@@ -2,826 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3989ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 16:58:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A6E0ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 16:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232038AbiHaQ65 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 12:58:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59568 "EHLO
+        id S232408AbiHaQ7U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 12:59:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231755AbiHaQ6V (ORCPT
+        with ESMTP id S232447AbiHaQ6l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 12:58:21 -0400
-Received: from frasgout12.his.huawei.com (frasgout12.his.huawei.com [14.137.139.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0737DF65D;
-        Wed, 31 Aug 2022 09:57:52 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.18.147.227])
-        by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4MHqyB421fz9v7cZ;
-        Thu,  1 Sep 2022 00:53:54 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.204.63.22])
-        by APP2 (Coremail) with SMTP id GxC2BwBX0lxfkg9jJXIRAA--.5993S13;
-        Wed, 31 Aug 2022 17:57:23 +0100 (CET)
-From:   Roberto Sassu <roberto.sassu@huaweicloud.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, mykolal@fb.com,
-        dhowells@redhat.com, jarkko@kernel.org, rostedt@goodmis.org,
-        mingo@redhat.com, paul@paul-moore.com, jmorris@namei.org,
-        serge@hallyn.com, shuah@kernel.org
-Cc:     bpf@vger.kernel.org, keyrings@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        deso@posteo.net, memxor@gmail.com,
-        Roberto Sassu <roberto.sassu@huawei.com>
-Subject: [PATCH v15 11/12] selftests/bpf: Add test for bpf_verify_pkcs7_signature() kfunc
-Date:   Wed, 31 Aug 2022 18:54:44 +0200
-Message-Id: <20220831165445.1071641-12-roberto.sassu@huaweicloud.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220831165445.1071641-1-roberto.sassu@huaweicloud.com>
-References: <20220831165445.1071641-1-roberto.sassu@huaweicloud.com>
+        Wed, 31 Aug 2022 12:58:41 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2056.outbound.protection.outlook.com [40.107.223.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8FB0DDB41;
+        Wed, 31 Aug 2022 09:58:03 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aDlpbBJIgKhU33z/z1w21k2Sdm8Q+wFzjxia9gw0hOk7mAYpt4cN2G4f1qTpw4mZfCKMSLlbrfTx3krA+h3BU5VW/lwYV7ppZUKyhMtdLfbFxXIcusk6q9Wmm6pK/gT2y+oLp/LG2riNGLEaY2ySq3eKVZia/cmB2DQQCxXGroEKDbs+hPUP6yJZB+Vm+grYqE97DOyGBZTpxF1o0EVSO4Fl5qjpAgP7Cqpzs8y9jdcbKGU+MVfWsLv6S4pTF7kEJ/NPgEzNyVs8Ox65JWTiW1ATqjbN/7o0vfpOlc8tZ0yaYndvXAP5srKl38rb2V429X3CriIii9dsl2V1nUHHCw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1NxUwri2i4bBDuGP16lHt396R/bFTiwewZFeKEjOVkY=;
+ b=ihDMI7zOHbJbpqscNP8t3Lz5X1iXziJM797uD4YnCCvrEELweXZqPuHWIt2KQYWAustef5FXgl55nOsOMkW1UF4obCjuWVPorzOapmwVTAR1ovdka9MeiCTyDLR7M5Mx317HSIEgaqSeI46aAtIXuN1o3Ro3SD1GgChhqAhFRz+B4SzDumeNDY18laawuoRsFH1zOrsKIgPhzWB3Rhgcy4oUBGVpK5nFX0ME5e/girAvP4zyIXfaQk1cuva3YWulcT+AKi0NOziKj/oiBTLyE72FeEDfaTdKdhIs8t2tpOJfd3sgbAWVoS4ZBlc/FLLyetK6hBP2sQILUjehSaUFGQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1NxUwri2i4bBDuGP16lHt396R/bFTiwewZFeKEjOVkY=;
+ b=cSgFs/xIhx/b/t/RQL+S4/6HvA88k1v5mH4hVHR/KeS/RZkjHpazbSo7TcawRGq2nEzpDrSgO9i7F0jopFcAw/zhXkKv/k4+G6yYNuWiiTi4Y/ZCUXQLMZP0JV+Tw/HEQWpP/wkosZoxxh69OVHrTXEneNvQ9sFsxD/QazQykWSazjrkFt25PCs8pxPKpwTFlpjvvgDTRxsN6dNZkxsBC0yqZGLmI3lqJHTyz1FWSYFDZQzuRYIUDMm3LKJ0dDCTtfwy51bNp4+f87BYg11MK170tLKXZ3kEMUFkTQXtdFqYoirY4hwkcFPoaotSHFxtlE6e3k9j0n22iczkxi71GA==
+Received: from MW2PR12MB4667.namprd12.prod.outlook.com (2603:10b6:302:12::28)
+ by SJ1PR12MB6243.namprd12.prod.outlook.com (2603:10b6:a03:456::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Wed, 31 Aug
+ 2022 16:58:00 +0000
+Received: from MW2PR12MB4667.namprd12.prod.outlook.com
+ ([fe80::c04:1bde:6484:efd2]) by MW2PR12MB4667.namprd12.prod.outlook.com
+ ([fe80::c04:1bde:6484:efd2%4]) with mapi id 15.20.5588.010; Wed, 31 Aug 2022
+ 16:58:00 +0000
+From:   Chaitanya Kulkarni <chaitanyak@nvidia.com>
+To:     Maxime Coquelin <maxime.coquelin@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        Eli Cohen <elic@nvidia.com>,
+        "guanjun@linux.alibaba.com" <guanjun@linux.alibaba.com>,
+        Parav Pandit <parav@nvidia.com>,
+        "gautam.dawar@xilinx.com" <gautam.dawar@xilinx.com>,
+        "dan.carpenter@oracle.com" <dan.carpenter@oracle.com>,
+        "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
+        "jasowang@redhat.com" <jasowang@redhat.com>,
+        "mst@redhat.com" <mst@redhat.com>
+CC:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: Re: [PATCH v3] vduse: prevent uninitialized memory accesses
+Thread-Topic: [PATCH v3] vduse: prevent uninitialized memory accesses
+Thread-Index: AQHYvVFN2JZtfr6++kSU8TZ8vD51QK3JOwOA
+Date:   Wed, 31 Aug 2022 16:57:59 +0000
+Message-ID: <fc475f95-3523-6c03-2508-23617eb26422@nvidia.com>
+References: <20220831154923.97809-1-maxime.coquelin@redhat.com>
+In-Reply-To: <20220831154923.97809-1-maxime.coquelin@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: fdba2545-5837-43e6-7200-08da8b71f5f3
+x-ms-traffictypediagnostic: SJ1PR12MB6243:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: MQ8SAn1rTKQeuVMYN8gA5DipFt6IH1qSiuywHcU/tsk4bRyzm2LyaAGFtGqU+T3qoNLxpGdxiIb7IpsLedYWE2lRaHmshaMPvlP3+cCsjlsgLTB7NGeldmDRv+af19prGVE6V0chzoMEMxsfAi6SUg1N3G93i3MzB5CDhPj8V+ahjtWcpTvj1emPac0d4eHl4+82oP6I7gMaXXNWBdMWYC/E+hFpSDa/tIuCPiohqp2bVGK/OP7OWx+GrtzNYwfq8+Dbe+/gxVceT82z4jOr5k+U7bnvdnKZcZU6yfsB+AIqEjoytHx+wwqAaomF/eJsgwDBfGcAHP+fvA+PjCfwEroabB/niABcWnHqMUvtbOdkZFcsLzmM4P9qHkY7UxKRJnEZSDntjXzM5f8aKydke1uM7YLy7BYAiu3U++rLMbApax0EG41SPZbC9q2zy63SbOzjNAoTmXr4iJUgl898AjcpMapi4iCH53htVZrGGLFHJx72dhq1klaMyUCsAYPBh30k7i2QEBYQYUnrrdlZAsXBCU54WHtubC3TK80HDnsabqAxHIZUVDLoDeQHBMgBRLpgNkIaE9NLcnBjz2s7gVLiJCKAIiVVsa1ArLEXOcoY/SW+axu0BPEUvau1r18J64Qc/DJSX4RH00SPIUckud9EcNdkrVVWeBfh0Ny7jGEU1H8pLhsV662nTjS7lPmumNdbH+nCoJYd/efk7OGbFQMN5D0bGPo1cRi/trguKTMEpRB+fl8zjcR3acF3txldfqCnJR1/njoSHBDuewfkgur0vtt/td7WMcqher7n2uuSHKZgGwCyyq662Hf5dZxRHnyL9vvUIH1ovDI85/5k1kXEMnU9UTlc/LdqB+KvvE4=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW2PR12MB4667.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(136003)(39860400002)(376002)(346002)(396003)(2906002)(921005)(31686004)(36756003)(4744005)(5660300002)(8936002)(7416002)(186003)(2616005)(38070700005)(8676002)(64756008)(66476007)(76116006)(66556008)(4326008)(91956017)(66446008)(66946007)(110136005)(54906003)(6486002)(41300700001)(316002)(53546011)(6512007)(6506007)(122000001)(38100700002)(71200400001)(31696002)(478600001)(86362001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?d0toK1doUElqOUlBZ1lHc2tHam5Sc0FmcmtwcGhkODl1cm91ZEtrUjdySjlj?=
+ =?utf-8?B?NllvZVczWTEzUzJjbHhuMnFOampFdTdaeWhmM1BhM040SW9PeU9uRkk5R1hS?=
+ =?utf-8?B?NXFRUkloeTY5S0ltZDdQTlQvRDFxaCtyQ01iRGVEVzR5ZmpNdUxYNG5CdzRB?=
+ =?utf-8?B?WjcyR01EcGdCL2t1WENJT1QySzBLc1VYcWN6dExEalNGOGhqNEkwaC8xdTgz?=
+ =?utf-8?B?WXdzaW9ZcFExcDJUZFQ4andPQ25wdDF1OGFHUUtDYll6dDdnbmtubHdwL3hI?=
+ =?utf-8?B?eFZGUnhLVXZPcGZsSkxnTHhRUmtqdkJYRjhyUDJpVVpmV2l5N1RUOXdmTTlj?=
+ =?utf-8?B?OXZhazJNRXRyK1pOMEpGcGd3dnFlakQxbm5rc083LzVYVTRjQS9GdDFrZ0NQ?=
+ =?utf-8?B?VytMdkJoMy8vZEp5WFp4a0R1OVl4YWw5dWVLeDhiRHZWTXJZRkszNXhSaW9B?=
+ =?utf-8?B?WTRQRUJaQk5zSmpNL3R2OEZBTzlkUHJ6R1Z1YnAxek82d0ppMGFqSExjbEJj?=
+ =?utf-8?B?cC9QQythNUs2VnQzY3dyYXVYNXk1OGxVRUs1NUpINmVKaE1UdHBGQjFSMGlt?=
+ =?utf-8?B?RHpSN2xvb2JpcG5ZaUxKN1d6TFhGWnI4MmFkQlJKRUFrbXYzZGViUmdRWi9X?=
+ =?utf-8?B?c3lGQ1V6bG93QzJWNnJhc3VVeFMwWWo5MXBqbVU4VU84RUJxRmNlMm1FcFd3?=
+ =?utf-8?B?RHliVEF5bXVZa2ZwZ1A3V1ZqY2xxcWRBa3J4OTNZMjdYYnZucmhxMStMdGtJ?=
+ =?utf-8?B?djB5dHhmNUFWQlZ2K3N6VVMxcFMvSjk4M2hOemFPaVlGcjhCc3EyRTkvNXE3?=
+ =?utf-8?B?dnd4dkhXMm1sMU1tWjdLcitSU3cwa0N1YktBNmF0bmpVa3RaVWJVc3REL050?=
+ =?utf-8?B?di84MmNSY2hqWUpqVTVFVmpmVlJzWkRSa3BoVTh4RmRWOW5iZ01yY1dING5y?=
+ =?utf-8?B?SGd1UTlWd3NucjlPcnVEZVRnVnJzcENPeDhCQWdMQVNiUjM3RDE1RlZxbmFU?=
+ =?utf-8?B?Vlh4U1ZRcDFkZm16bW9ZeFdBYyt4ckhRQ0F3NW9XMDkwR0FIdUI4bWFEMkdZ?=
+ =?utf-8?B?OTFTaUhMTHRPQVB5Nlc3Z1ZUR3dIenZnZHhZdGdLY2VlRmYwVitGQ3pmMG9Y?=
+ =?utf-8?B?NVFaQlhPYWtFNml1KzdYRVJYVEl4eG4rdmowVVp4V2dHai85QmhiRzVuRVJv?=
+ =?utf-8?B?dVIzMHc3OXh3Uy93RE12Umt1R05BVHJhemRvbk5PTWhKYUg1UExKS2J6VzRJ?=
+ =?utf-8?B?emRFblZ0eWdwNURkOGdwajd4YVk5Rm9SWmdOUGdWdXVTdGNEeTdLTklNdU5B?=
+ =?utf-8?B?UjBPY2pMSWVKT2Yxd2FvaHhVc0czekdwT2V5NTA0VVFFVzBYc2dXd1BsbVZO?=
+ =?utf-8?B?Z3ZOMGQyRVNudENKN1VubGRVdTNnUmRWOTNRbDhyYkpQbmcvVVdENDdkZzBL?=
+ =?utf-8?B?MkY0WFVTS2wza0gvbTRjbFFQZDNyYStPTTFDTXFNVklyUm1UYXl2TWlJQ3Y1?=
+ =?utf-8?B?Y2lCQnVRNnMrdUxYeGJjeHlkdEFnaWgyRktPVHlQbmdQTGFDNXZiM3cwVnlY?=
+ =?utf-8?B?MHl2aHdTQjgyVnpYZy9IOTVqVUxzZFlya2dzS2RSNk1WU3FaZ1NENlJoOWkr?=
+ =?utf-8?B?ZVdhVkd1Q2RXOVVJajBWdlcxR0Z2S09HVnFtQURNNE5aZVV5M1ZGSmJKSFFR?=
+ =?utf-8?B?TnZCTW95Y01COGFrWFpUZDRwNTlKZmNjUXRaSFArNzFBSjNpa0xtclVMSW9i?=
+ =?utf-8?B?QW9qRjdSUHBiRGFXMkF5VVJjR2lCUjJlbzhNS3FkS2M4Vmt5ZTRPTzZldnM1?=
+ =?utf-8?B?SDdUNnJQVVlmU290d29mUm5FZ0pJRVpVcHlNNGN3QWhQZXBTcVVBSTBRZEtr?=
+ =?utf-8?B?RHFBZjg3QzhIckM3N0U0YzRxWjlydlhpVUc3OUZZZG9CU1hmLzJnNHRZbDNR?=
+ =?utf-8?B?MWFGcXh3Z3h3Q2V3ZXBjUXZ1Nzl6QzloekdXK0dQbWF2b1F0WENXZ1I2NE1n?=
+ =?utf-8?B?aU0xcTZOSWt2VXFnejBpRXQ4ck1YbmdTUGlnVVdNb0g3dnJ3VHR4UWsxbSs0?=
+ =?utf-8?B?UGZGUW4zUnhyYUhTcGVqTHhydU9iZ05INVlYUmpva0RZWFI4RVFGUkZMMlZD?=
+ =?utf-8?B?WnJ6Wk1kK21meCt0Tm15WHFGYVJOYUozWjlhNVdoWFdUZ0QzTVJPREY4SHAw?=
+ =?utf-8?B?MUE9PQ==?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <BE11E11D5034684589AFE2F55248E47D@namprd12.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GxC2BwBX0lxfkg9jJXIRAA--.5993S13
-X-Coremail-Antispam: 1UD129KBjvAXoWftw43ur43Cw47Jr15Wry8Krg_yoW8uw4kXo
-        Z3Gw43X3WrGr1UCr18KFykCryfWw48Ka4kAwnYv3srXFyDK3sIkr48Cw4fX342v39YqFyr
-        uFn3Z3s7uFWxtrn5n29KB7ZKAUJUUUU8529EdanIXcx71UUUUU7v73VFW2AGmfu7bjvjm3
-        AaLaJ3UjIYCTnIWjp_UUUOe7kC6x804xWl14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK
-        8VAvwI8IcIk0rVWUuVWrJwAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_JF
-        0E3s1l82xGYIkIc2x26xkF7I0E14v26ryj6s0DM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vE
-        j48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxV
-        AFwI0_Cr1j6rxdM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E
-        14v26F4UJVW0owAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I
-        80ewAv7VC0I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCj
-        c4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7MxkF7I0En4
-        kS14v26r4a6rW5MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E
-        5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVW8ZV
-        WrXwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26ryj6F1UMIIF0xvE2Ix0cI8IcVCY
-        1x0267AKxVWxJr0_GcWlIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14
-        v26r4j6F4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Cr1j6rxdYxBIdaVFxhVjvjDU0xZFpf9x
-        07j7GYLUUUUU=
-X-CM-SenderInfo: purev21wro2thvvxqx5xdzvxpfor3voofrz/1tbiAgABBF1jj357FgACsn
-X-CFilter-Loop: Reflected
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MW2PR12MB4667.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fdba2545-5837-43e6-7200-08da8b71f5f3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Aug 2022 16:57:59.9659
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Pm1PWUHRPJYk7p3yIZvz8qXMlcMclJGG9LihcgiXD6s86UDRnQKvLp9OoF708tENtwUys979KGSDmQsPOudCRg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6243
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roberto Sassu <roberto.sassu@huawei.com>
-
-Perform several tests to ensure the correct implementation of the
-bpf_verify_pkcs7_signature() kfunc.
-
-Do the tests with data signed with a generated testing key (by using
-sign-file from scripts/) and with the tcp_bic.ko kernel module if it is
-found in the system. The test does not fail if tcp_bic.ko is not found.
-
-First, perform an unsuccessful signature verification without data.
-
-Second, perform a successful signature verification with the session
-keyring and a new one created for testing.
-
-Then, ensure that permission and validation checks are done properly on the
-keyring provided to bpf_verify_pkcs7_signature(), despite those checks were
-deferred at the time the keyring was retrieved with bpf_lookup_user_key().
-The tests expect to encounter an error if the Search permission is removed
-from the keyring, or the keyring is expired.
-
-Finally, perform a successful and unsuccessful signature verification with
-the keyrings with pre-determined IDs (the last test fails because the key
-is not in the platform keyring).
-
-The test is currently in the deny list for s390x (JIT does not support
-calling kernel function).
-
-Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
----
- tools/testing/selftests/bpf/DENYLIST.s390x    |   1 +
- tools/testing/selftests/bpf/Makefile          |  14 +-
- tools/testing/selftests/bpf/config            |   5 +
- tools/testing/selftests/bpf/config.x86_64     |   5 -
- .../bpf/prog_tests/verify_pkcs7_sig.c         | 399 ++++++++++++++++++
- .../bpf/progs/test_verify_pkcs7_sig.c         | 100 +++++
- .../testing/selftests/bpf/verify_sig_setup.sh | 104 +++++
- 7 files changed, 620 insertions(+), 8 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/verify_pkcs7_sig.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_verify_pkcs7_sig.c
- create mode 100755 tools/testing/selftests/bpf/verify_sig_setup.sh
-
-diff --git a/tools/testing/selftests/bpf/DENYLIST.s390x b/tools/testing/selftests/bpf/DENYLIST.s390x
-index 50edce0de0b0..e7cffbb57d68 100644
---- a/tools/testing/selftests/bpf/DENYLIST.s390x
-+++ b/tools/testing/selftests/bpf/DENYLIST.s390x
-@@ -69,3 +69,4 @@ setget_sockopt                           # attach unexpected error: -524
- cb_refs                                  # expected error message unexpected error: -524                               (trampoline)
- cgroup_hierarchical_stats                # JIT does not support calling kernel function                                (kfunc)
- lookup_key                               # JIT does not support calling kernel function                                (kfunc)
-+verify_pkcs7_sig                         # JIT does not support calling kernel function                                (kfunc)
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index eecad99f1735..1bea47732788 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -14,6 +14,7 @@ BPFTOOLDIR := $(TOOLSDIR)/bpf/bpftool
- APIDIR := $(TOOLSINCDIR)/uapi
- GENDIR := $(abspath ../../../../include/generated)
- GENHDR := $(GENDIR)/autoconf.h
-+HOSTPKG_CONFIG := pkg-config
- 
- ifneq ($(wildcard $(GENHDR)),)
-   GENFLAGS := -DHAVE_GENHDR
-@@ -75,7 +76,7 @@ TEST_PROGS := test_kmod.sh \
- 	test_xsk.sh
- 
- TEST_PROGS_EXTENDED := with_addr.sh \
--	with_tunnels.sh ima_setup.sh \
-+	with_tunnels.sh ima_setup.sh verify_sig_setup.sh \
- 	test_xdp_vlan.sh test_bpftool.py
- 
- # Compile but not part of 'make run_tests'
-@@ -84,7 +85,7 @@ TEST_GEN_PROGS_EXTENDED = test_sock_addr test_skb_cgroup_id_user \
- 	test_lirc_mode2_user xdping test_cpp runqslower bench bpf_testmod.ko \
- 	xskxceiver xdp_redirect_multi xdp_synproxy
- 
--TEST_CUSTOM_PROGS = $(OUTPUT)/urandom_read
-+TEST_CUSTOM_PROGS = $(OUTPUT)/urandom_read $(OUTPUT)/sign-file
- 
- # Emit succinct information message describing current building step
- # $1 - generic step name (e.g., CC, LINK, etc);
-@@ -189,6 +190,12 @@ $(OUTPUT)/urandom_read: urandom_read.c urandom_read_aux.c $(OUTPUT)/liburandom_r
- 		     -fuse-ld=$(LLD) -Wl,-znoseparate-code		       \
- 		     -Wl,-rpath=. -Wl,--build-id=sha1 -o $@
- 
-+$(OUTPUT)/sign-file: ../../../../scripts/sign-file.c
-+	$(call msg,SIGN-FILE,,$@)
-+	$(Q)$(CC) $(shell $(HOSTPKG_CONFIG)--cflags libcrypto 2> /dev/null) \
-+		  $< -o $@ \
-+		  $(shell $(HOSTPKG_CONFIG) --libs libcrypto 2> /dev/null || echo -lcrypto)
-+
- $(OUTPUT)/bpf_testmod.ko: $(VMLINUX_BTF) $(wildcard bpf_testmod/Makefile bpf_testmod/*.[ch])
- 	$(call msg,MOD,,$@)
- 	$(Q)$(RM) bpf_testmod/bpf_testmod.ko # force re-compilation
-@@ -515,7 +522,8 @@ TRUNNER_EXTRA_SOURCES := test_progs.c cgroup_helpers.c trace_helpers.c	\
- TRUNNER_EXTRA_FILES := $(OUTPUT)/urandom_read $(OUTPUT)/bpf_testmod.ko	\
- 		       $(OUTPUT)/liburandom_read.so			\
- 		       $(OUTPUT)/xdp_synproxy				\
--		       ima_setup.sh					\
-+		       $(OUTPUT)/sign-file				\
-+		       ima_setup.sh verify_sig_setup.sh			\
- 		       $(wildcard progs/btf_dump_test_case_*.c)
- TRUNNER_BPF_BUILD_RULE := CLANG_BPF_BUILD_RULE
- TRUNNER_BPF_CFLAGS := $(BPF_CFLAGS) $(CLANG_CFLAGS) -DENABLE_ATOMICS_TESTS
-diff --git a/tools/testing/selftests/bpf/config b/tools/testing/selftests/bpf/config
-index add5a5a919b4..905a9be8d0a2 100644
---- a/tools/testing/selftests/bpf/config
-+++ b/tools/testing/selftests/bpf/config
-@@ -33,6 +33,11 @@ CONFIG_IPV6_TUNNEL=y
- CONFIG_KEYS=y
- CONFIG_LIRC=y
- CONFIG_LWTUNNEL=y
-+CONFIG_MODULE_SIG=y
-+CONFIG_MODULE_SRCVERSION_ALL=y
-+CONFIG_MODULE_UNLOAD=y
-+CONFIG_MODULES=y
-+CONFIG_MODVERSIONS=y
- CONFIG_MPLS=y
- CONFIG_MPLS_IPTUNNEL=y
- CONFIG_MPLS_ROUTING=y
-diff --git a/tools/testing/selftests/bpf/config.x86_64 b/tools/testing/selftests/bpf/config.x86_64
-index ce70c9509204..21ce5ea4304e 100644
---- a/tools/testing/selftests/bpf/config.x86_64
-+++ b/tools/testing/selftests/bpf/config.x86_64
-@@ -145,11 +145,6 @@ CONFIG_MCORE2=y
- CONFIG_MEMCG=y
- CONFIG_MEMORY_FAILURE=y
- CONFIG_MINIX_SUBPARTITION=y
--CONFIG_MODULE_SIG=y
--CONFIG_MODULE_SRCVERSION_ALL=y
--CONFIG_MODULE_UNLOAD=y
--CONFIG_MODULES=y
--CONFIG_MODVERSIONS=y
- CONFIG_NAMESPACES=y
- CONFIG_NET=y
- CONFIG_NET_9P=y
-diff --git a/tools/testing/selftests/bpf/prog_tests/verify_pkcs7_sig.c b/tools/testing/selftests/bpf/prog_tests/verify_pkcs7_sig.c
-new file mode 100644
-index 000000000000..20be68d4cce4
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/verify_pkcs7_sig.c
-@@ -0,0 +1,399 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+/*
-+ * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
-+ *
-+ * Author: Roberto Sassu <roberto.sassu@huawei.com>
-+ */
-+
-+#include <stdio.h>
-+#include <errno.h>
-+#include <stdlib.h>
-+#include <unistd.h>
-+#include <endian.h>
-+#include <limits.h>
-+#include <sys/stat.h>
-+#include <sys/wait.h>
-+#include <sys/mman.h>
-+#include <linux/keyctl.h>
-+#include <test_progs.h>
-+
-+#include "test_verify_pkcs7_sig.skel.h"
-+
-+#define MAX_DATA_SIZE (1024 * 1024)
-+#define MAX_SIG_SIZE 1024
-+
-+#define VERIFY_USE_SECONDARY_KEYRING (1UL)
-+#define VERIFY_USE_PLATFORM_KEYRING  (2UL)
-+
-+/* In stripped ARM and x86-64 modules, ~ is surprisingly rare. */
-+#define MODULE_SIG_STRING "~Module signature appended~\n"
-+
-+/*
-+ * Module signature information block.
-+ *
-+ * The constituents of the signature section are, in order:
-+ *
-+ *	- Signer's name
-+ *	- Key identifier
-+ *	- Signature data
-+ *	- Information block
-+ */
-+struct module_signature {
-+	u8	algo;		/* Public-key crypto algorithm [0] */
-+	u8	hash;		/* Digest algorithm [0] */
-+	u8	id_type;	/* Key identifier type [PKEY_ID_PKCS7] */
-+	u8	signer_len;	/* Length of signer's name [0] */
-+	u8	key_id_len;	/* Length of key identifier [0] */
-+	u8	__pad[3];
-+	__be32	sig_len;	/* Length of signature data */
-+};
-+
-+struct data {
-+	u8 data[MAX_DATA_SIZE];
-+	u32 data_len;
-+	u8 sig[MAX_SIG_SIZE];
-+	u32 sig_len;
-+};
-+
-+static bool kfunc_not_supported;
-+
-+static int libbpf_print_cb(enum libbpf_print_level level, const char *fmt,
-+			   va_list args)
-+{
-+	if (strcmp(fmt, "libbpf: extern (func ksym) '%s': not found in kernel or module BTFs\n"))
-+		return 0;
-+
-+	if (strcmp(va_arg(args, char *), "bpf_verify_pkcs7_signature"))
-+		return 0;
-+
-+	kfunc_not_supported = true;
-+	return 0;
-+}
-+
-+static int _run_setup_process(const char *setup_dir, const char *cmd)
-+{
-+	int child_pid, child_status;
-+
-+	child_pid = fork();
-+	if (child_pid == 0) {
-+		execlp("./verify_sig_setup.sh", "./verify_sig_setup.sh", cmd,
-+		       setup_dir, NULL);
-+		exit(errno);
-+
-+	} else if (child_pid > 0) {
-+		waitpid(child_pid, &child_status, 0);
-+		return WEXITSTATUS(child_status);
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static int populate_data_item_str(const char *tmp_dir, struct data *data_item)
-+{
-+	struct stat st;
-+	char data_template[] = "/tmp/dataXXXXXX";
-+	char path[PATH_MAX];
-+	int ret, fd, child_status, child_pid;
-+
-+	data_item->data_len = 4;
-+	memcpy(data_item->data, "test", data_item->data_len);
-+
-+	fd = mkstemp(data_template);
-+	if (fd == -1)
-+		return -errno;
-+
-+	ret = write(fd, data_item->data, data_item->data_len);
-+
-+	close(fd);
-+
-+	if (ret != data_item->data_len) {
-+		ret = -EIO;
-+		goto out;
-+	}
-+
-+	child_pid = fork();
-+
-+	if (child_pid == -1) {
-+		ret = -errno;
-+		goto out;
-+	}
-+
-+	if (child_pid == 0) {
-+		snprintf(path, sizeof(path), "%s/signing_key.pem", tmp_dir);
-+
-+		return execlp("./sign-file", "./sign-file", "-d", "sha256",
-+			      path, path, data_template, NULL);
-+	}
-+
-+	waitpid(child_pid, &child_status, 0);
-+
-+	ret = WEXITSTATUS(child_status);
-+	if (ret)
-+		goto out;
-+
-+	snprintf(path, sizeof(path), "%s.p7s", data_template);
-+
-+	ret = stat(path, &st);
-+	if (ret == -1) {
-+		ret = -errno;
-+		goto out;
-+	}
-+
-+	if (st.st_size > sizeof(data_item->sig)) {
-+		ret = -EINVAL;
-+		goto out_sig;
-+	}
-+
-+	data_item->sig_len = st.st_size;
-+
-+	fd = open(path, O_RDONLY);
-+	if (fd == -1) {
-+		ret = -errno;
-+		goto out_sig;
-+	}
-+
-+	ret = read(fd, data_item->sig, data_item->sig_len);
-+
-+	close(fd);
-+
-+	if (ret != data_item->sig_len) {
-+		ret = -EIO;
-+		goto out_sig;
-+	}
-+
-+	ret = 0;
-+out_sig:
-+	unlink(path);
-+out:
-+	unlink(data_template);
-+	return ret;
-+}
-+
-+static int populate_data_item_mod(struct data *data_item)
-+{
-+	char mod_path[PATH_MAX], *mod_path_ptr;
-+	struct stat st;
-+	void *mod;
-+	FILE *fp;
-+	struct module_signature ms;
-+	int ret, fd, modlen, marker_len, sig_len;
-+
-+	data_item->data_len = 0;
-+
-+	if (stat("/lib/modules", &st) == -1)
-+		return 0;
-+
-+	/* Requires CONFIG_TCP_CONG_BIC=m. */
-+	fp = popen("find /lib/modules/$(uname -r) -name tcp_bic.ko", "r");
-+	if (!fp)
-+		return 0;
-+
-+	mod_path_ptr = fgets(mod_path, sizeof(mod_path), fp);
-+	pclose(fp);
-+
-+	if (!mod_path_ptr)
-+		return 0;
-+
-+	mod_path_ptr = strchr(mod_path, '\n');
-+	if (!mod_path_ptr)
-+		return 0;
-+
-+	*mod_path_ptr = '\0';
-+
-+	if (stat(mod_path, &st) == -1)
-+		return 0;
-+
-+	modlen = st.st_size;
-+	marker_len = sizeof(MODULE_SIG_STRING) - 1;
-+
-+	fd = open(mod_path, O_RDONLY);
-+	if (fd == -1)
-+		return -errno;
-+
-+	mod = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
-+
-+	close(fd);
-+
-+	if (mod == MAP_FAILED)
-+		return -errno;
-+
-+	if (strncmp(mod + modlen - marker_len, MODULE_SIG_STRING, marker_len)) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	modlen -= marker_len;
-+
-+	memcpy(&ms, mod + (modlen - sizeof(ms)), sizeof(ms));
-+
-+	sig_len = __be32_to_cpu(ms.sig_len);
-+	modlen -= sig_len + sizeof(ms);
-+
-+	if (modlen > sizeof(data_item->data)) {
-+		ret = -E2BIG;
-+		goto out;
-+	}
-+
-+	memcpy(data_item->data, mod, modlen);
-+	data_item->data_len = modlen;
-+
-+	if (sig_len > sizeof(data_item->sig)) {
-+		ret = -E2BIG;
-+		goto out;
-+	}
-+
-+	memcpy(data_item->sig, mod + modlen, sig_len);
-+	data_item->sig_len = sig_len;
-+	ret = 0;
-+out:
-+	munmap(mod, st.st_size);
-+	return ret;
-+}
-+
-+void test_verify_pkcs7_sig(void)
-+{
-+	libbpf_print_fn_t old_print_cb;
-+	char tmp_dir_template[] = "/tmp/verify_sigXXXXXX";
-+	char *tmp_dir;
-+	struct test_verify_pkcs7_sig *skel = NULL;
-+	struct bpf_map *map;
-+	struct data data;
-+	int ret, zero = 0;
-+
-+	/* Trigger creation of session keyring. */
-+	syscall(__NR_request_key, "keyring", "_uid.0", NULL,
-+		KEY_SPEC_SESSION_KEYRING);
-+
-+	tmp_dir = mkdtemp(tmp_dir_template);
-+	if (!ASSERT_OK_PTR(tmp_dir, "mkdtemp"))
-+		return;
-+
-+	ret = _run_setup_process(tmp_dir, "setup");
-+	if (!ASSERT_OK(ret, "_run_setup_process"))
-+		goto close_prog;
-+
-+	skel = test_verify_pkcs7_sig__open();
-+	if (!ASSERT_OK_PTR(skel, "test_verify_pkcs7_sig__open"))
-+		goto close_prog;
-+
-+	old_print_cb = libbpf_set_print(libbpf_print_cb);
-+	ret = test_verify_pkcs7_sig__load(skel);
-+	libbpf_set_print(old_print_cb);
-+
-+	if (ret < 0 && kfunc_not_supported) {
-+		printf(
-+		  "%s:SKIP:bpf_verify_pkcs7_signature() kfunc not supported\n",
-+		  __func__);
-+		test__skip();
-+		goto close_prog;
-+	}
-+
-+	if (!ASSERT_OK(ret, "test_verify_pkcs7_sig__load"))
-+		goto close_prog;
-+
-+	ret = test_verify_pkcs7_sig__attach(skel);
-+	if (!ASSERT_OK(ret, "test_verify_pkcs7_sig__attach"))
-+		goto close_prog;
-+
-+	map = bpf_object__find_map_by_name(skel->obj, "data_input");
-+	if (!ASSERT_OK_PTR(map, "data_input not found"))
-+		goto close_prog;
-+
-+	skel->bss->monitored_pid = getpid();
-+
-+	/* Test without data and signature. */
-+	skel->bss->user_keyring_serial = KEY_SPEC_SESSION_KEYRING;
-+
-+	ret = bpf_map_update_elem(bpf_map__fd(map), &zero, &data, BPF_ANY);
-+	if (!ASSERT_LT(ret, 0, "bpf_map_update_elem data_input"))
-+		goto close_prog;
-+
-+	/* Test successful signature verification with session keyring. */
-+	ret = populate_data_item_str(tmp_dir, &data);
-+	if (!ASSERT_OK(ret, "populate_data_item_str"))
-+		goto close_prog;
-+
-+	ret = bpf_map_update_elem(bpf_map__fd(map), &zero, &data, BPF_ANY);
-+	if (!ASSERT_OK(ret, "bpf_map_update_elem data_input"))
-+		goto close_prog;
-+
-+	/* Test successful signature verification with testing keyring. */
-+	skel->bss->user_keyring_serial = syscall(__NR_request_key, "keyring",
-+						 "ebpf_testing_keyring", NULL,
-+						 KEY_SPEC_SESSION_KEYRING);
-+
-+	ret = bpf_map_update_elem(bpf_map__fd(map), &zero, &data, BPF_ANY);
-+	if (!ASSERT_OK(ret, "bpf_map_update_elem data_input"))
-+		goto close_prog;
-+
-+	/*
-+	 * Ensure key_task_permission() is called and rejects the keyring
-+	 * (no Search permission).
-+	 */
-+	syscall(__NR_keyctl, KEYCTL_SETPERM, skel->bss->user_keyring_serial,
-+		0x37373737);
-+
-+	ret = bpf_map_update_elem(bpf_map__fd(map), &zero, &data, BPF_ANY);
-+	if (!ASSERT_LT(ret, 0, "bpf_map_update_elem data_input"))
-+		goto close_prog;
-+
-+	syscall(__NR_keyctl, KEYCTL_SETPERM, skel->bss->user_keyring_serial,
-+		0x3f3f3f3f);
-+
-+	/*
-+	 * Ensure key_validate() is called and rejects the keyring (key expired)
-+	 */
-+	syscall(__NR_keyctl, KEYCTL_SET_TIMEOUT,
-+		skel->bss->user_keyring_serial, 1);
-+	sleep(1);
-+
-+	ret = bpf_map_update_elem(bpf_map__fd(map), &zero, &data, BPF_ANY);
-+	if (!ASSERT_LT(ret, 0, "bpf_map_update_elem data_input"))
-+		goto close_prog;
-+
-+	skel->bss->user_keyring_serial = KEY_SPEC_SESSION_KEYRING;
-+
-+	/* Test with corrupted data (signature verification should fail). */
-+	data.data[0] = 'a';
-+	ret = bpf_map_update_elem(bpf_map__fd(map), &zero, &data, BPF_ANY);
-+	if (!ASSERT_LT(ret, 0, "bpf_map_update_elem data_input"))
-+		goto close_prog;
-+
-+	ret = populate_data_item_mod(&data);
-+	if (!ASSERT_OK(ret, "populate_data_item_mod"))
-+		goto close_prog;
-+
-+	/* Test signature verification with system keyrings. */
-+	if (data.data_len) {
-+		skel->bss->user_keyring_serial = 0;
-+		skel->bss->system_keyring_id = 0;
-+
-+		ret = bpf_map_update_elem(bpf_map__fd(map), &zero, &data,
-+					  BPF_ANY);
-+		if (!ASSERT_OK(ret, "bpf_map_update_elem data_input"))
-+			goto close_prog;
-+
-+		skel->bss->system_keyring_id = VERIFY_USE_SECONDARY_KEYRING;
-+
-+		ret = bpf_map_update_elem(bpf_map__fd(map), &zero, &data,
-+					  BPF_ANY);
-+		if (!ASSERT_OK(ret, "bpf_map_update_elem data_input"))
-+			goto close_prog;
-+
-+		skel->bss->system_keyring_id = VERIFY_USE_PLATFORM_KEYRING;
-+
-+		ret = bpf_map_update_elem(bpf_map__fd(map), &zero, &data,
-+					  BPF_ANY);
-+		ASSERT_LT(ret, 0, "bpf_map_update_elem data_input");
-+	}
-+
-+close_prog:
-+	_run_setup_process(tmp_dir, "cleanup");
-+
-+	if (!skel)
-+		return;
-+
-+	skel->bss->monitored_pid = 0;
-+	test_verify_pkcs7_sig__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_verify_pkcs7_sig.c b/tools/testing/selftests/bpf/progs/test_verify_pkcs7_sig.c
-new file mode 100644
-index 000000000000..4ceab545d99a
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_verify_pkcs7_sig.c
-@@ -0,0 +1,100 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+/*
-+ * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
-+ *
-+ * Author: Roberto Sassu <roberto.sassu@huawei.com>
-+ */
-+
-+#include "vmlinux.h"
-+#include <errno.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+#define MAX_DATA_SIZE (1024 * 1024)
-+#define MAX_SIG_SIZE 1024
-+
-+typedef __u8 u8;
-+typedef __u16 u16;
-+typedef __u32 u32;
-+typedef __u64 u64;
-+
-+struct bpf_dynptr {
-+	__u64 :64;
-+	__u64 :64;
-+} __attribute__((aligned(8)));
-+
-+extern struct bpf_key *bpf_lookup_user_key(__u32 serial, __u64 flags) __ksym;
-+extern struct bpf_key *bpf_lookup_system_key(__u64 id) __ksym;
-+extern void bpf_key_put(struct bpf_key *key) __ksym;
-+extern int bpf_verify_pkcs7_signature(struct bpf_dynptr *data_ptr,
-+				      struct bpf_dynptr *sig_ptr,
-+				      struct bpf_key *trusted_keyring) __ksym;
-+
-+u32 monitored_pid;
-+u32 user_keyring_serial;
-+u64 system_keyring_id;
-+
-+struct data {
-+	u8 data[MAX_DATA_SIZE];
-+	u32 data_len;
-+	u8 sig[MAX_SIG_SIZE];
-+	u32 sig_len;
-+};
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(max_entries, 1);
-+	__type(key, __u32);
-+	__type(value, struct data);
-+} data_input SEC(".maps");
-+
-+char _license[] SEC("license") = "GPL";
-+
-+SEC("lsm.s/bpf")
-+int BPF_PROG(bpf, int cmd, union bpf_attr *attr, unsigned int size)
-+{
-+	struct bpf_dynptr data_ptr, sig_ptr;
-+	struct data *data_val;
-+	struct bpf_key *trusted_keyring;
-+	u32 pid;
-+	u64 value;
-+	int ret, zero = 0;
-+
-+	pid = bpf_get_current_pid_tgid() >> 32;
-+	if (pid != monitored_pid)
-+		return 0;
-+
-+	data_val = bpf_map_lookup_elem(&data_input, &zero);
-+	if (!data_val)
-+		return 0;
-+
-+	bpf_probe_read(&value, sizeof(value), &attr->value);
-+
-+	bpf_copy_from_user(data_val, sizeof(struct data),
-+			   (void *)(unsigned long)value);
-+
-+	if (data_val->data_len > sizeof(data_val->data))
-+		return -EINVAL;
-+
-+	bpf_dynptr_from_mem(data_val->data, data_val->data_len, 0, &data_ptr);
-+
-+	if (data_val->sig_len > sizeof(data_val->sig))
-+		return -EINVAL;
-+
-+	bpf_dynptr_from_mem(data_val->sig, data_val->sig_len, 0, &sig_ptr);
-+
-+	if (user_keyring_serial)
-+		trusted_keyring = bpf_lookup_user_key(user_keyring_serial, 0);
-+	else
-+		trusted_keyring = bpf_lookup_system_key(system_keyring_id);
-+
-+	if (!trusted_keyring)
-+		return -ENOENT;
-+
-+	ret = bpf_verify_pkcs7_signature(&data_ptr, &sig_ptr, trusted_keyring);
-+
-+	bpf_key_put(trusted_keyring);
-+
-+	return ret;
-+}
-diff --git a/tools/testing/selftests/bpf/verify_sig_setup.sh b/tools/testing/selftests/bpf/verify_sig_setup.sh
-new file mode 100755
-index 000000000000..ba08922b4a27
---- /dev/null
-+++ b/tools/testing/selftests/bpf/verify_sig_setup.sh
-@@ -0,0 +1,104 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+set -e
-+set -u
-+set -o pipefail
-+
-+VERBOSE="${SELFTESTS_VERBOSE:=0}"
-+LOG_FILE="$(mktemp /tmp/verify_sig_setup.log.XXXXXX)"
-+
-+x509_genkey_content="\
-+[ req ]
-+default_bits = 2048
-+distinguished_name = req_distinguished_name
-+prompt = no
-+string_mask = utf8only
-+x509_extensions = myexts
-+
-+[ req_distinguished_name ]
-+CN = eBPF Signature Verification Testing Key
-+
-+[ myexts ]
-+basicConstraints=critical,CA:FALSE
-+keyUsage=digitalSignature
-+subjectKeyIdentifier=hash
-+authorityKeyIdentifier=keyid
-+"
-+
-+usage()
-+{
-+	echo "Usage: $0 <setup|cleanup <existing_tmp_dir>"
-+	exit 1
-+}
-+
-+setup()
-+{
-+	local tmp_dir="$1"
-+
-+	echo "${x509_genkey_content}" > ${tmp_dir}/x509.genkey
-+
-+	openssl req -new -nodes -utf8 -sha256 -days 36500 \
-+			-batch -x509 -config ${tmp_dir}/x509.genkey \
-+			-outform PEM -out ${tmp_dir}/signing_key.pem \
-+			-keyout ${tmp_dir}/signing_key.pem 2>&1
-+
-+	openssl x509 -in ${tmp_dir}/signing_key.pem -out \
-+		${tmp_dir}/signing_key.der -outform der
-+
-+	key_id=$(cat ${tmp_dir}/signing_key.der | keyctl padd asymmetric ebpf_testing_key @s)
-+
-+	keyring_id=$(keyctl newring ebpf_testing_keyring @s)
-+	keyctl link $key_id $keyring_id
-+}
-+
-+cleanup() {
-+	local tmp_dir="$1"
-+
-+	keyctl unlink $(keyctl search @s asymmetric ebpf_testing_key) @s
-+	keyctl unlink $(keyctl search @s keyring ebpf_testing_keyring) @s
-+	rm -rf ${tmp_dir}
-+}
-+
-+catch()
-+{
-+	local exit_code="$1"
-+	local log_file="$2"
-+
-+	if [[ "${exit_code}" -ne 0 ]]; then
-+		cat "${log_file}" >&3
-+	fi
-+
-+	rm -f "${log_file}"
-+	exit ${exit_code}
-+}
-+
-+main()
-+{
-+	[[ $# -ne 2 ]] && usage
-+
-+	local action="$1"
-+	local tmp_dir="$2"
-+
-+	[[ ! -d "${tmp_dir}" ]] && echo "Directory ${tmp_dir} doesn't exist" && exit 1
-+
-+	if [[ "${action}" == "setup" ]]; then
-+		setup "${tmp_dir}"
-+	elif [[ "${action}" == "cleanup" ]]; then
-+		cleanup "${tmp_dir}"
-+	else
-+		echo "Unknown action: ${action}"
-+		exit 1
-+	fi
-+}
-+
-+trap 'catch "$?" "${LOG_FILE}"' EXIT
-+
-+if [[ "${VERBOSE}" -eq 0 ]]; then
-+	# Save the stderr to 3 so that we can output back to
-+	# it incase of an error.
-+	exec 3>&2 1>"${LOG_FILE}" 2>&1
-+fi
-+
-+main "$@"
-+rm -f "${LOG_FILE}"
--- 
-2.25.1
-
+T24gOC8zMS8yMiAwODo0OSwgTWF4aW1lIENvcXVlbGluIHdyb3RlOg0KPiBJZiB0aGUgVkRVU0Ug
+YXBwbGljYXRpb24gcHJvdmlkZXMgYSBzbWFsbGVyIGNvbmZpZyBzcGFjZQ0KPiB0aGFuIHRoZSBk
+cml2ZXIgZXhwZWN0cywgdGhlIGRyaXZlciBtYXkgdXNlIHVuaW5pdGlhbGl6ZWQNCj4gbWVtb3J5
+IGZyb20gdGhlIHN0YWNrLg0KPiANCj4gVGhpcyBwYXRjaCBwcmV2ZW50cyBpdCBieSBpbml0aWFs
+aXppbmcgdGhlIGJ1ZmZlciBwYXNzZWQgYnkNCj4gdGhlIGRyaXZlciB0byBzdG9yZSB0aGUgY29u
+ZmlnIHZhbHVlLg0KPiANCj4gVGhpcyBmaXggYWRkcmVzc2VzIENWRS0yMDIyLTIzMDguDQo+IA0K
+PiBDYzogc3RhYmxlQHZnZXIua2VybmVsLm9yZyAjIHY1LjE1Kw0KPiBGaXhlczogYzhhNjE1M2I2
+YzU5ICgidmR1c2U6IEludHJvZHVjZSBWRFVTRSAtIHZEUEEgRGV2aWNlIGluIFVzZXJzcGFjZSIp
+DQo+IFJldmlld2VkLWJ5OiBYaWUgWW9uZ2ppIDx4aWV5b25namlAYnl0ZWRhbmNlLmNvbT4NCj4g
+QWNrZWQtYnk6IEphc29uIFdhbmcgPGphc293YW5nQHJlZGhhdC5jb20+DQo+IFNpZ25lZC1vZmYt
+Ynk6IE1heGltZSBDb3F1ZWxpbiA8bWF4aW1lLmNvcXVlbGluQHJlZGhhdC5jb20+DQo+IC0tLQ0K
+DQpMb29rcyBnb29kLg0KDQpSZXZpZXdlZC1ieTogQ2hhaXRhbnlhIEt1bGthcm5pIDxrY2hAbnZp
+ZGlhLmNvbT4NCg==
