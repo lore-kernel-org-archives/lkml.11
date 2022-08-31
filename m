@@ -2,101 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52937ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:54:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04059ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:54:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230340AbiHaOyA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 10:54:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46538 "EHLO
+        id S230491AbiHaOyD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 10:54:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiHaOx6 (ORCPT
+        with ESMTP id S229498AbiHaOx6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 31 Aug 2022 10:53:58 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27652C9EA2
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BFDDCAC78
         for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 07:53:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1661957638; x=1693493638;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=0+EbL1RhBfmVcoK0Ut4bdChM3MUYimh+4W3tL0nGLCY=;
-  b=fY/YNL6BG1mIOzj51muxLeArec6Mpf5bKcZzVpTfgrRaBSxNc5LTT1rq
-   fcg2BZuE2NHPIkqD7TgE6ATS3LiFRBmgrFJTdLDP9CEmKCVE0a2WBC2qf
-   Io6tJrF2PSnK6EdhNnNbV4tBqLxgkZAfOC2VmDHNGmYU5T+33yWHbE991
-   XCzC2QqVQV5pTuPy3/MEf2e3QUXxGbTEv9Z/m7ySG95X9nIsj/5+NcBw0
-   MZlKgfuVsn4sMR5H7QsDK5A1JWaCiF4yfj1TV9Ze4qqfz1yDfpruhjS2L
-   ZTiGFE+fgXlqV6wsYalt8STD2YX2Y3LPs1KS+AFLBF/VvNvCzDLqbyLW2
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="357181894"
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=wQjO2Qr9DHvGPdGhD873KnHloO/hAygxHjzc3ypaSxQ=;
+  b=kMXf3QllTg+76WAIBzaVxrIf4TJKFrp0oxhGEv7zyAEFfwGd9vruTXxq
+   HNov69A4O6ehmmLmqlpqPybc2wRyvBF5ETCAVmAGgvmvcAqCk9tx1on9Z
+   daZ4W/ciDpljy0I7K+XISPRQeL5IdGA5H3bQyhN6vtf00Ub7dewJ8k4E7
+   QcgsUB6yHq3uBRf1AAI1u8KtesWSYwXJqCGzGecTBBNbGTsbNDnRKos/l
+   W8wcv917iA47hCMXuCzW3ACzZ434hkho+A8xus+O5SCYq0qwW1inWOlpx
+   j/lzwDFm4NxfZ4QJGakYxmqR9eX/YS7SmC3Lxk++hRq6WI35gmh9Of+zg
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="275865921"
 X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
-   d="scan'208";a="357181894"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 07:53:57 -0700
+   d="scan'208";a="275865921"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 07:53:57 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
-   d="scan'208";a="608203872"
+   d="scan'208";a="940456856"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga007.jf.intel.com with ESMTP; 31 Aug 2022 07:53:56 -0700
+  by fmsmga005.fm.intel.com with ESMTP; 31 Aug 2022 07:53:56 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id CB99B174; Wed, 31 Aug 2022 17:54:10 +0300 (EEST)
+        id E07C019D; Wed, 31 Aug 2022 17:54:10 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
         Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH v1 1/3] swab: Add array operations
-Date:   Wed, 31 Aug 2022 17:54:05 +0300
-Message-Id: <20220831145407.78166-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 3/3] regmap: spi-avmm: Use swabXX_array() helpers
+Date:   Wed, 31 Aug 2022 17:54:07 +0300
+Message-Id: <20220831145407.78166-3-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220831145407.78166-1-andriy.shevchenko@linux.intel.com>
+References: <20220831145407.78166-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For now, some simple array operations to swab.
+Since we have a few helpers to swab elements of a given size in an array
+use them instead of open coded variants.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- include/linux/swab.h | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+ drivers/base/regmap/regmap-spi-avmm.c | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
-diff --git a/include/linux/swab.h b/include/linux/swab.h
-index bcff5149861a..9b804dbb0d79 100644
---- a/include/linux/swab.h
-+++ b/include/linux/swab.h
-@@ -20,4 +20,29 @@
- # define swab64s __swab64s
- # define swahw32s __swahw32s
- # define swahb32s __swahb32s
-+
-+static inline void swab16_array(u16 *buf, unsigned int words)
-+{
-+	while (words--) {
-+		swab16s(buf);
-+		buf++;
-+	}
-+}
-+
-+static inline void swab32_array(u32 *buf, unsigned int words)
-+{
-+	while (words--) {
-+		swab32s(buf);
-+		buf++;
-+	}
-+}
-+
-+static inline void swab64_array(u64 *buf, unsigned int words)
-+{
-+	while (words--) {
-+		swab64s(buf);
-+		buf++;
-+	}
-+}
-+
- #endif /* _LINUX_SWAB_H */
+diff --git a/drivers/base/regmap/regmap-spi-avmm.c b/drivers/base/regmap/regmap-spi-avmm.c
+index ad1da83e849f..1cf133c49bd4 100644
+--- a/drivers/base/regmap/regmap-spi-avmm.c
++++ b/drivers/base/regmap/regmap-spi-avmm.c
+@@ -7,6 +7,7 @@
+ #include <linux/module.h>
+ #include <linux/regmap.h>
+ #include <linux/spi/spi.h>
++#include <linux/swab.h>
+ 
+ /*
+  * This driver implements the regmap operations for a generic SPI
+@@ -167,14 +168,7 @@ struct spi_avmm_bridge {
+ 
+ static void br_swap_words_32(char *buf, unsigned int len)
+ {
+-	u32 *p = (u32 *)buf;
+-	unsigned int count;
+-
+-	count = len / 4;
+-	while (count--) {
+-		*p = swab32p(p);
+-		p++;
+-	}
++	swab32_array(buf, len / 4);
+ }
+ 
+ /*
 -- 
 2.35.1
 
