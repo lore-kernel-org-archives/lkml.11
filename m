@@ -2,165 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06EA5ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:35:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA395C54EE9
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:37:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231702AbiHaOfh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 10:35:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48378 "EHLO
+        id S231866AbiHaOhk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 10:37:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231526AbiHaOfe (ORCPT
+        with ESMTP id S231138AbiHaOhf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 10:35:34 -0400
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D596218E1F
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 07:35:32 -0700 (PDT)
-Received: by mail-io1-f72.google.com with SMTP id q10-20020a0566022f0a00b00688d703717bso8751375iow.9
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 07:35:32 -0700 (PDT)
+        Wed, 31 Aug 2022 10:37:35 -0400
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF257AA4F4
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 07:37:34 -0700 (PDT)
+Received: by mail-qt1-x835.google.com with SMTP id h21so11094457qta.3
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 07:37:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date;
+        bh=rnLojn8m5RIM9q/IHnLgW3r82z0fH67X9Nn6XLx+iP8=;
+        b=eP2EBWEyS5OceuUNbFWUUEhT+EaDji20F6lwBwaZaBxv8WpYTOUsYf0S6rmaThA347
+         0Ueh4D1zirBcr2kZkhBlN4xIzW5pRVT+G8+yhXfqg806chDbfySODQazELVomunSOhEm
+         zQH0SOBIDUDXqHRoSK4bYuBXgvQMaAqp35YUU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc;
-        bh=WXaJAZ2MWFYdF36wziQhVxf0uszdOkCCLhumYClSVQo=;
-        b=nZAIZAxFyPVhM5Xz/p5XzbtGz2KGMEfrncpr+4TW31785Ilq1cgYCPnGAKVOaQuPo/
-         hGoH4QJaJB86knURQadz3aKIHKsMF2+yQzlTOcn72IPh+APFfwwU/5paPzFJsaa5Rr0f
-         pW/JiQTc3qVNpqPQBtcBA9OUo8Q961TLB2mQVa1CNQw7GJ0rLK7Ao03BEf3A0mcYWryC
-         sx31TVLFiQW9g9SnT6lKNN+lcdpvm3Qs2xPwxiShryqlJwN0yU3Kxexfr7H/bdabHvAi
-         8QBB41mg3LOiyqpG9goOeIyyPEyIXgHyxpj0rQG6iTmS4+XEx+3IhMcBhNGGK9vNPSTH
-         J65g==
-X-Gm-Message-State: ACgBeo13G/yM1HdJF5KD2b5LE9DIQvCuvkbg7oEL5Bo2eKWjsRYyiQzJ
-        /qye/hK6qgRchGpIej0dqnodmgN9fXBYB8saCBa7QtyJjA3V
-X-Google-Smtp-Source: AA6agR4f0yfFac2l5mMkYv6Whuuyzl4KTiFvbrcUg36fBjMQ2x6ed+Jqk+DMnEhYEyciZMFHknGl4TsG83Ohkr6dhgAzjR+hX4yc
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=rnLojn8m5RIM9q/IHnLgW3r82z0fH67X9Nn6XLx+iP8=;
+        b=ffn1VsERbTDa3ijt84Bha+Pa7MqIclZMmziSmTG4u/84w1TR0AmT+emItshhtoOWoq
+         6PIwFIn+FUhWuVxtekcPrNRoWxOupXm6x63Crq2nl6aJqQVZPZl4b2WFjxJYyOmA1S8o
+         OIG8ey4DSXqWR80PTa0gCcLoIFn94LggEAaVOaL3VwbjIpKHptgpKAWDmf1XqUzjMcAm
+         od9hH/UGXjktnyUUG75+6oQwFszEkTJhBYmONIJ3VbykJRFdNt+bgrHBxJNFL7fAwKPV
+         k8YWAP0IBTLYFHFMYy/X/BzXuJrAFmNdPpSsgEPvU9W2xN/99C/r+cKaQcbWZXKFKBFm
+         bNCA==
+X-Gm-Message-State: ACgBeo01Ee/zv3aydd2ru+yZDbTTufP3EXoNFuS7dL141DdYXokSzMvv
+        NcBEFILr0YLV6PWC4gL0Iy8sDqL9/U5BmPmz
+X-Google-Smtp-Source: AA6agR5HvJA/wFvm1pz6fdbgWNQWZ+clEpCNbFgOlyLc4N72m9X8A0Etulpr4s0uXM0wC0ZhtXFoSw==
+X-Received: by 2002:a05:622a:103:b0:343:3ce4:c383 with SMTP id u3-20020a05622a010300b003433ce4c383mr19539589qtw.388.1661956654122;
+        Wed, 31 Aug 2022 07:37:34 -0700 (PDT)
+Received: from mail-qk1-f179.google.com (mail-qk1-f179.google.com. [209.85.222.179])
+        by smtp.gmail.com with ESMTPSA id q16-20020a05620a2a5000b006bb20e8ee70sm10056319qkp.89.2022.08.31.07.37.33
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 31 Aug 2022 07:37:33 -0700 (PDT)
+Received: by mail-qk1-f179.google.com with SMTP id w18so10929083qki.8
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 07:37:33 -0700 (PDT)
+X-Received: by 2002:a05:620a:1650:b0:6bb:29b7:198c with SMTP id
+ c16-20020a05620a165000b006bb29b7198cmr15523438qko.552.1661956642390; Wed, 31
+ Aug 2022 07:37:22 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a02:b1c5:0:b0:349:c080:b371 with SMTP id
- u5-20020a02b1c5000000b00349c080b371mr15380892jah.136.1661956532260; Wed, 31
- Aug 2022 07:35:32 -0700 (PDT)
-Date:   Wed, 31 Aug 2022 07:35:32 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000bcd87205e78a68d8@google.com>
-Subject: [syzbot] INFO: task hung in blk_freeze_queue (3)
-From:   syzbot <syzbot+38e6c55d4969a14c1534@syzkaller.appspotmail.com>
-To:     brauner@kernel.org, broonie@kernel.org, catalin.marinas@arm.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        madvenka@linux.microsoft.com, mark.rutland@arm.com,
-        scott@os.amperecomputing.com, syzkaller-bugs@googlegroups.com,
-        will@kernel.org
+References: <20220830231541.1135813-1-rrangel@chromium.org> <Yw9LdxWQMpnzgFe/@smile.fi.intel.com>
+In-Reply-To: <Yw9LdxWQMpnzgFe/@smile.fi.intel.com>
+From:   Raul Rangel <rrangel@chromium.org>
+Date:   Wed, 31 Aug 2022 08:37:11 -0600
+X-Gmail-Original-Message-ID: <CAHQZ30BemtpHiZHOh+Wvh3N9wz5SSD9VdoQHNbArKhZUmudkwQ@mail.gmail.com>
+Message-ID: <CAHQZ30BemtpHiZHOh+Wvh3N9wz5SSD9VdoQHNbArKhZUmudkwQ@mail.gmail.com>
+Subject: Re: [PATCH 0/8] acpi: i2c: Use SharedAndWake and ExclusiveAndWake to
+ enable wake irq
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Linux ACPI <linux-acpi@vger.kernel.org>,
+        linux-input <linux-input@vger.kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "Limonciello, Mario" <mario.limonciello@amd.com>,
+        Tim Van Patten <timvp@google.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Alistair Francis <alistair@alistair23.me>,
+        Angela Czubak <acz@semihalf.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Bartosz Szczepanek <bsz@semihalf.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Jiri Kosina <jikos@kernel.org>, Len Brown <lenb@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Rob Herring <robh@kernel.org>, Wolfram Sang <wsa@kernel.org>,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        "jingle.wu" <jingle.wu@emc.com.tw>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "open list:I2C SUBSYSTEM HOST DRIVERS" <linux-i2c@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Interesting... The patch series is here:
+https://patchwork.kernel.org/project/linux-input/cover/20220830231541.11358=
+13-1-rrangel@chromium.org/
 
-syzbot found the following issue on:
+I'll look into why you only got added to 2 of the emails.
 
-HEAD commit:    a41a877bc12d Merge branch 'for-next/fixes' into for-kernelci
-git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-kernelci
-console output: https://syzkaller.appspot.com/x/log.txt?x=1233470b080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=5cea15779c42821c
-dashboard link: https://syzkaller.appspot.com/bug?extid=38e6c55d4969a14c1534
-compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
-userspace arch: arm64
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10f59dad080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=160918e5080000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+38e6c55d4969a14c1534@syzkaller.appspotmail.com
-
-INFO: task syz-executor245:3083 blocked for more than 143 seconds.
-      Not tainted 6.0.0-rc2-syzkaller-16455-ga41a877bc12d #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz-executor245 state:D stack:    0 pid: 3083 ppid:  3071 flags:0x00000001
-Call trace:
- __switch_to+0x180/0x28c arch/arm64/kernel/process.c:557
- context_switch kernel/sched/core.c:5182 [inline]
- __schedule+0x414/0x570 kernel/sched/core.c:6494
- schedule+0x64/0xa4 kernel/sched/core.c:6570
- blk_mq_freeze_queue_wait+0x94/0xf4 block/blk-mq.c:180
- blk_freeze_queue+0x94/0xa8 block/blk-mq.c:207
- blk_mq_freeze_queue+0x20/0x30 block/blk-mq.c:216
- nbd_add_socket+0x78/0x26c drivers/block/nbd.c:1123
- __nbd_ioctl+0x80/0x320 drivers/block/nbd.c:1464
- nbd_ioctl+0xec/0x13c drivers/block/nbd.c:1521
- blkdev_ioctl+0x250/0x764 block/ioctl.c:614
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:870 [inline]
- __se_sys_ioctl fs/ioctl.c:856 [inline]
- __arm64_sys_ioctl+0xd0/0x140 fs/ioctl.c:856
- __invoke_syscall arch/arm64/kernel/syscall.c:38 [inline]
- invoke_syscall arch/arm64/kernel/syscall.c:52 [inline]
- el0_svc_common+0x138/0x220 arch/arm64/kernel/syscall.c:142
- do_el0_svc+0x48/0x154 arch/arm64/kernel/syscall.c:206
- el0_svc+0x58/0x150 arch/arm64/kernel/entry-common.c:624
- el0t_64_sync_handler+0x84/0xf0 arch/arm64/kernel/entry-common.c:642
- el0t_64_sync+0x18c/0x190
-INFO: task udevd:3084 blocked for more than 143 seconds.
-      Not tainted 6.0.0-rc2-syzkaller-16455-ga41a877bc12d #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:udevd           state:D stack:    0 pid: 3084 ppid:  2560 flags:0x00000000
-Call trace:
- __switch_to+0x180/0x28c arch/arm64/kernel/process.c:557
- context_switch kernel/sched/core.c:5182 [inline]
- __schedule+0x414/0x570 kernel/sched/core.c:6494
- schedule+0x64/0xa4 kernel/sched/core.c:6570
- io_schedule+0x38/0x104 kernel/sched/core.c:8714
- folio_wait_bit_common+0x458/0x9f8 mm/filemap.c:1298
- folio_put_wait_locked mm/filemap.c:1472 [inline]
- do_read_cache_folio+0x78/0x550 mm/filemap.c:3501
- read_cache_folio+0x40/0x54 mm/filemap.c:3551
- read_mapping_folio include/linux/pagemap.h:762 [inline]
- read_part_sector+0x60/0x1d8 block/partitions/core.c:714
- adfspart_check_ICS+0x4c/0x38c block/partitions/acorn.c:360
- check_partition block/partitions/core.c:146 [inline]
- blk_add_partitions block/partitions/core.c:599 [inline]
- bdev_disk_changed+0x340/0x63c block/partitions/core.c:685
- blkdev_get_whole+0x1b0/0x1f8 block/bdev.c:684
- blkdev_get_by_dev+0x178/0x2fc block/bdev.c:821
- blkdev_open+0x84/0xd8 block/fops.c:485
- do_dentry_open+0x318/0x688 fs/open.c:878
- vfs_open+0x38/0x48 fs/open.c:1014
- do_open fs/namei.c:3557 [inline]
- path_openat+0xe34/0x11c4 fs/namei.c:3691
- do_filp_open+0xdc/0x1b8 fs/namei.c:3718
- do_sys_openat2+0xb8/0x22c fs/open.c:1311
- do_sys_open fs/open.c:1327 [inline]
- __do_sys_openat fs/open.c:1343 [inline]
- __se_sys_openat fs/open.c:1338 [inline]
- __arm64_sys_openat+0xb0/0xe0 fs/open.c:1338
- __invoke_syscall arch/arm64/kernel/syscall.c:38 [inline]
- invoke_syscall arch/arm64/kernel/syscall.c:52 [inline]
- el0_svc_common+0x138/0x220 arch/arm64/kernel/syscall.c:142
- do_el0_svc+0x48/0x154 arch/arm64/kernel/syscall.c:206
- el0_svc+0x58/0x150 arch/arm64/kernel/entry-common.c:624
- el0t_64_sync_handler+0x84/0xf0 arch/arm64/kernel/entry-common.c:642
- el0t_64_sync+0x18c/0x190
-
-Showing all locks held in the system:
-1 lock held by rcu_tasks_kthre/10:
- #0: ffff80000d4a3568 (rcu_tasks.tasks_gp_mutex){+.+.}-{3:3}, at: rcu_tasks_one_gp+0x3c/0x450 kernel/rcu/tasks.h:507
-1 lock held by rcu_tasks_trace/11:
- #0: ffff80000d4a3bb8 (rcu_tasks_trace.tasks_gp_mutex){+.+.}-{3:3}, at: rcu_tasks_one_gp+0x3c/0x450 kernel/rcu/tasks.h:507
-1 lock held by khungtaskd/26:
- #0: ffff80000d4a3440 (rcu_read_lock){....}-{1:2}, at: rcu_lock_acquire+0x4/0x48 include/linux/rcupdate.h:279
-2 locks held by getty/2712:
- #0: ffff0000c730a898 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref_wait+0x28/0x58 drivers/tty/tty_ldisc.c:244
- #1: ffff80000f67e2f0 (&ldata->atomic_read_lock){+.+.}-{3:3}, at: n_tty_read+0x19c/0x88c drivers/tty/n_tty.c:2177
-1 lock held by syz-executor245/3083:
- #0: ffff0000c5ccd998 (&nbd->config_lock){+.+.}-{3:3}, at: nbd_ioctl+0x70/0x13c drivers/block/nbd.c:1514
-1 lock held by udevd/3084:
- #0: ffff0000c5daacc8 (&disk->open_mutex){+.+.}-{3:3}, at: blkdev_get_by_dev+0xfc/0x2fc block/bdev.c:812
-
-=============================================
-
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+On Wed, Aug 31, 2022 at 5:52 AM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> On Tue, Aug 30, 2022 at 05:15:33PM -0600, Raul E Rangel wrote:
+> > Today, i2c drivers are making the assumption that their IRQs can also
+> > be used as wake IRQs. This isn't always the case and it can lead to
+> > spurious wakes. This has recently started to affect AMD Chromebooks.
+> > With the introduction of
+> > d62bd5ce12d7 ("pinctrl: amd: Implement irq_set_wake"), the AMD GPIO
+> > controller gained the capability to set the wake bit on each GPIO. The
+> > ACPI specification defines two ways to inform the system if a device is
+> > wake capable:
+> > 1) The _PRW object defines the GPE that can be used to wake the system.
+> > 2) Setting ExclusiveAndWake or SharedAndWake in the _CRS GpioInt.
+> >
+> > Currently only the first method is supported. The i2c drivers don't hav=
+e
+> > any indication that the IRQ is wake capable, so they guess. This causes
+> > spurious interrupts, for example:
+> > * We have an ACPI HID device that has `_PR0` and `_PR3`. It doesn't hav=
+e
+> >   `_PRW` or `ExclusiveAndWake` so that means the device can't wake the
+> >   system.
+> > * The IRQ line is active level low for this device and is pulled up by
+> >   the power resource defined in `_PR0`/`_PR3`.
+> > * The i2c driver will (incorrectly) arm the GPIO for wake by calling
+> >   `enable_irq_wake` as part of its suspend hook.
+> > * ACPI will power down the device since it doesn't have a wake GPE
+> >   associated with it.
+> > * When the device is powered down, the IRQ line will drop, and it will
+> >   trigger a wake event.
+> >
+> > See the following debug log:
+> > [   42.335804] PM: Suspending system (s2idle)
+> > [   42.340186] amd_gpio AMD0030:00: RX: Setting wake for pin 89 to enab=
+le
+> > [   42.467736]     power-0416 __acpi_power_off      : Power resource [P=
+R00] turned off
+> > [   42.467739] device_pm-0280 device_set_power      : Device [H05D] tra=
+nsitioned to D3cold
+> > [   42.475210] PM: pm_system_irq_wakeup: 11 triggered pinctrl_amd
+> > [   42.535293] PM: Wakeup unrelated to ACPI SCI
+> > [   42.535294] PM: resume from suspend-to-idle
+> >
+> > In order to fix this, we need to take into account the wake capable bit
+> > defined on the GpioInt. This is accomplished by:
+> > * Migrating some of the i2c drivers over to using the PM subsystem to
+> >   manage the wake IRQ. max8925-i2c, elants_i2c, and raydium_i2c_ts stil=
+l
+> >   need to be migrated, I can do that depending on the feedback to this
+> >   patch series.
+> > * Expose the wake_capable bit from the ACPI GpioInt resource to the
+> >   i2c core.
+> > * Use the wake_capable bit in the i2c core to call
+> >   `dev_pm_set_wake_irq`. This reuses the existing device tree flow.
+> > * Make the i2c drivers stop calling `dev_pm_set_wake_irq` since it's no=
+w
+> >   handled by the i2c core.
+> > * Make the ACPI device PM system aware of the wake_irq. This is
+> >   necessary so the device doesn't incorrectly get powered down when a
+> >   wake_irq is enabled.
+> >
+> > I've tested this code with various combinations of having _PRW,
+> > ExclusiveAndWake and power resources all defined or not defined, but it
+> > would be great if others could test this out on their hardware.
+>
+> I have got only cover letter and a single patch (#3). What's going on?
+>
+> Note: I'm also reviewer of I=E6=B6=8E DesignWare driver, you really have =
+to
+> fix your tools / submission process and try again. No review for this
+> series.
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
