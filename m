@@ -2,126 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ABB1ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:25:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33BDFECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:26:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232332AbiHaSZk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 14:25:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57120 "EHLO
+        id S232852AbiHaS0A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 14:26:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232740AbiHaSZO (ORCPT
+        with ESMTP id S232370AbiHaSZd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 14:25:14 -0400
+        Wed, 31 Aug 2022 14:25:33 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E70A7FAC51
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:21:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD20CE3420;
+        Wed, 31 Aug 2022 11:21:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0E1FB8220F
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:21:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0D18C433C1;
-        Wed, 31 Aug 2022 18:21:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A390EB82221;
+        Wed, 31 Aug 2022 18:21:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 164F7C433D6;
+        Wed, 31 Aug 2022 18:21:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661970073;
-        bh=+j70l5OHx91xkNyOJnY6CBLy1XNZ1Wk6HIj0sQSWl90=;
-        h=Date:From:To:Cc:Subject:Reply-To:From;
-        b=nKIw6c1BMEZZZXIFxcpBUuD7Z6P4w84AVspPwOwoBZWDqCljlpgnr/jyvOPBdjcoG
-         KqZ8XpIZYfYwI8Q0l9SLmdlHI5ymZlpCZ8JdFEGW4WWqkM+I8lcnX5s5ePqT/40kHT
-         nLTbF1GyycZ/kScqfAQK89c7sKMNHhQrWhGe9gaW3hAojuOUqiDyZwpKvIVHmP+SO+
-         dE0WkPv3f2cgSuTJ46sxqJqjD86RlbDTQG7nAL76IbYRpeQMST2J+bC1FWP9D/Cb42
-         8AJTlzrzWxBBsT8oPOsYDf9smN/i6zBsa1+AQ4Rz5QbUBieBPw/5Q1TgJuPs9m9Rsw
-         ZUzsCu8V7NzaQ==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 606825C015D; Wed, 31 Aug 2022 11:21:13 -0700 (PDT)
-Date:   Wed, 31 Aug 2022 11:21:13 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     gwml@vger.gnuweeb.org, kernel-team@fb.com, w@lwt.eu
-Subject: [PATCH nolibc 0/18] nolibc updates for v6.1
-Message-ID: <20220831182113.GA2697286@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
+        s=k20201202; t=1661970105;
+        bh=VfqWYmsroNc40aDzHJP4Oz82CrPs4tYiPBQEHE7mCHs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WhkKrb4viMn/yX3AS+kCL6vTqSDvaM30S6DwNJQRdsl1AgwGSn7rftwEZQo+5Ynf6
+         S9E8uGrAgI4b6zDOhgZOYhsg5xkRJieNMZu2nE2UNrJq1eYooyy5tY6PNfQjsCKD/g
+         9FqJ/G6gQORToNcg0qy8S/QekzXWfWMVwMYKtIwhhPigIjsdjNZCsA4ABTldm4630B
+         wTH2N3fS2y+Ir0pycP4G+PJzqhfzaZ2cLpCIfpe2xnxkXMRJ4XpusK9dsQYXX+r6w8
+         nCWO2IGvm/Q/heTwP7e6tZF9EtviuDO0gYzKLXk3XYj454/Av3rUqRlqAB1Rzx0P0b
+         4EGgG5DzxKXzQ==
+Date:   Wed, 31 Aug 2022 21:21:41 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Reinette Chatre <reinette.chatre@intel.com>
+Cc:     linux-sgx@vger.kernel.org,
+        Haitao Huang <haitao.huang@linux.intel.com>,
+        Vijay Dhanraj <vijay.dhanraj@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 3/6] x86/sgx: Handle VA page allocation failure for
+ EAUG on PF.
+Message-ID: <Yw+mtfFs3dvOWOv2@kernel.org>
+References: <20220831173829.126661-1-jarkko@kernel.org>
+ <20220831173829.126661-4-jarkko@kernel.org>
+ <20991fdc-1ae4-ef68-c6d4-12372b4e6f73@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20991fdc-1ae4-ef68-c6d4-12372b4e6f73@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello!
+On Wed, Aug 31, 2022 at 11:08:33AM -0700, Reinette Chatre wrote:
+> Hi Jarkko,
+> 
+> On 8/31/2022 10:38 AM, Jarkko Sakkinen wrote:
+> > From: Haitao Huang <haitao.huang@linux.intel.com>
+> > 
+> > VM_FAULT_NOPAGE is expected behaviour for -EBUSY failure path, when
+> > augmenting a page, as this means that the reclaimer thread has been
+> > triggered, and the intention is just to round-trip in ring-3, and
+> > retry with a new page fault.
+> > 
+> > Fixes: 5a90d2c3f5ef ("x86/sgx: Support adding of pages to an initialized enclave")
+> > Signed-off-by: Haitao Huang <haitao.huang@linux.intel.com>
+> > Tested-by: Vijay Dhanraj <vijay.dhanraj@intel.com>
+> > Reviewed-by: Reinette Chatre <reinette.chatre@intel.com>
+> > Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+> > ---
+> > v3:
+> > * Added Reinette's ack.
+> 
+> The ack came with a caveat related to a white space issue that
+> you did not fix in this version.
 
-This series provides nolibc updates for v6.1, most notably greatly
-improved testing in tools/testing/selftests/nolibc.  See "make help"
-for details.
+Reinette, I'm sorry but I might possibly have some sort of blind
+spot here.
 
-1.	make argc 32-bit in riscv startup code, courtesy of Willy Tarreau.
+I looked at the diff and I could not see any issues, and did not
+run into issues with checkpath.
 
-2.	Optionally flush printk() buffers before powering off.
+Can you point out what exactly is the whitespace issue?
 
-3.	Use the barrier operation specified by cur_ops, courtesy of
-	Zqiang.
-
-4.	fix build warning in sys_mmap() when my_syscall6 is not defined,
-	courtesy of Willy Tarreau.
-
-5.	make sys_mmap() automatically use the right __NR_mmap definition,
-	courtesy of Willy Tarreau.
-
-6.	add basic infrastructure to ease creation of nolibc tests,
-	courtesy of Willy Tarreau.
-
-7.	support a test definition format, courtesy of Willy Tarreau.
-
-8.	implement a few tests for various syscalls, courtesy of Willy
-	Tarreau.
-
-9.	add a few tests for some libc functions, courtesy of Willy
-	Tarreau.
-
-10.	exit with poweroff on success when getpid() == 1, courtesy of
-	Willy Tarreau.
-
-11.	on x86, support exiting with isa-debug-exit, courtesy of Willy
-	Tarreau.
-
-12.	recreate and populate /dev and /proc if missing, courtesy of
-	Willy Tarreau.
-
-13.	condition some tests on /proc existence, courtesy of Willy
-	Tarreau.
-
-14.	support glibc as well, courtesy of Willy Tarreau.
-
-15.	add a "kernel" target to build the kernel with the initramfs,
-	courtesy of Willy Tarreau.
-
-16.	add a "defconfig" target, courtesy of Willy Tarreau.
-
-17.	add a "run" target to start the kernel in QEMU, courtesy of
-	Willy Tarreau.
-
-18.	"sysroot" target installs a local copy of the sysroot, courtesy
-	of Willy Tarreau.
-
-19.	add a "help" target, courtesy of Willy Tarreau.
-
-20.	Avoid generated files being committed, courtesy of Fernanda
-	Ma'rouf.
-
-						Thanx, Paul
-
-------------------------------------------------------------------------
-
- b/Documentation/admin-guide/kernel-parameters.txt |    6 
- b/MAINTAINERS                                     |    1 
- b/kernel/rcu/rcutorture.c                         |    4 
- b/kernel/torture.c                                |    7 
- b/tools/include/nolibc/arch-riscv.h               |    2 
- b/tools/include/nolibc/sys.h                      |    2 
- b/tools/testing/selftests/nolibc/.gitignore       |    4 
- b/tools/testing/selftests/nolibc/Makefile         |   43 ++
- b/tools/testing/selftests/nolibc/nolibc-test.c    |  395 ++++++++++++++++++++++
- tools/include/nolibc/sys.h                        |    2 
- tools/testing/selftests/nolibc/Makefile           |   98 +++++
- tools/testing/selftests/nolibc/nolibc-test.c      |  376 ++++++++++++++++++++
- 12 files changed, 925 insertions(+), 15 deletions(-)
+BR, Jarkko
