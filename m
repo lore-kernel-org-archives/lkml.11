@@ -2,120 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DD9EECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 17:49:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D735ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 17:50:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231681AbiHaRtU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 13:49:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35130 "EHLO
+        id S231577AbiHaRuH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 13:50:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231531AbiHaRtQ (ORCPT
+        with ESMTP id S231937AbiHaRtw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 13:49:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80174D51C8
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 10:49:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661968151;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DeI1SmKit0K3Fr9de4qL5NqdwvAZGkC6KqoGn3Aeuzo=;
-        b=IRsKDLZXT7uSxZilWmgxJFqUbkI7Ixg7Ok6yom4JSQMirre5wpw4DSMmxovjnRH+ZWMF5F
-        5exqcmWr9BsCNsaxgbeQ3/0W170yw0gg+H/2Z+hRlUjv4MvwjBsYz70ODoO3PVSMxOZIFA
-        q78xAi0/MhS0UGjvnvWZQB3duibkltQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-356-mDrMJF4KNvWKar9XXcUx9w-1; Wed, 31 Aug 2022 13:49:07 -0400
-X-MC-Unique: mDrMJF4KNvWKar9XXcUx9w-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E0135185A7BA;
-        Wed, 31 Aug 2022 17:49:05 +0000 (UTC)
-Received: from starship (unknown [10.40.194.96])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4AC9BC15BB3;
-        Wed, 31 Aug 2022 17:49:04 +0000 (UTC)
-Message-ID: <ffdd3daf51e1e192a260b2824842730ecfe124b3.camel@redhat.com>
-Subject: Re: [PATCH 10/19] KVM: SVM: Document that vCPU ID == APIC ID in
- AVIC kick fastpatch
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Li RongQing <lirongqing@baidu.com>
-Date:   Wed, 31 Aug 2022 20:49:03 +0300
-In-Reply-To: <Yw+JZODiHgvZVsAN@google.com>
-References: <20220831003506.4117148-1-seanjc@google.com>
-         <20220831003506.4117148-11-seanjc@google.com>
-         <29542724f23fd15745bd137b99153bf8629907f0.camel@redhat.com>
-         <Yw+JZODiHgvZVsAN@google.com>
+        Wed, 31 Aug 2022 13:49:52 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D92D7438
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 10:49:39 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-335420c7bfeso208951147b3.16
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 10:49:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
+        bh=MnsS8ncSlTAcFzP7xEc9prMO96AQWzO4o54UtGrQzJU=;
+        b=gg3c8bDNGCr3x3JbayKQGif3lCtfSKsL+hD2/hH+DYLV89UjDLhUvnvGbL61aElRWU
+         2puYuvgz7VcM3xmVRlZLm5MUlcL0302bbgotdLSWZB3kCFMEFCmkIsrNihw9EY//796o
+         AAqYjlYpOqSJBqaqkMZIT73K4HqWEXsxQGcGT0+ZMS32tow3pzhz+Qi6LKIQnM19rB2a
+         kmDenz81aGiF0UOtl1MFu5lH3kDlBHKRPKm89KQx7TFJa50EwaM0uPu2dqbIAnwPo+zt
+         re7McxUZFeN2zcFd0Qk4kqefnJ39aGDKPmfc1TCcX6D07pHhnUG7jxk5rVjgctm7ct/5
+         uatw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
+         :from:to:cc;
+        bh=MnsS8ncSlTAcFzP7xEc9prMO96AQWzO4o54UtGrQzJU=;
+        b=2lVkD82TcR/wKzk+7pFoyRka6sY+mltcgBZ0f+MmZuaEYRT44JkpQzyBINf+rBhuba
+         Z2mzEoHqiR7ll1/0hXJk5Y077ZPzG+advxmab8yWHMNMDUbjXNdpTSg07+/bHyCaAktP
+         4UA9OwtK+dik5amvEMjLyKKqOrRkWtpP5vMBczJiwSHs7M1wvnfMzgVW5EGJ7mIFDfu3
+         ACZcEagwedF/Bqaor3zBxHpc7AtPoyBm91FgkCp3tnPyboWmO9VYoj0fYZBvMVgOXqFZ
+         wMLnNtIK34M4xAZRjUeLxaMuB74pcl73Zl/z0NpXytw/scr2eHYa4DPtc5Ang1IwzF2F
+         el2w==
+X-Gm-Message-State: ACgBeo2padIJkBnTmq3pD6r9LTW9bBDndds3XZHH+7VhwKPl/yVIBSVT
+        39z3BR5rK3gyk0T7NcTuxv0OQgA4HGae
+X-Google-Smtp-Source: AA6agR5at5t1TXd5WijHlgK6tmOOJUVw9stHldpjmciTFBm7Fn21LINgH9dd6oZLnP4AdhNoGG63TfQE5sNg
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2d4:203:c8e4:a3e5:9d09:d3d4])
+ (user=irogers job=sendgmr) by 2002:a25:4c83:0:b0:699:5f97:cf2 with SMTP id
+ z125-20020a254c83000000b006995f970cf2mr17491716yba.198.1661968177909; Wed, 31
+ Aug 2022 10:49:37 -0700 (PDT)
+Date:   Wed, 31 Aug 2022 10:49:19 -0700
+Message-Id: <20220831174926.579643-1-irogers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
+Subject: [PATCH v2 0/7] Add core wide metric literal
+From:   Ian Rogers <irogers@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        James Clark <james.clark@arm.com>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        John Garry <john.garry@huawei.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Florian Fischer <florian.fischer@muhq.space>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        perry.taylor@intel.com, caleb.biggers@intel.com,
+        kshipra.bopardikar@intel.com, ahmad.yasin@intel.com
+Cc:     Stephane Eranian <eranian@google.com>,
+        Ian Rogers <irogers@google.com>
 Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-08-31 at 16:16 +0000, Sean Christopherson wrote:
-> On Wed, Aug 31, 2022, Maxim Levitsky wrote:
-> > On Wed, 2022-08-31 at 00:34 +0000, Sean Christopherson wrote:
-> > > Document that AVIC is inhibited if any vCPU's APIC ID diverges from its
-> > > vCPU ID, i.e. that there's no need to check for a destination match in
-> > > the AVIC kick fast path.
-> > > 
-> > > Opportunistically tweak comments to remove "guest bug", as that suggests
-> > > KVM is punting on error handling, which is not the case.  Targeting a
-> > > non-existent vCPU or no vCPUs _may_ be a guest software bug, but whether
-> > > or not it's a guest bug is irrelevant.  Such behavior is architecturally
-> > > legal and thus needs to faithfully emulated by KVM (and it is).
-> > 
-> > I don't want to pick a fight,
-> 
-> Please don't hesitate to push back, I would much rather discuss points of contention
-> than have an ongoing, silent battle through patches.
-> 
-> > but personally these things *are* guest bugs / improper usage of APIC, and I
-> > don't think it is wrong to document them as such.
-> 
-> If the guest is intentionally exercising an edge case, e.g. KUT or selftests, then
-> from the guest's perspective its code/behavior isn't buggy.
-> 
-> I completely agree that abusing/aliasing logical IDs is improper usage and arguably
-> out of spec, but the scenarios here are very much in spec, e.g. a bitmap of '0'
-> isn't expressly forbidden and both Intel and AMD specs very clearly state that
-> APICs discard interrupt messages if they are not the destination.
-> 
-> But that's somewhat beside the point, as I have no objection to documenting scenarios
-> that are out-of-spec or undefined.  What I object to is documenting such scenarios as
-> "guest bugs".  If the CPU/APIC/whatever behavior is undefined, then document it
-> as undefined.  Saying "guest bug" doesn't help future readers understand what is
-> architecturally supposed to happen, whereas a comment like
-> 
-> 	/*
-> 	 * Logical IDs are architecturally "required" to be unique, i.e. this is
-> 	 * technically undefined behavior.  Disable the optimized logical map so
-> 	 * that KVM is consistent with itself, as the non-optimized matching
-> 	 * logic with accept interrupts on all CPUs with the logical ID.
-> 	 */
-> 
-> anchors KVM's behavior to the specs and explains why KVM does XYZ in response to
-> undefined behavior.
-> 
-> I feel very strongly about "guest bug" because KVM has a history of disregarding
-> architectural correctness and using a "good enough" approach.  Simply stating
-> "guest bug" makes it all the more difficult to differentiate between KVM handling
-> architecturally undefined behavior, versus KVM deviating from the spec because
-> someone decided that KVM's partial emulation/virtualziation was "good enough".
-> 
+It is possible to optimize metrics when all SMT threads (CPUs) on a
+core are measuring events in system wide mode. For example, TMA
+metrics [1] defines CORE_CLKS for Sandybrdige as:
+    
+if SMT is disabled:
+  CPU_CLK_UNHALTED.THREAD
+if SMT is enabled and recording on all SMT threads (for all processes):
+  CPU_CLK_UNHALTED.THREAD_ANY / 2
+if SMT is enabled and not recording on all SMT threads:
+  (CPU_CLK_UNHALTED.THREAD/2)*
+  (1+CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE/CPU_CLK_UNHALTED.REF_XCLK )
+    
+That is two more events are necessary when not gathering counts on all
+SMT threads. To distinguish all SMT threads on a core vs system wide
+(all CPUs) call the new property core wide.
 
-All right, I agree with you.
+As this literal requires the user requested CPUs and system wide to be
+present, the parsing of metrics is delayed until after command line
+option processing. As events are used to compute the evlist maps, and
+metrics create events, the data for core wide must come from the target.
 
-Best regards,
-	Maxim Levitsky
+This patch series doesn't correct the Intel metrics to use #core_wide,
+which will be done in follow up work. To see the two behaviors
+currently you need an Intel CPU between Sandybridge and before
+Icelake, then compare the events for tma_backend_bound_percent and
+Backend_Bound_SMT where the former assumes recording on all SMT
+threads and the latter assumes not recording on all SMT threads. The
+future work will just have a single backend bound metric for both
+cases determined using #core_wide.
+
+[1] https://download.01.org/perfmon/TMA_Metrics.xlsx Note, #EBS_Mode
+is false when recording on all SMT threads and all processes which is
+ #core_wide true in this change.
+
+v2. Add error handling for ENOMEM to more strdup cases as suggested by
+    Arnaldo. Init the shadow stats if running "perf stat report",
+    issue caught by the stat shell test.
+
+Ian Rogers (7):
+  perf metric: Return early if no CPU PMU table exists
+  perf expr: Move the scanner_ctx into the parse_ctx
+  perf smt: Compute SMT from topology
+  perf topology: Add core_wide
+  perf stat: Delay metric parsing
+  perf metrics: Wire up core_wide
+  perf test: Add basic core_wide expression test
+
+ tools/perf/builtin-stat.c     |  66 +++++++++++++----
+ tools/perf/tests/expr.c       |  37 +++++++---
+ tools/perf/util/cputopo.c     |  61 +++++++++++++++
+ tools/perf/util/cputopo.h     |   5 ++
+ tools/perf/util/expr.c        |  29 +++++---
+ tools/perf/util/expr.h        |  14 ++--
+ tools/perf/util/expr.l        |   6 +-
+ tools/perf/util/metricgroup.c | 135 ++++++++++++++++++++++++----------
+ tools/perf/util/metricgroup.h |   4 +-
+ tools/perf/util/smt.c         | 109 ++++++---------------------
+ tools/perf/util/smt.h         |  12 ++-
+ tools/perf/util/stat-shadow.c |  13 +++-
+ tools/perf/util/stat.h        |   2 +
+ 13 files changed, 318 insertions(+), 175 deletions(-)
+
+-- 
+2.37.2.672.g94769d06f0-goog
 
