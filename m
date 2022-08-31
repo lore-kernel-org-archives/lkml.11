@@ -2,110 +2,297 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F31FECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:23:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C214ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:24:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230455AbiHaKXY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 06:23:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34394 "EHLO
+        id S230465AbiHaKYu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 06:24:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230296AbiHaKXV (ORCPT
+        with ESMTP id S229565AbiHaKYq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 06:23:21 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E76F61CFE5;
-        Wed, 31 Aug 2022 03:23:20 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id e20so17594997wri.13;
-        Wed, 31 Aug 2022 03:23:20 -0700 (PDT)
+        Wed, 31 Aug 2022 06:24:46 -0400
+Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C37313D3C
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 03:14:56 -0700 (PDT)
+Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-11ba6e79dd1so22961628fac.12
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 03:14:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:content-language
-         :references:cc:to:user-agent:mime-version:date:message-id:from:to:cc
-         :subject:date;
-        bh=QQOr949BNq6Tsz1/GWbY8mmvpE6EQflLuQEMgsG3Mmo=;
-        b=N6qelCPephiPlFW95dJC6m2EGeguD6GlubhFgn3yrrYceSIOUjnmv2FjS7kLO784wp
-         qrvliJMZE5Mo7cWGZCCBPEs9u7tIHTvUDcFyadVgRHjD8JMaVGl6e/WQ3w8FXN0Wzgl9
-         WSgndB2UFYpyZGiRsigro0C/cTmIT/GoYcDMpZjyfkfh7z8PY17W3yfjNYbhcW/x5HnL
-         BusJb87qgrJRvZ7VnFcHSX+IHmpOa5WN3l4XTUClj50rO4oltoGifwwy1DW4K4jJ3tUR
-         Q1euY5dxLPmNybYtZJZcKB/HlplhwpnEy8geNmxX8NrnzypUWDE+0/xRFdmaSs15Yeqy
-         U7VQ==
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=Nk8Oy5vkVnTTSzGWaE5y7yDsItAvAdd8LQXNrJXKYZE=;
+        b=amshP7IOWgmv5dih6NiB6+tMgw5jXRfyCEsSSXDMXhRXZNJiAaenki7t8NdLuupVHN
+         v3jkhj0IJbe5cTwxULee47U3PiiBL/4fpoX+uwDcmV11ODX4SIOt08jfjk21eLQp4jH8
+         kMSxCx0vwJZv//D0WZazhWOGvZORbCp6f40l3bbxEITNqUsCbDadnJJYWjJVfX1Xnu3H
+         3hG+X/+En4RjeutgzCyy8T4DROhAB+/xCXv9xWOIJf8rEkcwl9U5LYenfXALIes94keX
+         SnvzO0uXesbCqHPV5TgOTthfxg0k+NCumQkKrxbr9aOxn33dqJhIVljpy7A88xh8Z8Wv
+         fh0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:content-language
-         :references:cc:to:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=QQOr949BNq6Tsz1/GWbY8mmvpE6EQflLuQEMgsG3Mmo=;
-        b=QF2jJNvQgR6cjUgbzcqyUDl+/II7tJsYRC7byn0f+eZL2VJsFTcWVaEhsZ4m2qghZW
-         AQdCLElg4VwAOBZ2vufg4HlV81MBVfN1Y/hGaNWb6lAMkmF+7ynpl7273RRIgsQYPrkR
-         yU3j2D9KQOlrBRz6+3Lr8SWFJj0GTIUrSbSeKhKggW43jv8yEd1fy7IiKeubWGr7OYSa
-         7KuT+p/I6Tp28NMABHiEA+0gfAdlCt/sivCGcSTgnPRutnFgzrlUIhCq+xjINV8WCxWo
-         Jb+c1eD2yxzEbJyE3UebQqMPmr0XpvsuLxC9zdkQs1k2dISEgvnIogw/0fPrWaGv9W/s
-         NxUw==
-X-Gm-Message-State: ACgBeo1ATTue8PHldfyHi6VEtk61qkU81ZZftZHUchlX+wJykBRVOeMF
-        W2VaqM5sxOWbnxpPVEiGCn0=
-X-Google-Smtp-Source: AA6agR45AiRbadhtI8VHMxdZMgSj4iWs74MjjZ+50gkYRpG4I1dQpNdnXALXXj7dSaAbUnVb7glEHA==
-X-Received: by 2002:a5d:47a1:0:b0:226:ebfc:f759 with SMTP id 1-20020a5d47a1000000b00226ebfcf759mr1265470wrb.636.1661941399465;
-        Wed, 31 Aug 2022 03:23:19 -0700 (PDT)
-Received: from [192.168.2.177] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id p8-20020a1c5448000000b003a63a3b55c3sm1955370wmi.14.2022.08.31.03.23.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 31 Aug 2022 03:23:18 -0700 (PDT)
-Message-ID: <995875c3-5b04-5981-b0e1-f66f73cdfafc@gmail.com>
-Date:   Wed, 31 Aug 2022 12:23:17 +0200
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=Nk8Oy5vkVnTTSzGWaE5y7yDsItAvAdd8LQXNrJXKYZE=;
+        b=RN/P3mzok/YlpCM+zFyAuHCBojT4J2vb8Xto0aaj0nfLjyVOxB6MvfXS1D89bMDVSL
+         /0QEhQ9tvivun2G/Cw5sJy6z4Yn4eUfTtom8SEEn40O4yegSytwcGQEmIVbJyvQdX4YW
+         tryWCZzRKiTDTtiFi3/lM16NANS7uXYrtabcQN56j+8OuZvk73bB4a0YRE+xGDTRN8w2
+         ab37ytu9DhY0psVwIMiaQOdFgng82LNUxw0jsUVGaSCpWns44JONLFnboQlAKgp+54yx
+         NZZuiPUAuZ++yG0sl5ujN0MhPBpzHubf/c9u5a1kAOhqBPkxhRrARcKLDuWx2oBZ9jrI
+         7hEg==
+X-Gm-Message-State: ACgBeo0++qhqNQnYIPH2q/mxJm4xNR0Yzcub2qPEVK4jxUQE2AtvraTy
+        Al9ohE/Tma3DCvHvdeMQ+dXTRSXyKZweQBVimQcRKA==
+X-Google-Smtp-Source: AA6agR7jawkBeelqj7YKMLju3461JHxtE4/7FNbyMBe++ok7zHieJ3ZOxTgnZnYJ9/zG5YncVuEwL6nQtSz1MY5HHqU=
+X-Received: by 2002:a05:6870:58a4:b0:11c:9b6d:f066 with SMTP id
+ be36-20020a05687058a400b0011c9b6df066mr1030196oab.155.1661940895794; Wed, 31
+ Aug 2022 03:14:55 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-To:     Tinghan Shen <tinghan.shen@mediatek.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220831065100.27722-1-tinghan.shen@mediatek.com>
-Content-Language: en-US
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH v1] arm64: dts: mediatek: Fix build warnings of mt8173
- vcodec nodes
-In-Reply-To: <20220831065100.27722-1-tinghan.shen@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220830172614.340962-1-james.clark@arm.com> <20220830172614.340962-6-james.clark@arm.com>
+In-Reply-To: <20220830172614.340962-6-james.clark@arm.com>
+From:   Mike Leach <mike.leach@linaro.org>
+Date:   Wed, 31 Aug 2022 11:14:44 +0100
+Message-ID: <CAJ9a7Vhx2g+Er9ohjznqA7k+HZBNKWiruCPyC93mn88mb2Ekqw@mail.gmail.com>
+Subject: Re: [PATCH v2 5/5] coresight: Make new csdev_access offsets unsigned
+To:     James Clark <james.clark@arm.com>
+Cc:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
+        mathieu.poirier@linaro.org, leo.yan@linaro.org,
+        linux-kernel@vger.kernel.org, german.gomez@arm.com,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied, thanks!
-
-On 31/08/2022 08:51, Tinghan Shen wrote:
-> Correct the phandle of power domain node referenced by vcodec nodes.
-> 
-> arch/arm64/boot/dts/mediatek/mt8173.dtsi:1450.35-1471.5: Warning (power_domains_property): /soc/vcodec@18002000: Missing property '#power-domain-cells' in node /soc/syscon@10006000 or bad phandle (referred from power-domains[0])
-> arch/arm64/boot/dts/mediatek/mt8173.dtsi:1502.35-1522.5: Warning (power_domains_property): /soc/vcodec@19002000: Missing property '#power-domain-cells' in node /soc/syscon@10006000 or bad phandle (referred from power-domains[0])
-> 
-> Fixes: d3dfd4688574 ("arm64: dts: mediatek: Update mt81xx scpsys node to align with dt-bindings")
-> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+On Tue, 30 Aug 2022 at 18:26, James Clark <james.clark@arm.com> wrote:
+>
+> New csdev_access functions were added as part of the previous
+> refactor. In order to make them more consistent with the
+> existing ones, change any signed offset types to be unsigned.
+>
+> Now that they are unsigned, stop using hi_off = -1 to signify
+> a single 32bit access. Instead just call the existing 32bit
+> accessors. This is also applied to other parts of the codebase,
+> and the coresight_{read,write}_reg_pair() functions can be
+> deleted.
+>
+> Signed-off-by: James Clark <james.clark@arm.com>
 > ---
->   arch/arm64/boot/dts/mediatek/mt8173.dtsi | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8173.dtsi b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-> index b4d48f8b7eeb..7640b5158ff9 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-> @@ -1467,7 +1467,7 @@
->   			clock-names = "venc_sel";
->   			assigned-clocks = <&topckgen CLK_TOP_VENC_SEL>;
->   			assigned-clock-parents = <&topckgen CLK_TOP_VCODECPLL>;
-> -			power-domains = <&scpsys MT8173_POWER_DOMAIN_VENC>;
-> +			power-domains = <&spm MT8173_POWER_DOMAIN_VENC>;
->   		};
->   
->   		jpegdec: jpegdec@18004000 {
-> @@ -1518,7 +1518,7 @@
->   			assigned-clocks = <&topckgen CLK_TOP_VENC_LT_SEL>;
->   			assigned-clock-parents =
->   				 <&topckgen CLK_TOP_VCODECPLL_370P5>;
-> -			power-domains = <&scpsys MT8173_POWER_DOMAIN_VENC_LT>;
-> +			power-domains = <&spm MT8173_POWER_DOMAIN_VENC_LT>;
->   		};
->   	};
->   };
+>  drivers/hwtracing/coresight/coresight-catu.h |  8 ++---
+>  drivers/hwtracing/coresight/coresight-core.c | 18 ++++++++--
+>  drivers/hwtracing/coresight/coresight-priv.h | 35 +++++---------------
+>  drivers/hwtracing/coresight/coresight-tmc.h  |  4 +--
+>  include/linux/coresight.h                    | 27 +++++++++------
+>  5 files changed, 47 insertions(+), 45 deletions(-)
+>
+> diff --git a/drivers/hwtracing/coresight/coresight-catu.h b/drivers/hwtracing/coresight/coresight-catu.h
+> index 6160c2d75a56..442e034bbfba 100644
+> --- a/drivers/hwtracing/coresight/coresight-catu.h
+> +++ b/drivers/hwtracing/coresight/coresight-catu.h
+> @@ -70,24 +70,24 @@ struct catu_drvdata {
+>  static inline u32                                                      \
+>  catu_read_##name(struct catu_drvdata *drvdata)                         \
+>  {                                                                      \
+> -       return coresight_read_reg_pair(drvdata->base, offset, -1);      \
+> +       return csdev_access_relaxed_read32(&drvdata->csdev->access, offset); \
+>  }                                                                      \
+>  static inline void                                                     \
+>  catu_write_##name(struct catu_drvdata *drvdata, u32 val)               \
+>  {                                                                      \
+> -       coresight_write_reg_pair(drvdata->base, val, offset, -1);       \
+> +       csdev_access_relaxed_write32(&drvdata->csdev->access, val, offset); \
+>  }
+>
+>  #define CATU_REG_PAIR(name, lo_off, hi_off)                            \
+>  static inline u64                                                      \
+>  catu_read_##name(struct catu_drvdata *drvdata)                         \
+>  {                                                                      \
+> -       return coresight_read_reg_pair(drvdata->base, lo_off, hi_off);  \
+> +       return csdev_access_relaxed_read_pair(&drvdata->csdev->access, lo_off, hi_off); \
+>  }                                                                      \
+>  static inline void                                                     \
+>  catu_write_##name(struct catu_drvdata *drvdata, u64 val)               \
+>  {                                                                      \
+> -       coresight_write_reg_pair(drvdata->base, val, lo_off, hi_off);   \
+> +       csdev_access_relaxed_write_pair(&drvdata->csdev->access, val, lo_off, hi_off); \
+>  }
+>
+>  CATU_REG32(control, CATU_CONTROL);
+> diff --git a/drivers/hwtracing/coresight/coresight-core.c b/drivers/hwtracing/coresight/coresight-core.c
+> index c63b2167a69f..d5dbc67bacb4 100644
+> --- a/drivers/hwtracing/coresight/coresight-core.c
+> +++ b/drivers/hwtracing/coresight/coresight-core.c
+> @@ -60,7 +60,7 @@ EXPORT_SYMBOL_GPL(coresight_barrier_pkt);
+>
+>  static const struct cti_assoc_op *cti_assoc_ops;
+>
+> -ssize_t coresight_simple_show(struct device *_dev,
+> +ssize_t coresight_simple_show_pair(struct device *_dev,
+>                               struct device_attribute *attr, char *buf)
+>  {
+>         struct coresight_device *csdev = container_of(_dev, struct coresight_device, dev);
+> @@ -72,7 +72,21 @@ ssize_t coresight_simple_show(struct device *_dev,
+>         pm_runtime_put_sync(_dev->parent);
+>         return sysfs_emit(buf, "0x%llx\n", val);
+>  }
+> -EXPORT_SYMBOL_GPL(coresight_simple_show);
+> +EXPORT_SYMBOL_GPL(coresight_simple_show_pair);
+> +
+> +ssize_t coresight_simple_show32(struct device *_dev,
+> +                             struct device_attribute *attr, char *buf)
+> +{
+> +       struct coresight_device *csdev = container_of(_dev, struct coresight_device, dev);
+> +       struct cs_off_attribute *cs_attr = container_of(attr, struct cs_off_attribute, attr);
+> +       u64 val;
+> +
+> +       pm_runtime_get_sync(_dev->parent);
+> +       val = csdev_access_relaxed_read32(&csdev->access, cs_attr->off);
+> +       pm_runtime_put_sync(_dev->parent);
+> +       return sysfs_emit(buf, "0x%llx\n", val);
+> +}
+> +EXPORT_SYMBOL_GPL(coresight_simple_show32);
+>
+>  void coresight_set_cti_ops(const struct cti_assoc_op *cti_op)
+>  {
+> diff --git a/drivers/hwtracing/coresight/coresight-priv.h b/drivers/hwtracing/coresight/coresight-priv.h
+> index c211979deca5..595ce5862056 100644
+> --- a/drivers/hwtracing/coresight/coresight-priv.h
+> +++ b/drivers/hwtracing/coresight/coresight-priv.h
+> @@ -41,8 +41,8 @@
+>  #define ETM_MODE_EXCL_USER     BIT(31)
+>  struct cs_pair_attribute {
+>         struct device_attribute attr;
+> -       s32 lo_off;
+> -       s32 hi_off;
+> +       u32 lo_off;
+> +       u32 hi_off;
+>  };
+>
+>  struct cs_off_attribute {
+> @@ -50,21 +50,23 @@ struct cs_off_attribute {
+>         u32 off;
+>  };
+>
+> -extern ssize_t coresight_simple_show(struct device *_dev,
+> +extern ssize_t coresight_simple_show32(struct device *_dev,
+> +                                    struct device_attribute *attr, char *buf);
+> +extern ssize_t coresight_simple_show_pair(struct device *_dev,
+>                                      struct device_attribute *attr, char *buf);
+>
+>  #define coresight_simple_reg32(name, offset)                           \
+> -       (&((struct cs_pair_attribute[]) {                               \
+> +       (&((struct cs_off_attribute[]) {                                \
+>            {                                                            \
+> -               __ATTR(name, 0444, coresight_simple_show, NULL),        \
+> -               offset, -1                                              \
+> +               __ATTR(name, 0444, coresight_simple_show32, NULL),      \
+> +               offset                                                  \
+>            }                                                            \
+>         })[0].attr.attr)
+>
+>  #define coresight_simple_reg64(name, lo_off, hi_off)                   \
+>         (&((struct cs_pair_attribute[]) {                               \
+>            {                                                            \
+> -               __ATTR(name, 0444, coresight_simple_show, NULL),        \
+> +               __ATTR(name, 0444, coresight_simple_show_pair, NULL),   \
+>                 lo_off, hi_off                                          \
+>            }                                                            \
+>         })[0].attr.attr)
+> @@ -130,25 +132,6 @@ static inline void CS_UNLOCK(void __iomem *addr)
+>         } while (0);
+>  }
+>
+> -static inline u64
+> -coresight_read_reg_pair(void __iomem *addr, s32 lo_offset, s32 hi_offset)
+> -{
+> -       u64 val;
+> -
+> -       val = readl_relaxed(addr + lo_offset);
+> -       val |= (hi_offset < 0) ? 0 :
+> -              (u64)readl_relaxed(addr + hi_offset) << 32;
+> -       return val;
+> -}
+> -
+> -static inline void coresight_write_reg_pair(void __iomem *addr, u64 val,
+> -                                                s32 lo_offset, s32 hi_offset)
+> -{
+> -       writel_relaxed((u32)val, addr + lo_offset);
+> -       if (hi_offset >= 0)
+> -               writel_relaxed((u32)(val >> 32), addr + hi_offset);
+> -}
+> -
+>  void coresight_disable_path(struct list_head *path);
+>  int coresight_enable_path(struct list_head *path, u32 mode, void *sink_data);
+>  struct coresight_device *coresight_get_sink(struct list_head *path);
+> diff --git a/drivers/hwtracing/coresight/coresight-tmc.h b/drivers/hwtracing/coresight/coresight-tmc.h
+> index 6bec20a392b3..66959557cf39 100644
+> --- a/drivers/hwtracing/coresight/coresight-tmc.h
+> +++ b/drivers/hwtracing/coresight/coresight-tmc.h
+> @@ -282,12 +282,12 @@ ssize_t tmc_etr_get_sysfs_trace(struct tmc_drvdata *drvdata,
+>  static inline u64                                                      \
+>  tmc_read_##name(struct tmc_drvdata *drvdata)                           \
+>  {                                                                      \
+> -       return coresight_read_reg_pair(drvdata->base, lo_off, hi_off);  \
+> +       return csdev_access_relaxed_read_pair(&drvdata->csdev->access, lo_off, hi_off); \
+>  }                                                                      \
+>  static inline void                                                     \
+>  tmc_write_##name(struct tmc_drvdata *drvdata, u64 val)                 \
+>  {                                                                      \
+> -       coresight_write_reg_pair(drvdata->base, val, lo_off, hi_off);   \
+> +       csdev_access_relaxed_write_pair(&drvdata->csdev->access, val, lo_off, hi_off); \
+>  }
+>
+>  TMC_REG_PAIR(rrp, TMC_RRP, TMC_RRPHI)
+> diff --git a/include/linux/coresight.h b/include/linux/coresight.h
+> index a47dd1f62216..1554021231f9 100644
+> --- a/include/linux/coresight.h
+> +++ b/include/linux/coresight.h
+> @@ -373,21 +373,26 @@ static inline u32 csdev_access_relaxed_read32(struct csdev_access *csa,
+>  }
+>
+>  static inline u64 csdev_access_relaxed_read_pair(struct csdev_access *csa,
+> -                                                s32 lo_offset, s32 hi_offset)
+> +                                                u32 lo_offset, u32 hi_offset)
+>  {
+> -       u64 val;
+> -
+>         if (likely(csa->io_mem)) {
+> -               val = readl_relaxed(csa->base + lo_offset);
+> -               val |= (hi_offset < 0) ? 0 :
+> -                      (u64)readl_relaxed(csa->base + hi_offset) << 32;
+> -               return val;
+> +               return readl_relaxed(csa->base + lo_offset) |
+> +                       ((u64)readl_relaxed(csa->base + hi_offset) << 32);
+>         }
+>
+> -       val = csa->read(lo_offset, true, false);
+> -       val |= (hi_offset < 0) ? 0 :
+> -              (u64)csa->read(hi_offset, true, false) << 32;
+> -       return val;
+> +       return csa->read(lo_offset, true, false) | (csa->read(hi_offset, true, false) << 32);
+> +}
+> +
+> +static inline void csdev_access_relaxed_write_pair(struct csdev_access *csa, u64 val,
+> +                                                  u32 lo_offset, u32 hi_offset)
+> +{
+> +       if (likely(csa->io_mem)) {
+> +               writel_relaxed((u32)val, csa->base + lo_offset);
+> +               writel_relaxed((u32)(val >> 32), csa->base + hi_offset);
+> +       } else {
+> +               csa->write((u32)val, lo_offset, true, false);
+> +               csa->write((u32)(val >> 32), hi_offset, true, false);
+> +       }
+>  }
+>
+>  static inline u32 csdev_access_read32(struct csdev_access *csa, u32 offset)
+> --
+> 2.28.0
+>
+
+Reviewed-by: Mike Leach <mike.leach@linaro.org>
+-- 
+Mike Leach
+Principal Engineer, ARM Ltd.
+Manchester Design Centre. UK
