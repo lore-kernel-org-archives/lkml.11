@@ -2,107 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29D58ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:56:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B41AAECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:56:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231504AbiHaO4k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 10:56:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53476 "EHLO
+        id S231522AbiHaO4o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 10:56:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231315AbiHaO4U (ORCPT
+        with ESMTP id S230257AbiHaO4V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 10:56:20 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 288D6C992F
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 07:55:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661957746; x=1693493746;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=8+GY+VHMpQ4tyKPMCOukgzehMzX4R6wiYIg29V61XK0=;
-  b=VEQPCB4DcvGDmR26ZtRC2HTZj4tvUNsMkEq6znCwhD0eQ6y7QMxSor2l
-   HSsVq3Fh5LnjM+dCKuTIJyUNV9/OB0uuzeKRV7/e0lYz9XsrrQlqy+CRm
-   BVHnfcjJ402DZYPoCVyUU46elK41mz3NZ43dYbrfkNisNo0eH2bjgUOxT
-   sL3LJnVjjKxhN5aSaincoElRkCk3I0RKWD6qd1Zz21T7Mg0CN6XLbP8r0
-   GvmiN6pbEJJ7kGSK1HFzt4wkPwvIJRfhy/eiBiU2/d2jEVqfyxxXeCpDa
-   C+LYe9SKKlcjX7VY4+kFsABHBXjqWc73PAm5dwJ6G/H1bMpGnS7ZBbYIS
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="296248193"
-X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
-   d="scan'208";a="296248193"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 07:55:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
-   d="scan'208";a="614991680"
-Received: from kanliang-dev.jf.intel.com ([10.165.154.102])
-  by fmsmga007.fm.intel.com with ESMTP; 31 Aug 2022 07:55:44 -0700
-From:   kan.liang@linux.intel.com
-To:     peterz@infradead.org, acme@kernel.org, mingo@redhat.com,
-        eranian@google.com, mpe@ellerman.id.au,
-        linux-kernel@vger.kernel.org
-Cc:     ak@linux.intel.com, andreas.kogler.0x@gmail.com,
-        atrajeev@linux.vnet.ibm.com, Kan Liang <kan.liang@linux.intel.com>
-Subject: [PATCH 2/6] perf/x86/intel/pebs: Fix PEBS timestamps overwritten
-Date:   Wed, 31 Aug 2022 07:55:10 -0700
-Message-Id: <20220831145514.190514-3-kan.liang@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220831145514.190514-1-kan.liang@linux.intel.com>
-References: <20220831145514.190514-1-kan.liang@linux.intel.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 31 Aug 2022 10:56:21 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F17DACC32D;
+        Wed, 31 Aug 2022 07:55:46 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 9D33822100;
+        Wed, 31 Aug 2022 14:55:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1661957745; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=s6AjlAeWtcKwmBZkBON6SrodR56ivUjL6OJtH2nJbWA=;
+        b=JIUylpNW05JOiyVBi265AW5nHZI3DvkLsHtXw900NpgNlNlcUTiMa/ivHlSsAeATDm/KIJ
+        KJQGrrtZd9LEp2OkZ9lGmRir6YcExN10I9llYBHfnhSCsIHh0jq+OcCwGdGibV3XX3Mc6w
+        nFigLkrUB0iseJ3lSMRrlXRD19zHBXM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1661957745;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=s6AjlAeWtcKwmBZkBON6SrodR56ivUjL6OJtH2nJbWA=;
+        b=i0V6x6gQGmnH4AZq4BwH7anJ6DOPGAbGNjpb4PbQ7W0aKjfflDqq6tdVc31SM1e/wph8/f
+        ADYRcGEViz62u9Dw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A42D313A7C;
+        Wed, 31 Aug 2022 14:55:44 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id q/YgHnB2D2PCXwAAMHmgww
+        (envelope-from <colyli@suse.de>); Wed, 31 Aug 2022 14:55:44 +0000
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.120.41.1.1\))
+Subject: Re: [PATCH] bcache: bset: Fix comment typos
+From:   Coly Li <colyli@suse.de>
+In-Reply-To: <20220826100052.22945-24-jmaselbas@kalray.eu>
+Date:   Wed, 31 Aug 2022 22:55:42 +0800
+Cc:     linux-kernel@vger.kernel.org,
+        Kent Overstreet <kent.overstreet@gmail.com>,
+        linux-bcache@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <FD6DF477-C5B5-482F-B237-0FC1B7CED915@suse.de>
+References: <20220826100052.22945-24-jmaselbas@kalray.eu>
+To:     Jules Maselbas <jmaselbas@kalray.eu>
+X-Mailer: Apple Mail (2.3696.120.41.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kan Liang <kan.liang@linux.intel.com>
 
-The PEBS TSC-based timestamps do not appear correctly in the final
-perf.data output file from perf record.
 
-The data->time field setup by PEBS in the setup_pebs_fixed_sample_data()
-is later overwritten by perf_events generic code in
-perf_prepare_sample(). There is an ordering problem.
+> 2022=E5=B9=B48=E6=9C=8826=E6=97=A5 18:00=EF=BC=8CJules Maselbas =
+<jmaselbas@kalray.eu> =E5=86=99=E9=81=93=EF=BC=9A
+>=20
+> Remove the redundant word `by`, correct the typo `creaated`.
+>=20
+> CC: Kent Overstreet <kent.overstreet@gmail.com>
+> CC: linux-bcache@vger.kernel.org
+> Signed-off-by: Jules Maselbas <jmaselbas@kalray.eu>
 
-Set the sample flags when the data->time is updated by PEBS.
-The data->time field will not be overwritten anymore.
+Added to my for-next queue. Thanks.
 
-Reported-by: Andreas Kogler <andreas.kogler.0x@gmail.com>
-Reported-by: Stephane Eranian <eranian@google.com>
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
----
- arch/x86/events/intel/ds.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+Coly Li
 
-diff --git a/arch/x86/events/intel/ds.c b/arch/x86/events/intel/ds.c
-index 6ce73b4ae2f3..3af24c4891fb 100644
---- a/arch/x86/events/intel/ds.c
-+++ b/arch/x86/events/intel/ds.c
-@@ -1640,8 +1640,10 @@ static void setup_pebs_fixed_sample_data(struct perf_event *event,
- 	 * We can only do this for the default trace clock.
- 	 */
- 	if (x86_pmu.intel_cap.pebs_format >= 3 &&
--		event->attr.use_clockid == 0)
-+		event->attr.use_clockid == 0) {
- 		data->time = native_sched_clock_from_tsc(pebs->tsc);
-+		data->sample_flags |= PERF_SAMPLE_TIME;
-+	}
- 
- 	if (has_branch_stack(event))
- 		data->br_stack = &cpuc->lbr_stack;
-@@ -1702,8 +1704,10 @@ static void setup_pebs_adaptive_sample_data(struct perf_event *event,
- 	perf_sample_data_init(data, 0, event->hw.last_period);
- 	data->period = event->hw.last_period;
- 
--	if (event->attr.use_clockid == 0)
-+	if (event->attr.use_clockid == 0) {
- 		data->time = native_sched_clock_from_tsc(basic->tsc);
-+		data->sample_flags |= PERF_SAMPLE_TIME;
-+	}
- 
- 	/*
- 	 * We must however always use iregs for the unwinder to stay sane; the
--- 
-2.35.1
+> ---
+> drivers/md/bcache/bset.c | 2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/md/bcache/bset.c b/drivers/md/bcache/bset.c
+> index 94d38e8a59b3..2bba4d6aaaa2 100644
+> --- a/drivers/md/bcache/bset.c
+> +++ b/drivers/md/bcache/bset.c
+> @@ -1264,7 +1264,7 @@ static void __btree_sort(struct btree_keys *b, =
+struct btree_iter *iter,
+> 		 *
+> 		 * Don't worry event 'out' is allocated from mempool, it =
+can
+> 		 * still be swapped here. Because state->pool is a page =
+mempool
+> -		 * creaated by by mempool_init_page_pool(), which =
+allocates
+> +		 * created by mempool_init_page_pool(), which allocates
+> 		 * pages by alloc_pages() indeed.
+> 		 */
+>=20
+> --=20
+> 2.17.1
+>=20
 
