@@ -2,281 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0045C54EE9
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 11:07:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2551ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 11:07:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229752AbiHaLHW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 07:07:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43550 "EHLO
+        id S230455AbiHaLHu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 07:07:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbiHaLHT (ORCPT
+        with ESMTP id S229555AbiHaLHr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 07:07:19 -0400
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B4D7CE461;
-        Wed, 31 Aug 2022 04:07:13 -0700 (PDT)
-Received: by mail-il1-x143.google.com with SMTP id l16so7407277ilj.2;
-        Wed, 31 Aug 2022 04:07:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=3+Y19qbqOfOKCdO6satr64KYp8FSt0WdCJXly/Kr6V4=;
-        b=oQehFaiXCrprvH1Av4ny354sfuI4solNkKcCw4+krks/gwHOxw6ae/X4zbLVXBtvbH
-         4pDoGQ32uYoN+3sQO3AC60syNtyT/ixbwjgcosomogrm6qwReGu5UwiOgGpIEezYkL0j
-         M6qbdi/kuVbpvaLC5wrBMkm6ySHvpZHnbhUScrE3vQz8jGdekRPKtsytutep7auBG5k6
-         iDWMLbEc1cvdEERXRAl+2HHjcfijSRF3eQR1J8dwnhFglYtBuxuslqo8ZsCJwAzXOJnY
-         DHgGFQKa+w8b79hvXzcVjkegfHn/2AC+d8HVSh2WQfuVf6Aeb3HpRYEsebzXzRpLT2Nq
-         32ng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=3+Y19qbqOfOKCdO6satr64KYp8FSt0WdCJXly/Kr6V4=;
-        b=nsDQAnYWBNCWIb4G63A5INaAOIHxOSB48ilD2CJ30b58b09QxsSBNCJXyx9hwDWOCA
-         tFgfhJwxSyBF+jbdZh3RLVS6Ytxh7W34P2KWsMZHvS8mi0XzScN5eRx/9WLdnpwde//v
-         tKFQCYI6wEqCtOvbF/ZPcfrCkmq/eGMN1sxo8UhD662pP67v2iLUUylRAsRzlOJs7rNa
-         kvtjfsCZlr9uqChQX23kogUWEwZOtcSX5wcwOjsRNPqDOq5uL7ohjxGcliRxV7G59xJu
-         t2LJWNB4tIxB956sYrjfNYI0gA+wW7GR5L7oFboCgy4d/f3GWYxpH1NLVa86Ok3BY5Yh
-         yeSw==
-X-Gm-Message-State: ACgBeo0AAZC3Q/rgExMH+GMXsxneCy0ZMjtm4eaY48zSDdESMCnIE9yk
-        CQNECfcyCTpcUZ/0piDtq+4cVXceILK7C4AZYds=
-X-Google-Smtp-Source: AA6agR4Eai9xmwbXn8E/Gh36RQ3nEE4HqyvSrJg4QuyYYbjKphFEKK/5z3YFnOzU8zFDEx4C4bnRSBqDvigq9wEqG4w=
-X-Received: by 2002:a05:6e02:661:b0:2e2:be22:67f0 with SMTP id
- l1-20020a056e02066100b002e2be2267f0mr14238315ilt.91.1661944032433; Wed, 31
- Aug 2022 04:07:12 -0700 (PDT)
+        Wed, 31 Aug 2022 07:07:47 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2060.outbound.protection.outlook.com [40.107.223.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA2E2A4B3C;
+        Wed, 31 Aug 2022 04:07:45 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=i083RL7yVwlHapmYv7PNb1yZXZhhsRVmdDWcupC/CWXt6Kwr+4WiRvdps0KlHOJgvdxToE4C3B4tVxTaDPh5bI62P8aNTjJrywb+zvoLmI6f+P9wR7FtCBfteBWfsXOEIbEyNvijzYHbDWWcs5z5dG2a8em7y1iSzCGJodhh6tVO987ngVy40Njdgmb1TDOcB3c9dlZ6Bf12Ax46mup87CILtN9gDyPpjuw5Sm39XTqmXOZKSCRWpmNpvKW1pX8cyyEQMnGxqPy/YRV2pfFBik9bGWqqbqlb4MsLAAXH+TUw0hOH81Zc6A5/o/PJZlDisQz86gKQVlVrWH5KA+Gcug==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=z0VYsW8GS2oeFr9IwJLul9eD+McR0vh7NYWbBPfG2nc=;
+ b=RQ6Kp2pNUSwZnz+0Sw+i5DmgUQFNRCC56fRzTyaeY7Zrtag42cOleHGAqypRutKXGD6oXzYzoXaQl8h7y0AS0Jb/3d9PSD26DPPx5jNiuHCU9IagflyEhFamFJj1fjmoh1MFO0JHP1wnfqEZ44dncufAfl4Efu4h7B2Qk4PURdms0VSN0MVbYZLGVOaf1xxmkOcR2chDOQFh1InDThE0eG/B6YqiOh4qcTqc1V3u7ePEfJ9LZxLWiIfHiwBUMHS1AX3MB1YnIym0Fopz3BCPSx029GHPpVsSzlv0DdWI8kNUSG3CDEMIuI6/3w6fz+4W5ePlDKuli2jITyri22johA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=z0VYsW8GS2oeFr9IwJLul9eD+McR0vh7NYWbBPfG2nc=;
+ b=Nc1q02vU82hd18gV9LjWmxamsOF4QwtUac1JI44aYb3bTrdNbqy2Mw6f6wIGpvKUzZNPbZE37cGNApTCOFQPyTQHSYTFia901YYYyFzFtoBE/3MeLaB6jwalDaZi65dVQVBGIK8uq01EbZckcEkTBlz3yBnK9roz6P83sLg+4+k=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com (2603:10b6:408:43::13)
+ by SN7PR12MB6885.namprd12.prod.outlook.com (2603:10b6:806:263::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.19; Wed, 31 Aug
+ 2022 11:07:43 +0000
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::4524:eda6:873a:8f94]) by BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::4524:eda6:873a:8f94%7]) with mapi id 15.20.5588.010; Wed, 31 Aug 2022
+ 11:07:43 +0000
+Message-ID: <41b495a6-d1c1-922d-ec4d-febaa01ae75c@amd.com>
+Date:   Wed, 31 Aug 2022 13:07:36 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [bug report] dma-buf: Add debug option
+Content-Language: en-US
+To:     yf.wang@mediatek.com, Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        linux-media@vger.kernel.org
+Cc:     wsd_upstream@mediatek.com, Libo Kang <Libo.Kang@mediatek.com>,
+        Ning Li <Ning.Li@mediatek.com>, Yong Wu <Yong.Wu@mediatek.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+        linux-kernel@vger.kernel.org
+References: <20220831103521.3019-1-yf.wang@mediatek.com>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+In-Reply-To: <20220831103521.3019-1-yf.wang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR0P281CA0089.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:1e::11) To BN8PR12MB3587.namprd12.prod.outlook.com
+ (2603:10b6:408:43::13)
 MIME-Version: 1.0
-References: <20220824134055.1328882-1-benjamin.tissoires@redhat.com>
- <20220824134055.1328882-5-benjamin.tissoires@redhat.com> <CAP01T74ZmvoYtG=8wiDm0_X3hrMN8s55CkSzurphDrZ3b86UZQ@mail.gmail.com>
- <CAO-hwJ+Xk=93oCXTp7vWVx_oXmx5=PPwWoAgahLSZBTcD9XQmg@mail.gmail.com>
-In-Reply-To: <CAO-hwJ+Xk=93oCXTp7vWVx_oXmx5=PPwWoAgahLSZBTcD9XQmg@mail.gmail.com>
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Date:   Wed, 31 Aug 2022 13:06:34 +0200
-Message-ID: <CAP01T74KGSwYfCOdy7F_zk2CN5=ts01SSrPYUSAcDtL1zOB-Ug@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v9 04/23] bpf/verifier: allow kfunc to return an
- allocated mem
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        lkml <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 49a69372-424e-4779-240a-08da8b4106b9
+X-MS-TrafficTypeDiagnostic: SN7PR12MB6885:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 2Ro8lHHSV0/2ld7WY8x4Tqt43PuFB+uDSUwJLNIAvkJI2MvrHXzQc+qjS8vvJ2h1Iat+1xzr+M1rNwQOwpoQnr2B0S2gLeCybra+Vkt7fKqj93/0H2HtgElRIxKpuJLGal/G1LX1D4iYGCpwohC2ALKBdpuhaWvhB2ZKSw2lPROqB1wj/FgfGC2FkikwqScu+pG3Iq2IvDdYD1rCV2MhFXsWYN+VaEYrinpJEDPX+LzBGoZmDuYZ7TM8lJCwHvgM2EbOBuGlNx4Dw2a4k6u/mksm+j9WZ4dJLd8Y0CzYtQNYhw2r1BFGTwBGEM85d9pZ3H93KLef8ahx+q3Km7IEPVFiWCyms9VdNGqQrbmXrDP47w1g2CdKoG/wprXGnj4RPoUndMnqdNGWRmRMnZPI4wyR4fpvvxb53SuTrdUEey1wVsCc4KeyaWhvWtjy8IUFBqsTFY48juQ/Gl78cQIVsPwg3eW3q5lWrMwEv1jW5F7TmVfvxgZ48rEk0p3eG6LgMqkc5gTk4M+r+lu0KcfoFCMnkNRfYzs9BsVRgg7A5GFE89YW95As4ypaSVFmjDaSW4eN2XPKdOJleYjnGn6Aae7UfH4Gc5f6R1XdbPocsp8E0zfxeEiXhsO+e9j7ZIN5BPiz+ftzpf5HkRbiXJdmVmQMKIkpENj+TJN3rM3bDT7b3/fSMCdbH38ydhoECA6LGehR5sqm9RT2eTkqjgwYcvDgX/0vc/DAF1zvauxQwfvA0qrdW3nNseIV5Vs+b0Yr
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3587.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(39860400002)(396003)(376002)(136003)(346002)(316002)(66476007)(5660300002)(66556008)(36756003)(8676002)(2906002)(86362001)(66946007)(4326008)(7416002)(8936002)(31696002)(83380400001)(38100700002)(478600001)(110136005)(41300700001)(6486002)(54906003)(186003)(2616005)(6512007)(6666004)(966005)(6506007)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?R2VTb0hDZlBvSHM1ZTE3L202QjBBR2g1SnR6bEVRNSsyZGVZQUJtYTFNOHFB?=
+ =?utf-8?B?SUtPaUc2MTFPVHhRMm9KL2tuUXNQc0I4Mkk3d3VLdFJ1T2ZQY3NyY3Q2d0tp?=
+ =?utf-8?B?MXRkdGY5OHJ3ZlNTdXZKaWtRYzdsV1ZrKy9EUDhjYmI5N3ZBb3pmajc3amts?=
+ =?utf-8?B?TDBWZ3hZWWhyZmJmWHdPVTNjK09ScnBuTXRKb2hLUGE3V1hWQ1gveTlUem4v?=
+ =?utf-8?B?WWI1WlhYdjNFb0U2QWZTdzQ5Qks0TWNoZUhvVHpPcjN2Tmh3OHMySnFJeER0?=
+ =?utf-8?B?by92QXllRVRlKytXM1BDM1k5VW9EZEJiNFlPaTBmOHhwRzMyMVhPZlkwU3pP?=
+ =?utf-8?B?eVhYTU56MVlySVc1QW5XSWxEWWx1NDllTkpSQnl1R2lodkYxUWZyUWxoa3Fr?=
+ =?utf-8?B?UzJEdFhkaEVMWVNkSWRSMUI2L0svMENidWFLdzZ0UEEvNEVlZTk2bTg0MXlD?=
+ =?utf-8?B?b2draHNNNFV6OVQzNHg2MDBYcVQreU9mZ2EwRCsxZmY2ZVJSNkxORDJYUW93?=
+ =?utf-8?B?bitqdGhKYlFOVTI2SURQcHA3YkZEZFMwZW1GOS80LzJpL2Z0bzFqdU9MU0JR?=
+ =?utf-8?B?cHdmLytQcTg1aUpldzh0UGk4bTBKM2NMVUNpOGp1NmNyRExOS21PRTZ6a0pI?=
+ =?utf-8?B?TnAvQnZZenFRWmNXdnVHbzF0Mzg0MjFiWG1EWkptYnFiTk9FbnBXMGxka2lR?=
+ =?utf-8?B?Vlg4eGd5ZkwrVTg3bm1IQWVTT2ZwSmZQNlMwb1VEbEZzbk9VSkZnMWVDOFZE?=
+ =?utf-8?B?VzE5UnB4TFowQ0NQbjkyVUh3UGllTlE2WTN4cE1Pa1lSUEl5cG5KV25kZUxK?=
+ =?utf-8?B?Z2thand0M0RMQ1dYMGtmWVdDcDZ3THVsdWpPcnYwMlFuNEE4OVp5bWZDSGFz?=
+ =?utf-8?B?SGRSQlpiNGE2SmdXeGpya09Rc2xsT01LdFlYY2VkK2tkUzlQaDMwcWRPenZL?=
+ =?utf-8?B?Z1RSbjlqZ0ExWmxDN3pEU2IxUXFGWDlkMXlJa1VuYnROcU9SMittbVlBckJG?=
+ =?utf-8?B?T0VhMk1NQU1idU5vRGZwNFBXaW5HVC8wd0h4M0xDNFArTDBGWVliS0VwMHc5?=
+ =?utf-8?B?TC9YaVUzRGV2RG9qcDJUWkptZDZERnFiTjNpRTBzdE1QU3hBcU1WVnp5UEhD?=
+ =?utf-8?B?OEY5dXlUczdKR2ZIQ3VNQ2U0ZW9vSWtQSU5ZNWhDT3ZNTW5MNlMwUDl3K2I1?=
+ =?utf-8?B?QXh6OFNMYzRnU29IN0c4RTNrbmNzR3VEM1M5YjltcHlvalRsYXFzZ1RYVkpp?=
+ =?utf-8?B?cVRTNlFiaFRQRDlaVlppWFZ3Q2lvUFVjV3lwNUhOdU1oSnlaa2Q0SGZWM21m?=
+ =?utf-8?B?aHdWdWxlbmpMMnU0ZTZ1RVlUWXVBYkNKcFpyNE51ZFoxUFM4cGRCZldVdGpn?=
+ =?utf-8?B?OWxaUW5ZWkNPYTh0bnkzOVFsSW50b3I4R0R2TlpaclNJSkJnWjlNaVFKcGI5?=
+ =?utf-8?B?UnFmUmpjYVVxdDVSY2xVOURtR1hvUWZyQk1DZ1BuTTh6VW5qUVFCbjcwcXh1?=
+ =?utf-8?B?RWdtWkZ6bkkvdkFGcWlIWFZxMzBCblNWdDR6NTR3QkI1blpPUy8ySUg4SmJh?=
+ =?utf-8?B?RVdlWFJHUlQ4a0d5dEsrdlJ1T3gzSEErYm93em5iajZra1RZUmxOQU1jU2Qy?=
+ =?utf-8?B?ZXN0T09YVkhZakZQUUtyMG5tRGpoZlJwR3RiNE1JOTdwS2NiS29HMmZvaTJY?=
+ =?utf-8?B?a1VFR2RCOUE4MjVYczdnSUxhWGpyUkNRRUVWZDFqOWY0RjY0M3d1cFB1blIz?=
+ =?utf-8?B?dGhmdUxBMXhrdExKK3NBdGQ4cVRrbTVoQ01mUnpVMjNxcER2MTBKVlVZQnZn?=
+ =?utf-8?B?aFJIWTVOa2ZzeitwSzhib0tMQTB5b2dUS3lnSjV4VUlvWkJ2TU9tWU1ZV2g2?=
+ =?utf-8?B?YTM0UkdMUnNncGVmSFdFMnpFcUtYZURsQXAzWU40MUJBM05WQVJIcXIrVkJk?=
+ =?utf-8?B?NnRUZHBXM2JEL1dtcjFiZWt1Uk9tMm9Sb0ZIN0xaakxGeGtuQ1lETTNYSms5?=
+ =?utf-8?B?UjVnUW12MHJVMTNnVHpEMllXWXZqMGo5WHRvQ0Y0QVlZd0ZCVkxwaWY4VEJK?=
+ =?utf-8?B?SE9ET2ZIbExiajRHSHg3RVFubnowUTc2amJnYUd3eGtWUHVnRUNmNFp5VGJ1?=
+ =?utf-8?B?T05PMW4yOXBSUmtlK09iMXVZOFh6N1hZZXVsRXNIeGZscFJjNnlOdkowVUdh?=
+ =?utf-8?Q?3ij4wUPokaP5H56SIfVnzoGLNiwgp6GSiBhSZzgNLROB?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 49a69372-424e-4779-240a-08da8b4106b9
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3587.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2022 11:07:43.0309
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: QZHMjdR3JNUP/Y6QrlBp8uK+6NaInedoQD6Fp7nB4BjjilgXwBc0om0xXEwq6IsE
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6885
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 31 Aug 2022 at 07:50, Benjamin Tissoires
-<benjamin.tissoires@redhat.com> wrote:
->
-> On Fri, Aug 26, 2022 at 3:25 AM Kumar Kartikeya Dwivedi
-> <memxor@gmail.com> wrote:
-> >
-> > On Wed, 24 Aug 2022 at 15:41, Benjamin Tissoires
-> > <benjamin.tissoires@redhat.com> wrote:
-> > >
-> > > For drivers (outside of network), the incoming data is not statically
-> > > defined in a struct. Most of the time the data buffer is kzalloc-ed
-> > > and thus we can not rely on eBPF and BTF to explore the data.
-> > >
-> > > This commit allows to return an arbitrary memory, previously allocated by
-> > > the driver.
-> > > An interesting extra point is that the kfunc can mark the exported
-> > > memory region as read only or read/write.
-> > >
-> > > So, when a kfunc is not returning a pointer to a struct but to a plain
-> > > type, we can consider it is a valid allocated memory assuming that:
-> > > - one of the arguments is either called rdonly_buf_size or
-> > >   rdwr_buf_size
-> > > - and this argument is a const from the caller point of view
-> > >
-> > > We can then use this parameter as the size of the allocated memory.
-> > >
-> > > The memory is either read-only or read-write based on the name
-> > > of the size parameter.
-> > >
-> > > Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-> > >
-> > > ---
-> > >
-> > > changes in v9:
-> > > - updated to match upstream (replaced kfunc_flag by a field in
-> > >   kfunc_meta)
-> > >
-> > > no changes in v8
-> > >
-> > > changes in v7:
-> > > - ensures btf_type_is_struct_ptr() checks for a ptr first
-> > >   (squashed from next commit)
-> > > - remove multiple_ref_obj_id need
-> > > - use btf_type_skip_modifiers instead of manually doing it in
-> > >   btf_type_is_struct_ptr()
-> > > - s/strncmp/strcmp/ in btf_is_kfunc_arg_mem_size()
-> > > - check for tnum_is_const when retrieving the size value
-> > > - have only one check for "Ensure only one argument is referenced
-> > >   PTR_TO_BTF_ID"
-> > > - add some more context to the commit message
-> > >
-> > > changes in v6:
-> > > - code review from Kartikeya:
-> > >   - remove comment change that had no reasons to be
-> > >   - remove handling of PTR_TO_MEM with kfunc releases
-> > >   - introduce struct bpf_kfunc_arg_meta
-> > >   - do rdonly/rdwr_buf_size check in btf_check_kfunc_arg_match
-> > >   - reverted most of the changes in verifier.c
-> > >   - make sure kfunc acquire is using a struct pointer, not just a plain
-> > >     pointer
-> > >   - also forward ref_obj_id to PTR_TO_MEM in kfunc to not use after free
-> > >     the allocated memory
-> > >
-> > > changes in v5:
-> > > - updated PTR_TO_MEM comment in btf.c to match upstream
-> > > - make it read-only or read-write based on the name of size
-> > >
-> > > new in v4
-> > >
-> > > change btf.h
-> > >
-> > > fix allow kfunc to return an allocated mem
-> > > ---
-> > >  include/linux/bpf.h   |  9 +++-
-> > >  include/linux/btf.h   | 10 +++++
-> > >  kernel/bpf/btf.c      | 98 ++++++++++++++++++++++++++++++++++---------
-> > >  kernel/bpf/verifier.c | 43 +++++++++++++------
-> > >  4 files changed, 128 insertions(+), 32 deletions(-)
-> > >
-> > > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> > > index 39bd36359c1e..90dd218e0199 100644
-> > > --- a/include/linux/bpf.h
-> > > +++ b/include/linux/bpf.h
-> > > @@ -1932,13 +1932,20 @@ int btf_distill_func_proto(struct bpf_verifier_log *log,
-> > >                            const char *func_name,
-> > >                            struct btf_func_model *m);
-> > > [...]
-> > > +
-> > >  static int btf_check_func_arg_match(struct bpf_verifier_env *env,
-> > >                                     const struct btf *btf, u32 func_id,
-> > >                                     struct bpf_reg_state *regs,
-> > >                                     bool ptr_to_mem_ok,
-> > > -                                   u32 kfunc_flags)
-> > > +                                   struct bpf_kfunc_arg_meta *kfunc_meta)
-> > >  {
-> > >         enum bpf_prog_type prog_type = resolve_prog_type(env->prog);
-> > >         bool rel = false, kptr_get = false, trusted_arg = false;
-> > > @@ -6207,12 +6232,12 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
-> > >                 return -EINVAL;
-> > >         }
-> > >
-> > > -       if (is_kfunc) {
-> > > +       if (is_kfunc && kfunc_meta) {
-> > >                 /* Only kfunc can be release func */
-> > > -               rel = kfunc_flags & KF_RELEASE;
-> > > -               kptr_get = kfunc_flags & KF_KPTR_GET;
-> > > -               trusted_arg = kfunc_flags & KF_TRUSTED_ARGS;
-> > > -               sleepable = kfunc_flags & KF_SLEEPABLE;
-> > > +               rel = kfunc_meta->flags & KF_RELEASE;
-> > > +               kptr_get = kfunc_meta->flags & KF_KPTR_GET;
-> > > +               trusted_arg = kfunc_meta->flags & KF_TRUSTED_ARGS;
-> > > +               sleepable = kfunc_meta->flags & KF_SLEEPABLE;
-> > >         }
-> > >
-> > >         /* check that BTF function arguments match actual types that the
-> > > @@ -6225,6 +6250,35 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
-> > >
-> > >                 t = btf_type_skip_modifiers(btf, args[i].type, NULL);
-> > >                 if (btf_type_is_scalar(t)) {
-> > > +                       if (is_kfunc && kfunc_meta) {
-> > > +                               bool is_buf_size = false;
-> > > +
-> > > +                               /* check for any const scalar parameter of name "rdonly_buf_size"
-> > > +                                * or "rdwr_buf_size"
-> > > +                                */
-> > > +                               if (btf_is_kfunc_arg_mem_size(btf, &args[i], reg,
-> > > +                                                             "rdonly_buf_size")) {
-> > > +                                       kfunc_meta->r0_rdonly = true;
-> > > +                                       is_buf_size = true;
-> > > +                               } else if (btf_is_kfunc_arg_mem_size(btf, &args[i], reg,
-> > > +                                                                    "rdwr_buf_size"))
-> > > +                                       is_buf_size = true;
-> > > +
-> > > +                               if (is_buf_size) {
-> > > +                                       if (kfunc_meta->r0_size) {
-> > > +                                               bpf_log(log, "2 or more rdonly/rdwr_buf_size parameters for kfunc");
-> > > +                                               return -EINVAL;
-> > > +                                       }
-> > > +
-> > > +                                       if (!tnum_is_const(reg->var_off)) {
-> > > +                                               bpf_log(log, "R%d is not a const\n", regno);
-> > > +                                               return -EINVAL;
-> > > +                                       }
-> > > +
-> > > +                                       kfunc_meta->r0_size = reg->var_off.value;
-> >
-> > Sorry for not pointing it out before, but you will need a call to
-> > mark_chain_precision here after this, since the value of the scalar is
-> > being used to decide the size of the returned pointer.
->
-> No worries.
->
-> I do however have a couple of questions (I have strictly no idea what
-> mark_chain_precision does):
+Hi Yunfei,
 
-See this patch for some background:
-https://lore.kernel.org/bpf/20220823185300.406-2-memxor@gmail.com
-Same case here, it is setting the size of r0 PTR_TO_MEM.
+well it looks like system_heap_dma_buf_begin_cpu_access() is exactly 
+doing what this patch tries to prevent.
 
-> - which register number should I call mark_chain_precision() as
-> parameter? r0 or regno (the one with the constant)?
+In other words the dma_heap implementation is doing something which it 
+shouldn't be doing. The patch from Daniel is just surfacing this.
 
-Yes, regno, i.e. the one with the constant.
+Regards,
+Christian.
 
-> - mark_chain_precision() is declared static in verifier.c. Should I
-> export it so btf.c can have access to it, or can I delay the call to
-> mark_chain_precision() in verifier.c when I set
-> regs[BPF_REG_0].mem_size?
+Am 31.08.22 um 12:35 schrieb yf.wang@mediatek.com:
+> Hi Daniel Vetter,
 >
+> The patch https://patchwork.freedesktop.org/patch/414455/:
+> "dma-buf: Add debug option" from Jan. 15, 2021, leads to the following expection:
+>
+> Backtrace:
+>
+> [<ffffffc0081a2258>] atomic_notifier_call_chain+0x9c/0xe8
+> [<ffffffc0081a2d54>] notify_die+0x114/0x19c
+> [<ffffffc0080348d8>] __die+0xec/0x468
+> [<ffffffc008034648>] die+0x54/0x1f8
+> [<ffffffc0080631e8>] die_kernel_fault+0x80/0xbc
+> [<ffffffc0080630fc>] __do_kernel_fault+0x268/0x2d4
+> [<ffffffc008062c4c>] do_bad_area+0x68/0x148
+> [<ffffffc00a6dab34>] do_translation_fault+0xbc/0x108
+> [<ffffffc0080619f8>] do_mem_abort+0x6c/0x1e8
+> [<ffffffc00a68f5cc>] el1_abort+0x3c/0x64
+> [<ffffffc00a68f54c>] el1h_64_sync_handler+0x5c/0xa0
+> [<ffffffc008011ae4>] el1h_64_sync+0x78/0x80
+> [<ffffffc008063b9c>] dcache_inval_poc+0x40/0x58
+> [<ffffffc009236104>] iommu_dma_sync_sg_for_cpu+0x144/0x280
+> [<ffffffc0082b4870>] dma_sync_sg_for_cpu+0xbc/0x110
+> [<ffffffc002c7538c>] system_heap_dma_buf_begin_cpu_access+0x144/0x1e0 [system_heap]
+> [<ffffffc0094154e4>] dma_buf_begin_cpu_access+0xa4/0x10c
+> [<ffffffc004888df4>] isp71_allocate_working_buffer+0x3b0/0xe8c [mtk_hcp]
+> [<ffffffc004884a20>] mtk_hcp_allocate_working_buffer+0xc0/0x108 [mtk_hcp]
+>
+> Because of CONFIG_DMABUF_DEBUG will default enable when DMA_API_DEBUG enable,
+> and when not support dma coherent, since the main function of user calling
+> dma_buf_begin_cpu_access and dma_buf_end_cpu_access is to do cache sync during
+> dma_buf_map_attachment and dma_buf_unmap_attachment, which get PA error from
+> sgtable by sg_phys(sg), this leads to the expection.
+>
+> 1.dma_buf_map_attachement()
+>   -.> mangle_sg_table(sg)  // "sg->page_link ^= ~0xffUL" to rotate PA in this patch.
+>
+> 2.dma_buf_begin_cpu_access()
+>   -.> system_heap_dma_buf_begin_cpu_access() in system_heap.c  // do cache sync if mapped attachment before
+>      -.> iommu_dma_sync_sg_for_cpu() in dma-iommu.c
+>          -.>  arch_sync_dma_for_device(sg_phys(sg), sg->length, dir) // get PA error since PA mix up
+>
+> 3.dma_buf_end_cpu_access() and dma_buf_begin_cpu_access are similar.
+>
+> 4.dma_buf_unmap_attachement()
+>         -.> mangle_sg_table(sg) // "sg->page_link ^= ~0xffUL" to rotate PA
+>
+>
+>
+> drivers/dma-buf/Kconfig:
+> config DMABUF_DEBUG
+> 	bool "DMA-BUF debug checks"
+> 	default y if DMA_API_DEBUG
+>
+>
+> drivers/dma-buf/dma-buf.c:
+> static void mangle_sg_table(struct sg_table *sg_table)
+> {
+> #ifdef CONFIG_DMABUF_DEBUG
+> 	int i;
+> 	struct scatterlist *sg;
+>
+> 	/* To catch abuse of the underlying struct page by importers mix
+> 	 * up the bits, but take care to preserve the low SG_ bits to
+> 	 * not corrupt the sgt. The mixing is undone in __unmap_dma_buf
+> 	 * before passing the sgt back to the exporter. */
+> 	for_each_sgtable_sg(sg_table, sg, i)
+> 		sg->page_link ^= ~0xffUL;
+> #endif
+> }
+>
+>
+> drivers/iommu/dma-iommu.c:
+> static void iommu_dma_sync_sg_for_cpu(struct device *dev,
+> 		struct scatterlist *sgl, int nelems,
+> 		enum dma_data_direction dir)
+> {
+> 	struct scatterlist *sg;
+> 	int i;
+>
+> 	if (dev_is_dma_coherent(dev) && !dev_is_untrusted(dev))
+> 		return;
+>
+> 	for_each_sg(sgl, sg, nelems, i) {
+> 		if (!dev_is_dma_coherent(dev))
+> 			arch_sync_dma_for_cpu(sg_phys(sg), sg->length, dir);
+>
+> 		if (is_swiotlb_buffer(sg_phys(sg)))
+> 			swiotlb_tbl_sync_single(dev, sg_phys(sg), sg->length,
+> 						dir, SYNC_FOR_CPU);
+> 	}
+> }
+>
+>
+> Thanks,
+> Yunfei.
 
-Yes, but then you have to remember the regno you have to call it for.
-So it might be easier to just make it non-static and call in btf.c.
-
->
-> >
-> > > +                               }
-> > > +                       }
-> > > +
-> > >                         if (reg->type == SCALAR_VALUE)
-> > >                                 continue;
-> > >                         bpf_log(log, "R%d is not a scalar\n", regno);
-> > > @@ -6255,6 +6309,19 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
-> > >                 if (ret < 0)
-> > >                         return ret;
-> > >
-> > > +               if (is_kfunc && reg->type == PTR_TO_BTF_ID) {
-> >
-> > I think you can drop this extra check 'reg->type == PTR_TO_BTF_ID),
-> > this condition of only one ref_obj_id should hold regardless of the
-> > type.
->
-> Ack.
->
-> Cheers,
-> Benjamin
->
-> >
-> > > [...]
-> >
->
