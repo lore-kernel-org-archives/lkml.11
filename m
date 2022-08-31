@@ -2,132 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02057ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 11:12:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B23FBECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 11:13:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230386AbiHaLM2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 07:12:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51736 "EHLO
+        id S230455AbiHaLNA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 07:13:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230313AbiHaLM0 (ORCPT
+        with ESMTP id S229449AbiHaLM5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 07:12:26 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FE8CD0235;
-        Wed, 31 Aug 2022 04:12:25 -0700 (PDT)
-Received: from fraeml709-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MHhMV0yCZz67xg5;
-        Wed, 31 Aug 2022 19:11:50 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- fraeml709-chm.china.huawei.com (10.206.15.37) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 31 Aug 2022 13:12:23 +0200
-Received: from localhost (10.202.226.42) by lhrpeml500005.china.huawei.com
- (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 31 Aug
- 2022 12:12:23 +0100
-Date:   Wed, 31 Aug 2022 12:12:22 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To:     Robert Richter <rrichter@amd.com>
-CC:     Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Ben Widawsky <bwidawsk@kernel.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        <linux-cxl@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>
-Subject: Re: [PATCH 08/15] cxl/acpi: Check RCH's CXL DVSEC capabilities
-Message-ID: <20220831121222.00000977@huawei.com>
-In-Reply-To: <20220831115224.00003afd@huawei.com>
-References: <20220831081603.3415-1-rrichter@amd.com>
-        <20220831081603.3415-9-rrichter@amd.com>
-        <20220831115224.00003afd@huawei.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        Wed, 31 Aug 2022 07:12:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D7B0CEB34
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 04:12:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661944375;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=USB8h2BMQ0I24TO04KeG3lsFoMe632Y1I1xHU109ulU=;
+        b=Is+2FgW26NqjN67OmnLksd2BlKIHqf7cgOE4KFxc695myGjktavLbNrb0QoBFM5GakyPdu
+        E45sGUv+EOViXgeDuAVvUk9xtgUfpvBVLd29KSvGE0zPz/m6mSn+JJxxPIzKMfroCcBmIA
+        riJj5xPJwKAHfO5KfNKv3UbgDv2KP34=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-622-LVLC7euSNaebfBAg9G8_ag-1; Wed, 31 Aug 2022 07:12:54 -0400
+X-MC-Unique: LVLC7euSNaebfBAg9G8_ag-1
+Received: by mail-wm1-f69.google.com with SMTP id 203-20020a1c02d4000000b003a5f5bce876so11567901wmc.2
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 04:12:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=USB8h2BMQ0I24TO04KeG3lsFoMe632Y1I1xHU109ulU=;
+        b=wXLGgfRe3MaU+9RJn7IEkELTm/fMHa6E2ExAB9odlMFYQy10YalyQ8yYs9egoig6QE
+         iSS1peR2W5BripNLmF4A0SXUQsrKOfaZpjNsCBFFGIVDMgqe//4YZH9GBvEMz2BFDQ8G
+         5WQTk7m/mJ0mvTz/GLuJE+P1XDUWislqkckbqQ+TxfZTKqLpcl2fX9oXvqo02W3Wz1yk
+         S4WhoAYiqH4LQJSEpTojOtx1PCxRPHnySYaw4984mP3DF+aDObYsdWa+oxdTIWAbk86V
+         kUQ9OV/IRrePX4aRMwIBQf37vSRzFlYcbZgmpKyoKrXZSXNmWZP8gAaXnvhBMw4HU4W3
+         GENw==
+X-Gm-Message-State: ACgBeo3TBhHOy/bhET1FaRy4hSJGgiYeHNy6FlmE+TZHHz7wHNt7Nqgj
+        zK7t7lhZrJpwXep+3qkmLbDP4mzKeY4t+s/MrqCWT4bQZyIryUSCxsjd7ZLtCZXcPa07xhX+2HE
+        x/gw6opdw5PnGVkIVrCWGWF3Ywfbh2g7DL6UlJsTQXyTpuA6nHQqHrtMIiadr0zSELCYE1DwXmx
+        k=
+X-Received: by 2002:a05:6000:1e18:b0:226:e095:a98c with SMTP id bj24-20020a0560001e1800b00226e095a98cmr5123175wrb.235.1661944372492;
+        Wed, 31 Aug 2022 04:12:52 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7MLzM43BMadh9MDmVHhKCnDr9/uiKXZwJnIT9SD0vG1W6oIuYqjfK3qOR+cK45WBdZ15aCwg==
+X-Received: by 2002:a05:6000:1e18:b0:226:e095:a98c with SMTP id bj24-20020a0560001e1800b00226e095a98cmr5123155wrb.235.1661944372208;
+        Wed, 31 Aug 2022 04:12:52 -0700 (PDT)
+Received: from minerva.home (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id ay19-20020a05600c1e1300b003a682354f63sm2054876wmb.11.2022.08.31.04.12.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Aug 2022 04:12:51 -0700 (PDT)
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Javier Martinez Canillas <javierm@redhat.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH] drm/simpledrm: Drop superfluous primary plane .atomic_check return logic
+Date:   Wed, 31 Aug 2022 13:12:43 +0200
+Message-Id: <20220831111243.1530620-1-javierm@redhat.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.42]
-X-ClientProxiedBy: lhrpeml100001.china.huawei.com (7.191.160.183) To
- lhrpeml500005.china.huawei.com (7.191.163.240)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 31 Aug 2022 11:52:24 +0100
-Jonathan Cameron <Jonathan.Cameron@huawei.com> wrote:
+The simpledrm_primary_plane_helper_atomic_check() function is more complex
+than needed. It first checks drm_atomic_helper_check_plane_state() returns
+value to decide whether to return this or zero.
 
-> On Wed, 31 Aug 2022 10:15:56 +0200
-> Robert Richter <rrichter@amd.com> wrote:
-> 
-> > An RCH has an RCiEP connected to it with CXL DVSEC capabilities
-> > present and the CXL PCIe DVSEC included. Check this.
-> > 
-> > Signed-off-by: Robert Richter <rrichter@amd.com>  
-> One comment inline. This looks good to me.
-> 
-> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
-> > ---
-> >  drivers/cxl/acpi.c | 17 +++++++++++++++++
-> >  1 file changed, 17 insertions(+)
-> > 
-> > diff --git a/drivers/cxl/acpi.c b/drivers/cxl/acpi.c
-> > index ffdf439adb87..f9cdf23a91a8 100644
-> > --- a/drivers/cxl/acpi.c
-> > +++ b/drivers/cxl/acpi.c
-> > @@ -322,6 +322,8 @@ struct pci_host_bridge *cxl_find_next_rch(struct pci_host_bridge *host)
-> >  {
-> >  	struct pci_bus *bus = host ? host->bus : NULL;
-> >  	struct acpi_device *adev;
-> > +	struct pci_dev *pdev;
-> > +	bool is_restricted_host;
-> >  
-> >  	while ((bus = pci_find_next_bus(bus)) != NULL) {
-> >  		host = bus ? to_pci_host_bridge(bus->bridge) : NULL;
-> > @@ -343,6 +345,20 @@ struct pci_host_bridge *cxl_find_next_rch(struct pci_host_bridge *host)
-> >  		dev_dbg(&host->dev, "PCI ACPI host found: %s\n",
-> >  			acpi_dev_name(adev));
-> >  
-> > +		/* Check CXL DVSEC of dev 0 func 0 */  
-> 
-> So assumption here is that the hostbridge has a one or more RCiEPs.
-> The spec (r3.0 9.11.4) allows for the EP to appear behind a root port
-> - that case always felt odd to me, so I'm fine with not supporting it until
-> we see a user.
-> 
-> > +		pdev = pci_get_slot(bus, PCI_DEVFN(0, 0));
-> > +		is_restricted_host = pdev
-> > +			&& (pci_pcie_type(pdev) == PCI_EXP_TYPE_RC_END)
-> > +			&& pci_find_dvsec_capability(pdev,
-> > +						PCI_DVSEC_VENDOR_ID_CXL,
-> > +						CXL_DVSEC_PCIE_DEVICE);
+But it could just return that function return value directly. It also does
+a check if new_plane_state->visible isn't set, but returns zero regardless.
 
-Thinking a bit more on this.  I'm not sure this is sufficient.
-Nothing in CXL 2.0 or later prevents true RCiEP devices (there are a
-few references in CXL 3.0 e.g. 9.12.1 has RCDs or CXL RCiEPs - so just
-detecting that there is one on the host bridge might not be sufficient
-to distinguish this from a non RCH / RCB.
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+---
 
-> > +		pci_dev_put(pdev);
-> > +
-> > +		if (!is_restricted_host)
-> > +			continue;
-> > +
-> > +		dev_dbg(&host->dev, "CXL restricted host found\n");
-> > +
-> >  		return host;
-> >  	}
-> >  
-> > @@ -354,6 +370,7 @@ static int __init cxl_restricted_host_probe(struct platform_device *pdev)
-> >  	struct pci_host_bridge *host = NULL;
-> >  
-> >  	while ((host = cxl_find_next_rch(host)) != NULL) {
-> > +		dev_info(&host->dev, "host supports CXL\n");
-> >  	}
-> >  
-> >  	return 0;  
-> 
+ drivers/gpu/drm/tiny/simpledrm.c | 15 ++++-----------
+ 1 file changed, 4 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/gpu/drm/tiny/simpledrm.c b/drivers/gpu/drm/tiny/simpledrm.c
+index a81f91814595..0be47f40247a 100644
+--- a/drivers/gpu/drm/tiny/simpledrm.c
++++ b/drivers/gpu/drm/tiny/simpledrm.c
+@@ -485,21 +485,14 @@ static int simpledrm_primary_plane_helper_atomic_check(struct drm_plane *plane,
+ 	struct drm_plane_state *new_plane_state = drm_atomic_get_new_plane_state(new_state, plane);
+ 	struct drm_crtc *new_crtc = new_plane_state->crtc;
+ 	struct drm_crtc_state *new_crtc_state = NULL;
+-	int ret;
+ 
+ 	if (new_crtc)
+ 		new_crtc_state = drm_atomic_get_new_crtc_state(new_state, new_crtc);
+ 
+-	ret = drm_atomic_helper_check_plane_state(new_plane_state, new_crtc_state,
+-						  DRM_PLANE_NO_SCALING,
+-						  DRM_PLANE_NO_SCALING,
+-						  false, false);
+-	if (ret)
+-		return ret;
+-	else if (!new_plane_state->visible)
+-		return 0;
+-
+-	return 0;
++	return drm_atomic_helper_check_plane_state(new_plane_state, new_crtc_state,
++						   DRM_PLANE_NO_SCALING,
++						   DRM_PLANE_NO_SCALING,
++						   false, false);
+ }
+ 
+ static void simpledrm_primary_plane_helper_atomic_update(struct drm_plane *plane,
+-- 
+2.37.1
 
