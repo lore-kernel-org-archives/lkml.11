@@ -2,91 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E4C4ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:01:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7D0BC0502C
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:03:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231249AbiHaKBI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 06:01:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49998 "EHLO
+        id S230399AbiHaKDE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 06:03:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230498AbiHaKAh (ORCPT
+        with ESMTP id S229913AbiHaKDA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 06:00:37 -0400
-Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E1F9A50F1
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 03:00:32 -0700 (PDT)
-Received: by mail-il1-x129.google.com with SMTP id s11so3608148iln.12
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 03:00:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=btMbTIPSX5dbCacGerCyAxqDIoBmYrvBMjvjrYIGNig=;
-        b=WYM3XeLVMXVxeaZOoVzvPbeAuSlTMMHkX0Y2eZD1K4/ThGlZ6+Eg/Bv6VJyoDJlB+u
-         W9LgBtDjWINhH+2OYh6n1/A5BSQmHGsWXMj8XqAhtn+krL7C++jj6y+j+FmlTs31utN0
-         k9tC2ICHRKzAD6KXirg6CojpcPygW6KLNOetc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=btMbTIPSX5dbCacGerCyAxqDIoBmYrvBMjvjrYIGNig=;
-        b=VSBOWDGyFeE+D7w4dE+XMIsEQcTIg3HYTfI2fJgUa5q11+rLYy6n3l0j/CzSg3WQbi
-         7PD0nXxoqjWS1g+j8AW3OxpuGy//Mio0l0VAz+76VTaOFFrllFfqAdjHq4cpf2AA8iyq
-         kRzKXahGdJVCMH5w8LyakLy4ov24SEWFs9tJQP9in/AuGEIuh21ALJ8uKNfYT1lpwx4s
-         p3WdQ30ORE5F2E+Iue7crPzDJX8/y5D3iltFIj0UwhV9GpYWwzkgveTk2b3Yp+Vq4+61
-         coZKkIiX0wC2JgYHbA2QzQmZUV37lSYM77/w2pSyKBwlGvUwoD6io1lxQqszNao6Ti4m
-         Q8oQ==
-X-Gm-Message-State: ACgBeo2ZH9NlHQpKXrBx7GBNJ37RWoBnrXPnhN7eax4amffGJpF+dAgN
-        DQNPVxUgNt8sBp8+KD7v9LMWT7pTX84O8T8d5HI53Q==
-X-Google-Smtp-Source: AA6agR7Ykym679T8iG+4ASbb+ENC/8XjLuzKLFnYo9eL16xdbnKf1MwaRtCyWd2Kj1UhmxqnIYOvsKqLHnQSC+/aFFU=
-X-Received: by 2002:a92:cd0d:0:b0:2eb:e4a:2d4a with SMTP id
- z13-20020a92cd0d000000b002eb0e4a2d4amr6517370iln.309.1661940031852; Wed, 31
- Aug 2022 03:00:31 -0700 (PDT)
+        Wed, 31 Aug 2022 06:03:00 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15824BD1FF;
+        Wed, 31 Aug 2022 03:03:00 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 60E182226F;
+        Wed, 31 Aug 2022 10:02:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1661940178; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UghZOtEbbNtkuyHw6OG+q34Eguh17rpI6TW2xy+k26s=;
+        b=PRBKEeRroKw9uKicRWHW+510+yPrLqUkpbnRk+7WMXhWuFKJOM0BT+MpyEO2iwAv8hytIA
+        btsLNyDayNr7GOZofmiVg24uPISDfKOix86GB2r26KRZAxV3CAmeg/EZgjlKPFALHLF+rj
+        W6qDhGUMZIbq1FBe7+V0SXRtsy5jHbc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1661940178;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UghZOtEbbNtkuyHw6OG+q34Eguh17rpI6TW2xy+k26s=;
+        b=Fsjsh2O/oToKVq/H89joyhrl1vB+8BTBfApNgEKpxECOhMpD8okC2XulgoKvPMmysJjbXj
+        bGEzv3xuk/Jor7Bg==
+Received: from suse.de (unknown [10.163.43.106])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id C064A2C142;
+        Wed, 31 Aug 2022 10:02:50 +0000 (UTC)
+Date:   Wed, 31 Aug 2022 11:02:49 +0100
+From:   Mel Gorman <mgorman@suse.de>
+To:     Suren Baghdasaryan <surenb@google.com>
+Cc:     akpm@linux-foundation.org, kent.overstreet@linux.dev,
+        mhocko@suse.com, vbabka@suse.cz, hannes@cmpxchg.org,
+        roman.gushchin@linux.dev, dave@stgolabs.net, willy@infradead.org,
+        liam.howlett@oracle.com, void@manifault.com, peterz@infradead.org,
+        juri.lelli@redhat.com, ldufour@linux.ibm.com, peterx@redhat.com,
+        david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org,
+        masahiroy@kernel.org, nathan@kernel.org, changbin.du@intel.com,
+        ytcoode@gmail.com, vincent.guittot@linaro.org,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+        bristot@redhat.com, vschneid@redhat.com, cl@linux.com,
+        penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com,
+        glider@google.com, elver@google.com, dvyukov@google.com,
+        shakeelb@google.com, songmuchun@bytedance.com, arnd@arndb.de,
+        jbaron@akamai.com, rientjes@google.com, minchan@google.com,
+        kaleshsingh@google.com, kernel-team@android.com,
+        linux-mm@kvack.org, iommu@lists.linux.dev,
+        kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
+        linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
+        linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 03/30] Lazy percpu counters
+Message-ID: <20220831100249.f2o27ri7ho4ma3pe@suse.de>
+References: <20220830214919.53220-1-surenb@google.com>
+ <20220830214919.53220-4-surenb@google.com>
 MIME-Version: 1.0
-References: <20220729165954.991-1-ignat@cloudflare.com> <Yv9dvvy0rK/1T0sU@gondor.apana.org.au>
- <CALrw=nEh7LX3DSCa3FTu8BYr4QWx+W2h3Jei9Qo67+XXH-Vegw@mail.gmail.com>
- <Yw3Rneo6Ik1QEfbG@gondor.apana.org.au> <CALrw=nGJgMACrFVy+FVVCDb4H3wNUN2E-GLZaXzLsm3ReOUeVg@mail.gmail.com>
- <Yw8iTNjGlsP1LpNG@gondor.apana.org.au>
-In-Reply-To: <Yw8iTNjGlsP1LpNG@gondor.apana.org.au>
-From:   Ignat Korchagin <ignat@cloudflare.com>
-Date:   Wed, 31 Aug 2022 11:00:21 +0100
-Message-ID: <CALrw=nECpsJA-Q1ze2-ErQN37hMeWYbyfrWpmzUpsFCq=6R7Ew@mail.gmail.com>
-Subject: Re: [PATCH] crypto: akcipher - default implementations for setting
- private/public keys
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        linux-crypto <linux-crypto@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+In-Reply-To: <20220830214919.53220-4-surenb@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 9:56 AM Herbert Xu <herbert@gondor.apana.org.au> wrote:
->
-> On Tue, Aug 30, 2022 at 11:48:23AM +0100, Ignat Korchagin wrote:
-> >
-> > I vaguely remember some initial research in quantum-resistant
-> > signatures, which used HMAC for "signing" thus don't have any public
-> > keys. But it is way beyond my expertise to comment on the practicality
-> > and availability of such schemes.
->
-> We could always add this again should an algorithm requiring
-> it be introduced.
->
-> > I'm more concerned here about a buggy "third-party" RSA driver, which
-> > may not implement the callback and which gets prioritised by the
-> > framework, thus giving the ability to trigger a NULL-ptr dereference
-> > from userspace via keyctl(2). I think the Crypto API framework should
-> > be a bit more robust to handle such a case, but I also understand that
-> > there are a lot of "if"s in this scenario and we can say it is up to
-> > crypto driver not to be buggy. Therefore, consider my opinion as not
-> > strong and I can post a v2, which does not provide a default stub for
-> > set_pub_key, if you prefer.
->
-> If you're concerned with buggy algorithms/drivers, we should
-> ensure that the self-tests catch this.
+On Tue, Aug 30, 2022 at 02:48:52PM -0700, Suren Baghdasaryan wrote:
+> From: Kent Overstreet <kent.overstreet@linux.dev>
+> 
+> This patch adds lib/lazy-percpu-counter.c, which implements counters
+> that start out as atomics, but lazily switch to percpu mode if the
+> update rate crosses some threshold (arbitrarily set at 256 per second).
+> 
+> Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
 
-So it does currently, because I caught it via testmgr. Will send a v2
-without a default set_pub_key.
+Why not use percpu_counter? It has a per-cpu counter that is synchronised
+when a batch threshold (default 32) is exceeded and can explicitly sync
+the counters when required assuming the synchronised count is only needed
+when reading debugfs.
+
+-- 
+Mel Gorman
+SUSE Labs
