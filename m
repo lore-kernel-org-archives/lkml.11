@@ -2,157 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11A29ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 02:44:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A337ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 02:45:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231477AbiHaCow (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 22:44:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39642 "EHLO
+        id S231978AbiHaCpI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 22:45:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230188AbiHaCot (ORCPT
+        with ESMTP id S231990AbiHaCpB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 22:44:49 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 650FA193
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 19:44:46 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id 199so13094906pfz.2
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 19:44:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=fiOKZnNdxmLYNBXMmqi3GFFdRwsFMJMRCNCo8og41hE=;
-        b=E5sLVuRg4Ke/M/hekHh6NqNyJoXPQnXvAE9dm9Xl+Tp72T4sV2Fq0HVFKUzlJRRmwe
-         6nxBecHlXvyNVbcGal2R33DWmh7Z2usuupIFftXcPjvQtqIvWRH/0ZTqWF7NryJOaBvs
-         zMmpyWa2GCI7qvVqNtYwueh4zIz6HzleTiSD0Q30O/aV7WmNyQ+JJnpUlc9IybGycBC3
-         EleuV082Hr32YeAju4zzyFgcsGrGlvl2zFr1csLdOc+l0euoxmIoNH+C0FFBGkB3CNOX
-         XPDzWse6gM0S9L6dt+Z6UAq4Pe/fEP/Zynan0zAps7SfbnFaoTqsVww7tbvw2xl2njzD
-         HY8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=fiOKZnNdxmLYNBXMmqi3GFFdRwsFMJMRCNCo8og41hE=;
-        b=DErEX/6jEGhXHaJzYTLSSUvqWi4OfvLNCyd4LocP57VKllFxVpPalrWtbo3w/nUPUa
-         w7u9YvaoEmzEtUlHnZgV6xAQCA0TL4VoC71AwTi2jJe3oeS4/8t0na2utZfRgUHcy8dZ
-         QucuH6WNUKawevy1nqFREiUaUhlAWDe/ysyAcTdbef6PR8MIrRKiVde3TrE18WnmYVEN
-         D5f4SQiI/YwX+uRMrhSBNJLcxtG7OfM1fjt90rq/wth52I/3QM/DYnD9LwsMIKg9d5GQ
-         Gbg6SZyrA9x8J71I3E9MLaMi3Z7Tt1BDFYAZBX6Knf+vtagmcH2BQ6+omSy7hjEFo2u3
-         hmew==
-X-Gm-Message-State: ACgBeo2D4LWYaJXYL8lJ2EEznVPdQSlNdYq3QDf38EohlL2SSb+Hnw3N
-        WapmShlIJD06pdQBfgKyLuY=
-X-Google-Smtp-Source: AA6agR6uw20aC5DxdaKyiK6ooFu7KbSn4emVYsN+t7F4FHXZDhXDAmVmzBwHDJQ8haxCTDGes/aTGg==
-X-Received: by 2002:a05:6a00:804:b0:52f:43f9:b634 with SMTP id m4-20020a056a00080400b0052f43f9b634mr24307126pfk.62.1661913885905;
-        Tue, 30 Aug 2022 19:44:45 -0700 (PDT)
-Received: from localhost ([36.112.86.8])
-        by smtp.gmail.com with ESMTPSA id c73-20020a621c4c000000b00536779d43e7sm9997205pfc.201.2022.08.30.19.44.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 19:44:45 -0700 (PDT)
-From:   Hawkins Jiawei <yin31149@gmail.com>
-To:     syzbot+5f8dcabe4a3b2c51c607@syzkaller.appspotmail.com,
-        Anton Altaparmakov <anton@tuxera.com>
-Cc:     akpm@linux-foundation.org, chenxiaosong2@huawei.com,
-        linux-kernel@vger.kernel.org, linux-ntfs-dev@lists.sourceforge.net,
-        syzkaller-bugs@googlegroups.com, yin31149@gmail.com,
-        18801353760@163.com
-Subject: [PATCH 1/3] ntfs: fix use-after-free in ntfs_attr_find()
-Date:   Wed, 31 Aug 2022 10:43:34 +0800
-Message-Id: <44b15fb54dbc5b5d8c8726e957d494d38538789e.1661875711.git.yin31149@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1661875711.git.yin31149@gmail.com>
-References: <cover.1661875711.git.yin31149@gmail.com>
+        Tue, 30 Aug 2022 22:45:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1FF418356;
+        Tue, 30 Aug 2022 19:44:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FB026192E;
+        Wed, 31 Aug 2022 02:44:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C52EC433C1;
+        Wed, 31 Aug 2022 02:44:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661913897;
+        bh=7akbOTuRrQCIYuRF795lZFUhzM12WJ++N4hz4TsdqRY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=imqGM4z4RM0CDiFVkP9CAajSeG7O3pvtiLwE4XSBPpDjhIYllmNoQuy8sFUFh/z6e
+         6hdhmRVf2HP3twPL5fM4yKcQ/D5YkH/FnB4XnvOiaZU4jAYrIq4CIF/lG1hEjUsD7d
+         E08h8+p+/KZnsCciLi27IY3ioGruBuY519ccNFPq7krSDFzvPhEO7QTAFVF7HcihWv
+         XazRWtMJ9Oa9aTnMnJW9jWsvCpsHwQCl4qOIKR+VhlpxA00z7G5WX0+sCMoQ8hnJ7U
+         t4ZCORE7ow2YF9HCwcjiMiFS+mdojBxe4QA1RjwBGlsnfnMpixHDBOUSRtOLNHR5s9
+         2rcHplJiRBdpg==
+Date:   Wed, 31 Aug 2022 05:44:53 +0300
+From:   "jarkko@kernel.org" <jarkko@kernel.org>
+To:     "Huang, Kai" <kai.huang@intel.com>
+Cc:     "pmenzel@molgen.mpg.de" <pmenzel@molgen.mpg.de>,
+        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "Dhanraj, Vijay" <vijay.dhanraj@intel.com>,
+        "Chatre, Reinette" <reinette.chatre@intel.com>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "haitao.huang@linux.intel.com" <haitao.huang@linux.intel.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/6] x86/sgx: Do not consider unsanitized pages an error
+Message-ID: <Yw7LJa7eRG+WZ0wv@kernel.org>
+References: <20220830031206.13449-1-jarkko@kernel.org>
+ <20220830031206.13449-2-jarkko@kernel.org>
+ <1f43e7b9-c101-3872-bd1b-add66933b285@intel.com>
+ <1b3308a364317d36ad41961ea9cfee24aa122f02.camel@intel.com>
+ <Yw7EX5GCrEaLzpHV@kernel.org>
+ <d07577c3f0b4b3fff0ce470c56f91fb634653703.camel@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d07577c3f0b4b3fff0ce470c56f91fb634653703.camel@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Syzkaller reported use-after-free read as follows:
-==================================================================
-BUG: KASAN: use-after-free in ntfs_attr_find+0xc02/0xce0 fs/ntfs/attrib.c:597
-Read of size 2 at addr ffff88807e352009 by task syz-executor153/3607
+On Wed, Aug 31, 2022 at 02:35:53AM +0000, Huang, Kai wrote:
+> On Wed, 2022-08-31 at 05:15 +0300, jarkko@kernel.org wrote:
+> > On Wed, Aug 31, 2022 at 01:27:58AM +0000, Huang, Kai wrote:
+> > > On Tue, 2022-08-30 at 15:54 -0700, Reinette Chatre wrote:
+> > > > Hi Jarkko,
+> > > > 
+> > > > On 8/29/2022 8:12 PM, Jarkko Sakkinen wrote:
+> > > > > In sgx_init(), if misc_register() for the provision device fails, and
+> > > > > neither sgx_drv_init() nor sgx_vepc_init() succeeds, then ksgxd will be
+> > > > > prematurely stopped.
+> > > > 
+> > > > I do not think misc_register() is required to fail for the scenario to
+> > > > be triggered (rather use "or" than "and"?). Perhaps just
+> > > > "In sgx_init(), if a failure is encountered after ksgxd is started
+> > > > (via sgx_page_reclaimer_init()) ...".
+> > > 
+> > > IMHO "a failure" might be too vague.  For instance, failure to sgx_drv_init()
+> > > won't immediately result in ksgxd to stop prematurally.  As long as KVM SGX can
+> > > be initialized successfully, sgx_init() still returns 0.
+> > > 
+> > > Btw I was thinking whether we should move sgx_page_reclaimer_init() to the end
+> > > of sgx_init(), after we make sure at least one of the driver and the KVM SGX is
+> > > initialized successfully.  Then the code change in this patch won't be necessary
+> > > if I understand correctly.  AFAICT there's no good reason to start the ksgxd at
+> > > early stage before we are sure either the driver or KVM SGX will work.
+> > 
+> > I would focus fixing the existing flow rather than reinventing the flow.
+> > 
+> > It can be made to work, and therefore it is IMHO correct action to take.
+> 
+> From another perspective, the *existing flow* is the reason which causes this
+> bug.  A real fix is to fix the flow itself.
 
-[...]
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description mm/kasan/report.c:317 [inline]
- print_report.cold+0x2ba/0x719 mm/kasan/report.c:433
- kasan_report+0xb1/0x1e0 mm/kasan/report.c:495
- ntfs_attr_find+0xc02/0xce0 fs/ntfs/attrib.c:597
- ntfs_attr_lookup+0x1056/0x2070 fs/ntfs/attrib.c:1193
- ntfs_read_inode_mount+0x89a/0x2580 fs/ntfs/inode.c:1845
- ntfs_fill_super+0x1799/0x9320 fs/ntfs/super.c:2854
- mount_bdev+0x34d/0x410 fs/super.c:1400
- legacy_get_tree+0x105/0x220 fs/fs_context.c:610
- vfs_get_tree+0x89/0x2f0 fs/super.c:1530
- do_new_mount fs/namespace.c:3040 [inline]
- path_mount+0x1326/0x1e20 fs/namespace.c:3370
- do_mount fs/namespace.c:3383 [inline]
- __do_sys_mount fs/namespace.c:3591 [inline]
- __se_sys_mount fs/namespace.c:3568 [inline]
- __x64_sys_mount+0x27f/0x300 fs/namespace.c:3568
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
- [...]
- </TASK>
+Any existing flow in part of the kernel can have a bug. That
+does not mean that switching flow would be proper way to fix
+a bug.
 
-The buggy address belongs to the physical page:
-page:ffffea0001f8d400 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x7e350
-head:ffffea0001f8d400 order:3 compound_mapcount:0 compound_pincount:0
-flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
-raw: 00fff00000010200 0000000000000000 dead000000000122 ffff888011842140
-raw: 0000000000000000 0000000000040004 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-Memory state around the buggy address:
- ffff88807e351f00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff88807e351f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->ffff88807e352000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                      ^
- ffff88807e352080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff88807e352100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
-
-Kernel will loads $MFT/$DATA's first mft record in
-ntfs_read_inode_mount().
-
-Yet the problem is that after loading, kernel doesn't check whether
-attrs_offset field is a valid value.
-
-To be more specific, if attrs_offset field is larger
-than bytes_allocated field, then it may trigger the out-of-bounds read
-bug(reported as use-after-free bug) in ntfs_attr_find(), when kernel
-tries to access the corresponding mft record's attribute.
-
-This patch solves it by adding the sanity check between attrs_offset
-field and bytes_allocated field, after loading the first mft record.
-
-Reported-and-tested-by: syzbot+5f8dcabe4a3b2c51c607@syzkaller.appspotmail.com
-Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
----
- fs/ntfs/inode.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/fs/ntfs/inode.c b/fs/ntfs/inode.c
-index db0f1995aedd..08c659332e26 100644
---- a/fs/ntfs/inode.c
-+++ b/fs/ntfs/inode.c
-@@ -1829,6 +1829,13 @@ int ntfs_read_inode_mount(struct inode *vi)
- 		goto err_out;
- 	}
- 
-+	/* Sanity check offset to the first attribute */
-+	if (le16_to_cpu(m->attrs_offset) >= le32_to_cpu(m->bytes_allocated)) {
-+		ntfs_error(sb, "Incorrect mft offset to the first attribute %u in superblock.",
-+			       le16_to_cpu(m->attrs_offset));
-+		goto err_out;
-+	}
-+
- 	/* Need this to sanity check attribute list references to $MFT. */
- 	vi->i_generation = ni->seq_no = le16_to_cpu(m->sequence_number);
- 
--- 
-2.25.1
-
+BR, Jarkko
