@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87915ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 00:37:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B3BCECAAA1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 00:37:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231774AbiHaAhG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 20:37:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47906 "EHLO
+        id S231878AbiHaAhJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 20:37:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231829AbiHaAgN (ORCPT
+        with ESMTP id S231873AbiHaAgs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 20:36:13 -0400
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E66A00D0
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:35:22 -0700 (PDT)
-Received: by mail-pl1-x64a.google.com with SMTP id p8-20020a170902e74800b0017307429ca3so8946029plf.17
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:35:22 -0700 (PDT)
+        Tue, 30 Aug 2022 20:36:48 -0400
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88640A8950
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:35:38 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id v202-20020a6361d3000000b004300a4a30dbso829565pgb.20
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:35:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:from:to:cc;
-        bh=Loe3MlTGcMk80vSZPHjHmMjavqy1PId/3gp5j3Ud0uU=;
-        b=B+TprnwR0pgPPbE76syVYpuZqhC1waR/eOXBEcoJkGVOWULQh6Z3lQadB1ByrLmS8r
-         OxnmBpGiT+g6/soGVFO18dm2EY7FONP7o6ts3u1yMAVXctVTCy/rXTNEWdihDYn5dTFM
-         v9LU3DTRxwQlQQqr7tKQAtF4L5HHUpbrUJr+WOdFUU6ZQaXIX9YNBZIdVhRvwRNvPWoi
-         N5DGrsUfQTJGitQYuDBOotavc1C1MqjBqiwFSt0j9tUhJn6IS5lrdhCnUFmv9hd/sltO
-         s4DZBu45EZx7NN4jTnSrlhJwP/DXyzPx1SWrxbjA2TZ9Q1tDp0nl5c1ZeXWaYWZxzAC/
-         1GDQ==
+        bh=0HXY0EEA1Ha5zVQSoYds7krJoiBKDZH41KEpFRGKQBk=;
+        b=tJJWk6gHdA3Q/3/ppn1buDVs74SZMkiSxm9h9DAGV4S3Ojwz0SYC89VGuOsrtzS4Oc
+         TAkzd0myieatN1aT5PFhwdSIN8hjqBrxtcL8Ct8Kk66vbmp3qi4Kk9q6AU8UlaMktG6m
+         vWal4FN12VXiLg+Kl8GGR8MMnh5KaZZFamxs+uYum7eQNlir8Y6rZxQDor6AQHSEhCny
+         3v5VvOJ1apVC4AA5eC8ZviJ9p0WzC/AlTdiUlTVS0a05I69UUew5sNcWBt/Hueu3x+1K
+         yNpnDcKTd3VlEbtLisO5TpzfssAdwvnwqRGOSLWnJ6y6n6c9ZdPsUWa+ZwhbslYgEPnA
+         GTxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:x-gm-message-state:from:to:cc;
-        bh=Loe3MlTGcMk80vSZPHjHmMjavqy1PId/3gp5j3Ud0uU=;
-        b=EqWQvVNkHq7R5sKucyfIpKHJeGDVhDMg1JaxWi1SyLrRsUXieAaP+WVWfEnCgK+cxv
-         ouawgBfN3gcTCArUN7ZlWFkqMYJrG9CXUd+Cq/WssNXoSj4IF2gZ/3KHRYap8Wo+ABq7
-         0rIEnniOTE4hkqFJXpe2ajWDnuXYp9lJJtRdODfByF5l7Z4nu3DmzpqlnK7SHFfj7n3n
-         ePt1bC1r0AG0Q/vri/Dz2RFo2pTkYIbEYclEw2ksglUADwlcaxx2RC9Y1W5gd4C4/qQN
-         qtbGWo3mJO1ADO6kcjt46F1gbqPYkwBB8Ez9LE7wh2oYSf37obgTgsgk1IAjpq7n9pD8
-         K+6A==
-X-Gm-Message-State: ACgBeo3yHN8XiHhHY4HD6bIXGugebgXYDs5bfkvt8s2YronLyTxjRIzr
-        Jv0GZnU5mqxjlEY/zIbhH19hKh6YUgU=
-X-Google-Smtp-Source: AA6agR5yKeNCnlQO1qCPyK52ww70HZJLlWgT1/q2p5pwB2YtIp3VwcOzeBTGE/6CVfenoQJvr0ZqRa21OmM=
+        bh=0HXY0EEA1Ha5zVQSoYds7krJoiBKDZH41KEpFRGKQBk=;
+        b=RyI0s8ekjVBlaBL4n3pVazO/uwes/RVOcLzmo8pA2Vekx7oFAQR8qEljUI9TBZygga
+         xApwzVuerrRgDDTNLvUnYul+pnPdBJKUQIa727ngoS4nui1HWysfenDyridmQnxAewox
+         hnAmcmuHldgUQ5WXRxy/KM37sVNa1sSpto8FE4/lB9+6mdw1+gyDiXXKzlJ27fXap32g
+         +nqQNvH4JL0xxmIO+dI2VOS/LIlscR/EvAgfBx0/qvG9WjD29P0E9he/5KPdr7p7y+7U
+         c8PbP4s3QMxpqS0zA96ZwmLrZ2dFu9NcvOJBiz2eVIryeIFamota8NxUSMXHr0YUYsOW
+         IYBw==
+X-Gm-Message-State: ACgBeo2fj5NUYhSOlWe5ncPMOUkTK0t9B98e1ijkB/uWav3wgsNphq23
+        ZEaPGHa7BBsRGP2iwaCXTemyFcG6H5E=
+X-Google-Smtp-Source: AA6agR5nPKcjBevp91WFt9YRwA6+l0+inVdDs1vL1ZnLIyKe5/LKdV7S/tmoziioGqnNYaClWetxEoFjK4g=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a17:90b:4c8d:b0:1f5:409b:b017 with SMTP id
- my13-20020a17090b4c8d00b001f5409bb017mr659921pjb.52.1661906110868; Tue, 30
- Aug 2022 17:35:10 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a63:445b:0:b0:42c:7b67:287e with SMTP id
+ t27-20020a63445b000000b0042c7b67287emr6195583pgk.166.1661906118100; Tue, 30
+ Aug 2022 17:35:18 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed, 31 Aug 2022 00:34:48 +0000
+Date:   Wed, 31 Aug 2022 00:34:52 +0000
 In-Reply-To: <20220831003506.4117148-1-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220831003506.4117148-1-seanjc@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220831003506.4117148-2-seanjc@google.com>
-Subject: [PATCH 01/19] KVM: SVM: Process ICR on AVIC IPI delivery failure due
- to invalid target
+Message-ID: <20220831003506.4117148-6-seanjc@google.com>
+Subject: [PATCH 05/19] KVM: SVM: Compute dest based on sender's x2APIC status
+ for AVIC kick
 From:   Sean Christopherson <seanjc@google.com>
 To:     Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
@@ -67,58 +67,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Emulate ICR writes on AVIC IPI failures due to invalid targets using the
-same logic as failures due to invalid types.  AVIC acceleration fails if
-_any_ of the targets are invalid, and crucially VM-Exits before sending
-IPIs to targets that _are_ valid.  In logical mode, the destination is a
-bitmap, i.e. a single IPI can target multiple logical IDs.  Doing nothing
-causes KVM to drop IPIs if at least one target is valid and at least one
-target is invalid.
+Compute the destination from ICRH using the sender's x2APIC status, not
+each (potential) target's x2APIC status.
 
-Fixes: 18f40c53e10f ("svm: Add VMEXIT handlers for AVIC")
-Cc: stable@vger.kernel.org
+Fixes: c514d3a348ac ("KVM: SVM: Update avic_kick_target_vcpus to support 32-bit APIC ID")
+Cc: Li RongQing <lirongqing@baidu.com>
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/svm/avic.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ arch/x86/kvm/svm/avic.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
 diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index 6919dee69f18..b1ade555e8d0 100644
+index b59f8ee2671f..3ace0f2f52f0 100644
 --- a/arch/x86/kvm/svm/avic.c
 +++ b/arch/x86/kvm/svm/avic.c
-@@ -496,14 +496,18 @@ int avic_incomplete_ipi_interception(struct kvm_vcpu *vcpu)
- 	trace_kvm_avic_incomplete_ipi(vcpu->vcpu_id, icrh, icrl, id, index);
+@@ -441,6 +441,7 @@ static int avic_kick_target_vcpus_fast(struct kvm *kvm, struct kvm_lapic *source
+ static void avic_kick_target_vcpus(struct kvm *kvm, struct kvm_lapic *source,
+ 				   u32 icrl, u32 icrh, u32 index)
+ {
++	u32 dest = apic_x2apic_mode(source) ? icrh : GET_XAPIC_DEST_FIELD(icrh);
+ 	unsigned long i;
+ 	struct kvm_vcpu *vcpu;
  
- 	switch (id) {
-+	case AVIC_IPI_FAILURE_INVALID_TARGET:
- 	case AVIC_IPI_FAILURE_INVALID_INT_TYPE:
- 		/*
- 		 * Emulate IPIs that are not handled by AVIC hardware, which
--		 * only virtualizes Fixed, Edge-Triggered INTRs.  The exit is
--		 * a trap, e.g. ICR holds the correct value and RIP has been
--		 * advanced, KVM is responsible only for emulating the IPI.
--		 * Sadly, hardware may sometimes leave the BUSY flag set, in
--		 * which case KVM needs to emulate the ICR write as well in
-+		 * only virtualizes Fixed, Edge-Triggered INTRs, and falls over
-+		 * if _any_ targets are invalid, e.g. if the logical mode mask
-+		 * is a superset of running vCPUs.
-+		 *
-+		 * The exit is a trap, e.g. ICR holds the correct value and RIP
-+		 * has been advanced, KVM is responsible only for emulating the
-+		 * IPI.  Sadly, hardware may sometimes leave the BUSY flag set,
-+		 * in which case KVM needs to emulate the ICR write as well in
- 		 * order to clear the BUSY flag.
- 		 */
- 		if (icrl & APIC_ICR_BUSY)
-@@ -519,8 +523,6 @@ int avic_incomplete_ipi_interception(struct kvm_vcpu *vcpu)
- 		 */
- 		avic_kick_target_vcpus(vcpu->kvm, apic, icrl, icrh, index);
- 		break;
--	case AVIC_IPI_FAILURE_INVALID_TARGET:
--		break;
- 	case AVIC_IPI_FAILURE_INVALID_BACKING_PAGE:
- 		WARN_ONCE(1, "Invalid backing page\n");
- 		break;
+@@ -456,13 +457,6 @@ static void avic_kick_target_vcpus(struct kvm *kvm, struct kvm_lapic *source,
+ 	 * since entered the guest will have processed pending IRQs at VMRUN.
+ 	 */
+ 	kvm_for_each_vcpu(i, vcpu, kvm) {
+-		u32 dest;
+-
+-		if (apic_x2apic_mode(vcpu->arch.apic))
+-			dest = icrh;
+-		else
+-			dest = GET_XAPIC_DEST_FIELD(icrh);
+-
+ 		if (kvm_apic_match_dest(vcpu, source, icrl & APIC_SHORT_MASK,
+ 					dest, icrl & APIC_DEST_MASK)) {
+ 			vcpu->arch.apic->irr_pending = true;
 -- 
 2.37.2.672.g94769d06f0-goog
 
