@@ -2,196 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F585ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 01:34:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F15DECAAD5
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 01:35:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231742AbiHaBeX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 21:34:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58564 "EHLO
+        id S231741AbiHaBfT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 21:35:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230092AbiHaBeN (ORCPT
+        with ESMTP id S231663AbiHaBfN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 21:34:13 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A736DB14C3
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 18:34:10 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id y141so13049755pfb.7
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 18:34:10 -0700 (PDT)
+        Tue, 30 Aug 2022 21:35:13 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B195193F7
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 18:35:04 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id n65-20020a17090a5ac700b001fbb4fad865so13596018pji.1
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 18:35:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=vhZ3yILypvJYBsR07fkWNRnqx8C8Eemkyou0+SjZ/pw=;
-        b=cMSqVjK2Zfuhis85tst7BCwfAKBK2t9NliW2wwptDc3jcSLvsk23IFXL1Ba9QZNbLC
-         RX0DbKquu1UnUWoZqzpAPwmEa6sGt3eS9DJi7Xc77uohiNcPVNoo8RG8QDAcwwJoqAAx
-         FtQyKE8TyoclIShBe/nRYQFQZL9ZI4ZVzGZpk=
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=JVftubc6KuRp3jMxakTu7sb8RAmy7skK2pVT1PxM25o=;
+        b=cMy3guYSxEFyWIHVXlr8oksM36Y3sMAwvAgvJHSo7Wc1VgjW0Tayprba0syLeZ/G5J
+         5oRhiSiUwE047aaS8BCbsZBML6KkQCztALGvE4m+VrIP0kx78DRCzZMeMowoqChwJTpc
+         2KqR7aDDTZO5uEd94b0SJVXgH5E8ZeYAyiKLXVZRdKQyBicUHmESRsubf5/ff7VAi20A
+         DCsIZxfaUZej7nnN1WAsjJ0psocbT+vG4E+b7IqkHAzF2/C691SDO9AeN0KEWozeW0og
+         yfegvHcRl1LRDdWAo9Vg8mtwwF3GlQcs3Kl4LwNH/3ukRlP4Q1KT16Rzq3dxNJYKQjEH
+         hIeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=vhZ3yILypvJYBsR07fkWNRnqx8C8Eemkyou0+SjZ/pw=;
-        b=5M3KyPW6OtJ2mwZEy4BzZVp7aXaAGzyt7wvIYe8O2gR2QVwPArxJi1JP0zM5NuymI4
-         NVDzlERWdeI/oMAQ2FhQ1t07YZ2Q+QnB/II7iL/Xinm4Lnh0f/m+aJOaAajlP7W1i00y
-         8DM8trCGNnhC3OnhG4be/xbDadenq0In3c6JEXDGLVRlJY+U2+kj1asW0k5/lXkNmoCe
-         wWeOM3vYotktUhfyo53nTnrqPlWRVepeEoefj+l/JQMVWTcNVKBX9CGHAXmzzQpE+32E
-         gVQ3QEJTLj5tYD2cJsrWEV9s9fZgch4emDmIgz7aNF/XjLi1Q6I3fwd++9v1DhjuGS0T
-         pZ/w==
-X-Gm-Message-State: ACgBeo1Dpf767/CR6FDj5euXzmZ8BXVCr9l+82tPWCpe9MKRrrcdh12E
-        c3Jpp4awtxl6IX7W1GHVBWXLXw==
-X-Google-Smtp-Source: AA6agR4ccLRkb7LZHm0w+AIKx+colMNa8gkGdaPzUYlDlj4c6fTm7pv6uev6zAoWSFIZgENYZSJ7nQ==
-X-Received: by 2002:a65:6b8e:0:b0:42a:162c:e3a0 with SMTP id d14-20020a656b8e000000b0042a162ce3a0mr20198378pgw.464.1661909648973;
-        Tue, 30 Aug 2022 18:34:08 -0700 (PDT)
-Received: from jwerner-p920.mtv.corp.google.com ([2620:15c:202:201:2e75:b9a4:fb1:b1b8])
-        by smtp.gmail.com with ESMTPSA id t10-20020a170902e84a00b00174f4316c24sm4261382plg.245.2022.08.30.18.34.08
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=JVftubc6KuRp3jMxakTu7sb8RAmy7skK2pVT1PxM25o=;
+        b=uwZe6aeq+ueurQF7LrnP4P5HPGsYeIKjMQtYbkbigVe5SvBMbqyE+iGd6Rie4oTO+V
+         HwVMDpsgnwCXG0kVf4CI9leQ3MOYoUGtLhn+ysZEcpmAdnmMLabYPIrZ7xv4bLbjlpIm
+         sq1XkHjiTxQAeQmRBTGNbyjxK8X1sjqdD8I9jnSWRdH3N0R5cnJqbWgIjo1r3tR63b9J
+         bXPNaxI71MjtZabRjok6aKjAzKeB9brcjDO7qm7pFwi+oGMiBO2MG7nSzqX38r5Yxkqo
+         m7bwkX48sjIQBg3hNdNJ3yZUoI2rpKBu6+o+iJuyBww7uQU6kWCe8DH2gsbMOESgyhRt
+         +IGw==
+X-Gm-Message-State: ACgBeo0EVpJOZBi5JncolNEr6G0P4sqqbIQs0OJFMtgDuN5S7u92jCOW
+        XhrmwGyEIxH6QlV/7kFSBLLO6RzIncRDyw==
+X-Google-Smtp-Source: AA6agR4MBVEJ8wrauAtQ76q7SlsBGMsjHuUkXJsmX0qQMM4J+5MZoeAks2bsWSO2lUtOPY5tNWbySA==
+X-Received: by 2002:a17:902:b603:b0:174:8a6b:8e0d with SMTP id b3-20020a170902b60300b001748a6b8e0dmr16461501pls.105.1661909680224;
+        Tue, 30 Aug 2022 18:34:40 -0700 (PDT)
+Received: from always-x1.bytedance.net ([61.120.150.74])
+        by smtp.gmail.com with ESMTPSA id r36-20020a17090a43a700b001f50e4c43c4sm202891pjg.22.2022.08.30.18.34.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 18:34:08 -0700 (PDT)
-From:   Julius Werner <jwerner@chromium.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Doug Anderson <dianders@chromium.org>,
-        Jian-Jia Su <jjsu@google.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Julius Werner <jwerner@chromium.org>
-Subject: [PATCH 3/4] dt-bindings: memory: Add jedec,lpddr4 and jedec,lpddr5 bindings
-Date:   Tue, 30 Aug 2022 18:33:58 -0700
-Message-Id: <20220831013359.1807905-4-jwerner@chromium.org>
-X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
-In-Reply-To: <20220831013359.1807905-1-jwerner@chromium.org>
-References: <20220831013359.1807905-1-jwerner@chromium.org>
+        Tue, 30 Aug 2022 18:34:39 -0700 (PDT)
+From:   zhenwei pi <pizhenwei@bytedance.com>
+To:     hch@lst.de, sagi@grimberg.me
+Cc:     kch@nvidia.com, linux-nvme@lists.infradead.org,
+        linux-kernel@vger.kernel.org, zhenwei pi <pizhenwei@bytedance.com>
+Subject: [PATCH v2 0/1] nvmet-tcp: Fix NULL pointer dereference during release
+Date:   Wed, 31 Aug 2022 09:34:01 +0800
+Message-Id: <20220831013402.514055-1-pizhenwei@bytedance.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds bindings for LPDDR4 and LPDDR5 memory analogous to the
-existing bindings for LPDDR2 and LPDDR3. For now, the new types are only
-needed for topology description, so other properties like timing
-parameters are omitted. They can be added later if needed.
+v1 -> v2:
+- Seperate nvmet_tcp_uninit_data_in_cmds() into nvmet_tcp_uninit_req()
+  & nvmet_tcp_uninit_data_in_cmds()(free buffers only).
 
-Signed-off-by: Julius Werner <jwerner@chromium.org>
----
- .../ddr/jedec,lpddr-props.yaml                |  4 ++
- .../memory-controllers/ddr/jedec,lpddr4.yaml  | 36 ++++++++++++++
- .../memory-controllers/ddr/jedec,lpddr5.yaml  | 48 +++++++++++++++++++
- 3 files changed, 88 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr4.yaml
- create mode 100644 Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr5.yaml
+v1:
+- Move nvmet_tcp_uninit_data_in_cmds() after nvmet_sq_destroy()
 
-diff --git a/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr-props.yaml b/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr-props.yaml
-index 0c7d2feafd77c8..e1182e75ca1a3f 100644
---- a/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr-props.yaml
-+++ b/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr-props.yaml
-@@ -53,9 +53,13 @@ properties:
-       - 512
-       - 1024
-       - 2048
-+      - 3072
-       - 4096
-+      - 6144
-       - 8192
-+      - 12288
-       - 16384
-+      - 24576
-       - 32768
- 
-   io-width:
-diff --git a/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr4.yaml b/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr4.yaml
-new file mode 100644
-index 00000000000000..860300cebee754
---- /dev/null
-+++ b/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr4.yaml
-@@ -0,0 +1,36 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/memory-controllers/ddr/jedec,lpddr4.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: LPDDR4 SDRAM compliant to JEDEC JESD209-4
-+
-+allOf:
-+  - $ref: "jedec,lpddr-props.yaml#"
-+
-+maintainers:
-+  - Krzysztof Kozlowski <krzk@kernel.org>
-+
-+properties:
-+  compatible:
-+    items:
-+      - pattern: "^lpddr4-[0-9a-f]{2},[0-9a-f]{4}$"
-+      - const: jedec,lpddr4
-+
-+required:
-+  - compatible
-+  - density
-+  - io-width
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    lpddr4 {
-+        compatible = "lpddr4-ff,0100", "jedec,lpddr4";
-+        density = <8192>;
-+        io-width = <16>;
-+        manufacturer-id = <255>;
-+        revision-id = <1 0>;
-+    };
-diff --git a/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr5.yaml b/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr5.yaml
-new file mode 100644
-index 00000000000000..ae3894bb346d5e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr5.yaml
-@@ -0,0 +1,48 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/memory-controllers/ddr/jedec,lpddr5.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: LPDDR5 SDRAM compliant to JEDEC JESD209-5
-+
-+allOf:
-+  - $ref: "jedec,lpddr-props.yaml#"
-+
-+maintainers:
-+  - Krzysztof Kozlowski <krzk@kernel.org>
-+
-+properties:
-+  compatible:
-+    items:
-+      - pattern: "^lpddr5-[0-9a-f]{2},[0-9a-f]{4}$"
-+      - const: jedec,lpddr5
-+
-+  serial-id:
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+    description:
-+      Serial IDs read from Mode Registers 47 through 54. One byte per uint32
-+      cell (i.e. <MR47 MR48 MR49 MR50 MR51 MR52 MR53 MR54>).
-+    minItems: 8
-+    maxItems: 8
-+    items:
-+      minimum: 0
-+      maximum: 255
-+
-+required:
-+  - compatible
-+  - density
-+  - io-width
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    lpddr4 {
-+        compatible = "lpddr5-01,0200", "jedec,lpddr5";
-+        density = <8192>;
-+        io-width = <8>;
-+        manufacturer-id = <1>;
-+        revision-id = <2 0>;
-+        serial-id = <3 1 0 0 0 0 0 0>;
-+    };
+zhenwei pi (1):
+  nvmet-tcp: Fix NULL pointer dereference during release
+
+ drivers/nvme/target/tcp.c | 22 ++++++++++++++++++----
+ 1 file changed, 18 insertions(+), 4 deletions(-)
+
 -- 
-2.31.0
+2.20.1
 
