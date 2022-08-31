@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAA80ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 06:34:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5864DC0502C
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 06:36:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229916AbiHaGeb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 02:34:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56962 "EHLO
+        id S230206AbiHaGf7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 02:35:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229882AbiHaGe3 (ORCPT
+        with ESMTP id S229451AbiHaGf4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 02:34:29 -0400
-Received: from bg4.exmail.qq.com (bg4.exmail.qq.com [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15E5CBD747
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 23:34:27 -0700 (PDT)
-X-QQ-mid: bizesmtp81t1661927641to564cr6
+        Wed, 31 Aug 2022 02:35:56 -0400
+Received: from bg4.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEBDDA61DF;
+        Tue, 30 Aug 2022 23:35:52 -0700 (PDT)
+X-QQ-mid: bizesmtp81t1661927738tvymfl2y
 Received: from localhost.localdomain ( [182.148.13.26])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 31 Aug 2022 14:33:59 +0800 (CST)
+        id ; Wed, 31 Aug 2022 14:35:36 +0800 (CST)
 X-QQ-SSF: 01000000000000D0E000000A0000000
-X-QQ-FEAT: 0EOhYdNGHFJODcCsJlB+PndVE3HKuxUu2dJoUGjj4nzM/BN4ZgNINucadzpaH
-        24ZgGGgIzdHX6gyQOzAsLVPFPIa72oXHvA3skG4n2hMcUrXOvGV0hgtvZGxqzWNmkLzasZ2
-        38yRt5bjWYaFdZiMnctDZkIZrTczbB9vqx583Urez6hAVI5h8qPXMLNtH6uiyU0LaMOuvvg
-        EExv875xfCQE3qXvMcNIn4o75ANuri0E+Nee3UUK8jvkOrIgFAi61cjQKO4uOrprQSLfsMo
-        9h1S8wolg7Ach8O0yijzbT8RvgYSnPZzr9PcocLKnOk6jPKd54VaE69E81qYs8hvIW+p4KC
-        IS/JAoKW2kpte5f+hAomg2jMycFktK/0gf7qzLFfniK59t+MxkL23VrKnwthw==
+X-QQ-FEAT: r/cTxDoDoiHHOLH8/pfmSzkC6LAycOY6ODvGYfCuyUE00ML6d0WF7UrVe6GSA
+        HOccopvysDr1rWgE7Uo8zCYHPC2kLmrnI7hCmTEnUrQJj6tpRaFWioqqOaQ2c5HoEHQYGki
+        G8ejFWM4/j6DF453T/OLYq/YFnjTsy1Borj7KZrLWKPyTvQKg5q22qAP6Ncyxql9OLafT1p
+        WriXnFxzuO/EW0qUk+i/ZDdOnSJZfubPUEfz5lPkoDIpRxY4O6pojJO7sdTyqVRj9cZat72
+        bC8XQe/JN0arjOYltCm5gWq1ui6x09PkmISp65esh2Jb5Qn/I2JxPYOe2x+adn1LX9RVkZn
+        W/1r1HmQ0EXgdSZjOtUSCDsKIqaJQWxZNXSyAz18pnCWNrBuv5aPqNM9c3qnXNO4lMAwMH8
 X-QQ-GoodBg: 0
 From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     richard@nod.at, anton.ivanov@cambridgegreys.com,
-        johannes@sipsolutions.net
-Cc:     linux-um@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] um: fix repeated words in comments
-Date:   Wed, 31 Aug 2022 14:33:53 +0800
-Message-Id: <20220831063353.15700-1-yuanjilin@cdjrlc.com>
+To:     borntraeger@linux.ibm.com, frankja@linux.ibm.com,
+        imbrenda@linux.ibm.com, david@redhat.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, agordeev@linux.ibm.com, svens@linux.ibm.com
+Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] KVM: s390: fix repeated words in comments
+Date:   Wed, 31 Aug 2022 14:35:30 +0800
+Message-Id: <20220831063530.16876-1-yuanjilin@cdjrlc.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -44,26 +45,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'in'.
+Delete the redundant word 'not'.
 
 Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
 ---
- arch/um/kernel/physmem.c | 2 +-
+ arch/s390/kvm/interrupt.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/um/kernel/physmem.c b/arch/um/kernel/physmem.c
-index e7c7b53a1435..91485119ae67 100644
---- a/arch/um/kernel/physmem.c
-+++ b/arch/um/kernel/physmem.c
-@@ -169,7 +169,7 @@ __uml_setup("iomem=", parse_iomem,
- );
- 
- /*
-- * This list is constructed in parse_iomem and addresses filled in in
-+ * This list is constructed in parse_iomem and addresses filled in
-  * setup_iomem, both of which run during early boot.  Afterwards, it's
-  * unchanged.
-  */
+diff --git a/arch/s390/kvm/interrupt.c b/arch/s390/kvm/interrupt.c
+index b9c944b262c7..f0b925e70900 100644
+--- a/arch/s390/kvm/interrupt.c
++++ b/arch/s390/kvm/interrupt.c
+@@ -577,7 +577,7 @@ static int __write_machine_check(struct kvm_vcpu *vcpu,
+ 	/*
+ 	 * All other possible payload for a machine check (e.g. the register
+ 	 * contents in the save area) will be handled by the ultravisor, as
+-	 * the hypervisor does not not have the needed information for
++	 * the hypervisor does not have the needed information for
+ 	 * protected guests.
+ 	 */
+ 	if (kvm_s390_pv_cpu_is_protected(vcpu)) {
 -- 
 2.36.1
 
