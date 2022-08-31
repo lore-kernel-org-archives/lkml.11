@@ -2,197 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D8D3ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 09:59:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 470F0ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:00:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230421AbiHaJ7r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 05:59:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48126 "EHLO
+        id S230510AbiHaKAm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 06:00:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230469AbiHaJ7U (ORCPT
+        with ESMTP id S230437AbiHaKAR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 05:59:20 -0400
-Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2072.outbound.protection.outlook.com [40.107.104.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91876D21F6;
-        Wed, 31 Aug 2022 02:59:15 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LfkWbo2D55MKzRSbglWqXqWF0XiKsNbT2GGEAc6SY+BOOcObkG93mnZDuIgcIc5Wuupc/UxeJH5hc+a6twuhm9xfZ4Bs4Tt4nkeJr32bUyNxOPmmLuDTAC1wO52543vbI3YVyDxK4SPEXfVcP/QoP73ByJMQPfDjog/sePenZm3yJEkX6a05Uta/BktJgmiTJM7Ks+PHk8kasyFle47MSxJNdN6Zs1sCjWG0lak+nUVrDHwP9qdH7INH7EVjsah0RoyHfrEi3yPWoErSebjkun+bmEIwCC+v2vAtzWd/R/wrS6H+wMoGMUZ5m4f/aLeeA8Yxg3210rZPYb7PCX+NNA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5KkVVSdy5o3tD9kl9xMcRzHotMk2Hi6mnYgMs66deM4=;
- b=Bk7/VNwHPrbX4j2XZ12a3stfPSGCLrU0p1M7JUSrCHoCdxhxkkBD7fMIZVeiHnU1K4xE3ZjeAV+K23ecW0ogjxLgMPhGXSOYR976bywUMb5xuta95DHxeFAZisixs2hEy/DMX9cEOdvaSBKOwmPaL62cED7VYtjnVgkPDOAR0m0aylw1skbG8k2YqOa7yYFqZJbme61MJ00xAo7AzrYCZdz7cTgLLY77xpc5y0nONuhwMTCumvnDFGV8IybSLmoKsjaDmo5h8VTlbKH2MpajiRPxKUfkQRAQ8HewUBGhkbc+vKWzO18hEQvvbdbClsgZggL8seVQIN85CpkGb5aQmQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5KkVVSdy5o3tD9kl9xMcRzHotMk2Hi6mnYgMs66deM4=;
- b=QkkXeeV7ib4k8uTP61iBcO0J2xZUYGH7uFW+hp8zHS598j73Y/MRPDs0NPu5U2ZJrM33lcsgNnUKTUvNh2UjAuTgvy4fOunbQH9G2YvbWto+1324bxm2xrexv+bd76ygXs2sbSAQV/R3BcgFrA7+fpDZL29J/KMSRi4eqAVDkh8=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
- by AM6PR04MB5671.eurprd04.prod.outlook.com (2603:10a6:20b:a0::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.21; Wed, 31 Aug
- 2022 09:59:11 +0000
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::2d22:3315:6f9b:82c7]) by DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::2d22:3315:6f9b:82c7%5]) with mapi id 15.20.5588.010; Wed, 31 Aug 2022
- 09:59:11 +0000
-From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de
-Cc:     kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        aisheng.dong@nxp.com, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Clark Wang <xiaoning.wang@nxp.com>,
-        Haibo Chen <haibo.chen@nxp.com>, Jun Li <jun.li@nxp.com>,
-        Peng Fan <peng.fan@nxp.com>
-Subject: [PATCH 6/6] arm64: dts: imx8ulp: increase the clock speed of LPSPI
-Date:   Wed, 31 Aug 2022 18:00:16 +0800
-Message-Id: <20220831100016.3649852-7-peng.fan@oss.nxp.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220831100016.3649852-1-peng.fan@oss.nxp.com>
-References: <20220831100016.3649852-1-peng.fan@oss.nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SI2PR01CA0024.apcprd01.prod.exchangelabs.com
- (2603:1096:4:192::20) To DU0PR04MB9417.eurprd04.prod.outlook.com
- (2603:10a6:10:358::11)
+        Wed, 31 Aug 2022 06:00:17 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36751DEC4;
+        Wed, 31 Aug 2022 02:59:49 -0700 (PDT)
+Received: from fraeml705-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MHflj3mCTz687Gp;
+        Wed, 31 Aug 2022 17:59:13 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ fraeml705-chm.china.huawei.com (10.206.15.54) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.31; Wed, 31 Aug 2022 11:59:46 +0200
+Received: from localhost (10.202.226.42) by lhrpeml500005.china.huawei.com
+ (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 31 Aug
+ 2022 10:59:46 +0100
+Date:   Wed, 31 Aug 2022 10:59:45 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To:     Robert Richter <rrichter@amd.com>
+CC:     Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Ben Widawsky <bwidawsk@kernel.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        <linux-cxl@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>
+Subject: Re: [PATCH 03/15] cxl: Unify debug messages when calling
+ devm_cxl_add_port()
+Message-ID: <20220831105945.00004668@huawei.com>
+In-Reply-To: <20220831081603.3415-4-rrichter@amd.com>
+References: <20220831081603.3415-1-rrichter@amd.com>
+        <20220831081603.3415-4-rrichter@amd.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 78b860d6-253e-4599-ff39-08da8b377421
-X-MS-TrafficTypeDiagnostic: AM6PR04MB5671:EE_
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: PuvlZ22e65cCsDPU2tXdWjskpw+WOak/qMt3jCFvgrp/SxLNnlbevTvfHyXKwsPD9G0rAzPwDVDPusZPIcnraQ8+hqZW0f4l2yuu1dLOI/RxRGqASgWWPtXjkSLBQJ6eoUw5WoKNQ1uabGMcwMzkm9qoezbjVXXqRgcpPPUcq1oP4ezwthcdWrHvokz+x++LIl2zBpM9P2UhL6OQG2tD/m2JdXWgR3ygf1OFneoTmzPdT+gtCCy8yyKeFqBrLjhk1IOdg3S6ZVa3uQzVFfIOIUJ472e5XVHGDBecwzeJZniNA5mx5QV1qlVPoaEEN2RcLD0XiGBLwt863oCljBAROw3GuTp7ei9ke5erh8nAc+cOHupS/Yf6YvNb0HlfHjM9ZqiEu8m/64Kh/VFfCAtzUNnEqojNEyI96m++D6pOk0ufpXg5YwTvDlXCdCzMCasKpbznnT//0xVuBm3/QAXoUEAXEwRYsYBDY1iPOsWkm8VL/RYTbrzlG6WL7CWlKS2JQ/SLn3L4EOphPJUOYSYqefpKEcZ4EWQqG27TCpV2kAWuVKE4liFAToO2TPWPDQzrmywkOSdZUJzlejYOR7GmL3VmIrYoZ7nbf4t08xrdVqESw0WOA60L3poxsQ3I6+opEht069ddkHynRHnnpi64ZRViQrcQA5KHc976osLGGno0RcQXWAHlwsy/eP2TZ9iUiZeiCwr2kKJPFLo/RHfMKgHkNetW8sO79kDTYDOuTLCN3zoB0uRrdY8616DsQigr3LhGOVGMAp2EXUAxH8PiXQ4r0c7YuG11K7jOryx3SHs=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(396003)(376002)(136003)(346002)(39860400002)(4326008)(66476007)(8936002)(5660300002)(66556008)(2906002)(54906003)(66946007)(8676002)(2616005)(1076003)(316002)(6486002)(41300700001)(6506007)(52116002)(86362001)(6512007)(26005)(186003)(478600001)(38350700002)(83380400001)(38100700002)(32563001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ZxSs16dVD47GFmczUZq0ObCrZBrQiNTxiwIoWEcyb/6F/9i/Nfy8gwGJdWqQ?=
- =?us-ascii?Q?GcqvJAuqY6KeV/IWfK9X7oqceme6a6MGMNDyeLwMlkbBfjssi1S3Ry6NxiFT?=
- =?us-ascii?Q?kWox2DbkkrUFiWzrc5/k2o8xbq1GC4Y6tMZRNoIqoPQH0+I4xAP8P8xsSHMC?=
- =?us-ascii?Q?iGvpwDAu9ZvB9TCGl4bsS9tnr0700m3DN370O4MihWpLP+OyAGPrXs+nUfEi?=
- =?us-ascii?Q?O521BbG41QQj6l1waAbmDVvAn9zVoFB9I2WsyX73fwYwi49GjOt/esSTUWe4?=
- =?us-ascii?Q?Ij6qQ9NtkuPl61EOuEWsX7YKW3cZ2HyayhuNssZCxBnk9+mkY+GgsL2opsqT?=
- =?us-ascii?Q?VtCKl5CbvBX98SZ7tGkLBcSyWSKfYCk5QJ/Ftvd2+POe4hxc+FOAiZ1IBnCG?=
- =?us-ascii?Q?MZI6GMrd07Tru/4DqbQ4x0UX5HRb9s7ELPFqNStznVQr4t0sbeuORNOEyPoz?=
- =?us-ascii?Q?dFyQuvKWo2DcAdzkKfdJnQGoOH31jv7rcEgadPonfL5j4XTOqHyS1aQwNeYz?=
- =?us-ascii?Q?pvjT3p6q9wVew1e7nAMAlHkdDAs11FtPLvHpPh2d125/xdHrm/rbxFIXR6YY?=
- =?us-ascii?Q?vv5V57ErIge9WtgRdM/UCGwSmwbeppChBSHAAKa5SlntI+s7pEhlAIb5uV1Q?=
- =?us-ascii?Q?6D7NfNpc0xCtY8W384176bGoTB+rRdv4yvP6/xH+b9A5QBQL8qQCguVkVZxx?=
- =?us-ascii?Q?DpSgmHHJ9NDToOhLQfd/Ch5qgBrBTUiosI73XW1RJCNNLOtWksdiEjUJ+NMc?=
- =?us-ascii?Q?5bN7QKDaue+kdrlRaOCRrBJWbhbw43t+Ys1iMOGUKOi9d3IzBApt8CiiQRxz?=
- =?us-ascii?Q?APwps87d2d6hl3BH99vrHP3Gfdq044kvF3GXGQ1IhTO20Gqbe3r1CrDJUUt+?=
- =?us-ascii?Q?ZVk/XGxMiEpF/cN3c+/X9YWQG0zFpchnc7biiapKL0E8/PD2zZ2BksjR5/Yv?=
- =?us-ascii?Q?ZXoMgm4JeAXEF/aMWxGx8Icgya7JK5/J/8bZ0MdTv8NCdf6j14JajEkzftDm?=
- =?us-ascii?Q?nrCEkKLexPoercjFG5EdrXIQUBfXrk+nNSjQKrY0Cib+Giub9aSE96x7L0We?=
- =?us-ascii?Q?SMY8iD+iscu68o3dRrsPD+RtIS1fPUV7vSnYR3wRiie+7gARvMbRgZbbkAQK?=
- =?us-ascii?Q?I2QsPNm6oxXM79KQQvWyqrbLYC+IOgMZevWFGjxwlbQ6T9nfTry4S9pR6gTl?=
- =?us-ascii?Q?1JwmlYlWC94gSuHZR1wMwDIVEbFgsOtC2I/SJSUNctcP4axfJ0rFwNuONUn4?=
- =?us-ascii?Q?PnGd8rl65UWTiZ/+e/5EensLBQC+87a1Pwo7uxrunsCdhLahqNHqvsVDOXOP?=
- =?us-ascii?Q?yS1GNaCR0UG/VlhS0n+nYuISWyp1w6xACOw/CvbEtuLEf0pH1rIYj5E/CxN5?=
- =?us-ascii?Q?o4u714FLGlLZI4TTg5B2ZpxGhgu2LMESaa7UbIkr00HHDticHdNuL6oCojQL?=
- =?us-ascii?Q?kOgBRSisEjaZj2kgTuw6xA+QTb3f6azHn6W7QRDiOBzLWlcKwYmHP8rnZ2Ua?=
- =?us-ascii?Q?lcQEzSejtvB40+ts87B2OsZaP4qqVrglSa8dM48KNHv102VRINW2+7KcrWdW?=
- =?us-ascii?Q?1BH646s6UGBdzlFHMWsw7o9J/Ntg6xfe3Xmz067t?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 78b860d6-253e-4599-ff39-08da8b377421
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2022 09:59:11.6849
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7cSOJ+5XzX4Nx7tbAKAsTm72Z9f5YwZ1v1LyWq57/3Plc8aCo6cnpmWkyGEU7KuYR2ZjYpC7sh/prLL0Pi2qng==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB5671
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.42]
+X-ClientProxiedBy: lhrpeml100004.china.huawei.com (7.191.162.219) To
+ lhrpeml500005.china.huawei.com (7.191.163.240)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Clark Wang <xiaoning.wang@nxp.com>
+On Wed, 31 Aug 2022 10:15:51 +0200
+Robert Richter <rrichter@amd.com> wrote:
 
-LPSPI transfer max speed is half of the root clock.
-Increase the root clock speed to support faster data transmission.
+> CXL ports are added in a couple of code paths using
+> devm_cxl_add_port(). Debug messages are individually generated, but
+> are incomplete and inconsistent. Change this by moving its generation
+> to devm_cxl_add_port(). This unifies the messages and reduces code
+> duplication. Also, generate messages on failure.
+> 
+> Signed-off-by: Robert Richter <rrichter@amd.com>
 
-And update the parent clock of all i2c/spi with IMX8ULP_CLK_FROSC_DIV2
-which could produce accurate clock for i2c/spi usage.
+This is one for Dan etc as it is mostly a question of how verbose we want
+the debug prints to be plus preference for caller or callee being
+responsible for outputting this sort of message.
 
-Reviewed-by: Haibo Chen <haibo.chen@nxp.com>
-Reviewed-by: Jun Li <jun.li@nxp.com>
-Signed-off-by: Clark Wang <xiaoning.wang@nxp.com>
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
----
- arch/arm64/boot/dts/freescale/imx8ulp.dtsi | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+Patch looks good to me if we want to make this sort of change.
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8ulp.dtsi b/arch/arm64/boot/dts/freescale/imx8ulp.dtsi
-index 54ccf31896b7..6eeeacb2f931 100644
---- a/arch/arm64/boot/dts/freescale/imx8ulp.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8ulp.dtsi
-@@ -226,7 +226,7 @@ lpi2c4: i2c@29370000 {
- 					 <&pcc3 IMX8ULP_CLK_LPI2C4>;
- 				clock-names = "per", "ipg";
- 				assigned-clocks = <&pcc3 IMX8ULP_CLK_LPI2C4>;
--				assigned-clock-parents = <&cgc1 IMX8ULP_CLK_XBAR_DIVBUS>;
-+				assigned-clock-parents = <&cgc1 IMX8ULP_CLK_FROSC_DIV2>;
- 				assigned-clock-rates = <48000000>;
- 				status = "disabled";
- 			};
-@@ -239,7 +239,7 @@ lpi2c5: i2c@29380000 {
- 					 <&pcc3 IMX8ULP_CLK_LPI2C5>;
- 				clock-names = "per", "ipg";
- 				assigned-clocks = <&pcc3 IMX8ULP_CLK_LPI2C5>;
--				assigned-clock-parents = <&cgc1 IMX8ULP_CLK_XBAR_DIVBUS>;
-+				assigned-clock-parents = <&cgc1 IMX8ULP_CLK_FROSC_DIV2>;
- 				assigned-clock-rates = <48000000>;
- 				status = "disabled";
- 			};
-@@ -272,8 +272,8 @@ lpspi4: spi@293b0000 {
- 					 <&pcc3 IMX8ULP_CLK_LPSPI4>;
- 				clock-names = "per", "ipg";
- 				assigned-clocks = <&pcc3 IMX8ULP_CLK_LPSPI4>;
--				assigned-clock-parents = <&cgc1 IMX8ULP_CLK_XBAR_DIVBUS>;
--				assigned-clock-rates = <16000000>;
-+				assigned-clock-parents = <&cgc1 IMX8ULP_CLK_FROSC_DIV2>;
-+				assigned-clock-rates = <48000000>;
- 				status = "disabled";
- 			};
- 
-@@ -287,8 +287,8 @@ lpspi5: spi@293c0000 {
- 					 <&pcc3 IMX8ULP_CLK_LPSPI5>;
- 				clock-names = "per", "ipg";
- 				assigned-clocks = <&pcc3 IMX8ULP_CLK_LPSPI5>;
--				assigned-clock-parents = <&cgc1 IMX8ULP_CLK_XBAR_DIVBUS>;
--				assigned-clock-rates = <16000000>;
-+				assigned-clock-parents = <&cgc1 IMX8ULP_CLK_FROSC_DIV2>;
-+				assigned-clock-rates = <48000000>;
- 				status = "disabled";
- 			};
- 		};
-@@ -315,7 +315,7 @@ lpi2c6: i2c@29840000 {
- 					 <&pcc4 IMX8ULP_CLK_LPI2C6>;
- 				clock-names = "per", "ipg";
- 				assigned-clocks = <&pcc4 IMX8ULP_CLK_LPI2C6>;
--				assigned-clock-parents = <&cgc1 IMX8ULP_CLK_XBAR_DIVBUS>;
-+				assigned-clock-parents = <&cgc1 IMX8ULP_CLK_FROSC_DIV2>;
- 				assigned-clock-rates = <48000000>;
- 				status = "disabled";
- 			};
-@@ -328,7 +328,7 @@ lpi2c7: i2c@29850000 {
- 					 <&pcc4 IMX8ULP_CLK_LPI2C7>;
- 				clock-names = "per", "ipg";
- 				assigned-clocks = <&pcc4 IMX8ULP_CLK_LPI2C7>;
--				assigned-clock-parents = <&cgc1 IMX8ULP_CLK_XBAR_DIVBUS>;
-+				assigned-clock-parents = <&cgc1 IMX8ULP_CLK_FROSC_DIV2>;
- 				assigned-clock-rates = <48000000>;
- 				status = "disabled";
- 			};
--- 
-2.37.1
+> ---
+>  drivers/cxl/acpi.c      |  2 --
+>  drivers/cxl/core/port.c | 39 ++++++++++++++++++++++++++++-----------
+>  2 files changed, 28 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/cxl/acpi.c b/drivers/cxl/acpi.c
+> index fb649683dd3a..767a91f44221 100644
+> --- a/drivers/cxl/acpi.c
+> +++ b/drivers/cxl/acpi.c
+> @@ -220,7 +220,6 @@ static int add_host_bridge_uport(struct device *match, void *arg)
+>  	port = devm_cxl_add_port(host, match, dport->component_reg_phys, dport);
+>  	if (IS_ERR(port))
+>  		return PTR_ERR(port);
+> -	dev_dbg(host, "%s: add: %s\n", dev_name(match), dev_name(&port->dev));
+>  
+>  	return 0;
+>  }
+> @@ -466,7 +465,6 @@ static int cxl_acpi_probe(struct platform_device *pdev)
+>  	root_port = devm_cxl_add_port(host, host, CXL_RESOURCE_NONE, NULL);
+>  	if (IS_ERR(root_port))
+>  		return PTR_ERR(root_port);
+> -	dev_dbg(host, "add: %s\n", dev_name(&root_port->dev));
+>  
+>  	rc = bus_for_each_dev(adev->dev.bus, NULL, root_port,
+>  			      add_host_bridge_dport);
+> diff --git a/drivers/cxl/core/port.c b/drivers/cxl/core/port.c
+> index bffde862de0b..8604cda88787 100644
+> --- a/drivers/cxl/core/port.c
+> +++ b/drivers/cxl/core/port.c
+> @@ -666,13 +666,17 @@ struct cxl_port *devm_cxl_add_port(struct device *host, struct device *uport,
+>  				   resource_size_t component_reg_phys,
+>  				   struct cxl_dport *parent_dport)
+>  {
+> -	struct cxl_port *port;
+> +	struct cxl_port *port, *parent_port;
+>  	struct device *dev;
+>  	int rc;
+>  
+> +	parent_port = parent_dport ? parent_dport->port : NULL;
+> +
+>  	port = cxl_port_alloc(uport, component_reg_phys, parent_dport);
+> -	if (IS_ERR(port))
+> -		return port;
+> +	if (IS_ERR(port)) {
+> +		rc = PTR_ERR(port);
+> +		goto err_out;
+> +	}
+>  
+>  	dev = &port->dev;
+>  	if (is_cxl_memdev(uport))
+> @@ -682,24 +686,39 @@ struct cxl_port *devm_cxl_add_port(struct device *host, struct device *uport,
+>  	else
+>  		rc = dev_set_name(dev, "root%d", port->id);
+>  	if (rc)
+> -		goto err;
+> +		goto err_put;
+>  
+>  	rc = device_add(dev);
+>  	if (rc)
+> -		goto err;
+> +		goto err_put;
+>  
+>  	rc = devm_add_action_or_reset(host, unregister_port, port);
+>  	if (rc)
+> -		return ERR_PTR(rc);
+> +		goto err_out;
+>  
+>  	rc = devm_cxl_link_uport(host, port);
+>  	if (rc)
+> -		return ERR_PTR(rc);
+> +		goto err_out;
+>  
+> -	return port;
+> +	dev_dbg(host, "added %s as%s port of device %s%s%s\n",
+> +		dev_name(&port->dev),
+> +		parent_port ? "" : " root",
+> +		dev_name(uport),
+> +		parent_port ? " to parent port " : "",
+> +		parent_port ? dev_name(&parent_port->dev) : "");
+>  
+> -err:
+> +	return port;
+> +err_put:
+>  	put_device(dev);
+> +err_out:
+> +	dev_dbg(host, "failed to add %s as%s port of device %s%s%s: %d\n",
+> +		dev_name(&port->dev),
+> +		parent_port ? "" : " root",
+> +		dev_name(uport),
+> +		parent_port ? " to parent port " : "",
+> +		parent_port ? dev_name(&parent_port->dev) : "",
+> +		rc);
+> +
+>  	return ERR_PTR(rc);
+>  }
+>  EXPORT_SYMBOL_NS_GPL(devm_cxl_add_port, CXL);
+> @@ -1140,8 +1159,6 @@ int devm_cxl_add_endpoint(struct cxl_memdev *cxlmd,
+>  	if (IS_ERR(endpoint))
+>  		return PTR_ERR(endpoint);
+>  
+> -	dev_dbg(&cxlmd->dev, "add: %s\n", dev_name(&endpoint->dev));
+> -
+>  	rc = cxl_endpoint_autoremove(cxlmd, endpoint);
+>  	if (rc)
+>  		return rc;
 
