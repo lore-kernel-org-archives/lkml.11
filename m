@@ -2,59 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B3BCECAAA1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 00:37:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01CC9ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 00:37:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231878AbiHaAhJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 20:37:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51576 "EHLO
+        id S231641AbiHaAhP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 20:37:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231873AbiHaAgs (ORCPT
+        with ESMTP id S231846AbiHaAgs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 30 Aug 2022 20:36:48 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88640A8950
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:35:38 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id v202-20020a6361d3000000b004300a4a30dbso829565pgb.20
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:35:37 -0700 (PDT)
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5F8EA59A8
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:35:29 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id f16-20020a17090a4a9000b001f234757bbbso5296470pjh.6
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:35:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:from:to:cc;
-        bh=0HXY0EEA1Ha5zVQSoYds7krJoiBKDZH41KEpFRGKQBk=;
-        b=tJJWk6gHdA3Q/3/ppn1buDVs74SZMkiSxm9h9DAGV4S3Ojwz0SYC89VGuOsrtzS4Oc
-         TAkzd0myieatN1aT5PFhwdSIN8hjqBrxtcL8Ct8Kk66vbmp3qi4Kk9q6AU8UlaMktG6m
-         vWal4FN12VXiLg+Kl8GGR8MMnh5KaZZFamxs+uYum7eQNlir8Y6rZxQDor6AQHSEhCny
-         3v5VvOJ1apVC4AA5eC8ZviJ9p0WzC/AlTdiUlTVS0a05I69UUew5sNcWBt/Hueu3x+1K
-         yNpnDcKTd3VlEbtLisO5TpzfssAdwvnwqRGOSLWnJ6y6n6c9ZdPsUWa+ZwhbslYgEPnA
-         GTxA==
+        bh=tqSFf2c/aR0xKLJBDtSO/L4uHcT204aNH3nZsuo4w3I=;
+        b=KErlEMAFoPTtFRi6Bojf/EJxZz4t2LYfQhsYhAPlw+jdz4eBgRUBZEhO6Hyc41ujO1
+         sQEGPDQXJ0Bdy/9xAdVxhOjhkikMSI6dEBsVrw+M3bXKGR+EunIcRvOrh3xYizbSJtcG
+         ziV0rcRn6eOA1jcEjUgc8yyP7GSfzC9A2LRJCCK9wHN/Wb1sz3EC5Etu+GJkqNCflwJ2
+         bEYGOoqjLnJHngLHPQsyfoiaIr2GuihYJM3gouUKIyzLhgdFyTRQdfcOe1+pLIFXcsnl
+         lxfjvcVvnSimrlJfiY73E9do/E0IxHmEsrR6nOU5AWsO66/ijfjeYvAq2c5TFToMWaAQ
+         V4vg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:x-gm-message-state:from:to:cc;
-        bh=0HXY0EEA1Ha5zVQSoYds7krJoiBKDZH41KEpFRGKQBk=;
-        b=RyI0s8ekjVBlaBL4n3pVazO/uwes/RVOcLzmo8pA2Vekx7oFAQR8qEljUI9TBZygga
-         xApwzVuerrRgDDTNLvUnYul+pnPdBJKUQIa727ngoS4nui1HWysfenDyridmQnxAewox
-         hnAmcmuHldgUQ5WXRxy/KM37sVNa1sSpto8FE4/lB9+6mdw1+gyDiXXKzlJ27fXap32g
-         +nqQNvH4JL0xxmIO+dI2VOS/LIlscR/EvAgfBx0/qvG9WjD29P0E9he/5KPdr7p7y+7U
-         c8PbP4s3QMxpqS0zA96ZwmLrZ2dFu9NcvOJBiz2eVIryeIFamota8NxUSMXHr0YUYsOW
-         IYBw==
-X-Gm-Message-State: ACgBeo2fj5NUYhSOlWe5ncPMOUkTK0t9B98e1ijkB/uWav3wgsNphq23
-        ZEaPGHa7BBsRGP2iwaCXTemyFcG6H5E=
-X-Google-Smtp-Source: AA6agR5nPKcjBevp91WFt9YRwA6+l0+inVdDs1vL1ZnLIyKe5/LKdV7S/tmoziioGqnNYaClWetxEoFjK4g=
+        bh=tqSFf2c/aR0xKLJBDtSO/L4uHcT204aNH3nZsuo4w3I=;
+        b=Juga2VkSB6j3qpShpyiOhAfEeXuyd/oKg3pxtsGhYfvow0/yWcioS1Pw9+nz2tWOAV
+         nKWamG8a8LhBuOYNYDSno7qlP02Es6G5bXImo5L7/elH+iCzHHYl3/K4zUYGl2H4BysA
+         vEOutjUIaHjhYefi5GS/KP6luKc+cp71URzU6WTxDLzHPqNDy65pIwC+iCFIlWRNTCtr
+         RRSaR1cSM6IitGTO++FgjH/raV7j5Eky3fxMaJZsVbtPGhkmT2TLlqzkOmFDoxu6FEdm
+         aAhvn8V97emRkfEvyEc46iiiJixyAkEiOamGyMwGknxWMQP2TFi9jqdn+0PwRa7r797Q
+         hhIw==
+X-Gm-Message-State: ACgBeo0LjEtJNXFy+UaXHCGF/E2UX6WeP0quLPCIdMYGRnLEVnySnaLw
+        Idv8+VuYg5lYk2sC92mmdUPOI2u8Wb8=
+X-Google-Smtp-Source: AA6agR4NV6ilNxju28gGAtvFvCbwtdHUFc7GAdPfKwMLLiKqvqvTVqp9b9JTlBsJQYJm3qq2uA/+hIhhY2U=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a63:445b:0:b0:42c:7b67:287e with SMTP id
- t27-20020a63445b000000b0042c7b67287emr6195583pgk.166.1661906118100; Tue, 30
- Aug 2022 17:35:18 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:90a:249:b0:1e0:a8a3:3c6c with SMTP id
+ t9-20020a17090a024900b001e0a8a33c6cmr26559pje.0.1661906112763; Tue, 30 Aug
+ 2022 17:35:12 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed, 31 Aug 2022 00:34:52 +0000
+Date:   Wed, 31 Aug 2022 00:34:49 +0000
 In-Reply-To: <20220831003506.4117148-1-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220831003506.4117148-1-seanjc@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220831003506.4117148-6-seanjc@google.com>
-Subject: [PATCH 05/19] KVM: SVM: Compute dest based on sender's x2APIC status
- for AVIC kick
+Message-ID: <20220831003506.4117148-3-seanjc@google.com>
+Subject: [PATCH 02/19] KVM: SVM: Don't put/load AVIC when setting virtual APIC mode
 From:   Sean Christopherson <seanjc@google.com>
 To:     Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
@@ -67,42 +66,126 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Compute the destination from ICRH using the sender's x2APIC status, not
-each (potential) target's x2APIC status.
+Move the VMCB updates from avic_refresh_apicv_exec_ctrl() into
+avic_set_virtual_apic_mode() and invert the dependency being said
+functions to avoid calling avic_vcpu_{load,put}() and
+avic_set_pi_irte_mode() when "only" setting the virtual APIC mode.
 
-Fixes: c514d3a348ac ("KVM: SVM: Update avic_kick_target_vcpus to support 32-bit APIC ID")
-Cc: Li RongQing <lirongqing@baidu.com>
+avic_set_virtual_apic_mode() is invoked from common x86 with preemption
+enabled, which makes avic_vcpu_{load,put}() unhappy.  Luckily, calling
+those and updating IRTE stuff is unnecessary as the only reason
+avic_set_virtual_apic_mode() is called is to handle transitions between
+xAPIC and x2APIC that don't also toggle APICv activation.  And if
+activation doesn't change, there's no need to fiddle with the physical
+APIC ID table or update IRTE.
+
+The "full" refresh is guaranteed to be called if activation changes in
+this case as the only call to the "set" path is:
+
+	kvm_vcpu_update_apicv(vcpu);
+	static_call_cond(kvm_x86_set_virtual_apic_mode)(vcpu);
+
+and kvm_vcpu_update_apicv() invokes the refresh if activation changes:
+
+	if (apic->apicv_active == activate)
+		goto out;
+
+	apic->apicv_active = activate;
+	kvm_apic_update_apicv(vcpu);
+	static_call(kvm_x86_refresh_apicv_exec_ctrl)(vcpu);
+
+  WARNING: CPU: 183 PID: 49186 at arch/x86/kvm/svm/avic.c:1081 avic_vcpu_put+0xde/0xf0 [kvm_amd]
+  CPU: 183 PID: 49186 Comm: stable Tainted: G           O       6.0.0-smp--fcddbca45f0a-sink #34
+  Hardware name: Google, Inc. Arcadia_IT_80/Arcadia_IT_80, BIOS 10.48.0 01/27/2022
+  RIP: 0010:avic_vcpu_put+0xde/0xf0 [kvm_amd]
+   avic_refresh_apicv_exec_ctrl+0x142/0x1c0 [kvm_amd]
+   avic_set_virtual_apic_mode+0x5a/0x70 [kvm_amd]
+   kvm_lapic_set_base+0x149/0x1a0 [kvm]
+   kvm_set_apic_base+0x8f/0xd0 [kvm]
+   kvm_set_msr_common+0xa3a/0xdc0 [kvm]
+   svm_set_msr+0x364/0x6b0 [kvm_amd]
+   __kvm_set_msr+0xb8/0x1c0 [kvm]
+   kvm_emulate_wrmsr+0x58/0x1d0 [kvm]
+   msr_interception+0x1c/0x30 [kvm_amd]
+   svm_invoke_exit_handler+0x31/0x100 [kvm_amd]
+   svm_handle_exit+0xfc/0x160 [kvm_amd]
+   vcpu_enter_guest+0x21bb/0x23e0 [kvm]
+   vcpu_run+0x92/0x450 [kvm]
+   kvm_arch_vcpu_ioctl_run+0x43e/0x6e0 [kvm]
+   kvm_vcpu_ioctl+0x559/0x620 [kvm]
+
+Fixes: 05c4fe8c1bd9 ("KVM: SVM: Refresh AVIC configuration when changing APIC mode")
+Cc: stable@vger.kernel.org
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: Maxim Levitsky <mlevitsk@redhat.com>
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/svm/avic.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ arch/x86/kvm/svm/avic.c | 31 +++++++++++++++----------------
+ 1 file changed, 15 insertions(+), 16 deletions(-)
 
 diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index b59f8ee2671f..3ace0f2f52f0 100644
+index b1ade555e8d0..f3a74c8284cb 100644
 --- a/arch/x86/kvm/svm/avic.c
 +++ b/arch/x86/kvm/svm/avic.c
-@@ -441,6 +441,7 @@ static int avic_kick_target_vcpus_fast(struct kvm *kvm, struct kvm_lapic *source
- static void avic_kick_target_vcpus(struct kvm *kvm, struct kvm_lapic *source,
- 				   u32 icrl, u32 icrh, u32 index)
- {
-+	u32 dest = apic_x2apic_mode(source) ? icrh : GET_XAPIC_DEST_FIELD(icrh);
- 	unsigned long i;
- 	struct kvm_vcpu *vcpu;
+@@ -741,18 +741,6 @@ void avic_apicv_post_state_restore(struct kvm_vcpu *vcpu)
+ 	avic_handle_ldr_update(vcpu);
+ }
  
-@@ -456,13 +457,6 @@ static void avic_kick_target_vcpus(struct kvm *kvm, struct kvm_lapic *source,
- 	 * since entered the guest will have processed pending IRQs at VMRUN.
- 	 */
- 	kvm_for_each_vcpu(i, vcpu, kvm) {
--		u32 dest;
+-void avic_set_virtual_apic_mode(struct kvm_vcpu *vcpu)
+-{
+-	if (!lapic_in_kernel(vcpu) || avic_mode == AVIC_MODE_NONE)
+-		return;
 -
--		if (apic_x2apic_mode(vcpu->arch.apic))
--			dest = icrh;
--		else
--			dest = GET_XAPIC_DEST_FIELD(icrh);
+-	if (kvm_get_apic_mode(vcpu) == LAPIC_MODE_INVALID) {
+-		WARN_ONCE(true, "Invalid local APIC state (vcpu_id=%d)", vcpu->vcpu_id);
+-		return;
+-	}
+-	avic_refresh_apicv_exec_ctrl(vcpu);
+-}
 -
- 		if (kvm_apic_match_dest(vcpu, source, icrl & APIC_SHORT_MASK,
- 					dest, icrl & APIC_DEST_MASK)) {
- 			vcpu->arch.apic->irr_pending = true;
+ static int avic_set_pi_irte_mode(struct kvm_vcpu *vcpu, bool activate)
+ {
+ 	int ret = 0;
+@@ -1094,17 +1082,18 @@ void avic_vcpu_put(struct kvm_vcpu *vcpu)
+ 	WRITE_ONCE(*(svm->avic_physical_id_cache), entry);
+ }
+ 
+-
+-void avic_refresh_apicv_exec_ctrl(struct kvm_vcpu *vcpu)
++void avic_set_virtual_apic_mode(struct kvm_vcpu *vcpu)
+ {
+ 	struct vcpu_svm *svm = to_svm(vcpu);
+ 	struct vmcb *vmcb = svm->vmcb01.ptr;
+-	bool activated = kvm_vcpu_apicv_active(vcpu);
++
++	if (!lapic_in_kernel(vcpu) || avic_mode == AVIC_MODE_NONE)
++		return;
+ 
+ 	if (!enable_apicv)
+ 		return;
+ 
+-	if (activated) {
++	if (kvm_vcpu_apicv_active(vcpu)) {
+ 		/**
+ 		 * During AVIC temporary deactivation, guest could update
+ 		 * APIC ID, DFR and LDR registers, which would not be trapped
+@@ -1118,6 +1107,16 @@ void avic_refresh_apicv_exec_ctrl(struct kvm_vcpu *vcpu)
+ 		avic_deactivate_vmcb(svm);
+ 	}
+ 	vmcb_mark_dirty(vmcb, VMCB_AVIC);
++}
++
++void avic_refresh_apicv_exec_ctrl(struct kvm_vcpu *vcpu)
++{
++	bool activated = kvm_vcpu_apicv_active(vcpu);
++
++	if (!enable_apicv)
++		return;
++
++	avic_set_virtual_apic_mode(vcpu);
+ 
+ 	if (activated)
+ 		avic_vcpu_load(vcpu, vcpu->cpu);
 -- 
 2.37.2.672.g94769d06f0-goog
 
