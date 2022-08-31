@@ -2,100 +2,300 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFA46C0502A
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:04:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C896C0502A
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:04:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231899AbiHaOEB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 10:04:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43886 "EHLO
+        id S231691AbiHaOEy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 10:04:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232075AbiHaODo (ORCPT
+        with ESMTP id S231727AbiHaOEc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 10:03:44 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4724D7584;
-        Wed, 31 Aug 2022 07:03:32 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id q3so10985886pjg.3;
-        Wed, 31 Aug 2022 07:03:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=RKP/ZYjQ5LLZx8BdjnHeUNuUWKQLAOrkHnnLMRbIo6g=;
-        b=Q3IkbhY2RfoBmt+qrOm3SlTSGuJw+s5kdmR95OQdDMohpQYqiv0JBaEm51XCr1n8+f
-         FxPliqYcGW1IepktBKvaVYfMniyobeP7hi1620AmKrSI4gXaVZDjEO848kMFFsvumPvQ
-         yFVnmltYYqsP0pV4OI3rD11kIaBG7XIutAHIgMAiFG11pfw4bfUAvgUIdFusPY0TCsD3
-         xeT9Xw7KT91eeDMWwc6LZMXyeTvBFZBx/6/lWHyKcd8qFFfkkWKoHd5fiRed9m6Rc3LL
-         UNxJdb40x7tr7FLATfr69ahY4RAjhh5CoaivucoVSzA8PeOpr/oqMdaHRJhS8xUfTtVp
-         OVRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=RKP/ZYjQ5LLZx8BdjnHeUNuUWKQLAOrkHnnLMRbIo6g=;
-        b=GrBvqYeqzOJchxF3e/72xcvM2oUo6aGwCEMRLgiNOy+AxRPZdtET2Y9XU5cmNd7Wtu
-         bJeZ1M1JDceMYhKQ83IfqyqtMd1iXC9WI/GfOCfZJk5sKm+KDIZZev47eB1yvyR14DIf
-         WjUD3O06AFU0ZI29cTVB6iKRPb24gQi3Q5DoIr43r1/Gxm+3bHp/2VvOemO8AZ6Z9ew6
-         77SJ3zfnub/d0VVlEdDHPHxmbVTo/1WwT1xUPCFItF9nWmZTf/hXKQ7XWZLGisXVYES9
-         7DsipobAzhjcH1zvGAMdJKcM7KyID3k3fNXpZVAOseHPXVGRW7i5rX5W/wLBt0zVzpC4
-         Ngnw==
-X-Gm-Message-State: ACgBeo2XW/DxXg91KbrcnSWmh19yIZSFxX0FJbQNpo+W1XrMTDkfrs75
-        pR7mSLS8u/IW4nwLlC4FQ88=
-X-Google-Smtp-Source: AA6agR64POgYbk5BQ45tnGxc5PZdhejfTcLDwh5aFsNEC2MFKbAKuZN+r97xfhvMBYSEfNNJY0XEjw==
-X-Received: by 2002:a17:903:2651:b0:173:3dc3:a19b with SMTP id je17-20020a170903265100b001733dc3a19bmr25616970plb.79.1661954611654;
-        Wed, 31 Aug 2022 07:03:31 -0700 (PDT)
-Received: from carlis-virtual-machine.localdomain ([156.236.96.164])
-        by smtp.gmail.com with ESMTPSA id ik21-20020a170902ab1500b0016f057b88c9sm11627936plb.26.2022.08.31.07.03.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Aug 2022 07:03:31 -0700 (PDT)
-From:   Xuezhi Zhang <zhangxuezhi3@gmail.com>
-To:     kashyap.desai@broadcom.com, sumit.saxena@broadcom.com,
-        shivasharan.srikanteshwara@broadcom.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com
-Cc:     megaraidlinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, zhangxuezhi3@gmail.com,
-        Xuezhi Zhang <zhangxuezhi1@coolpad.com>
-Subject: [PATCH] scsi: megaraid: convert sysfs snprintf to sysfs_emit
-Date:   Wed, 31 Aug 2022 22:03:25 +0800
-Message-Id: <20220831140325.396295-1-zhangxuezhi3@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 31 Aug 2022 10:04:32 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14C4FD7588;
+        Wed, 31 Aug 2022 07:04:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1661954668; x=1693490668;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=I4HAbKA0UyO2MIs7bemGVv7JTBttCA5lMY0VsZmgrVw=;
+  b=VLiwHle4ZqMe1d2GhIZuA+j2SaPbDyLxY4MiXicEeWm7uwBNgwmHEY2w
+   S7ahUC8LENL4RIX0Ex3pRSDYG/76LH+UBGJ7InYNvxHP088vxswYbYhSd
+   OJ0abv9SNuPIsg0MxmNYoS68t+CYCwBZh8g+/86qvGQotVgSA1breu2KQ
+   mFLEGoyOpbHEPqYKTOUnqs82SkA76WMODJ3mSMsvhb3vziBNfdrQrGkQU
+   simDxf/K7nkep/P3uZrs0cm4yOigS8nL2pM6ZhwEx2iWPuJFFbXYv69+g
+   382Kew+K/ebu5WYci6GJHQX0s9sz7mAmu3di3HW0XvtALTK+Eg2Xcc/Lc
+   w==;
+X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
+   d="scan'208";a="175003959"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 Aug 2022 07:04:28 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Wed, 31 Aug 2022 06:54:26 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Wed, 31 Aug 2022 06:54:24 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <ludovic.desroches@microchip.com>, <linus.walleij@linaro.org>,
+        <linux@armlinux.org.uk>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH 2/3] pinctrl: at91: move gpio suspend/resume calls to driver's context
+Date:   Wed, 31 Aug 2022 16:56:35 +0300
+Message-ID: <20220831135636.3176406-3-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220831135636.3176406-1-claudiu.beznea@microchip.com>
+References: <20220831135636.3176406-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xuezhi Zhang <zhangxuezhi1@coolpad.com>
+Move gpio suspend/resume execution local to driver and let it execute as
+close as possible to the moment the machine specific PM code is executed
+(by setting it to .noirq member of dev_pm_ops). With this the
+at91_pinctrl_gpio_suspend()/at91_pinctrl_gpio_resume() calls were removed
+from arch/arm/mach-at91/pm.c and also a header has been removed.
+The patch has been checked on sama5d3_xplained, sam9x60ek,
+sama5d2_xplained, sama7g5ek boards.
 
-Fix up all sysfs show entries to use sysfs_emit
-
-Signed-off-by: Xuezhi Zhang <zhangxuezhi1@coolpad.com>
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- drivers/scsi/megaraid/megaraid_mbox.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/mach-at91/pm.c        | 15 -------
+ drivers/pinctrl/pinctrl-at91.c | 79 ++++++++++++++++------------------
+ include/soc/at91/pm.h          | 16 -------
+ 3 files changed, 36 insertions(+), 74 deletions(-)
+ delete mode 100644 include/soc/at91/pm.h
 
-diff --git a/drivers/scsi/megaraid/megaraid_mbox.c b/drivers/scsi/megaraid/megaraid_mbox.c
-index 157c3bdb50be..132de68c14e9 100644
---- a/drivers/scsi/megaraid/megaraid_mbox.c
-+++ b/drivers/scsi/megaraid/megaraid_mbox.c
-@@ -3979,7 +3979,7 @@ megaraid_mbox_app_hndl_show(struct device *dev, struct device_attribute *attr, c
+diff --git a/arch/arm/mach-at91/pm.c b/arch/arm/mach-at91/pm.c
+index f4501dea98b0..60dc56d8acfb 100644
+--- a/arch/arm/mach-at91/pm.c
++++ b/arch/arm/mach-at91/pm.c
+@@ -19,8 +19,6 @@
+ #include <linux/clk/at91_pmc.h>
+ #include <linux/platform_data/atmel.h>
  
- 	app_hndl = mraid_mm_adapter_app_handle(adapter->unique_id);
+-#include <soc/at91/pm.h>
+-
+ #include <asm/cacheflush.h>
+ #include <asm/fncpy.h>
+ #include <asm/system_misc.h>
+@@ -656,16 +654,6 @@ static int at91_pm_enter(suspend_state_t state)
+ 	if (ret)
+ 		return ret;
  
--	return snprintf(buf, 8, "%u\n", app_hndl);
-+	return sysfs_emit(buf, "%u\n", app_hndl);
- }
- 
- 
-@@ -4048,7 +4048,7 @@ megaraid_mbox_ld_show(struct device *dev, struct device_attribute *attr, char *b
- 		}
+-#ifdef CONFIG_PINCTRL_AT91
+-	/*
+-	 * FIXME: this is needed to communicate between the pinctrl driver and
+-	 * the PM implementation in the machine. Possibly part of the PM
+-	 * implementation should be moved down into the pinctrl driver and get
+-	 * called as part of the generic suspend/resume path.
+-	 */
+-	at91_pinctrl_gpio_suspend();
+-#endif
+-
+ 	switch (state) {
+ 	case PM_SUSPEND_MEM:
+ 	case PM_SUSPEND_STANDBY:
+@@ -690,9 +678,6 @@ static int at91_pm_enter(suspend_state_t state)
  	}
  
--	return snprintf(buf, 36, "%d %d %d %d\n", scsi_id, logical_drv,
-+	return sysfs_emit(buf, "%d %d %d %d\n", scsi_id, logical_drv,
- 			ldid_map, app_hndl);
+ error:
+-#ifdef CONFIG_PINCTRL_AT91
+-	at91_pinctrl_gpio_resume();
+-#endif
+ 	at91_pm_config_quirks(false);
+ 	return 0;
+ }
+diff --git a/drivers/pinctrl/pinctrl-at91.c b/drivers/pinctrl/pinctrl-at91.c
+index 0b78fd48fd02..631a6289c2b6 100644
+--- a/drivers/pinctrl/pinctrl-at91.c
++++ b/drivers/pinctrl/pinctrl-at91.c
+@@ -22,8 +22,7 @@
+ #include <linux/pinctrl/pinmux.h>
+ /* Since we request GPIOs from ourself */
+ #include <linux/pinctrl/consumer.h>
+-
+-#include <soc/at91/pm.h>
++#include <linux/pm.h>
+ 
+ #include "pinctrl-at91.h"
+ #include "core.h"
+@@ -44,6 +43,9 @@ struct at91_pinctrl_mux_ops;
+  * @regbase: PIO bank virtual address
+  * @clock: associated clock
+  * @ops: at91 pinctrl mux ops
++ * @wakeups: wakeup interrupts
++ * @backups: interrupts disabled in suspend
++ * @id: gpio chip identifier
+  */
+ struct at91_gpio_chip {
+ 	struct gpio_chip	chip;
+@@ -55,6 +57,9 @@ struct at91_gpio_chip {
+ 	void __iomem		*regbase;
+ 	struct clk		*clock;
+ 	const struct at91_pinctrl_mux_ops *ops;
++	u32			wakeups;
++	u32			backups;
++	u32			id;
+ };
+ 
+ static struct at91_gpio_chip *gpio_chips[MAX_GPIO_BANKS];
+@@ -1627,70 +1632,51 @@ static void gpio_irq_ack(struct irq_data *d)
+ 	/* the interrupt is already cleared before by reading ISR */
  }
  
+-static u32 wakeups[MAX_GPIO_BANKS];
+-static u32 backups[MAX_GPIO_BANKS];
+-
+ static int gpio_irq_set_wake(struct irq_data *d, unsigned state)
+ {
+ 	struct at91_gpio_chip *at91_gpio = irq_data_get_irq_chip_data(d);
+-	unsigned	bank = at91_gpio->pioc_idx;
+ 	unsigned mask = 1 << d->hwirq;
+ 
+-	if (unlikely(bank >= MAX_GPIO_BANKS))
+-		return -EINVAL;
+-
+ 	if (state)
+-		wakeups[bank] |= mask;
++		at91_gpio->wakeups |= mask;
+ 	else
+-		wakeups[bank] &= ~mask;
++		at91_gpio->wakeups &= ~mask;
+ 
+ 	irq_set_irq_wake(at91_gpio->pioc_virq, state);
+ 
+ 	return 0;
+ }
+ 
+-void at91_pinctrl_gpio_suspend(void)
++static int at91_gpio_suspend(struct device *dev)
+ {
+-	int i;
++	struct at91_gpio_chip *at91_chip = dev_get_drvdata(dev);
++	void __iomem *pio = at91_chip->regbase;
+ 
+-	for (i = 0; i < gpio_banks; i++) {
+-		void __iomem  *pio;
++	at91_chip->backups = readl_relaxed(pio + PIO_IMR);
++	writel_relaxed(at91_chip->backups, pio + PIO_IDR);
++	writel_relaxed(at91_chip->wakeups, pio + PIO_IER);
+ 
+-		if (!gpio_chips[i])
+-			continue;
+-
+-		pio = gpio_chips[i]->regbase;
+-
+-		backups[i] = readl_relaxed(pio + PIO_IMR);
+-		writel_relaxed(backups[i], pio + PIO_IDR);
+-		writel_relaxed(wakeups[i], pio + PIO_IER);
++	if (!at91_chip->wakeups)
++		clk_disable_unprepare(at91_chip->clock);
++	else
++		printk(KERN_DEBUG "GPIO-%c may wake for %08x\n",
++		       'A' + at91_chip->id, at91_chip->wakeups);
+ 
+-		if (!wakeups[i])
+-			clk_disable_unprepare(gpio_chips[i]->clock);
+-		else
+-			printk(KERN_DEBUG "GPIO-%c may wake for %08x\n",
+-			       'A'+i, wakeups[i]);
+-	}
++	return 0;
+ }
+ 
+-void at91_pinctrl_gpio_resume(void)
++static int at91_gpio_resume(struct device *dev)
+ {
+-	int i;
++	struct at91_gpio_chip *at91_chip = dev_get_drvdata(dev);
++	void __iomem *pio = at91_chip->regbase;
+ 
+-	for (i = 0; i < gpio_banks; i++) {
+-		void __iomem  *pio;
+-
+-		if (!gpio_chips[i])
+-			continue;
++	if (!at91_chip->wakeups)
++		clk_prepare_enable(at91_chip->clock);
+ 
+-		pio = gpio_chips[i]->regbase;
++	writel_relaxed(at91_chip->wakeups, pio + PIO_IDR);
++	writel_relaxed(at91_chip->backups, pio + PIO_IER);
+ 
+-		if (!wakeups[i])
+-			clk_prepare_enable(gpio_chips[i]->clock);
+-
+-		writel_relaxed(wakeups[i], pio + PIO_IDR);
+-		writel_relaxed(backups[i], pio + PIO_IER);
+-	}
++	return 0;
+ }
+ 
+ static void gpio_irq_handler(struct irq_desc *desc)
+@@ -1872,6 +1858,7 @@ static int at91_gpio_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	at91_chip->chip = at91_gpio_template;
++	at91_chip->id = alias_idx;
+ 
+ 	chip = &at91_chip->chip;
+ 	chip->label = dev_name(&pdev->dev);
+@@ -1917,6 +1904,7 @@ static int at91_gpio_probe(struct platform_device *pdev)
+ 		goto gpiochip_add_err;
+ 
+ 	gpio_chips[alias_idx] = at91_chip;
++	platform_set_drvdata(pdev, at91_chip);
+ 	gpio_banks = max(gpio_banks, alias_idx + 1);
+ 
+ 	dev_info(&pdev->dev, "at address %p\n", at91_chip->regbase);
+@@ -1932,10 +1920,15 @@ static int at91_gpio_probe(struct platform_device *pdev)
+ 	return ret;
+ }
+ 
++static const struct dev_pm_ops at91_gpio_pm_ops = {
++	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(at91_gpio_suspend, at91_gpio_resume)
++};
++
+ static struct platform_driver at91_gpio_driver = {
+ 	.driver = {
+ 		.name = "gpio-at91",
+ 		.of_match_table = at91_gpio_of_match,
++		.pm = pm_ptr(&at91_gpio_pm_ops),
+ 	},
+ 	.probe = at91_gpio_probe,
+ };
+diff --git a/include/soc/at91/pm.h b/include/soc/at91/pm.h
+deleted file mode 100644
+index 7a41e53a3ffa..000000000000
+--- a/include/soc/at91/pm.h
++++ /dev/null
+@@ -1,16 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0-only */
+-/*
+- * Atmel Power Management
+- *
+- * Copyright (C) 2020 Atmel
+- *
+- * Author: Lee Jones <lee.jones@linaro.org>
+- */
+-
+-#ifndef __SOC_ATMEL_PM_H
+-#define __SOC_ATMEL_PM_H
+-
+-void at91_pinctrl_gpio_suspend(void);
+-void at91_pinctrl_gpio_resume(void);
+-
+-#endif /* __SOC_ATMEL_PM_H */
 -- 
-2.25.1
+2.34.1
 
