@@ -2,60 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D411AECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 06:05:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B11A4ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 06:06:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230029AbiHaGF2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 02:05:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38254 "EHLO
+        id S229653AbiHaGGa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 02:06:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230023AbiHaGFY (ORCPT
+        with ESMTP id S229599AbiHaGG0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 02:05:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A81531226;
-        Tue, 30 Aug 2022 23:05:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA758616FF;
-        Wed, 31 Aug 2022 06:05:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1DEEC433C1;
-        Wed, 31 Aug 2022 06:05:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661925921;
-        bh=1o734kbPT2aSPyWXx6uaFvK3CaaLOF8FTwNTJ7jLcj0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lg6WJEPRuwERlCGI5pF5z5HBjJMfJZkC+RDVNKs4tio92gfSZSK3HC4zTfoZNKU0o
-         afnSltf1KXT4QifNdqzeW81TgCyvkGAj+PONyfedDeD7c3+CBvYSp9Q9AlMnSz1QvV
-         rSE6Cvgg7oIMTIkEG+dEg+SJ0JdiM2ajoZzBlnuwrKuHLX5o89mZjRJzBeXB6bd6b6
-         UsEKHThSKtOU25YnrehSDy2I4/utXOAm7EnCOe3s8WLec3DnAGQvP08io4/+QFNexx
-         vfDQeBT8pcpfRhuL0dI1h3w0YlPSR54RWqntCiO327X+2m9txc2JknjTM4eUbRbtFg
-         Tf0UXbE8qanDw==
-Date:   Tue, 30 Aug 2022 23:05:19 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     cgel.zte@gmail.com
-Cc:     idosch@nvidia.com, petrm@nvidia.com, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jinpeng Cui <cui.jinpeng2@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH linux-next] mlxsw: remove redundant err variable
-Message-ID: <20220830230519.4e92813a@kernel.org>
-In-Reply-To: <20220829105454.266509-1-cui.jinpeng2@zte.com.cn>
-References: <20220829105454.266509-1-cui.jinpeng2@zte.com.cn>
+        Wed, 31 Aug 2022 02:06:26 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B8C7BBA78
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 23:06:24 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id by6so13524806ljb.11
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 23:06:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=ANWBqxWkat4oQFVKGRhdNPZ9ZiKYZ296HDF9WbmQQ+8=;
+        b=TbZpycTA3AqHS1/7eFvv9gYFRLluNX0H7KoZ9Yoy3jmt09xOepWw774eJiYL7WS7uw
+         7LVC5U8tnfxTbUNXoVCdBLSf3Ao4ByC6cEs+tbmBSq9MJuBUV7rrvZJtrUGjYwKjwQxC
+         G2a/4fk+EwasMBZU8VBFamTdQ9qcK0GvR9ZxK5uVMvEW4vVFixcS6tzpRI2dyvX2Xad0
+         MCNDp8I797KzzZP0DAPZvCA7PdWJb/7o+Dj/G9lKMWi6jxk0+++iBNGVsp+JYzHn6r4x
+         YEok1Pkf0QRmH8VgbIaulRZT+V05dFyjB4nTVLuDVSzwCmxRVEivjFs2G3feZVANrufc
+         F8Dg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=ANWBqxWkat4oQFVKGRhdNPZ9ZiKYZ296HDF9WbmQQ+8=;
+        b=zJapZqrYbStgdM8/XtYEkMhlkdcjsRcYKAJ6Yb+3zER7ul2t5P/2joQ7G1qSPuUH6r
+         rIcJuFUPPHldK+xxJ4bqn78llkEPY//tVBdDDTB/aWooLLaj3sTFnIBAAyjjP/Z+6ozL
+         vlL/E4qgA/qzUritLPfpWg7GdnQeF8g+JV9PJNoAqjR+aJ7FaDFMwCjUWCKWRmrIlvDj
+         V5i8CdR7xBbQs/BnFHUOqC+v0OqQmgHWgkYWxNWVPa4o02QAG5RCDKx6cWccju0sfFlJ
+         z20L8iI1tk/h1ZIMSV77m7Kl0JXC2WXvwhOX0NVGZhbpTf0+Es1GYD0MwzAc3kaKQy7e
+         fG5Q==
+X-Gm-Message-State: ACgBeo22Nk71I7eXNATeeMxDwcCk4ivYWLRf6YYJ9hEsCVU4onT2lI14
+        NUocY5L2FBvIfZORZ3uWVQh0PQ==
+X-Google-Smtp-Source: AA6agR4QWoZyhAAEzosHUW29HjdzdM6WXVR3nCVWVK7p9w1Z5PugZ8sseAxrpNPkz7l7u4HkxqZT7g==
+X-Received: by 2002:a2e:b987:0:b0:268:4772:8e41 with SMTP id p7-20020a2eb987000000b0026847728e41mr1034144ljp.458.1661925982704;
+        Tue, 30 Aug 2022 23:06:22 -0700 (PDT)
+Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
+        by smtp.gmail.com with ESMTPSA id e15-20020a05651c038f00b00264bb2351e8sm569511ljp.7.2022.08.30.23.06.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Aug 2022 23:06:22 -0700 (PDT)
+Message-ID: <daf497c5-4422-b8ce-1bbe-f2722962715c@linaro.org>
+Date:   Wed, 31 Aug 2022 09:06:21 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v5 2/2] dts: arm: at91: Add SAMA5D3-EDS board
+Content-Language: en-US
+To:     Jerry.Ray@microchip.com, robh+dt@kernel.org,
+        Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com,
+        Ludovic.Desroches@microchip.com, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220830152428.12625-1-jerry.ray@microchip.com>
+ <20220830152428.12625-2-jerry.ray@microchip.com>
+ <92c213de-872c-bc0b-382c-c9940309f272@linaro.org>
+ <MWHPR11MB169397E1C572642536803951EF799@MWHPR11MB1693.namprd11.prod.outlook.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <MWHPR11MB169397E1C572642536803951EF799@MWHPR11MB1693.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 29 Aug 2022 10:54:55 +0000 cgel.zte@gmail.com wrote:
-> +	return mlxsw_core_bus_device_register(mlxsw_core->bus_info,
->  					     mlxsw_core->bus,
->  					     mlxsw_core->bus_priv, true,
->  					     devlink, extack);
+On 30/08/2022 23:16, Jerry.Ray@microchip.com wrote:
+>>
+>>> +
+>>> +     chosen {
+>>> +             stdout-path = "serial0:115200n8";
+>>> +     };
+>>> +
+>>> +     clocks {
+>>> +             slow_xtal {
+>>
+>> No underscores in node names. Generic node names, so at least add some generic prefix or suffix, e.g.: "slow-xtal-clock"
+>>
+> 
+> I'm not at liberty to change these names.  Pre-existing drivers are counting on them.
+> The hardware leverages the SAMA5D3-xplained board.
+> I'm leveraging the at91-sama5d3_xplained.dts.
+> The board will not boot up if I modify the names.
 
-Please realign continuation lines so that their starts match the
-opening bracket. Please keep the review tags you received.
+For custom names you have clock-output-names... But anyway it seems you
+override existing nodes, so this should be override by label, not by
+entire path.
+
+Best regards,
+Krzysztof
