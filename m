@@ -2,92 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0810ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:11:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B87D9C0502C
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:11:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230243AbiHaKLl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 06:11:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44118 "EHLO
+        id S230437AbiHaKLz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 06:11:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229986AbiHaKLf (ORCPT
+        with ESMTP id S230332AbiHaKLs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 06:11:35 -0400
-X-Greylist: delayed 1854 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 31 Aug 2022 03:11:26 PDT
-Received: from mail-m964.mail.126.com (mail-m964.mail.126.com [123.126.96.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 09B41AEDB7
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 03:11:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=qV7ak
-        zLaGXu9fGQiOMj/yV6cyOJkqSiwyUBHI4SCrYU=; b=LCSWjsF//RrnWuIz0RXeM
-        OnrYonwQWxDeOwZeNa+eJn1aPYToLOAd2fMKzsjujzJz8ttzRD3ZvUmUqDOcf27d
-        tAyrw5EFXgYd+JwS4XYdCseVyxANzevah7Go9seTtV4HM1pWCBkpFVTDRCqQafE/
-        VPzh3vXW8IVOf9q0cJy/9U=
-Received: from localhost.localdomain (unknown [116.128.244.169])
-        by smtp9 (Coremail) with SMTP id NeRpCgB3lxNPLA9jA+xpAg--.24384S2;
-        Wed, 31 Aug 2022 17:39:28 +0800 (CST)
-From:   Bing Huang <huangbing775@126.com>
-To:     rostedt@goodmis.org, dietmar.eggemann@arm.com
-Cc:     brauner@kernel.org, bristot@redhat.com, bsegall@google.com,
-        juri.lelli@redhat.com, linux-kernel@vger.kernel.org,
-        mgorman@suse.de, mingo@redhat.com, peterz@infradead.org,
-        vincent.guittot@linaro.org
-Subject: [PATCH RESEND] sched/topology: Add __init for init_defrootdomain
-Date:   Wed, 31 Aug 2022 17:39:27 +0800
-Message-Id: <20220831093927.5904-1-huangbing775@126.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 31 Aug 2022 06:11:48 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 986DDB943B;
+        Wed, 31 Aug 2022 03:11:43 -0700 (PDT)
+Received: from fraeml739-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MHg1R4Vbhz67yJP;
+        Wed, 31 Aug 2022 18:11:07 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ fraeml739-chm.china.huawei.com (10.206.15.220) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 31 Aug 2022 12:11:41 +0200
+Received: from localhost (10.202.226.42) by lhrpeml500005.china.huawei.com
+ (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 31 Aug
+ 2022 11:11:40 +0100
+Date:   Wed, 31 Aug 2022 11:11:39 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To:     Robert Richter <rrichter@amd.com>
+CC:     Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Ben Widawsky <bwidawsk@kernel.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        "Bjorn Helgaas" <bhelgaas@google.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        <linux-cxl@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Len Brown <lenb@kernel.org>, <linux-pci@vger.kernel.org>,
+        <linux-acpi@vger.kernel.org>
+Subject: Re: [PATCH 06/15] PCI/ACPI: Link host bridge to its ACPI fw node
+Message-ID: <20220831111139.0000560f@huawei.com>
+In-Reply-To: <20220831081603.3415-7-rrichter@amd.com>
+References: <20220831081603.3415-1-rrichter@amd.com>
+        <20220831081603.3415-7-rrichter@amd.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: NeRpCgB3lxNPLA9jA+xpAg--.24384S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7Cr48ury3Kw4fJw1xKr43GFg_yoW8JFyrpF
-        yq9rW5G3y8GrWqq348C3ykurW3W3sxKw4Skan8tws8Jr1rGwn0gFn0vF43CryY9r45Gr4a
-        yF4qq342y3WUtFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07Undb8UUUUU=
-X-Originating-IP: [116.128.244.169]
-X-CM-SenderInfo: xkxd0w5elqwlixv6ij2wof0z/1tbijBBur1pEJLYbywAAsB
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.42]
+X-ClientProxiedBy: lhrpeml100004.china.huawei.com (7.191.162.219) To
+ lhrpeml500005.china.huawei.com (7.191.163.240)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bing Huang <huangbing@kylinos.cn>
+On Wed, 31 Aug 2022 10:15:54 +0200
+Robert Richter <rrichter@amd.com> wrote:
 
-init_defrootdomain is only used in initialization
+> A lookup of a host bridge's corresponding acpi device (struct
+> acpi_device) is not possible, for example:
+> 
+> 	adev = ACPI_COMPANION(&host_bridge->dev);
+> 
+> This could be useful to find a host bridge's fwnode handle and to
+> determine and call additional host bridge ACPI parameters and methods
+> such as HID/CID or _UID.
+> 
+> Make this work by linking the host bridge to its ACPI fw node.
+> 
+> Signed-off-by: Robert Richter <rrichter@amd.com>
 
-Signed-off-by: Bing Huang <huangbing@kylinos.cn>
----
- kernel/sched/sched.h    | 2 +-
- kernel/sched/topology.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index b0bf2287dd9d..cd761f1fc60c 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -883,7 +883,7 @@ struct root_domain {
- 	struct perf_domain __rcu *pd;
- };
- 
--extern void init_defrootdomain(void);
-+extern void __init init_defrootdomain(void);
- extern int sched_init_domains(const struct cpumask *cpu_map);
- extern void rq_attach_root(struct rq *rq, struct root_domain *rd);
- extern void sched_get_rd(struct root_domain *rd);
-diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
-index 8739c2a5a54e..dea9fa39e7c0 100644
---- a/kernel/sched/topology.c
-+++ b/kernel/sched/topology.c
-@@ -578,7 +578,7 @@ static int init_rootdomain(struct root_domain *rd)
-  */
- struct root_domain def_root_domain;
- 
--void init_defrootdomain(void)
-+void __init init_defrootdomain(void)
- {
- 	init_rootdomain(&def_root_domain);
- 
--- 
-2.25.1
+Seems sensible to me, though I'm not an expert in this are of the code.
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
 
-No virus found
-		Checked by Hillstone Network AntiVirus
+> ---
+>  drivers/acpi/pci_root.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/acpi/pci_root.c b/drivers/acpi/pci_root.c
+> index d57cf8454b93..846c979e4c29 100644
+> --- a/drivers/acpi/pci_root.c
+> +++ b/drivers/acpi/pci_root.c
+> @@ -1083,6 +1083,7 @@ struct pci_bus *acpi_pci_root_create(struct acpi_pci_root *root,
+>  		goto out_release_info;
+>  
+>  	host_bridge = to_pci_host_bridge(bus->bridge);
+> +	host_bridge->dev.fwnode = acpi_fwnode_handle(device);
+>  	if (!(root->osc_control_set & OSC_PCI_EXPRESS_NATIVE_HP_CONTROL))
+>  		host_bridge->native_pcie_hotplug = 0;
+>  	if (!(root->osc_control_set & OSC_PCI_SHPC_NATIVE_HP_CONTROL))
 
