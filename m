@@ -2,110 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 871CBECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 17:51:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A469ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 17:51:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231920AbiHaRve (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 13:51:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42770 "EHLO
+        id S231527AbiHaRvi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 13:51:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232007AbiHaRvS (ORCPT
+        with ESMTP id S229826AbiHaRv3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 13:51:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ABB74A803
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 10:51:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661968276;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=abvYViIvguPONv8Ppgd4Bbm0PP4cfU0m1JZK9rzmMe4=;
-        b=KyjnEs2QJzowb1aSJDPMsCY1pfLUpovaXoU2ZlNAfvCdroPrYa/I1gQZ9M/c8iBqBnVCfB
-        Po/chVPEDvRYTe8m/hJYw71Xsda2IP1G7PAKPJO6p2WH4Dpkf79EtM+Ns8/+JsOV1CxooI
-        RMmh+ko2+/o0aYXFfzOeJJplTXOyCHw=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-9-ycFemNoFM7OjuzlH2u3S7A-1; Wed, 31 Aug 2022 13:51:13 -0400
-X-MC-Unique: ycFemNoFM7OjuzlH2u3S7A-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A2299800124;
-        Wed, 31 Aug 2022 17:51:12 +0000 (UTC)
-Received: from starship (unknown [10.40.194.96])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0A6A7492C3B;
-        Wed, 31 Aug 2022 17:51:10 +0000 (UTC)
-Message-ID: <81ba71741c4098591f77de4275e2df4b558b19c0.camel@redhat.com>
-Subject: Re: [PATCH 14/19] KVM: x86: Honor architectural behavior for
- aliased 8-bit APIC IDs
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Li RongQing <lirongqing@baidu.com>
-Date:   Wed, 31 Aug 2022 20:51:04 +0300
-In-Reply-To: <Yw+PRS2hScQd4ShB@google.com>
-References: <20220831003506.4117148-1-seanjc@google.com>
-         <20220831003506.4117148-15-seanjc@google.com>
-         <5f6d99bc28fde0c48907991b6f67009430aea243.camel@redhat.com>
-         <Yw+PRS2hScQd4ShB@google.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Wed, 31 Aug 2022 13:51:29 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0293BB938;
+        Wed, 31 Aug 2022 10:51:27 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id fa2so7162413pjb.2;
+        Wed, 31 Aug 2022 10:51:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :sender:from:to:cc:subject:date;
+        bh=HeHd13NUasJVCk4KgKhrFLwhTEXtxTOChOcy1/oX1Kk=;
+        b=T3LTxnDRIVReJHwofzw8MZ2qvXfgMT4g2ghnvIhL51ORKruE4CxWgyIGCEuhsrqJGs
+         71nm++fCd3TSlgdZWfe8X5JelIqfT6FhGPivegZmZ9te5yfzyy8hp12KSxl2rgPnvFWg
+         lq+Um47WnFZ0ZA/pLUW9aFGS1PWKIn+L9RQSYQ0wFJXuSbbIvoQQhMX09g5xcgVFPn7Y
+         rvvANWn6DoJb1jxRagdXdjHJbZEm0FkR6kAKh61Fe4wAGKfHYTvdXHNlZgus30qhvZCc
+         P0iofwI3avwqlQmh4hFasO3tYD8P6/+cY3XrQNIdjji7xY3r3aThxJAzMSRqrYknUu9a
+         6c+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :sender:x-gm-message-state:from:to:cc:subject:date;
+        bh=HeHd13NUasJVCk4KgKhrFLwhTEXtxTOChOcy1/oX1Kk=;
+        b=pna58Aw7/7wb1pWtxC/qyjpRR7IMmwCAw+netoYACZ4kTEecXBKWZqXEXSX3NAYc0C
+         wZrgUPUK8ehtU+ePV5MZ1ZhNV/2HPZwjF1k8b6AlOXeH4CzTbCRDV2kE9eay12N9q8VM
+         yFpXbLZL0BH3D1y/AFbnpfbFyU4gXM09OYL6Pwp22W52Z4hqIMb373BbsADEu0A545A7
+         rjy8T7f0ZL7CmNaDcxRc+Ivpehxd90gj1HBz/UZgE16CE7LdaeMQBNaT1Wh1P1uC3LaB
+         z5GChAmWDBqlwXRDX0DpWcdfojOKLD9zVkTEBYK6DXuZHNc776EVn1ZFXBcRIM9/v9e9
+         LyxQ==
+X-Gm-Message-State: ACgBeo2a/IvfF7mLaiTp2KRaKpo8S/eBVrVt+f81ElkZowVtrVSVc5Q6
+        aQrbuciPiCqQhHaTNuXZhUQ=
+X-Google-Smtp-Source: AA6agR5HBd4CNH6zTJ8+Z3CX9INI+OIwMpJqpGsYZjR7qeZm/8PiyItn0SSCIb5xClMyuzkKaycn7Q==
+X-Received: by 2002:a17:903:187:b0:175:4e37:c294 with SMTP id z7-20020a170903018700b001754e37c294mr2271991plg.129.1661968287105;
+        Wed, 31 Aug 2022 10:51:27 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id 96-20020a17090a0fe900b001f54fa41242sm1558355pjz.42.2022.08.31.10.51.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 31 Aug 2022 10:51:25 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <7bf33aaa-11d3-2ff2-8c32-70e11340a3a9@roeck-us.net>
+Date:   Wed, 31 Aug 2022 10:51:23 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 1/3] usb: typec: tcpm: Add callbacks to mitigate
+ wakeups due to contaminant
+Content-Language: en-US
+To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Badhri Jagan Sridharan <badhri@google.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kyle Tso <kyletso@google.com>
+References: <20220831001555.285081-1-badhri@google.com>
+ <Yw90JmdIxg/YdUYH@kuha.fi.intel.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <Yw90JmdIxg/YdUYH@kuha.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-08-31 at 16:41 +0000, Sean Christopherson wrote:
-> On Wed, Aug 31, 2022, Maxim Levitsky wrote:
-> > On Wed, 2022-08-31 at 00:35 +0000, Sean Christopherson wrote:
-> > > -		if (!apic_x2apic_mode(apic) && !new->phys_map[xapic_id])
-> > > -			new->phys_map[xapic_id] = apic;
-> > > +		if (kvm->arch.x2apic_format) {
-> > > +			/* See also kvm_apic_match_physical_addr(). */
-> > > +			if ((apic_x2apic_mode(apic) || x2apic_id > 0xff) &&
-> > > +			    x2apic_id <= new->max_apic_id)
-> > > +				new->phys_map[x2apic_id] = apic;
-> > > +
-> > > +			if (!apic_x2apic_mode(apic) && !new->phys_map[xapic_id])
-> > > +				new->phys_map[xapic_id] = apic;
-> > > +		} else {
-> > > +			/*
-> > > +			 * Disable the optimized map if the physical APIC ID is
-> > > +			 * already mapped, i.e. is aliased to multiple vCPUs.
-> > > +			 * The optimized map requires a strict 1:1 mapping
-> > > +			 * between IDs and vCPUs.
-> > > +			 */
-> > > +			if (apic_x2apic_mode(apic))
-> > > +				physical_id = x2apic_id;
-> > > +			else
-> > > +				physical_id = xapic_id;
-> > > +
-> > > +			if (new->phys_map[physical_id]) {
-> > > +				kvfree(new);
-> > > +				new = NULL;
-> > > +				goto out;
-> > Why not to use the same  KVM_APIC_MODE_XAPIC_FLAT |  KVM_APIC_MODE_XAPIC_CLUSTER
-> > hack here?
+On 8/31/22 07:45, Heikki Krogerus wrote:
+> Hi Badhri,
 > 
-> The map's "mode" only covers logical mode (the cleanup patch renames "mode" to
-> "logical_mode" to make this more clear).  There is no equivalent for dealing with
-> the physical IDs.  Alternatively, a flag to say "physical map is disabled" could
-> be added, but KVM already has to cleanly handle a NULL map and in all likelihood
-> the logical map is also going to be disabled anyways.
+> On Tue, Aug 30, 2022 at 05:15:53PM -0700, Badhri Jagan Sridharan wrote:
+>> On some of the TCPC implementations, when the Type-C port is exposed
+>> to contaminants, such as water, TCPC stops toggling while reporting OPEN
+>> either by the time TCPM reads CC pin status or during CC debounce
+>> window. This causes TCPM to be stuck in TOGGLING state. If TCPM is made
+>> to restart toggling, the behavior recurs causing redundant CPU wakeups
+>> till the USB-C port is free of contaminant.
+>>
+>> [206199.287817] CC1: 0 -> 0, CC2: 0 -> 0 [state TOGGLING, polarity 0, disconnected]
+>> [206199.640337] CC1: 0 -> 0, CC2: 0 -> 0 [state TOGGLING, polarity 0, disconnected]
+>> [206199.985789] CC1: 0 -> 0, CC2: 0 -> 0 [state TOGGLING, polarity 0, disconnected]
+>> ...
+>>
+>> To mitigate redundant TCPM wakeups, TCPCs which do have the needed hardware
+>> can implement the check_contaminant callback which is invoked by TCPM
+>> to evaluate for presence of contaminant. Lower level TCPC driver can
+>> restart toggling through TCPM_PORT_CLEAN event when the driver detects
+>> that USB-C port is free of contaminant. check_contaminant callback also passes
+>> the disconnect_while_debounce flag which when true denotes that the CC pins
+>> transitioned to OPEN state during the CC debounce window.
 > 
-> Not to mention that APIC performance is unlikely to be a priority for any guest
-> that triggers this code :-)
+> I'm a little bit concerned about the size of the state machine. I
+> think this is a special case that at least in the beginning only the
+> Maxim port controller can support, but it's still mixed into the
+> "generic" state machine.
+> 
+> How about if we just add "run_state_machine" callback for the port
+> controller drivers so they can handle this kind of special cases on
+> their own - they can then also add custom states?
 > 
 
-Thanks for the explanation, that makes sense!
+Same concern here. I would very much prefer an approach as suggested below,
+especially since the changes around the added disconnect_while_debounce flag
+are extensive and difficult to verify.
 
-Best regards,
-	Maxim Levitsky
+Thanks,
+Guenter
+
+> diff --git a/drivers/usb/typec/tcpm/tcpm.c b/drivers/usb/typec/tcpm/tcpm.c
+> index 904c7b4ce2f0c..91c22945ba258 100644
+> --- a/drivers/usb/typec/tcpm/tcpm.c
+> +++ b/drivers/usb/typec/tcpm/tcpm.c
+> @@ -4858,9 +4858,11 @@ static void run_state_machine(struct tcpm_port *port)
+>                  tcpm_set_state(port, port->pwr_role == TYPEC_SOURCE ? SRC_READY : SNK_READY, 0);
+>                  break;
+>          default:
+> -               WARN(1, "Unexpected port state %d\n", port->state);
+>                  break;
+>          }
+> +
+> +       if (port->tcpc->run_state_machine)
+> +               port->tcpc->run_state_machine(port->tcpc);
+>   }
+>   
+>   static void tcpm_state_machine_work(struct kthread_work *work)
+> 
+> thanks,
+> 
 
