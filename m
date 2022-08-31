@@ -2,163 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71048ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 09:43:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38B36ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 09:43:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229939AbiHaJnO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 05:43:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48226 "EHLO
+        id S230002AbiHaJnw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 05:43:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229912AbiHaJnE (ORCPT
+        with ESMTP id S230207AbiHaJng (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 05:43:04 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0ED8C6FF5;
-        Wed, 31 Aug 2022 02:43:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661938980; x=1693474980;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=e5BXTTbEN9oyaXeHXCdrLZklrN/YmuZpv91NpQyVSl4=;
-  b=Aj8PYwmYazVIKc7i9u470gnHZi3c1d9w4/T8MtCIxlmGpAsXA/IPZv94
-   It07wZoT3DxZzi+bxBa+flqjpLcdlN0/9sOWgsv1v7GPLamRQ+bnxgEUy
-   it8UQI4u1uGw2Wr0+QKq1nTEKWsr/fn+GZF85dH7EXvZ/n8JaCjWCuGZk
-   qBSDMdZqQSFF/4JFf6waVDLP/koGVJAgAs8M6iDZJ8vLW+pXbvJzXR8yx
-   CSvn0CwwKI9QgjSa7mUI5c+QSU/qPNQxmFbK8UnGPh3xghZA9E887ne13
-   /iy8TfR+Y12ccJ6OuWnASCMA+mR+ahicCr+GqveB8MFRdtM3zSH9l2qN1
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="278429089"
-X-IronPort-AV: E=Sophos;i="5.93,277,1654585200"; 
-   d="scan'208";a="278429089"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 02:42:59 -0700
-X-IronPort-AV: E=Sophos;i="5.93,277,1654585200"; 
-   d="scan'208";a="673282687"
-Received: from adott-mobl1.ger.corp.intel.com ([10.252.43.127])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 02:42:53 -0700
-Date:   Wed, 31 Aug 2022 12:42:48 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, andy.shevchenko@gmail.com,
-        u.kleine-koenig@pengutronix.de, johan@kernel.org,
-        wander@redhat.com, etremblay@distech-controls.com,
-        macro@orcam.me.uk, geert+renesas@glider.be, jk@ozlabs.org,
-        phil.edworthy@renesas.com, Lukas Wunner <lukas@wunner.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH v1 tty-next 1/2] 8250: microchip: pci1xxxx: Add driver
- for the quad-uart function in the  multi-function endpoint of pci1xxxx
- device.
-In-Reply-To: <20220830180054.1998296-2-kumaravel.thiagarajan@microchip.com>
-Message-ID: <bea049b-69d-a097-ddeb-737cdd485e@linux.intel.com>
-References: <20220830180054.1998296-1-kumaravel.thiagarajan@microchip.com> <20220830180054.1998296-2-kumaravel.thiagarajan@microchip.com>
+        Wed, 31 Aug 2022 05:43:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CEF0D0753
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 02:43:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661939012;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1/RPC3U8/B6XhFjkMnHWjczBI3bfZVPLGSzFqMJ48tc=;
+        b=YXf20ScTzg5CDoxc6AVXlPpUn02q20zhT6fC2KVLQ+8GvmMxQpu0G4SGXmPHf+yPERjdqO
+        T7k6HHT5WTuG6LdQ8Rvho5no58nJzclhpSD8YoTw7lZ4OuhQ9rfzpsGdDkPkS/VPbnE7La
+        jk98eCa1dxm0tdPGgC0gM4a0RnoK//8=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-626-Ql1lswLhOi2iFE_xz4Xl3Q-1; Wed, 31 Aug 2022 05:43:28 -0400
+X-MC-Unique: Ql1lswLhOi2iFE_xz4Xl3Q-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4246C85A589;
+        Wed, 31 Aug 2022 09:43:28 +0000 (UTC)
+Received: from starship (unknown [10.40.194.96])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A1BB94010FA0;
+        Wed, 31 Aug 2022 09:43:26 +0000 (UTC)
+Message-ID: <b660f600ff5f6c107d899ced46c04de3b99c425f.camel@redhat.com>
+Subject: Re: [PATCH 06/19] KVM: SVM: Get x2APIC logical dest bitmap from
+ ICRH[15:0], not ICHR[31:16]
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Li RongQing <lirongqing@baidu.com>
+Date:   Wed, 31 Aug 2022 12:43:24 +0300
+In-Reply-To: <7a7827ec2652a8409fccfe070659497df229211b.camel@redhat.com>
+References: <20220831003506.4117148-1-seanjc@google.com>
+         <20220831003506.4117148-7-seanjc@google.com>
+         <7a7827ec2652a8409fccfe070659497df229211b.camel@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 30 Aug 2022, Kumaravel Thiagarajan wrote:
-
-> pci1xxxx is a PCIe switch with a multi-function endpoint on one of its
-> downstream ports. Quad-uart is one of the functions in the
-> multi-function endpoint. This driver loads for the quad-uart and
-> enumerates single or multiple instances of uart based on the PCIe
-> subsystem device ID.
+On Wed, 2022-08-31 at 09:09 +0300, Maxim Levitsky wrote:
+> On Wed, 2022-08-31 at 00:34 +0000, Sean Christopherson wrote:
+> > When attempting a fast kick for x2AVIC, get the destination bitmap from
+> > ICR[15:0], not ICHR[31:16].  The upper 16 bits contain the cluster, the
+> > lower 16 bits hold the bitmap.
+> > 
+> > Fixes: 603ccef42ce9 ("KVM: x86: SVM: fix avic_kick_target_vcpus_fast")
+> > Cc: Maxim Levitsky <mlevitsk@redhat.com>
+> > Signed-off-by: Sean Christopherson <seanjc@google.com>
+> > ---
+> >  arch/x86/kvm/svm/avic.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+> > index 3ace0f2f52f0..3c333cd2e752 100644
+> > --- a/arch/x86/kvm/svm/avic.c
+> > +++ b/arch/x86/kvm/svm/avic.c
+> > @@ -368,7 +368,7 @@ static int avic_kick_target_vcpus_fast(struct kvm *kvm, struct kvm_lapic *source
+> >  
+> >  		if (apic_x2apic_mode(source)) {
+> >  			/* 16 bit dest mask, 16 bit cluster id */
+> > -			bitmap = dest & 0xFFFF0000;
+> > +			bitmap = dest & 0xFFFF;
+> >  			cluster = (dest >> 16) << 4;
+> >  		} else if (kvm_lapic_get_reg(source, APIC_DFR) == APIC_DFR_FLAT) {
+> >  			/* 8 bit dest mask*/
 > 
-> Signed-off-by: Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
-> ---
+> I swear I have seen a patch from Suravee Suthikulpanit fixing this my mistake, I don't know why it was not
+> accepted upstream.
 
-> +static int mchp_pci1xxxx_rs485_config(struct uart_port *port,
-> +				      struct ktermios *termios,
-> +				      struct serial_rs485 *rs485)
-> +{
-> +	u8 data = 0;
-> +
-> +	memset(rs485->padding, 0, sizeof(rs485->padding));
-> +	rs485->flags &= SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND;
-> +
-> +	if (rs485->flags & SER_RS485_ENABLED) {
-> +		data = ADCL_CFG_EN | ADCL_CFG_PIN_SEL;
-> +		if (!(rs485->flags & SER_RS485_RTS_ON_SEND)) {
-> +			data |= ADCL_CFG_POL_SEL;
-> +			rs485->flags |=  SER_RS485_RTS_AFTER_SEND;
-> +		}
-> +	}
-> +
-> +	rs485->delay_rts_after_send = 0;
-> +	rs485->delay_rts_before_send = 0;
-> +	writeb(data, (port->membase + ADCL_CFG_REG));
-> +	port->rs485 = *rs485;
+This is the patch, which I guess got forgotten.
 
-Most of this will be handled for by the core so don't duplicate it in
-the driver.
+https://www.spinics.net/lists/kernel/msg4417427.html
 
-These days, you also need to provide rs485_supported.
+Since it is literaly the same patch, you can just add credit to Suravee Suthikulpanit.
 
-> +	return 0;
-> +}
-> +
-> +static void mchp_pci1xxxx_set_termios(struct uart_port *port,
-> +				      struct ktermios *termios,
-> +				      struct ktermios *old)
-> +{
-> +	const unsigned int standard_baud_list[] = {50, 75, 110, 134, 150, 300,
-> +						600, 1200, 1800, 2000, 2400, 3600,
-> +						4800, 7200, 9600, 19200, 38400, 57600,
-> +						115200, 125000, 136400, 150000, 166700,
-> +						187500, 214300, 250000, 300000, 375000,
-> +						500000, 750000, 1000000, 1500000};
-> +	unsigned int baud = tty_termios_baud_rate(termios);
-> +	unsigned int baud_clock;
-> +	unsigned int quot;
-> +	unsigned int frac;
-> +	unsigned int i;
-> +
-> +	baud = tty_termios_baud_rate(termios);
+So with the credit added:
 
-Either this or the one at the declaration is redundant.
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 
-> +	serial8250_do_set_termios(port, termios, NULL);
-> +
-> +	if (baud == 38400 && (port->flags & UPF_SPD_MASK) == UPF_SPD_CUST) {
-> +		writel((port->custom_divisor & 0x3FFFFFFF),
-> +		       (port->membase + CLK_DIVISOR_REG));
-> +	} else {
-> +		for (i = 0; i < ARRAY_SIZE(standard_baud_list); i++) {
-> +			if (baud == standard_baud_list[i])
-> +				return;
-
-Did you mean to break here instead?
-
-> +		}
-> +		tty_termios_encode_baud_rate(termios, baud, baud);
-> +
-> +		baud = uart_get_baud_rate(port, termios, old,
-> +					  50, 1500000);
-> +		baud_clock = readb(port->membase + CLK_SEL_REG);
-> +
-> +		if ((baud_clock & CLK_SEL_MASK) == CLK_SEL_500MHZ) {
-> +			quot = 500000000 / (16 * baud);
-> +			writel(quot, (port->membase + CLK_DIVISOR_REG));
-> +		} else if ((baud_clock & CLK_SEL_MASK) == CLK_SEL_166MHZ) {
-> +			quot = (166667 * 1000) / (16 * baud);
-> +			writel(quot, (port->membase + CLK_DIVISOR_REG));
-> +		} else {
-> +			quot = ((1000000000) / (baud * UART_BIT_SAMPLE_CNT));
-> +			frac = (((1000000000 - (quot * baud *
-> +				UART_BIT_SAMPLE_CNT)) / UART_BIT_SAMPLE_CNT)
-> +				* 255) / baud;
-> +			writel(frac | (quot << 8),
-> +			       (port->membase + CLK_DIVISOR_REG));
-> +		}
-
-Please check ->[gs]et_divisor() out.
-
-
--- 
- i.
+Best regards,
+	Maxim Levitsky
 
