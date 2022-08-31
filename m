@@ -2,176 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74003ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 13:31:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEFF5ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 13:32:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231605AbiHaNbD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 09:31:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40828 "EHLO
+        id S229992AbiHaNcn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 09:32:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbiHaNax (ORCPT
+        with ESMTP id S231232AbiHaNck (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 09:30:53 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B47D4C04CC;
-        Wed, 31 Aug 2022 06:30:51 -0700 (PDT)
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27VCNCuG026265;
-        Wed, 31 Aug 2022 09:30:44 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3j7d48kxj0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 31 Aug 2022 09:30:44 -0400
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 27VDUgUa021322
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 31 Aug 2022 09:30:42 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Wed, 31 Aug
- 2022 09:30:41 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Wed, 31 Aug 2022 09:30:41 -0400
-Received: from rbolboac.ad.analog.com ([10.48.65.113])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 27VDUTRF019685;
-        Wed, 31 Aug 2022 09:30:32 -0400
-From:   Ramona Bolboaca <ramona.bolboaca@analog.com>
-To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Ramona Bolboaca <ramona.bolboaca@analog.com>
-Subject: [PATCH v2 1/2] bindings: iio: adc: Add max11205 documentation file
-Date:   Wed, 31 Aug 2022 16:30:20 +0300
-Message-ID: <20220831133021.215625-1-ramona.bolboaca@analog.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 31 Aug 2022 09:32:40 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A14C9D21E8
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 06:32:38 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id c59so12196605edf.10
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 06:32:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=CgFPDK2LvRhAS6goxi4X/Ic8NNdHal1iYUOcFxcfEdk=;
+        b=OihL0qcd7WTm78kvrrTsnVuXk1//E+pKPWsyjcGbB/P4HjEZXfREd/CjogrV6SDOlL
+         GsHoAFIvYgnKbfcx6ccWiSl/xuBdQG3P5vgPFA8wCFCPYFhzTVSvCx3jIWFOrPt68oMR
+         qUwnav9c//Odlu5krHpyk+sUs7gdRgOWz0XpnFbonZzefWiC4MhVBSZ3S2qO0xugA1Ov
+         AYmMZUOVp+svGZPETa8oThZlCTa0q8zfwEfoUmRrznv3BP2HFAI0R6ZJICBLg/fmdhkh
+         BaKfz/hMLg5YOV9680dDdCjKdeV3uupWudbX/ipOad25UYmOrgCvX6SUubv1SUxPTtZN
+         rsOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=CgFPDK2LvRhAS6goxi4X/Ic8NNdHal1iYUOcFxcfEdk=;
+        b=jbvau9+efM0T5KPEHimweOfMmVnYq9NwQhL3QIxFd+V68HMloxsvwBaUuh34au8mn3
+         KnFtOmkFSeDa2cGMGv/jHNDlFlxwu6Yv093ml5QiGaIxPB9Tsyreos7cynfVg1sHbU25
+         HAEWsgEBBmqTaA8TCdKaURGXX7zUD8WqvRXFYkt/YqPHogVtzyjGSoIEXTToJhXvL3M4
+         BGBAyjt9aOk2KeDc8rL/2a+UdRDbhuLsWYXkbsVD0mNCDVfrEHAU6X79Ft/cbdnAU4xs
+         wUz4njZ0HTycrySpSqk9wbVuHo+zL1ZVOi6m6W0GHB7GLkG8WRwHlmz6+9RMW9mujxUa
+         es8Q==
+X-Gm-Message-State: ACgBeo18uNCyAUabX7v00DPFItmzG4vRyg/BjSH4E67v2onJ0Ze0lYxa
+        tyYai0ptns5WqwImHU5yRSGwxxj+rNN3WATQQ7vqog==
+X-Google-Smtp-Source: AA6agR4gJIbhP+4ApJR2yhAwf3e1Odkz7EHU+179Wq7SwkPr/9kSVAUOmgosnJMFlpXFsd/QDaxBnLupLFuZc97eYn0=
+X-Received: by 2002:a05:6402:2691:b0:43d:ba10:854b with SMTP id
+ w17-20020a056402269100b0043dba10854bmr23759195edd.158.1661952757218; Wed, 31
+ Aug 2022 06:32:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: wI204ToU81DzyZbPbV5CL3VT19ZzNk-v
-X-Proofpoint-ORIG-GUID: wI204ToU81DzyZbPbV5CL3VT19ZzNk-v
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-31_08,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
- impostorscore=0 priorityscore=1501 bulkscore=0 clxscore=1015
- malwarescore=0 lowpriorityscore=0 mlxlogscore=999 mlxscore=0 adultscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208310068
+References: <CAK8P3a0j-54_OkXC7x3NSNaHhwJ+9umNgbpsrPxUB4dwewK63A@mail.gmail.com>
+ <CACRpkda0+iy8H0YmyowSDn8RbYgnVbC1k+o5F67inXg4Qb934Q@mail.gmail.com>
+ <CAK8P3a0uuJ_z8wmNmQTW_qPNqzz7XoxZdHgqbzmK+ydtjraeHg@mail.gmail.com>
+ <CACRpkdb5ow4hD3td6agCuKWvuxptm5AV4rsCrcxNStNdXnBzrA@mail.gmail.com>
+ <87f2ff4c-3426-201c-df86-2d06d3587a20@csgroup.eu> <CACRpkdYizQhiJXzXNHg7TXUVHzhkwXHFN5+e58kH4udGm1ziEA@mail.gmail.com>
+ <f76dbc49-526f-6dc7-2ef1-558baea5848b@csgroup.eu> <CACRpkdZpwdP+1VitohznqRfhFGcLT2f+sQnmsRWwMBB3bobwAw@mail.gmail.com>
+ <515364a9-33a1-fafa-fdce-dc7dbd5bb7fb@csgroup.eu> <CAK8P3a36qbRW8hd+1Uhi88kh+-KTjDMT-Zr8Jq9h_G3zQLfzgw@mail.gmail.com>
+ <Yw3DKCuDoPkCaqxE@arcana.i.gnudd.com>
+In-Reply-To: <Yw3DKCuDoPkCaqxE@arcana.i.gnudd.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Wed, 31 Aug 2022 15:32:25 +0200
+Message-ID: <CACRpkdZeAAZYqV3ccd-X=ZwdnfSwRUdXchGETB-WTkgSZQL=Pw@mail.gmail.com>
+Subject: Re: [PATCH] gpio: Allow user to customise maximum number of GPIOs
+To:     Davide Ciminaghi <ciminaghi@gnudd.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Alexandre Courbot <gnurou@gmail.com>,
+        Alexandre Courbot <acourbot@nvidia.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+        "open list:GENERIC INCLUDE/ASM HEADER FILES" 
+        <linux-arch@vger.kernel.org>, Alessandro Rubini <rubini@gnudd.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add bindings documentation file and MAINTAINERS entry for MAX11205.
+On Tue, Aug 30, 2022 at 9:58 AM Davide Ciminaghi <ciminaghi@gnudd.com> wrote:
 
-Signed-off-by: Ramona Bolboaca <ramona.bolboaca@analog.com>
----
-changes in v2:
- - reference /schemas/spi/spi-peripheral-props.yaml in allOf 
- - use unevaluatedProperties:false and remove additionalProperties:false
- - use generic node name and fix indentation in device-tree example
- - wrap lines nearer to 75-80 chars in documentation
- - add extra information to the description of the regulator
- .../bindings/iio/adc/maxim,max11205.yaml      | 69 +++++++++++++++++++
- MAINTAINERS                                   |  8 +++
- 2 files changed, 77 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
+> the sta2x11 was a chip containing AMBA peripherals and a PCIe to AMBA bridge
+> (it is still in production as far as I know, but deprecated for new designs).
+> It would typically be installed on x86 machines, so you needed to build and
+> run AMBA drivers in an x86 environment. The original drivers we started from
+> had platform data, but then we were told to switch to DTS.
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml b/Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
-new file mode 100644
-index 000000000000..7902f82da927
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
-@@ -0,0 +1,69 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/maxim,max11205.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Maxim MAX11205 ADC
-+
-+maintainers:
-+  - Ramona Bolboaca <ramona.bolboaca@analog.com>
-+
-+description: |
-+  The MAX11205 is an ultra-low-power (< 300FA max active current),
-+  high-resolution, serial-output ADC.
-+
-+  https://datasheets.maximintegrated.com/en/ds/MAX11205.pdf
-+
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+properties:
-+  compatible:
-+    enum:
-+      - maxim,max11205a
-+      - maxim,max11205b
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  spi-max-frequency:
-+    maximum: 5000000
-+
-+  spi-cpha: true
-+
-+  vref-supply:
-+    description:
-+      The regulator supply for the ADC reference voltage. This is a differential
-+      reference. It is equal to the V_REFP - V_REFN. The maximum value is 3.6V.
-+
-+required:
-+  - compatible
-+  - reg
-+  - spi-max-frequency
-+  - spi-cpha
-+  - interrupts
-+  - vref-supply
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        adc@0 {
-+            compatible = "maxim,max11205a";
-+            reg = <0>;
-+            spi-max-frequency = <5000000>;
-+            spi-cpha;
-+            interrupt-parent = <&gpio>;
-+            interrupts = <19 IRQ_TYPE_EDGE_FALLING>;
-+            vref-supply = <&max11205_vref>;
-+        };
-+    };
-+...
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 96f47a7865d6..db1b5dc03988 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12341,6 +12341,14 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/iio/proximity/maxbotix,mb1232.yaml
- F:	drivers/iio/proximity/mb1232.c
- 
-+MAXIM MAX11205 DRIVER
-+M:	Ramona Bolboaca <ramona.bolboaca@analog.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Supported
-+W:	https://ez.analog.com/linux-software-drivers
-+F:	Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
-+F:	drivers/iio/adc/max11205.c
-+
- MAXIM MAX17040 FAMILY FUEL GAUGE DRIVERS
- R:	Iskren Chernev <iskren.chernev@gmail.com>
- R:	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
--- 
-2.25.1
+For the record I think that was bad advice, I hope it wasn't me.
+But the world was different back then I suppose.
+Adding DTS to x86 which is inherently ACPI is not a good idea.
+Especially if you look at how SBSA ACPI UARTS were done
+in drivers/tty/serial/amba-pl011.c.
 
+Today I think we would solve this by simply creating software nodes, which
+are the same no matter if you're doing device tree or ACPI, so it would
+have been much easier now, I think. :/
+
+Yours,
+Linus Walleij
