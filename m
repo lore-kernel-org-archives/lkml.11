@@ -2,155 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0876ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 20:21:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3523ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 20:22:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231555AbiHaUVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 16:21:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52814 "EHLO
+        id S231788AbiHaUWP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 16:22:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229531AbiHaUVl (ORCPT
+        with ESMTP id S230370AbiHaUWJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 16:21:41 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE0BED86D0;
-        Wed, 31 Aug 2022 13:21:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=QOtbQ4yJveAuBSbPqKAD8fBOR2UFCoCezNEyy822MA8=; b=RWTXs0S5NMPiMNm3DzReyR7HIH
-        9BSyfgq0C/oLwpvxRj13cxPUljrsp99FTOgX4LJ9Q4dYT5K4DR26WlG975PZfHACip6e9tSAK0LOe
-        nYDaaKusx6MpomBtWMUVifptUtGEWjvkJOg/oNgQL5d6/Q279mMkefo3UYeQNX/ZUmEcOCThZhvaU
-        Eaga1uavqxmdS/8FLOeuCh5bvx9F/89dANjNuxsK8OIMcpQbHTfiGHrhpV1Mob2jXFWi/V4/Rtlon
-        JOlC/lYHYdo5lmbxTa8muqT+o9DnpVUToNhl4SmJvq69owrXnSUgK3jr53GBpMGyhxlUiC//Ny4vJ
-        kP9FZqBg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34026)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oTUDN-0004ru-2y; Wed, 31 Aug 2022 21:21:33 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oTUDJ-0002nh-Ke; Wed, 31 Aug 2022 21:21:29 +0100
-Date:   Wed, 31 Aug 2022 21:21:29 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     "Isaac J. Manjarres" <isaacmanjarres@google.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        stable@vger.kernel.org, Saravana Kannan <saravanak@google.com>,
-        Guenter Roeck <linux@roeck-us.net>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] driver core: Don't probe devices after
- bus_type.match() probe deferral
-Message-ID: <Yw/CyRFr1bYNlNGh@shell.armlinux.org.uk>
-References: <20220817184026.3468620-1-isaacmanjarres@google.com>
+        Wed, 31 Aug 2022 16:22:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B367D87DF;
+        Wed, 31 Aug 2022 13:22:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C40161946;
+        Wed, 31 Aug 2022 20:22:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 463CDC433C1;
+        Wed, 31 Aug 2022 20:22:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661977328;
+        bh=VWwpWtbs0bVVU2d8nghDcUxyB0ZgqCrW/45hwJMVcpA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TkvI1Fm8dZZmEYVkRXkshckfcR2ez1MU6euo0846z4PmvbyoMFCsrvtVRqNQGgPgB
+         JQ/SycAD50JZjoH36AuSC1+MkKmNpMsYSmflqrtskrCDUXR2fqzSG2isyt8uX2S8Kr
+         LFDrrNXrhURCCs0IELNct5BNLhmC6J1/vZTij5c5fVmdnQfKJ4W3Lyjah1c57TQ7Ov
+         f1Wu2s/jLRcFqaLgIKzVhNbvlMPgc3SU4GETEu/K7yLCM6M3p5S9PDLkCCmid5plJJ
+         tpmUdZT1F0vwrsffsRCfMWt0cdVSMmYcsTtfO/adhmpZpME7r1/gPQTiNtXQS1DOnG
+         CD0J3mUL43Kog==
+Date:   Wed, 31 Aug 2022 13:22:05 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Tom Rix <trix@redhat.com>, linux-kbuild@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev, x86@kernel.org,
+        Dmitrii Bundin <dmitrii.bundin.a@gmail.com>,
+        Fangrui Song <maskray@google.com>,
+        Alexey Alexandrov <aalexand@google.com>,
+        Bill Wendling <morbo@google.com>,
+        Greg Thelen <gthelen@google.com>
+Subject: Re: [PATCH v2 4/5] Makefile.debug: re-enable debug info for .S files
+Message-ID: <Yw/C7fYWP+KkVKk2@dev-arch.thelio-3990X>
+References: <20220831184408.2778264-1-ndesaulniers@google.com>
+ <20220831184408.2778264-5-ndesaulniers@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220817184026.3468620-1-isaacmanjarres@google.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+In-Reply-To: <20220831184408.2778264-5-ndesaulniers@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Greg,
-
-Are you happy for me to pick up this patch as part of the fixes for the
-AMBA changes? The original patch that it is fixing is a patch that was
-part of a series that was merged through my tree.
-
-It's fixing a problem that has been noticed by several people and the
-fix is now a few weeks old.
-
-Thanks.
-
-On Wed, Aug 17, 2022 at 11:40:26AM -0700, Isaac J. Manjarres wrote:
-> Both __device_attach_driver() and __driver_attach() check the return
-> code of the bus_type.match() function to see if the device needs to be
-> added to the deferred probe list. After adding the device to the list,
-> the logic attempts to bind the device to the driver anyway, as if the
-> device had matched with the driver, which is not correct.
+On Wed, Aug 31, 2022 at 11:44:07AM -0700, Nick Desaulniers wrote:
+> Alexey reported that the fraction of unknown filename instances in
+> kallsyms grew from ~0.3% to ~10% recently; Bill and Greg tracked it down
+> to assembler defined symbols, which regressed as a result of:
 > 
-> If __device_attach_driver() detects that the device in question is not
-> ready to match with a driver on the bus, then it doesn't make sense for
-> the device to attempt to bind with the current driver or continue
-> attempting to match with any of the other drivers on the bus. So, update
-> the logic in __device_attach_driver() to reflect this.
+> commit b8a9092330da ("Kbuild: do not emit debug info for assembly with LLVM_IAS=1")
 > 
-> If __driver_attach() detects that a driver tried to match with a device
-> that is not ready to match yet, then the driver should not attempt to bind
-> with the device. However, the driver can still attempt to match and bind
-> with other devices on the bus, as drivers can be bound to multiple
-> devices. So, update the logic in __driver_attach() to reflect this.
+> In that commit, I allude to restoring debug info for assembler defined
+> symbols in a follow up patch, but it seems I forgot to do so in
 > 
-> Cc: stable@vger.kernel.org
-> Cc: Saravana Kannan <saravanak@google.com>
-> Fixes: 656b8035b0ee ("ARM: 8524/1: driver cohandle -EPROBE_DEFER from bus_type.match()")
-> Reported-by: Guenter Roeck <linux@roeck-us.net>
-> Signed-off-by: Isaac J. Manjarres <isaacmanjarres@google.com>
-> Tested-by: Guenter Roeck <linux@roeck-us.net>
-> Reviewed-by: Saravana Kannan <saravanak@google.com>
+> commit a66049e2cf0e ("Kbuild: make DWARF version a choice")
+> 
+> This patch does a few things:
+> 1. Add -g to KBUILD_AFLAGS. This will instruct the compiler to instruct
+>    the assembler to emit debug info. But this can cause an issue for
+>    folks using a newer compiler but older assembler, because the
+>    implicit default DWARF version changed from v4 to v5 in gcc-11 and
+>    clang-14.
+> 2. If the user is using CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT, use a
+>    version check to explicitly set -Wa,-gdwarf-<version> for the
+>    assembler. There's another problem with this; GAS only gained support
+>    for explicit DWARF versions 3-5 in the 2.36 GNU binutils release.
+> 3. Wrap -Wa,-gdwarf-<version> in as-option call to test whether the
+>    assembler supports that explicit DWARF version.
+> 
+> Link: https://sourceware.org/git/gitweb.cgi?p=binutils-gdb.git;h=31bf18645d98b4d3d7357353be840e320649a67d
+> Fixes: b8a9092330da ("Kbuild: do not emit debug info for assembly with LLVM_IAS=1")
+> Reported-by: Alexey Alexandrov <aalexand@google.com>
+> Reported-by: Bill Wendling <morbo@google.com>
+> Reported-by: Greg Thelen <gthelen@google.com>
+> Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+
 > ---
->  drivers/base/dd.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
+> Changes v1 -> v2:
+> * Use newly added compiler-specific macros, as per Bill.
 > 
-> v1 -> v2:
-> - Fixed the logic in __driver_attach() to allow a driver to continue
->   attempting to match and bind with devices in case of any error, not
->   just probe deferral.
+>  scripts/Makefile.debug | 22 ++++++++++++++++++----
+>  1 file changed, 18 insertions(+), 4 deletions(-)
 > 
-> v2 -> v3:
-> - Restored the patch back to v1.
-> - Added Guenter's Tested-by tag.
-> - Added Saravana's Reviewed-by tag.
-> - Cc'd stable@vger.kernel.org
-> 
-> Greg,
-> 
-> This is the final version of this patch. Can you please pick this up?
-> 
-> Thanks,
-> Isaac
-> 
-> diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-> index 70f79fc71539..90b31fb141a5 100644
-> --- a/drivers/base/dd.c
-> +++ b/drivers/base/dd.c
-> @@ -881,6 +881,11 @@ static int __device_attach_driver(struct device_driver *drv, void *_data)
->  		dev_dbg(dev, "Device match requests probe deferral\n");
->  		dev->can_match = true;
->  		driver_deferred_probe_add(dev);
-> +		/*
-> +		 * Device can't match with a driver right now, so don't attempt
-> +		 * to match or bind with other drivers on the bus.
-> +		 */
-> +		return ret;
->  	} else if (ret < 0) {
->  		dev_dbg(dev, "Bus failed to match device: %d\n", ret);
->  		return ret;
-> @@ -1120,6 +1125,11 @@ static int __driver_attach(struct device *dev, void *data)
->  		dev_dbg(dev, "Device match requests probe deferral\n");
->  		dev->can_match = true;
->  		driver_deferred_probe_add(dev);
-> +		/*
-> +		 * Driver could not match with device, but may match with
-> +		 * another device on the bus.
-> +		 */
-> +		return 0;
->  	} else if (ret < 0) {
->  		dev_dbg(dev, "Bus failed to match device: %d\n", ret);
->  		return ret;
+> diff --git a/scripts/Makefile.debug b/scripts/Makefile.debug
+> index 9f39b0130551..46e88f0ca998 100644
+> --- a/scripts/Makefile.debug
+> +++ b/scripts/Makefile.debug
+> @@ -4,18 +4,32 @@ ifdef CONFIG_DEBUG_INFO_SPLIT
+>  DEBUG_CFLAGS	+= -gsplit-dwarf
+>  else
+>  DEBUG_CFLAGS	+= -g
+> +KBUILD_AFLAGS	+= -g
+>  endif
+>  
+> -ifndef CONFIG_AS_IS_LLVM
+> -KBUILD_AFLAGS	+= -Wa,-gdwarf-2
+> +ifdef CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT
+> +# gcc-11+, clang-14+
+> +ifeq ($(call cc-min-version, 110000, 140000),y)
+> +dwarf-version-y := 5
+> +else
+> +dwarf-version-y := 4
+>  endif
+> -
+> -ifndef CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT
+> +else # !CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT
+>  dwarf-version-$(CONFIG_DEBUG_INFO_DWARF4) := 4
+>  dwarf-version-$(CONFIG_DEBUG_INFO_DWARF5) := 5
+>  DEBUG_CFLAGS	+= -gdwarf-$(dwarf-version-y)
+>  endif
+>  
+> +# Binutils 2.35+ (or clang) required for -gdwarf-{4|5}.
+> +# https://sourceware.org/git/gitweb.cgi?p=binutils-gdb.git;h=31bf18645d98b4d3d7357353be840e320649a67d
+> +ifneq ($(call as-option,-Wa$(comma)-gdwarf-$(dwarf-version-y)),)
+> +KBUILD_AFLAGS	+= -Wa,-gdwarf-$(dwarf-version-y)
+> +else
+> +ifndef CONFIG_AS_IS_LLVM
+> +KBUILD_AFLAGS	+= -Wa,-gdwarf-2
+> +endif
+> +endif
+> +
+>  ifdef CONFIG_DEBUG_INFO_REDUCED
+>  DEBUG_CFLAGS	+= -fno-var-tracking
+>  ifdef CONFIG_CC_IS_GCC
 > -- 
-> 2.37.1.595.g718a3a8f04-goog
+> 2.37.2.672.g94769d06f0-goog
 > 
-> 
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
