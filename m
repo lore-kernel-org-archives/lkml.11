@@ -2,78 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BBF4ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 01:49:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ABC1ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 01:49:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231765AbiHaBtj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 21:49:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49462 "EHLO
+        id S231754AbiHaBtn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 21:49:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229811AbiHaBt3 (ORCPT
+        with ESMTP id S230250AbiHaBt3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 30 Aug 2022 21:49:29 -0400
 Received: from server.lespinasse.org (server.lespinasse.org [IPv6:2001:470:82ab::100:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DC39AD9AA;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DABAAD999;
         Tue, 30 Aug 2022 18:49:27 -0700 (PDT)
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
  d=lespinasse.org; i=@lespinasse.org; q=dns/txt; s=srv-83-ed;
  t=1661908369; h=from : to : cc : subject : date : message-id :
- in-reply-to : references : mime-version : content-transfer-encoding :
- from; bh=vSoUAaOGn/xCpVT7xIuPnYP+3A9mzSdbLNxp3aYE+kE=;
- b=Yvg7XcIa5aGW2rfkDbtI21478eJwnjnmzSWQbJFzY3XZAFMAjZmCP1VnfgceCg70fEHVh
- /RIh444getTgrpsDQ==
+ mime-version : content-transfer-encoding : from;
+ bh=2vF0iKj3rZj+zvyIjC+40c2+iouHVtn9J64weGafMkM=;
+ b=L6+P0BHb97HbSnhGWvmL54EzilcpLqqkkYNi7KJMPxEggJAcb3MrRrOsRCk0XHvHGaQZG
+ DFBzI0Z0zKEEmKpAQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lespinasse.org;
  i=@lespinasse.org; q=dns/txt; s=srv-83-rsa; t=1661908369; h=from : to
- : cc : subject : date : message-id : in-reply-to : references :
- mime-version : content-transfer-encoding : from;
- bh=vSoUAaOGn/xCpVT7xIuPnYP+3A9mzSdbLNxp3aYE+kE=;
- b=YQLAL6BEHSu2bC2CY0ZQtDRppemfZXBLUCYheqGu2jCqwcEs5sPIKVG7jwlcE/BC3PXLR
- t66N94V9KRPgFx+5EEctstB7f1AsZeNEUOMQpyIJmVQ+Lpr18lOt03GN22EOLnq2sePWTvZ
- GWv3mZPFXk3f3x7aEN5zbs+PlWX6oH9grcFHIEcHgYWimHOEhbPon76lslAuzoSpFYSlmbx
- PiedHm3nLUtJhzoVwC9xntCM+wJomc0gUlPYmtjNaYcZ8cQpmohiI2gEZgejFz94rH5pr1a
- HOUU5O207YdG4fB4L8zTAZiD+6ImJPrxHhsMmuD4u8FE+kAeb2cP7TXYv+Lg==
+ : cc : subject : date : message-id : mime-version :
+ content-transfer-encoding : from;
+ bh=2vF0iKj3rZj+zvyIjC+40c2+iouHVtn9J64weGafMkM=;
+ b=S3aE+n3wq8AteH0qu7exNGRsJzUpTQRpNxRW0R5v+Ywxa0lbwfO3hDdp9tAeJAHLa+a/H
+ 1s4edV3leGB+ynX7DbTKqo4rm4u64Ltg613bPuHMkA1TADhn7JxPLkjfBDrmrHlIjkHbfbc
+ bPVZUyP7C5k+cgCOhUgZO4ZFxfU7uMt1YoIS2/At3vrC8aVp96elmswyMP4weEpI9ZbPo+F
+ km2eSZPmeQ3FmJj5yUW+gMb2eK40TFI4/R6h/cLDJ6A9Kzp7ZDXwNlvSajCRXpcJoage1Kj
+ eHCJMPG204q50+8NiGXkwlApFw6OVSq8MRQfy1Kz9TAbdGzo0L/QzFZdeRuA==
 Received: from zeus.lespinasse.org (zeus.lespinasse.org [IPv6:fd00::150:0])
-        by server.lespinasse.org (Postfix) with ESMTPS id 21580160523;
+        by server.lespinasse.org (Postfix) with ESMTPS id 16505160521;
         Tue, 30 Aug 2022 18:12:49 -0700 (PDT)
 Received: by zeus.lespinasse.org (Postfix, from userid 1000)
-        id 058E3201FC; Tue, 30 Aug 2022 18:12:49 -0700 (PDT)
+        id 01312201B8; Tue, 30 Aug 2022 18:12:48 -0700 (PDT)
 From:   Michel Lespinasse <michel@lespinasse.org>
 To:     Michael Roth <michael.roth@amd.com>,
         Ard Biesheuvel <ardb@kernel.org>
 Cc:     linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
         Michel Lespinasse <michel@lespinasse.org>
-Subject: [PATCH 2/4] Remove unused variable nr_tables in efi_get_rsdp_addr()
-Date:   Tue, 30 Aug 2022 18:12:46 -0700
-Message-Id: <20220831011248.28632-3-michel@lespinasse.org>
+Subject: [PATCH 0/4] Remove unused variables resulting in CONFIG_EFI warnings
+Date:   Tue, 30 Aug 2022 18:12:44 -0700
+Message-Id: <20220831011248.28632-1-michel@lespinasse.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220831011248.28632-1-michel@lespinasse.org>
-References: <20220831011248.28632-1-michel@lespinasse.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This avoids a build warning with CONFIG_EFI enabled.
+This small series removes a few unused variables.
+This fixes some CONFIG_EFI build warnings that were introduced in v5.19-rc1.
 
-Fixes: 61c14ceda840 (x86/compressed/acpi: Move EFI config table lookup to helper)
-Signed-off-by: Michel Lespinasse <michel@lespinasse.org>
----
- arch/x86/boot/compressed/acpi.c | 1 -
- 1 file changed, 1 deletion(-)
+Is there any chance these could be pushed into v6.0 ?
+If not, could you queue these for the next release cycle ?
 
-diff --git a/arch/x86/boot/compressed/acpi.c b/arch/x86/boot/compressed/acpi.c
-index 9caf89063e77..83a7977ef56f 100644
---- a/arch/x86/boot/compressed/acpi.c
-+++ b/arch/x86/boot/compressed/acpi.c
-@@ -52,7 +52,6 @@ static acpi_physical_address efi_get_rsdp_addr(void)
- 	unsigned long cfg_tbl_pa = 0;
- 	unsigned int cfg_tbl_len;
- 	unsigned long systab_pa;
--	unsigned int nr_tables;
- 	enum efi_type et;
- 	int ret;
- 
+Michel Lespinasse (4):
+  Remove unused variable et in efi_get_system_table()
+  Remove unused variable nr_tables in efi_get_rsdp_addr()
+  Remove unused variable ret in efi_get_conf_table()
+  Remove unused variable ret in __efi_get_rsdp_addr()
+
+ arch/x86/boot/compressed/acpi.c | 2 --
+ arch/x86/boot/compressed/efi.c  | 2 --
+ 2 files changed, 4 deletions(-)
+
+
+base-commit: b90cb1053190353cc30f0fef0ef1f378ccc063c5
 -- 
 2.20.1
 
