@@ -2,90 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A827ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:13:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0DB4ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232500AbiHaSNC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 14:13:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44860 "EHLO
+        id S232367AbiHaSNG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 14:13:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232409AbiHaSMl (ORCPT
+        with ESMTP id S232503AbiHaSMm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 14:12:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92071E3961;
-        Wed, 31 Aug 2022 11:11:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 31 Aug 2022 14:12:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E86DAEA31B
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:11:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661969448;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HtanDUyn5fWOiylnSZSGqVRKIcfPLDAAzDH/PpQv72s=;
+        b=RKgoJBhe+VKO8HSA8XRTytJT50ZAhAZ3To6MW3HV9NBl76ZJy3SRIi1PJNsmH5iUEHhPUU
+        FFU0qyXf29ha1fS5wNnct3e9NOegH0AHFfFbbxMHOud2DxSXzaYO++r1wfiXgLc4+jw5cm
+        UEB/A9hz8O3gFwBzjhF+4zrKNrb8Rzg=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-531-EmCRBavSNBKEoWM3mp6aNw-1; Wed, 31 Aug 2022 14:10:45 -0400
+X-MC-Unique: EmCRBavSNBKEoWM3mp6aNw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DEEDC61BF0;
-        Wed, 31 Aug 2022 18:10:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CC2FC433D6;
-        Wed, 31 Aug 2022 18:10:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661969446;
-        bh=RzA/0h68ZhBe7KOWBZY3n3Aj4fMOY0YIfHq1RWU0ov4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AhLOP54ZWRohzBkh5yFGWcRdlrY5IQ7hBScdDCNCfQFaKOWaV/OVPWBdHYwQ6H1Fx
-         fuyyZcMC+Nfpkn377Bu3xN/SzZMyvq4VhqLR6y0c6x0dj5RM3R7moXPfFlfYYInYsT
-         s+uFqkEu2cTP9aPp2wmJ5sLwD7jIpMiBuWRprTXEQaJ0E0jSyk1HpA3OYmr/i2uqDv
-         ndgZNpZiZyUNLWyY5OslicLNgrGj8tAu3xJxgN/HHeNrCWSRwo9kXBHzTwMzfp1L58
-         NpIKnMIYrDTGcfhjY+Pz38Qlnnkzj5dNcb9A8XkWZMB1nRKpLNisB+q1ya8yEl0ECT
-         cTvRMz0NX5LsA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 0AA015C019C; Wed, 31 Aug 2022 11:10:46 -0700 (PDT)
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     rcu@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        rostedt@goodmis.org, "Paul E. McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>
-Subject: [PATCH rcu 2/3] rcu/nocb: Add CPU number to CPU-{,de}offload failure messages
-Date:   Wed, 31 Aug 2022 11:10:43 -0700
-Message-Id: <20220831181044.2694488-2-paulmck@kernel.org>
-X-Mailer: git-send-email 2.31.1.189.g2e36527f23
-In-Reply-To: <20220831181040.GA2694278@paulmck-ThinkPad-P17-Gen-1>
-References: <20220831181040.GA2694278@paulmck-ThinkPad-P17-Gen-1>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5B292101036A;
+        Wed, 31 Aug 2022 18:10:44 +0000 (UTC)
+Received: from starship (unknown [10.40.194.96])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B831340C1421;
+        Wed, 31 Aug 2022 18:10:42 +0000 (UTC)
+Message-ID: <3e51ca310ccd1f2f075d29972e6b55520fac2796.camel@redhat.com>
+Subject: Re: [PATCH 07/19] KVM: SVM: Drop buggy and redundant AVIC "single
+ logical dest" check
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Li RongQing <lirongqing@baidu.com>
+Date:   Wed, 31 Aug 2022 21:10:41 +0300
+In-Reply-To: <Yw+OUa3l1Rg036fb@google.com>
+References: <20220831003506.4117148-1-seanjc@google.com>
+         <20220831003506.4117148-8-seanjc@google.com>
+         <dd8c92855762258d87486f719bf7e52e36169ef2.camel@redhat.com>
+         <Yw+OUa3l1Rg036fb@google.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Offline CPUs cannot be offloaded or deoffloaded.  Any attempt to offload
-or deoffload an offline CPU causes a message to be printed on the console,
-which is good, but this message does not contain the CPU number, which
-is bad.  Such a CPU number can be helpful when debugging, as it gives a
-clear indication that the CPU in question is in fact offline.  This commit
-therefore adds the CPU number to the CPU-{,de}offload failure messages.
+On Wed, 2022-08-31 at 16:37 +0000, Sean Christopherson wrote:
+> On Wed, Aug 31, 2022, Maxim Levitsky wrote:
+> > On Wed, 2022-08-31 at 00:34 +0000, Sean Christopherson wrote:
+> > > Use the already-calculated-and-sanity-checked destination bitmap when
+> > > processing a fast AVIC kick in logical mode, and drop the logical path's
+> > > flawed logic.  The intent of the check is to ensure the bitmap is a power
+> > > of two, whereas "icrh != (1 << avic)" effectively checks that the bitmap
+> > > is a power of two _and_ the target cluster is '0'.
+> > > 
+> > > Note, the flawed check isn't a functional issue, it simply means that KVM
+> > > will go down the slow path if the target cluster is non-zero.
+> > > 
+> > > Fixes: 8c9e639da435 ("KVM: SVM: Use target APIC ID to complete x2AVIC IRQs when possible")
+> > > Signed-off-by: Sean Christopherson <seanjc@google.com>
+> > > ---
+> > >  arch/x86/kvm/svm/avic.c | 10 +---------
+> > >  1 file changed, 1 insertion(+), 9 deletions(-)
+> > > 
+> > > diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+> > > index 3c333cd2e752..14f567550a1e 100644
+> > > --- a/arch/x86/kvm/svm/avic.c
+> > > +++ b/arch/x86/kvm/svm/avic.c
+> > > @@ -411,15 +411,7 @@ static int avic_kick_target_vcpus_fast(struct kvm *kvm, struct kvm_lapic *source
+> > >  			 * Instead, calculate physical ID from logical ID in ICRH.
+> > >  			 */
+> > >  			int cluster = (icrh & 0xffff0000) >> 16;
+> > > -			int apic = ffs(icrh & 0xffff) - 1;
+> > > -
+> > > -			/*
+> > > -			 * If the x2APIC logical ID sub-field (i.e. icrh[15:0])
+> > > -			 * contains anything but a single bit, we cannot use the
+> > > -			 * fast path, because it is limited to a single vCPU.
+> > > -			 */
+> > > -			if (apic < 0 || icrh != (1 << apic))
+> > > -				return -EINVAL;
+> > > +			int apic = ffs(bitmap) - 1;
+> > >  
+> > >  			l1_physical_id = (cluster << 4) + apic;
+> > >  		}
+> > 
+> > Oh, I didn't notice this bug. However isn't removing the check is wrong as well?
+> > 
+> > What if we do have multiple bits set in the bitmap? After you remove this code,
+> > we will set IPI only to APIC which matches the 1st bit, no?
+> 
+> The common code (out of sight here) already ensures the bitmap has exactly one bit set:
+> 
+>                 if (unlikely(!bitmap))
+>                         /* guest bug: nobody to send the logical interrupt to */
+>                         return 0;
+> 
+>                 if (!is_power_of_2(bitmap))
+>                         /* multiple logical destinations, use slow path */
+>                         return -EINVAL;
+> 
+>                 logid_index = cluster + __ffs(bitmap);
+> 
+Ah right, but again because the patch that added x2apic logic after I already added should not
+be added. I vote again to just revert it.
 
-Cc: Frederic Weisbecker <frederic@kernel.org>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
----
- kernel/rcu/tree_nocb.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
-index f20aec4f4394b..0a5f0ef414845 100644
---- a/kernel/rcu/tree_nocb.h
-+++ b/kernel/rcu/tree_nocb.h
-@@ -1111,7 +1111,7 @@ int rcu_nocb_cpu_deoffload(int cpu)
- 			if (!ret)
- 				cpumask_clear_cpu(cpu, rcu_nocb_mask);
- 		} else {
--			pr_info("NOCB: Can't CB-deoffload an offline CPU\n");
-+			pr_info("NOCB: Cannot CB-deoffload offline CPU %d\n", rdp->cpu);
- 			ret = -EINVAL;
- 		}
- 	}
-@@ -1196,7 +1196,7 @@ int rcu_nocb_cpu_offload(int cpu)
- 			if (!ret)
- 				cpumask_set_cpu(cpu, rcu_nocb_mask);
- 		} else {
--			pr_info("NOCB: Can't CB-offload an offline CPU\n");
-+			pr_info("NOCB: Cannot CB-offload offline CPU %d\n", rdp->cpu);
- 			ret = -EINVAL;
- 		}
- 	}
--- 
-2.31.1.189.g2e36527f23
+Best regards,
+	Maxim Levitsky
 
