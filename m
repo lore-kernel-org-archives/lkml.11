@@ -2,107 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 159C2ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 08:05:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 040C9ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 08:06:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230399AbiHaIFy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 04:05:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43140 "EHLO
+        id S229862AbiHaIF5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 04:05:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230322AbiHaIFq (ORCPT
+        with ESMTP id S229765AbiHaIFr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 04:05:46 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2CBA85F8A;
-        Wed, 31 Aug 2022 01:05:37 -0700 (PDT)
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27V4PuOg001748;
-        Wed, 31 Aug 2022 10:03:51 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=Nk2MZAhvJXb3CoaTgq8LEaBG5RYc8Ufzp5+Z0j3aUnc=;
- b=TewhhTweiPPNzw3Ma2RluJ3yXIZ4wxWDXod4J7dF+nhZGsgyfTFX/EBtN+5DhYmZDM/+
- SW7NTa0OCSu1Yyw6EJbLBNhFjrj1XI2X1QOvMF1Hr3dHT2gswyp33VVdfP2KfiM/QIme
- mC4NzXiEfQQv44KBXTt8vh9Ouh+kx8XCHHFp7xTCtobfq7WKqZXOj6WpW1ZV5MX2AHFJ
- gMwPcrzvabk6J1bx9XsfU0kLDRVtGdEU50kKGEM21wtzpYBdq0nT3fPUYl5Rgn1EkPay
- TDp9oVirlrEN8RcjGzvHIGrjn+AEyVlm/Y/MLU2QmIrzm/4bY93mzQtKTXuJ6Ol8TfLD 1g== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3j9fmy5w5x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 31 Aug 2022 10:03:51 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 70D4F10002A;
-        Wed, 31 Aug 2022 10:03:50 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 6CEE5216EC0;
-        Wed, 31 Aug 2022 10:03:50 +0200 (CEST)
-Received: from [10.201.21.72] (10.75.127.47) by SHFDAG1NODE1.st.com
- (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2375.7; Wed, 31 Aug
- 2022 10:03:49 +0200
-Message-ID: <b6b13f40-346c-5d48-f9c3-56b49356e4e0@foss.st.com>
-Date:   Wed, 31 Aug 2022 10:03:48 +0200
+        Wed, 31 Aug 2022 04:05:47 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3C19BCBE;
+        Wed, 31 Aug 2022 01:05:38 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id m10-20020a17090a730a00b001fa986fd8eeso20349752pjk.0;
+        Wed, 31 Aug 2022 01:05:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=KAGqkvOKiabn/+RhA/LB35qY/OwR5Hgcx6mK/sCzhDM=;
+        b=JL/g4wLIEVjPo4DpYiDYAHm7zNH48YuwegOYKCy4jQ0xPAKnjUtOFSwPtpzY/tg+9Q
+         DV41ceVmq6X5/BJ4uBVmuBpUbCrKO7DkZdA0lJUy58K7X3bY3m5++wPdBfuN+qNphuVS
+         1RPmY/YoPCz76A9dAFA2x2LRLwmVkw8VBDGMZnrUX9c9JsCC+YrBmJq10LnREw2T2XBC
+         WKJIEyaPzbwuLqsvxm+BRPmehvz/g03wbft7dyO3bZSaFbOeFnuHZxyRcH1h0t/Q8Spe
+         ksxUiXo2B2P5rAy4Hf8wn59fsJtv+9GcuOn8yrQlwW0qKMMz3vfZnX2KBAcuSjVWjNeY
+         scKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=KAGqkvOKiabn/+RhA/LB35qY/OwR5Hgcx6mK/sCzhDM=;
+        b=kTpU76IIH+R48/EGmgsCKZnWeEQW2niPXj+ghWT/UJnZWpBcw5uEL0wkvALYBkN402
+         jzGciEcxFdlCjcbcNgi4VYtGXTSS2gvxJKRc9GcU7x2JX1DSkyCjUr5BsIp/GhjIgAkO
+         16DCzkcciD2y6wtuunh/WbIH9ditGSa/n8YLXqBfX9BuA+OvPz18GIeCPKT8i3z+x1ib
+         4HwlY2nTOQC3mZJ99ZEfQV78WAQUGGiXYkkrdpUlgMnpUs8sUl6SGMyJuqHCCiUK0Eqm
+         wIWEknknjxAJk6y5ti+OUZC4ItXB80Vh4USnXUmYbS6//xdWI8cDUhnd+JXF89y7fetX
+         9cWg==
+X-Gm-Message-State: ACgBeo0kH+bS0YaCNXld7W28wlRQEbqHGz4Z/PF9ixnarRz2dIpUHge/
+        eNP5J8/XVxM8YdonARPhSjw=
+X-Google-Smtp-Source: AA6agR4YoFdT7TkXbipm6o/wat/23Ik2j+mhGIsWuQAwJ9S5TDs2aIqtNWZVWufkqhz2Mpa0l3NVOA==
+X-Received: by 2002:a17:902:a58c:b0:174:3c97:d9a1 with SMTP id az12-20020a170902a58c00b001743c97d9a1mr23266345plb.22.1661933136810;
+        Wed, 31 Aug 2022 01:05:36 -0700 (PDT)
+Received: from [192.168.255.10] ([103.7.29.32])
+        by smtp.gmail.com with ESMTPSA id z24-20020aa79f98000000b00537f9e32b00sm8207498pfr.37.2022.08.31.01.05.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 31 Aug 2022 01:05:36 -0700 (PDT)
+Message-ID: <f8d1275b-966a-95ed-1122-d74fa62d811a@gmail.com>
+Date:   Wed, 31 Aug 2022 16:05:27 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v1 2/2] spi: stm32-qspi: Refactor dual flash mode enable
- check in ->setup()
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.0
+Subject: Re: [PATCH RESEND v2 0/8] x86/pmu: Corner cases fixes and
+ optimization
 Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>, <linux-spi@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-References: <20220830182821.47919-1-andriy.shevchenko@linux.intel.com>
- <20220830182821.47919-2-andriy.shevchenko@linux.intel.com>
-From:   Patrice CHOTARD <patrice.chotard@foss.st.com>
-In-Reply-To: <20220830182821.47919-2-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+References: <20220823093221.38075-1-likexu@tencent.com>
+ <Yw5I3P4Vs5GGBtuJ@google.com>
+From:   Like Xu <like.xu.linux@gmail.com>
+In-Reply-To: <Yw5I3P4Vs5GGBtuJ@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.47]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-31_04,2022-08-31_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-HI Andy
-
-On 8/30/22 20:28, Andy Shevchenko wrote:
-> gpiod_count() either returns positive number of the CS or negative
-> error code. In the stm32_qspi_setup() we check that configuration
-> has enough CS for the dual flash mode and SPI mode is not changing
-> over the lines of the code. Taking all above into considertion,
-> refactor dual flash mode enable check by dropping unneeded CS check
-> and reusing local mode variable.
+On 31/8/2022 1:29 am, Sean Christopherson wrote:
+> On Tue, Aug 23, 2022, Like Xu wrote:
+>> Good well-designed tests can help us find more bugs, especially when
+>> the test steps differ from the Linux kernel behaviour in terms of the
+>> timing of access to virtualized hw resources.
+>>
+>> In this patch series, there are three small optimization (006/007/008),
+>> one hardware surprise (001), and most of these fixes have stepped
+>> on my little toes.
+>>
+>> Please feel free to run tests, add more or share comments.
+>>
+>> Previous:
+>> https://lore.kernel.org/kvm/20220721103549.49543-1-likexu@tencent.com/
+>> https://lore.kernel.org/kvm/20220803130124.72340-1-likexu@tencent.com/
+>>
+>> V2 -> V2 RESEND Changelog:
+>> - The "pebs_capable" fix has been merged into tip/perf/tree tree;
+>> - Move the other two AMD vPMU optimization here;
 > 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  drivers/spi/spi-stm32-qspi.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+> This is not a RESEND.  These things very much matter because I'm sitting here
+> trying to figure out whether I need to review this "v2", which is really v3, or
+> whether I can just review the real v2.
 > 
-> diff --git a/drivers/spi/spi-stm32-qspi.c b/drivers/spi/spi-stm32-qspi.c
-> index 5858f5f9c758..9131660c1afb 100644
-> --- a/drivers/spi/spi-stm32-qspi.c
-> +++ b/drivers/spi/spi-stm32-qspi.c
-> @@ -680,8 +680,7 @@ static int stm32_qspi_setup(struct spi_device *spi)
->  	 * Dual flash mode is only enable in case SPI_TX_OCTAL and SPI_TX_OCTAL
->  	 * are both set in spi->mode and "cs-gpios" properties is found in DT
->  	 */
-> -	if (((spi->mode & (SPI_TX_OCTAL | SPI_RX_OCTAL)) == (SPI_TX_OCTAL | SPI_RX_OCTAL)) &&
-> -	    gpiod_count(qspi->dev, "cs")) {
-> +	if (mode == (SPI_TX_OCTAL | SPI_RX_OCTAL)) {
->  		qspi->cr_reg |= CR_DFM;
->  		dev_dbg(qspi->dev, "Dual flash mode enable");
->  	}
+>    Don't add "RESEND" when you are submitting a modified version of your
+>    patch or patch series - "RESEND" only applies to resubmission of a
+>    patch or patch series which have not been modified in any way from the
+>    previous submission.
 
-Reviewed-by: Patrice Chotard <patrice.chotard@foss.st.com>
+Roger that. Thanks for your detailed comments and all of that will be applied in V3.
 
-Thanks
-Patrice
+The new AMD vPMU testcases[1] will also help guard future related changes.
+[1] https://lore.kernel.org/kvm/20220819110939.78013-1-likexu@tencent.com/
+
+Thanks,
+Like Xu
