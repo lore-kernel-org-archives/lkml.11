@@ -2,92 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 490FFECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:17:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80FC8ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:17:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231290AbiHaSRh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 14:17:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56782 "EHLO
+        id S232743AbiHaSRo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 14:17:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232767AbiHaSQo (ORCPT
+        with ESMTP id S232741AbiHaSRD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 14:16:44 -0400
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04DA2E3432
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:13:41 -0700 (PDT)
-Received: by mail-qt1-x834.google.com with SMTP id j17so11608418qtp.12
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:13:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=u1UVGt6PDJkRSWBfyxYzPJPgJUP53+mBBhKcycvTk2g=;
-        b=DzjeZqnBEIOpRc0mqEBl5vCuzK/sA5YrAjEOSfzzRN+NHRw/jneFNPhOXOoa0/WAz8
-         fapoH4MfjijFBac1DYoiBXKYAj6lbFwTnN5zLElx5Z71IBkIRItRnt+r6z/v1n0YsAwZ
-         6BRIDW4+nXIcwSzg4MMBOBzBPVlsll5ktae+M=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=u1UVGt6PDJkRSWBfyxYzPJPgJUP53+mBBhKcycvTk2g=;
-        b=7IHeO1SaT2mapCn/fXyCsVUSOkuFtOlvbsscsO8W3+FY/bgL1kU4pI2/M6qHVtUP3Y
-         BR2tN5GG7vAaX7Xr1na868kSTicWyCtWAI5hLryjCVG7bkYSYBqMAzaraLTcNco78YYW
-         7CgiukZPrgCDq22lUN8PxS4sD0Sve5Dsgbo/8yNWcYoUl/7kj9yeKMLSJF2QZ750Tf2c
-         DEnXC3OhJe1Q7ED+IMeA/+NlidH+T8Ua/CfCKG2Wpcms9ZvFxQMLBX7SYsYNft3EN+Qz
-         3JhusoIMbYmU9ZSOS3IiqdpMoMsfSgOe9xtCuiAW+QOouliQQd2IuzBma1hcg4J2HMD2
-         4pdQ==
-X-Gm-Message-State: ACgBeo1cqmw7OTUkyC7yQgGZayE55T2WnqwrOw+qIXM0X/bPAwnX/Eja
-        MwL5K8GlTCOcA9cO6Vv5f5kiFvSsuaZo8Sm83GA0670UyBA=
-X-Google-Smtp-Source: AA6agR5OFUtG/N/PNwq8535QjQeYjw4uWLO1JLOAsKjXkpu6+BRuCFiHCNnvFotv4A2ReBXzk2skh2SdsmxB8iMwS0g=
-X-Received: by 2002:ac8:5983:0:b0:344:5dcb:3b6b with SMTP id
- e3-20020ac85983000000b003445dcb3b6bmr20745469qte.503.1661969611308; Wed, 31
- Aug 2022 11:13:31 -0700 (PDT)
+        Wed, 31 Aug 2022 14:17:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4FDAEC4C1;
+        Wed, 31 Aug 2022 11:13:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 34E6861C4F;
+        Wed, 31 Aug 2022 18:13:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98617C433C1;
+        Wed, 31 Aug 2022 18:13:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661969629;
+        bh=L7TRejKFwJZQ3r4eqXUKz8DxNFpD4zUaV37kHBH0mU0=;
+        h=Date:From:To:Cc:Subject:Reply-To:From;
+        b=EaImZNYubv5UWdPa7NTmJRCaDMNmynv1YaDvkt3J+8e0elQfDH9zv0DRTGGCK9ctR
+         CcfzVIsYkBUvw6djN7r7kyxkt0RgWtTY+BiOqGqkPtWj4qaD0As76WjvbJBPYX1uEh
+         NDZAzuqfxG2qxxTJgb0gzfylyX/2RAEenLh1MN/xwe0AUzj2+evvomnAFjiOFo6LQH
+         goeyZF0I5lLjCowUXUoxeUA3w/pMKHXFduDZsy5L/IOk2tLD15aE4ytdHlV1r2vT3W
+         jgOA5CyerGSfNqT3lhMcjN/rP7Gl8JEaTb0/1GJe/h62PdnUmKUfEXEkZCDtIWLtk4
+         q3CWn79MyDv/g==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 439B25C015D; Wed, 31 Aug 2022 11:13:49 -0700 (PDT)
+Date:   Wed, 31 Aug 2022 11:13:49 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     rcu@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
+        rostedt@goodmis.org
+Subject: [PATCH rcu 0/7] SRCU polled grace-period updates for v6.1
+Message-ID: <20220831181349.GA2695341@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
 MIME-Version: 1.0
-References: <20220830202018.1884851-1-pmalani@chromium.org> <Yw8frAv2pMfjmE0U@kuha.fi.intel.com>
-In-Reply-To: <Yw8frAv2pMfjmE0U@kuha.fi.intel.com>
-From:   Prashant Malani <pmalani@chromium.org>
-Date:   Wed, 31 Aug 2022 11:13:20 -0700
-Message-ID: <CACeCKae_uB6O_=A6bPGq28zUivWhhyLpvb31c7gP5vMFBSetNg@mail.gmail.com>
-Subject: Re: [PATCH] platform/chrome: cros_ec_typec: Register partner PDOs
-To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc:     linux-kernel@vger.kernel.org, chrome-platform@lists.linux.dev,
-        bleung@chromium.org, Guenter Roeck <groeck@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks for the review, Heikki.
+Hello!
 
-On Wed, Aug 31, 2022 at 1:45 AM Heikki Krogerus
-<heikki.krogerus@linux.intel.com> wrote:
->
-> On Tue, Aug 30, 2022 at 08:20:18PM +0000, Prashant Malani wrote:
-> > The ChromeOS EC exports partner source/sink cap PDOs (Power Data
-> > Objects) to the application processor (AP). Use this information
-> > to register USB PD (Power Delivery) capabilities with the
-> > USB Type-C Power Delivery device class.
-> >
-> > Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-> > Signed-off-by: Prashant Malani <pmalani@chromium.org>
->
-> This looks good to me. One nitpick below. With that fixed, FWIW:
->
-> Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
->
-> Will you later register also the port PDOs?
-Yes, that is the plan.
+This series provides updates for polled SRCU grace periods, mainly for
+Tiny SRCU:
 
-> >       if (resp.events & PD_STATUS_EVENT_SOP_PRIME_DISC_DONE &&
-> > @@ -1006,6 +1061,7 @@ static void cros_typec_handle_status(struct cros_typec_data *typec, int port_num
-> >                                        "Failed SOP Disc event clear, port: %d\n", port_num);
-> >               }
-> >       }
-> > +
-> >  }
->
-> I'm guessing that extra newline was just a typo.
+1.	Make "srcud" option also test polled grace-period API.
 
-Yeah ,I missed it during self-review :(
-I'll fix it up while applying the patch if there is no other comment.
-Otherwise I'll fix it in v2 (if there is one).
+2.	Add GP and maximum requested GP to Tiny SRCU rcutorture output.
+
+3.	Make Tiny SRCU poll_state_synchronize_srcu() more precise.
+
+4.	Make Tiny SRCU use full-sized grace-period counters.
+
+						Thanx, Paul
+
+------------------------------------------------------------------------
+
+ b/include/linux/srcutiny.h |    6 ++++--
+ b/kernel/rcu/rcutorture.c  |    3 +++
+ b/kernel/rcu/srcutiny.c    |    4 ++--
+ include/linux/srcutiny.h   |    6 +++---
+ kernel/rcu/srcutiny.c      |   14 +++++++-------
+ 5 files changed, 19 insertions(+), 14 deletions(-)
