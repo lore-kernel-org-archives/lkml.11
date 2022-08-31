@@ -2,86 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E868ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 09:33:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEE80ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 09:33:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229732AbiHaJdD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 05:33:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59654 "EHLO
+        id S229714AbiHaJdM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 05:33:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229652AbiHaJc5 (ORCPT
+        with ESMTP id S229591AbiHaJc6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 05:32:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF9CCEB1A
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 02:32:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3951DB81F3D
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 09:32:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 558B2C433C1;
-        Wed, 31 Aug 2022 09:32:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661938367;
-        bh=QG1DyMGmqSCY6m/qOIfbt61PZ1QMvZ1UY2rmKlptMps=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=yaiR/2gVKsybGXDd/TqmywNAVa20/rZyQOsrXE3RUKpuC5U7sa4RFgTLm56e0Kyti
-         B0Zuoz3i8sIGtmu2B7Zga63uVAPF11Tnif4SCJdrwf1ubGU0LxF8yB2nGgtNcINU1S
-         q5hrsNyN9sOtxTSpDv7QLEPe5cw9b1nCTbtYGKe0=
-Date:   Wed, 31 Aug 2022 11:32:43 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
-        johan@kernel.org, penguin-kernel@i-love.sakura.ne.jp,
-        zhangxuezhi1@coolpad.com, xyangxi5@gmail.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: Re: [PATCH] tty: vt: Add checks after calling kzalloc
-Message-ID: <Yw8qu1op37fWTvdi@kroah.com>
-References: <20220831090810.2175859-1-jiasheng@iscas.ac.cn>
+        Wed, 31 Aug 2022 05:32:58 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94585CE48F
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 02:32:55 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4MHf8x2lfVz9sVQ;
+        Wed, 31 Aug 2022 11:32:33 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id a-n1N6O5ZN4k; Wed, 31 Aug 2022 11:32:33 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4MHf8w1TxGz9sf4;
+        Wed, 31 Aug 2022 11:32:32 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 23CBB8B77A;
+        Wed, 31 Aug 2022 11:32:32 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id QV0Zrev9zaSn; Wed, 31 Aug 2022 11:32:32 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 04C8C8B766;
+        Wed, 31 Aug 2022 11:32:32 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 27V9WSBY1567859
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Wed, 31 Aug 2022 11:32:28 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 27V9WRtb1567828;
+        Wed, 31 Aug 2022 11:32:27 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH 3/3] powerpc/32: Remove wii_memory_fixups()
+Date:   Wed, 31 Aug 2022 11:32:09 +0200
+Message-Id: <5f2091f86528b59ef92ef1daed5d3dd8c0d7bebd.1661938317.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <959d77be630b9b46a7458f0fbd41dc3a94ec811a.1661938317.git.christophe.leroy@csgroup.eu>
+References: <959d77be630b9b46a7458f0fbd41dc3a94ec811a.1661938317.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220831090810.2175859-1-jiasheng@iscas.ac.cn>
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1661938326; l=1978; s=20211009; h=from:subject:message-id; bh=ZS2ts3r/FWR4lJ5dMmgFvcH2uwiPJ5VLgro8FN39SEA=; b=D/faDj1PzXiQq3BtXU7rUCwwtG6EVZENk9NMUQkTIz0ln0tZgqHzQ9BP1HdkfHfDZenWNAO4UNkL qgmVgjMyAIu4JBA11wbeLFdcX/CEILhBk/xwLeRyCJTUIUsQWo4p
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 05:08:10PM +0800, Jiasheng Jiang wrote:
-> On Wed, Aug 31, 2022 at 03:57:42PM +0800, Jiasheng Jiang wrote:
-> >>  	for (currcons = 0; currcons < MIN_NR_CONSOLES; currcons++) {
-> >>  		vc_cons[currcons].d = vc = kzalloc(sizeof(struct vc_data), GFP_NOWAIT);
-> >> +		if (!vc) {
-> >> +			console_unlock();
-> >> +			return -ENOMEM;
-> >> +		}
-> >>  		INIT_WORK(&vc_cons[currcons].SAK_work, vc_SAK);
-> >>  		tty_port_init(&vc->port);
-> >>  		visual_init(vc, currcons, 1);
-> >>  		/* Assuming vc->vc_{cols,rows,screenbuf_size} are sane here. */
-> >>  		vc->vc_screenbuf = kzalloc(vc->vc_screenbuf_size, GFP_NOWAIT);
-> >> +		if (!vc->vc_screenbuf) {
-> >> +			console_unlock();
-> >> +			return -ENOMEM;
-> >> +		}
-> > 
-> > This has been attempted many times in the past, sorry.  Unless you can
-> > prove that this can actually happen in real life, we are going to leave
-> > these as-is.
-> > 
-> > Please do not just do random changes like this without actually testing
-> > to see if it is possible to happen.
-> 
-> As the harm of vulnerabilities is much higher than the cost of fixing them,
-> it is acceptable to add harmless security checks that guarantee the
-> vulnerabilities will never be triggered.
+wii_memory_fixups() is not called anymore, remove it.
 
-No, not always, many times you are adding new bugs by doing this type of
-"unneeded fixes".  We have had this happen in the vt code many times in
-the past, let's learn from our mistakes please.
+Also remove left-overs in mmu_decl.h which were forgotten by
+commit 160985f3025b ("powerpc/wii: remove wii_mmu_mapin_mem2()")
 
-And where is the "vulnerability" here exactly?
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ arch/powerpc/mm/mmu_decl.h               |  8 --------
+ arch/powerpc/platforms/embedded6xx/wii.c | 15 ---------------
+ 2 files changed, 23 deletions(-)
 
-thanks,
+diff --git a/arch/powerpc/mm/mmu_decl.h b/arch/powerpc/mm/mmu_decl.h
+index 6dd4744cc56a..0e3528aec49e 100644
+--- a/arch/powerpc/mm/mmu_decl.h
++++ b/arch/powerpc/mm/mmu_decl.h
+@@ -102,14 +102,6 @@ extern phys_addr_t total_lowmem;
+ extern phys_addr_t memstart_addr;
+ extern phys_addr_t lowmem_end_addr;
+ 
+-#ifdef CONFIG_WII
+-extern unsigned long wii_hole_start;
+-extern unsigned long wii_hole_size;
+-
+-extern unsigned long wii_mmu_mapin_mem2(unsigned long top);
+-extern void wii_memory_fixups(void);
+-#endif
+-
+ /* ...and now those things that may be slightly different between processor
+  * architectures.  -- Dan
+  */
+diff --git a/arch/powerpc/platforms/embedded6xx/wii.c b/arch/powerpc/platforms/embedded6xx/wii.c
+index 9e03ff8f631c..f4e654a9d4ff 100644
+--- a/arch/powerpc/platforms/embedded6xx/wii.c
++++ b/arch/powerpc/platforms/embedded6xx/wii.c
+@@ -15,8 +15,6 @@
+ #include <linux/seq_file.h>
+ #include <linux/of_address.h>
+ #include <linux/of_platform.h>
+-#include <linux/memblock.h>
+-#include <mm/mmu_decl.h>
+ 
+ #include <asm/io.h>
+ #include <asm/machdep.h>
+@@ -49,19 +47,6 @@
+ static void __iomem *hw_ctrl;
+ static void __iomem *hw_gpio;
+ 
+-static int __init page_aligned(unsigned long x)
+-{
+-	return !(x & (PAGE_SIZE-1));
+-}
+-
+-void __init wii_memory_fixups(void)
+-{
+-	struct memblock_region *p = memblock.memory.regions;
+-
+-	BUG_ON(memblock.memory.cnt != 2);
+-	BUG_ON(!page_aligned(p[0].base) || !page_aligned(p[1].base));
+-}
+-
+ static void __noreturn wii_spin(void)
+ {
+ 	local_irq_disable();
+-- 
+2.37.1
 
-greg k-h
