@@ -2,105 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C5F3ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 08:37:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A944ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 08:38:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231150AbiHaIhB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 04:37:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47284 "EHLO
+        id S230521AbiHaIiT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 04:38:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231281AbiHaIg5 (ORCPT
+        with ESMTP id S229583AbiHaIiQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 04:36:57 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E75A8CFC
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 01:36:56 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <l.stach@pengutronix.de>)
-        id 1oTJDE-0008Cf-KV; Wed, 31 Aug 2022 10:36:40 +0200
-Message-ID: <cbf7cc48acb1c772bea8594aa4017f56b4d1074e.camel@pengutronix.de>
-Subject: Re: [PATCH v5 5/7] soc: imx: imx8mp-blk-ctrl: handle PCIe PHY resets
-From:   Lucas Stach <l.stach@pengutronix.de>
-To:     Richard Zhu <hongxing.zhu@nxp.com>, p.zabel@pengutronix.de,
-        bhelgaas@google.com, lorenzo.pieralisi@arm.com, robh@kernel.org,
-        shawnguo@kernel.org, vkoul@kernel.org,
-        alexander.stein@ew.tq-group.com, marex@denx.de,
-        richard.leitner@linux.dev
-Cc:     linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        linux-imx@nxp.com
-Date:   Wed, 31 Aug 2022 10:36:39 +0200
-In-Reply-To: <1661845564-11373-6-git-send-email-hongxing.zhu@nxp.com>
-References: <1661845564-11373-1-git-send-email-hongxing.zhu@nxp.com>
-         <1661845564-11373-6-git-send-email-hongxing.zhu@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+        Wed, 31 Aug 2022 04:38:16 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FFD19BB70
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 01:38:15 -0700 (PDT)
+Received: from fraeml710-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MHcsw1khDz67mY4;
+        Wed, 31 Aug 2022 16:34:28 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ fraeml710-chm.china.huawei.com (10.206.15.59) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 31 Aug 2022 10:38:12 +0200
+Received: from localhost (10.202.226.42) by lhrpeml500005.china.huawei.com
+ (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 31 Aug
+ 2022 09:38:11 +0100
+Date:   Wed, 31 Aug 2022 09:38:10 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To:     Dmitry Rokosov <ddrokosov@sberdevices.ru>
+CC:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        kernel test robot <lkp@intel.com>, <llvm@lists.linux.dev>,
+        <kbuild-all@lists.01.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>
+Subject: Re: [jic23-iio:testing 124/129] drivers/iio/accel/msa311.c:993:24:
+ warning: format specifies type 'unsigned char' but the argument has type
+ 'unsigned int'
+Message-ID: <20220831093810.00006112@huawei.com>
+In-Reply-To: <20220831002405.m3j5sug2rz7bdz5s@Rockosov-MBP>
+References: <202208290618.wU7mHfOp-lkp@intel.com>
+        <20220830110329.00000d18@huawei.com>
+        <CAHp75VfA=w+Q2ccdTiQXeWRw0wSjbkUf6J3+tp-kE50mxdkTNg@mail.gmail.com>
+        <20220831002405.m3j5sug2rz7bdz5s@Rockosov-MBP>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
+Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: l.stach@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+X-Originating-IP: [10.202.226.42]
+X-ClientProxiedBy: lhrpeml100003.china.huawei.com (7.191.160.210) To
+ lhrpeml500005.china.huawei.com (7.191.163.240)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Dienstag, dem 30.08.2022 um 15:46 +0800 schrieb Richard Zhu:
-> From: Lucas Stach <l.stach@pengutronix.de>
-> 
-> Dessert the PHY reset when powering up the domain and put it back
-> into reset when the domain is powered down.
-> 
-> Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+On Wed, 31 Aug 2022 03:24:05 +0300
+Dmitry Rokosov <ddrokosov@sberdevices.ru> wrote:
 
-According to patch submission guidelines you need to add your own sign-
-off when integrating this patch into your series. Please add in the
-next revision.
-
-Regards,
-Lucas
-
-> ---
->  drivers/soc/imx/imx8mp-blk-ctrl.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
+> Hello Jonathan and Andy,
 > 
-> diff --git a/drivers/soc/imx/imx8mp-blk-ctrl.c b/drivers/soc/imx/imx8mp-blk-ctrl.c
-> index 4ca2ede6871b..6c939d68ba9a 100644
-> --- a/drivers/soc/imx/imx8mp-blk-ctrl.c
-> +++ b/drivers/soc/imx/imx8mp-blk-ctrl.c
-> @@ -18,6 +18,8 @@
->  #define GPR_REG0		0x0
->  #define  PCIE_CLOCK_MODULE_EN	BIT(0)
->  #define  USB_CLOCK_MODULE_EN	BIT(1)
-> +#define  PCIE_PHY_APB_RST	BIT(4)
-> +#define  PCIE_PHY_INIT_RST	BIT(5)
->  
->  struct imx8mp_blk_ctrl_domain;
->  
-> @@ -75,6 +77,10 @@ static void imx8mp_hsio_blk_ctrl_power_on(struct imx8mp_blk_ctrl *bc,
->  	case IMX8MP_HSIOBLK_PD_PCIE:
->  		regmap_set_bits(bc->regmap, GPR_REG0, PCIE_CLOCK_MODULE_EN);
->  		break;
-> +	case IMX8MP_HSIOBLK_PD_PCIE_PHY:
-> +		regmap_set_bits(bc->regmap, GPR_REG0,
-> +				PCIE_PHY_APB_RST | PCIE_PHY_INIT_RST);
-> +		break;
->  	default:
->  		break;
->  	}
-> @@ -90,6 +96,10 @@ static void imx8mp_hsio_blk_ctrl_power_off(struct imx8mp_blk_ctrl *bc,
->  	case IMX8MP_HSIOBLK_PD_PCIE:
->  		regmap_clear_bits(bc->regmap, GPR_REG0, PCIE_CLOCK_MODULE_EN);
->  		break;
-> +	case IMX8MP_HSIOBLK_PD_PCIE_PHY:
-> +		regmap_clear_bits(bc->regmap, GPR_REG0,
-> +				  PCIE_PHY_APB_RST | PCIE_PHY_INIT_RST);
-> +		break;
->  	default:
->  		break;
->  	}
+> Sorry for such a late response, a couple of days ago my daughter was born.
+> So I couldn't reach my laptop :)
+
+Congratulations and good luck! :)
+
+> 
+> Please find my thoughts below.
+> 
+> > > > >> drivers/iio/accel/msa311.c:993:24: warning: format specifies type 'unsigned char' but the argument has type 'unsigned int' [-Wformat]  
+> > > >                                               "msa311-%hhx", partid);
+> > > >                                                       ~~~~   ^~~~~~
+> > > >                                                       %x
+> > > >    1 warning generated.  
+> >   
+> > > >    992                msa311->chip_name = devm_kasprintf(dev, GFP_KERNEL,  
+> > > >  > 993                                                   "msa311-%hhx", partid);  
+> >   
+> > > I'm thinking intent here was to limit range of what was printed. Maybe better to use
+> > > local u8 variable or cast?
+> > >
+> > > I can fix it up if that's fine with you - or even better send me a patch that fixes
+> > > it however you prefer!  
+> > 
+> > Looking back at what Linus said about those specifiers, I would rather
+> > go with simple %x or %02x.
+> > 
+> > P.S. Surprisingly many C developers don't know the difference between
+> > %hhx and %02x, which is easy to check by
+> > 
+> >   char a = -1;
+> >   printf("%hhx <==> %02x\n", a, a);
+> >   a = 217;
+> >   printf("%hhx <==> %02x\n", a, a);  
+> 
+> Thank you for pointing to Linus answer. I have explored it at the link:
+> 
+> https://lore.kernel.org/lkml/CAHk-=wgoxnmsj8GEVFJSvTwdnWm8wVJthefNk2n6+4TC=20e0Q@mail.gmail.com/
+> 
+> Actually, Linus described one exception to this rule, which I have
+> in my patch. I have an integer which I want to print as a char.
+> I see that Linus mentions it's a bad idea. I agree with that. But
+> currently %hhx => %02x replacement breaks the requested behavior, %02x
+> will not shrink integer value to char. I want to say, maybe it's better
+> just cast the value to u8 type and print as %x. What do you think? I can
+> prepare such a patch.
+> 
+> P.S. Andy's example to show the difference between %hhx and %02x makes
+> more clear why such a replacement is not acceptable here.
+> 
+> Output:
+> ff <==> ffffffff
+> d9 <==> ffffffd9
+> 
+In this case the storage is an unsigned int, not an unsigned char.
+Hence the value will be small and positive.  So I'm fairly sure you
+won't hit the above because it's
+
+0x000000ff --> ff
+0x000000d9 --> d9
+
+The range is limited to 8 bits because that's all the underlying register
+holds.
+
+Jonathan
 
 
