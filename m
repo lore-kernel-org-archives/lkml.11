@@ -2,93 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20A90ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 20:40:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF639ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 20:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231419AbiHaUkf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 16:40:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44400 "EHLO
+        id S231515AbiHaUm2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 16:42:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231440AbiHaUkb (ORCPT
+        with ESMTP id S230215AbiHaUm0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 16:40:31 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0946844EE;
-        Wed, 31 Aug 2022 13:40:28 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id q7so21563722lfu.5;
-        Wed, 31 Aug 2022 13:40:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=6r7qNJQ9qhEl++Kww/F8hltPupbf7ISSLDOC2iciXcw=;
-        b=ezCb/Lqr8CabV5aQeawj6AuanSM1hkM/RPKw9RIKeJEKHBJtK5BxlVy2sZJDnNTTBS
-         wDViDDZEZX1E70OeL2HJ7xhSr1r9cj5AaWH228Di0f7sEgrVScxjrRIPTGZ6YjWmvT0y
-         bfhZA7CFgfufWKms0ORjgP+BkII3DzQCJ6ah6VJoPwL9tZFZ30iN+5ae+1LUosNZgvFx
-         VIJGCxvazX/4YrOJd6vpZJJtLtsWifVFUR5fIR+Vinti3S2X8sxrHVFiGKZDMLsC7jUS
-         gPF0Psiyr18UW2AUYGxP4CZt1MhtEiQiioylO14Zs3PuJDmoQNwAzxXM8e8jf0WbTFn4
-         jN3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=6r7qNJQ9qhEl++Kww/F8hltPupbf7ISSLDOC2iciXcw=;
-        b=pNRoVBhxcyPvutNDTBNdPnStrRNHsP48ytGX80wKvKyr60dfNA8Z5RzuoPlNMEtpvx
-         Ps3V/0EK3E8PWiL//TZ7R7k9ve/kXktHjWmiysxVMQY7aL1jyZSZ2XIAH0/RDyffhQto
-         6UQPxdVpmZzssybIX59GZLgcyAURVTkJfTYIUMTi6oeE6UTXr56XBpRrGKKnWtk9sDdc
-         PNZB0HKAIX6N+C+BzczVN+COOSCR08W8WvpbZmp0bJZ+x+7r/mTDR1jiHWQ3SBRcTdB7
-         IVatzDozGUHnf1oX8sCwWf8uriCxXBvvQcov1YgVdnlfJP2AmLiFWI1PleO7pxxiqFOL
-         gxdg==
-X-Gm-Message-State: ACgBeo3zMyYmnlivw0roLOYXQtsOe4+mvoOP5t4i8p3Qp+WKMt5huHoH
-        nZM5/oVNJc3EU27aiSEn7pT0QqqHSZC/+g==
-X-Google-Smtp-Source: AA6agR6oonOsgUC++bzNhhDhebFY1lavC6Y0gvQCkfsPEzbfHSRQSGSLieabrd4fvAh0tpi1Z6uKmw==
-X-Received: by 2002:ac2:5d6e:0:b0:494:99aa:6548 with SMTP id h14-20020ac25d6e000000b0049499aa6548mr240660lft.508.1661978427095;
-        Wed, 31 Aug 2022 13:40:27 -0700 (PDT)
-Received: from i-vetokaappi.home.lan (dsl-hkibng42-5673c7-93.dhcp.inet.fi. [86.115.199.93])
-        by smtp.gmail.com with ESMTPSA id w18-20020a05651234d200b0048acfdc8b70sm198431lfr.184.2022.08.31.13.40.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Aug 2022 13:40:25 -0700 (PDT)
-From:   =?UTF-8?q?Matti=20Lehtim=C3=A4ki?= <matti.lehtimaki@gmail.com>
-To:     linux-arm-msm@vger.kernel.org
-Cc:     =?UTF-8?q?Matti=20Lehtim=C3=A4ki?= <matti.lehtimaki@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Brian Masney <bmasney@redhat.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Douglas Anderson <dianders@chromium.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ARM: qcom_defconfig: Enable MSM8226 pinctrl driver
-Date:   Wed, 31 Aug 2022 23:30:33 +0300
-Message-Id: <20220831203033.250237-1-matti.lehtimaki@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Wed, 31 Aug 2022 16:42:26 -0400
+Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95071E9900;
+        Wed, 31 Aug 2022 13:42:24 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 94CF9C021; Wed, 31 Aug 2022 22:42:22 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1661978542; bh=2S8zNBkMltmRF/cvyoxKRx1ONepP3QD9MZcg6yVc+o8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=d9P/NsNoX8MkIwSItZAKCOAi0leyFp63WG6GS46++sXtGbSot6NQi5KnDYcNbVZUJ
+         GdhAe7Nds8tm6ZG6Tkt/+RTVNFpC5Euzv2ATZNTW7zE9zxwQySU/kJPtBr8aL3cLCa
+         7Fs5DYYwQN9bkeoEFRnEEbM2fT0e/JmxOjrizXiGVshy0YWzIccCwrSfpZzq+04Btf
+         PHZrabK4kCUWdi3JHieMwpP3e8rg47lARTGsTioaO5Q7x9knKS044hmURb5mMWBVeZ
+         qncjFqE5a1BaEjWJew4htRgQfbHJ4CE0dN51+YD2ML/i1g2nAkhQtjsaZJW33PaO44
+         CEs/1cbyynGFg==
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 966BAC009;
+        Wed, 31 Aug 2022 22:42:18 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1661978541; bh=2S8zNBkMltmRF/cvyoxKRx1ONepP3QD9MZcg6yVc+o8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SjayXfD9nyhtO69rLqNAiqvy1T972+T12pYmOCjC9mXdTSMMeXwhUY5X0QYFM8Jlo
+         HHY/0smde5bhP/o0/ZQHZbGgexcLtSwjFj9vL7+oBfYLp1C8jUwIaHFRjY7VLf2zgm
+         wfYPsP80Rs3yQZU5d5IxgB8ANpSOVcRY+5u/P9DqX9Sm0ESTqz2waSypIQ51mNzltx
+         Xr2uobUGC6VUewhQxFmw3PkuX4ygIOh/tGFHFLGK0c8Rf3s3IUmi/GDP9qL9IN9wwa
+         IvjOqiTy7OpMVOUNrFf8v/A7EbWIeQ9n+53nU8ywX/cH+bYUjOUwxbd0Ds9HFxB1x/
+         r1BqQviWbDSCw==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id cb20c655;
+        Wed, 31 Aug 2022 20:42:15 +0000 (UTC)
+Date:   Thu, 1 Sep 2022 05:42:00 +0900
+From:   asmadeus@codewreck.org
+To:     Schspa Shi <schspa@gmail.com>
+Cc:     ericvh@gmail.com, lucho@ionkov.net, linux_oss@crudebyte.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, v9fs-developer@lists.sourceforge.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] p9: trans_fd: Fix deadlock when connection cancel
+Message-ID: <Yw/HmHcmXBVIg/SW@codewreck.org>
+References: <20220831180950.76907-1-schspa@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220831180950.76907-1-schspa@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This config is required for QCOM APQ8026/MSM8226 based devices.
+Schspa Shi wrote on Thu, Sep 01, 2022 at 02:09:50AM +0800:
+> To fix it, we can add extra reference counter to avoid deadlock, and
+> decrease it after we unlock the client->lock.
 
-Signed-off-by: Matti Lehtimäki <matti.lehtimaki@gmail.com>
----
- arch/arm/configs/qcom_defconfig | 1 +
- 1 file changed, 1 insertion(+)
+Thanks for the patch!
 
-diff --git a/arch/arm/configs/qcom_defconfig b/arch/arm/configs/qcom_defconfig
-index 8a59441701a8..91572f6d0a89 100644
---- a/arch/arm/configs/qcom_defconfig
-+++ b/arch/arm/configs/qcom_defconfig
-@@ -131,6 +131,7 @@ CONFIG_PINCTRL_APQ8064=y
- CONFIG_PINCTRL_APQ8084=y
- CONFIG_PINCTRL_IPQ4019=y
- CONFIG_PINCTRL_IPQ8064=y
-+CONFIG_PINCTRL_MSM8226=y
- CONFIG_PINCTRL_MSM8660=y
- CONFIG_PINCTRL_MSM8960=y
- CONFIG_PINCTRL_MDM9615=y
--- 
-2.34.1
+Unfortunately I already sent a slightly different version to the list,
+hidden in another syzbot thread, here:
+https://lkml.kernel.org/r/YvyD053bdbGE9xoo@codewreck.org
 
+(yes, sorry, not exactly somewhere I'd expect someone to find it... 9p
+hasn't had many contributors recently)
+
+
+Basically instead of taking an extra lock I just released the client
+lock before calling p9_client_cb, so it shouldn't hang anymore.
+
+We don't need the lock to call the cb as in p9_conn_cancel we already
+won't accept any new request and by this point the requests are in a
+local list that isn't shared anywhere.
+
+If you have a test setup, would you mind testing my patch?
+That's the main reason I was delaying pushing it.
+
+Since you went out of your way to make this patch if you agree with my
+approach I don't mind adding your sign off or another mark of having
+worked on it.
+
+Thank you,
+--
+Dominique
