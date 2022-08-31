@@ -2,101 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30EBFECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 21:25:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 665C3ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 21:25:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232211AbiHaVZQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 17:25:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50208 "EHLO
+        id S232241AbiHaVZZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 17:25:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230478AbiHaVZN (ORCPT
+        with ESMTP id S232215AbiHaVZV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 17:25:13 -0400
-Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB197B481
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 14:25:11 -0700 (PDT)
-Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-11f0fa892aeso18954605fac.7
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 14:25:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=g+LFT64nKjvFQ9xBs3ga17iSDMJNzcQHBlCbx79FOAA=;
-        b=Z4r+al+4Pp7+eTwrj0gkK1wBO8Z0CpU7HFRAFrfv4p86LXjVXcvfALv60ZlKgJxda2
-         buOcRK5++YP6s/L3n6ZjEeHdba/BWIXiWTp14xU9HOBtdXk9gdNeo41fD9jm9u8oeOTS
-         b3odhDl+/3OiWnz7H6fJQC/oFftOplAIsblpfHfw7/WhNrze0wGyl0bKOBU0PaM3u0mC
-         v2snYeD51HdMQUR0pqB99AA++xapBHElVIVCuQeBwR0/Gzc5Ag66WSfDLcshMKsLntyq
-         5SDsbDX2/7vIlG6ILnLQtms7Fy8OlV8fh9x6Th6J9i95F76zXuGnq8FlvbFEYFxjx+Sc
-         CB0w==
+        Wed, 31 Aug 2022 17:25:21 -0400
+Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E9B255082;
+        Wed, 31 Aug 2022 14:25:20 -0700 (PDT)
+Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-11f4e634072so12976308fac.13;
+        Wed, 31 Aug 2022 14:25:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=g+LFT64nKjvFQ9xBs3ga17iSDMJNzcQHBlCbx79FOAA=;
-        b=D0HCIqMaYeZNUpSAXJ4gF637ajUrzQqOU20iEyvGroTnmhWCAGf6++pP7FX/cyKxOP
-         MXgGhUhC68d/E2vFfQCOH5I0YZn/wLFNZYMJDngbwCUBwKo7WCyHt7maOzJ27Aci+f9l
-         ZJgFUr6sfgky571ylTOOGMbYi12Pg8aehHnbI6sWynT49s4SXv0oES2lT8w5pOA6pPqr
-         w5WfF5tLERVrS089zCnGI0hPE/l5kigMpJAN0mqAsIKXBJmGBldVwpuFa1H3vvEzCDnN
-         xqyBeHA/NZ4xbmqe9+HPmljSrd7hCc7ssckrjQ3l1D8kwdySUokxUKpoPl8yCjFPrXPb
-         Q8PQ==
-X-Gm-Message-State: ACgBeo12MTNNJwzPi08r8QxB/gFmOkc/KAygj/uKFKr5UKM9RBQE7MGJ
-        APB0QZzm9l93ZUWE0hGzC975HoHnWnySpaQaeqwPjA==
-X-Google-Smtp-Source: AA6agR4N+yQXPnOGxaJMFenO1Wz9ePQE4H8Up8oiR4Fnc6irTFXk/fUy8f1Iwrt05kWPuLi9Qce/XHeXKrUoHCdbHkg=
-X-Received: by 2002:a05:6870:4308:b0:10b:8cbe:c945 with SMTP id
- w8-20020a056870430800b0010b8cbec945mr2401759oah.220.1661981110841; Wed, 31
- Aug 2022 14:25:10 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=3IO7QYOx3ovoZtkLdtuGfUPure2DXDjbSLg7kimkmnk=;
+        b=M9KTKOqS5jkSj+FIbaVsG5A0B/o+cHUCcat0CJuKK6flq7WPJnC/5ipTx7YwHG1GO4
+         faDv1w9S9O7KLeS2D9PioKjRMKIVvtdxRaMJ6bUPVQGacW5Qzyfx/NUkcIeMrn7Gu9Cx
+         w8/UwloFuOle+7iNzDdtYsAvBMWz5ZC5q/DsI6/yh2tyN9pyDs32sUTR4RNIaSU9ECmb
+         SlYJOGozX16ch/16cK/51IvooDcXMbnyRag9wByBjYda83Po6hDx1mXQkTgOpIfiDNB9
+         X6y5jsK5amE5nKEpwOqI11PoA/1L7TKNafPDN+fAVn3aKklzUDC0QJBCDR4A9O9wOBxE
+         T4bg==
+X-Gm-Message-State: ACgBeo3Yo8UVQX3ZtI5fCNfLAapFVQplnsprbg+/nTWrKuJRiqZ97r5b
+        0yj5fLyjOq/Ex4if3QtDcw==
+X-Google-Smtp-Source: AA6agR5FNzao4c+d5/VDOYcbN1vLGoZj2frgIS/RF/DPtMRtmJentWXzD/8RolZiTMlRjZR7NZI+KQ==
+X-Received: by 2002:a05:6808:f89:b0:344:cab1:14e9 with SMTP id o9-20020a0568080f8900b00344cab114e9mr2076886oiw.82.1661981119631;
+        Wed, 31 Aug 2022 14:25:19 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id by6-20020a056830608600b00638e49d4cadsm9278246otb.36.2022.08.31.14.25.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Aug 2022 14:25:19 -0700 (PDT)
+Received: (nullmailer pid 277757 invoked by uid 1000);
+        Wed, 31 Aug 2022 21:25:18 -0000
+Date:   Wed, 31 Aug 2022 16:25:18 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        devicetree@vger.kernel.org,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Frank Li <Frank.Li@nxp.com>, linux-pci@vger.kernel.org,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v5 12/20] dt-bindings: PCI: dwc: Add dma-coherent property
+Message-ID: <20220831212518.GA277724-robh@kernel.org>
+References: <20220822184701.25246-1-Sergey.Semin@baikalelectronics.ru>
+ <20220822184701.25246-13-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-References: <20220831211526.2743216-1-axelrasmussen@google.com>
-In-Reply-To: <20220831211526.2743216-1-axelrasmussen@google.com>
-From:   "Zach O'Keefe" <zokeefe@google.com>
-Date:   Wed, 31 Aug 2022 14:24:34 -0700
-Message-ID: <CAAa6QmRy3N9cO14AVz2g0dA_MOSatwzufQxO1PwH35J4mYPbmQ@mail.gmail.com>
-Subject: Re: [PATCH] selftest: vm: remove orphaned references to local_config.{h,mk}
-To:     Axel Rasmussen <axelrasmussen@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Tarun Sahu <tsahu@linux.ibm.com>, linux-mm@kvack.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220822184701.25246-13-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 2:16 PM Axel Rasmussen <axelrasmussen@google.com> wrote:
->
-> Note: this commit is intended to apply to mm-unstable, the commit being
-> fixed only exists in that branch for now.
->
-> Commit b4efb234e53cc60ccdc855190be9f35918687412 ("Kselftests: remove
-> support of libhugetlbfs from kselftests") removed the rule describing
-> how to build local_config.{h,mk}, but it left two references to these
-> files lingering around. The result is, none of the selftests could be
-> built due to dependencies with no rule for how to build them.
->
-> Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+On Mon, 22 Aug 2022 21:46:53 +0300, Serge Semin wrote:
+> DW PCIe EP/RP AXI- and TRGT1-master interfaces are responsible for the
+> application memory access. They are used by the RP/EP PCIe buses (MWr/MWr
+> TLPs emitted by the peripheral PCIe devices) and the eDMA block. Since all
+> of them mainly involve the system memory and basically mean DMA we can
+> expect the corresponding platforms can be designed in a way to make sure
+> the transactions are cache-coherent. As such the DW PCIe DT-nodes can have
+> the 'dma-coherent' property specified. Let's permit it in the DT-bindings
+> then.
+> 
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> 
 > ---
->  tools/testing/selftests/vm/Makefile | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
->
-> diff --git a/tools/testing/selftests/vm/Makefile b/tools/testing/selftests/vm/Makefile
-> index b52f2cc51482..4ae879f70f4c 100644
-> --- a/tools/testing/selftests/vm/Makefile
-> +++ b/tools/testing/selftests/vm/Makefile
-> @@ -1,9 +1,7 @@
->  # SPDX-License-Identifier: GPL-2.0
->  # Makefile for vm selftests
->
-> -LOCAL_HDRS += $(selfdir)/vm/local_config.h $(top_srcdir)/mm/gup_test.h
-> -
-> -include local_config.mk
-> +LOCAL_HDRS += $(top_srcdir)/mm/gup_test.h
->
->  uname_M := $(shell uname -m 2>/dev/null || echo not)
->  MACHINE ?= $(shell echo $(uname_M) | sed -e 's/aarch64.*/arm64/' -e 's/ppc64.*/ppc64/')
-> --
-> 2.37.2.789.g6183377224-goog
->
+> 
+> Changelog v3:
+> - This is a new patch created on v3 lap of the series.
+> ---
+>  Documentation/devicetree/bindings/pci/snps,dw-pcie-common.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
 
-Thanks Axel! Works here on latest mm-unstable
-
-Tested-by: Zach O'Keefe <zokeefe@google.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
