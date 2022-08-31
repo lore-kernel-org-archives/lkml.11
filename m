@@ -2,132 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06AD4ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 21:23:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E03ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 21:24:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232154AbiHaVXe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 17:23:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47990 "EHLO
+        id S229453AbiHaVYy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 17:24:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230478AbiHaVXa (ORCPT
+        with ESMTP id S230478AbiHaVYt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 17:23:30 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2528BA7AA8
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 14:23:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661981010; x=1693517010;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=l+xXkWuuCi6rF4D2yXyu4H40LQSFIn3eOKHFcrv/pTU=;
-  b=Le9Dh+GKOFj2Lw3bf/UALXN6TwAYOfQGVKCyHNoSafvzR/Euhf/ilF9W
-   JO/aBSZSoxACylBQ/eAV1VJIscdyGoNWGEk8fzBqhuUuXKIHsud+z0xqN
-   v835949qvLhH4/WA3b2m3QrHidH5Y7IZ006UWAAKT7u7BwInK+vRw8ErA
-   03G+7j/iKcw2O2InL5FmVBZp2ijaO+UIDz48xcDALvYAdrdhL/XSk22rw
-   +hdDNpViD2ZQXO7idftrQKBtIDZKL8KCvJYjVzGmIvlVO70kVMjqkHdCI
-   GpdzpcsRwTxqPEYJPdfVubUYcO3L0LUg7EEILvRp5BqV7EQPeilteip/n
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="275295985"
-X-IronPort-AV: E=Sophos;i="5.93,279,1654585200"; 
-   d="scan'208";a="275295985"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 14:23:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,279,1654585200"; 
-   d="scan'208";a="680577062"
-Received: from lkp-server02.sh.intel.com (HELO 811e2ceaf0e5) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 31 Aug 2022 14:23:28 -0700
-Received: from kbuild by 811e2ceaf0e5 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oTVBH-0000if-1W;
-        Wed, 31 Aug 2022 21:23:27 +0000
-Date:   Thu, 1 Sep 2022 05:22:59 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v1 3/3] regmap: spi-avmm: Use swabXX_array() helpers
-Message-ID: <202209010548.ZC5MnsXX-lkp@intel.com>
-References: <20220831145407.78166-3-andriy.shevchenko@linux.intel.com>
+        Wed, 31 Aug 2022 17:24:49 -0400
+Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A43BCC68;
+        Wed, 31 Aug 2022 14:24:45 -0700 (PDT)
+Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-11e9a7135easo24728203fac.6;
+        Wed, 31 Aug 2022 14:24:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=ptckDRyC3NuutV/1EQwXwr/4eg6rFrtCSCG7+WQhK1U=;
+        b=OH9U6oTI9IM1ydlFk/dAVvemii05k1QdcnziLcC+kLjt0WdykZyM9dljQwepXTytcW
+         QZuoGHJkUQRj+nvVhUlN3boOGnKV0pi6g789XtEwzDVs3lvQNqpaDQafiT02jjN6sfwe
+         zBqgEs3w9MKwLhoXWLKtpX/gVORwpMQKdQVx4lw+3Cg+MvtVbOgdOvOYR6EGqgcXa+RM
+         adKx5twYT1J4REqCvSXlXMzqbX704QqJseBq+FpOgxgRJtTg2l7Pb2FnrwIsjubJ6KFv
+         LzVMN6ioJ/pLc1MsniZdp8JxXPNehRREs/VlPo+jRzmE3gvgDg9svv66nFN+oGZimsf+
+         DwUQ==
+X-Gm-Message-State: ACgBeo2KtThsJ4AImrriE/lxPfqNAHpZ+jdM+a7iyNk/k//S4swkIuXo
+        UvHc8z4xvzgjtKLDVcBqQQ==
+X-Google-Smtp-Source: AA6agR6taqPYE3ZLkGFuOohLzZadZneybxVqVYn6iJavCQbIzrZE934PA3y4+GwUZvEJRpWSE6RErA==
+X-Received: by 2002:a05:6870:f2a1:b0:122:3d83:b14d with SMTP id u33-20020a056870f2a100b001223d83b14dmr1756973oap.136.1661981084919;
+        Wed, 31 Aug 2022 14:24:44 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id d15-20020a9d51cf000000b0063b1f060d25sm7451596oth.65.2022.08.31.14.24.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Aug 2022 14:24:44 -0700 (PDT)
+Received: (nullmailer pid 276625 invoked by uid 1000);
+        Wed, 31 Aug 2022 21:24:43 -0000
+Date:   Wed, 31 Aug 2022 16:24:43 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Frank Li <Frank.Li@nxp.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 09/20] dt-bindings: PCI: dwc: Add
+ interrupts/interrupt-names common properties
+Message-ID: <20220831212443.GA267718-robh@kernel.org>
+References: <20220822184701.25246-1-Sergey.Semin@baikalelectronics.ru>
+ <20220822184701.25246-10-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220831145407.78166-3-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220822184701.25246-10-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy,
+On Mon, Aug 22, 2022 at 09:46:50PM +0300, Serge Semin wrote:
+> Currently the 'interrupts' and 'interrupt-names' are defined being too
+> generic to really describe any actual IRQ interface. Moreover the DW PCIe
+> End-point devices are left with no IRQ signals. All of that can be fixed
+> by adding the IRQ-related properties to the common DW PCIe DT-schema and
+> defining a common and device-specific set of the IRQ names in accordance
+> with the hardware reference manual. Seeing there are common and dedicated
+> IRQ signals for DW PCIe Root Port and End-point controllers we suggest to
+> split the IRQ names up into two sets: common definitions available in the
+> snps,dw-pcie-common.yaml schema and Root Port specific names defined in
+> the snps,dw-pcie.yaml schema. The former one will be applied to both DW
+> PCIe RP and EP controllers, while the later one - for the RP only.
+> 
+> Note since there are DW PCI-based vendor-specific DT-bindings with the
+> custom names assigned to the same IRQ resources we have no much choice but
+> to add them to the generic DT-schemas in order to have the schemas being
+> applicable for such devices. Let's mark these names as deprecated so not
+> to encourage the new DT-bindings to use them.
+> 
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> 
+> ---
+> 
+> Changelog v3:
+> - This is a new patch unpinned from the next one:
+>   https://lore.kernel.org/linux-pci/20220503214638.1895-2-Sergey.Semin@baikalelectronics.ru/
+>   by the Rob' request. (@Rob)
+> 
+> Changelog v5:
+> - Add platform-specific interrupt names, but mark them as deprecated.
+> ---
+>  .../bindings/pci/snps,dw-pcie-common.yaml     | 51 ++++++++++++++
+>  .../bindings/pci/snps,dw-pcie-ep.yaml         | 17 +++++
+>  .../devicetree/bindings/pci/snps,dw-pcie.yaml | 67 ++++++++++++++++++-
+>  3 files changed, 132 insertions(+), 3 deletions(-)
 
-I love your patch! Yet something to improve:
+I still don't like how you've done interrupts/clocks/reg. I'd suggest 
+dropping it if you want this series applied soonish.
 
-[auto build test ERROR on broonie-regmap/for-next]
-[also build test ERROR on next-20220831]
-[cannot apply to linus/master v6.0-rc3]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/swab-Add-array-operations/20220831-225514
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git for-next
-config: x86_64-randconfig-a013 (https://download.01.org/0day-ci/archive/20220901/202209010548.ZC5MnsXX-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/783618682b27b5d06605086a386d64d355914b38
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Andy-Shevchenko/swab-Add-array-operations/20220831-225514
-        git checkout 783618682b27b5d06605086a386d64d355914b38
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   drivers/base/regmap/regmap-spi-avmm.c: In function 'br_swap_words_32':
->> drivers/base/regmap/regmap-spi-avmm.c:171:22: error: passing argument 1 of 'swab32_array' from incompatible pointer type [-Werror=incompatible-pointer-types]
-     171 |         swab32_array(buf, len / 4);
-         |                      ^~~
-         |                      |
-         |                      char *
-   In file included from include/uapi/linux/byteorder/little_endian.h:14,
-                    from include/linux/byteorder/little_endian.h:5,
-                    from arch/x86/include/uapi/asm/byteorder.h:5,
-                    from arch/x86/include/asm/orc_types.h:43,
-                    from arch/x86/include/asm/unwind_hints.h:6,
-                    from arch/x86/include/asm/nospec-branch.h:13,
-                    from arch/x86/include/asm/paravirt_types.h:40,
-                    from arch/x86/include/asm/ptrace.h:97,
-                    from arch/x86/include/asm/math_emu.h:5,
-                    from arch/x86/include/asm/processor.h:13,
-                    from arch/x86/include/asm/timex.h:5,
-                    from include/linux/timex.h:67,
-                    from include/linux/time32.h:13,
-                    from include/linux/time.h:60,
-                    from include/linux/stat.h:19,
-                    from include/linux/module.h:13,
-                    from drivers/base/regmap/regmap-spi-avmm.c:7:
-   include/linux/swab.h:32:38: note: expected 'u32 *' {aka 'unsigned int *'} but argument is of type 'char *'
-      32 | static inline void swab32_array(u32 *buf, unsigned int words)
-         |                                 ~~~~~^~~
-   cc1: some warnings being treated as errors
-
-
-vim +/swab32_array +171 drivers/base/regmap/regmap-spi-avmm.c
-
-   168	
-   169	static void br_swap_words_32(char *buf, unsigned int len)
-   170	{
- > 171		swab32_array(buf, len / 4);
-   172	}
-   173	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Rob
