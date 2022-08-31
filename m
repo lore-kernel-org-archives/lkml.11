@@ -2,113 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C37C7ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 19:44:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A1CBECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 19:50:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232003AbiHaTof (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 15:44:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57368 "EHLO
+        id S232045AbiHaTuX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 15:50:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231645AbiHaTod (ORCPT
+        with ESMTP id S231331AbiHaTuT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 15:44:33 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7A6F95E6C
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 12:44:31 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id nc14so25538617ejc.4
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 12:44:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=VkN9kjUhyzdT4oetnRVdj6WFy3Q+ODyLNUTLMRrWCOU=;
-        b=jnoZz37Afx7vOS3iOdri3YbmU0nJL11sAICLa1IjRRdteBOcSQ5fX36C+GB7uY3uGu
-         too9RUznebC7dzqDpYIK3uXi/9G08AmaqAcLs8pe3WN9b6IJuUlgenI+VyBrjJjdEZVX
-         0ddZzfaG8Xzeeg2bfYcoEZM2lbICLrUl7G5ire3Y9SQkv/wu9j+i/FzJpJ0VY9rTKl3L
-         /7Rigmgjj5uv0du2sNg5piTTMDSAR76wW31GEitWfq39WHqqeYgH2F1YnJIg74MKvFIS
-         VQCL0nl5uNkT7xX1XLvTaCypGIvDgP98djxfCWKA9lSPQXDau+Z/4cXWwu0yxY25kybe
-         3Wdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=VkN9kjUhyzdT4oetnRVdj6WFy3Q+ODyLNUTLMRrWCOU=;
-        b=wyn0NXjQacmfaqGVkT0NmBu+v2wVRs7kkzgxijBIiJCOOp3QhGdbVzIuebSbcOGElh
-         dP3U08s+/pdlS2mHbVl29m8cY+qP83o58VzjGWTAw9E5C5tc0TmCUNHtRrz333iFMpEA
-         rlXL5aumUibFpMVY1iOGQbA8/XilDbILiL/NYFRegCtp1Wft6Ck5ZB10nmvLJCp3prEw
-         aP6VTmV6eFrKwIZq4w8uIbyS1ioo13EvVdcHlrl1S+kVLaBpSUQc9yGCSG7tNO8+t4Qe
-         qm97svBmun9lw8Hk4f5eTX5PiIRzsmAUt13XmPn+a3kXZQ3Od4INoEpg8THxRJ7v1HIo
-         fR4g==
-X-Gm-Message-State: ACgBeo3hYBvh2dWwBijhh2NftRFXJbesnpoEBDEkN2MVeDzmeTFRD9Bw
-        teaIy3uzisjCR2iae4mLRIS5BNSXsvrhONWvYaNjdkJkgEg=
-X-Google-Smtp-Source: AA6agR5MTT/5X3Lj28oVpccvJJVfK2uwoHcuj+zttvxgOp9gs/MFWIZrWXRK1OSYY83eGMl2c3TmmiX4+nzizsps4Z4=
-X-Received: by 2002:a17:907:7254:b0:731:61c6:ecf9 with SMTP id
- ds20-20020a170907725400b0073161c6ecf9mr21837260ejc.101.1661975070397; Wed, 31
- Aug 2022 12:44:30 -0700 (PDT)
+        Wed, 31 Aug 2022 15:50:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 837BD4599C;
+        Wed, 31 Aug 2022 12:50:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A1CCB82296;
+        Wed, 31 Aug 2022 19:50:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 478B9C433B5;
+        Wed, 31 Aug 2022 19:50:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661975415;
+        bh=1Hqj9cGQMvdM0HK2rNbmJyNsJ4gxVRMh3qEmfemnL00=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=tgD9JEKdkV1FuTJxKtVGSCHNmta4SQ3HTzwtbH8PBIp4sAJttvgHjWIux3teb1AFR
+         b0DpfmDQwyaGeTXHujteZh4i86qMUFjntBQi+P3axZ9o+Q7zrrGMktXpPcX7cSipUK
+         93JjpFUTVGWfqkzzT7SFfM0uqjs/20/2ZlgDydyjzWEDCPZY8D4n0lp1RNvoSiaM3Y
+         2qDy+hCFe7NryddMEwF/92BjijtDlby1G0DBRP2AXtA8/DRqaPHRs9VDsMyFJBEa4C
+         oYdkWKT7qqz70jIsSFzotDL3nJQF3ZTtdBMhYI6CjodC/9jbCELSwPOOGkvbGSGisA
+         sU0KefdtT/r5w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2FB38E924DC;
+        Wed, 31 Aug 2022 19:50:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220829133923.1114555-1-martyn.welch@collabora.com>
- <20220829133923.1114555-5-martyn.welch@collabora.com> <CAMRc=McbNwLRq_OBo_=xwFJJ-_8C5VfjQt75dvSVC9SqUYTpFg@mail.gmail.com>
- <e89ccd1ecb675ab899dba0f08624a3dde195c970.camel@collabora.com>
-In-Reply-To: <e89ccd1ecb675ab899dba0f08624a3dde195c970.camel@collabora.com>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Wed, 31 Aug 2022 21:44:19 +0200
-Message-ID: <CAMRc=MdKU0nWQnOqyMpMk-fwZ2svRhQJ+jgE_u20jLmRKCmPZw@mail.gmail.com>
-Subject: Re: [PATCH 5/5] gpio: pca953x: Add support for PCAL6534 and compatible
-To:     Martyn Welch <martyn.welch@collabora.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>, kernel@collabora.com,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] selftests: net: sort .gitignore file
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166197541519.20889.18175493740792064843.git-patchwork-notify@kernel.org>
+Date:   Wed, 31 Aug 2022 19:50:15 +0000
+References: <20220829184748.1535580-1-axelrasmussen@google.com>
+In-Reply-To: <20220829184748.1535580-1-axelrasmussen@google.com>
+To:     Axel Rasmussen <axelrasmussen@google.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, shuah@kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 6:30 PM Martyn Welch <martyn.welch@collabora.com> wrote:
->
-> On Wed, 2022-08-31 at 13:57 +0200, Bartosz Golaszewski wrote:
-> > On Mon, Aug 29, 2022 at 3:39 PM Martyn Welch
-> > <martyn.welch@collabora.com> wrote:
-> > >
-> > > Add support for the NXP PCAL6534 and Diodes Inc. PI4IOE5V6534Q.
-> > > These
-> > > devices, which have identical register layouts and features, are
-> > > broadly a
-> > > 34-bit version of the PCAL6524.
-> > >
-> > > However, whilst the registers are broadly what you'd expect for a
-> > > 34-bit
-> > > version of the PCAL6524, the spacing of the registers has been
-> > > compacted. This has the unfortunate effect of breaking the bit
-> > > shift
-> > > based mechanism that is employed to work out register locations
-> > > used by
-> > > the other chips supported by this driver, resulting in special
-> > > handling
-> > > needing to be introduced in pca953x_recalc_addr() and
-> > > pca953x_check_register().
-> > >
-> > > Datasheet: https://www.nxp.com/docs/en/data-sheet/PCAL6534.pdf
-> > > Datasheet:
-> > > https://www.diodes.com/assets/Datasheets/PI4IOE5V6534Q.pdf
-> > > Signed-off-by: Martyn Welch <martyn.welch@collabora.com>
-> > > ---
-> >
-> > Is this series complete? I don't have patch 1/5 in my inbox and
-> > neither does patchwork.
-> >
->
-> I used get_maintainers to generate the recipients, it's a patch for the
-> binding documentation relating to the driver so didn't get sent to the
-> same lists:
->
-> https://lore.kernel.org/lkml/20220829133923.1114555-3-martyn.welch@collabora.com/T/
->
-> Martyn
->
-> > Bart
->
+Hello:
 
-Ah, ok. Just for completeness, please send the entire series to
-everyone unless it's lots of patches.
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Bart
+On Mon, 29 Aug 2022 11:47:48 -0700 you wrote:
+> This is the result of `sort tools/testing/selftests/net/.gitignore`, but
+> preserving the comment at the top.
+> 
+> Suggested-by: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+> ---
+>  tools/testing/selftests/net/.gitignore | 52 +++++++++++++-------------
+>  1 file changed, 26 insertions(+), 26 deletions(-)
+
+Here is the summary with links:
+  - selftests: net: sort .gitignore file
+    https://git.kernel.org/netdev/net/c/5a3a59981027
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
