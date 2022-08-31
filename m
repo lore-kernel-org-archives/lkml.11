@@ -2,170 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55EF0ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 03:49:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B930DECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 04:04:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230270AbiHaDtR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 23:49:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39940 "EHLO
+        id S229913AbiHaEEx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 00:04:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229723AbiHaDtN (ORCPT
+        with ESMTP id S229457AbiHaEEw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 23:49:13 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 488CBA8CFF
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 20:49:12 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id f4so9974050qkl.7
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 20:49:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=gk0iaSJZd5YzOd+2zJ3o0BDcK8HeEHtmeUyCb8yUhwg=;
-        b=QyPzKIVt2x781/58vuUJd2IpLRwDNMhuuv/u/in2ftPzeonWhYG6Lgvb4rxm+lgy7h
-         p7+c05xoW4aoU1QQuBsrFW+R0xTD7YyOzdcKc0eo+WcKtOYL4of2yicINzeJdsxTsICb
-         c93wO3BOziIlFkfZaV39mlAiZcagm6QYzYHcVcwVOU/rAacNdOG8lA/sCpHRWay8qOpj
-         UIE1n5qYGg5ANrt/9yc6EUv0t512o7Wr8HZoCcZVD8onj4D2kIqMMYGh4yWsgEVZd5do
-         kU6CUtsTKDcYZLggSiamKsbJlEKbCj1YTkl6CpyM2Cz5DZPw0llUBFDcFZvTMoykmhbn
-         3ASg==
+        Wed, 31 Aug 2022 00:04:52 -0400
+Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A0FE05;
+        Tue, 30 Aug 2022 21:04:51 -0700 (PDT)
+Received: by mail-pg1-f169.google.com with SMTP id q63so12452509pga.9;
+        Tue, 30 Aug 2022 21:04:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=gk0iaSJZd5YzOd+2zJ3o0BDcK8HeEHtmeUyCb8yUhwg=;
-        b=S7SusnGo7mj1rrTOljYX30hlb73jg0qWrYXxh2W82aSE968ToQ57kJ18wnvr7zwAuo
-         Jq5KEoFY9NT2ALvOPnl3fpz3jNhP7blfQkGgfHVgKMpwRJ5yqMh6lrFukd7C9Nj9CkqJ
-         S/WJWMFR1y8mVQgzsIwK0Wou9mCDXzEQjGnwqbO+flyKQVGXJAwoegPnfrixCslemmmt
-         HOg/tlZNs+S4NcdVB51hYegCGui1mq5mVhpXzrBDLITcjBwMToIfJeZkzBa/joUslzw/
-         2i8Mh9A8Yp8ndvs1h/EUXgsatqmeDpsMQRnMvcV8/ye51NbZDz8oWlg49obtsztvSbPg
-         Vpcg==
-X-Gm-Message-State: ACgBeo0VXQ4A6+YqvPEX6jK810+7DOnLLpgsHfZkAPkWbD42u5KYjeoe
-        hNVLQeEx6YYYWVFrxsDi6bt5mPZNajU=
-X-Google-Smtp-Source: AA6agR61z5dsBNHuUN1y8570X5NV/YX276IXuHchR3IZ3zRLEhosUC8KLcvp8jOb9LoJeGZxmDYFQg==
-X-Received: by 2002:a05:620a:4502:b0:6b4:6c2f:e7b7 with SMTP id t2-20020a05620a450200b006b46c2fe7b7mr14502233qkp.11.1661917751176;
-        Tue, 30 Aug 2022 20:49:11 -0700 (PDT)
-Received: from sophie ([45.134.140.172])
-        by smtp.gmail.com with ESMTPSA id u6-20020a05620a430600b006b893d135basm9012602qko.86.2022.08.30.20.49.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 20:49:10 -0700 (PDT)
-Date:   Tue, 30 Aug 2022 22:49:09 -0500
-From:   Rebecca Mckeever <remckee0@gmail.com>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/4] memblock tests: add simulation of physical memory
- with multiple NUMA nodes
-Message-ID: <20220831034909.GA16092@sophie>
-References: <cover.1660897864.git.remckee0@gmail.com>
- <0cfb3c69ba6ca9ff55e1fc2528d18d108416ba57.1660897864.git.remckee0@gmail.com>
- <329ab669-620c-ba9e-3c57-9cb90d55b942@redhat.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=Ugy18ngp8TGo8D4YXWwazm/ISYgDkRHB79Dqf1WUU1E=;
+        b=M1p1G/l9omHGz7+ZYzWGcQe09vJ+q0Xm8uTcUW0CBhjcogr7KUbjsSb+/QQaHwzgJN
+         oND36CdAyR1/vQO86AdcWW6xuNOTwjdQRjB5i9ap7YaiX/g1esispDLT6nDWBr6mQSWf
+         ZeWayjdF4kcvpIjOOxWYj+19t0WMva53pbhvf87QJwm5NtM/zMgbNBRun5zbOAvl85Wh
+         uKkoeaNXMbp9jIXlrZUa8v4jvAWTOGAI/WV1Qep9Eakm5pkXoWJPVs4fHzMg/npgeqY0
+         QJ8LHygTzC4kdtyHgHSnh7mZb94x5V691lLIqT0u+30+8SjgmBBjY82g8RMWqghMuD7x
+         8z4w==
+X-Gm-Message-State: ACgBeo1hILgJuL6fT6ctMWwSBQygiSeSySBjskJCoSFF4FW42qtZD5hK
+        nQkD28z+0UJbqt0x8IZEipk=
+X-Google-Smtp-Source: AA6agR6w+lV3se8EUuvDlebbruOsx7Yf3qQA+5w1OqLzOgB2LQx/vGe5qmKXrAAZgOyUlc07yXPr+w==
+X-Received: by 2002:a65:6b8a:0:b0:42b:1eca:eef1 with SMTP id d10-20020a656b8a000000b0042b1ecaeef1mr20193646pgw.205.1661918690353;
+        Tue, 30 Aug 2022 21:04:50 -0700 (PDT)
+Received: from [172.20.0.236] ([12.219.165.6])
+        by smtp.gmail.com with ESMTPSA id s15-20020a170902ea0f00b0015e8d4eb1f7sm10348441plg.65.2022.08.30.21.04.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Aug 2022 21:04:49 -0700 (PDT)
+Message-ID: <ca74a481-3e80-9a7a-9db7-d766a16d8fd6@acm.org>
+Date:   Tue, 30 Aug 2022 21:04:47 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <329ab669-620c-ba9e-3c57-9cb90d55b942@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] RDMA/srp: Set scmnd->result only when scmnd is not NULL
+Content-Language: en-US
+To:     "yangx.jy@fujitsu.com" <yangx.jy@fujitsu.com>,
+        "jgg@nvidia.com" <jgg@nvidia.com>,
+        "leon@kernel.org" <leon@kernel.org>
+Cc:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220831014730.17566-1-yangx.jy@fujitsu.com>
+ <5daac9db-2b34-fbe5-a891-8ecf77fbe46f@acm.org>
+ <bff7565b-7159-e8f4-e8f5-711994f95056@fujitsu.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <bff7565b-7159-e8f4-e8f5-711994f95056@fujitsu.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 01:17:56PM +0200, David Hildenbrand wrote:
-> On 19.08.22 11:05, Rebecca Mckeever wrote:
-> > Add functions setup_numa_memblock_generic() and setup_numa_memblock()
-> > for setting up a memory layout with multiple NUMA nodes in a previously
-> > allocated dummy physical memory. These functions can be used in place of
-> > setup_memblock() in tests that need to simulate a NUMA system.
-> > 
-> > setup_numa_memblock_generic():
-> > - allows for setting up a custom memory layout by specifying the amount
-> >   of memory in each node, the number of nodes, and a factor that will be
-> >   used to scale the memory in each node
-> > 
-> > setup_numa_memblock():
-> > - allows for setting up a default memory layout
-> > 
-> > Introduce constant MEM_FACTOR, which is used to scale the default memory
-> > layout based on MEM_SIZE.
-> > 
-> > Set CONFIG_NODES_SHIFT to 4 when building with NUMA=1 to allow for up to
-> > 16 NUMA nodes.
-> > 
-> > Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
-> > ---
-> >  .../testing/memblock/scripts/Makefile.include |  2 +-
-> >  tools/testing/memblock/tests/common.c         | 38 +++++++++++++++++++
-> >  tools/testing/memblock/tests/common.h         |  9 ++++-
-> >  3 files changed, 47 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/tools/testing/memblock/scripts/Makefile.include b/tools/testing/memblock/scripts/Makefile.include
-> > index aa6d82d56a23..998281723590 100644
-> > --- a/tools/testing/memblock/scripts/Makefile.include
-> > +++ b/tools/testing/memblock/scripts/Makefile.include
-> > @@ -3,7 +3,7 @@
-> >  
-> >  # Simulate CONFIG_NUMA=y
-> >  ifeq ($(NUMA), 1)
-> > -	CFLAGS += -D CONFIG_NUMA
-> > +	CFLAGS += -D CONFIG_NUMA -D CONFIG_NODES_SHIFT=4
-> >  endif
-> >  
-> >  # Use 32 bit physical addresses.
-> > diff --git a/tools/testing/memblock/tests/common.c b/tools/testing/memblock/tests/common.c
-> > index eec6901081af..15d8767dc70c 100644
-> > --- a/tools/testing/memblock/tests/common.c
-> > +++ b/tools/testing/memblock/tests/common.c
-> > @@ -34,6 +34,10 @@ static const char * const help_opts[] = {
-> >  
-> >  static int verbose;
-> >  
-> > +static const phys_addr_t node_sizes[] = {
-> > +	SZ_4K, SZ_1K, SZ_2K, SZ_2K, SZ_1K, SZ_1K, SZ_4K, SZ_1K
-> > +};
-> > +
-> >  /* sets global variable returned by movable_node_is_enabled() stub */
-> >  bool movable_node_enabled;
-> >  
-> > @@ -72,6 +76,40 @@ void setup_memblock(void)
-> >  	fill_memblock();
-> >  }
-> >  
-> > +/**
-> > + * setup_numa_memblock_generic:
-> > + * Set up a memory layout with multiple NUMA nodes in a previously allocated
-> > + * dummy physical memory.
-> > + * @nodes: an array containing the amount of memory in each node
-> > + * @node_cnt: the size of @nodes
-> > + * @factor: a factor that will be used to scale the memory in each node
-> > + *
-> > + * The nids will be set to 0 through node_cnt - 1.
-> > + */
-> > +void setup_numa_memblock_generic(const phys_addr_t nodes[],
-> > +				 int node_cnt, int factor)
-> > +{
-> > +	phys_addr_t base;
-> > +	int flags;
-> > +
-> > +	reset_memblock_regions();
-> > +	base = (phys_addr_t)memory_block.base;
-> > +	flags = (movable_node_is_enabled()) ? MEMBLOCK_NONE : MEMBLOCK_HOTPLUG;
-> > +
-> > +	for (int i = 0; i < node_cnt; i++) {
-> > +		phys_addr_t size = factor * nodes[i];
-> 
-> I'm a bit lost why we need the factor if we already provide sizes in the
-> array.
-> 
-> Can you enlighten me? :)
-> 
-> Why can't we just stick to the sizes in the array?
-> 
-Without the factor, some of the tests will break if we increase MEM_SIZE
-in the future (which we may need to do). I could rewrite them so that the
-factor is not needed, but I thought the code would be over-complicated if
-I did.
+On 8/30/22 20:16, yangx.jy@fujitsu.com wrote:
+> Sorry, I didn't make the right fix. I will send v2 patch.
+> I think scmnd may be set to NULL after srp_claim_req() is called and
+> then setting scmnd->result can trigger the NULL pointer dereference.
 
-> -- 
-> Thanks,
-> 
-> David / dhildenb
-> 
-Thanks,
-Rebecca
+Something like this untested patch may be what you are looking for:
+
+diff --git a/drivers/infiniband/ulp/srp/ib_srp.c 
+b/drivers/infiniband/ulp/srp/ib_srp.c
+index 7720ea270ed8..d7f69e593a63 100644
+--- a/drivers/infiniband/ulp/srp/ib_srp.c
++++ b/drivers/infiniband/ulp/srp/ib_srp.c
+@@ -1961,7 +1961,8 @@ static void srp_process_rsp(struct srp_rdma_ch 
+*ch, struct srp_rsp *rsp)
+  		if (scmnd) {
+  			req = scsi_cmd_priv(scmnd);
+  			scmnd = srp_claim_req(ch, req, NULL, scmnd);
+-		} else {
++		}
++		if (!scmnd) {
+  			shost_printk(KERN_ERR, target->scsi_host,
+  				     "Null scmnd for RSP w/tag %#016llx received on ch %td / QP 
+%#x\n",
+  				     rsp->tag, ch - target->ch, ch->qp->qp_num);
+
+Bart.
