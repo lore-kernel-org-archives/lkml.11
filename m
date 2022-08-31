@@ -2,274 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 807AEECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 06:55:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3F48ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 06:58:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230331AbiHaGzO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 02:55:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60964 "EHLO
+        id S230375AbiHaG61 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 02:58:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230080AbiHaGzJ (ORCPT
+        with ESMTP id S229457AbiHaG6Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 02:55:09 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CD9124BF0
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 23:55:06 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id j14so8279035lfu.4
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 23:55:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=L+B/6A2HCPuRiI3qqp8Q6EFBeowqp+Dn2ncX1CvCRK4=;
-        b=NA9WBXvdZVHJb2T58VWVH0MfKTs0Cy7wtQNnkNkzbhTm+DD6QGqFYlutim8nERN3Sd
-         Pfdub2MB2Yho0EWhSGBlftTsuEOICZsZBT8iDvyked3w0KBWPfDPV8/oDbLxBb/H+zvz
-         u/Zv1SCAgsTQzJEkMk3ISUuc16gKhcgaYLAiRUwQNmD+nuBz8UDC+K7LGoam4qx4t0+r
-         QCAaLMQ3NxNhFQPMYyBwe+Xs7JkutDrXCsO05lsuCMTpwVwM7MB2fTioVmVbK57HdKw9
-         YvbqVxR6/ILZA+eFuYnvBw4o+nXiW0ja+pQ0/QvHr9cwvzdDvDQYe0Xkur/DICz5J8NH
-         KqLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=L+B/6A2HCPuRiI3qqp8Q6EFBeowqp+Dn2ncX1CvCRK4=;
-        b=cVk1qzOa5uVQVxfQLTb6o/1A16467CP3coNV2G95oE7v6BrWfOcaJRzlXJZ+QQPpBy
-         ZWRyBHGFJxURSg7KL0ng/vKFAOumS+oR/4kf/f90wfFHmy/DsiiixfZBdFmLWe1rkCUO
-         afO+sdafY9nEjhCO7Kgz4UzcH/i/mnPqcYgFKGz0zR9gHHXW13l0NQdqfcI/YdZFTFo0
-         fA3JBqkM5LI1BBauUrfCTBGHAsmM6naitYUnIpTJPqDjJAS5mGw8f51Fep7b5hIN7oGj
-         h3G5Bujaz3A+jviivvae0q7ptIk+SVZDRFdGoc57+4Wsvr7jLTM5H04m4txoii3YXSAX
-         1EUA==
-X-Gm-Message-State: ACgBeo0ctWB5JOM68sVy/oVSZ1AhhW0ZmolMnKGWQ+tO2Nw0xXseh3Md
-        yhgUP/Ox394lNHe1sRsRmMishw==
-X-Google-Smtp-Source: AA6agR6EckFh8vz2EkGB+cabsEsDSkYnz3oYB8hTA1BY2Jj98dJxhqSoZHypvJVoo9SrQFwDCJ2AuA==
-X-Received: by 2002:ac2:4e63:0:b0:493:20a:be3a with SMTP id y3-20020ac24e63000000b00493020abe3amr8683316lfs.114.1661928904946;
-        Tue, 30 Aug 2022 23:55:04 -0700 (PDT)
-Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id y9-20020a196409000000b0048af749c060sm1877637lfb.157.2022.08.30.23.55.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 23:55:04 -0700 (PDT)
-Message-ID: <63c350a0-2393-208b-4fab-94db050407c2@linaro.org>
-Date:   Wed, 31 Aug 2022 09:55:03 +0300
+        Wed, 31 Aug 2022 02:58:25 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 88954BFC51
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 23:58:22 -0700 (PDT)
+Received: from localhost.localdomain (unknown [111.9.175.10])
+        by localhost.localdomain (Coremail) with SMTP id AQAAf8CxT+CLBg9jHoYNAA--.60052S3;
+        Wed, 31 Aug 2022 14:58:21 +0800 (CST)
+Subject: Re: [PATCH v7 0/5] LoongArch: Support toolchain with new relocation
+ types
+To:     Xi Ruoyao <xry111@xry111.site>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        WANG Xuerui <kernel@xen0n.name>
+References: <20220830104806.128365-1-xry111@xry111.site>
+ <CAAhV-H5bH7xZTWLhqcZ_Bmh=RNaEVBy9523hmj-gTmitqqc8ag@mail.gmail.com>
+ <c0ba2e23-5be3-924d-554a-2f10272c05bc@xen0n.name>
+ <CAAhV-H7Dz21qRgwkMcJ0SnA9FNDN19E6mpa7C25LUitrO9LGeA@mail.gmail.com>
+ <5b87173faeef587a2ffaaa6f58d34e0940231067.camel@xry111.site>
+Cc:     loongarch@lists.linux.dev, LKML <linux-kernel@vger.kernel.org>,
+        Youling Tang <tangyouling@loongson.cn>
+From:   Jinyang He <hejinyang@loongson.cn>
+Message-ID: <c53303bf-a5d2-098f-8975-efadbe0b2f2e@loongson.cn>
+Date:   Wed, 31 Aug 2022 14:58:19 +0800
+User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:45.0) Gecko/20100101
+ Thunderbird/45.4.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH 4/4] dt-bindings: memory: Add jedec,lpddrX-channel binding
-Content-Language: en-US
-To:     Julius Werner <jwerner@chromium.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Doug Anderson <dianders@chromium.org>,
-        Jian-Jia Su <jjsu@google.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220831013359.1807905-1-jwerner@chromium.org>
- <20220831013359.1807905-5-jwerner@chromium.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220831013359.1807905-5-jwerner@chromium.org>
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <5b87173faeef587a2ffaaa6f58d34e0940231067.camel@xry111.site>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-CM-TRANSID: AQAAf8CxT+CLBg9jHoYNAA--.60052S3
+X-Coremail-Antispam: 1UD129KBjvJXoW7Cw4kKF4DAFWfuF43tw17Awb_yoW8ury8pF
+        W5Kr95tF4UuFW8A3Z7tF1Iva4fXw1kA34agFy5Ka48Aan8uasaqrZYva17ZFyqywn5ur40
+        gryrtry0kF18ZFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkl14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvEwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc7I2V7IY0VAS07AlzVAY
+        IcxG8wCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14
+        v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkG
+        c2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI
+        0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4U
+        MIIF0xvEx4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUU
+        U==
+X-CM-SenderInfo: pkhmx0p1dqwqxorr0wxvrqhubq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 31/08/2022 04:33, Julius Werner wrote:
-> This patch adds a new device tree binding for an LPDDR channel to serve
-> as a top-level organizing node for LPDDR part nodes nested below it. An
-> LPDDR channel needs to have an "io-width" property to describe its width
-> (this is important because this width does not always match the io-width
-> of the part number, indicating that multiple parts are wired in parallel
-> on the same channel), as well as one or more nested "rank@X" nodes.
-> Those represent information about the individual ranks of each LPDDR
-> part connected on that channel and should match the existing
-> "jedec,lpddrX" bindings for individual LPDDR parts.
-> 
-> New platforms should be using this node -- the existing practice of
-> providing a raw, toplevel "jedec,lpddrX" node without indication of how
-> many identical parts are in the system should be considered deprecated.
-> 
-> Signed-off-by: Julius Werner <jwerner@chromium.org>
-> ---
->  .../ddr/jedec,lpddr-channel.yaml              | 116 ++++++++++++++++++
->  .../ddr/jedec,lpddr-props.yaml                |  10 +-
->  2 files changed, 125 insertions(+), 1 deletion(-)
->  create mode 100644 Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr-channel.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr-channel.yaml b/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr-channel.yaml
-> new file mode 100644
-> index 00000000000000..517e770d8e7133
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr-channel.yaml
-> @@ -0,0 +1,116 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/memory-controllers/ddr/jedec,lpddr-channel.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: LPDDR channel with chip/rank topology description
-> +
-> +description:
-> +  An LPDDR channel is a completely independent set of LPDDR pins (DQ, CA, CS,
-> +  CK, etc.) that connect one or more LPDDR chips to a host system. The main
-> +  purpose of this node is to overall LPDDR topology of the system, including the
-> +  amount of individual LPDDR chips and the ranks per chip.
+On 08/31/2022 02:10 PM, Xi Ruoyao wrote:
 
-"channel" in this context confuses me a bit, because usually everyone is
-talking about DDR controller channels, not memory channels. I think this
-actually maps to a DDR controller channel?
+> On Wed, 2022-08-31 at 13:44 +0800, Huacai Chen wrote:
+>
+>> With this series applied and ARCH_WANT_LD_ORPHAN_WARN enabled, we get
+>> loongarch64-unknown-linux-gnu-ld: warning: orphan section `.got' from
+>> `arch/loongarch/kernel/head.o' being placed in section `.got'
+>> loongarch64-unknown-linux-gnu-ld: warning: orphan section `.got.plt'
+>> from `arch/loongarch/kernel/head.o' being placed in section `.got.plt'
+>>
+>> I think we should add this lines in vmlinux.lds.S
+>>          .got : { *(.got) }
+>>          .got.plt : { *(.got.plt) }
+>>
+>> But put them to which patch? Patch 2 or Patch 5?
+> In patch 2 IMO.  Because in patch 2 we already know "-Wa,-mla-global-
+> with-pcrel" does not prevent the generation of GOT with new toolchain.
+>
+> If you need a v8 please tell me to send it, but I don't know how to
+> handle -Woverride-init warnings (IMO the fix for this warning should be
+> a standalone patch outside of the series).
+>
+> P. S. The ld warning message seems a little strange because "head.o"
+> does not contain .got or .got.plt sections...  I guess there is a linker
+> bug causing it outputs the very first input file in the message, instead
+> of the first input file really containing an orphaned section.
+>
+> Another P. S.: the use of GOT is actually unneeded in main kernel image
+> but we don't have something equivalent to "-Wa,-mla-global-with-pcrel"
+> in the new toolchain.  Perhaps we can add this feature to GCC later.
+>
+That's right. Also I am wondering why new toolchain produce .got* in
+kernel. It's unneeded. In the past, gcc create la.global and parsed
+to la.pcrel by gas, and kernel works well. Now it seems we lost this
+feature in gcc. I checked the x86 asm code just now. And some info
+follows,
 
-> +
-> +maintainers:
-> +  - Julius Werner <jwerner@chromium.org>
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - jedec,lpddr2-channel
-> +      - jedec,lpddr3-channel
-> +      - jedec,lpddr4-channel
-> +      - jedec,lpddr5-channel
-> +
-> +  io-width:
-> +    description:
-> +      The number of DQ pins in the channel. If this number is different
-> +      from (a multiple of) the io-width of the LPDDR chip, that means that
-> +      multiple instances of that type of chip are wired in parallel on this
-> +      channel (with the channel's DQ pins split up between the different
-> +      chips, and the CA, CS, etc. pins of the different chips all shorted
-> +      together).  This means that the total physical memory controlled by a
-> +      channel is equal to the sum of the densities of each rank on the
-> +      connected LPDDR chip, times the io-width of the channel divided by
-> +      the io-width of the LPDDR chip.
-> +    enum:
-> +      - 8
-> +      - 16
-> +      - 32
-> +      - 64
-> +      - 128
-> +
-> +  "#address-cells":
-> +    const: 1
-> +
-> +  "#size-cells":
-> +    const: 0
-> +
-> +patternProperties:
-> +  "^rank@[0-9]+$":
-> +    type: object
-> +    description:
-> +      Each physical LPDDR chip may have one or more ranks. Ranks are
-> +      internal but fully independent sub-units of the chip. Each LPDDR bus
-> +      transaction on the channel targets exactly one rank, based on the
-> +      state of the CS pins. Different ranks may have different densities and
-> +      timing requirements.
-> +    oneOf:
-> +      - $ref: /schemas/memory-controllers/ddr/jedec,lpddr2.yaml#
-> +      - $ref: /schemas/memory-controllers/ddr/jedec,lpddr3.yaml#
-> +      - $ref: /schemas/memory-controllers/ddr/jedec,lpddr4.yaml#
-> +      - $ref: /schemas/memory-controllers/ddr/jedec,lpddr5.yaml#
+LoongArch64, ./net/ipv4/udp_diag.s, *have reloc hint*
+         pcalau12i       $r4,%got_pc_hi20(udplite_table)
+         ld.d    $r4,$r4,%got_pc_lo12(udplite_table)
+         b       udp_dump
 
-This should be rather chosen depending on top-level compatible. IOW, add
-allOf where ref is chosen. Something like:
-https://lore.kernel.org/linux-devicetree/20220828084341.112146-15-krzysztof.kozlowski@linaro.org/
+x86_64, ./net/ipv4/udp_diag.s
+         movq    $udplite_table, %rdi
+         jmp     udp_dump
 
-Unless LPDDR3 memory can be put in LPDDR5 channel? But I think it cannot...
+It seems related to -fno-PIE and -cmodel=kernel on x86_64.
+Hope new gcc with this feature now.
 
-> +    required:
-> +      - reg
-> +
-> +required:
-> +  - compatible
-> +  - io-width
-> +  - "#address-cells"
-> +  - "#size-cells"
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    lpddr-channel0 {
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +      compatible = "jedec,lpddr4-channel";
-> +      io-width = <32>;
-> +
-> +      rank@0 {
-> +        compatible = "lpddr4-ff,0100", "jedec,lpddr4";
-> +        reg = <0>;
-> +        density = <8192>;
-> +        io-width = <16>;
-> +        manufacturer-id = <255>;
-> +        revision-id = <1 0>;
-> +      };
-> +    };
-> +
-> +    lpddr-channel1 {
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +      compatible = "jedec,lpddr4-channel";
-> +      io-width = <32>;
-
-I wonder now, how does it exactly work - channel is 32 bits, two ranks
-each with 32 bit IO bus. Your description said that:
-
-total_ram = (rank0 + rank1) * (channel_width / chip_width)
-so for this case: (4+2)*(32/32) = 6 Mbit
-
-If channel io-width = <64>, then memories are stacked in parallel and
-according to your description total RAM would be: (4+2)*(64/32) = 12 Mbit
-I wonder why stacking memories in parallel increases their size?
-
-> +
-> +      rank@0 {
-> +        compatible = "lpddr4-05,0301", "jedec,lpddr4";
-> +        reg = <0>;
-> +        density = <4096>;
-> +        io-width = <32>;
-> +        manufacturer-id = <5>;
-> +        revision-id = <3 1>;
-> +      };
-> +
-> +      rank@1 {
-> +        compatible = "lpddr4-05,0301", "jedec,lpddr4";
-> +        reg = <1>;
-> +        density = <2048>;
-> +        io-width = <32>;
-> +        manufacturer-id = <5>;
-> +        revision-id = <3 1>;
-> +      };
-> +    };
-> diff --git a/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr-props.yaml b/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr-props.yaml
-> index e1182e75ca1a3f..53a4836028cd25 100644
-> --- a/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr-props.yaml
-> +++ b/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr-props.yaml
-> @@ -9,7 +9,8 @@ title: Common properties for LPDDR types
->  description:
->    Different LPDDR types generally use the same properties and only differ in the
->    range of legal values for each. This file defines the common parts that can be
-> -  reused for each type.
-> +  reused for each type. Nodes using this schema should generally be nested under
-> +  an LPDDR channel node.
->  
->  maintainers:
->    - Krzysztof Kozlowski <krzk@kernel.org>
-> @@ -71,4 +72,11 @@ properties:
->        - 16
->        - 8
->  
-> +  reg:
-> +    description:
-> +      The rank number of this LPDDR rank when used as a subnode to an LPDDR
-> +      channel.
-> +    minimum: 0
-> +    maximum: 3
-
-Put reg just after compatible.
-
-> +
->  additionalProperties: true
-
-
-Best regards,
-Krzysztof
