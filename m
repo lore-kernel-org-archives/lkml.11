@@ -2,123 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B124DECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 08:12:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 331A5ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 08:14:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231249AbiHaIMo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 04:12:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54788 "EHLO
+        id S229867AbiHaIOd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 04:14:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231192AbiHaIM2 (ORCPT
+        with ESMTP id S229838AbiHaIOa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 04:12:28 -0400
-X-Greylist: delayed 1983 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 31 Aug 2022 01:12:27 PDT
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA669BD1E4
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 01:12:26 -0700 (PDT)
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202208310739224fcaf1b96c86e54dc0
-        for <linux-kernel@vger.kernel.org>;
-        Wed, 31 Aug 2022 09:39:23 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=xPAHuyCcauRzXbU2F0wSMbyCkn9ZpPEPIcMeTRGYZX4=;
- b=RcmqXxPyY3VqVsNVXTbfPf8J7fUnCgEgBxrG1ryuOhv+flTFlG0IkLZSL2rDN0l7WtKr+A
- 329i7qK7y2CunAv4rjuBT7uj3HQZQgen7ThvZSSzdAtN2GTHLbKms8lBucvGspaULvduW31A
- OK8YQD3+4Er+fpMr97mBlIgI0pnpE=;
-From:   "D. Starke" <daniel.starke@siemens.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v3 4/6] tty: n_gsm: introduce gsm_control_command() function
-Date:   Wed, 31 Aug 2022 09:37:58 +0200
-Message-Id: <20220831073800.7459-4-daniel.starke@siemens.com>
-In-Reply-To: <20220831073800.7459-1-daniel.starke@siemens.com>
-References: <20220831073800.7459-1-daniel.starke@siemens.com>
+        Wed, 31 Aug 2022 04:14:30 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0F83BD153;
+        Wed, 31 Aug 2022 01:14:29 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id B6F8F6601A13;
+        Wed, 31 Aug 2022 09:14:27 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1661933668;
+        bh=MxOD5M65W1GJcNc0Z8B2s/tYrrWG9J/LN9h5lRW6bSU=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=iaGCilpQKPcvOdreLUtUnyAO/H8KlaMdDQY5OwiupI4t3Ruht7gtwqhUgexUB9SPV
+         p4okatpOHehg5tuz60UsjxuUuTKp07/aH9d94kH53QPMA/Bkeg0z8oxof/I1XPKUgw
+         J/P5qqUYbelSw0cQUg2qqwljDtPkXqieT86jRDFdBkFhCycZOXOaTKBebwT8PpF6h5
+         AxxrV3K60UmDTdA9mzSlWdXHYBCBmFS6MOSp2IkWcskFS6tinz73Y1ioLbE8Ic3edB
+         oqooAJiBqGuoYJww0T4/ga0JmNHLFLVEJNhReQmRIMCpVvuhpRff8IDuIbN6o6LyiR
+         X8CTpZsWeNlnw==
+Message-ID: <219aef5a-af2a-6873-f682-cb6aef862425@collabora.com>
+Date:   Wed, 31 Aug 2022 10:14:25 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-314044:519-21489:flowmailer
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH v2 3/7] phy: phy-mtk-tphy: add property to set
+ pre-emphasis
+Content-Language: en-US
+To:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Eddie Hung <eddie.hung@mediatek.com>
+References: <20220829080830.5378-1-chunfeng.yun@mediatek.com>
+ <20220829080830.5378-3-chunfeng.yun@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220829080830.5378-3-chunfeng.yun@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+Il 29/08/22 10:08, Chunfeng Yun ha scritto:
+> Add a property to set usb2 phy's pre-emphasis, it's disabled by default
+> on some SoCs.
+> 
+> Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+> ---
+> v2: no changes
+> ---
+>   drivers/phy/mediatek/phy-mtk-tphy.c | 10 ++++++++++
+>   1 file changed, 10 insertions(+)
+> 
+> diff --git a/drivers/phy/mediatek/phy-mtk-tphy.c b/drivers/phy/mediatek/phy-mtk-tphy.c
+> index 8ee7682b8e93..986fde0f63a0 100644
+> --- a/drivers/phy/mediatek/phy-mtk-tphy.c
+> +++ b/drivers/phy/mediatek/phy-mtk-tphy.c
+> @@ -72,6 +72,8 @@
+>   #define PA5_RG_U2_HS_100U_U3_EN	BIT(11)
+>   
+>   #define U3P_USBPHYACR6		0x018
+> +#define PA6_RG_U2_PRE_EMP		GENMASK(31, 30)
+> +#define PA6_RG_U2_PRE_EMP_VAL(x)	((0x3 & (x)) << 30)
 
-Move the content of gsm_control_transmit() to a new function
-gsm_control_command() with a more generic signature and analog to
-gsm_control_reply(). Use this within gsm_control_transmit().
+Hello Chunfeng,
 
-This is needed to simplify upcoming functional additions.
+can you please clarify which SoC is this change referred to?
 
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
----
- drivers/tty/n_gsm.c | 33 ++++++++++++++++++++++++++-------
- 1 file changed, 26 insertions(+), 7 deletions(-)
+If I'm not missing anything, there may be a register layout conflict between
+one version and the other for T-PHYs, for which, it may be a good idea to add
+a PHY version check before allowing to write settings that are supported only
+on a specific IP...
 
-Incorporated review comments from Jiri Slaby since v2:
-- leading changed tab to space in function comment of gsm_control_command()
-- made function parameter data to const in gsm_control_command()
-- added extra line-feeds in gsm_control_command()
-- kept signess and constness of other parameters in gsm_control_command()
-  to align with gsm_control_reply() as stated in the commit message;
-  possible changes here are subject to a different commit which should
-  keep the changes in alignment to the signature of gsm_control_reply()
-
-Link: https://lore.kernel.org/all/fe014b7b-a1d2-9be9-625b-2f630934c56c@kernel.org/
-
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 9d0b4f79b65a..e050d76385ba 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1316,6 +1316,31 @@ static void gsm_dlci_data_kick(struct gsm_dlci *dlci)
-  */
- 
- 
-+/**
-+ * gsm_control_command	-	send a command frame to a control
-+ * @gsm: gsm channel
-+ * @cmd: the command to use
-+ * @data: data to follow encoded info
-+ * @dlen: length of data
-+ *
-+ * Encode up and queue a UI/UIH frame containing our command.
-+ */
-+static int gsm_control_command(struct gsm_mux *gsm, int cmd, const u8 *data,
-+			       int dlen)
-+{
-+	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, dlen + 2, gsm->ftype);
-+
-+	if (msg == NULL)
-+		return -ENOMEM;
-+
-+	msg->data[0] = (cmd << 1) | CR | EA;	/* Set C/R */
-+	msg->data[1] = (dlen << 1) | EA;
-+	memcpy(msg->data + 2, data, dlen);
-+	gsm_data_queue(gsm->dlci[0], msg);
-+
-+	return 0;
-+}
-+
- /**
-  *	gsm_control_reply	-	send a response frame to a control
-  *	@gsm: gsm channel
-@@ -1621,13 +1646,7 @@ static void gsm_control_response(struct gsm_mux *gsm, unsigned int command,
- 
- static void gsm_control_transmit(struct gsm_mux *gsm, struct gsm_control *ctrl)
- {
--	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, ctrl->len + 2, gsm->ftype);
--	if (msg == NULL)
--		return;
--	msg->data[0] = (ctrl->cmd << 1) | CR | EA;	/* command */
--	msg->data[1] = (ctrl->len << 1) | EA;
--	memcpy(msg->data + 2, ctrl->data, ctrl->len);
--	gsm_data_queue(gsm->dlci[0], msg);
-+	gsm_control_command(gsm, ctrl->cmd, ctrl->data, ctrl->len);
- }
- 
- /**
--- 
-2.34.1
+Regards,
+Angelo
 
