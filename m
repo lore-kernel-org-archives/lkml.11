@@ -2,91 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB66DECAAD5
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 21:48:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20DEDECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 21:48:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230370AbiHaVsP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 17:48:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53442 "EHLO
+        id S231585AbiHaVst (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 17:48:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229510AbiHaVsM (ORCPT
+        with ESMTP id S232254AbiHaVso (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 17:48:12 -0400
-Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com [209.85.160.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4C8BF61AD;
-        Wed, 31 Aug 2022 14:48:11 -0700 (PDT)
-Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-11f11d932a8so18958878fac.3;
-        Wed, 31 Aug 2022 14:48:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=JD82AHGx84kMfXbfehKRODVwT5PdMYhij9FNOZzBHYc=;
-        b=U7fymrrzN329Sf5bfjRw9duInxROWaO4+CJHSU+cSx+XyJY75RcmUVpTQ33/7BRZhb
-         H0q+ENPjZU0tRkuvFXr4afxNI+b/vzp0XqjRKOxCHRJpMDVLykPE68lhf+Kl9AACUGP8
-         4/P23eYzdJwM091bPGL+DuBV0qxw44g1fs9CoPVncaz2WrD4shqOjqwRp3MtQibRMTOM
-         X8WHVDrIk+/wqtM0TlxCvsPiyG8SMRFKYQDl8tYjTOiTwvfZ78mT+uqAd6rQhNxnRxjd
-         M3dHg8MGBYLmfZjpX2NROKt/W+i+pn0xaLs3OZOD9hZ1CdzA/dutRprY0nUEX5hk5Yyz
-         SARw==
-X-Gm-Message-State: ACgBeo1Z4ttzgq4zHqrIt99K4Fc8/byYFv0J6+BR/235SrS4HSlILFxZ
-        Hs6f4jEQlNxD93m2uXbMJA==
-X-Google-Smtp-Source: AA6agR42CMQBtttjZ/zkx4w8wd0niU7A9WHNAhfgLAJFh/npgcOzrKIbttMD5OzwceY42pFmKqe7lw==
-X-Received: by 2002:a05:6808:1491:b0:343:7543:1a37 with SMTP id e17-20020a056808149100b0034375431a37mr2191781oiw.106.1661982491138;
-        Wed, 31 Aug 2022 14:48:11 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id p81-20020acad854000000b00342ded07a75sm7875032oig.18.2022.08.31.14.48.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Aug 2022 14:48:10 -0700 (PDT)
-Received: (nullmailer pid 310004 invoked by uid 1000);
-        Wed, 31 Aug 2022 21:48:09 -0000
-Date:   Wed, 31 Aug 2022 16:48:09 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>
-Subject: Re: [PATCH v1 08/14] dt-bindings: mtd: relax the nvmem compatible
- string
-Message-ID: <20220831214809.GA282739-robh@kernel.org>
-References: <20220825214423.903672-1-michael@walle.cc>
- <20220825214423.903672-9-michael@walle.cc>
+        Wed, 31 Aug 2022 17:48:44 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ABC7F61B2;
+        Wed, 31 Aug 2022 14:48:43 -0700 (PDT)
+Date:   Wed, 31 Aug 2022 21:48:40 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1661982521;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ruc15FW8yZ3ad1mAu2TEMPhbmoHkGlGQXyyboBFzGcE=;
+        b=OEnH+Rf/IsX43S07eKFxsTUVe8K0QM5NxhumJ4ZcYrg4GR9YTPbwFw5YjgRRN8xUsJqCwB
+        BK8QCyqPmc5oo8z8wvHnl8JPGIH+deIMqsvyIt8wXtwdoHN7fr/h6dTtlPk6lbIq7R/xDL
+        OhyjEkUkyFr7krEJUg7Orawt3JphndhnKO6QbcahvDwDXYAlT3Vk6FcUObX9sY5q3dK3td
+        PW7zuKZgtgJJog0ulFL2IeznO7s8D7eWciMftY7ztka/quNULz7mDJ91gUwkrWLe8qFhwg
+        FFELVLh2jv4M6FtPttS0G5M9RU44rabjHYCy2OGSTLJTFFX61Fnj+EKNhanpLQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1661982521;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ruc15FW8yZ3ad1mAu2TEMPhbmoHkGlGQXyyboBFzGcE=;
+        b=z00oK9h8PdChZAosQTs4NmpyrQA5jGCepFTaca07EKEQGSNf3pgOn2TcR+QcIlgYru7K+m
+        lusPp5pSOAqdt3Bg==
+From:   "tip-bot2 for Stephen Kitt" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/misc] x86/Kconfig: Specify idle=poll instead of no-hlt
+Cc:     Stephen Kitt <steve@sk2.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220713160840.1577569-1-steve@sk2.org>
+References: <20220713160840.1577569-1-steve@sk2.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220825214423.903672-9-michael@walle.cc>
+Message-ID: <166198252046.401.16177409434472954362.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 11:44:17PM +0200, Michael Walle wrote:
-> The "user-otp" and "factory-otp" compatible string just depicts a
-> generic NVMEM device. But an actual device tree node might as well
-> contain a more specific compatible string. Make it possible to add
-> more specific binding elsewere and just match part of the compatibles
-> here.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
->  Documentation/devicetree/bindings/mtd/mtd.yaml | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
+The following commit has been merged into the x86/misc branch of tip:
 
-In hindsight it looks like we are mixing 2 different purposes of 'which 
-instance is this' and 'what is this'. 'compatible' is supposed to be the 
-latter.
+Commit-ID:     7987448ffc34f41590bae5b28cd23ca0b8c93291
+Gitweb:        https://git.kernel.org/tip/7987448ffc34f41590bae5b28cd23ca0b8c93291
+Author:        Stephen Kitt <steve@sk2.org>
+AuthorDate:    Wed, 13 Jul 2022 18:08:40 +02:00
+Committer:     Dave Hansen <dave.hansen@linux.intel.com>
+CommitterDate: Wed, 31 Aug 2022 14:43:36 -07:00
 
-Maybe there's a better way to handle user/factory? There's a similar 
-need with partitions for A/B or factory/update.
+x86/Kconfig: Specify idle=poll instead of no-hlt
 
-Rob
+Commit 27be45700021 ("x86 idle: remove 32-bit-only "no-hlt" parameter,
+hlt_works_ok flag") removed no-hlt, but CONFIG_APM still refers to
+it. Suggest "idle=poll" instead, based on the commit message:
+
+> If a user wants to avoid HLT, then "idle=poll"
+> is much more useful, as it avoids invocation of HLT
+> in idle, while "no-hlt" failed to do so.
+
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Link: https://lkml.kernel.org/r/20220713160840.1577569-1-steve@sk2.org
+---
+ arch/x86/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index f9920f1..83b163a 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -2569,7 +2569,7 @@ menuconfig APM
+ 
+ 	  1) make sure that you have enough swap space and that it is
+ 	  enabled.
+-	  2) pass the "no-hlt" option to the kernel
++	  2) pass the "idle=poll" option to the kernel
+ 	  3) switch on floating point emulation in the kernel and pass
+ 	  the "no387" option to the kernel
+ 	  4) pass the "floppy=nodma" option to the kernel
