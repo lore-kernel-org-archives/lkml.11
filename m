@@ -2,107 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B2EEC3DA6B
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 09:44:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF65FECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 09:44:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230053AbiHaJoB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 05:44:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48900 "EHLO
+        id S230076AbiHaJoH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 05:44:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229961AbiHaJns (ORCPT
+        with ESMTP id S230014AbiHaJnx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 05:43:48 -0400
-Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21479CEB3C;
-        Wed, 31 Aug 2022 02:43:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1661939025; x=1693475025;
-  h=message-id:date:mime-version:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:subject;
-  bh=dhx4/HWDxIlBVqlYs4wS13lU72P1ArGL4LVJwKr7dkU=;
-  b=TTMP7HZ9z6Y6IqgOHUtTUqu/0crjIpthYwXk8qaQeJ+j880DewWmBiiB
-   MfQXH2McS5urK5E7EdDTC9DUDGdGMpwlkj/9uuq9jy3g9fykPf8pepCR8
-   dUTPDRhkvdKi7SJSC1QxcUmFnWLyun47EAMsX1RI4SHwJAh9t8yM0u11T
-   0=;
-Subject: Re: [PATCH v3 04/19] dt-bindings: hwmon: (mr75203) change "reset" property
- to be optional
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1d-f20e0c8b.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 09:43:33 +0000
-Received: from EX13D41EUB002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1d-f20e0c8b.us-east-1.amazon.com (Postfix) with ESMTPS id 0E82680268;
-        Wed, 31 Aug 2022 09:43:30 +0000 (UTC)
-Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
- EX13D41EUB002.ant.amazon.com (10.43.166.132) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Wed, 31 Aug 2022 09:43:29 +0000
-Received: from [192.168.153.206] (10.85.143.179) by mail-relay.amazon.com
- (10.43.60.234) with Microsoft SMTP Server id 15.0.1497.38 via Frontend
- Transport; Wed, 31 Aug 2022 09:43:24 +0000
-Message-ID: <671a0ee8-9b0d-b417-19ff-013681cc73d8@amazon.com>
-Date:   Wed, 31 Aug 2022 12:43:24 +0300
+        Wed, 31 Aug 2022 05:43:53 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 606A8CE4BC;
+        Wed, 31 Aug 2022 02:43:51 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id CD2992226F;
+        Wed, 31 Aug 2022 09:43:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1661939029; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Wf21pEEc2qn4pGtb/SmWthvBwjNCurQ6Mq3fuLKCgXM=;
+        b=ZCv8hkQMv8VLUCjw+uWsF2LGUYsHrCxsVqq3OQGJcExeJM0/HRGBDw8+/sxrpshYy2Oa6v
+        2swiTLpvpZjw3UzuYHRoCD3p8cxabr9zKD9K0aRKKqOX8D3uLDV5eAFnU9JbpejhZ7Ws3a
+        iDt5IueX4Sm74kxBss2tlSq3x1auDNg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1661939029;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Wf21pEEc2qn4pGtb/SmWthvBwjNCurQ6Mq3fuLKCgXM=;
+        b=dbelnQ/VdnnD4iu+J0ymYt3LS1MSca1P78Kt0qZxPB51wzUaPAjopEjwqz/m9HSF/ZLIPg
+        JDWp+J0k//jhQACg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B6DDE1332D;
+        Wed, 31 Aug 2022 09:43:49 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id FXOYLFUtD2PMTAAAMHmgww
+        (envelope-from <jack@suse.cz>); Wed, 31 Aug 2022 09:43:49 +0000
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 2F5D0A067B; Wed, 31 Aug 2022 11:43:49 +0200 (CEST)
+Date:   Wed, 31 Aug 2022 11:43:49 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Jan Kara <jack@suse.cz>, Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Darrick J . Wong" <djwong@kernel.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna@kernel.org>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-xfs@vger.kernel.org, linux-nfs@vger.kernel.org,
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 5/6] NFS: direct-io: convert to FOLL_PIN pages
+Message-ID: <20220831094349.boln4jjajkdtykx3@quack3>
+References: <20220827083607.2345453-1-jhubbard@nvidia.com>
+ <20220827083607.2345453-6-jhubbard@nvidia.com>
+ <YwqfWoAE2Awp4YvT@ZenIV>
+ <353f18ac-0792-2cb7-6675-868d0bd41d3d@nvidia.com>
+ <Ywq5ILRNxsbWvFQe@ZenIV>
+ <Ywq5VrSrY341UVpL@ZenIV>
+ <217b4a17-1355-06c5-291e-7980c0d3cea6@nvidia.com>
+ <20220829160808.rwkkiuelipr3huxk@quack3>
+ <a53b2d14-687a-16c9-2f63-4f94876f8b3c@nvidia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Content-Language: en-US
-To:     Philipp Zabel <p.zabel@pengutronix.de>, <jdelvare@suse.com>,
-        <linux@roeck-us.net>, <robh+dt@kernel.org>,
-        <rtanwar@maxlinear.com>, <linux-hwmon@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <talel@amazon.com>, <hhhawa@amazon.com>, <jonnyc@amazon.com>,
-        <hanochu@amazon.com>, <ronenk@amazon.com>, <itamark@amazon.com>,
-        <shellykz@amazon.com>, <shorer@amazon.com>, <amitlavi@amazon.com>,
-        <almogbs@amazon.com>, <dkl@amazon.com>,
-        <andriy.shevchenko@intel.com>, "Farber, Eliav" <farbere@amazon.com>
-References: <20220830192212.28570-1-farbere@amazon.com>
- <20220830192212.28570-5-farbere@amazon.com>
- <3bd5f46dff622e375c4f60140f479bf6ee483aec.camel@pengutronix.de>
-From:   "Farber, Eliav" <farbere@amazon.com>
-In-Reply-To: <3bd5f46dff622e375c4f60140f479bf6ee483aec.camel@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a53b2d14-687a-16c9-2f63-4f94876f8b3c@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/31/2022 11:21 AM, Philipp Zabel wrote:
-> On Di, 2022-08-30 at 19:21 +0000, Eliav Farber wrote:
->> Change "reset" property to be optional instead of required, for SOCs 
->> that
->> don't support a reset controller.
->>
->> Signed-off-by: Eliav Farber <farbere@amazon.com>
->> ---
->> V3 -> v2:
->> - Change "reset" property to be optional instead of adding new
->>   "reset-control-skip" property.
->>
->>  Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml | 1 -
->>  1 file changed, 1 deletion(-)
->>
->> diff --git 
->> a/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml 
->> b/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml
->> index 6abde48b746e..2ec4b9da4b92 100644
->> --- a/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml
->> +++ b/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml
->> @@ -49,7 +49,6 @@ required:
->>    - reg
->>    - reg-names
->>    - clocks
->> -  - resets
->
-> Is this just for mr76006? Or does mr75203 work without reset as well?
->
-> If it is the former, maybe a new compatible should be added and resets
-> should be kept required
+On Mon 29-08-22 12:59:26, John Hubbard wrote:
+> On 8/29/22 09:08, Jan Kara wrote:
+> >> However, the core block/bio conversion in patch 4 still does depend upon
+> >> a key assumption, which I got from a 2019 email discussion with
+> >> Christoph Hellwig and others here [1], which says:
+> >>
+> >>     "All pages released by bio_release_pages should come from
+> >>      get_get_user_pages...".
+> >>
+> >> I really hope that still holds true. Otherwise this whole thing is in
+> >> trouble.
+> >>
+> >> [1] https://lore.kernel.org/kvm/20190724053053.GA18330@infradead.org/
+> > 
+> > Well as far as I've checked that discussion, Christoph was aware of pipe
+> > pages etc. (i.e., bvecs) entering direct IO code. But he had some patches
+> > [2] which enabled GUP to work for bvecs as well (using the kernel mapping
+> > under the hood AFAICT from a quick glance at the series). I suppose we
+> > could also handle this in __iov_iter_get_pages_alloc() by grabbing pin
+> > reference instead of plain get_page() for the case of bvec iter. That way
+> > we should have only pinned pages in bio_release_pages() even for the bvec
+> > case.
+> 
+> OK, thanks, that looks viable. So, that approach assumes that the
+> remaining two cases in __iov_iter_get_pages_alloc() will never end up
+> being released via bio_release_pages():
+> 
+>     iov_iter_is_pipe(i)
+>     iov_iter_is_xarray(i)
+> 
+> I'm actually a little worried about ITER_XARRAY, which is a recent addition.
+> It seems to be used in ways that are similar to ITER_BVEC, and cephfs is
+> using it. It's probably OK for now, for this series, which doesn't yet
+> convert cephfs.
 
-mr75203 also works without a reset.
-As I replied in PATCH v3 14/19, series 5/6 is relevant only for the
-temperature sensor.
-The “reset” property is relevant to the controller.
+So after looking into that a bit more, I think a clean approach would be to
+provide iov_iter_pin_pages2() and iov_iter_pages_alloc2(), under the hood
+in __iov_iter_get_pages_alloc() make sure we use pin_user_page() instead of
+get_page() in all the cases (using this in pipe_get_pages() and
+iter_xarray_get_pages() is easy) and then make all bio handling use the
+pinning variants for iters. I think at least iov_iter_is_pipe() case needs
+to be handled as well because as I wrote above, pipe pages can enter direct
+IO code e.g. for splice(2).
 
---
-Regards, Eliav
+Also I think that all iov_iter_get_pages2() (or the _alloc2 variant) users
+actually do want the "pin page" semantics in the end (they are accessing
+page contents) so eventually we should convert them all to
+iov_iter_pin_pages2() and remove iov_iter_get_pages2() altogether. But this
+will take some more conversion work with networking etc. so I'd start with
+converting bios only.
 
-
-
+								Honza
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
