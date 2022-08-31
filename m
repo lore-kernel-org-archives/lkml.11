@@ -2,103 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62FC2ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:17:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61CCEECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:18:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232797AbiHaSRs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 14:17:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32788 "EHLO
+        id S232801AbiHaSSN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 14:18:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232477AbiHaSRE (ORCPT
+        with ESMTP id S232600AbiHaSRu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 14:17:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 740AD9E2D6
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:13:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661969584;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=uE4KJW14kc3gE1qAWoSUzP1OSr0PXZymBaEjR1U5HqE=;
-        b=X1A6icccDISJgOXovqiGdlOzQNrxzGOfZ+ObcWC4PF7YRGMw5I8NZNr989tWQ+fRyrMWQf
-        LdeXFYDbeoAT1AhWohFeAnsNJq071r6p0q8pa8jzdmatDDxUhWyqwrMoeVV0hcMjP53OdR
-        UxgXlBjIjH/kWjLuHauMbZM6FZgQazw=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-493-VTVB-NxDP2irnQSeEC6Fww-1; Wed, 31 Aug 2022 14:12:59 -0400
-X-MC-Unique: VTVB-NxDP2irnQSeEC6Fww-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6C6348037AA;
-        Wed, 31 Aug 2022 18:12:59 +0000 (UTC)
-Received: from starship (unknown [10.40.194.96])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CC7DAC15BB3;
-        Wed, 31 Aug 2022 18:12:57 +0000 (UTC)
-Message-ID: <eac344b89e16721a0c2ac5e25dad78b4826d67d6.camel@redhat.com>
-Subject: Re: [PATCH 11/19] KVM: SVM: Add helper to perform final AVIC "kick"
- of single vCPU
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Li RongQing <lirongqing@baidu.com>
-Date:   Wed, 31 Aug 2022 21:12:56 +0300
-In-Reply-To: <Yw95XR59VQSbVlY9@google.com>
-References: <20220831003506.4117148-1-seanjc@google.com>
-         <20220831003506.4117148-12-seanjc@google.com>
-         <9144c9921bd46ba7c2b2e9427d053b1fc5abccf7.camel@redhat.com>
-         <Yw95XR59VQSbVlY9@google.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Wed, 31 Aug 2022 14:17:50 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A76EF32C0
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:14:15 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id f4so11463282qkl.7
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:14:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=J57R+POjwarkhG0ohhPSH5aFm2b5W+GSzqYH/OtjluE=;
+        b=coq0jRegFak07tL9CfIRw4qNyOsmTDdAeVhAFqpTTL9xu73mkSXYqMAd+h0jjTLInR
+         YODQQ0l2SqeQrlpzTx49Z8yMSslvrqdOT3yyTgiPhTkvq/50a7Kr1TM3nT7Nz/KzlAUe
+         JQ8RoQha7mg7lJPcdNXGfesGbfZZ6bYAZUF9A=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=J57R+POjwarkhG0ohhPSH5aFm2b5W+GSzqYH/OtjluE=;
+        b=B/Y95xvrNS5lzEooD8nwmUKjyukqg25Zc3G3uDdyWd640b5X1CUYE7vQVcA9L50xrh
+         yPrrS+5ggga2bq/drn/zbgtBwa0mxLkuNZiCPKwu0X2suVon7RN+bsxjcvEy4lw4hvaX
+         /Pc4fjdijuOOhnv7bTQaGIJoECs7LiGy+NfRumJT+t9U7hHs6cTM9L3WgtUfCDF7rV9j
+         wQkszu0JnHLh1+W86rAO+EexeSpZdw5xXp6KGUXmLISLVBrs+GgqqgB4r5EcRWNLHtBK
+         twBnh/oICHVyTg5a+S4rMMFt4JtM11fzVEB53QgNROydbpybmHm+7KqqOQB2JhFmklnM
+         +qiA==
+X-Gm-Message-State: ACgBeo2Qa4jDOn0/b/fOaoDPnD1gdkXJLFVraK4Uk8gXMCxWT1kf4H6t
+        ryyDA7chh9ENK0SWa5KF5bJjzUQ5esQzOg==
+X-Google-Smtp-Source: AA6agR6pTE5GlZBKozvk3V08HA/HcxZ7l9V5Rbitq5ipHWqpEU7ylsiMUxLMpUacqjVaKRQCOB0jQw==
+X-Received: by 2002:a37:c96:0:b0:6bc:15eb:351a with SMTP id 144-20020a370c96000000b006bc15eb351amr16427702qkm.473.1661969640448;
+        Wed, 31 Aug 2022 11:14:00 -0700 (PDT)
+Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com. [209.85.160.178])
+        by smtp.gmail.com with ESMTPSA id u3-20020a37ab03000000b006bc68cfcdf7sm10050237qke.13.2022.08.31.11.13.57
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 31 Aug 2022 11:13:58 -0700 (PDT)
+Received: by mail-qt1-f178.google.com with SMTP id y18so11635491qtv.5
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:13:57 -0700 (PDT)
+X-Received: by 2002:ac8:5fd6:0:b0:343:4b4:1022 with SMTP id
+ k22-20020ac85fd6000000b0034304b41022mr20415702qta.616.1661969637250; Wed, 31
+ Aug 2022 11:13:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+References: <20220830231541.1135813-1-rrangel@chromium.org>
+ <20220830171332.1.Id022caf53d01112188308520915798f08a33cd3e@changeid> <CAJZ5v0h10wrurjYG50dA+pCfRtNDqN=c8odQ0p6HJRnOyJh7KA@mail.gmail.com>
+In-Reply-To: <CAJZ5v0h10wrurjYG50dA+pCfRtNDqN=c8odQ0p6HJRnOyJh7KA@mail.gmail.com>
+From:   Raul Rangel <rrangel@chromium.org>
+Date:   Wed, 31 Aug 2022 12:13:46 -0600
+X-Gmail-Original-Message-ID: <CAHQZ30BTYEYEAGjwsbuiYuYGhpFtQy_AEP66v3trdTzY_DRUOQ@mail.gmail.com>
+Message-ID: <CAHQZ30BTYEYEAGjwsbuiYuYGhpFtQy_AEP66v3trdTzY_DRUOQ@mail.gmail.com>
+Subject: Re: [PATCH 1/8] Input: elan_i2c - Use PM subsystem to manage wake irq
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        linux-input <linux-input@vger.kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Tim Van Patten <timvp@google.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        "jingle.wu" <jingle.wu@emc.com.tw>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Tony Lindgren <tony@atomide.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-08-31 at 15:08 +0000, Sean Christopherson wrote:
-> On Wed, Aug 31, 2022, Maxim Levitsky wrote:
-> > On Wed, 2022-08-31 at 00:34 +0000, Sean Christopherson wrote:
-> > > @@ -455,13 +461,8 @@ static void avic_kick_target_vcpus(struct kvm *kvm, struct kvm_lapic *source,
-> > >  	 */
-> > >  	kvm_for_each_vcpu(i, vcpu, kvm) {
-> > >  		if (kvm_apic_match_dest(vcpu, source, icrl & APIC_SHORT_MASK,
-> > > -					dest, icrl & APIC_DEST_MASK)) {
-> > > -			vcpu->arch.apic->irr_pending = true;
-> > > -			svm_complete_interrupt_delivery(vcpu,
-> > > -							icrl & APIC_MODE_MASK,
-> > > -							icrl & APIC_INT_LEVELTRIG,
-> > > -							icrl & APIC_VECTOR_MASK);
-> > > -		}
-> > > +					dest, icrl & APIC_DEST_MASK))
-> > > +			avic_kick_vcpu(vcpu, icrl);
-> > >  	}
-> > >  }
-> > >  
-> > 
-> > I don't know what I think about this, sometimes *minor* code duplication
-> > might actually be a good thing, as it is easier to read the code, but I don't
-> > have much against this as well.
-> > 
-> > I am not sure if before or after this code is more readable.
-> 
-> I don't have a strong opinion either.  I think I prefer having the helper, but
-> have no objection to leaving things as is.  Originally I was thinking there was
-> going to be a third call site, but that didn't happen.
-> 
+On Wed, Aug 31, 2022 at 12:01 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
+>
+> On Wed, Aug 31, 2022 at 1:16 AM Raul E Rangel <rrangel@chromium.org> wrote:
+> >
+> > The Elan I2C touchpad driver is currently manually managing the wake
+> > IRQ. This change removes the explicit enable_irq_wake/disable_irq_wake
+> > and instead relies on the PM subsystem. This is done by calling
+> > dev_pm_set_wake_irq.
+> >
+> > i2c_device_probe already calls dev_pm_set_wake_irq when using device
+> > tree, so it's only required when using ACPI. The net result is that this
+> > change should be a no-op. i2c_device_remove also already calls
+> > dev_pm_clear_wake_irq, so we don't need to do that in this driver.
+> >
+> > I tested this on an ACPI system where the touchpad doesn't have _PRW
+> > defined. I verified I can still wake the system and that the wake source
+> > was the touchpad IRQ GPIO.
+> >
+> > Signed-off-by: Raul E Rangel <rrangel@chromium.org>
+>
 
-Yep - when something is duplicated 3 times, it is really rare to not want to have a helper,
-Anyway I don't have a strong opinion about this either.
 
-I mostly was unsure about the fact that helper receives icrl and not icrh, kind of wierd,
-but anyway let it be.
+> I like this a lot, but the assumption in the wakeirq code is that the
+> IRQ in question will be dedicated for signaling wakeup.  Does it hold
+> here?
 
-Best regards,
-	Maxim Levitsky
+The wakeirq code defines two methods: `dev_pm_set_wake_irq` and
+`dev_pm_set_dedicated_wake_irq`.
+The latter is used when you have a dedicated wakeup signal. In this
+driver it's currently assumed
+that the IRQ and the wake IRQ are the same, so I used `dev_pm_set_wake_irq`.
 
+This change in theory also fixes a bug where you define a dedicated
+wake irq in DT, but
+then the driver enables the `client->irq` as a wake source. In
+practice this doesn't happen
+since the elan touchpads only have a single IRQ line.
+
+>
+> > ---
+> >
+> >  drivers/input/mouse/elan_i2c_core.c | 12 ++++--------
+> >  1 file changed, 4 insertions(+), 8 deletions(-)
+> >
+> > diff --git a/drivers/input/mouse/elan_i2c_core.c b/drivers/input/mouse/elan_i2c_core.c
+> > index e1758d5ffe4218..7d997d2b56436b 100644
+> > --- a/drivers/input/mouse/elan_i2c_core.c
+> > +++ b/drivers/input/mouse/elan_i2c_core.c
+> > @@ -33,6 +33,7 @@
+> >  #include <linux/jiffies.h>
+> >  #include <linux/completion.h>
+> >  #include <linux/of.h>
+> > +#include <linux/pm_wakeirq.h>
+> >  #include <linux/property.h>
+> >  #include <linux/regulator/consumer.h>
+> >  #include <asm/unaligned.h>
+> > @@ -86,8 +87,6 @@ struct elan_tp_data {
+> >         u16                     fw_page_size;
+> >         u32                     fw_signature_address;
+> >
+> > -       bool                    irq_wake;
+> > -
+> >         u8                      min_baseline;
+> >         u8                      max_baseline;
+> >         bool                    baseline_ready;
+> > @@ -1337,8 +1336,10 @@ static int elan_probe(struct i2c_client *client,
+> >          * Systems using device tree should set up wakeup via DTS,
+> >          * the rest will configure device as wakeup source by default.
+> >          */
+> > -       if (!dev->of_node)
+> > +       if (!dev->of_node) {
+> >                 device_init_wakeup(dev, true);
+> > +               dev_pm_set_wake_irq(dev, client->irq);
+> > +       }
+> >
+> >         return 0;
+> >  }
+> > @@ -1362,8 +1363,6 @@ static int __maybe_unused elan_suspend(struct device *dev)
+> >
+> >         if (device_may_wakeup(dev)) {
+> >                 ret = elan_sleep(data);
+> > -               /* Enable wake from IRQ */
+> > -               data->irq_wake = (enable_irq_wake(client->irq) == 0);
+> >         } else {
+> >                 ret = elan_set_power(data, false);
+> >                 if (ret)
+> > @@ -1394,9 +1393,6 @@ static int __maybe_unused elan_resume(struct device *dev)
+> >                         dev_err(dev, "error %d enabling regulator\n", error);
+> >                         goto err;
+> >                 }
+> > -       } else if (data->irq_wake) {
+> > -               disable_irq_wake(client->irq);
+> > -               data->irq_wake = false;
+> >         }
+> >
+> >         error = elan_set_power(data, true);
+> > --
+> > 2.37.2.672.g94769d06f0-goog
+> >
