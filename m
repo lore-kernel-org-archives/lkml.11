@@ -2,121 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39B18ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 17:51:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14357ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 17:51:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231968AbiHaRvJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 13:51:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40676 "EHLO
+        id S229977AbiHaRv3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 13:51:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230521AbiHaRuk (ORCPT
+        with ESMTP id S229616AbiHaRvM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 13:50:40 -0400
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 419894E875
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 10:50:38 -0700 (PDT)
-Received: by mail-pf1-x449.google.com with SMTP id c135-20020a624e8d000000b0053617082770so6389173pfb.8
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 10:50:38 -0700 (PDT)
+        Wed, 31 Aug 2022 13:51:12 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3D167C1ED
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 10:51:10 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id l65so4794407pfl.8
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 10:51:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:from:to:cc;
-        bh=hBJ0yO7Shj4BOGRLl4iwSJQIsSnhkgtQ+YJ6SsJa66s=;
-        b=EUrxwLovkSwJ6TvkQKG8Klcqc7EZ7RVJLb38iq+CvHU+quWu0R9+NfCH0WIn1OAuXI
-         QRKBYrqgM7LtbjAKMeZvYVvDy6Z6J6NC+DUpXkVeSXi/+lMIa2o9SH549yRhIUWuXV3X
-         MQfiqxR7PSeFNuz10ifbhUSKXJpdvxhWjfp3aogg9kq/EpMa3irR/9l5vRDDzaOxP/P/
-         XbnWvNZFTSMgt6WFc6SOQEh9AgmxisyNF/AzIVHfCiWJ6ffdNyeD90ZZKfM+g2rbzPI1
-         FLkiDoJ1A9ru709SSUUm8CibNMQQ2NgSy1eIedsr/e8TMWU+ZUGpRH2HfNfD6NpuFj40
-         uJKg==
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=XFXEowDQcVYKezApj/384ov2KBax8K2fIP9yDwQpf9Q=;
+        b=InN4QYFeXhi6K8Y7NaMJWfjcPixUKdsrMbVznMWaVd1BA9zOhRX8Wc45OE8uyf+jqI
+         rL3UOwGqot6QfkagDK2R1YsC4SycKqS2TvLg5W0kieNaLsd1DYbwqpNyNJK/VhMBAv/I
+         QE/seQeOZhDY7uTOjfghA2fjGV97IAFyG0RHU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=hBJ0yO7Shj4BOGRLl4iwSJQIsSnhkgtQ+YJ6SsJa66s=;
-        b=rxB4iz4s1ZyxrdnNOiFYTcmruiiLp6/zw0Wk4VE2t3u1Enq5SeTCic+JoptzltgvDp
-         fLciamrwf0ZoprjarKc8NrxkVlCWEfSGEUPIqOb10OHKyrN1tVHaRK9WoPKnHx6B2PLW
-         woMWWXgLnOEf4wiEO64vNqLwFC/6Q1I5xKBaIeruMV4CpcN296QkaSXSbottA80WO+2r
-         yAT/PZGwvha43z7uZewuZvDPvHH29yT7mfuF3sHyBHVT30Sg8PfZlWplJjBxplEkokBu
-         1g0EyE/AjEFa9OeqfOVza7OMG7NGoFUJHO9AZgyV6Lcro2RPppTGvAoXNxhQZUTnVscr
-         erFg==
-X-Gm-Message-State: ACgBeo1vkkL8av1Pe3wWA/ncswKukmf8/76EHofMOSY+YB0NcjP+kDtd
-        uM2hAfuS5OIo4j2BHfkkC/QxK8+i2+7W
-X-Google-Smtp-Source: AA6agR6KUXTyj1DNwsbVD0rQVcRjyBpcT5UUV8Q3uxsgGqjxyGpUlPH3TVslv1iig/sms+GEgtrglNC5U5Tv
-X-Received: from irogers.svl.corp.google.com ([2620:15c:2d4:203:c8e4:a3e5:9d09:d3d4])
- (user=irogers job=sendgmr) by 2002:a17:90a:e558:b0:1fb:c4b7:1a24 with SMTP id
- ei24-20020a17090ae55800b001fbc4b71a24mr254671pjb.1.1661968237443; Wed, 31 Aug
- 2022 10:50:37 -0700 (PDT)
-Date:   Wed, 31 Aug 2022 10:49:26 -0700
-In-Reply-To: <20220831174926.579643-1-irogers@google.com>
-Message-Id: <20220831174926.579643-8-irogers@google.com>
-Mime-Version: 1.0
-References: <20220831174926.579643-1-irogers@google.com>
-X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Subject: [PATCH v2 7/7] perf test: Add basic core_wide expression test
-From:   Ian Rogers <irogers@google.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        James Clark <james.clark@arm.com>,
-        Miaoqian Lin <linmq006@gmail.com>,
-        John Garry <john.garry@huawei.com>,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        Florian Fischer <florian.fischer@muhq.space>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        perry.taylor@intel.com, caleb.biggers@intel.com,
-        kshipra.bopardikar@intel.com, ahmad.yasin@intel.com
-Cc:     Stephane Eranian <eranian@google.com>,
-        Ian Rogers <irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=XFXEowDQcVYKezApj/384ov2KBax8K2fIP9yDwQpf9Q=;
+        b=hncF8B9L354j+dD3WWOuz3ycWvxQbEnyXNVLfZd8kdh91uV/U01aaiy1avfAhuVRH8
+         4MNAOiGogKGCE9QbI/CFIzoC5mPUoqzSmDtMiCUIO/bDY/WoY+ah30MMOkByHTb+sJev
+         j0hw5Uond7t9xWkeduooMUaz4IlQ3kyXDGUCPTm4+zz9Jtu6bumcB1IYpb5FaJSf0MG+
+         Ui/5sns0ezMSnU1+n8aA4JudUWlst0+Oql4/zOoU69uDbZyjJGk06f6mfrRFS9mDqSUt
+         jpYYEXZ4ciyZk8EOcdfZRdJ3rBphOTHwh5KTgx1JvUY2vOBLYj+s80tlimxocpSlKn41
+         z8Sw==
+X-Gm-Message-State: ACgBeo0+yY4cuP2xVb2dYdDYQyXoAB8sEH/QQOuZsc5HOnY9UdLsTN8B
+        5pBXDtRmOutNpMtwrq2SvrNr7cJMMw1L5g==
+X-Google-Smtp-Source: AA6agR5qXFqXkTU2ik3j5m3InZp9lwNmw9IrdpIJekwLeSH8XNA60/frqdTvzd5HJLhsGXxbJoQpIA==
+X-Received: by 2002:a63:8048:0:b0:42b:73ef:ac8f with SMTP id j69-20020a638048000000b0042b73efac8fmr22058673pgd.446.1661968270381;
+        Wed, 31 Aug 2022 10:51:10 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id r14-20020a17090a4dce00b001fde4a4c28csm1560720pjl.37.2022.08.31.10.51.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Aug 2022 10:51:09 -0700 (PDT)
+Date:   Wed, 31 Aug 2022 10:51:08 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: manual merge of the mm tree with the kspp tree
+Message-ID: <202208311050.60A8E9C43@keescook>
+References: <20220830170051.6c190838@canb.auug.org.au>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220830170051.6c190838@canb.auug.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add basic test for coverage, similar to #smt_on.
+On Tue, Aug 30, 2022 at 05:00:51PM +1000, Stephen Rothwell wrote:
+> Hi all,
+> 
+> Today's linux-next merge of the mm tree got a conflict in:
+> 
+>   lib/Makefile
+> 
+> between commit:
+> 
+>   5e3ad11bfc5a ("testing/selftests: Add tests for the is_signed_type() macro")
+> 
+> from the kspp tree and commit:
+> 
+>   7a2791666971 ("testing/selftests: add tests for the is_signed_type() macro")
+> 
+> from the mm tree.
+> 
+> I fixed it up (I dropped the latter commit by using the former version
+> of this file and deleting lib/is_signed_type_test.c) and can carry the
+> fix as necessary. This is now fixed as far as linux-next is concerned,
+> but any non trivial conflicts should be mentioned to your upstream
+> maintainer when your tree is submitted for merging.  You may also want
+> to consider cooperating with the maintainer of the conflicting tree to
+> minimise any particularly complex conflicts.
 
-Signed-off-by: Ian Rogers <irogers@google.com>
----
- tools/perf/tests/expr.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+Thanks! Andrew, can you drop these patches from -mm please? I corrected
+the filename convention in the above named patch.
 
-diff --git a/tools/perf/tests/expr.c b/tools/perf/tests/expr.c
-index db736ed49556..8bd719766814 100644
---- a/tools/perf/tests/expr.c
-+++ b/tools/perf/tests/expr.c
-@@ -158,6 +158,9 @@ static int test__expr(struct test_suite *t __maybe_unused, int subtest __maybe_u
- 	{
- 		struct cpu_topology *topology = cpu_topology__new();
- 		bool smton = smt_on(topology);
-+		bool corewide = core_wide(/*system_wide=*/false,
-+					  /*user_requested_cpus=*/false,
-+					  topology);
- 
- 		cpu_topology__delete(topology);
- 		expr__ctx_clear(ctx);
-@@ -168,6 +171,16 @@ static int test__expr(struct test_suite *t __maybe_unused, int subtest __maybe_u
- 		TEST_ASSERT_VAL("find ids", hashmap__find(ctx->ids,
- 							  smton ? "EVENT1" : "EVENT2",
- 							  (void **)&val_ptr));
-+
-+		expr__ctx_clear(ctx);
-+		TEST_ASSERT_VAL("find ids",
-+				expr__find_ids("EVENT1 if #core_wide else EVENT2",
-+					NULL, ctx) == 0);
-+		TEST_ASSERT_VAL("find ids", hashmap__size(ctx->ids) == 1);
-+		TEST_ASSERT_VAL("find ids", hashmap__find(ctx->ids,
-+							  corewide ? "EVENT1" : "EVENT2",
-+							  (void **)&val_ptr));
-+
- 	}
- 	/* The expression is a constant 1.0 without needing to evaluate EVENT1. */
- 	expr__ctx_clear(ctx);
 -- 
-2.37.2.672.g94769d06f0-goog
-
+Kees Cook
