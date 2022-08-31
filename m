@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D86FDECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 21:27:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C9B0ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 21:27:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232310AbiHaV1h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 17:27:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54988 "EHLO
+        id S232331AbiHaV1k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 17:27:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232199AbiHaV1e (ORCPT
+        with ESMTP id S232208AbiHaV1f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 17:27:34 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C88F2F4935
+        Wed, 31 Aug 2022 17:27:35 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E80C6F4C88
         for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 14:27:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1661981253; x=1693517253;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=m3s12TGYjWSlxsDVLCLH+j+oxn8X4YKyWRyMNxD+r3o=;
-  b=A9iMkozpiN5nnyu1OA0nWjsKjYEPqipYD6nYvk/RPTBDjUQJR3kiYKnK
-   1Kf3DcB9O79Nx2u0xfVqpJAD6P0CFLC8iNJL/63aIT0QBwDrEmXYRQHqa
-   GPpqw6uFEPqGi0IwInta47MaKmiveJW1nPcxv+89hT53Ll6qytx49zDPM
-   TuuYn217yIAmm02zEHJ9ePvEIwJ1HlBjGQ1zp/u4gCqgofH1/iCdcL5dF
-   cJUxViTLujVhPXvFd/sNu+IrW+drGAGAa5DpPi7B4ihImboHBRM3sLUwT
-   FpxApndEsyzsGu0c1stwR2XsZUP6C2p1T+Vi4hvxgmNyocBtPBD9+i4ld
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="296828925"
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=4TD5fQr4fxUJXo4Iew85XPimvRvneII2apiUFF+zuDM=;
+  b=QPBJEjsU3lEv1nltU2vDYugDMnyXVow3Ll+NcpUR+qBohJxVYaIb0j6u
+   ks8xHrIyv/q6WIJtItRvgo+VrbmV51BZhtiJabJrjOEeAAhuaVBKpjdux
+   ZiPC34PQKj9v0QIJQ0nrqCk9M31bzH9Yd+59xAq1xN7pZMBje1Xt1Fsp6
+   Lh4ctTsfNkDhUWSFu9y9tkPoioZbBmx23bvDy5/J2v0jYOPMRh1sQm8Xy
+   mysOpjGR/efTQFOPZJERhCXg6daUm1KljLmuuwBdD0CQ1ExhXo6XCpxKT
+   flRsYQHhF4fsHRrY5M4+zgS/5P+qB1SOeMTEnEvyPWUTSJTEIAooSKhcT
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="357266135"
 X-IronPort-AV: E=Sophos;i="5.93,279,1654585200"; 
-   d="scan'208";a="296828925"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 14:27:33 -0700
+   d="scan'208";a="357266135"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 14:27:33 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,279,1654585200"; 
-   d="scan'208";a="612236180"
+   d="scan'208";a="754557671"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga002.jf.intel.com with ESMTP; 31 Aug 2022 14:27:31 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 31 Aug 2022 14:27:31 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 8C5E519D; Thu,  1 Sep 2022 00:27:46 +0300 (EEST)
+        id 7B81F174; Thu,  1 Sep 2022 00:27:46 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Mark Brown <broonie@kernel.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -47,62 +47,58 @@ To:     Mark Brown <broonie@kernel.org>,
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
         Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH v2 3/3] regmap: spi-avmm: Use swabXX_array() helpers
-Date:   Thu,  1 Sep 2022 00:27:44 +0300
-Message-Id: <20220831212744.56435-3-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 1/3] swab: Add array operations
+Date:   Thu,  1 Sep 2022 00:27:42 +0300
+Message-Id: <20220831212744.56435-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220831212744.56435-1-andriy.shevchenko@linux.intel.com>
-References: <20220831212744.56435-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since we have a few helpers to swab elements of a given size in an array
-use them instead of open coded variants.
+For now, some simple array operations to swab.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
-v2: fixed compilation error (LKP)
- drivers/base/regmap/regmap-spi-avmm.c | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+v2: no changes
+ include/linux/swab.h | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-diff --git a/drivers/base/regmap/regmap-spi-avmm.c b/drivers/base/regmap/regmap-spi-avmm.c
-index ad1da83e849f..4c2b94b3e30b 100644
---- a/drivers/base/regmap/regmap-spi-avmm.c
-+++ b/drivers/base/regmap/regmap-spi-avmm.c
-@@ -7,6 +7,7 @@
- #include <linux/module.h>
- #include <linux/regmap.h>
- #include <linux/spi/spi.h>
-+#include <linux/swab.h>
- 
- /*
-  * This driver implements the regmap operations for a generic SPI
-@@ -162,19 +163,12 @@ struct spi_avmm_bridge {
- 	/* bridge buffer used in translation between protocol layers */
- 	char trans_buf[TRANS_BUF_SIZE];
- 	char phy_buf[PHY_BUF_SIZE];
--	void (*swap_words)(char *buf, unsigned int len);
-+	void (*swap_words)(void *buf, unsigned int len);
- };
- 
--static void br_swap_words_32(char *buf, unsigned int len)
-+static void br_swap_words_32(void *buf, unsigned int len)
- {
--	u32 *p = (u32 *)buf;
--	unsigned int count;
--
--	count = len / 4;
--	while (count--) {
--		*p = swab32p(p);
--		p++;
--	}
-+	swab32_array(buf, len / 4);
- }
- 
- /*
+diff --git a/include/linux/swab.h b/include/linux/swab.h
+index bcff5149861a..9b804dbb0d79 100644
+--- a/include/linux/swab.h
++++ b/include/linux/swab.h
+@@ -20,4 +20,29 @@
+ # define swab64s __swab64s
+ # define swahw32s __swahw32s
+ # define swahb32s __swahb32s
++
++static inline void swab16_array(u16 *buf, unsigned int words)
++{
++	while (words--) {
++		swab16s(buf);
++		buf++;
++	}
++}
++
++static inline void swab32_array(u32 *buf, unsigned int words)
++{
++	while (words--) {
++		swab32s(buf);
++		buf++;
++	}
++}
++
++static inline void swab64_array(u64 *buf, unsigned int words)
++{
++	while (words--) {
++		swab64s(buf);
++		buf++;
++	}
++}
++
+ #endif /* _LINUX_SWAB_H */
 -- 
 2.35.1
 
