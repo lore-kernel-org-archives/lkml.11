@@ -2,109 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D41ACECAAD8
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 06:04:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B56AECAAD8
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 06:05:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230020AbiHaGE1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 02:04:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35314 "EHLO
+        id S229985AbiHaGFS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 02:05:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbiHaGEZ (ORCPT
+        with ESMTP id S229649AbiHaGFP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 02:04:25 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A29BBA6F
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 23:04:21 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id z6so18482156lfu.9
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 23:04:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=Dl8bj8J2OYumn/gfks6Y/TXqxWAUsjyKN5CBMLkq33M=;
-        b=s+ld3BSW73VpjKfO2WLJyo8QMXPvYevRcq4PsaT3k2Z77qKdk8xKWjJckUUaWfvzr4
-         YWyksAxTftPrsW0ppk7H7HitM7QBkNbDsEe2lUr+1cxY0DIUgs1AZjooirLpXWNVTIFe
-         Oy9N2ufiwiT31+pU/7i2ANgmlzvXMLwrfmDJQoiEn4KgNO/wFYvu0BozmqYQelW3kvN6
-         iMGYIV3a7efaPBH1DniQf9yKlOy7z72aD7wlQ/YWJ1LW9PR2JrdFT4QNQHCki8J/HXBb
-         StVeaV3xBeut8XNSL/uttxlhjAlNWyfMYZBMtKmZg2uLKvzTsrKOgTHO5CYB/GgCVYyq
-         ceNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=Dl8bj8J2OYumn/gfks6Y/TXqxWAUsjyKN5CBMLkq33M=;
-        b=oBdl7i1FZpJeHzQav6MDN+twQZrf4BamsgzUy1ohRFVMaOtxltu4Sj2DKPC0gg/d++
-         kE1ICo9HUFj0lj11bmFS/kaKuImpnTo8/5g/eApjJSJNJieqKKkfxj+QHpMkBC+QGDa0
-         iFfa+s/n67w+DcI0abLBFMmKF/Adhcdt3cO5Hj2Dw9W3nnvAt7ebuOWiHC2VEOZPX0wQ
-         8jfUpLpC6axPe4nM/GrA1gTGRgBHT1frhJwdetI8CjUEyG8OEW4MAZ9EsixhfN2rcpKh
-         kvEyk4AAgWynejqG7QhqjSoiCPcaHOsApUm9z+nd+OEXBdpkfrcQfZAa7UrLTQHM0e/M
-         y+5g==
-X-Gm-Message-State: ACgBeo1gyZXklflMscgk5sCg5U588YO/ipOyF5boYkznqyL1Y/w4M4fo
-        zu02wJ79g9sLfc9OWfXYyO3WVg==
-X-Google-Smtp-Source: AA6agR4VDbEUmpQN/YYGQlYkrQzhU4Vr7ZnZNVwK+T0wj2HQ8et1E4vjPcFJasdVKjtvPACwyeVfzA==
-X-Received: by 2002:a05:6512:1395:b0:48d:81b:4955 with SMTP id p21-20020a056512139500b0048d081b4955mr8308222lfa.307.1661925860150;
-        Tue, 30 Aug 2022 23:04:20 -0700 (PDT)
-Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id k4-20020ac257c4000000b0049483572143sm300975lfo.283.2022.08.30.23.04.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 23:04:19 -0700 (PDT)
-Message-ID: <22eb5611-84e2-23e9-f70b-48bef351133f@linaro.org>
-Date:   Wed, 31 Aug 2022 09:04:18 +0300
+        Wed, 31 Aug 2022 02:05:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02123275FF;
+        Tue, 30 Aug 2022 23:05:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 94B39616FF;
+        Wed, 31 Aug 2022 06:05:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 517AEC433C1;
+        Wed, 31 Aug 2022 06:05:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661925914;
+        bh=SGYtE+p3Dtu7fXMJkMnYtZQdjKI8+lz4apBzmE24BwU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Leas9ssnKXdkrL04JMj7MN3/F8Ky+L1na54faAV9IGDg7hCXKUJZGk3Vb+tBt2dKN
+         LGrhWBJ97gERfM/oo4YvDmIiUM7KGaC+m02IHuXg5TVtgSYRIQu8z8ql+E9FRX75ZV
+         A+J5D+7S942nrwBEKrpqkjb4/cnFp/9VMJ+KSIwo=
+Date:   Wed, 31 Aug 2022 08:05:28 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Tom Rix <trix@redhat.com>, linux-hardening@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        linux-input@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>
+Subject: Re: [PATCH 3/3] HID: avoid runtime call to strlen
+Message-ID: <Yw76KBJ2+uulyC/Q@kroah.com>
+References: <20220830205309.312864-1-ndesaulniers@google.com>
+ <20220830205309.312864-4-ndesaulniers@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v2 3/3] arm64: dts: Modify gamma compatible for mt8195
-Content-Language: en-US
-To:     "zheng-yan.chen" <zheng-yan.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        "Jason-JH . Lin" <jason-jh.lin@mediatek.com>,
-        Singo Chang <singo.chang@mediatek.com>,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220830063929.13390-1-zheng-yan.chen@mediatek.com>
- <20220830063929.13390-4-zheng-yan.chen@mediatek.com>
- <a209aea3-bf23-4670-91d0-e7f41ac57833@collabora.com>
- <bf2b277e-8b02-6a44-e463-6b7c4a697ce7@linaro.org>
- <b61776761eb0ab9a0b1dcf29d908e4bfd789d2ac.camel@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <b61776761eb0ab9a0b1dcf29d908e4bfd789d2ac.camel@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220830205309.312864-4-ndesaulniers@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 31/08/2022 05:29, zheng-yan.chen wrote:
-> On Tue, 2022-08-30 at 12:14 +0300, Krzysztof Kozlowski wrote:
->> On 30/08/2022 10:49, AngeloGioacchino Del Regno wrote:
->>> Il 30/08/22 08:39, zheng-yan.chen ha scritto:
->>>> Modify gamma compatible for mt8195.
->>>>
->>>> Fixes: 16590e634f1d ("arm64: dts: mt8195: Add display node for
->>>> vdosys0")
->>>> Signed-off-by: zheng-yan.chen <zheng-yan.chen@mediatek.com>
->>>
->>> Reviewed-by: AngeloGioacchino Del Regno <
->>> angelogioacchino.delregno@collabora.com>
->>
->> Please also perform review on the commit msg and backport status.
->>
->> Best regards,
->> Krzysztof
-> Hello Krzysztof, 
-> Thanks for the review,
-> I will fix it at the next version.
+On Tue, Aug 30, 2022 at 01:53:09PM -0700, Nick Desaulniers wrote:
+> While looking into a CONFIG_FORTIFY=y related bug, I noticed that
+> hid_allocate calls strlen() on a local C string variable. This variable
+> can only have literal string values. There is no benefit to having
+> FORTIFY have this be a checked strlen call, because these are literal
+> values.  By calling strlen() explicitly in the branches of a switch, the
+> compiler can evaluate strlen("literal value") at compile time, rather
+> than at runtime.
+> 
+> Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+> ---
+>  drivers/hid/hid-input.c | 13 ++++++++++++-
+>  1 file changed, 12 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/hid/hid-input.c b/drivers/hid/hid-input.c
+> index 48c1c02c69f4..9ad3cc88c26b 100644
+> --- a/drivers/hid/hid-input.c
+> +++ b/drivers/hid/hid-input.c
+> @@ -1922,12 +1922,15 @@ static struct hid_input *hidinput_allocate(struct hid_device *hid,
+>  		switch (application) {
+>  		case HID_GD_KEYBOARD:
+>  			suffix = "Keyboard";
+> +			suffix_len = strlen(suffix);
+>  			break;
+>  		case HID_GD_KEYPAD:
+>  			suffix = "Keypad";
+> +			suffix_len = strlen(suffix);
+>  			break;
+>  		case HID_GD_MOUSE:
+>  			suffix = "Mouse";
+> +			suffix_len = strlen(suffix);
 
-This was to AngeloGioacchino...
+<snip>
 
-Best regards,
-Krzysztof
+This seems ripe for someone to come along and go "look at this cleanup
+patch where I move all of this duplicated code to below it in one line!"
+
+As this is a compiler bug, why not fix the compiler?  Or at least put a
+comment in here saying why this looks so odd to prevent it from being
+changed in the future.
+
+thanks,
+
+greg k-h
