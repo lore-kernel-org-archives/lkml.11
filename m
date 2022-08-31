@@ -2,137 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF13CECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 12:41:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0497DECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 12:42:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231434AbiHaMlo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 08:41:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41422 "EHLO
+        id S231356AbiHaMmB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 08:42:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231315AbiHaMle (ORCPT
+        with ESMTP id S231358AbiHaMls (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 08:41:34 -0400
-Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70A31A2D90;
-        Wed, 31 Aug 2022 05:41:27 -0700 (PDT)
-Received: by mail-qv1-xf31.google.com with SMTP id cv7so8411737qvb.3;
-        Wed, 31 Aug 2022 05:41:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=SqSaiH001DaKHsJtGylzBtgtVHavENIN9cJHRvwSVcg=;
-        b=cBeX6NbUeFDxee/h/N0TapFMYkJCFlRssIH4TXVMSzIHfIJzwVxMoRNkvGuMgTwdfG
-         6ysgvlLYWWpJxc3WYHj21zBNqjQWBZy0TYGMGOaYnksIozBtMv2t9khsJfV4K0EXXAVs
-         Eysms5qjh7C3kB+Lcu/V1Aj/dW1If5uy19bUUtuteKB50gqr5Ab5ZE8dYCpBZbCMQKNW
-         RC+XTvBHmr2BnVqgAWlRYbWkCoVl51/iUd/ArO9EjFOWLovIEHwAbxUZTkV2uyigLh0W
-         Yxa7LUUANqnyk2FEAa01eBmNJS6KnKs0LzUxenUzf7ImebvuMwqRJq5Rml7wZ//8pQyj
-         Q60g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=SqSaiH001DaKHsJtGylzBtgtVHavENIN9cJHRvwSVcg=;
-        b=3k8PopbYMoNYAixEC4CP/zrslXYAYKvs7+o1GGfTuBLKIM4NYFbS50zlcWuppKulPb
-         eii+CgqF9wR9KxCuKCGUifZKPPUE1rBPDOaMD91shgB84Bpzo+Zz/d9Xor7SPh5RLV+x
-         FdYTNoq4mLMEMpd73bF3xzkAkcWqb32JoGVaWRWyA9GRhXrZkiiyaCQC9eENgL00p8Ql
-         Rp1aLcg3qjYVzmozngUlMh67IhDzsyS0G9bZIuwCODmIxO8MQ83JXIAQ4c+6UDm+7i+k
-         IJo0vEaljwrbAXfPikdO90PeHIhnv735yN1qkU1fQlMMEhkj8IPTyn58TaOjs4cWRTab
-         D8rQ==
-X-Gm-Message-State: ACgBeo3tP4AERhtTTW/IJlrKRAVeGoOrKzZ0d2iE49qii/revXbzhKDK
-        OOU/ktKo4PSYwpWhWtZVfRp1n+fytE3PLb+si9hkjG71PvM=
-X-Google-Smtp-Source: AA6agR5f3FCjiKfWsC0DabfD1g2ht9f5bkZhBMZDQuweXO0x08WBqTdkZ/4Rc8AvW0QyOZ3Iji+d8zQCf0QlhO0HPz4=
-X-Received: by 2002:a05:6214:c26:b0:499:19f1:1a73 with SMTP id
- a6-20020a0562140c2600b0049919f11a73mr3868741qvd.48.1661949685953; Wed, 31 Aug
- 2022 05:41:25 -0700 (PDT)
+        Wed, 31 Aug 2022 08:41:48 -0400
+X-Greylist: delayed 506 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 31 Aug 2022 05:41:46 PDT
+Received: from smtp86.iad3b.emailsrvr.com (smtp86.iad3b.emailsrvr.com [146.20.161.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7388D3E79
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 05:41:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mev.co.uk;
+        s=20190130-41we5z8j; t=1661949200;
+        bh=f7Ge6BqQzFFLnUBF1++YxLIJ1YH3OB0XRMTv5fP9cQc=;
+        h=Date:Subject:To:From:From;
+        b=K/crxDlTJz3YFxF6FIuw3JGVV3vC+U9Zbe1OvhOv5CHoSBijoQdVdl7TaLToBCs9p
+         07/S1aeUmXD6D2K6n6fNMnku8/d9U1KGhsRX0tVSejJO/ldL5kRrGYz31xswBHh059
+         RvEQgiawNT00NQ+bcpVwzwrV0dfQ7CLTqNsaJzGg=
+X-Auth-ID: abbotti@mev.co.uk
+Received: by smtp11.relay.iad3b.emailsrvr.com (Authenticated sender: abbotti-AT-mev.co.uk) with ESMTPSA id 36AE9400D4;
+        Wed, 31 Aug 2022 08:33:19 -0400 (EDT)
+Message-ID: <0a0e568e-e3fc-56da-8370-e4796b480fe3@mev.co.uk>
+Date:   Wed, 31 Aug 2022 13:33:18 +0100
 MIME-Version: 1.0
-References: <20220831100506.3368103-1-vincent.whitchurch@axis.com> <20220831100506.3368103-2-vincent.whitchurch@axis.com>
-In-Reply-To: <20220831100506.3368103-2-vincent.whitchurch@axis.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 31 Aug 2022 15:40:49 +0300
-Message-ID: <CAHp75Vek8tLnwYWZO91HHr1_i7G_F9tErnRsq-GwfQcpR0FaTw@mail.gmail.com>
-Subject: Re: [PATCH v2 1/5] iio: adc: mcp320x: use callbacks for RX conversion
-To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>, kernel <kernel@axis.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH] comedi: sysfs: convert sysfs snprintf to sysfs_emit
+Content-Language: en-GB
+To:     Xuezhi Zhang <zhangxuezhi3@gmail.com>,
+        hsweeten@visionengravers.com, gregkh@linuxfoundation.org,
+        zhangxuezhi1@coolpad.com
+Cc:     linux-kernel@vger.kernel.org
+References: <20220831121456.210835-1-zhangxuezhi3@gmail.com>
+From:   Ian Abbott <abbotti@mev.co.uk>
+Organization: MEV Ltd.
+In-Reply-To: <20220831121456.210835-1-zhangxuezhi3@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Classification-ID: 0165e51f-50d6-4f1b-89cf-afbcf9ee0dca-1-1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 1:05 PM Vincent Whitchurch
-<vincent.whitchurch@axis.com> wrote:
->
-> Replace the device_index switch with callbacks from the chip_info
-> structure, so that the latter has all the information needed to handle
-> the variants.
+On 31/08/2022 13:14, Xuezhi Zhang wrote:
+> From: zhangxuezhi1 <zhangxuezhi1@coolpad.com>
+> 
+> Fix up all sysfs show entries to use sysfs_emit
+> 
+> Signed-off-by: zhangxuezhi1 <zhangxuezhi1@coolpad.com>
 
-Below are for the further patches, as I see the original code has the
-same disadvantages.
+The patch looks fine apart from the Signed-off-by line.  Please use a 
+proper name for the Signed-off-by line.  Generally, a romanized version 
+of the forename(s) (given name(s)) followed by the surname (family name) 
+is preferred, for example: Xuezhi Zhang.
 
-...
+Could you please post a "PATCH v2" with a proper Signed-off-by line? 
+Thanks.
 
->  struct mcp320x_chip_info {
->         const struct iio_chan_spec *channels;
->         unsigned int num_channels;
->         unsigned int resolution;
-
->         unsigned int conv_time; /* usec */
-
-Instead of a comment, I would rename it to conv_time_us.
-
-> +       int (*convert_rx)(struct mcp320x *adc);
->  };
-
-...
-
-> +       return adc->rx_buf[0] << 5 | adc->rx_buf[1] >> 3;
-
-> +       return adc->rx_buf[0] << 2 | adc->rx_buf[1] >> 6;
-
-> +       return adc->rx_buf[0] << 7 | adc->rx_buf[1] >> 1;
-
-> +       return adc->rx_buf[0] << 4 | adc->rx_buf[1] >> 4;
-
-> +       return sign_extend32((adc->rx_buf[0] & 0x1f) << 8 | adc->rx_buf[1], 12);
-
-All above should really use
-
-u16 buf = be16_to_cpu(&adc->rx_buf[0]);
-
-return buf >> 3 /* 6, 1, 4 (respectively) */;
-
-...
-
-> +       if (raw & BIT(22) && raw & BIT(23))
-
-> +               return -EIO; /* cannot have overrange AND underrange */
-> +       else if (raw & BIT(22))
-
-Redundant  'else'.
-
-> +               raw &= ~BIT(22); /* overrange */
-> +       else if (raw & BIT(23) || raw & BIT(21))
-
-if (raw & (BIT(23) | BIT(21))) ?
-
-> +               raw |= GENMASK(31, 22); /* underrange or negative */
-
-...
-
->         [mcp3201] = {
->                 .channels = mcp3201_channels,
->                 .num_channels = ARRAY_SIZE(mcp3201_channels),
-> +               .convert_rx = mcp3201_convert_rx,
-
->                 .resolution = 12
-
-+ Comma in such lines.
-
->         },
+> ---
+>   drivers/comedi/comedi_fops.c | 8 ++++----
+>   1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/comedi/comedi_fops.c b/drivers/comedi/comedi_fops.c
+> index 55a0cae04b8d..e2114bcf815a 100644
+> --- a/drivers/comedi/comedi_fops.c
+> +++ b/drivers/comedi/comedi_fops.c
+> @@ -396,7 +396,7 @@ static ssize_t max_read_buffer_kb_show(struct device *csdev,
+>   	mutex_unlock(&dev->mutex);
+>   
+>   	comedi_dev_put(dev);
+> -	return snprintf(buf, PAGE_SIZE, "%u\n", size);
+> +	return sysfs_emit(buf, "%u\n", size);
+>   }
+>   
+>   static ssize_t max_read_buffer_kb_store(struct device *csdev,
+> @@ -452,7 +452,7 @@ static ssize_t read_buffer_kb_show(struct device *csdev,
+>   	mutex_unlock(&dev->mutex);
+>   
+>   	comedi_dev_put(dev);
+> -	return snprintf(buf, PAGE_SIZE, "%u\n", size);
+> +	return sysfs_emit(buf, "%u\n", size);
+>   }
+>   
+>   static ssize_t read_buffer_kb_store(struct device *csdev,
+> @@ -509,7 +509,7 @@ static ssize_t max_write_buffer_kb_show(struct device *csdev,
+>   	mutex_unlock(&dev->mutex);
+>   
+>   	comedi_dev_put(dev);
+> -	return snprintf(buf, PAGE_SIZE, "%u\n", size);
+> +	return sysfs_emit(buf, "%u\n", size);
+>   }
+>   
+>   static ssize_t max_write_buffer_kb_store(struct device *csdev,
+> @@ -565,7 +565,7 @@ static ssize_t write_buffer_kb_show(struct device *csdev,
+>   	mutex_unlock(&dev->mutex);
+>   
+>   	comedi_dev_put(dev);
+> -	return snprintf(buf, PAGE_SIZE, "%u\n", size);
+> +	return sysfs_emit(buf, "%u\n", size);
+>   }
+>   
+>   static ssize_t write_buffer_kb_store(struct device *csdev,
 
 -- 
-With Best Regards,
-Andy Shevchenko
+-=( Ian Abbott <abbotti@mev.co.uk> || MEV Ltd. is a company  )=-
+-=( registered in England & Wales.  Regd. number: 02862268.  )=-
+-=( Regd. addr.: S11 & 12 Building 67, Europa Business Park, )=-
+-=( Bird Hall Lane, STOCKPORT, SK3 0XA, UK. || www.mev.co.uk )=-
