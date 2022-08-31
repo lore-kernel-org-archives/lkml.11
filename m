@@ -2,169 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 460EEECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:24:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FB46ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:24:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232313AbiHaSYL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 14:24:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46010 "EHLO
+        id S232635AbiHaSYP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 14:24:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232923AbiHaSXm (ORCPT
+        with ESMTP id S232958AbiHaSXq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 14:23:42 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4310210D4CD
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:19:43 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id c2so14895851plo.3
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:19:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=81cxqnbCXs4IvcPvB7D0eLT2L7c7/05/+jBHEgh8YbI=;
-        b=Al5khbiMiE91Wy0qYXl9rLmk69PiKN9UYLVA5bheW2gKrSXvKUWMwgGFkl6Kz94Lnj
-         jpktS5izu0x2o9CxveFFRSFxFRTEeP6fDBlZWikTqKvkjdOajhZkOkM6U5ozaO6iberV
-         CaR8vtyJFdZPFK157DioeqeomRzuyW/m3AY3YPFfIIQ3xXA8Gcw5JxK7FAauSEY7PoSt
-         v9TUkK6EDSRYMO4T2FjyDEnhT6Idm0iJeL7CSX6pjyFP2iPYK3+8Hky1obcrt141syYs
-         19oqOMc3ExUoWBtVbCBlAZrzD3NOIA8T/cu0GAerrbY0tT7Lt92tSfFraHIweRFE2agC
-         2VFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=81cxqnbCXs4IvcPvB7D0eLT2L7c7/05/+jBHEgh8YbI=;
-        b=lIviZpjHqz/kI+ti1cqrKLhwa5UMvn/Lxgfm77lyKsGYfgIURGsXb79mNL93OAfSIO
-         gH0VB1bVhd9Qp3wpfVJ++M50ZNPWSlHAwe0bSTR+892EDN0Q8DkdmtJarn4yTvFBMGqx
-         N4rPYcBZdzgs5hur4S6v8bgVhGArClZiBO/DbrzS1nCpBeYrnnygaOUO+Vjm3lOG63+V
-         RoBJKZCUFuBLnTt9vX6YdmDI8RC5hu8m54OssXUjI8bH++l5LQiv/H6xJMfBQPNqu6ME
-         v3hU1S7fJNJErARYS2/NDTkmVY70qbTMLj8iOEzFn3T4WkBYchrajf+k/r0Fs7p3Lweo
-         UNBg==
-X-Gm-Message-State: ACgBeo1yeFKhnwh5hbw77EMvZFn2u84605fzgBqV6Swgb/wWOu8NJo4s
-        n/XjnIY5xM/cQXNLfog2EM1HIw==
-X-Google-Smtp-Source: AA6agR6JakllMeX5LmRTVr5HK8mAyZUnOIwMOcY8w1XZC5rVQAU2d/3uhIXxGvht95N46CX0BxfdeQ==
-X-Received: by 2002:a17:90a:2e12:b0:1fb:a4d4:be3f with SMTP id q18-20020a17090a2e1200b001fba4d4be3fmr4504751pjd.237.1661969945597;
-        Wed, 31 Aug 2022 11:19:05 -0700 (PDT)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id d2-20020a170902f14200b00173368e9dedsm8755331plb.252.2022.08.31.11.19.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Aug 2022 11:19:05 -0700 (PDT)
-Date:   Wed, 31 Aug 2022 18:19:01 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Li RongQing <lirongqing@baidu.com>
-Subject: Re: [PATCH 17/19] KVM: SVM: Handle multiple logical targets in AVIC
- kick fastpath
-Message-ID: <Yw+mFbuih3rBjMV8@google.com>
-References: <20220831003506.4117148-1-seanjc@google.com>
- <20220831003506.4117148-18-seanjc@google.com>
- <ca3be5f88268f1547e6f02b01a472186566066c5.camel@redhat.com>
+        Wed, 31 Aug 2022 14:23:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65D55101E6;
+        Wed, 31 Aug 2022 11:19:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2BF85B82271;
+        Wed, 31 Aug 2022 18:14:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEF33C433D7;
+        Wed, 31 Aug 2022 18:14:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661969677;
+        bh=X9PKdPFevUFDYLsifWGkcchXcPpnWnttSHK/jbXc4Yg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Af4g9TloRVFDTdFQkjLT/cgHc2KSQ5+Q5CesGxRZo5xSnVkKLO40MCX+zumCiDD5o
+         OTOj2HS4nBcFpLL8V+WSkLKYrxTEFma7nBvV4iicQMxZhfkkpLCsQZoKSkisjmcoxN
+         bJ/AKjo64fm4IFOr66DYQjy8eaddpvLDqF5JtZngTiCQkuwl9a40R5CMq3KGR3m6Xa
+         JMgezTYCaMggIX+BgRtFbqi1o4jCjndoZfPB7ICzKLw3YdALO3apiJqYyCEfHAU8CG
+         1LCJa4Tn1jcvxis7BLgUWjmmnUqtlvPHUm1ZKXY8yJvBVPjXJUQmjDz+tdKa9/ajJJ
+         koOnkbiEZYitg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 7887D5C02A9; Wed, 31 Aug 2022 11:14:37 -0700 (PDT)
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     rcu@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
+        rostedt@goodmis.org, "Paul E. McKenney" <paulmck@kernel.org>
+Subject: [PATCH rcu 3/4] srcu: Make Tiny SRCU poll_state_synchronize_srcu() more precise
+Date:   Wed, 31 Aug 2022 11:14:34 -0700
+Message-Id: <20220831181435.2695936-3-paulmck@kernel.org>
+X-Mailer: git-send-email 2.31.1.189.g2e36527f23
+In-Reply-To: <20220831181349.GA2695341@paulmck-ThinkPad-P17-Gen-1>
+References: <20220831181349.GA2695341@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ca3be5f88268f1547e6f02b01a472186566066c5.camel@redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022, Maxim Levitsky wrote:
-> On Wed, 2022-08-31 at 00:35 +0000, Sean Christopherson wrote:
-> > +static void avic_kick_vcpu_by_logical_id(struct kvm *kvm, u32 *avic_logical_id_table,
-> > +					 u32 logid_index, u32 icrl)
-> > +{
-> > +	u32 physical_id;
-> > +
-> > +	if (!avic_logical_id_table) {
-> ^ Typo, the '!' shoudn't be there.
+This commit applies the more-precise grace-period-state check used by
+rcu_seq_done_exact() to poll_state_synchronize_srcu().  This is important
+because Tiny SRCU uses a 16-bit counter, which can wrap quite quickly.
+If counter wrap continues to be a problem, then expanding ->srcu_idx
+and ->srcu_idx_max to 32 bits might be warranted.
 
-Ouch.  I suspect the tests pass because this just ends up routing events through
-the slow path.  I try to concoct a testcase to expose this bug.
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+---
+ kernel/rcu/srcutiny.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> > +static bool is_optimized_logical_map_enabled(struct kvm *kvm)
-> > +{
-> > +	struct kvm_apic_map *map;
-> > +	bool enabled;
-> > +
-> > +	rcu_read_lock();
-> > +	map = rcu_dereference(kvm->arch.apic_map);
-> > +	enabled = map && map->logical_mode != KVM_APIC_MODE_MAP_DISABLED;
-> > +	rcu_read_unlock();
-> > +	return enabled;
-> > +}
-> 
-> This function doesn't belong to avic, it should be in common KVM code.
+diff --git a/kernel/rcu/srcutiny.c b/kernel/rcu/srcutiny.c
+index 92c002d654828..a2af24f214676 100644
+--- a/kernel/rcu/srcutiny.c
++++ b/kernel/rcu/srcutiny.c
+@@ -240,10 +240,10 @@ EXPORT_SYMBOL_GPL(start_poll_synchronize_srcu);
+  */
+ bool poll_state_synchronize_srcu(struct srcu_struct *ssp, unsigned long cookie)
+ {
+-	bool ret = USHORT_CMP_GE(READ_ONCE(ssp->srcu_idx), cookie);
++	unsigned short cur_s = READ_ONCE(ssp->srcu_idx);
+ 
+ 	barrier();
+-	return ret;
++	return USHORT_CMP_GE(cur_s, cookie) || USHORT_CMP_LT(cur_s, cookie - 3);
+ }
+ EXPORT_SYMBOL_GPL(poll_state_synchronize_srcu);
+ 
+-- 
+2.31.1.189.g2e36527f23
 
-I'll move it.  I'm not expecting any additional users, but I agree it belongs
-elsewhere.  Actually, might be a moot point (see below).
-
-> > @@ -394,50 +449,27 @@ static int avic_kick_target_vcpus_fast(struct kvm *kvm, struct kvm_lapic *source
-> >  		if (unlikely(!bitmap))
-> >  			return 0;
-> >  
-> > -		if (!is_power_of_2(bitmap))
-> > -			/* multiple logical destinations, use slow path */
-> > +		/*
-> > +		 * Use the slow path if more than one bit is set in the bitmap
-> > +		 * and KVM's optimized logical map is disabled to avoid kicking
-> > +		 * a vCPU multiple times.  If the optimized map is disabled, a
-> > +		 * vCPU _may_ have multiple bits set in its logical ID, i.e.
-> > +		 * may have multiple entries in the logical table.
-> > +		 */
-> > +		if (!is_power_of_2(bitmap) &&
-> > +		    !is_optimized_logical_map_enabled(kvm))
-> >  			return -EINVAL;
-> 
-> 
-> I hate to say it but there is another issue here, which I know about for a while
-> but haven't gotten yet to fix.
-> 
-> The issue is that AVIC's logical to physical map can't cover all the corner cases
-> that you discovered - it only supports the sane subset: for each cluster, and for each bit
-> in the mask, it has a physical apic id - so things like logical ids with multiple bits,
-> having same logical id for multiple vcpus and so on can't work.
-> 
-> In this case we need to either inhibit AVIC (I support this 100%),
-
-I like the idea of inhibiting.
-
->  or clear its logical ID map, so all logicical IPIs VM exit, and then they
->  can be emulated.
-> 
-> I haven't studied it formally but the code which rebuilds the AVIC's logical ID map
-> starts at 'avic_handle_ldr_update'.
-
-I suspected there are issues here, but the new tests passed (somewhat surprisingly)
-so I stopped trying to decipher the AVIC LDR handling.
-
-Eww.  And the VM-Exit trap logic is broken too.  If the guest updates and disables
-its LDR, SVM returns immediately and doesn't call into common APIC code, i.e. doesn't
-recalc the optimized map.  E.g. if the guest clears its LDR, the optimized map will
-be left as is and the vCPU will receive interrupts using its old LDR.
-
-	case APIC_LDR:
-		if (avic_handle_ldr_update(vcpu))
-			return 0;
-		break;
-
-Rather than handling this purely in AVIC code, what if we a key off of
-the optimized map being enabled?  E.g. drop the return from avic_handle_ldr_update()
-and in the kvm_recalculate_apic_map() do:
-
-diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index 3b6ef36b3963..6e188010b614 100644
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -364,6 +364,11 @@ void kvm_recalculate_apic_map(struct kvm *kvm)
-                cluster[ldr] = apic;
-        }
- out:
-+       if (!new || new->logical_mode == KVM_APIC_MODE_MAP_DISABLED)
-+               kvm_set_apicv_inhibit(kvm, APICV_INHIBIT_REASON_LOGICAL_MAP_DISABLED);
-+       else
-+               kvm_clear_apicv_inhibit(kvm, APICV_INHIBIT_REASON_LOGICAL_MAP_DISABLED);
-+
-        old = rcu_dereference_protected(kvm->arch.apic_map,
-                        lockdep_is_held(&kvm->arch.apic_map_lock));
-        rcu_assign_pointer(kvm->arch.apic_map, new);
