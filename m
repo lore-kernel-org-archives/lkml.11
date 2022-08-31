@@ -2,168 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 577ABECAAA1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 00:36:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69506ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 00:37:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231279AbiHaAf6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 20:35:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48040 "EHLO
+        id S231992AbiHaAhA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 20:37:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231609AbiHaAfV (ORCPT
+        with ESMTP id S231646AbiHaAgM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 20:35:21 -0400
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2077.outbound.protection.outlook.com [40.107.96.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A0B214D09;
-        Tue, 30 Aug 2022 17:34:54 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CPwSGbC5+C0Nl1OFjvFm+iznuEzevKytxzSbXYjPFrilLhEb3fNUKY1HReoV8URyYHZmFeJovoWeTjFdIQNyGzd8Ax/ZSyppX3rkQcBo98+cKYm3uk4Z7QEd378NsYqicHteJuTfsr9bAaPy4Ovtpf/+jltptlJ9VgYS8HW1HpaS1aHt2RNDusiNiEstSd6hzwaA9vn5mAQBcvRxZe1YPHC5NB7vOa+HsD6US9MDYAKNK7aaN5tILGhoU8jrst8eEVoPH0tCfASeOeRznrumL1uXOeVV3+sc2vtwsrZ2TS0bQzDPKS4sdES2KxsX7a6DErXRUAzIcWcRONhzCimSaw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KZmeRXQKbrF32qEGJFMopvORf03gQ1T2bl4FJjflUGc=;
- b=gQTITlSDxv8mPKKA2086A9+rMhcN8qgAVbAvUP+GCE/wjMoyVBbgx2/HFGg7Z1SqFThtUiTzPs7KC5YOnwjrZWG48Kqyq0djDGSBD/xHp4QCRByNIuoOs9DB+jq4FkhB8U95QYQajqDPNDWxOeTczEDxPP8uaHqXlyrzs186L6McryENxujHj1KpSuayiVZo264BywjFHSx3tTFiAminAtT55eFGR3LDnjmWboStqEV3gbUue16dTio8IHuqJ/XDN5D4Yqa1N3XqPL9XUqpyNPLfV2lI14vz94CDMeGpMcjhhUpePYnPFGV3pexq0SgUvVD74uUxQuMADs21YNhPzA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KZmeRXQKbrF32qEGJFMopvORf03gQ1T2bl4FJjflUGc=;
- b=dlvBOHDaWwjGKG/IyQK8sb/EXADJOeXHWnmldQJWI86luYpvptsifOryZ12LajfILbT1/G8KJHJj2+YwDdxsyPosnrYRe4P/Wwo/FeI+g8JsQVbmhNZFhR2aGU9y2Tux/Y5x8PlnH+h3RhcChZCS7f4RuSExslouu3ZOgdYTZKvWq6bcsbZ/C25sQwD/nrRc6bw2FMhC8LPaLFoHwYctqw2b2hlZ51bXA83CbCvu85qkUkGXDYiXvTjopWaE9WuMcNGJtwssgKGkbTYmjrBx5JwwT9TOcFlSaPsEk3a1sszy6s5kRDoiS0HxAvDhEZZRF/3MyzwkwCEVUs1e0aebZg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by DM4PR12MB6350.namprd12.prod.outlook.com (2603:10b6:8:a3::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Wed, 31 Aug
- 2022 00:34:52 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::462:7fe:f04f:d0d5]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::462:7fe:f04f:d0d5%8]) with mapi id 15.20.5566.021; Wed, 31 Aug 2022
- 00:34:51 +0000
-Date:   Tue, 30 Aug 2022 21:34:50 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Kevin Tian <kevin.tian@intel.com>
-Cc:     Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Zhi Wang <zhi.a.wang@intel.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Eric Farman <farman@linux.ibm.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Tony Krowiak <akrowiak@linux.ibm.com>,
-        Jason Herne <jjherne@linux.ibm.com>,
-        Harald Freudenberger <freude@linux.ibm.com>,
-        Diana Craciun <diana.craciun@oss.nxp.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Longfang Liu <liulongfang@huawei.com>,
-        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Kirti Wankhede <kwankhede@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Abhishek Sahu <abhsahu@nvidia.com>,
-        intel-gvt-dev@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org, Yi Liu <yi.l.liu@intel.com>
-Subject: Re: [PATCH 00/15] Tidy up vfio_device life cycle
-Message-ID: <Yw6sqidAP7puXApd@ziepe.ca>
-References: <20220827171037.30297-1-kevin.tian@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220827171037.30297-1-kevin.tian@intel.com>
-X-ClientProxiedBy: MN2PR03CA0006.namprd03.prod.outlook.com
- (2603:10b6:208:23a::11) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a0e20cca-a551-44e0-8bf9-08da8ae89dfb
-X-MS-TrafficTypeDiagnostic: DM4PR12MB6350:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Ot4GUQXcrRzgCh4nmrrnBhhHDXMdTpkLZIAEI6VMCk43n1TnLq6M98F2PRamXAMHeN11XZZC/uYMR8OUUyRfFxlgMRigtCeLwSqW3tcZEuMinweFAdIzWoR5yjgKv/mCY4XxFkCf1AgpPAlZiiBCBql5JLE/JG2Kprh/0TU0scGeILcWwZuB/ns3Syw+OOj834xh3O3BqzH37G3m44qT0TJpVZHsA0ALl/EwiJiN3TXmgjw/68A5S8l9zdzRbKzpBmXry9VdF4yNS0Ge/03doKzSCBmxYyvfSYtj3iq1ODcVqE539UBtdgbxNenRiTsL2NySc7I2SxBim/pLiFdJUSeY2tRi2EbrRMlP5Bq8ik2eVZ75PCoxlFD2a28eJlZwt1QOp8w4f9GQxH58YHGKzMctGOxlLzPSiTRgqghNKCodEcqsuGbaP+POdV8R60r/iTDZ+Z8TLcBMo0V7Fo+HaSKW9erM11vpB8sJJFGPkEsNimqoTtDrgHgJgmE3iAyuzkFeIJoNH1dBFs83vmroDXdd7KjdSrO9tNIYEBF5oX1pMOwsjvhmDmHxmyE9CFFcgwm50sT8jTjxKR7W+9xf/vI9twi9TUzGL6fYgv3KB88X7Nd+q15s0X/P7xlgDC6qjtn4xyRlsJo60qwfXMxw3B/3JHBEtE59UKC+rgZD3CZOJ92JegZd+Wgwt5BIsvOH69aRynf+d3cO9UNwXDs/qg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(136003)(376002)(39860400002)(396003)(366004)(86362001)(38100700002)(6916009)(54906003)(316002)(7416002)(7406005)(8936002)(2906002)(4326008)(66946007)(66556008)(66476007)(8676002)(5660300002)(186003)(6486002)(41300700001)(6506007)(9686003)(6512007)(26005)(478600001)(36756003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?xOW+CNUsNORHnvYJjz7/Fmx+ERAesPwtfyRBleLz7uzsaZ8BIIvFx/Vz+RaE?=
- =?us-ascii?Q?U/EdqIuYWzDOGdw87/twwSWpiPYVnltTvPw6aCxuZ70MNXQDfuhLzAgq994K?=
- =?us-ascii?Q?vvydCWEjPfqm1tQmLKVK9mFq1Ru+4VhQX7ngnCEpktFTr9Uq47c8vM5CmP+Q?=
- =?us-ascii?Q?pospTcAzIu4bveSNhq9z0lch24iwcLXuw2erI5wrX07CEAs4EgOzuuamUZxe?=
- =?us-ascii?Q?uf6T1fCsN4xMGDzBMirz9kJEhXl6gud0Hd/JVPDxLXY+5VB/Kvhh950p0wxT?=
- =?us-ascii?Q?8GhRhNGJtb5L5ccZ+Mtyzc/EL/9PWshLG384IfrnedMjH7zdPZx8EPl8YSr7?=
- =?us-ascii?Q?6EnYcp3DEPiiDFTICfRa0MWvir80gvXhQwSNKQyJYKaSmTfSklUYW5pedy/4?=
- =?us-ascii?Q?0j/zzOTDuEKKsHrpzJIPP/6DtBXp3QKQ++XWYgiIEmbnvLIwDl3lN/tdiGfh?=
- =?us-ascii?Q?5eZ3yyY4xggjovrWV/K7OT01AMQSjHILyU3bb7WVxHMJTMQIaA3vyxatPswy?=
- =?us-ascii?Q?nvLlUwc+bbSWJWBCkAsImnRJC6Bjzc/+qIuF7Wt7wbKRyvnNyKVYcXoy9YdQ?=
- =?us-ascii?Q?oZCxV6uDGGj73mFMTxNQt6PoV+JPX86JtWgGHGKOjlE5u8MrHN0YpfRX2eTA?=
- =?us-ascii?Q?OnBCbmtQZCkTTYiKD+BdKsrLjFedCzj3UpEhZi5v73EzNlt3Wv3QTk9OLK3u?=
- =?us-ascii?Q?X4I7WArzsIHMX2vjBux8S1G+v60ombMKinXDxRA9qJONJTSutfIpkWP0GbNm?=
- =?us-ascii?Q?8xk/nNL12InVChwJWHQVgScN/5zSXbXNF0NRt0Szx+jxpnQh9hmviUm6ZurR?=
- =?us-ascii?Q?ZVPPIENK/6ttHz1jKLikEIzwYlZ6avlBP53DdljWsAEPvMnHWWKKf2Ljzyao?=
- =?us-ascii?Q?aFtgRZ8zUw5RH08T4SI2OKTo+r+OjZRzNmSwHr8MIlIj9dqSAMqNZW/G0oVA?=
- =?us-ascii?Q?n5E8ZLHj+WfJBpU22TLT7LhrPOhFrrXvHSmky6m/+ymWrLeI1O166zZUOOUl?=
- =?us-ascii?Q?epLfU1/Ics6dPXXIQ6fAqmKdc9coBnI/c2uuerFEcK/yTVlv1gGlLCNtYWD0?=
- =?us-ascii?Q?7GvHkq1iSASJRH393HjWwbQhAipq3iK4qY18blfIdrPbH8t1s4rl+/BnE+6l?=
- =?us-ascii?Q?hJRoXqD6ole+bPk+zkIjGSA0zC80dzcoDHTB/IxJSh/9l7ZyV4jWtxFXsCN+?=
- =?us-ascii?Q?TW9FjldhzaMDyjjvPDTwSrufSXGeoLkbsn+taASdHXnf+Un9iP0gSMlae8c+?=
- =?us-ascii?Q?aOq3x1itUgFrp7yTzBZ+KNGOXEYxZhRkEw2PDf5fZx/3WqXAowTU0bmTSspW?=
- =?us-ascii?Q?V7ihFIfptgVUW3UbXRc7hjyrlWr4rUtFgxgu4DsJSkRdemPqRXtPKX4DcJVP?=
- =?us-ascii?Q?jJdCYOy0mnRNIta84i4J5ttKUPOudT3zOBgqx4Kr5KeX3Gn9v0YjrFTnsz4i?=
- =?us-ascii?Q?y2XG2+k97PugPXWvxthm9DZ8rOpqTSq4noHLaVKCZNUfaPpYUJxLXu368Fvf?=
- =?us-ascii?Q?LXRWLrO11kpT4X/BJsTXnZH1q6lD/1+COaqauSDvnn+ypA/ZAak4s0gLx/U3?=
- =?us-ascii?Q?r9o/XBaEUtcWzloM2rtwQcRIolTfu1o6kX9Jwxsr?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a0e20cca-a551-44e0-8bf9-08da8ae89dfb
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2022 00:34:51.8444
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4jAm5IIFDdzvOfnvASXGV8Z+QN4C54vTmGyu0gg7WbDYTQLK1oU+PE/mWXrFyfM+
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6350
+        Tue, 30 Aug 2022 20:36:12 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FB02979DD
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:35:21 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id h5-20020a636c05000000b00429fa12cb65so6296079pgc.21
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:35:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:reply-to:from:to:cc;
+        bh=vQjfmAeokYMHaFKC24HPf5qSFHNWZwCTyrVaZZhdr6g=;
+        b=HyZQtTQe8sv1fFpmWsBB1x/zoopbd0fljzA3156nZJgj+zmKIG/p1Bw22VR0a72shj
+         tXrjBM8Z8BVHkXg9rfk4YHYpUbmPOLwMSBO6Kn+RueEpko/LscZDgYKz0XCrVQnjJMn0
+         a1knszFnqc8fRjcL31Fbfur8Dk0v/69sc9Tgr5v+sNSFwN08VAr7kZ55KSJM5RsuZbM2
+         OQhQNE16zaNgbS1yAeEqo7nyaAdtaNyP7mXiGvlZ+cyafkKmL0HtxJplQV9gTvj/ghVN
+         ziitxO2FItbRBTwMfBP3vGk4O21i0v5+0CgQwnGNGnF0OFiRd6o25C5SEStRNDRZ7pRX
+         plIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:reply-to
+         :x-gm-message-state:from:to:cc;
+        bh=vQjfmAeokYMHaFKC24HPf5qSFHNWZwCTyrVaZZhdr6g=;
+        b=iYdNS+NPcB/xNNEoxKL2okkI1njY0FNilcvxQNzXwPmNKBQVrr6XEL0P15ycVQLXBb
+         6DDZitIlAyLGQYRC1l0Xs6fmCWN+cCwjIN+99/jIsIWNuea08LXcU0lzzcFHM1jbrvdH
+         1Uz8V6Q8tg3DLBWmuDqovZCND+oCfZIFVPma7FO1htJstGTgjQ4ETpYdpN1GnSIBhBJU
+         UPfFxwKpg5jTVJfAREysUcDZsiT57aEwdFvcvKaDbmlO5T2hYSdQiiT8qOf86PmA4RK6
+         HH5A8fO6VS6U1lZ/IXIufzcMORh1sh9vnQA1YbXmK6ZrLJHMs3DaTBNURBTBkGZiBOds
+         olzw==
+X-Gm-Message-State: ACgBeo2b/yqkvnKIA+eCDagVbPiEPrj4i5Dy+Z6xeUW8vP+iewY+Guym
+        VgFd3ukSjm7RO8JiKL6F9oQQt41YxxU=
+X-Google-Smtp-Source: AA6agR48IkDisKJLCllOWr3gCFWtwysHo4voHNcs55clmzzgw9G7CJBinW+TyQzT6XVubKAgJxdg4jQf4Zs=
+X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
+ (user=seanjc job=sendgmr) by 2002:a17:90a:249:b0:1e0:a8a3:3c6c with SMTP id
+ t9-20020a17090a024900b001e0a8a33c6cmr26541pje.0.1661906109176; Tue, 30 Aug
+ 2022 17:35:09 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Wed, 31 Aug 2022 00:34:47 +0000
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
+Message-ID: <20220831003506.4117148-1-seanjc@google.com>
+Subject: [PATCH 00/19] KVM: x86: AVIC and local APIC fixes+cleanups
+From:   Sean Christopherson <seanjc@google.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Li RongQing <lirongqing@baidu.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 28, 2022 at 01:10:22AM +0800, Kevin Tian wrote:
+This started as a simple cleanup, and then I made the mistake of writing
+a test to verify my changes to AVIC's handling of logical mode interrupts.
 
-> Kevin Tian (6):
->   vfio: Add helpers for unifying vfio_device life cycle
->   drm/i915/gvt: Use the new device life cycle helpers
->   vfio/platform: Use the new device life cycle helpers
->   vfio/amba: Use the new device life cycle helpers
->   vfio/ccw: Use the new device life cycle helpers
->   vfio: Rename vfio_device_put() and vfio_device_try_get()
-> 
-> Yi Liu (9):
->   vfio/pci: Use the new device life cycle helpers
->   vfio/mlx5: Use the new device life cycle helpers
->   vfio/hisi_acc: Use the new device life cycle helpers
->   vfio/mdpy: Use the new device life cycle helpers
->   vfio/mtty: Use the new device life cycle helpers
->   vfio/mbochs: Use the new device life cycle helpers
->   vfio/ap: Use the new device life cycle helpers
->   vfio/fsl-mc: Use the new device life cycle helpers
->   vfio: Add struct device to vfio_device
+TL;DR: KVM's AVIC and optimized APIC map code doesn't correctly handle
+various edge cases that are 100% architecturally legal, but are unlikely
+to occur in most real world scenarios.
 
-Other than my small remarks this all looked good to me - for every patch:
+There are a variety of other fixes, but most of them are non-fatal.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+I have tested this heavily with KUT, but I haven't booted Windows and
+don't have access to x2AVIC, so additional testing would be much
+appreciated.
 
-Thanks,
-Jason
+I'll post my KVM-Unit-Tests later this week (need to write quite a few
+changelogs).  The gist of the tests is to target multiple and non-existent
+vCPUs in logical mode, and to target multiple vCPUs in physical mode by
+aliasing vCPU0 and vCPU1 to the same physical ID.
+
+Sean Christopherson (19):
+  KVM: SVM: Process ICR on AVIC IPI delivery failure due to invalid
+    target
+  KVM: SVM: Don't put/load AVIC when setting virtual APIC mode
+  Revert "KVM: SVM: Introduce hybrid-AVIC mode"
+  KVM: SVM: Replace "avic_mode" enum with "x2avic_enabled" boolean
+  KVM: SVM: Compute dest based on sender's x2APIC status for AVIC kick
+  KVM: SVM: Get x2APIC logical dest bitmap from ICRH[15:0], not
+    ICHR[31:16]
+  KVM: SVM: Drop buggy and redundant AVIC "single logical dest" check
+  KVM: SVM: Remove redundant cluster calculation that also creates a
+    shadow
+  KVM: SVM: Drop duplicate calcuation of AVIC/x2AVIC "logical index"
+  KVM: SVM: Document that vCPU ID == APIC ID in AVIC kick fastpatch
+  KVM: SVM: Add helper to perform final AVIC "kick" of single vCPU
+  KVM: x86: Disable APIC logical map if logical ID covers multiple MDAs
+  KVM: x86: Disable APIC logical map if vCPUs are aliased in logical
+    mode
+  KVM: x86: Honor architectural behavior for aliased 8-bit APIC IDs
+  KVM: x86: Explicitly skip optimized logical map setup if vCPU's LDR==0
+  KVM: x86: Explicitly track all possibilities for APIC map's logical
+    modes
+  KVM: SVM: Handle multiple logical targets in AVIC kick fastpath
+  KVM: SVM: Ignore writes to Remote Read Data on AVIC write traps
+  Revert "KVM: SVM: Do not throw warning when calling avic_vcpu_load on
+    a running vcpu"
+
+ Documentation/virt/kvm/x86/errata.rst |  11 ++
+ arch/x86/include/asm/kvm_host.h       |  27 ++-
+ arch/x86/kvm/lapic.c                  | 100 ++++++++--
+ arch/x86/kvm/svm/avic.c               | 273 ++++++++++++++------------
+ arch/x86/kvm/svm/svm.c                |   2 +-
+ arch/x86/kvm/svm/svm.h                |   9 +-
+ 6 files changed, 260 insertions(+), 162 deletions(-)
+
+
+base-commit: 372d07084593dc7a399bf9bee815711b1fb1bcf2
+-- 
+2.37.2.672.g94769d06f0-goog
+
