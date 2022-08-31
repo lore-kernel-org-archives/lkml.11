@@ -2,297 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C214ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:24:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0980ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:25:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230465AbiHaKYu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 06:24:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35230 "EHLO
+        id S230511AbiHaKZu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 06:25:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbiHaKYq (ORCPT
+        with ESMTP id S229985AbiHaKZq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 06:24:46 -0400
-Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C37313D3C
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 03:14:56 -0700 (PDT)
-Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-11ba6e79dd1so22961628fac.12
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 03:14:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=Nk8Oy5vkVnTTSzGWaE5y7yDsItAvAdd8LQXNrJXKYZE=;
-        b=amshP7IOWgmv5dih6NiB6+tMgw5jXRfyCEsSSXDMXhRXZNJiAaenki7t8NdLuupVHN
-         v3jkhj0IJbe5cTwxULee47U3PiiBL/4fpoX+uwDcmV11ODX4SIOt08jfjk21eLQp4jH8
-         kMSxCx0vwJZv//D0WZazhWOGvZORbCp6f40l3bbxEITNqUsCbDadnJJYWjJVfX1Xnu3H
-         3hG+X/+En4RjeutgzCyy8T4DROhAB+/xCXv9xWOIJf8rEkcwl9U5LYenfXALIes94keX
-         SnvzO0uXesbCqHPV5TgOTthfxg0k+NCumQkKrxbr9aOxn33dqJhIVljpy7A88xh8Z8Wv
-         fh0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=Nk8Oy5vkVnTTSzGWaE5y7yDsItAvAdd8LQXNrJXKYZE=;
-        b=RN/P3mzok/YlpCM+zFyAuHCBojT4J2vb8Xto0aaj0nfLjyVOxB6MvfXS1D89bMDVSL
-         /0QEhQ9tvivun2G/Cw5sJy6z4Yn4eUfTtom8SEEn40O4yegSytwcGQEmIVbJyvQdX4YW
-         tryWCZzRKiTDTtiFi3/lM16NANS7uXYrtabcQN56j+8OuZvk73bB4a0YRE+xGDTRN8w2
-         ab37ytu9DhY0psVwIMiaQOdFgng82LNUxw0jsUVGaSCpWns44JONLFnboQlAKgp+54yx
-         NZZuiPUAuZ++yG0sl5ujN0MhPBpzHubf/c9u5a1kAOhqBPkxhRrARcKLDuWx2oBZ9jrI
-         7hEg==
-X-Gm-Message-State: ACgBeo0++qhqNQnYIPH2q/mxJm4xNR0Yzcub2qPEVK4jxUQE2AtvraTy
-        Al9ohE/Tma3DCvHvdeMQ+dXTRSXyKZweQBVimQcRKA==
-X-Google-Smtp-Source: AA6agR7jawkBeelqj7YKMLju3461JHxtE4/7FNbyMBe++ok7zHieJ3ZOxTgnZnYJ9/zG5YncVuEwL6nQtSz1MY5HHqU=
-X-Received: by 2002:a05:6870:58a4:b0:11c:9b6d:f066 with SMTP id
- be36-20020a05687058a400b0011c9b6df066mr1030196oab.155.1661940895794; Wed, 31
- Aug 2022 03:14:55 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220830172614.340962-1-james.clark@arm.com> <20220830172614.340962-6-james.clark@arm.com>
-In-Reply-To: <20220830172614.340962-6-james.clark@arm.com>
-From:   Mike Leach <mike.leach@linaro.org>
-Date:   Wed, 31 Aug 2022 11:14:44 +0100
-Message-ID: <CAJ9a7Vhx2g+Er9ohjznqA7k+HZBNKWiruCPyC93mn88mb2Ekqw@mail.gmail.com>
-Subject: Re: [PATCH v2 5/5] coresight: Make new csdev_access offsets unsigned
-To:     James Clark <james.clark@arm.com>
-Cc:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
-        mathieu.poirier@linaro.org, leo.yan@linaro.org,
-        linux-kernel@vger.kernel.org, german.gomez@arm.com,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com
+        Wed, 31 Aug 2022 06:25:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F008513F23
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 03:25:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661941545;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=V8h8OUNTnDfV5oRnsul62c5hOJtBjcQSg6IQ5TZZYu0=;
+        b=Oy3p62tqQz9Nfg4kmqvra1fUwqDgZiJP6hRjWiwsRHNNhtonR9es+VDduJ1J7gCQdJqjgV
+        1f8NS1yHS5y1v6YTew0Xy8twnkgNWFfEfkwAvU+1e+ajsEK0hHZ6NyIhr4MoOv0VanjfTZ
+        vGQHOPLD7pOm2WqUPm7Bkjl8++PKj2k=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-551-BRZdk2DyOXShxloZ3yzLEQ-1; Wed, 31 Aug 2022 06:25:41 -0400
+X-MC-Unique: BRZdk2DyOXShxloZ3yzLEQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6DC063803907;
+        Wed, 31 Aug 2022 10:25:41 +0000 (UTC)
+Received: from starship (unknown [10.40.194.96])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8E5531415133;
+        Wed, 31 Aug 2022 10:25:39 +0000 (UTC)
+Message-ID: <9144c9921bd46ba7c2b2e9427d053b1fc5abccf7.camel@redhat.com>
+Subject: Re: [PATCH 11/19] KVM: SVM: Add helper to perform final AVIC "kick"
+ of single vCPU
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Li RongQing <lirongqing@baidu.com>
+Date:   Wed, 31 Aug 2022 13:25:38 +0300
+In-Reply-To: <20220831003506.4117148-12-seanjc@google.com>
+References: <20220831003506.4117148-1-seanjc@google.com>
+         <20220831003506.4117148-12-seanjc@google.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 30 Aug 2022 at 18:26, James Clark <james.clark@arm.com> wrote:
->
-> New csdev_access functions were added as part of the previous
-> refactor. In order to make them more consistent with the
-> existing ones, change any signed offset types to be unsigned.
->
-> Now that they are unsigned, stop using hi_off = -1 to signify
-> a single 32bit access. Instead just call the existing 32bit
-> accessors. This is also applied to other parts of the codebase,
-> and the coresight_{read,write}_reg_pair() functions can be
-> deleted.
->
-> Signed-off-by: James Clark <james.clark@arm.com>
+On Wed, 2022-08-31 at 00:34 +0000, Sean Christopherson wrote:
+> Add a helper to perform the final kick, two instances of the ICR decoding
+> is one too many.
+> 
+> No functional change intended.
+> 
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
 > ---
->  drivers/hwtracing/coresight/coresight-catu.h |  8 ++---
->  drivers/hwtracing/coresight/coresight-core.c | 18 ++++++++--
->  drivers/hwtracing/coresight/coresight-priv.h | 35 +++++---------------
->  drivers/hwtracing/coresight/coresight-tmc.h  |  4 +--
->  include/linux/coresight.h                    | 27 +++++++++------
->  5 files changed, 47 insertions(+), 45 deletions(-)
->
-> diff --git a/drivers/hwtracing/coresight/coresight-catu.h b/drivers/hwtracing/coresight/coresight-catu.h
-> index 6160c2d75a56..442e034bbfba 100644
-> --- a/drivers/hwtracing/coresight/coresight-catu.h
-> +++ b/drivers/hwtracing/coresight/coresight-catu.h
-> @@ -70,24 +70,24 @@ struct catu_drvdata {
->  static inline u32                                                      \
->  catu_read_##name(struct catu_drvdata *drvdata)                         \
->  {                                                                      \
-> -       return coresight_read_reg_pair(drvdata->base, offset, -1);      \
-> +       return csdev_access_relaxed_read32(&drvdata->csdev->access, offset); \
->  }                                                                      \
->  static inline void                                                     \
->  catu_write_##name(struct catu_drvdata *drvdata, u32 val)               \
->  {                                                                      \
-> -       coresight_write_reg_pair(drvdata->base, val, offset, -1);       \
-> +       csdev_access_relaxed_write32(&drvdata->csdev->access, val, offset); \
+>  arch/x86/kvm/svm/avic.c | 25 +++++++++++++------------
+>  1 file changed, 13 insertions(+), 12 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+> index 3959d4766911..2095ece70712 100644
+> --- a/arch/x86/kvm/svm/avic.c
+> +++ b/arch/x86/kvm/svm/avic.c
+> @@ -329,6 +329,16 @@ void avic_ring_doorbell(struct kvm_vcpu *vcpu)
+>  	put_cpu();
 >  }
->
->  #define CATU_REG_PAIR(name, lo_off, hi_off)                            \
->  static inline u64                                                      \
->  catu_read_##name(struct catu_drvdata *drvdata)                         \
->  {                                                                      \
-> -       return coresight_read_reg_pair(drvdata->base, lo_off, hi_off);  \
-> +       return csdev_access_relaxed_read_pair(&drvdata->csdev->access, lo_off, hi_off); \
->  }                                                                      \
->  static inline void                                                     \
->  catu_write_##name(struct catu_drvdata *drvdata, u64 val)               \
->  {                                                                      \
-> -       coresight_write_reg_pair(drvdata->base, val, lo_off, hi_off);   \
-> +       csdev_access_relaxed_write_pair(&drvdata->csdev->access, val, lo_off, hi_off); \
->  }
->
->  CATU_REG32(control, CATU_CONTROL);
-> diff --git a/drivers/hwtracing/coresight/coresight-core.c b/drivers/hwtracing/coresight/coresight-core.c
-> index c63b2167a69f..d5dbc67bacb4 100644
-> --- a/drivers/hwtracing/coresight/coresight-core.c
-> +++ b/drivers/hwtracing/coresight/coresight-core.c
-> @@ -60,7 +60,7 @@ EXPORT_SYMBOL_GPL(coresight_barrier_pkt);
->
->  static const struct cti_assoc_op *cti_assoc_ops;
->
-> -ssize_t coresight_simple_show(struct device *_dev,
-> +ssize_t coresight_simple_show_pair(struct device *_dev,
->                               struct device_attribute *attr, char *buf)
->  {
->         struct coresight_device *csdev = container_of(_dev, struct coresight_device, dev);
-> @@ -72,7 +72,21 @@ ssize_t coresight_simple_show(struct device *_dev,
->         pm_runtime_put_sync(_dev->parent);
->         return sysfs_emit(buf, "0x%llx\n", val);
->  }
-> -EXPORT_SYMBOL_GPL(coresight_simple_show);
-> +EXPORT_SYMBOL_GPL(coresight_simple_show_pair);
+>  
 > +
-> +ssize_t coresight_simple_show32(struct device *_dev,
-> +                             struct device_attribute *attr, char *buf)
+> +static void avic_kick_vcpu(struct kvm_vcpu *vcpu, u32 icrl)
 > +{
-> +       struct coresight_device *csdev = container_of(_dev, struct coresight_device, dev);
-> +       struct cs_off_attribute *cs_attr = container_of(attr, struct cs_off_attribute, attr);
-> +       u64 val;
-> +
-> +       pm_runtime_get_sync(_dev->parent);
-> +       val = csdev_access_relaxed_read32(&csdev->access, cs_attr->off);
-> +       pm_runtime_put_sync(_dev->parent);
-> +       return sysfs_emit(buf, "0x%llx\n", val);
-> +}
-> +EXPORT_SYMBOL_GPL(coresight_simple_show32);
->
->  void coresight_set_cti_ops(const struct cti_assoc_op *cti_op)
->  {
-> diff --git a/drivers/hwtracing/coresight/coresight-priv.h b/drivers/hwtracing/coresight/coresight-priv.h
-> index c211979deca5..595ce5862056 100644
-> --- a/drivers/hwtracing/coresight/coresight-priv.h
-> +++ b/drivers/hwtracing/coresight/coresight-priv.h
-> @@ -41,8 +41,8 @@
->  #define ETM_MODE_EXCL_USER     BIT(31)
->  struct cs_pair_attribute {
->         struct device_attribute attr;
-> -       s32 lo_off;
-> -       s32 hi_off;
-> +       u32 lo_off;
-> +       u32 hi_off;
->  };
->
->  struct cs_off_attribute {
-> @@ -50,21 +50,23 @@ struct cs_off_attribute {
->         u32 off;
->  };
->
-> -extern ssize_t coresight_simple_show(struct device *_dev,
-> +extern ssize_t coresight_simple_show32(struct device *_dev,
-> +                                    struct device_attribute *attr, char *buf);
-> +extern ssize_t coresight_simple_show_pair(struct device *_dev,
->                                      struct device_attribute *attr, char *buf);
->
->  #define coresight_simple_reg32(name, offset)                           \
-> -       (&((struct cs_pair_attribute[]) {                               \
-> +       (&((struct cs_off_attribute[]) {                                \
->            {                                                            \
-> -               __ATTR(name, 0444, coresight_simple_show, NULL),        \
-> -               offset, -1                                              \
-> +               __ATTR(name, 0444, coresight_simple_show32, NULL),      \
-> +               offset                                                  \
->            }                                                            \
->         })[0].attr.attr)
->
->  #define coresight_simple_reg64(name, lo_off, hi_off)                   \
->         (&((struct cs_pair_attribute[]) {                               \
->            {                                                            \
-> -               __ATTR(name, 0444, coresight_simple_show, NULL),        \
-> +               __ATTR(name, 0444, coresight_simple_show_pair, NULL),   \
->                 lo_off, hi_off                                          \
->            }                                                            \
->         })[0].attr.attr)
-> @@ -130,25 +132,6 @@ static inline void CS_UNLOCK(void __iomem *addr)
->         } while (0);
->  }
->
-> -static inline u64
-> -coresight_read_reg_pair(void __iomem *addr, s32 lo_offset, s32 hi_offset)
-> -{
-> -       u64 val;
-> -
-> -       val = readl_relaxed(addr + lo_offset);
-> -       val |= (hi_offset < 0) ? 0 :
-> -              (u64)readl_relaxed(addr + hi_offset) << 32;
-> -       return val;
-> -}
-> -
-> -static inline void coresight_write_reg_pair(void __iomem *addr, u64 val,
-> -                                                s32 lo_offset, s32 hi_offset)
-> -{
-> -       writel_relaxed((u32)val, addr + lo_offset);
-> -       if (hi_offset >= 0)
-> -               writel_relaxed((u32)(val >> 32), addr + hi_offset);
-> -}
-> -
->  void coresight_disable_path(struct list_head *path);
->  int coresight_enable_path(struct list_head *path, u32 mode, void *sink_data);
->  struct coresight_device *coresight_get_sink(struct list_head *path);
-> diff --git a/drivers/hwtracing/coresight/coresight-tmc.h b/drivers/hwtracing/coresight/coresight-tmc.h
-> index 6bec20a392b3..66959557cf39 100644
-> --- a/drivers/hwtracing/coresight/coresight-tmc.h
-> +++ b/drivers/hwtracing/coresight/coresight-tmc.h
-> @@ -282,12 +282,12 @@ ssize_t tmc_etr_get_sysfs_trace(struct tmc_drvdata *drvdata,
->  static inline u64                                                      \
->  tmc_read_##name(struct tmc_drvdata *drvdata)                           \
->  {                                                                      \
-> -       return coresight_read_reg_pair(drvdata->base, lo_off, hi_off);  \
-> +       return csdev_access_relaxed_read_pair(&drvdata->csdev->access, lo_off, hi_off); \
->  }                                                                      \
->  static inline void                                                     \
->  tmc_write_##name(struct tmc_drvdata *drvdata, u64 val)                 \
->  {                                                                      \
-> -       coresight_write_reg_pair(drvdata->base, val, lo_off, hi_off);   \
-> +       csdev_access_relaxed_write_pair(&drvdata->csdev->access, val, lo_off, hi_off); \
->  }
->
->  TMC_REG_PAIR(rrp, TMC_RRP, TMC_RRPHI)
-> diff --git a/include/linux/coresight.h b/include/linux/coresight.h
-> index a47dd1f62216..1554021231f9 100644
-> --- a/include/linux/coresight.h
-> +++ b/include/linux/coresight.h
-> @@ -373,21 +373,26 @@ static inline u32 csdev_access_relaxed_read32(struct csdev_access *csa,
->  }
->
->  static inline u64 csdev_access_relaxed_read_pair(struct csdev_access *csa,
-> -                                                s32 lo_offset, s32 hi_offset)
-> +                                                u32 lo_offset, u32 hi_offset)
->  {
-> -       u64 val;
-> -
->         if (likely(csa->io_mem)) {
-> -               val = readl_relaxed(csa->base + lo_offset);
-> -               val |= (hi_offset < 0) ? 0 :
-> -                      (u64)readl_relaxed(csa->base + hi_offset) << 32;
-> -               return val;
-> +               return readl_relaxed(csa->base + lo_offset) |
-> +                       ((u64)readl_relaxed(csa->base + hi_offset) << 32);
->         }
->
-> -       val = csa->read(lo_offset, true, false);
-> -       val |= (hi_offset < 0) ? 0 :
-> -              (u64)csa->read(hi_offset, true, false) << 32;
-> -       return val;
-> +       return csa->read(lo_offset, true, false) | (csa->read(hi_offset, true, false) << 32);
+> +	vcpu->arch.apic->irr_pending = true;
+> +	svm_complete_interrupt_delivery(vcpu,
+> +					icrl & APIC_MODE_MASK,
+> +					icrl & APIC_INT_LEVELTRIG,
+> +					icrl & APIC_VECTOR_MASK);
 > +}
 > +
-> +static inline void csdev_access_relaxed_write_pair(struct csdev_access *csa, u64 val,
-> +                                                  u32 lo_offset, u32 hi_offset)
-> +{
-> +       if (likely(csa->io_mem)) {
-> +               writel_relaxed((u32)val, csa->base + lo_offset);
-> +               writel_relaxed((u32)(val >> 32), csa->base + hi_offset);
-> +       } else {
-> +               csa->write((u32)val, lo_offset, true, false);
-> +               csa->write((u32)(val >> 32), hi_offset, true, false);
-> +       }
+>  /*
+>   * A fast-path version of avic_kick_target_vcpus(), which attempts to match
+>   * destination APIC ID to vCPU without looping through all vCPUs.
+> @@ -427,11 +437,7 @@ static int avic_kick_target_vcpus_fast(struct kvm *kvm, struct kvm_lapic *source
+>  	if (unlikely(!target_vcpu))
+>  		return 0;
+>  
+> -	target_vcpu->arch.apic->irr_pending = true;
+> -	svm_complete_interrupt_delivery(target_vcpu,
+> -					icrl & APIC_MODE_MASK,
+> -					icrl & APIC_INT_LEVELTRIG,
+> -					icrl & APIC_VECTOR_MASK);
+> +	avic_kick_vcpu(target_vcpu, icrl);
+>  	return 0;
 >  }
->
->  static inline u32 csdev_access_read32(struct csdev_access *csa, u32 offset)
-> --
-> 2.28.0
->
+>  
+> @@ -455,13 +461,8 @@ static void avic_kick_target_vcpus(struct kvm *kvm, struct kvm_lapic *source,
+>  	 */
+>  	kvm_for_each_vcpu(i, vcpu, kvm) {
+>  		if (kvm_apic_match_dest(vcpu, source, icrl & APIC_SHORT_MASK,
+> -					dest, icrl & APIC_DEST_MASK)) {
+> -			vcpu->arch.apic->irr_pending = true;
+> -			svm_complete_interrupt_delivery(vcpu,
+> -							icrl & APIC_MODE_MASK,
+> -							icrl & APIC_INT_LEVELTRIG,
+> -							icrl & APIC_VECTOR_MASK);
+> -		}
+> +					dest, icrl & APIC_DEST_MASK))
+> +			avic_kick_vcpu(vcpu, icrl);
+>  	}
+>  }
+>  
 
-Reviewed-by: Mike Leach <mike.leach@linaro.org>
--- 
-Mike Leach
-Principal Engineer, ARM Ltd.
-Manchester Design Centre. UK
+I don't know what I think about this, sometimes *minor* code duplication might actually
+be a good thing, as it is easier to read the code, but I don't have much against this
+as well.
+
+I am not sure if before or after this code is more readable.
+
+But anyway,
+
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+
+Best regards,
+	Maxim Levitsky
+
