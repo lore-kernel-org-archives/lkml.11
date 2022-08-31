@@ -2,56 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E03ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 21:42:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B429ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 21:43:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231310AbiHaVms (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 17:42:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46048 "EHLO
+        id S232245AbiHaVns (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 17:43:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230002AbiHaVmp (ORCPT
+        with ESMTP id S232412AbiHaVnm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 17:42:45 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDD36DDB4A
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 14:42:44 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id z8so11323608edb.6
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 14:42:44 -0700 (PDT)
+        Wed, 31 Aug 2022 17:43:42 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEC3FE58AA
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 14:43:39 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id u9so31006736ejy.5
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 14:43:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=Wq5i0YmgH9334LpAnFgkB5aalJSWKK3bpzJb9praDCE=;
-        b=mfTF9yVOK5jguuRCZORu2pCr2RTpHkNBc9yBija4Pf1/xePOZXiEtQGc3Wl9o06kMI
-         d1HHyB8hxMc8I7HmyNW4Q7Gz4MRitaWL26M1wW9+c+4q8dVn9uveMVBLoarytNj/f3IJ
-         Ew0+My2eXFagIKqKHyGK+T2MQdCuKCPjWZWvFkJicpZhtIUYxaZ17SF5YRRo+jZEj7to
-         +u/fUJdfWgip7dnHpy6fwJHtslMbl1rjZcogKDPihmY6F+DV+jBOxPc0NtRI6246nlfX
-         yeq3QmVHY2rp9KKQAPJtU24quoTTVGQNT05MRALXEo9xaH3ZuS8ZOAKs5+5b5ZaRDtM7
-         JsxA==
+        bh=noQJgEZTEQcpa/6dOGXVHGaPl3bYXEs4M28ZIq9Z6Tg=;
+        b=X9RwiMmsswutT5jvrsy1LnT9cc3lwX5Hjqdp/3cjpmTOF06bbCfyhqtT33dDp2QknO
+         yX2MpnUgJDps0WsH1xOM+mz+Uf7PMhF+1U/2zv20/ZokxU1iCMf32nHM5vxCJW3Tp1wi
+         0IHx40CuGUVYjFC2suKGVuuDtNBegOgpriSzv4xQ5yOANuieRygnEOufkYHX1bM1OhzW
+         ll3fn66XGGoiBhPT5W1XTrUsTUq9AnYD5IAUhA+p/FnWv4XKs5LXODVQzYGns8/klaGz
+         BWrRnuypFp2yb+1bxV1FbWpo0Ove5egLYeQB/sH6kzjSIcvK0eQYn9njlTKIKND0wxRB
+         Wn1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=Wq5i0YmgH9334LpAnFgkB5aalJSWKK3bpzJb9praDCE=;
-        b=UcJoCHthCcsL2XJvFv6CLp1uByya4vQnTXO7wDjzYNF36X8ntDeBQlw1wHQDiY+sUZ
-         /ArNrUfnAFXEiP9bN0axkKCzMC7G2sOktRbDHgCyo2oMZIwxung4Xbh6Xzwj1BC1/0bc
-         BMXd6pXcukF/XE6OhgI5Lnwm1WDChcUGjaAxpL8sZC4SLuXU1fXQ26oF5Yp/JQGt4Eyd
-         Qu2zVZtHJczPW4uWIIbFCQDF0weQuvkFNuEheLLzGSVBdS4r0g2bLY82z0XWRksUFaTj
-         eacncnY7WYP8ed016rnnXz0w7kQSUmg54ElxVqmhAsCoL6dNSAaCPGdyNVBVwp/ki9QQ
-         ammw==
-X-Gm-Message-State: ACgBeo1HtaxHaVycGxVkbBv93pVHH5uX1x03kQuWGq13qRemY3agnoqg
-        V0WE3OlxSDT0/7jLPJCtzPloO6/P4TC1WI4opcKnd5RUFow=
-X-Google-Smtp-Source: AA6agR4oNn+8eD34j7SHHqpP6mepwl0PK2xbAQq/hmizD8BGFfCT9yHj6BS+XhFeYIWqCdqHW+d1KZdEk3JRakvgm04=
-X-Received: by 2002:a05:6402:51d1:b0:448:bed1:269c with SMTP id
- r17-20020a05640251d100b00448bed1269cmr8675051edd.205.1661982163401; Wed, 31
- Aug 2022 14:42:43 -0700 (PDT)
+        bh=noQJgEZTEQcpa/6dOGXVHGaPl3bYXEs4M28ZIq9Z6Tg=;
+        b=Mf+XEXJDPcvvx2bPO2LnF2pVnZdOksdMRKifoLV0u188Czz2bePWGOn9yg9aG41CHw
+         MlZA/4ULOBdcTADNqwtFbyV2ifEYF4EMI5n/swXOW5p/2TeQ32pX9ERr36UqZOsH0b0k
+         d38gTtfqL6qdZ/gLvLGw8y+sNVlF4gs6qLnAl9O+2cexSxaRs6vQXU8zYuCdkpp5GvH2
+         ZJZZYWh1QsNNuAaMa9ymjtOElnqlg0D3aSyrBhcIghlrTh8sMkyaal7jEdA/RPmbjToK
+         nf5AFu0o7K+tA8n/Vug1/0i5KbuBzxEApSM3lbJHb5koE/pn1gGUXmj8kmsyTP8oWQJz
+         Qmfw==
+X-Gm-Message-State: ACgBeo2dy7J6KH2SyCPFfwcVB3Ve375eOOQjFkKYV2GGa3bCQU7OOnpg
+        1RTf/EDHPFjKTVeYj806s5Q06zdCuatWhnYYTefuQA==
+X-Google-Smtp-Source: AA6agR5Qs1aB17CjJQHStueFA4+rLUel8x41FRNKwGuvY/5w71WxYFjetmf/3FrqX6O0hVrz+QVjP5ezUBYmz1nvWAU=
+X-Received: by 2002:a17:907:7242:b0:741:770b:dfc6 with SMTP id
+ ds2-20020a170907724200b00741770bdfc6mr12704648ejc.203.1661982217805; Wed, 31
+ Aug 2022 14:43:37 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220831212744.56435-1-andriy.shevchenko@linux.intel.com> <20220831212744.56435-2-andriy.shevchenko@linux.intel.com>
-In-Reply-To: <20220831212744.56435-2-andriy.shevchenko@linux.intel.com>
+References: <20220831212744.56435-1-andriy.shevchenko@linux.intel.com> <20220831212744.56435-3-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220831212744.56435-3-andriy.shevchenko@linux.intel.com>
 From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Wed, 31 Aug 2022 23:42:32 +0200
-Message-ID: <CACRpkdaVCYfo1SVhGmQG=rDNqmCDDNZjLUpN-A1ZX0CRAQHgJw@mail.gmail.com>
-Subject: Re: [PATCH v2 2/3] regmap: mmio: Use swabXX_array() helpers
+Date:   Wed, 31 Aug 2022 23:43:26 +0200
+Message-ID: <CACRpkdZp9Jcq6Ti3FAavrBPi5xM5SLGyecS2A9T16OKv_h=95w@mail.gmail.com>
+Subject: Re: [PATCH v2 3/3] regmap: spi-avmm: Use swabXX_array() helpers
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -69,7 +69,7 @@ On Wed, Aug 31, 2022 at 11:27 PM Andy Shevchenko
 >
 > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Sweet!
+LGTM
 Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
 Yours,
