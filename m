@@ -2,139 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23D45ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 16:11:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18407ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 16:12:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231331AbiHaQLK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 12:11:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43800 "EHLO
+        id S230474AbiHaQMc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 12:12:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229757AbiHaQLH (ORCPT
+        with ESMTP id S231356AbiHaQM1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 12:11:07 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B64A6E2F0
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 09:11:06 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oTQIr-0005ZB-EO; Wed, 31 Aug 2022 18:10:57 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oTQIp-0003g0-Ev; Wed, 31 Aug 2022 18:10:55 +0200
-Date:   Wed, 31 Aug 2022 18:10:55 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Arun.Ramadoss@microchip.com, andrew@lunn.ch,
-        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        vivien.didelot@gmail.com, san@skov.dk, linux@armlinux.org.uk,
-        f.fainelli@gmail.com, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        Woojung.Huh@microchip.com, davem@davemloft.net
-Subject: Re: [Patch net-next v2 0/9] net: dsa: microchip: add support for
- phylink mac config and link up
-Message-ID: <20220831161055.GA2479@pengutronix.de>
-References: <20220724092823.24567-1-arun.ramadoss@microchip.com>
- <20220830065533.GA18106@pengutronix.de>
- <67690ec6367c9dc6d2df720dcf98e6e332d2105b.camel@microchip.com>
- <20220830095830.flxd3fw4sqyn425m@skbuf>
- <20220830160546.GB16715@pengutronix.de>
- <20220831074324.GD16715@pengutronix.de>
- <20220831151859.ubpkt5aljrp3hiph@skbuf>
+        Wed, 31 Aug 2022 12:12:27 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63BC3D11F1
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 09:12:21 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id q15so9513978pfn.11
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 09:12:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=f8MgvGh+ksHn1mHkWpjvZ43exvRjNzmYkYNUVIU3dnI=;
+        b=N9vsfmbi93IeCMV0maJHVIvMTC6H2nPgQxnlPoOFJFEQzYYzYI3FxpE9EKxTENxN76
+         HlxRpRUP0AlmAskrDYhxf9LUQ+I+eFP/e5H+lB6j01dDuB0FubyTBGhLoMrrub7ZPXer
+         uYyc/gmNhT7dZQiyUTV59Fc2p6/i59TEQrVLfeTnC1WlIckL3GOIsGOvZD91mLeZjIrE
+         8Gy2V5wsSUBmoJdZfftBrHRu+snegVnG4Hc2v2DkEOZPqfEpb1nnaD1amm3of49arl+U
+         Mq9mSbSq5VQhT8uDrUjkwj19rYYW9qdkg6Xx4o6t5pX3XD3JoCv1zvrxMlL/MWIb9ET+
+         ohEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=f8MgvGh+ksHn1mHkWpjvZ43exvRjNzmYkYNUVIU3dnI=;
+        b=Qdn+ZvFOXvugQf9X0NgFPUD3U2GzWQ0ujso9pk/yfnE/s8t8+fXOSl4X1s/CrJNELn
+         qEN2SXFs8VK5BYqO8mCNzPSrQ6TSG4+bBdvtNH9DmjH+narGwjaIsxRqpRukN2J/3GwT
+         z+VgUF6jWcbujJzzj6mYrNlBJMlWdB1XLJRcv48k2Kvuk3t2WvzY/XHrz0JOmaY5AzfH
+         OGWwdWosDd0FbNTc9tkQZX+gDRgpBYKrNQHmlh2wmac+/nRPRecrq2G4tBETOBpfV0mE
+         GzVFSvwvOFrBRmphDUM1uZu4fyazf1+xgSEEkff99QiGwVtjl/k8VXb3ens3ZgLJ2uOn
+         SVlA==
+X-Gm-Message-State: ACgBeo1/KDHbHbwlnF49Gsf4f9K2vYMZmLOoLnlqpX+CajiA81KmoQKu
+        I25XDeveNgT9VtGijuc1Kzc=
+X-Google-Smtp-Source: AA6agR5sUHH4T3dAKze9jkp5hKoKpRegW3m0w6N5czp+D02Q+Qy6zxLre8UGpdUtsxYF5C5OthN1DQ==
+X-Received: by 2002:a63:256:0:b0:42f:b14b:2085 with SMTP id 83-20020a630256000000b0042fb14b2085mr6104065pgc.189.1661962341421;
+        Wed, 31 Aug 2022 09:12:21 -0700 (PDT)
+Received: from localhost ([36.112.195.70])
+        by smtp.gmail.com with ESMTPSA id x11-20020a17090ab00b00b001fbc0e9edafsm1470409pjq.56.2022.08.31.09.12.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Aug 2022 09:12:21 -0700 (PDT)
+From:   Hawkins Jiawei <yin31149@gmail.com>
+To:     syzbot+5f8dcabe4a3b2c51c607@syzkaller.appspotmail.com,
+        Anton Altaparmakov <anton@tuxera.com>
+Cc:     akpm@linux-foundation.org, chenxiaosong2@huawei.com,
+        linux-kernel@vger.kernel.org, linux-ntfs-dev@lists.sourceforge.net,
+        syzkaller-bugs@googlegroups.com, yin31149@gmail.com,
+        18801353760@163.com, Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [PATCH v2 2/3] ntfs: fix out-of-bounds read in ntfs_attr_find()
+Date:   Thu,  1 Sep 2022 00:09:36 +0800
+Message-Id: <20220831160935.3409-3-yin31149@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220831160935.3409-1-yin31149@gmail.com>
+References: <20220831160935.3409-1-yin31149@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220831151859.ubpkt5aljrp3hiph@skbuf>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 06:18:59PM +0300, Vladimir Oltean wrote:
-> On Wed, Aug 31, 2022 at 09:43:24AM +0200, Oleksij Rempel wrote:
-> > > > Should we point them to ksz8795_xmii_ctrl0 and ksz8795_xmii_ctrl1? I don't know.
-> > > > Could you find out what these should be set to?
-> > > 
-> > > xmii_ctrl0/1 are missing and it make no sense to add it.
-> > > KSZ8873 switch is controlling CPU port MII configuration over global,
-> > > not port based register.
-> > > 
-> > > I'll better define separate ops for this chip.
-> > 
-> > Hm, not only KSZ8830/KSZ8863/KSZ8873 are affected. ksz8795 compatible
-> > series with defined .xmii_ctrl0/.xmii_ctrl1 are broken too. Because it
-> > is writing to the global config register over ksz_pwrite8 function. It
-> > means, we are writing to 0xa6 instead of 0x06. And to 0xf6 instead of
-> > 0x56.
-> 
-> What do you mean by "global config register"? The Is_1Gbps bit is still
-> part of a port register, it's just that this particular register is only
-> defined for the 5th port (port #4, the only xMII port on KSZ7895 AFAIU).
-> That doesn't necessarily make it a "global" register.
-> 
-> Datasheet says:
-> 
-> Register 22 (0x16): Reserved
-> Register 38 (0x26): Reserved
-> Register 54 (0x36): Reserved
-> Register 70 (0x46): Reserved
-> Register 86 (0x56): Port 5 Interface Control 6
-> 
-> I wonder if it's ok to modify the regs table like this, because we
-> should then only touch P_XMII_CTRL_1 using port 4:
-> 
->  static const u16 ksz8795_regs[] = {
->  	[REG_IND_CTRL_0]		= 0x6E,
->  	[REG_IND_DATA_8]		= 0x70,
->  	[REG_IND_DATA_CHECK]		= 0x72,
->  	[REG_IND_DATA_HI]		= 0x71,
->  	[REG_IND_DATA_LO]		= 0x75,
->  	[REG_IND_MIB_CHECK]		= 0x74,
->  	[REG_IND_BYTE]			= 0xA0,
->  	[P_FORCE_CTRL]			= 0x0C,
->  	[P_LINK_STATUS]			= 0x0E,
->  	[P_LOCAL_CTRL]			= 0x07,
->  	[P_NEG_RESTART_CTRL]		= 0x0D,
->  	[P_REMOTE_STATUS]		= 0x08,
->  	[P_SPEED_STATUS]		= 0x09,
->  	[S_TAIL_TAG_CTRL]		= 0x0C,
->  	[P_STP_CTRL]			= 0x02,
->  	[S_START_CTRL]			= 0x01,
->  	[S_BROADCAST_CTRL]		= 0x06,
->  	[S_MULTICAST_CTRL]		= 0x04,
->  	[P_XMII_CTRL_0]			= 0x06,
-> -	[P_XMII_CTRL_1]			= 0x56,
-> +	[P_XMII_CTRL_1]			= 0x06,
->  };
-> 
+Kernel will iterates over ATTR_RECORDs in mft record in ntfs_attr_find().
+To ensure access on these ATTR_RECORDs are within bounds, kernel will
+do some checking during iteration.
 
-Speed configuration on ksz8795 is done over two registers:
-Register 86 (0x56): Port 5 Interface Control 6: Is_1Gbps - BIT(6)
-and
-Register 6 (0x06): Global Control 4: Switch SW5-MII/RMII Speed -BIT(4)
+The problem is that during checking whether ATTR_RECORD's name is within
+bounds, kernel will dereferences the ATTR_RECORD name_offset field,
+before checking this ATTR_RECORD strcture is within bounds. This problem
+may result out-of-bounds read in ntfs_attr_find(), reported by
+Syzkaller:
 
-both are accessed on wrong offsets.
+==================================================================
+BUG: KASAN: use-after-free in ntfs_attr_find+0xc02/0xce0 fs/ntfs/attrib.c:597
+Read of size 2 at addr ffff88807e352009 by task syz-executor153/3607
 
-I would prefer to do following steps:
-- remove everything from ksz_phylink_mac_link_up() except of
-  dev->dev_ops->phylink_mac_link_up
-- move ksz_duplex_flowctrl(), ksz_port_set_xmii_speed()... to ksz9477.c
-  and rename them. Assign ksz9477_phylink_mac_link_up()
-  dev->dev_ops->phylink_mac_link_up
-- create separate function ksz8795_phylink_mac_link_up()
-- use documented, not generic register names.
+[...]
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description mm/kasan/report.c:317 [inline]
+ print_report.cold+0x2ba/0x719 mm/kasan/report.c:433
+ kasan_report+0xb1/0x1e0 mm/kasan/report.c:495
+ ntfs_attr_find+0xc02/0xce0 fs/ntfs/attrib.c:597
+ ntfs_attr_lookup+0x1056/0x2070 fs/ntfs/attrib.c:1193
+ ntfs_read_inode_mount+0x89a/0x2580 fs/ntfs/inode.c:1845
+ ntfs_fill_super+0x1799/0x9320 fs/ntfs/super.c:2854
+ mount_bdev+0x34d/0x410 fs/super.c:1400
+ legacy_get_tree+0x105/0x220 fs/fs_context.c:610
+ vfs_get_tree+0x89/0x2f0 fs/super.c:1530
+ do_new_mount fs/namespace.c:3040 [inline]
+ path_mount+0x1326/0x1e20 fs/namespace.c:3370
+ do_mount fs/namespace.c:3383 [inline]
+ __do_sys_mount fs/namespace.c:3591 [inline]
+ __se_sys_mount fs/namespace.c:3568 [inline]
+ __x64_sys_mount+0x27f/0x300 fs/namespace.c:3568
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+ [...]
+ </TASK>
 
+The buggy address belongs to the physical page:
+page:ffffea0001f8d400 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x7e350
+head:ffffea0001f8d400 order:3 compound_mapcount:0 compound_pincount:0
+flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
+raw: 00fff00000010200 0000000000000000 dead000000000122 ffff888011842140
+raw: 0000000000000000 0000000000040004 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+Memory state around the buggy address:
+ ffff88807e351f00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff88807e351f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff88807e352000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                      ^
+ ffff88807e352080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88807e352100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
+
+This patch solves it by moving the ATTR_RECORD strcture's bounds
+checking earlier, then checking whether ATTR_RECORD's name
+is within bounds. What's more, this patch also add some comments
+to improve its maintainability.
+
+Reported-and-tested-by: syzbot+5f8dcabe4a3b2c51c607@syzkaller.appspotmail.com
+Signed-off-by: chenxiaosong (A) <chenxiaosong2@huawei.com>
+Link: https://lore.kernel.org/all/1636796c-c85e-7f47-e96f-e074fee3c7d3@huawei.com/
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://groups.google.com/g/syzkaller-bugs/c/t_XdeKPGTR4/m/LECAuIGcBgAJ
+Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
+---
+v1->v2:
+ * Refactor check on Attribute Record Header
+suggested by Dan Carpenter.
+
+ fs/ntfs/attrib.c | 20 ++++++++++++++++----
+ 1 file changed, 16 insertions(+), 4 deletions(-)
+
+diff --git a/fs/ntfs/attrib.c b/fs/ntfs/attrib.c
+index 52615e6090e1..cec4be2a2d23 100644
+--- a/fs/ntfs/attrib.c
++++ b/fs/ntfs/attrib.c
+@@ -594,11 +594,23 @@ static int ntfs_attr_find(const ATTR_TYPE type, const ntfschar *name,
+ 	for (;;	a = (ATTR_RECORD*)((u8*)a + le32_to_cpu(a->length))) {
+ 		u8 *mrec_end = (u8 *)ctx->mrec +
+ 		               le32_to_cpu(ctx->mrec->bytes_allocated);
+-		u8 *name_end = (u8 *)a + le16_to_cpu(a->name_offset) +
+-			       a->name_length * sizeof(ntfschar);
+-		if ((u8*)a < (u8*)ctx->mrec || (u8*)a > mrec_end ||
+-		    name_end > mrec_end)
++		u8 *name_end;
++
++		/* check whether ATTR_RECORD wrap */
++		if ((u8 *)a < (u8 *)ctx->mrec)
++			break;
++
++		/* check whether Attribute Record Header is within bounds */
++		if ((u8 *)a > mrec_end ||
++		    (u8 *)a + sizeof(ATTR_RECORD) > mrec_end)
+ 			break;
++
++		/* check whether ATTR_RECORD's name is within bounds */
++		name_end = (u8 *)a + le16_to_cpu(a->name_offset) +
++			   a->name_length * sizeof(ntfschar);
++		if (name_end > mrec_end)
++			break;
++
+ 		ctx->attr = a;
+ 		if (unlikely(le32_to_cpu(a->type) > le32_to_cpu(type) ||
+ 				a->type == AT_END))
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.25.1
+
