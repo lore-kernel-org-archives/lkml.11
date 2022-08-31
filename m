@@ -2,58 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C1EFECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 00:37:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C136AECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 00:37:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232084AbiHaAhU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 20:37:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51656 "EHLO
+        id S231931AbiHaAhb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 20:37:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231886AbiHaAgu (ORCPT
+        with ESMTP id S231898AbiHaAgx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 20:36:50 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C161FA6AD5
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:35:30 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id y9-20020a17090322c900b00174c881abaeso4607506plg.6
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:35:30 -0700 (PDT)
+        Tue, 30 Aug 2022 20:36:53 -0400
+Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21570A98DE
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:35:41 -0700 (PDT)
+Received: by mail-pf1-x449.google.com with SMTP id cj15-20020a056a00298f00b0053a700f1178so1525578pfb.14
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:35:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:from:to:cc;
-        bh=nNU9Bjqf9y2XiX7CZGxt5LtQZtYEQ0fRI0M+3kQYHd8=;
-        b=nsUDSLmwiz2YIjGoJDWf0sAGexBLRtBGLNj+U0a0dxwdRSnDUJLZ/s81wWgXfPmfZC
-         rcingM4u7HvJFWTBgWJYoy47ughU9OZmQ69i4DqRXTjNGW5TUGJAtBm24vA2koy20Z+W
-         WFEt7S4TUlpmlrrMirREsdRXHPp3qTniXB67PD3UFg+egTtgi3vDgy/lBQtl6fgp7K4x
-         na1upEaIRDzqldfvv3xrkoqoEluOHkX+4ctoSit8dSJRwikX9HoU6EP+/3rhGXZRoUT0
-         VfANzt47NFBIqN5xekmNQ7zAiDzyfupSXNkPPIW9bVZcUW6gXapvsysItmRXJxYhCoqs
-         hACQ==
+        bh=08A/F7QHFvdlbnKklqADdddOKG9On7dolttTZc9ut/0=;
+        b=CkX2HuJEwn2lrV3MfDjQU7bSjgXyWBqH1zLOhoXEALnjWvgnh9NnoXVN3W8W2Yiabx
+         8Xh0QTllzSGgDxYS/zmh7UMnqFS8gOaI/RAXjl4mzy0Ejd7hST5Tmd5hnq7dK1vCmlup
+         5xGMpyQHyV+sZMw8vLXbnTFOtU1DX3moFs6DahywnQfnNozyD3jmeJ/wCV+LUVv9mCLX
+         1ipFPq78hArYCly/jtVv/Q4NDHnLwdOw4/RLyzHla5Joj2WPCz/xYhvaThEFqxbJ+SSh
+         NjKLj4SrpMc1BAGIgnbRUZedkIsMBCm3T66SZFvstg01GTohs/Y4bOTllL3WP3M6aXXJ
+         k9Yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:x-gm-message-state:from:to:cc;
-        bh=nNU9Bjqf9y2XiX7CZGxt5LtQZtYEQ0fRI0M+3kQYHd8=;
-        b=ah0COkVJRMzQ1g0SIeRrqnW89NP2oU0e0rKzuwE+DIGZxgC/nIFmUtRoxmiL8oKtSx
-         VxaLaut5n7tzuiIOx6ZOf19iW4SZ+DaLVAiajPjRBfnW2Iy4XDEJLC4KIdXIz62Ek8R0
-         x6pu/RZxicopnQkLVNgz2BCAVy0uu4bIpp4m5WUBO7yNb0d/e+moJT0Gx+b9md4a14nS
-         Rg/3vfEStoMblrqEVgpmMvQJ00zUBCVf83EruLZqFYi99RJjGutn7BdOvgImSd3yCX9s
-         GnQ/EFQppUgR5aXbjBg06JDkPeXCBo1wLDY7No5Ar3ujaLHn+xDPDiDMTL6wWzaS8nhq
-         QsCw==
-X-Gm-Message-State: ACgBeo1K5WbXdMd7ZrOv5xdsNEHEgrfqTNCWiIvI1EKX44EMheIOpEue
-        8nvnF7nbs/vvJQy1wkKosH6yG4gUDK0=
-X-Google-Smtp-Source: AA6agR6iq5WY+NgNU9ERXKVNHlEQ6M1HBHY81ehzHMF+0tkMrIik4W+FhStuptJ4GRhrcOxrXoHTiMQFa3I=
+        bh=08A/F7QHFvdlbnKklqADdddOKG9On7dolttTZc9ut/0=;
+        b=HBEfAMPIfYasrUQe8NXypf/uH2uE+4gVws4aMOZasPeLKb5BpDa/W8y6z9FRucuLmc
+         K0aEiskuIqULVBzIBLb1jG0P1dw82UgOkF48bfTFdN0DtY22BQRZcTgLJ/sZnra3oIgJ
+         gbRtG/HMBbLYNxfCN9tU5SpKpckrMFoHvvcLk0AnPRliMQI0iCHbxKpSJCfDHED6gdIE
+         jn123eF4gYAUL/AF2SxC76gQcLeBSADjhRldkKV4BjlIwrY3cWem2oLdH0FTFNS7hSSy
+         yLob0ckNmf/OJvco4/Xgxka2BumTOdCzwBZtlcYSA8vK5yjyIqhFHuLHk0Mx2/gXTnp/
+         R/kQ==
+X-Gm-Message-State: ACgBeo1FsvJ4qKM6S3Uts10ElqjCYeNxprrrbQ435uX/MgErOJXJpp8P
+        t/K62grvM044OeEnLtrswd1+Vqey//M=
+X-Google-Smtp-Source: AA6agR7hbcOraGRxxAHcuZ5giMtcBel+k20eBMC4aqh6XQFuibRrMfc16BSRALwulHnNm7n29kP7LixwI8E=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:124d:b0:538:295a:1c47 with SMTP id
- u13-20020a056a00124d00b00538295a1c47mr13357367pfi.5.1661906114650; Tue, 30
- Aug 2022 17:35:14 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:aa7:804c:0:b0:536:80bb:8270 with SMTP id
+ y12-20020aa7804c000000b0053680bb8270mr23509612pfm.13.1661906119769; Tue, 30
+ Aug 2022 17:35:19 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed, 31 Aug 2022 00:34:50 +0000
+Date:   Wed, 31 Aug 2022 00:34:53 +0000
 In-Reply-To: <20220831003506.4117148-1-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220831003506.4117148-1-seanjc@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220831003506.4117148-4-seanjc@google.com>
-Subject: [PATCH 03/19] Revert "KVM: SVM: Introduce hybrid-AVIC mode"
+Message-ID: <20220831003506.4117148-7-seanjc@google.com>
+Subject: [PATCH 06/19] KVM: SVM: Get x2APIC logical dest bitmap from
+ ICRH[15:0], not ICHR[31:16]
 From:   Sean Christopherson <seanjc@google.com>
 To:     Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
@@ -66,98 +67,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove SVM's so called "hybrid-AVIC mode" and reinstate the restriction
-where AVIC is disabled if x2APIC is enabled.  The argument that the
-"guest is not supposed to access xAPIC mmio when uses x2APIC" is flat out
-wrong.  Activating x2APIC completely disables the xAPIC MMIO region,
-there is nothing that says the guest must not access that address.
+When attempting a fast kick for x2AVIC, get the destination bitmap from
+ICR[15:0], not ICHR[31:16].  The upper 16 bits contain the cluster, the
+lower 16 bits hold the bitmap.
 
-Concretely, KVM-Unit-Test's existing "apic" test fails the subtests that
-expect accesses to the APIC base region to not be emulated when x2APIC is
-enabled.
-
-Furthermore, allowing the guest to trigger MMIO emulation in a mode where
-KVM doesn't expect such emulation to occur is all kinds of dangerous.
-
-Tweak the restriction so that it only inhibits AVIC if x2APIC is actually
-enabled instead of inhibiting AVIC is x2APIC is exposed to the guest.
-
-This reverts commit 0e311d33bfbef86da130674e8528cc23e6acfe16.
-
+Fixes: 603ccef42ce9 ("KVM: x86: SVM: fix avic_kick_target_vcpus_fast")
+Cc: Maxim Levitsky <mlevitsk@redhat.com>
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/include/asm/kvm_host.h |  6 ++++++
- arch/x86/kvm/svm/avic.c         | 21 ++++++++++-----------
- 2 files changed, 16 insertions(+), 11 deletions(-)
+ arch/x86/kvm/svm/avic.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 2c96c43c313a..1f51411f3112 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1128,6 +1128,12 @@ enum kvm_apicv_inhibit {
- 	 */
- 	APICV_INHIBIT_REASON_PIT_REINJ,
- 
-+	/*
-+	 * AVIC is inhibited because the vCPU has x2apic enabled and x2AVIC is
-+	 * not supported.
-+	 */
-+	APICV_INHIBIT_REASON_X2APIC,
-+
- 	/*
- 	 * AVIC is disabled because SEV doesn't support it.
- 	 */
 diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index f3a74c8284cb..1d516d658f9a 100644
+index 3ace0f2f52f0..3c333cd2e752 100644
 --- a/arch/x86/kvm/svm/avic.c
 +++ b/arch/x86/kvm/svm/avic.c
-@@ -71,22 +71,12 @@ static void avic_activate_vmcb(struct vcpu_svm *svm)
- 	vmcb->control.avic_physical_id &= ~AVIC_PHYSICAL_MAX_INDEX_MASK;
+@@ -368,7 +368,7 @@ static int avic_kick_target_vcpus_fast(struct kvm *kvm, struct kvm_lapic *source
  
- 	vmcb->control.int_ctl |= AVIC_ENABLE_MASK;
--
--	/* Note:
--	 * KVM can support hybrid-AVIC mode, where KVM emulates x2APIC
--	 * MSR accesses, while interrupt injection to a running vCPU
--	 * can be achieved using AVIC doorbell. The AVIC hardware still
--	 * accelerate MMIO accesses, but this does not cause any harm
--	 * as the guest is not supposed to access xAPIC mmio when uses x2APIC.
--	 */
--	if (apic_x2apic_mode(svm->vcpu.arch.apic) &&
--	    avic_mode == AVIC_MODE_X2) {
-+	if (apic_x2apic_mode(svm->vcpu.arch.apic)) {
- 		vmcb->control.int_ctl |= X2APIC_MODE_MASK;
- 		vmcb->control.avic_physical_id |= X2AVIC_MAX_PHYSICAL_ID;
- 		/* Disabling MSR intercept for x2APIC registers */
- 		svm_set_x2apic_msr_interception(svm, false);
- 	} else {
--		/* For xAVIC and hybrid-xAVIC modes */
- 		vmcb->control.avic_physical_id |= AVIC_MAX_PHYSICAL_ID;
- 		/* Enabling MSR intercept for x2APIC registers */
- 		svm_set_x2apic_msr_interception(svm, true);
-@@ -537,6 +527,14 @@ unsigned long avic_vcpu_get_apicv_inhibit_reasons(struct kvm_vcpu *vcpu)
- {
- 	if (is_guest_mode(vcpu))
- 		return APICV_INHIBIT_REASON_NESTED;
-+
-+	/*
-+	 * AVIC must be disabled if x2AVIC isn't supported and the guest has
-+	 * x2APIC enabled.
-+	 */
-+	if (avic_mode != AVIC_MODE_X2 && apic_x2apic_mode(vcpu->arch.apic))
-+		return APICV_INHIBIT_REASON_X2APIC;
-+
- 	return 0;
- }
- 
-@@ -993,6 +991,7 @@ bool avic_check_apicv_inhibit_reasons(enum kvm_apicv_inhibit reason)
- 			  BIT(APICV_INHIBIT_REASON_NESTED) |
- 			  BIT(APICV_INHIBIT_REASON_IRQWIN) |
- 			  BIT(APICV_INHIBIT_REASON_PIT_REINJ) |
-+			  BIT(APICV_INHIBIT_REASON_X2APIC) |
- 			  BIT(APICV_INHIBIT_REASON_BLOCKIRQ) |
- 			  BIT(APICV_INHIBIT_REASON_SEV)      |
- 			  BIT(APICV_INHIBIT_REASON_APIC_ID_MODIFIED) |
+ 		if (apic_x2apic_mode(source)) {
+ 			/* 16 bit dest mask, 16 bit cluster id */
+-			bitmap = dest & 0xFFFF0000;
++			bitmap = dest & 0xFFFF;
+ 			cluster = (dest >> 16) << 4;
+ 		} else if (kvm_lapic_get_reg(source, APIC_DFR) == APIC_DFR_FLAT) {
+ 			/* 8 bit dest mask*/
 -- 
 2.37.2.672.g94769d06f0-goog
 
