@@ -2,240 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95F07C64991
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:43:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28B52ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:43:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229611AbiHaKnr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 06:43:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34566 "EHLO
+        id S229732AbiHaKnw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 06:43:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230456AbiHaKnj (ORCPT
+        with ESMTP id S230165AbiHaKnf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 06:43:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58EACC8777
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 03:43:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661942614;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XEnoteWaPcXVcCaT4ktnvKCklJJhM9Jf54qMIwHsBEA=;
-        b=d1430gzDG1/qNaizmXcCG63/3BnABEJuIWM/Md/88Hr234vFNBBHGtlPrucAaYc2vhonRb
-        s+6iGi+skzOfCVmR47w0+ynMB03V2WBXOOCxCfolla0gZF5DPenyCQVllXuIyJknPlN7u7
-        9wEm7qKl23gI7PPb7++rlCkPUm7Bf94=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-589-o0AgAB6sNE-xnu6bNiyYag-1; Wed, 31 Aug 2022 06:43:31 -0400
-X-MC-Unique: o0AgAB6sNE-xnu6bNiyYag-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AD1E038164CF;
-        Wed, 31 Aug 2022 10:43:29 +0000 (UTC)
-Received: from starship (unknown [10.40.194.96])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3D86C2166B26;
-        Wed, 31 Aug 2022 10:43:27 +0000 (UTC)
-Message-ID: <c86151790ab014f18adc64fc4c6a7e4d9e45299f.camel@redhat.com>
-Subject: Re: [PATCH v2 1/3] KVM: x86: Hyper-V invariant TSC control
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Wed, 31 Aug 2022 13:43:26 +0300
-In-Reply-To: <20220831085009.1627523-2-vkuznets@redhat.com>
-References: <20220831085009.1627523-1-vkuznets@redhat.com>
-         <20220831085009.1627523-2-vkuznets@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+        Wed, 31 Aug 2022 06:43:35 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 591B5C88BE
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 03:43:28 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id j5so9862560plj.5
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 03:43:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ecs-corp-partner-google-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:subject:cc:to:from:from:to:cc;
+        bh=A2LdkydV9AGLhMQY5rQpkTItkU8kDqfLlwLCs52s6tI=;
+        b=O4kipsSqeeQI8MpWgYiCpxLdomQ3bpf2BSWx1H3x1JeumMRmRG7KowaWaIMKyrvyik
+         QWgFIiQq5hdIxoyp4DzuxbdinvGrSM+iamYZgNAzed9RC3rnbaNHC7+Ff3k5iTmOb7IH
+         7vE/X0buWdmytGSaiNQO+ZUUskkD7n2hYrCb7c2keCDagaaKyaul4DxCElDHCalFe1TK
+         WNYAgMT4+bLFZpU160IUqYngC7TxXXoSIvM4YbmoND+dXKAp0PRI69Yy9MTIzlqWPIR7
+         RpOhgS3h11bjoUMuYXY2zIWgtjZ9pk70FVboyU6T/KjayipZNIEfRcliLpMBE9ZC2A8b
+         FyeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=A2LdkydV9AGLhMQY5rQpkTItkU8kDqfLlwLCs52s6tI=;
+        b=oKQTsLSGiyAhAXnPpPcdDkt7VxxeglXyJpCZKbb05B1jSHZYWZUJ1Urcg4Vk9DWxNB
+         Gyf/ejFIVo+9i+mwocUFOgE4gIrYGOBFqKZ7JWVAUMcI5KAWB1o1N4vbDFl1+XUkivUj
+         3Gz8IOC+Lqlc6XjJ9PJc3sqnVyJNW+6YojK+N7Jbe4spZXwdXowTSficlxijkz+Etk+y
+         o2heUZzQtCIHWl7i9wi+t6rJNcxg6ugpenKA5PWrql1eDkSbuIysToUhm15fuc3CCxKn
+         xTqbGrGxeiyXIDyMJ5OloUuO8SL0AMI0LEze00PWAavXgJ0zFBCmttgAqS+fRFy+hKk7
+         jTAA==
+X-Gm-Message-State: ACgBeo0EbfU2PigeLrec7G5urLdn2VWcVkuEYLJSom7bnFTnn2FSR9kY
+        /U2p8KKb7IsTQF7h36s9a63aAGzXvzcbkOKO
+X-Google-Smtp-Source: AA6agR7t0T6zJQLfXVRFxDuVMmANdIBGRVNj2vLbzWSOvv80L3yA6WjJ/IpZ1VM9O+wObuj1HVPtqg==
+X-Received: by 2002:a17:902:ba8a:b0:172:baa0:5676 with SMTP id k10-20020a170902ba8a00b00172baa05676mr26140608pls.64.1661942607691;
+        Wed, 31 Aug 2022 03:43:27 -0700 (PDT)
+Received: from localhost.localdomain ([103.150.184.130])
+        by smtp.gmail.com with ESMTPSA id b13-20020a170902650d00b0016be596c8afsm11266905plk.282.2022.08.31.03.43.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Aug 2022 03:43:27 -0700 (PDT)
+From:   Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Henry Sun <henrysun@google.com>,
+        Bob Moragues <moragues@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Subject: [PATCH v2 1/2] dt-bindings: arm: qcom: Document additional skus for sc7180 pazquel360
+Date:   Wed, 31 Aug 2022 10:43:17 +0000
+Message-Id: <20220831104220.v2.1.I11899dbd0476ffc83aaca07f8ca9b204ecd9a84c@changeid>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-08-31 at 10:50 +0200, Vitaly Kuznetsov wrote:
-> Normally, genuine Hyper-V doesn't expose architectural invariant TSC
-> (CPUID.80000007H:EDX[8]) to its guests by default. A special PV MSR
-> (HV_X64_MSR_TSC_INVARIANT_CONTROL, 0x40000118) and corresponding CPUID
-> feature bit (CPUID.0x40000003.EAX[15]) were introduced. When bit 0 of the
-> PV MSR is set, invariant TSC bit starts to show up in CPUID. When the
-> feature is exposed to Hyper-V guests, reenlightenment becomes unneeded.
-> 
-> Add the feature to KVM. Keep CPUID output intact when the feature
-> wasn't exposed to L1 and implement the required logic for hiding
-> invariant TSC when the feature was exposed and invariant TSC control
-> MSR wasn't written to. Copy genuine Hyper-V behavior and forbid to
-> disable the feature once it was enabled.
-> 
-> For the reference, for linux guests, support for the feature was added
-> in commit dce7cd62754b ("x86/hyperv: Allow guests to enable InvariantTSC").
-> 
-> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+pazquel360 is an extension project based on pazquel.
+We create 3 sku on pazquel360:
+   sku 20 for LTE with physical SIM _and_ eSIM and WiFi
+   sku 21 for WiFi only
+   sku 22 for LTE with only a physical SIM
+ Both sku20 and sku22 are LTE SKUs.
+ One has the eSIM stuffed and one doesn't.
+ There is a single shared device tree for the two.
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Signed-off-by: Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
 
-Best regards,
-	Maxim Levitsky
+---
 
+(no changes since v1)
 
-> ---
->  arch/x86/include/asm/kvm_host.h |  1 +
->  arch/x86/kvm/cpuid.c            |  7 +++++++
->  arch/x86/kvm/hyperv.c           | 19 +++++++++++++++++++
->  arch/x86/kvm/hyperv.h           | 15 +++++++++++++++
->  arch/x86/kvm/x86.c              |  4 +++-
->  5 files changed, 45 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-> index 2c96c43c313a..9098187e13aa 100644
-> --- a/arch/x86/include/asm/kvm_host.h
-> +++ b/arch/x86/include/asm/kvm_host.h
-> @@ -1021,6 +1021,7 @@ struct kvm_hv {
->  	u64 hv_reenlightenment_control;
->  	u64 hv_tsc_emulation_control;
->  	u64 hv_tsc_emulation_status;
-> +	u64 hv_invtsc;
->  
->  	/* How many vCPUs have VP index != vCPU index */
->  	atomic_t num_mismatched_vp_indexes;
-> diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-> index 75dcf7a72605..8ccd45fd66a9 100644
-> --- a/arch/x86/kvm/cpuid.c
-> +++ b/arch/x86/kvm/cpuid.c
-> @@ -1444,6 +1444,13 @@ bool kvm_cpuid(struct kvm_vcpu *vcpu, u32 *eax, u32 *ebx,
->  			    (data & TSX_CTRL_CPUID_CLEAR))
->  				*ebx &= ~(F(RTM) | F(HLE));
->  		}
-> +		/*
-> +		 * Filter out invariant TSC (CPUID.80000007H:EDX[8]) for Hyper-V
-> +		 * guests if needed.
-> +		 */
-> +		if (function == 0x80000007 && kvm_hv_invtsc_filtered(vcpu))
-> +			*edx &= ~(1 << 8);
-> +
->  	} else {
->  		*eax = *ebx = *ecx = *edx = 0;
->  		/*
-> diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-> index ed804447589c..df90cd7501b9 100644
-> --- a/arch/x86/kvm/hyperv.c
-> +++ b/arch/x86/kvm/hyperv.c
-> @@ -991,6 +991,7 @@ static bool kvm_hv_msr_partition_wide(u32 msr)
->  	case HV_X64_MSR_REENLIGHTENMENT_CONTROL:
->  	case HV_X64_MSR_TSC_EMULATION_CONTROL:
->  	case HV_X64_MSR_TSC_EMULATION_STATUS:
-> +	case HV_X64_MSR_TSC_INVARIANT_CONTROL:
->  	case HV_X64_MSR_SYNDBG_OPTIONS:
->  	case HV_X64_MSR_SYNDBG_CONTROL ... HV_X64_MSR_SYNDBG_PENDING_BUFFER:
->  		r = true;
-> @@ -1275,6 +1276,9 @@ static bool hv_check_msr_access(struct kvm_vcpu_hv *hv_vcpu, u32 msr)
->  	case HV_X64_MSR_TSC_EMULATION_STATUS:
->  		return hv_vcpu->cpuid_cache.features_eax &
->  			HV_ACCESS_REENLIGHTENMENT;
-> +	case HV_X64_MSR_TSC_INVARIANT_CONTROL:
-> +		return hv_vcpu->cpuid_cache.features_eax &
-> +			HV_ACCESS_TSC_INVARIANT;
->  	case HV_X64_MSR_CRASH_P0 ... HV_X64_MSR_CRASH_P4:
->  	case HV_X64_MSR_CRASH_CTL:
->  		return hv_vcpu->cpuid_cache.features_edx &
-> @@ -1402,6 +1406,17 @@ static int kvm_hv_set_msr_pw(struct kvm_vcpu *vcpu, u32 msr, u64 data,
->  		if (!host)
->  			return 1;
->  		break;
-> +	case HV_X64_MSR_TSC_INVARIANT_CONTROL:
-> +		/* Only bit 0 is supported */
-> +		if (data & ~BIT_ULL(0))
-> +			return 1;
-> +
-> +		/* The feature can't be disabled from the guest */
-> +		if (!host && hv->hv_invtsc && !data)
-> +			return 1;
-> +
-> +		hv->hv_invtsc = data;
-> +		break;
->  	case HV_X64_MSR_SYNDBG_OPTIONS:
->  	case HV_X64_MSR_SYNDBG_CONTROL ... HV_X64_MSR_SYNDBG_PENDING_BUFFER:
->  		return syndbg_set_msr(vcpu, msr, data, host);
-> @@ -1577,6 +1592,9 @@ static int kvm_hv_get_msr_pw(struct kvm_vcpu *vcpu, u32 msr, u64 *pdata,
->  	case HV_X64_MSR_TSC_EMULATION_STATUS:
->  		data = hv->hv_tsc_emulation_status;
->  		break;
-> +	case HV_X64_MSR_TSC_INVARIANT_CONTROL:
-> +		data = hv->hv_invtsc;
-> +		break;
->  	case HV_X64_MSR_SYNDBG_OPTIONS:
->  	case HV_X64_MSR_SYNDBG_CONTROL ... HV_X64_MSR_SYNDBG_PENDING_BUFFER:
->  		return syndbg_get_msr(vcpu, msr, pdata, host);
-> @@ -2497,6 +2515,7 @@ int kvm_get_hv_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid,
->  			ent->eax |= HV_MSR_REFERENCE_TSC_AVAILABLE;
->  			ent->eax |= HV_ACCESS_FREQUENCY_MSRS;
->  			ent->eax |= HV_ACCESS_REENLIGHTENMENT;
-> +			ent->eax |= HV_ACCESS_TSC_INVARIANT;
->  
->  			ent->ebx |= HV_POST_MESSAGES;
->  			ent->ebx |= HV_SIGNAL_EVENTS;
-> diff --git a/arch/x86/kvm/hyperv.h b/arch/x86/kvm/hyperv.h
-> index da2737f2a956..1a6316ab55eb 100644
-> --- a/arch/x86/kvm/hyperv.h
-> +++ b/arch/x86/kvm/hyperv.h
-> @@ -133,6 +133,21 @@ static inline bool kvm_hv_has_stimer_pending(struct kvm_vcpu *vcpu)
->  			     HV_SYNIC_STIMER_COUNT);
->  }
->  
-> +/*
-> + * With HV_ACCESS_TSC_INVARIANT feature, invariant TSC (CPUID.80000007H:EDX[8])
-> + * is only observed after HV_X64_MSR_TSC_INVARIANT_CONTROL was written to.
-> + */
-> +static inline bool kvm_hv_invtsc_filtered(struct kvm_vcpu *vcpu)
-> +{
-> +	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
-> +	struct kvm_hv *hv = to_kvm_hv(vcpu->kvm);
-> +
-> +	if (hv_vcpu && hv_vcpu->cpuid_cache.features_eax & HV_ACCESS_TSC_INVARIANT)
-> +		return !hv->hv_invtsc;
-> +
-> +	return false;
-> +}
-> +
->  void kvm_hv_process_stimers(struct kvm_vcpu *vcpu);
->  
->  void kvm_hv_setup_tsc_page(struct kvm *kvm,
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index d7374d768296..ad429800f9b5 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -1471,7 +1471,7 @@ static const u32 emulated_msrs_all[] = {
->  	HV_X64_MSR_STIMER0_CONFIG,
->  	HV_X64_MSR_VP_ASSIST_PAGE,
->  	HV_X64_MSR_REENLIGHTENMENT_CONTROL, HV_X64_MSR_TSC_EMULATION_CONTROL,
-> -	HV_X64_MSR_TSC_EMULATION_STATUS,
-> +	HV_X64_MSR_TSC_EMULATION_STATUS, HV_X64_MSR_TSC_INVARIANT_CONTROL,
->  	HV_X64_MSR_SYNDBG_OPTIONS,
->  	HV_X64_MSR_SYNDBG_CONTROL, HV_X64_MSR_SYNDBG_STATUS,
->  	HV_X64_MSR_SYNDBG_SEND_BUFFER, HV_X64_MSR_SYNDBG_RECV_BUFFER,
-> @@ -3777,6 +3777,7 @@ int kvm_set_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
->  	case HV_X64_MSR_REENLIGHTENMENT_CONTROL:
->  	case HV_X64_MSR_TSC_EMULATION_CONTROL:
->  	case HV_X64_MSR_TSC_EMULATION_STATUS:
-> +	case HV_X64_MSR_TSC_INVARIANT_CONTROL:
->  		return kvm_hv_set_msr_common(vcpu, msr, data,
->  					     msr_info->host_initiated);
->  	case MSR_IA32_BBL_CR_CTL3:
-> @@ -4147,6 +4148,7 @@ int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
->  	case HV_X64_MSR_REENLIGHTENMENT_CONTROL:
->  	case HV_X64_MSR_TSC_EMULATION_CONTROL:
->  	case HV_X64_MSR_TSC_EMULATION_STATUS:
-> +	case HV_X64_MSR_TSC_INVARIANT_CONTROL:
->  		return kvm_hv_get_msr_common(vcpu,
->  					     msr_info->index, &msr_info->data,
->  					     msr_info->host_initiated);
+---
+ Documentation/devicetree/bindings/arm/qcom.yaml | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
+diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+index fb1d00bcc847..851cf5edb582 100644
+--- a/Documentation/devicetree/bindings/arm/qcom.yaml
++++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+@@ -459,6 +459,17 @@ properties:
+           - const: google,pazquel-sku2
+           - const: qcom,sc7180
+ 
++      - description: Google Pazquel360 with LTE (newest rev)
++        items:
++          - const: google,pazquel-sku22
++          - const: google,pazquel-sku20
++          - const: qcom,sc7180
++
++      - description: Google Pazquel360 with WiFi (newest rev)
++        items:
++          - const: google,pazquel-sku21
++          - const: qcom,sc7180
++
+       - description: Sharp Dynabook Chromebook C1 (rev1)
+         items:
+           - const: google,pompom-rev1
+-- 
+2.17.1
 
