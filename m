@@ -2,162 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAE0FECAAA1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 00:17:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D2FFECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 00:20:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231528AbiHaAR0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 20:17:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54750 "EHLO
+        id S229560AbiHaAUl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 20:20:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231514AbiHaARR (ORCPT
+        with ESMTP id S229645AbiHaAUh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 20:17:17 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DADFB9BB6E
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:17:14 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id mq13-20020a17090b380d00b001fb60a596c8so1455489pjb.0
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:17:14 -0700 (PDT)
+        Tue, 30 Aug 2022 20:20:37 -0400
+Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1F4066130
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:20:36 -0700 (PDT)
+Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-11dca1c9c01so20753626fac.2
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:20:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:reply-to:from:to:cc;
-        bh=W7gWj5xWpB4Nm/5nHsnSYJ2NBkPvoSHoIvPmK8zyBD4=;
-        b=apF5W0LbK7aSyoktgfKgInFInnrXWL9VjEodnG0XpZyi3607eiUgzGiRhJL5RM2TL9
-         YfsoSbs4PRLUnHxX1xqwhkkjQN4wIqR44jXWqimODSYzoZFu0cD2TrssVikUiQHSLtDD
-         vKck8No7qEHWQJrxZuQvcILCXEEuQJbDyGZ4W8dSpeXPyfKn3OO5ijY38+n4upa8E0bb
-         cLeZyxI1mHAPNPTzQxKsnIzUs5USDf5oDx33hxvTgZhJe7vYPmuWu4m195TNztfGp5xG
-         TkEXQenDtXrRDdlBfCP2DjcomChN7F7dHoH4AMxgqwHR2PwWnd1EOHRs3PGD0VtuoWej
-         sq6w==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=r3UDywg7SzSP8lAjOmZNa7pGOpHyE6/AGndbPKcXCmE=;
+        b=bzVuZjsb/GbRdHuxaQjyUdoyBLSF+gq9Eh4rN4q+6+hC1N1zwJnwVT0LYde7+wmpTj
+         Pk4eXS3foj3JLK0sxxlcQyjxMpGRkUUg6q5aeqLRthXQIwMiqArr8kev7r0ppBBloeTB
+         ZN9aDjIqskVgS/KqfHDPj41Umu3SITKi4PAKzkGS8qdtslfuXfR9S2lfszNPPtAUrVIQ
+         Bh7Jtys7EoRvHvZ2+nlBFWg/Yo8Sq2xwJPSr4xSwZTa8TcwFkJferwJK03yUe2cQcoMv
+         Rimm2lqskmSgDJ26iYqEMbRUURBuxzpz85Md4Ckyly/GYMY4VtVhqXI5W6RTtGJ20Rt5
+         3fQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:reply-to:x-gm-message-state:from:to:cc;
-        bh=W7gWj5xWpB4Nm/5nHsnSYJ2NBkPvoSHoIvPmK8zyBD4=;
-        b=5Acad5uS6qD7bcjnGmwAenWD9cxtFgQtkZXeqMlDzODFnHnybxEyukXSlUUBsKkV5O
-         hDK363QUyDq5gY0x4+yPlSQwqdnSziXr1SEEiDlgyYUIx7PVadpJAhvnM/SbMqRM2bl0
-         RwIyZbZSAmeuJeQ9RX8UV5vi7YJj5itfnbcRkN/PiRsISIl/VU8/Fnp4/ej2c5MdHp+6
-         SNo2tShrb7+PPjVT4+T81wcHdK2mTkaSjx8Kmyb9bPldpq1pl767/4T58uVpa3Y34MJp
-         4AYhgT62TVAqUq5pklfdrd8JCC1DLNVeCFo/8zo3aLvBNq/Xip8DRFpYz+ZwrwUJCIWX
-         XMfQ==
-X-Gm-Message-State: ACgBeo2HTs+CDxZf06cHspoiqQPXiFDlZMrDy2hcRnCT+JJBKb3Yzzv9
-        FdEbQsNGc8sKfEyHEC9JUtoFIqnrLs0=
-X-Google-Smtp-Source: AA6agR4sgrM+8MSFb94eBPFvXUY852S6/HICOlkjKy3bOT/hEkeGasAZ2SS/kAPgwNIf3Ik/7zxZ9sxDuko=
-X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a17:90a:249:b0:1e0:a8a3:3c6c with SMTP id
- t9-20020a17090a024900b001e0a8a33c6cmr22624pje.0.1661905033981; Tue, 30 Aug
- 2022 17:17:13 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed, 31 Aug 2022 00:17:06 +0000
-In-Reply-To: <20220831001706.4075399-1-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220831001706.4075399-1-seanjc@google.com>
-X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220831001706.4075399-4-seanjc@google.com>
-Subject: [PATCH 3/3] KVM: x86: Clean up KVM_CAP_X86_USER_SPACE_MSR documentation
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Sean Christopherson <seanjc@google.com>,
-        Aaron Lewis <aaronlewis@google.com>
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=r3UDywg7SzSP8lAjOmZNa7pGOpHyE6/AGndbPKcXCmE=;
+        b=x/1JNz49UQFZHP4ZNx/XVjyM4iYBU/jszKhUCa2WXdNRf4ysIXqmGNLn+lC1IiN3m3
+         1NW/SaH54u8U7T5Zwzp5EGDtl8itiXZh7FtRdBPxiI4fFQV55UFJ/lWjJ7GdeKSL1XjV
+         s0K8sMwuzGOYiseaXwId6wBckZ9Gr9wcN49Sm5mEOcBwYNPqsxKZEiqw/QeXbfOP9kgo
+         XmgbC9+89E63608bnNEantMcWiozth2wfBzngHmP9bSsZrUriM0ta4vtxSbN/WnK4U6c
+         npC4q0ScJhl/btY7bE/1CcIz5eNXMgJ10twxpcfmqn1Tt3DLrsYQqy27/Z0fjXI/rhbZ
+         pa1Q==
+X-Gm-Message-State: ACgBeo0KzawqV6NsL1Zs/A8oXmn+Mp6rufjDBdOtoU+D/sY2y5LrZo6L
+        1/6Yvg91ASG/+OdwT5/dFEBrpz8RHGCLMzyJ8OU=
+X-Google-Smtp-Source: AA6agR62mmc2S08xI6FO+VBQIQ3CyAM+TxKO3ABv0UrnUPNo5vtWbOEhhvq5Mdr1OebdHmg+Nla78MZnDKmEclnTeN0=
+X-Received: by 2002:aca:c287:0:b0:343:402d:950a with SMTP id
+ s129-20020acac287000000b00343402d950amr209371oif.245.1661905236101; Tue, 30
+ Aug 2022 17:20:36 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220830105001.68478-1-wuchi.zero@gmail.com> <CAHC9VhSq7P8oHE5dQXdaYx33yMBFEASKgRngSZyNYMr96UYT_A@mail.gmail.com>
+In-Reply-To: <CAHC9VhSq7P8oHE5dQXdaYx33yMBFEASKgRngSZyNYMr96UYT_A@mail.gmail.com>
+From:   chi wu <wuchi.zero@gmail.com>
+Date:   Wed, 31 Aug 2022 08:20:24 +0800
+Message-ID: <CA+tQmHDoGjLsq74cifBpe1LvpN3MKYW0O5J9pX=vh4VVHoir8w@mail.gmail.com>
+Subject: Re: [PATCH] audit: remove obvious unnecessary header files
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     eparis@redhat.com, linux-audit@redhat.com,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clean up the KVM_CAP_X86_USER_SPACE_MSR documentation to eliminate
-misleading and/or inconsistent verbiage, and to actually document what
-accesses are intercepted by which flags.
+Paul Moore <paul@paul-moore.com> =E4=BA=8E2022=E5=B9=B48=E6=9C=8831=E6=97=
+=A5=E5=91=A8=E4=B8=89 01:04=E5=86=99=E9=81=93=EF=BC=9A
+>
+>
+> Hi Wuchi, can you explain what process you used to determine that
+> these header file includes were unnecessary?
 
-  - s/will/may since not all #GPs are guaranteed to be intercepted
-  - s/deflect/intercept to align with common KVM terminology
-  - s/user space/userspace to align with the majority of KVM docs
-  - Avoid using "trap" terminology, as KVM exits to userspace _before_
-    stepping, i.e. doesn't exhibit trap-like behavior
-  - Actually document the flags
+When reading the code, if I don't found the user of the *.h in the *.c
+file,I will think that is unnecessary. For example, #include
+<linux/kthread.h> in the audit.c, I don't found the use of kthread* in
+the file.
+But, I just build that without "W=3D1 " , the after test robot show that I
+was wrong. and I don't sure that if it is true to remove some header
+files.
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- Documentation/virt/kvm/api.rst | 40 ++++++++++++++++++++--------------
- 1 file changed, 24 insertions(+), 16 deletions(-)
-
-diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-index 406d3e7c5a59..32d8fc8dcbb5 100644
---- a/Documentation/virt/kvm/api.rst
-+++ b/Documentation/virt/kvm/api.rst
-@@ -6431,29 +6431,29 @@ if it decides to decode and emulate the instruction.
- 
- Used on x86 systems. When the VM capability KVM_CAP_X86_USER_SPACE_MSR is
- enabled, MSR accesses to registers that would invoke a #GP by KVM kernel code
--will instead trigger a KVM_EXIT_X86_RDMSR exit for reads and KVM_EXIT_X86_WRMSR
-+may instead trigger a KVM_EXIT_X86_RDMSR exit for reads and KVM_EXIT_X86_WRMSR
- exit for writes.
- 
--The "reason" field specifies why the MSR trap occurred. User space will only
--receive MSR exit traps when a particular reason was requested during through
-+The "reason" field specifies why the MSR interception occurred. Userspace will
-+only receive MSR exits when a particular reason was requested during through
- ENABLE_CAP. Currently valid exit reasons are:
- 
- 	KVM_MSR_EXIT_REASON_UNKNOWN - access to MSR that is unknown to KVM
- 	KVM_MSR_EXIT_REASON_INVAL - access to invalid MSRs or reserved bits
- 	KVM_MSR_EXIT_REASON_FILTER - access blocked by KVM_X86_SET_MSR_FILTER
- 
--For KVM_EXIT_X86_RDMSR, the "index" field tells user space which MSR the guest
--wants to read. To respond to this request with a successful read, user space
-+For KVM_EXIT_X86_RDMSR, the "index" field tells userspace which MSR the guest
-+wants to read. To respond to this request with a successful read, userspace
- writes the respective data into the "data" field and must continue guest
- execution to ensure the read data is transferred into guest register state.
- 
--If the RDMSR request was unsuccessful, user space indicates that with a "1" in
-+If the RDMSR request was unsuccessful, userspace indicates that with a "1" in
- the "error" field. This will inject a #GP into the guest when the VCPU is
- executed again.
- 
--For KVM_EXIT_X86_WRMSR, the "index" field tells user space which MSR the guest
--wants to write. Once finished processing the event, user space must continue
--vCPU execution. If the MSR write was unsuccessful, user space also sets the
-+For KVM_EXIT_X86_WRMSR, the "index" field tells userspace which MSR the guest
-+wants to write. Once finished processing the event, userspace must continue
-+vCPU execution. If the MSR write was unsuccessful, userspace also sets the
- "error" field to "1".
- 
- See KVM_X86_SET_MSR_FILTER for details on the interaction with MSR filtering.
-@@ -7223,19 +7223,27 @@ the module parameter for the target VM.
- :Parameters: args[0] contains the mask of KVM_MSR_EXIT_REASON_* events to report
- :Returns: 0 on success; -1 on error
- 
--This capability enables trapping of #GP invoking RDMSR and WRMSR instructions
--into user space.
-+This capability allows userspace to intercept RDMSR and WRMSR instructions if
-+access to an MSR is denied.  By default, KVM injects #GP on denied accesses.
- 
- When a guest requests to read or write an MSR, KVM may not implement all MSRs
- that are relevant to a respective system. It also does not differentiate by
- CPU type.
- 
--To allow more fine grained control over MSR handling, user space may enable
-+To allow more fine grained control over MSR handling, userspace may enable
- this capability. With it enabled, MSR accesses that match the mask specified in
--args[0] and trigger a #GP event inside the guest by KVM will instead trigger
--KVM_EXIT_X86_RDMSR and KVM_EXIT_X86_WRMSR exit notifications which user space
--can then handle to implement model specific MSR handling and/or user notifications
--to inform a user that an MSR was not handled.
-+args[0] and would trigger a #GP inside the guest will instead trigger
-+KVM_EXIT_X86_RDMSR and KVM_EXIT_X86_WRMSR exit notifications.  Userspace
-+can then implement model specific MSR handling and/or user notifications
-+to inform a user that an MSR was not emulated/virtualized by KVM.
-+
-+The valid mask flags are:
-+
-+	KVM_MSR_EXIT_REASON_UNKNOWN - intercept accesses to unknown (to KVM) MSRs
-+	KVM_MSR_EXIT_REASON_INVAL   - intercept accesses that are architecturally
-+                                invalid according to the vCPU model and/or mode
-+	KVM_MSR_EXIT_REASON_FILTER  - intercept accesses that are denied by userspace
-+                                via KVM_X86_SET_MSR_FILTER
- 
- 7.22 KVM_CAP_X86_BUS_LOCK_EXIT
- -------------------------------
--- 
-2.37.2.672.g94769d06f0-goog
-
+thanks
+wuchi
+>
+> --
+> paul-moore.com
