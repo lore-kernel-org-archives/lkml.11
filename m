@@ -2,131 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D547EECAAD5
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 09:29:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E0F5ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 09:30:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231867AbiHaJ3O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 05:29:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52650 "EHLO
+        id S231869AbiHaJaX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 05:30:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231887AbiHaJ3G (ORCPT
+        with ESMTP id S229742AbiHaJaT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 05:29:06 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD68DCE45F
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 02:29:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661938143; x=1693474143;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=GBJ1KL0AS+/TPkB2lGtEyWWMhZQldDqNk+PrCAI4uQs=;
-  b=h0M6UOesleKXJb5miF51bl60qQDXFpoQ8qDQEXKIYhRAWH+i9XdeBmhf
-   s5mQk/j6/j9jdfZz6AUQLvx6Brw3wBBsot+3neV5Zsk1V1z8P1DIe4T7a
-   0b5W7Kkr6HJ08sR+x7Nnk5JpzjLhfi1QnSZdw5ftYaj1Mp1Ajkc8u5RUy
-   NhQdXzmpAEzuV/q7SjH2J0VFbRakTdU6NBZe7PQBa/7m++H2o57cLPgjR
-   +fApcGpslgWGiQfkwed+87viepHYJUG8c9yRfSNbtMGa6HkP2M4Qm2+G2
-   PdTgS/35+U4j695uJkeT8FnEEp47v+3Ah2x+FIFFsHfX23IWCjSpAg5Cn
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="359370151"
-X-IronPort-AV: E=Sophos;i="5.93,277,1654585200"; 
-   d="scan'208";a="359370151"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 02:29:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,277,1654585200"; 
-   d="scan'208";a="680369182"
-Received: from lkp-server02.sh.intel.com (HELO 811e2ceaf0e5) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 31 Aug 2022 02:29:01 -0700
-Received: from kbuild by 811e2ceaf0e5 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oTK1t-0000AD-0N;
-        Wed, 31 Aug 2022 09:29:01 +0000
-Date:   Wed, 31 Aug 2022 17:28:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Anup Patel <apatel@ventanamicro.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Mayuresh Chitale <mchitale@ventanamicro.com>
-Subject: [avpatel:riscv_pmem_v1 9/11] arch/riscv/mm/cacheflush.c:99:2: error:
- call to undeclared function 'for_each_of_cpu_node'; ISO C99 and later do not
- support implicit function declarations
-Message-ID: <202208311748.kkZGf9sX-lkp@intel.com>
+        Wed, 31 Aug 2022 05:30:19 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86D443F1C7
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 02:30:18 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MHf2M61TQzlWd5;
+        Wed, 31 Aug 2022 17:26:51 +0800 (CST)
+Received: from kwepemm600008.china.huawei.com (7.193.23.88) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 31 Aug 2022 17:30:16 +0800
+Received: from [10.174.176.230] (10.174.176.230) by
+ kwepemm600008.china.huawei.com (7.193.23.88) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 31 Aug 2022 17:30:15 +0800
+Message-ID: <a21358e0-c8b0-368c-5ebb-061598c0f3a6@huawei.com>
+Date:   Wed, 31 Aug 2022 17:30:13 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.0
+Subject: Re: [PATCH] sched/deadline: Add should_push_task_away helper
+To:     Daniel Bristot de Oliveira <bristot@redhat.com>,
+        <mingo@redhat.com>, <peterz@infradead.org>,
+        <juri.lelli@redhat.com>, <vincent.guittot@linaro.org>,
+        <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
+        <bsegall@google.com>, <mgorman@suse.de>, <vschneid@redhat.com>,
+        <linux-kernel@vger.kernel.org>
+References: <20220829100533.19153-1-shangxiaojing@huawei.com>
+ <95f8c01c-12b2-5f2e-bc8f-288f16bfa5d3@redhat.com>
+From:   shangxiaojing <shangxiaojing@huawei.com>
+In-Reply-To: <95f8c01c-12b2-5f2e-bc8f-288f16bfa5d3@redhat.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.176.230]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600008.china.huawei.com (7.193.23.88)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/avpatel/linux.git riscv_pmem_v1
-head:   3d8ca09f6ee6f53dd03a1eeda6a68ef73056601e
-commit: 1cb8ad397aba3a012059dacd724ac7772bf6ea54 [9/11] RISC-V: Move riscv_init_cbom_blocksize() to cacheflush.c
-config: riscv-randconfig-r042-20220830 (https://download.01.org/0day-ci/archive/20220831/202208311748.kkZGf9sX-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project c7df82e4693c19e3fd2e25c83eb04d9deb7b7b59)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://github.com/avpatel/linux/commit/1cb8ad397aba3a012059dacd724ac7772bf6ea54
-        git remote add avpatel https://github.com/avpatel/linux.git
-        git fetch --no-tags avpatel riscv_pmem_v1
-        git checkout 1cb8ad397aba3a012059dacd724ac7772bf6ea54
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/mm/
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+On 2022/8/31 17:23, Daniel Bristot de Oliveira wrote:
+> On 8/29/22 12:05, Shang XiaoJing wrote:
+>> +static inline bool should_push_task_away(struct task_struct *a,
+>> +					  struct task_struct *b)
+> static inline bool should_push_task_dl(struct task_struct *curr, struct task_struct *p)
+>
+> a and b are not good variable names, and add the _dl suffix (instead of away).
+ok, i like that :-). This will be done in patch v2.
+>> +{
+>> +	return unlikely(dl_task(a)) &&
+>> +	       (a->nr_cpus_allowed < 2 ||
+>> +		!dl_entity_preempt(&b->dl, &a->dl)) &&
+>> +	       b->nr_cpus_allowed > 1;
+>> +}
+>> +
+> -- Daniel
 
-All errors (new ones prefixed by >>):
+Thanks,
 
->> arch/riscv/mm/cacheflush.c:99:2: error: call to undeclared function 'for_each_of_cpu_node'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           for_each_of_cpu_node(node) {
-           ^
->> arch/riscv/mm/cacheflush.c:99:28: error: expected ';' after expression
-           for_each_of_cpu_node(node) {
-                                     ^
-                                     ;
->> arch/riscv/mm/cacheflush.c:105:4: error: 'continue' statement not in loop statement
-                           continue;
-                           ^
-   arch/riscv/mm/cacheflush.c:108:4: error: 'continue' statement not in loop statement
-                           continue;
-                           ^
->> arch/riscv/mm/cacheflush.c:111:9: error: call to undeclared function 'of_property_read_u32'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-                   ret = of_property_read_u32(node, "riscv,cbom-block-size", &val);
-                         ^
-   arch/riscv/mm/cacheflush.c:113:4: error: 'continue' statement not in loop statement
-                           continue;
-                           ^
-   6 errors generated.
+Shang XiaoJing
 
-
-vim +/for_each_of_cpu_node +99 arch/riscv/mm/cacheflush.c
-
-    91	
-    92	#ifdef CONFIG_RISCV_ISA_ZICBOM
-    93	void riscv_init_cbom_blocksize(void)
-    94	{
-    95		struct device_node *node;
-    96		int ret;
-    97		u32 val;
-    98	
-  > 99		for_each_of_cpu_node(node) {
-   100			unsigned long hartid;
-   101			int cbom_hartid;
-   102	
-   103			ret = riscv_of_processor_hartid(node, &hartid);
-   104			if (ret)
- > 105				continue;
-   106	
-   107			if (hartid < 0)
-   108				continue;
-   109	
-   110			/* set block-size for cbom extension if available */
- > 111			ret = of_property_read_u32(node, "riscv,cbom-block-size", &val);
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
