@@ -2,214 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0406ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 20:09:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67051ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 20:11:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230414AbiHaUJy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 16:09:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60994 "EHLO
+        id S232014AbiHaULZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 16:11:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232194AbiHaUJl (ORCPT
+        with ESMTP id S232211AbiHaULO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 16:09:41 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72000EE6A4;
-        Wed, 31 Aug 2022 13:09:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661976570; x=1693512570;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=J+oHj258BvEFo3Hgudi6m8yyaVCBa1y6Q8ShWbl1LHw=;
-  b=m/LWOgrs1fq1Oq6+zj8kpZfJHLpdxM+SgHy69DkpdBrGe5ubsEXISsAp
-   4/6acutb5eaVRsBszuXC/c93CTL4J5OosBx79QFHlQLW9O/9DXKDU9PZH
-   yt6gSJY7LM8QnB76EXRF8pEqUdoYP5sYIcBHgj6s/PyRz6pXDlXT6l+0G
-   0cWTegW4E32e8qMlkI5HKcOo0BNbyUEMk1uQ09jZ+h46m2SsgBbeiikO5
-   rrYrkBGBQV98u0E7gwXfD/CljapCkmzYIe3PwV3G1P0Ba2rIHLBBbyT97
-   dMtKpMQnqjKx3+knYZOR/sMDl7D0AyBRgEk83hfEMrB1RwTbUMGzBheO/
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="381830794"
-X-IronPort-AV: E=Sophos;i="5.93,279,1654585200"; 
-   d="scan'208";a="381830794"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 13:09:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,279,1654585200"; 
-   d="scan'208";a="787975520"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by orsmga005.jf.intel.com with ESMTP; 31 Aug 2022 13:09:15 -0700
-Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 31 Aug 2022 13:09:14 -0700
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 31 Aug 2022 13:09:14 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Wed, 31 Aug 2022 13:09:14 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.107)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Wed, 31 Aug 2022 13:09:14 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WZf01X5HH39okMBJp/WQGcYaIBRKaz2BLLAE0kgMI8S4DJ0mLQtsaKwBXeb6ppkONrwpbpbbfXYAe9QQkZVy+c5DizTFkQf/LiZjYytH9f3ahoSZ9/1BHyCbhbabp3jHxsa3IEpcZmTH3up8Aw5c6Nrb/nepl4OedVHUFHB88Vjy7ZEMxDG24taWa7qlu5Qw81AaBwkxrvR8BoTcKj5+vj9nm1zxjZnwtZRqbb4dubB5AMDUa2nPhqAUHVrvtGXRw9m2IY9B4hxy5Brvk0TC4hokUW975sA7QkQi5h37d52oF31G8SBq9Vz/cdx3O84dIz9UkTF+gc5n2dqMF+bznw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GrMQtLBoI6awj8GGIRsZnIrgHQ/fa0Ex6P9BBu1E8xY=;
- b=Ki09EH/iS/98iUDL0h5KODn8I4Wx2jhVCK7iEjBFZ4ths0B9Iy3eE5zrJTUpxu11xrBOybxzMB411oIUiDVFfZGjGZHMqSNBoqRCHGwfJCNYtDmgac2wWvQo7AxXy6DtuBmoWJybm34XxSurVXSjMR8lL2/3NoluMWwjHJX4qGFIAInSQ3PY/mnmPP24fSL51siKG7l55VLMCp81WUYhVmXpjuhBw0B8jWk4PEsaO3uc6vy7idd83OaHerEXY4fxBN8o3FZE+dZWjg2Dxiu3mok6lEMfNCW2nDtImQTm4NKJ+HVaLn8Cwf+kybuqX+2r4FyLDsa4UNeBSLWqqRi7iA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
- by PH8PR11MB6951.namprd11.prod.outlook.com (2603:10b6:510:225::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.16; Wed, 31 Aug
- 2022 20:09:12 +0000
-Received: from CO1PR11MB5089.namprd11.prod.outlook.com
- ([fe80::295a:f0fd:ffeb:2115]) by CO1PR11MB5089.namprd11.prod.outlook.com
- ([fe80::295a:f0fd:ffeb:2115%4]) with mapi id 15.20.5588.010; Wed, 31 Aug 2022
- 20:09:11 +0000
-From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
-To:     ivecera <ivecera@redhat.com>,
-        "Laba, SlawomirX" <slawomirx.laba@intel.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Piotrowski, Patryk" <patryk.piotrowski@intel.com>,
-        Vitaly Grinberg <vgrinber@redhat.com>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Eric Dumazet" <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "moderated list:INTEL ETHERNET DRIVERS" 
-        <intel-wired-lan@lists.osuosl.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net v2] iavf: Detach device during reset task
-Thread-Topic: [PATCH net v2] iavf: Detach device during reset task
-Thread-Index: AQHYvEjk1CGq6TaBGUCRbbEbTVSolK3H64sAgACsCwCAANrVMA==
-Date:   Wed, 31 Aug 2022 20:09:11 +0000
-Message-ID: <CO1PR11MB508906BBD9F721E08C79CA8DD6789@CO1PR11MB5089.namprd11.prod.outlook.com>
-References: <20220830081627.1205872-1-ivecera@redhat.com>
-        <DM6PR11MB31134AD7D5D1CB5382A5052887799@DM6PR11MB3113.namprd11.prod.outlook.com>
- <20220831090540.53e324af@p1.luc.cera.cz>
-In-Reply-To: <20220831090540.53e324af@p1.luc.cera.cz>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ac5e1f9a-c76b-481c-5972-08da8b8cab72
-x-ms-traffictypediagnostic: PH8PR11MB6951:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: xuXhTCUGXPTiMJkm5qH5FCQ+g4YJbHe4zKnfzkNfMftiFEO/i92fymm8rI9Z2iKEOl3FhqpIisO++D5NZmKXvtFlKKyVyR18xzR21BEHbU21vq3XZMvb210GCmr9+psQvAFAB7fFGBErJzMUEgEka/ERl+oAs8JuJWnKT/P31nvQ6lya1XAi1PRz5gtT9qMTQF2X3c4cB6MJyZVhHuaQ5aQ2xjLKvRQs9WXNdUpg6SitJGfI/TPhy8tLlrVXUPq+2XzUSyOeHfI91yezP5HS40tZ1f5zQwKAa2untmZbC5k5LWfMiL6UTtcw0F/k3eIkDpRFn2C9tC9AbQr9sBjjWpH0GjvbPQglu3YqAnHyNMqxWX740zaypLh/OCwk+4INeF7J8gIudPcYb16HMqhS0mdXxdZuP3l+BWw05Lb9VR3aZzj8ZX2CBc1KtgFYwNBBhOoxXHm8I1QgjuiWqhkiSOu6D4A/Y0bpITZSO51/il91L1uCwy7RFi7oKKUCq7TqERh/cEaMOpBttx6yQVZ85jL2mgFtBNAl0iuVmBKbXf68hJX/6OvY4o63X9PwOokgHli4Ge5UUof69TsnkEE0Zn86/z4XksHQvvrrDIKuPI28k0HT3ybYJO+H6J8fZbuquBr7CqAXwHv5sCRHbR7QmNmN4v8j97FawWgRlFPJX+cAaXiRYNQT+sJN/urifmBUF+CtbYF1HWRv0WqOX5muuCPj4xxiB6Iao4BDFgw8PtdRQx59YzyGRL4ufgw8ZQtYno++EjVqc7CA1dHt+7IlcA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(366004)(39860400002)(136003)(346002)(396003)(71200400001)(41300700001)(7696005)(9686003)(53546011)(6506007)(478600001)(38070700005)(86362001)(8936002)(33656002)(82960400001)(38100700002)(26005)(2906002)(83380400001)(186003)(122000001)(52536014)(8676002)(66476007)(66446008)(4326008)(110136005)(66946007)(55016003)(66556008)(76116006)(64756008)(5660300002)(54906003)(6636002)(316002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?bi7kPp1N/Wtkj5NJjMfYcVWWfn6U/+orimyJaz4U/faq+0GCk2f9LylSh5Ye?=
- =?us-ascii?Q?u6EX0xwziR+nDDVhhMF6997BeLi8jY1TEpL0JYf1ur3Qe1+7FcTa5EfqlFlo?=
- =?us-ascii?Q?J0SmpcgbpaAc4n8Fl1AtaxfBan0ukyN8+PzhSINizD6kPjnB0F/8bSG4eWxr?=
- =?us-ascii?Q?+Fce6xw9cBKKlkmUnc7tyLa7ewoNOZ+ntfcTnStuGlx+p/4Sux3R5t0zFpRO?=
- =?us-ascii?Q?8N/59eOCQEuKmfi+gPUhjUcR8TqTVappbeBJQmPBbHTEi0xgV5I+xg2HlJ6B?=
- =?us-ascii?Q?zYLjvlqIEJ+FlEZCkfNCZhmwT9NOm2NPeMk81l3YTsB1IvSCeynglhqgmLNZ?=
- =?us-ascii?Q?lwQhrrWCCam5ArrT2VZJ8Mdtem7vutTdqBP92N36sCWIeUPY1eUfF6FyXgS5?=
- =?us-ascii?Q?IDGX9sAaTOfnTETSa8fhc9oAGEUaN3UJZLWOPO4uRqRo5K+PFXrPqfv6ulzt?=
- =?us-ascii?Q?pzT4kvdUtuveqhDKChbHN8R3zadUpK95X0BPydFIfyVD0izj23v7btSyAwEt?=
- =?us-ascii?Q?hu5vCDqu8/d8Fih7xTGRU/cOQSK+Zp/nP3kmgVw7/LuBX0OL9beDiMJs5OZm?=
- =?us-ascii?Q?Sjb8/jcWRqgfgZVJI7bbJ72kD2Qm/QlFNV5JEjwQQmzhnwSi5mgJsqDTBonC?=
- =?us-ascii?Q?zqv7FoK4+JXBjUTuHlSBxG2oVp649L9cyu5ni74EGNxdzA2eRuh3SoSgJFK0?=
- =?us-ascii?Q?HdRMRKCzkdfsVofutPBwFYHlqnm74qKmTsbbv6OokFNlS3DM/N0DPOgElsLy?=
- =?us-ascii?Q?h7FrjssmH3HhDE1vU3l1mnBpxYCym1FmUf7DKdy2uTvrK+JpIFxuV01YZwnE?=
- =?us-ascii?Q?XCUW14YmROJLS/RheiUHPjwuHhEKJRU9LYPM+e2ZQ1zZpcP+n8zKPLc2kqnH?=
- =?us-ascii?Q?zn9wuRKVdDCE71jOGRsvRAlJwuGRNLie17nxYZtDltkmYcFK/qHYO/OHcySH?=
- =?us-ascii?Q?jPGGqmJqlSGVbuFWEyH1Eh41f0GnW4wLa7LO+ZAWgjwGgWfV4IjB/GSinYLX?=
- =?us-ascii?Q?6gYsYldapwtQWtzRBn/fRedLy857icREgMtMHVpYsMAYysJ7snwi6WNWhD40?=
- =?us-ascii?Q?PZrWjJ0P7upa9fozcXB9JhcA55n52iNFuqaapMsT/JPLFtyfSYEU5ngTv+Ff?=
- =?us-ascii?Q?QLE3+M2WMLoi51Q7Q/Q1zac6JE75qRVGX4sqpsjCAdsUG4FI+GYbM/uKolci?=
- =?us-ascii?Q?zwkIfksd2iKaHWRXYL09m2grHR1waBi9a9TW/gLzZeBEuEwXF0Hamm4RgH9T?=
- =?us-ascii?Q?qbFq7R91m0A96Xa86lyyJLl+vdz1LRylDngX04N6y7/lwy1x+IxBhPQSebQN?=
- =?us-ascii?Q?0/6ay3dlgrhPBHXp62lPLOEQQmpTX3TZiZbRY/57oGz2R/wSTQI0Xw1gxw+O?=
- =?us-ascii?Q?t9U4F7X5NGAOeDxzqkvGMXSv+/ua57DPygi4wv7OeCd5AzafUvfJ1gsRQ+5e?=
- =?us-ascii?Q?mExsQ7kBpaFtPtUdk4Z38Gyr9feFgWj2LrTrtDc5mbo6ERQOcNoc5dBpckjO?=
- =?us-ascii?Q?Dvs1DpJl+ciRUBwklGeeEBEgBcxoqVa74c42x/0ffdBLtGNU5dcy1HYsliVc?=
- =?us-ascii?Q?ssoM8f8u9ugwfrBH+SB90N09qOccbsOhMIcvLykM?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Wed, 31 Aug 2022 16:11:14 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0AB6C2774;
+        Wed, 31 Aug 2022 13:10:53 -0700 (PDT)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27VJo2Cm021881;
+        Wed, 31 Aug 2022 20:10:37 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : from : to : cc : references : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=EoFDqYDmAmcHelb1TwaylGQ01tRux6eGAVVSEzEPYcE=;
+ b=jLV/OtEcDmD/m9cLTgrZWWgTN6SBlpsAcEe31da8vOg72D3D9X+/dXZDn5UYiCGuSmT3
+ W+9A3XBWKbk5gcAIAJQvtP1+DhzywpBAcfq8yngAs3/3bJeWNGwwPCGzMfhTtPE2+uGS
+ Z4DpmvaWrELG4iapG9RwTTxMh3WD/bzrxsftkiGtux3OCDio3CQ6Z1texMj0PbbRK13p
+ Qeo6o5FUH0WdQutAmkhneaBo+sogXZTTgj1b+fQwlfCriuJAfvOOCawBTK24ugw95cVm
+ ZmdjjWt6vBQTJ3d28IeNwmvUDwIeaS3Gb9qfH3X3w8C9a4OqvBqt2I8Yj74+OssLmtVx Hw== 
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jae518st2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 31 Aug 2022 20:10:37 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27VK69hv020020;
+        Wed, 31 Aug 2022 20:10:36 GMT
+Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
+        by ppma02dal.us.ibm.com with ESMTP id 3j7aw9umwh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 31 Aug 2022 20:10:36 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
+        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27VKAZkM10355314
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 31 Aug 2022 20:10:35 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7D4BE112062;
+        Wed, 31 Aug 2022 20:10:35 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id ADA06112061;
+        Wed, 31 Aug 2022 20:10:34 +0000 (GMT)
+Received: from [9.160.77.30] (unknown [9.160.77.30])
+        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
+        Wed, 31 Aug 2022 20:10:34 +0000 (GMT)
+Message-ID: <ebe5fa1e-812b-d705-1dff-41fa390c8596@linux.ibm.com>
+Date:   Wed, 31 Aug 2022 16:10:34 -0400
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ac5e1f9a-c76b-481c-5972-08da8b8cab72
-X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Aug 2022 20:09:11.4113
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: e433GESpcDQwEeRMdzAcLGkI64xFsjblIb78VMUjrkRJz8jHUaqOoUtZn24M9LBS8DHVSambCCOtybbDlRXVq/laacvqmSY0MMLs729fFiA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB6951
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH v3] iommu/s390: Fix race with release_device ops
+Content-Language: en-US
+From:   Matthew Rosato <mjrosato@linux.ibm.com>
+To:     Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev
+Cc:     linux-s390@vger.kernel.org, schnelle@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, joro@8bytes.org, will@kernel.org,
+        robin.murphy@arm.com, jgg@nvidia.com, linux-kernel@vger.kernel.org
+References: <20220830201546.18871-1-mjrosato@linux.ibm.com>
+ <12a49c8d-cb38-e22a-0040-88350b6210aa@linux.ibm.com>
+ <89bd532b-33ac-5f9d-a06e-eb002168778b@linux.ibm.com>
+In-Reply-To: <89bd532b-33ac-5f9d-a06e-eb002168778b@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: L1GGMTxseALPilKmrl6irVrGbXklrTe-
+X-Proofpoint-GUID: L1GGMTxseALPilKmrl6irVrGbXklrTe-
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-31_12,2022-08-31_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ lowpriorityscore=0 mlxscore=0 malwarescore=0 clxscore=1015 mlxlogscore=999
+ spamscore=0 phishscore=0 bulkscore=0 adultscore=0 suspectscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208310097
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 8/31/22 10:12 AM, Matthew Rosato wrote:
+> On 8/31/22 5:05 AM, Pierre Morel wrote:
+>>
+>>
+>> On 8/30/22 22:15, Matthew Rosato wrote:
+>>> With commit fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev
+>>> calls") s390-iommu is supposed to handle dynamic switching between IOMMU
+>>> domains and the DMA API handling.  However, this commit does not
+>>> sufficiently handle the case where the device is released via a call
+>>> to the release_device op as it may occur at the same time as an opposing
+>>> attach_dev or detach_dev since the group mutex is not held over
+>>> release_device.  This was observed if the device is deconfigured during a
+>>> small window during vfio-pci initialization and can result in WARNs and
+>>> potential kernel panics.
+>>>
+>>> Handle this by tracking when the device is probed/released via
+>>> dev_iommu_priv_set/get().  Ensure that once the device is released only
+>>> release_device handles the re-init of the device DMA.
+>>>
+>>> Fixes: fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev calls")
+>>> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+>>> ---
+>>> Changes since v2:
+>>> - Relocate the list_empty and aperture chekcs in attach_dev to the
+>>>    their original locations so they are all done under a single
+>>>    acquisition of the spinlock (Heiko)
+>>> ---
+>>>   arch/s390/include/asm/pci.h |  1 +
+>>>   arch/s390/pci/pci.c         |  1 +
+>>>   drivers/iommu/s390-iommu.c  | 39 ++++++++++++++++++++++++++++++++++---
+>>>   3 files changed, 38 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
+>>> index 7b4cdadbc023..080251e7b275 100644
+>>> --- a/arch/s390/include/asm/pci.h
+>>> +++ b/arch/s390/include/asm/pci.h
+>>> @@ -157,6 +157,7 @@ struct zpci_dev {
+>>>       /* DMA stuff */
+>>>       unsigned long    *dma_table;
+>>>       spinlock_t    dma_table_lock;
+>>> +    struct mutex    dma_domain_lock; /* protects s390_domain value */
+>>>       int        tlb_refresh;
+>>>         spinlock_t    iommu_bitmap_lock;
+>>> diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
+>>> index 73cdc5539384..973edd32ecc9 100644
+>>> --- a/arch/s390/pci/pci.c
+>>> +++ b/arch/s390/pci/pci.c
+>>> @@ -832,6 +832,7 @@ struct zpci_dev *zpci_create_device(u32 fid, u32 fh, enum zpci_state state)
+>>>       kref_init(&zdev->kref);
+>>>       mutex_init(&zdev->lock);
+>>>       mutex_init(&zdev->kzdev_lock);
+>>> +    mutex_init(&zdev->dma_domain_lock);
+>>>         rc = zpci_init_iommu(zdev);
+>>>       if (rc)
+>>> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+>>> index c898bcbbce11..1137d669e849 100644
+>>> --- a/drivers/iommu/s390-iommu.c
+>>> +++ b/drivers/iommu/s390-iommu.c
+>>> @@ -99,6 +99,14 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
+>>>       if (!domain_device)
+>>>           return -ENOMEM;
+>>>   +    /* Leave now if the device has already been released */
+>>> +    mutex_lock(&zdev->dma_domain_lock);
+>>> +    if (!dev_iommu_priv_get(dev)) {
+>>> +        mutex_unlock(&zdev->dma_domain_lock);
+>>> +        kfree(domain_device);
+>>> +        return 0;
+>>> +    }
+>>> +
+>>>       if (zdev->dma_table && !zdev->s390_domain) {
+>>>           cc = zpci_dma_exit_device(zdev);
+>>>           if (cc) {
+>>> @@ -132,9 +140,10 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
+>>>           goto out_restore;
+>>>       }
+>>>       domain_device->zdev = zdev;
+>>> -    zdev->s390_domain = s390_domain;
+>>>       list_add(&domain_device->list, &s390_domain->devices);
+>>>       spin_unlock_irqrestore(&s390_domain->list_lock, flags);
+>>> +    zdev->s390_domain = s390_domain;
+>>> +    mutex_unlock(&zdev->dma_domain_lock);
+>>>         return 0;
+>>>   @@ -147,6 +156,7 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
+>>>                      virt_to_phys(zdev->dma_table));
+>>>       }
+>>>   out_free:
+>>> +    mutex_unlock(&zdev->dma_domain_lock);
+>>>       kfree(domain_device);
+>>>         return rc;
+>>> @@ -176,17 +186,22 @@ static void s390_iommu_detach_device(struct iommu_domain *domain,
+>>>       }
+>>>       spin_unlock_irqrestore(&s390_domain->list_lock, flags);
+>>>   -    if (found && (zdev->s390_domain == s390_domain)) {
+>>> +    mutex_lock(&zdev->dma_domain_lock);
+>>> +    if (found && (zdev->s390_domain == s390_domain) &&
+>>> +        dev_iommu_priv_get(dev)) {
+>>>           zdev->s390_domain = NULL;
+>>>           zpci_unregister_ioat(zdev, 0);
+>>>           zpci_dma_init_device(zdev);
+>>>       }
+>>> +    mutex_unlock(&zdev->dma_domain_lock);
+>>>   }
+>>>     static struct iommu_device *s390_iommu_probe_device(struct device *dev)
+>>>   {
+>>>       struct zpci_dev *zdev = to_zpci_dev(dev);
+>>>   +    dev_iommu_priv_set(dev, zdev);
+>>> +
+>>>       return &zdev->iommu_dev;
+>>>   }
+>>>   @@ -206,10 +221,28 @@ static void s390_iommu_release_device(struct device *dev)
+>>>        *
+>>>        * So let's call detach_dev from here if it hasn't been called before.
+>>>        */
+>>> -    if (zdev && zdev->s390_domain) {
+>>> +    if (zdev) {
+>>> +        /*
+>>> +         * Clear priv to block further attaches for this device,
+>>> +         * ensure detaches don't init DMA.  Hold the domain lock
+>>> +         * to ensure that attach/detach get a consistent view of
+>>> +         * whether or not the device is released.
+>>> +         */
+>>> +        mutex_lock(&zdev->dma_domain_lock);
+>>> +        dev_iommu_priv_set(dev, NULL);
+>>> +        mutex_unlock(&zdev->dma_domain_lock);
+>>> +        /* Make sure this device is removed from the domain list */
+>>>           domain = iommu_get_domain_for_dev(dev);
+>>
+>>
+>> Shouldn't you take the group_mutex before calling directly s390_iommu_detach_device from here?
+>>
+> 
+> Well, we can't do that directly as the group mutex is only accessible to the iommu core.  But perhaps the right answer is to call back into the core here by just replacing the existing call to s390_iommu_detach_device below with a call to iommu_detach_device (1 line change).  Then we still ensure DMA is initialized next after this point.  I've been running tests with such a change for the last few hours and this works well.
+> 
 
+Nope, looking closer that won't work -- There is a small window between calling iommu_get_domain_for_dev and then the subsequent call to iommu_detach_device() where the group->domain could still change, which would trigger a WARN_ON in iommu_detach_device (I managed to trigger this once). 
 
-> -----Original Message-----
-> From: Ivan Vecera <ivecera@redhat.com>
-> Sent: Wednesday, August 31, 2022 12:06 AM
-> To: Laba, SlawomirX <slawomirx.laba@intel.com>
-> Cc: netdev@vger.kernel.org; Keller, Jacob E <jacob.e.keller@intel.com>;
-> Piotrowski, Patryk <patryk.piotrowski@intel.com>; Vitaly Grinberg
-> <vgrinber@redhat.com>; Brandeburg, Jesse <jesse.brandeburg@intel.com>;
-> Nguyen, Anthony L <anthony.l.nguyen@intel.com>; David S. Miller
-> <davem@davemloft.net>; Eric Dumazet <edumazet@google.com>; Jakub Kicinski
-> <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>; Jeff Kirsher
-> <jeffrey.t.kirsher@intel.com>; moderated list:INTEL ETHERNET DRIVERS <int=
-el-
-> wired-lan@lists.osuosl.org>; open list <linux-kernel@vger.kernel.org>
-> Subject: Re: [PATCH net v2] iavf: Detach device during reset task
->=20
-> On Tue, 30 Aug 2022 20:49:54 +0000
-> "Laba, SlawomirX" <slawomirx.laba@intel.com> wrote:
->=20
-> > Ivan, what do you think about this flow [1]? Shouldn't it also goto res=
-et_finish
-> label?
-> >
-> > 	if (i =3D=3D IAVF_RESET_WAIT_COMPLETE_COUNT) {
-> > 		dev_err(&adapter->pdev->dev, "Reset never finished (%x)\n",
-> > 			reg_val);
-> > 		iavf_disable_vf(adapter);
-> > 		mutex_unlock(&adapter->client_lock);
-> > 		mutex_unlock(&adapter->crit_lock);
-> > 		return; /* Do not attempt to reinit. It's dead, Jim. */
-> > 	}
-> >
-> > I am concerned that if the reset never finishes and iavf goes into disa=
-bled state,
-> and then for example if driver reload operation is performed, bad things =
-can
-> happen.
->=20
-> I think we should not re-attach device back as the VF is disabled. Detach=
-ed device
-> causes that userspace (user) won't be able to configure associated interf=
-ace
-> that is correct. Driver reload won't cause anything special in this situa=
-tion
-> because during module removal the interface is unregistered.
->=20
-> Thanks,
-> Ivan
+But really, I think just leaving this as a call to s390_iommu_detach_device without the group_mutex held at this point is OK, all the detach will do at this point (since priv has already been nullified) is get the list_lock and clear the entry for the domain that happened to be the group domain at the time release_device started - and any attempts at further attaches will just quietly return 0 because priv is null.  I guess technically we could also inline that list_del work into release_device and not even call s390_iommu_detach_device.  But the reality is by the time we've reached this point the device is going away and so it's going to have to be removed from all associated domains very soon, not just the one that happens to be active -- So this combined with my 2nd patch (sending shortly as a v4 series) would ensure the device gets removed from each domain, either from a detach_dev or a domain_free call.
 
-I agree. It's safe to remove a detached device.
+> But this also made me notice another subtle issue re: a mismatch between the number of kallocs and kfrees for s390_domain_device.  Need to investigate that further before a next version.
+> 
+>>
+>>>           if (domain)
+>>>               s390_iommu_detach_device(domain, dev);
+>>
+>>
+>>
+>>
+>>> +        /* Now ensure DMA is initialized from here */
+>>> +        mutex_lock(&zdev->dma_domain_lock);
+>>> +        if (zdev->s390_domain) {
+>>> +            zdev->s390_domain = NULL;
+>>> +            zpci_unregister_ioat(zdev, 0);
+>>> +            zpci_dma_init_device(zdev);
+>>> +        }
+>>> +        mutex_unlock(&zdev->dma_domain_lock);
+>>>       }
+>>>   }
+>>>  
+>>
+> 
 
-Thanks,
-Jake
