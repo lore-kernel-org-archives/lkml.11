@@ -2,51 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 059F8C0502A
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:37:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F1DBECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:37:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232960AbiHaShU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 14:37:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60032 "EHLO
+        id S233056AbiHaShZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 14:37:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232937AbiHaShA (ORCPT
+        with ESMTP id S231138AbiHaShB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 14:37:00 -0400
+        Wed, 31 Aug 2022 14:37:01 -0400
 Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC3A09DF99;
-        Wed, 31 Aug 2022 11:33:08 -0700 (PDT)
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27VDt3rg019477;
-        Wed, 31 Aug 2022 18:32:59 GMT
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1888CEEF29;
+        Wed, 31 Aug 2022 11:33:09 -0700 (PDT)
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27VIQrEB030264;
+        Wed, 31 Aug 2022 18:33:00 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=qcppdkim1;
- bh=gcFBJtVpigwd3dr3YYRez32IFKAFJ02k9HAMkUNGwxA=;
- b=QKLo9rRxTfpT24biS1MZM9zDd/Emq9X9ZmYELmJwjmIXSOJ5Ce08+WgPli46heSh9S9F
- wW8I63TYokljxLLl+/uEL6TSWhERMdKOLYoL3z8+oxhj39Y6YNrpSwzFtYnU1fWFRNHe
- XmS6NyIyD0IydRF35TBrxzQN35aZG48dC/heU4wHTdEyD8OF7Dc9yjAg5VqxzI8lkf7v
- krhsUQAUKpdMtA3pDGzTbouecunyo84PZgYxFXW2kBHHL8b13NsJxO1Td/HEHQi3es1x
- 2qYWQFO6sHxmYfDyhrYAZv6DUeS8YkWItmQtZZuhcQrTCEyYLGu1KZcIyuG69zfcUznx /g== 
-Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j9qdm3x7m-1
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=qcppdkim1;
+ bh=awe2Tegvy6b4FG8z+A+8Y+xjg0iYL/LtQdW0e1b7Ypo=;
+ b=k9z497R7WOaiv4AoO+CdeUPuy2IuHExY/QOec4wNbTy0hOagfT4L7tDHSUsH5Brdeb4h
+ IUTWtvM/yvCDuPtN+FQxG2zoLW463IzoiUYLga4gMQuxtqlvBujcF8csH42/NjKB171f
+ b1xWs7NcXWzTQAz5xZ3uvD3uXR4919jaPatpKYacJXPlFTFv3MzC0ZjuiPvFbWS/dn53
+ sio/60ei8OVGMeC283iUlJ9LbB2D0Nb+1d48P9IK5RSSw4eQl4OHCFDajacGKUk3UKpO
+ PQ88Dt5ySUg4sy+pLIMuvLOBWBhcL0aBQ3RhNnePvNBQ2fW6VLxOm8kcZw+THIYW+tKr UA== 
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j9n864f1a-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 31 Aug 2022 18:32:59 +0000
+        Wed, 31 Aug 2022 18:33:00 +0000
 Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-        by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27VIWxbK003732
+        by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27VIWxoe012992
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Wed, 31 Aug 2022 18:32:59 GMT
 Received: from hu-wcheng-lv.qualcomm.com (10.49.16.6) by
  nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Wed, 31 Aug 2022 11:32:58 -0700
+ 15.2.986.29; Wed, 31 Aug 2022 11:32:59 -0700
 From:   Wesley Cheng <quic_wcheng@quicinc.com>
 To:     <balbi@kernel.org>, <gregkh@linuxfoundation.org>,
         <Thinh.Nguyen@synopsys.com>
 CC:     <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
         <quic_jackp@quicinc.com>, Wesley Cheng <quic_wcheng@quicinc.com>
-Subject: [PATCH v5 0/5] Fix controller halt and endxfer timeout issues
-Date:   Wed, 31 Aug 2022 11:32:37 -0700
-Message-ID: <20220831183242.27826-1-quic_wcheng@quicinc.com>
+Subject: [PATCH v5 3/5] usb: dwc3: Increase DWC3 controller halt timeout
+Date:   Wed, 31 Aug 2022 11:32:40 -0700
+Message-ID: <20220831183242.27826-4-quic_wcheng@quicinc.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220831183242.27826-1-quic_wcheng@quicinc.com>
+References: <20220831183242.27826-1-quic_wcheng@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.49.16.6]
@@ -54,91 +57,49 @@ X-ClientProxiedBy: nalasex01a.na.qualcomm.com (10.47.209.196) To
  nalasex01b.na.qualcomm.com (10.47.209.197)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: xwwPPlLRvRdK11vYFuzVgUJJequEzjRb
-X-Proofpoint-GUID: xwwPPlLRvRdK11vYFuzVgUJJequEzjRb
+X-Proofpoint-GUID: KqEz-k20DS26vQlJUoWoQp00mI4LzEWI
+X-Proofpoint-ORIG-GUID: KqEz-k20DS26vQlJUoWoQp00mI4LzEWI
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-08-31_11,2022-08-31_03,2022-06-22_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- priorityscore=1501 adultscore=0 spamscore=0 bulkscore=0 suspectscore=0
- clxscore=1015 malwarescore=0 mlxscore=0 impostorscore=0 phishscore=0
- mlxlogscore=587 classifier=spam adjust=0 reason=mlx scancount=1
+ suspectscore=0 impostorscore=0 adultscore=0 mlxlogscore=685 spamscore=0
+ clxscore=1015 phishscore=0 bulkscore=0 priorityscore=1501 mlxscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2207270000 definitions=main-2208310089
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changes in v5:
-- Rebased series on usb-testing from patch #5 onwards.
+Since EP0 transactions need to be completed before the controller halt
+sequence is finished, this may take some time depending on the host and the
+enabled functions.  Increase the controller halt timeout, so that we give
+the controller sufficient time to handle EP0 transfers.
 
-Changes in v4:
-- Split the increase timeout patch into separate patches. #1 for the
-gadget suspend/resume locking changes #2 for the increased timeout
-- Modified msleep to usleep_range w/ an interval of 1-2ms and a max
-timeout of 4s.
+Reviewed-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Signed-off-by: Wesley Cheng <quic_wcheng@quicinc.com>
+---
+ drivers/usb/dwc3/gadget.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Changes in v3:
-- Modified the msleep() duration to ~2s versus ~10s due to the minimum
-mdelay() value.
-- Removed patch to modify DEP flags during dwc3_stop_active_transfer().
-This was not required after fixing the logic to allow EP xfercomplete
-events to be handled on EP0.
-- Added some changes to account for a cable disconnect scenario, where
-dwc3_gadget_pullup() would not be executed to stop active transfers.
-Needed to add some logic to the disconnect interrupt to ensure that we
-cleanup/restart any pending SETUP transaction, so that we can clear the
-EP0 delayed stop status. (if pending)
-- Added patch to ensure that we don't proceed with umapping buffers
-until the endxfer was actually sent.
-
-Changes in v2:
-- Moved msleep() to before reading status register for halted state
-- Fixed kernel bot errors
-- Clearing DEP flags in __dwc3_stop_active_transfers()
-- Added Suggested-by tags and link references to previous discussions
-
-This patch series addresses some issues seen while testing with the latest
-soft disconnect implementation where EP events are allowed to process while
-the controller halt is occurring.
-
-#1
-Since routines can now interweave, we can see that the soft disconnect can
-occur while conndone is being serviced.  This leads to a controller halt
-timeout, as the soft disconnect clears the DEP flags, for which conndone
-interrupt handler will issue a __dwc3_ep_enable(ep0), that leads to
-re-issuing the set ep config command for every endpoint.
-
-#2
-Function drivers can ask for a delayed_status phase, while it processes the
-received SETUP packet.  This can lead to large delays when handling the
-soft disconnect routine.  To improve the timing, forcefully send the status
-phase, as we are going to disconnect from the host.
-
-#3
-Ensure that local interrupts are left enabled, so that EP0 events can be
-processed while the soft disconnect/dequeue is happening.
-
-#4
-Since EP0 events can occur during controller halt, it may increase the time
-needed for the controller to fully stop.
-
-#5
-Account for cable disconnect scenarios where nothing may cause the endxfer
-retry if DWC3_EP_DELAY_STOP is set.
-
-#6
-Avoid unmapping pending USB requests that were never stopped.  This would
-lead to a potential SMMU fault.
-Wesley Cheng (5):
-  usb: dwc3: Avoid unmapping USB requests if endxfer is not complete
-  usb: dwc3: Remove DWC3 locking during gadget suspend/resume
-  usb: dwc3: Increase DWC3 controller halt timeout
-  usb: dwc3: gadget: Skip waiting for CMDACT cleared during endxfer
-  usb: dwc3: gadget: Submit endxfer command if delayed during disconnect
-
- drivers/usb/dwc3/core.c   |  4 ----
- drivers/usb/dwc3/core.h   |  3 +++
- drivers/usb/dwc3/ep0.c    |  5 ++++-
- drivers/usb/dwc3/gadget.c | 31 +++++++++++++++++++++++++++----
- 4 files changed, 34 insertions(+), 9 deletions(-)
-
+diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
+index 08281c4f47e6..c9310645701d 100644
+--- a/drivers/usb/dwc3/gadget.c
++++ b/drivers/usb/dwc3/gadget.c
+@@ -2444,7 +2444,7 @@ static void __dwc3_gadget_set_speed(struct dwc3 *dwc)
+ static int dwc3_gadget_run_stop(struct dwc3 *dwc, int is_on, int suspend)
+ {
+ 	u32			reg;
+-	u32			timeout = 500;
++	u32			timeout = 2000;
+ 
+ 	if (pm_runtime_suspended(dwc->dev))
+ 		return 0;
+@@ -2477,6 +2477,7 @@ static int dwc3_gadget_run_stop(struct dwc3 *dwc, int is_on, int suspend)
+ 	dwc3_gadget_dctl_write_safe(dwc, reg);
+ 
+ 	do {
++		usleep_range(1000, 2000);
+ 		reg = dwc3_readl(dwc->regs, DWC3_DSTS);
+ 		reg &= DWC3_DSTS_DEVCTRLHLT;
+ 	} while (--timeout && !(!is_on ^ !reg));
