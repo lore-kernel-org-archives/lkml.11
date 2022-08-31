@@ -2,88 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B930DECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 04:04:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B2C8ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 04:10:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229913AbiHaEEx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 00:04:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54552 "EHLO
+        id S231237AbiHaEKP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 00:10:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiHaEEw (ORCPT
+        with ESMTP id S229896AbiHaEKK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 00:04:52 -0400
-Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A0FE05;
-        Tue, 30 Aug 2022 21:04:51 -0700 (PDT)
-Received: by mail-pg1-f169.google.com with SMTP id q63so12452509pga.9;
-        Tue, 30 Aug 2022 21:04:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=Ugy18ngp8TGo8D4YXWwazm/ISYgDkRHB79Dqf1WUU1E=;
-        b=M1p1G/l9omHGz7+ZYzWGcQe09vJ+q0Xm8uTcUW0CBhjcogr7KUbjsSb+/QQaHwzgJN
-         oND36CdAyR1/vQO86AdcWW6xuNOTwjdQRjB5i9ap7YaiX/g1esispDLT6nDWBr6mQSWf
-         ZeWayjdF4kcvpIjOOxWYj+19t0WMva53pbhvf87QJwm5NtM/zMgbNBRun5zbOAvl85Wh
-         uKkoeaNXMbp9jIXlrZUa8v4jvAWTOGAI/WV1Qep9Eakm5pkXoWJPVs4fHzMg/npgeqY0
-         QJ8LHygTzC4kdtyHgHSnh7mZb94x5V691lLIqT0u+30+8SjgmBBjY82g8RMWqghMuD7x
-         8z4w==
-X-Gm-Message-State: ACgBeo1hILgJuL6fT6ctMWwSBQygiSeSySBjskJCoSFF4FW42qtZD5hK
-        nQkD28z+0UJbqt0x8IZEipk=
-X-Google-Smtp-Source: AA6agR6w+lV3se8EUuvDlebbruOsx7Yf3qQA+5w1OqLzOgB2LQx/vGe5qmKXrAAZgOyUlc07yXPr+w==
-X-Received: by 2002:a65:6b8a:0:b0:42b:1eca:eef1 with SMTP id d10-20020a656b8a000000b0042b1ecaeef1mr20193646pgw.205.1661918690353;
-        Tue, 30 Aug 2022 21:04:50 -0700 (PDT)
-Received: from [172.20.0.236] ([12.219.165.6])
-        by smtp.gmail.com with ESMTPSA id s15-20020a170902ea0f00b0015e8d4eb1f7sm10348441plg.65.2022.08.30.21.04.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 21:04:49 -0700 (PDT)
-Message-ID: <ca74a481-3e80-9a7a-9db7-d766a16d8fd6@acm.org>
-Date:   Tue, 30 Aug 2022 21:04:47 -0700
+        Wed, 31 Aug 2022 00:10:10 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 937AA28E24;
+        Tue, 30 Aug 2022 21:10:04 -0700 (PDT)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MHVwt4c5nzlWZk;
+        Wed, 31 Aug 2022 12:06:38 +0800 (CST)
+Received: from ubuntu-82.huawei.com (10.175.104.82) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 31 Aug 2022 12:10:02 +0800
+From:   Ziyang Xuan <william.xuanziyang@huawei.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <morbo@google.com>, <netdev@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>
+Subject: [PATCH next-next 2/2] net: vlan: reduce indentation level in __vlan_find_dev_deep_rcu()
+Date:   Wed, 31 Aug 2022 12:09:57 +0800
+Message-ID: <917c41381e1155eefe84c610585c487d8073166f.1661916732.git.william.xuanziyang@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1661916732.git.william.xuanziyang@huawei.com>
+References: <cover.1661916732.git.william.xuanziyang@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] RDMA/srp: Set scmnd->result only when scmnd is not NULL
-Content-Language: en-US
-To:     "yangx.jy@fujitsu.com" <yangx.jy@fujitsu.com>,
-        "jgg@nvidia.com" <jgg@nvidia.com>,
-        "leon@kernel.org" <leon@kernel.org>
-Cc:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220831014730.17566-1-yangx.jy@fujitsu.com>
- <5daac9db-2b34-fbe5-a891-8ecf77fbe46f@acm.org>
- <bff7565b-7159-e8f4-e8f5-711994f95056@fujitsu.com>
-From:   Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <bff7565b-7159-e8f4-e8f5-711994f95056@fujitsu.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/30/22 20:16, yangx.jy@fujitsu.com wrote:
-> Sorry, I didn't make the right fix. I will send v2 patch.
-> I think scmnd may be set to NULL after srp_claim_req() is called and
-> then setting scmnd->result can trigger the NULL pointer dereference.
+If vlan_info is NULL in __vlan_find_dev_deep_rcu(), else { ... } is
+unnecessary. Remove it to reduce indentation level.
 
-Something like this untested patch may be what you are looking for:
+Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+---
+ net/8021q/vlan_core.c | 22 +++++++++-------------
+ 1 file changed, 9 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/infiniband/ulp/srp/ib_srp.c 
-b/drivers/infiniband/ulp/srp/ib_srp.c
-index 7720ea270ed8..d7f69e593a63 100644
---- a/drivers/infiniband/ulp/srp/ib_srp.c
-+++ b/drivers/infiniband/ulp/srp/ib_srp.c
-@@ -1961,7 +1961,8 @@ static void srp_process_rsp(struct srp_rdma_ch 
-*ch, struct srp_rsp *rsp)
-  		if (scmnd) {
-  			req = scsi_cmd_priv(scmnd);
-  			scmnd = srp_claim_req(ch, req, NULL, scmnd);
--		} else {
-+		}
-+		if (!scmnd) {
-  			shost_printk(KERN_ERR, target->scsi_host,
-  				     "Null scmnd for RSP w/tag %#016llx received on ch %td / QP 
-%#x\n",
-  				     rsp->tag, ch - target->ch, ch->qp->qp_num);
+diff --git a/net/8021q/vlan_core.c b/net/8021q/vlan_core.c
+index 5aa8144101dc..027d4ebed9c0 100644
+--- a/net/8021q/vlan_core.c
++++ b/net/8021q/vlan_core.c
+@@ -77,23 +77,19 @@ struct net_device *__vlan_find_dev_deep_rcu(struct net_device *dev,
+ 					__be16 vlan_proto, u16 vlan_id)
+ {
+ 	struct vlan_info *vlan_info = rcu_dereference(dev->vlan_info);
++	struct net_device *upper_dev;
+ 
+-	if (vlan_info) {
++	if (vlan_info)
+ 		return vlan_group_get_device(&vlan_info->grp,
+ 					     vlan_proto, vlan_id);
+-	} else {
+-		/*
+-		 * Lower devices of master uppers (bonding, team) do not have
+-		 * grp assigned to themselves. Grp is assigned to upper device
+-		 * instead.
+-		 */
+-		struct net_device *upper_dev;
+ 
+-		upper_dev = netdev_master_upper_dev_get_rcu(dev);
+-		if (upper_dev)
+-			return __vlan_find_dev_deep_rcu(upper_dev,
+-						    vlan_proto, vlan_id);
+-	}
++	/* Lower devices of master uppers (bonding, team) do not have
++	 * grp assigned to themselves. Grp is assigned to upper device
++	 * instead.
++	 */
++	upper_dev = netdev_master_upper_dev_get_rcu(dev);
++	if (upper_dev)
++		return __vlan_find_dev_deep_rcu(upper_dev, vlan_proto, vlan_id);
+ 
+ 	return NULL;
+ }
+-- 
+2.25.1
 
-Bart.
