@@ -2,97 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D27FECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 21:49:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09487ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 21:51:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232228AbiHaVtL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 17:49:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54154 "EHLO
+        id S232242AbiHaVvA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 17:51:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232050AbiHaVtI (ORCPT
+        with ESMTP id S230377AbiHaVu4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 17:49:08 -0400
-Received: from mail.gnudd.com (mail.gnudd.com [93.91.132.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 559EDF72CB;
-        Wed, 31 Aug 2022 14:49:04 -0700 (PDT)
-Received: from dciminaghi by mail.gnudd.com with local (Exim 4.94.2)
-        (envelope-from <dciminaghi@arcana.gnudd.com>)
-        id 1oTVZO-0004bU-3K; Wed, 31 Aug 2022 23:48:22 +0200
-Date:   Wed, 31 Aug 2022 23:48:22 +0200
-From:   Davide Ciminaghi <ciminaghi@gnudd.com>
-Sender: ciminaghi@gnudd.com
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Alexandre Courbot <gnurou@gmail.com>,
-        Alexandre Courbot <acourbot@nvidia.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
-        "open list:GENERIC INCLUDE/ASM HEADER FILES" 
-        <linux-arch@vger.kernel.org>, Alessandro Rubini <rubini@gnudd.com>
-Subject: Re: [PATCH] gpio: Allow user to customise maximum number of GPIOs
-Message-ID: <Yw/XJstLR++AuULV@arcana.i.gnudd.com>
-References: <87f2ff4c-3426-201c-df86-2d06d3587a20@csgroup.eu>
- <CACRpkdYizQhiJXzXNHg7TXUVHzhkwXHFN5+e58kH4udGm1ziEA@mail.gmail.com>
- <f76dbc49-526f-6dc7-2ef1-558baea5848b@csgroup.eu>
- <CACRpkdZpwdP+1VitohznqRfhFGcLT2f+sQnmsRWwMBB3bobwAw@mail.gmail.com>
- <515364a9-33a1-fafa-fdce-dc7dbd5bb7fb@csgroup.eu>
- <CAK8P3a36qbRW8hd+1Uhi88kh+-KTjDMT-Zr8Jq9h_G3zQLfzgw@mail.gmail.com>
- <Yw3DKCuDoPkCaqxE@arcana.i.gnudd.com>
- <CACRpkdZeAAZYqV3ccd-X=ZwdnfSwRUdXchGETB-WTkgSZQL=Pw@mail.gmail.com>
- <Yw9sVCNtaLUjZH/F@arcana.i.gnudd.com>
- <CAHp75Vff0GUQXD8zstEFwXNcnbxKEc7Gqahoo_kZp69MyKWskg@mail.gmail.com>
+        Wed, 31 Aug 2022 17:50:56 -0400
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00066E6886;
+        Wed, 31 Aug 2022 14:50:55 -0700 (PDT)
+Received: by mail-qk1-x72c.google.com with SMTP id m5so11911481qkk.1;
+        Wed, 31 Aug 2022 14:50:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=vOy+aMqhVVgkaFdcKPS9BO6pUN7ZgzHkeevfPR3xgF8=;
+        b=moMlIKwBR5qnYuq9/hV5tNMraORsTiT1tQ/JJRfZM7uOBVm1j61bYK7YcjRSU9nGqw
+         qZEYIjKDHn1l3GLGwQ42OJYivWEw9ifn2fCgYAzflrlLSCtCL+agQ0tw2sI+CYh4zk27
+         QWjf4S75dInJz9H1m+vaF3805hHNeUVxkhi8BuFMApCREwmjGgAdgysFN1x7X+HCb/jL
+         9Ur3FrvcPYhrC9/7l1O9s7MwiY+tBV3nBp66dzq/Ofr/jEbLjqnKn6GgVYBngdX2T60m
+         k7XSKxcN2Y8Ftngs1IKD/Hy6Az/YeUamOFrPZeDUEPOS11Ce5XP+yr1MzVKEfUm+qCZ+
+         UaOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=vOy+aMqhVVgkaFdcKPS9BO6pUN7ZgzHkeevfPR3xgF8=;
+        b=vdPK5PTVggoGB0y8XEWQcKAL+fSJCAp7t9Xyqcq7PFYSa4STv1w3YxaR6CRAIa74uV
+         WGXq5q2rfDPIRcUE8g53Ep4+E9LzxgAUPIRBosN0K+FIogGA9T7VWnKOEVh1kM0e9pNa
+         faCn7x5DeWrxHMaCjP8ah8eooy5b7hgEwROLMEgqPpJt4UOOZJVAi77F7qmkpPcKDozE
+         YKnXlLPgDwNGigsDkmjtuN1D7urcmrZClGpoPIcNbX0tQA6S70QV0tSby1KwFM+9yZlb
+         F9Pxgi0PwIGWiHCkBFZNFQcYIWe6qJ9WzHs8E8a2vRis2NKOEUeWCLis9uishmvQNZQ6
+         VIUg==
+X-Gm-Message-State: ACgBeo2HyqUoRMS4f4AmlOi2nqGdK3Dv4OSUYzc5Uun+6BKQwEiHlKgr
+        xBLWaw5lt2fvBsxp4ESYM0A=
+X-Google-Smtp-Source: AA6agR5geD3j89IRsqLWukwG9AJmINLMZD/jIMiSMIrcF9dGTHQwDO1QvOnnST9XHmsotiUKXfC2Xw==
+X-Received: by 2002:a37:a811:0:b0:6ba:bc14:18ff with SMTP id r17-20020a37a811000000b006babc1418ffmr17077658qke.173.1661982655028;
+        Wed, 31 Aug 2022 14:50:55 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id bx4-20020a05622a090400b00342fcdc2d46sm9180494qtb.56.2022.08.31.14.50.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 31 Aug 2022 14:50:53 -0700 (PDT)
+Message-ID: <1d5510f7-7c2d-6e30-f5d9-e45c470c380a@gmail.com>
+Date:   Wed, 31 Aug 2022 14:50:51 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-In-Reply-To: <CAHp75Vff0GUQXD8zstEFwXNcnbxKEc7Gqahoo_kZp69MyKWskg@mail.gmail.com>
-X-Face: #Q;A)@_4.#>0+_%y]7aBr:c"ndLp&#+2?]J;lkse\^)FP^Lr5@O0{)J;'nny4%74.fM'n)M
- >ISCj.KmsL/HTxz!:Ju'pnj'Gz&.
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH] libbpf: Initialize err in probe_map_create
+Content-Language: en-US
+To:     patchwork-bot+netdevbpf@kernel.org
+Cc:     bpf@vger.kernel.org, andrii@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        sdf@google.com, haoluo@google.com, jolsa@kernel.org,
+        davemarchevsky@fb.com, linux-kernel@vger.kernel.org
+References: <20220801025109.1206633-1-f.fainelli@gmail.com>
+ <165964981402.20332.403823292048774488.git-patchwork-notify@kernel.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <165964981402.20332.403823292048774488.git-patchwork-notify@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 01, 2022 at 12:07:26AM +0300, Andy Shevchenko wrote:
-> On Wed, Aug 31, 2022 at 5:14 PM Davide Ciminaghi <ciminaghi@gnudd.com> wrote:
-> > On Wed, Aug 31, 2022 at 03:32:25PM +0200, Linus Walleij wrote:
-> > > On Tue, Aug 30, 2022 at 9:58 AM Davide Ciminaghi <ciminaghi@gnudd.com> wrote:
-> > >
-> > > > the sta2x11 was a chip containing AMBA peripherals and a PCIe to AMBA bridge
-> > > > (it is still in production as far as I know, but deprecated for new designs).
-> > > > It would typically be installed on x86 machines, so you needed to build and
-> > > > run AMBA drivers in an x86 environment. The original drivers we started from
-> > > > had platform data, but then we were told to switch to DTS.
-> > >
-> > > For the record I think that was bad advice, I hope it wasn't me.
-> > > But the world was different back then I suppose.
-> > > Adding DTS to x86 which is inherently ACPI is not a good idea.
-> > > Especially if you look at how SBSA ACPI UARTS were done
-> > > in drivers/tty/serial/amba-pl011.c.
-> > >
-> > now that I think of it, ACPI was also listed as a possible choice, but the
-> > problem was that we didn't know much about ACPI, and took the DTS way.
-> > So there was no bad advice, just fear of the unknown :-)
+
+
+On 8/4/2022 2:50 PM, patchwork-bot+netdevbpf@kernel.org wrote:
+> Hello:
 > 
-> Feel free to ask, we have experts in the mailing list(s).
->
-Thanks ! I'll keep that in mind in case I need some ACPI advice.
-I'm afraid it's too late for the sta2x11, though. Its kernel is now a
-downstream one, and it's been freezed, as the SOC has been deprecated
-for new designs.
-As Alessandro said, we'll submit (or ack) patches for removal.
+> This patch was applied to bpf/bpf-next.git (master)
+> by Andrii Nakryiko <andrii@kernel.org>:
+> 
+> On Sun, 31 Jul 2022 19:51:09 -0700 you wrote:
+>> GCC-11 warns about the possibly unitialized err variable in
+>> probe_map_create:
+>>
+>> libbpf_probes.c: In function 'probe_map_create':
+>> libbpf_probes.c:361:38: error: 'err' may be used uninitialized in this function [-Werror=maybe-uninitialized]
+>>    361 |                 return fd < 0 && err == exp_err ? 1 : 0;
+>>        |                                  ~~~~^~~~~~~~~~
+>>
+>> [...]
+> 
+> Here is the summary with links:
+>    - libbpf: Initialize err in probe_map_create
+>      https://git.kernel.org/bpf/bpf-next/c/3045f42a6432
+> 
+> You are awesome, thank you!
 
+Thanks for applying, I was sort of expecting this patch to land to Linus 
+a bit quicker, as far as I can see it is still only in linux-next yet it 
+does fix a build warning turned error. Any chance of fast tracking it?
 
-
-Thanks again and regards
-Davide
+Thanks!
+-- 
+Florian
