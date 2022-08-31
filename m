@@ -2,186 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B955ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:07:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 531C7C0502A
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:10:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231727AbiHaOHo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 10:07:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51434 "EHLO
+        id S231416AbiHaOKU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 10:10:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229892AbiHaOHm (ORCPT
+        with ESMTP id S229498AbiHaOKO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 10:07:42 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 610F8D631B
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 07:07:41 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id fy31so28199981ejc.6
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 07:07:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=SSE1HwMVcYk2UrtKirDe64NX+1tKMWo/CAq8zQgdjxY=;
-        b=gVt3VwChWCb8oP15iESWk4rihn+xtdYj1oXd5L8WISu2a1tF4jK3rEuTB7v9ySbeog
-         HgcdJ1f+K8DTlgJ45wz9Yo1+MlalUv+zlqhEy5mgfpIA6bMQqaPk2nRdWvCEbni6lIwt
-         nzN58amEGfpMhHYEiXwoP3RRtQilGWuNomP+6GnHaKnuU0iQLCWZoHrkM8X9M1DYXRke
-         /br92uXTzcm9iBSqpq68jxDQEuKBoyZYWx1crpHuRjl8j2TLqNE2MbVn3YJ+n4++T2O1
-         u4lRk4oN4pbjkDr/IyR2KbhhPxgEhDtKDnWX50xV8asGD2qN7rEel/E9C529YsVbIxN7
-         /RmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=SSE1HwMVcYk2UrtKirDe64NX+1tKMWo/CAq8zQgdjxY=;
-        b=OTYIkajbu8foLCfdGRzQmL8bkbXwo0znHS/XJul9wXgZX9otDV3aAUELIfwwOJuA/5
-         dsfQtKP2nri8DlcpF3ahAYabTpu81Pf0MB4Z2BzRxQQpRuTscgoPK0+owXeCh3+PhprZ
-         0qAJaLUx+vJHBLbMlTnLEGRBVlQfvp1eTQkrGcCQSX+v+J97LZsi7LmIxrNIVcJH++E6
-         UATzDU7hDGwh/0A5q+6EGb+dTLr6ip+NoY/VWHDJTbTRjqSsdI/hYOexKUXUGKhLhtr5
-         bctbcBX87MbHqIudvLDxl5y7TO3tZf/cYBX+sHfYBh78dzyt6pHWetP6UTy5m0C7IaEy
-         8P6Q==
-X-Gm-Message-State: ACgBeo0DYekn/pnBsEXufYzhrO/6oUq0jz9mtEFPjiMMsgxfvcIV6zhQ
-        QHJnKc8RpnCD8NbO9tw4nVbB3cOIpp7Jh4IUQjnO7Q==
-X-Google-Smtp-Source: AA6agR77qGHGAM0Tri5sa68ELBEsXwHnhPb0QhcWvme1wvHcI9OJsbaQhozvVO/j6e9nLwt7s959oQAQgKEIslsw4As=
-X-Received: by 2002:a17:907:1c89:b0:741:4453:75be with SMTP id
- nb9-20020a1709071c8900b00741445375bemr14554193ejc.208.1661954859828; Wed, 31
- Aug 2022 07:07:39 -0700 (PDT)
+        Wed, 31 Aug 2022 10:10:14 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2068.outbound.protection.outlook.com [40.107.243.68])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 201566C130;
+        Wed, 31 Aug 2022 07:10:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eU0CgVQDLbHxS+vfMfdqJ8pN2jBLha6rWS06PfT1A0qVXO+tvDMhLZy5i9yzAUBm36kkqDsDVEK8Y2/883/yCAARPs6bDaXdLR67BKOEXcZHhg3PepKscddrRIRt73SPM5n9Cv9L7D3fs22lEiRenqCEqXjNtvSGUcU2EQNXPoDdIH3HWABIzpUGMfzvKAkzIYB0iIOdhPm18Y5JE+sjXa3JSGc7ztbUxmIyJViN+MBITzLd68D+VI3o8ct7YIqPyKfkrr4t/Xlu3XWekjYb5BU8WXVdbJK2pFRfKYCth6Iu7BtNUD1W8Q6Dyuxf8Z8nJt0qiao70gk2dQaA6R88Gg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=74YNoZOCisO0cqQllsWusU4d2yCYWrgWe5FPNqRmIbY=;
+ b=bmWA0Bw5xWQvZ4XPOrjpo+ZNWd5ZmniK/2XF/nSvGNerJ8kzP6xmxGGkjvBrg6Iq6JANahVX/v2O3egH6HurjPZ5Lht5Z4pnGVYqTz7GiNWR46nZJhwH5Sx8fcBYjmRWSBEDfW4JAy08kGv/p+UGxnarQivUqH/bYngZtZ/dayDtEtmvgmixVE0/gZwsXstXplrzw3j/PNrzM+dhT8VTTJie2Gpjvgn09WYa/ML1xQcgetIf2rSj+9H34RdwdXcaC+WRdrrOWWMQhjdLIr3/c5Ae1VmD49cgap9vUaiQ38swi5gy37cTZmtsa5a8R5lCg2EpKRME90ilhNNzYmJ0rQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=74YNoZOCisO0cqQllsWusU4d2yCYWrgWe5FPNqRmIbY=;
+ b=YEXlHjdwr1nJcZYj5z8C1IrBxMNFHesQzpAO2PjXKKs8utpngItTH92Zk+hrYyeWUiQlvyGVucLmQ9OWyakN2KMR36qBOXl7DQJI/gxMxMItv70AdSrMUuRQDpMgSywIb7ugAPuw5sp2t+CcwFq3Jy9ZKuggeWweStgQ1jJLHNngsnm5mhm4dl7Py9vTBnbwEUCcLVuVAmrlNPvEgmGsrM0RJaS8T1xrTsP96oYC6ueBJCIu7c4AGNLZIKMfRJ0UFoehxWFxlMpadGcCHqse1iP1c1WZSGCtSOL7ZU+OYMzZl79hzceGS4rLJ9O8oM9gMqvjxFg7XAzYet7ma80Wdw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH2PR12MB4181.namprd12.prod.outlook.com (2603:10b6:610:a8::16)
+ by MN0PR12MB5956.namprd12.prod.outlook.com (2603:10b6:208:37f::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Wed, 31 Aug
+ 2022 14:10:11 +0000
+Received: from CH2PR12MB4181.namprd12.prod.outlook.com
+ ([fe80::3d9f:c18a:7310:ae46]) by CH2PR12MB4181.namprd12.prod.outlook.com
+ ([fe80::3d9f:c18a:7310:ae46%8]) with mapi id 15.20.5588.010; Wed, 31 Aug 2022
+ 14:10:11 +0000
+Date:   Wed, 31 Aug 2022 11:10:10 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Baolu Lu <baolu.lu@linux.intel.com>
+Cc:     Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Zhangfei Gao <zhangfei.gao@linaro.org>,
+        Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v12 07/17] iommu: Try to allocate blocking domain when
+ probing device
+Message-ID: <Yw9rwktDY9Uca/cv@nvidia.com>
+References: <20220826121141.50743-1-baolu.lu@linux.intel.com>
+ <20220826121141.50743-8-baolu.lu@linux.intel.com>
+ <YwjeL2SVmdRpoWb6@nvidia.com>
+ <316f6575-59ea-08e3-aaaf-bc1e4f42a574@linux.intel.com>
+ <Ywz3A3tHEzY+Sf7b@nvidia.com>
+ <c7d71936-ea06-3a71-d13a-cedd108413b5@linux.intel.com>
+ <Yw4Qzif8W53ykR6K@nvidia.com>
+ <c46ec383-bd51-1d78-ff81-0bee064ce1cb@linux.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c46ec383-bd51-1d78-ff81-0bee064ce1cb@linux.intel.com>
+X-ClientProxiedBy: BL1P223CA0005.NAMP223.PROD.OUTLOOK.COM
+ (2603:10b6:208:2c4::10) To CH2PR12MB4181.namprd12.prod.outlook.com
+ (2603:10b6:610:a8::16)
 MIME-Version: 1.0
-References: <20220816204832.265837-1-linus.walleij@linaro.org>
- <20220816204832.265837-2-linus.walleij@linaro.org> <Yw48R+EBmmZYl9x+@smile.fi.intel.com>
-In-Reply-To: <Yw48R+EBmmZYl9x+@smile.fi.intel.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Wed, 31 Aug 2022 16:07:28 +0200
-Message-ID: <CACRpkdbn_v7g4=2+jGwxTr2z4ZLcFFfRF4F0oohn0VOf4uJ1SQ@mail.gmail.com>
-Subject: Re: [PATCH 2/2 v5] regmap: mmio: Support accelerared noinc operations
-To:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        linux-alpha <linux-alpha@vger.kernel.org>
-Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
-        Brian Cain <bcain@quicinc.com>, linux-hexagon@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 928fd401-4bab-4b21-be83-08da8b5a8473
+X-MS-TrafficTypeDiagnostic: MN0PR12MB5956:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: djBilCimONxby/8FshW3ocGhvYlOJs08nAaICWeMaRJLFsaYa6tUwEGbOmW/dQCwhQNTC42YmN4bp0nJnnIsILscip2hXjrQP3z2Qpb7Zoeph1nRtY+/dy+UMfcIa9WeDE88b5gNAY3QkqBPI1mUTbIr3C0TZDj69iWv3cKHZ26wFnP1XnUGQf7kIE4JqWkRGJX3fuqBfqrN9OpeGqC1eBvf+Wnov3GYHTw6GnNWY+gKhzWvSxhmLw3Lk9IZiF4Q4yXWVVk0RSInGpfPvQ9JhUoukogGIc8dp6ZModHanDsvxovA1ukd6zlGlF2322Zt7n6UHE3vF9GdmSaoUhC31orWpEgz5fSNeL98oVAijCnyH9HzOhkEefFaiSUpZKBNFb7A2w0xRKIOi3r73xHYBA4cTw88B8j7lLuIP0X3dHTDd2ms6xb31z0D/jAkNp4Jt/anrWfLa8K6oaYM/p9fAaEbEn9nKAwJ3XlwPis9ziAswA3HuqD6+VBaq9R02ZHrNIC+y3Wm8B5MTZLQzsgwlf5A7XevxTd2FHwRbxGrV1OYA/6Nk3MNqdim1cSTERFZ8+nDEV5IwU9AjfLPNBuSy0I8+LphKFS1KqXXYDAtTgAVMFPIPuT6KBztwGkRSbqtIT8O1SbbHfjDjIONevtoKcyIS53z83uFG/dXz81Y76NAl4NjRQi5BGS5AJDh+jOpLcV/SLWbULgLiOL9q0JbeA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR12MB4181.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(376002)(346002)(136003)(366004)(39860400002)(4744005)(2616005)(83380400001)(36756003)(2906002)(186003)(7416002)(66946007)(5660300002)(26005)(6512007)(8936002)(316002)(6506007)(66556008)(4326008)(8676002)(66476007)(38100700002)(6916009)(41300700001)(54906003)(86362001)(6486002)(478600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?EmAxjWegNWsZ+LR6yNfs74sNkVLrKo4XLK8+le154RPcI+uNOMqqAkQ75Ekv?=
+ =?us-ascii?Q?CRDN2ih+ef5bRYQWb+3VobW9guBJYU8peYXp7/cYhI0qtm+yQTAmYnGH+eSf?=
+ =?us-ascii?Q?UGy3gAi07f2Zfh89Iqif58K07Zkx0xKlKns+oFexUeQbFRahbMfi1Xed0ICJ?=
+ =?us-ascii?Q?AzIBZKbd+OENSnXAfzZuqjQZHXDaHCJ1pLrVc7rS1dZfpMP73RWEJ1qCLEnl?=
+ =?us-ascii?Q?RIJn4tynyBQ2hBmCjtiIs6DohHbE4C+62a5L0Zw2/IT0Wbc2EbgujyCZKCpm?=
+ =?us-ascii?Q?/RVKTUOp7GOj0JMZ+/7Yc1Q+fVO8AUJzPviwULccoobkXEHFz6ItBm8SD2Xi?=
+ =?us-ascii?Q?6b+AfQEckGuG7HjkJiE1VF9Y1vkbgpMWgGaDrco+agJ29cp4FO6X6NGA3/Qx?=
+ =?us-ascii?Q?ZDf6E5079iKixskF4pyn5b5M+1xpFRrWIwU08t9t+pYBm7FJ0l6EvtPqFyAw?=
+ =?us-ascii?Q?oeEcTS8qK9K10PGs/OUYVKIDJrTh0M4UKiE2oUEcsr9tifOaBsNKlgaT6mx8?=
+ =?us-ascii?Q?udmZLfwLqMlTayEu/i/VLKrAIhea4TIN+V9mQdw/QZxMm/+rOI6ZltA7o5F3?=
+ =?us-ascii?Q?NqIcEoD0bu5qalVrcRobWzIUjetqQMR6yIK8BWTMjpe/dKg0F2jnFspFRr1w?=
+ =?us-ascii?Q?p4jOwtzxactVTXyYyPR/k46Krgbm/DSqZIA4tLrNjJfdcfsy90KKYb69Os0f?=
+ =?us-ascii?Q?n/3uLa8gKUSeROyiY4NA5XDGhIZ2EX86b9+MEjNzr26Ag/dSc+GiOIc0wyvB?=
+ =?us-ascii?Q?nYDfUaJPFpF8FXmcP9LH7ZloP+EOxwVIndtSTHxHRHIbT9Cy28W4bIAnYNSj?=
+ =?us-ascii?Q?tXYWalAaU1pyV/0Ipi6nMlW7oXvY8OWrr/j8Ezp63wyVA/yHXMtbpoROEzH7?=
+ =?us-ascii?Q?o7G0WkRno2pTZoEJlsf4wyVsV4RdqVuREQKV6iKEdpo3zXg/Mj3kd5GzpYlz?=
+ =?us-ascii?Q?jYIRx6Y8AgX5mqgzM7hL2hp27gJvnxg2BPSHO5uNgBQUQIMqabgUZYkORyZb?=
+ =?us-ascii?Q?dZSkYzZDaQkgwqo/fRfpP0Wf2G7lgq8haCQOz6lKpUPgFw75i3PnUOlSUDNe?=
+ =?us-ascii?Q?Z0DuSLmbTc43SKBiJ3Z66mURtRvGBeScQTrGZQbfgxTrsYL/7IdNhD2Je9bQ?=
+ =?us-ascii?Q?MWXPlDgcmWBphsMN1OSRz9/XVrqfRDiM+z/SJTKMPF7zx8zsXPn6ySE6IIBd?=
+ =?us-ascii?Q?fkX4OGv6QfpNuaBa6wyTZHwrn0DPWqD9I0YgT0QWJZgdsIAwP7zlVEee7uuH?=
+ =?us-ascii?Q?jm940ycEjYtnZMynzlktQkPtsanbWncZBt3oyHDpLctU+RnBv+EbmGj/pH/9?=
+ =?us-ascii?Q?m01NNa1Lu30tfRcBehJBudfQW4LZBDlOHtv/mVJWHADTs7st3Ob1ID1rQ37H?=
+ =?us-ascii?Q?4vz3NuZpJcpuziA8qeLeWDXKmMGirvYvSZ45m4Z1u+gvo7xLHn3o8ezR+lQD?=
+ =?us-ascii?Q?wG4GdmP9u4R6JNpasWsBXjrMvtJ2zAlUBRJwCoQ+1g3xL9wOe/5uj2dlIKi/?=
+ =?us-ascii?Q?nIQPCwUm/mnxbyGv1lRtuUt//0bOrT8N75frx17Jn9LVPIGKcBYlHUaqbwmN?=
+ =?us-ascii?Q?rIWpQCm81YKFtozYaP2JfqlpddUUUa6tlsHWXTEy?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 928fd401-4bab-4b21-be83-08da8b5a8473
+X-MS-Exchange-CrossTenant-AuthSource: CH2PR12MB4181.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2022 14:10:11.3247
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: OCaXlfeQkgZNlA7F1WCSCeEkfWaI2UHpwMCVQUHIIbjCkNjQ9kd556N6Qj2guqLg
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5956
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 6:39 PM Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
-> On Tue, Aug 16, 2022 at 10:48:32PM +0200, Linus Walleij wrote:
-> > Use the newly added callback for accelerated noinc MMIO
-> > to provide writesb, writesw, writesl, writesq, readsb, readsw,
-> > readsl and readsq.
-> >
-> > A special quirk is needed to deal with big endian regmaps: there
-> > are no accelerated operations defined for big endian, so fall
-> > back to calling the big endian operations itereatively for this
-> > case.
-> >
-> > The Hexagon architecture turns out to have an incomplete
-> > <asm/io.h>: writesb() is not implemented. Fix this by doing
-> > what other architectures do: include <asm-generic/io.h> into
-> > the <asm/io.h> file.
->
-> Wonderful!
->
-> So, I have seen a recent blow up by kernel bot due to Alpha issues on these
-> accessors.
+On Wed, Aug 31, 2022 at 09:49:44AM +0800, Baolu Lu wrote:
+> > Maybe all of this is just the good reason to go to a simple
+> > device->ops->remove_dev_pasid() callback and forget about blocking
+> > domain here.
+> 
+> Do you mean rolling back to what we did in v10?
 
-There is a patch for that:
-https://lore.kernel.org/linux-arch/20220818092059.103884-1-linus.walleij@linaro.org/
+Yeah, but it shouldn't be a domain_op, removing a pasid is a device op
 
-Alpha maintainance is not very active.
+Just 
 
-The problem is that some (fringe) architectures do not fulfil the contract
-to provide full accessors. I can fix them all, I am fixing powerpc right now,
-but the breakage is just random compile tests, they don't really use
-regmap-mmio, we're just enabling regmap-mmio to compile on archs
-that don't ever use it, so it's not urgent.
+remove_dev_pasid(struct device *dev, ioasid_t pasid)
 
-> > +     if (!IS_ERR(ctx->clk)) {
-> > +             ret = clk_enable(ctx->clk);
-> > +             if (ret < 0)
-> > +                     return ret;
-> > +     }
->
-> It's a new place of the duplicating check, can we have a helper for that?
->
-> ...
->
-> > +     /*
-> > +      * There are no native, assembly-optimized write single register
-> > +      * operations for big endian, so fall back to emulation if this
-> > +      * is needed. (Single bytes are fine, they are not affected by
-> > +      * endianness.)
-> > +      */
->
-> Wouldn't be faster to memdup() / swap / use corresponding IO accessor?
-
-Hm I would like a real BE target to test on and profile that.
-If someone has a target I can make a patch.
-
-> > +     /*
-> > +      * There are no native, assembly-optimized write single register
-> > +      * operations for big endian, so fall back to emulation if this
-> > +      * is needed. (Single bytes are fine, they are not affected by
-> > +      * endianness.)
-> > +      */
-> > +     if (ctx->big_endian && (ctx->val_bytes > 1)) {
-> > +             switch (ctx->val_bytes) {
-> > +             case 2:
-> > +             {
-> > +                     u16 *valp = (u16 *)val;
-> > +                     for (i = 0; i < val_count; i++)
-> > +                             valp[i] = swab16(valp[i]);
-> > +                     break;
-> > +             }
-> > +             case 4:
-> > +             {
-> > +                     u32 *valp = (u32 *)val;
-> > +                     for (i = 0; i < val_count; i++)
-> > +                             valp[i] = swab32(valp[i]);
-> > +                     break;
-> > +             }
-> > +#ifdef CONFIG_64BIT
-> > +             case 8:
-> > +             {
-> > +                     u64 *valp = (u64 *)val;
-> > +                     for (i = 0; i < val_count; i++)
-> > +                             valp[i] = swab64(valp[i]);
-> > +                     break;
-> > +             }
-> > +#endif
-> > +             default:
-> > +                     ret = -EINVAL;
-> > +                     break;
-> > +             }
-> > +     }
->
-> So, two questions here:
->
-> 1) can we use helpers from include/linux/byteorder/generic.h, such as
->    cpu_to_be32_array()/be32_to_cpu_array()?
->
-> 2) have you considered using memcpy_toio() / memcpy_fromio() and why
->    it's not okay to use them?
-
-I got scared of all of these accessors because of
-commit 7e7ba58c94127efa97c249e38cc2d1c0ed78b58f
-"regmap: mmio: Fix MMIO accessors to avoid talking to IO port"
-so I don't know if I dare to trust them. Therefore I opted for the
-simplest thing that I could write that fulfils the requirement.
-
-Again, if someone has a BE target to test on, I can write a patch!
-
-> > +out_clk:
-> > +     if (!IS_ERR(ctx->clk))
-> > +             clk_disable(ctx->clk);
-> > +
-> > +     return ret;
-> > +
-> > +     return 0;
->
-> Seems like misrebase? I believe this has to be fixed.
-
-Ooops I fix. Also the double newline.
-
-Yours,
-Linus Walleij
+Jason
