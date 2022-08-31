@@ -2,121 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 836E5ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:54:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 616D1ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:56:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231214AbiHaOyF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 10:54:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46564 "EHLO
+        id S229449AbiHaO4X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 10:56:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiHaOyB (ORCPT
+        with ESMTP id S230328AbiHaO4R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 10:54:01 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A717ECC325
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 07:54:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661957640; x=1693493640;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=WewXyGWrkI6CZTGTDosl2FVOiN/jXKLyzIyy1dbYklA=;
-  b=d05o4mJY8SvuMKOpNQj/Ep2RGCPIWDx5lIUYJmHdb1bpi+R3ulBmvHBG
-   c+u7q6y4Jo95IbDXUJ20Xoom75UygNftFe2W6aOaLGGdvcWJKhW1Jp345
-   UWyVoVlzg7BUcVHzy5gFI8LR46ld+MkN44XbBLbBkL7cGSeJNHEZSbYuw
-   SjS+Lv00+obfbISBs3IX+B2KaH7BjotsHw2eYG/WSi3PS080TwWcBkow0
-   yCwAJ26O/vTn7DDZOfDco1j1ZYeBEIAjCk8zOUJRC8Up3myjZ4YqvmXTd
-   op9g5Uya2E9fAiWv6eA1vE4nh+qTvYQ7oDdTrEooqIkqVGGzOj8QKvxFq
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="296744343"
-X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
-   d="scan'208";a="296744343"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 07:53:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
-   d="scan'208";a="589056893"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga006.jf.intel.com with ESMTP; 31 Aug 2022 07:53:56 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id D69EDAD; Wed, 31 Aug 2022 17:54:10 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH v1 2/3] regmap: mmio: Use swabXX_array() helpers
-Date:   Wed, 31 Aug 2022 17:54:06 +0300
-Message-Id: <20220831145407.78166-2-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220831145407.78166-1-andriy.shevchenko@linux.intel.com>
-References: <20220831145407.78166-1-andriy.shevchenko@linux.intel.com>
+        Wed, 31 Aug 2022 10:56:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBFF322505
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 07:55:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B67DB8217A
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 14:55:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83358C433D6;
+        Wed, 31 Aug 2022 14:54:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661957702;
+        bh=rsrl9rgDHgzWkXHkQCBHN7rLCeuL9PMu+p5M2KnjqKg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=OWJZvYHa+Xep3KmkaQ+GB7W6pV1vfHPJU7erMHtWkUY6siio4YDl5IQPoDYH6yP2y
+         X4apdWL8/C2AmlWqhHUZDBl+cLeSq+nrMWN8pX9gdy16w9/0UNC3va1Xei6G3iyt8g
+         wlOFiYCrSfHwgNT9S1cWHwUAI0h8BiQcO9308TxGTHhq372v5qkghtxwsBV9x3/AYR
+         OGQ/xEqWCQ5Wl9Caba6JP5LzZXlJ8vg7SoH1zkN+j8BCmCyF3kyEslGi8WECWnFNZ7
+         Anse4YQclEJ67+8+DLXWDH7+IffvEhxYyMpyjpkP0BvqxZ3yhvCb37KJCf/b/hmhwT
+         sKVCDLUWxDM2A==
+From:   Chao Yu <chao@kernel.org>
+To:     linux-mm@kvack.org
+Cc:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
+        chao@kernel.org, jaegeuk@kernel.org, Chao Yu <chao.yu@oppo.com>,
+        stable@kernel.org,
+        syzbot+81684812ea68216e08c5@syzkaller.appspotmail.com,
+        Muchun Song <songmuchun@bytedance.com>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Subject: [PATCH v2] mm/slub: fix to return errno if kmalloc() fails
+Date:   Wed, 31 Aug 2022 22:54:54 +0800
+Message-Id: <20220831145454.858200-1-chao@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since we have a few helpers to swab elements of a given size in an array
-use them instead of open coded variants.
+From: Chao Yu <chao.yu@oppo.com>
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+In create_unique_id(), kmalloc(, GFP_KERNEL) can fail due to
+out-of-memory, if it fails, return errno correctly rather than
+triggering panic via BUG_ON();
+
+kernel BUG at mm/slub.c:5893!
+Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
+
+Call trace:
+ sysfs_slab_add+0x258/0x260 mm/slub.c:5973
+ __kmem_cache_create+0x60/0x118 mm/slub.c:4899
+ create_cache mm/slab_common.c:229 [inline]
+ kmem_cache_create_usercopy+0x19c/0x31c mm/slab_common.c:335
+ kmem_cache_create+0x1c/0x28 mm/slab_common.c:390
+ f2fs_kmem_cache_create fs/f2fs/f2fs.h:2766 [inline]
+ f2fs_init_xattr_caches+0x78/0xb4 fs/f2fs/xattr.c:808
+ f2fs_fill_super+0x1050/0x1e0c fs/f2fs/super.c:4149
+ mount_bdev+0x1b8/0x210 fs/super.c:1400
+ f2fs_mount+0x44/0x58 fs/f2fs/super.c:4512
+ legacy_get_tree+0x30/0x74 fs/fs_context.c:610
+ vfs_get_tree+0x40/0x140 fs/super.c:1530
+ do_new_mount+0x1dc/0x4e4 fs/namespace.c:3040
+ path_mount+0x358/0x914 fs/namespace.c:3370
+ do_mount fs/namespace.c:3383 [inline]
+ __do_sys_mount fs/namespace.c:3591 [inline]
+ __se_sys_mount fs/namespace.c:3568 [inline]
+ __arm64_sys_mount+0x2f8/0x408 fs/namespace.c:3568
+
+Cc: <stable@kernel.org>
+Fixes: 81819f0fc8285 ("SLUB core")
+Reported-by: syzbot+81684812ea68216e08c5@syzkaller.appspotmail.com
+Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
 ---
- drivers/base/regmap/regmap-mmio.c | 20 ++++----------------
- 1 file changed, 4 insertions(+), 16 deletions(-)
+v2:
+- add more rvb tags and fixes line
+ mm/slub.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/base/regmap/regmap-mmio.c b/drivers/base/regmap/regmap-mmio.c
-index e8d2675463ac..66f92caa2fa2 100644
---- a/drivers/base/regmap/regmap-mmio.c
-+++ b/drivers/base/regmap/regmap-mmio.c
-@@ -10,6 +10,7 @@
- #include <linux/module.h>
- #include <linux/regmap.h>
- #include <linux/slab.h>
-+#include <linux/swab.h>
+diff --git a/mm/slub.c b/mm/slub.c
+index 862dbd9af4f5..e6f3727b9ad2 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -5890,7 +5890,8 @@ static char *create_unique_id(struct kmem_cache *s)
+ 	char *name = kmalloc(ID_STR_LENGTH, GFP_KERNEL);
+ 	char *p = name;
  
- #include "internal.h"
+-	BUG_ON(!name);
++	if (!name)
++		return ERR_PTR(-ENOMEM);
  
-@@ -345,7 +346,6 @@ static int regmap_mmio_noinc_read(void *context, unsigned int reg,
- {
- 	struct regmap_mmio_context *ctx = context;
- 	int ret = 0;
--	int i;
+ 	*p++ = ':';
+ 	/*
+@@ -5948,6 +5949,8 @@ static int sysfs_slab_add(struct kmem_cache *s)
+ 		 * for the symlinks.
+ 		 */
+ 		name = create_unique_id(s);
++		if (IS_ERR(name))
++			return PTR_ERR(name);
+ 	}
  
- 	if (!IS_ERR(ctx->clk)) {
- 		ret = clk_enable(ctx->clk);
-@@ -382,27 +382,15 @@ static int regmap_mmio_noinc_read(void *context, unsigned int reg,
- 	if (ctx->big_endian && (ctx->val_bytes > 1)) {
- 		switch (ctx->val_bytes) {
- 		case 2:
--		{
--			u16 *valp = (u16 *)val;
--			for (i = 0; i < val_count; i++)
--				valp[i] = swab16(valp[i]);
-+			swab16_array(val, val_count);
- 			break;
--		}
- 		case 4:
--		{
--			u32 *valp = (u32 *)val;
--			for (i = 0; i < val_count; i++)
--				valp[i] = swab32(valp[i]);
-+			swab32_array(val, val_count);
- 			break;
--		}
- #ifdef CONFIG_64BIT
- 		case 8:
--		{
--			u64 *valp = (u64 *)val;
--			for (i = 0; i < val_count; i++)
--				valp[i] = swab64(valp[i]);
-+			swab64_array(val, val_count);
- 			break;
--		}
- #endif
- 		default:
- 			ret = -EINVAL;
+ 	s->kobj.kset = kset;
 -- 
-2.35.1
+2.25.1
 
