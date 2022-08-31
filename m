@@ -2,426 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A943ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:44:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B45BEECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:46:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230293AbiHaKoc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 06:44:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35150 "EHLO
+        id S229976AbiHaKqZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 06:46:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229655AbiHaKoU (ORCPT
+        with ESMTP id S229607AbiHaKqY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 06:44:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3482DC9E93
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 03:44:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661942658;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=glJVeUkKg3tox5zcMh5W5s7ejcgNPbJiczeeGyhy1x0=;
-        b=ZyytIsXRgoj6WVrXwQi5xszOVbr/qlQ09sTcSO4Ru01+Y/RQsEhAVbF1YRaIN2vRcOHNtJ
-        nwC5++JnSsi52CpTAIi34XwNXyHrxjmRc7cjfSZF7ZYJDoLAuLygS+zZhkG7GCrZwyZlog
-        6jtu7YQh+F/ctfdS6uQ2Sml6yoK5QXA=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-446-abKaBme1Mkmze0NZBgk68g-1; Wed, 31 Aug 2022 06:44:15 -0400
-X-MC-Unique: abKaBme1Mkmze0NZBgk68g-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C62F83C0D865;
-        Wed, 31 Aug 2022 10:44:14 +0000 (UTC)
-Received: from starship (unknown [10.40.194.96])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8E14CC15BB3;
-        Wed, 31 Aug 2022 10:44:12 +0000 (UTC)
-Message-ID: <4ad924e282fd9a387a9c40d4780a1b9f2eaf4f06.camel@redhat.com>
-Subject: Re: [PATCH v2 2/3] KVM: selftests: Rename 'msr->availble' to
- 'msr->should_not_gp' in hyperv_features test
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Wed, 31 Aug 2022 13:44:11 +0300
-In-Reply-To: <20220831085009.1627523-3-vkuznets@redhat.com>
-References: <20220831085009.1627523-1-vkuznets@redhat.com>
-         <20220831085009.1627523-3-vkuznets@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Wed, 31 Aug 2022 06:46:24 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA1F0C7F84
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 03:46:22 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id z29so10779807lfb.13
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 03:46:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=w7LRoVcd9BLwWbUBCGZiiEDMoNflqnBENh2m6L91/iw=;
+        b=dVGV7u7T5VilLehTAFMbXWUy00y2JBJH0myB0WeUV66VShZMq4LTXsQAilglVayiRQ
+         7/WrsaGsovbhL+Yus5kvm4JuMhmlf4pN6WV7VyJtGZw/rUrQN+TyTvdMVoZ+NOsNBX5g
+         tRzreOGLBWrPTPI8+YcbMNFx1IlqP7kfT2fzExSWoRdg/0Z1N8T1zutf6Vk5ETkmQdqP
+         Y9Mg+DmQG/vmntyH5DC68torDWKHUhomGmT/iEEnNjBzzdfk5iK7Y16rOHD11WJThML5
+         cmdsmronTZ2m6ncHin+xgy1PGD/Ey0HmkKHu7wTorjJm4madmVwaUPa7QIk5EHnx9Afv
+         HrvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=w7LRoVcd9BLwWbUBCGZiiEDMoNflqnBENh2m6L91/iw=;
+        b=nYh/RncEkub6o+g+jxPVS63h4pt3zijzr4ZCsQLT2mRBSettayRpiVVyJ7hZ23YD5A
+         8hlxiMAww5XCL2QaPKtx6I9jdeyaJI1DryQxN2ApK8++oMJqm+g3fp/QAkCbIqFa9Qf6
+         By6STJcpVNbGAcoC+gFakexXRSqVlvSZjSK8XQQpjqef4g3PTXXGGij07BWG37JrtSvr
+         NzRrD4PoZdJNLtSbcyh7eNJcS7DviY5l8uRlaXemmpI8Mp/Vm59ehNPaO8DYXFyNRFR9
+         27T4rMvPD31x4qGpXudRgXycu6p8hEN9TAmJLbMqI/g0xlK8Egn3Fx4enmgGHpzCtXtm
+         x5pA==
+X-Gm-Message-State: ACgBeo3HdWM5qTBcveRwaGcGFdRvrPXfasqJXXzzEt7/vR6lzZc6L02h
+        tFVvcbMnSUP82tS58ykN4zwoCxNeMFL33enXAiNGzg==
+X-Google-Smtp-Source: AA6agR5yO7HRkS85a5YlDDM4S3UTg0C3dtBDpp6XCxnXZrKR5zqZ387xWMwl9MFmbAXvpE5aRu5Q9lPhsda/KMMbJto=
+X-Received: by 2002:ac2:4901:0:b0:494:88dc:7efc with SMTP id
+ n1-20020ac24901000000b0049488dc7efcmr986101lfi.408.1661942780284; Wed, 31 Aug
+ 2022 03:46:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+References: <20220830100700.344594-1-sudeep.holla@arm.com> <20220830100700.344594-7-sudeep.holla@arm.com>
+In-Reply-To: <20220830100700.344594-7-sudeep.holla@arm.com>
+From:   Sumit Garg <sumit.garg@linaro.org>
+Date:   Wed, 31 Aug 2022 16:16:09 +0530
+Message-ID: <CAFA6WYOcHGRwkt6PKFEm9did=hO-e1eukK_1M-NWT=79jMS9WQ@mail.gmail.com>
+Subject: Re: [PATCH 6/9] firmware: arm_ffa: Make memory apis ffa_device independent
+To:     Sudeep Holla <sudeep.holla@arm.com>
+Cc:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org,
+        Marc Bonnici <marc.bonnici@arm.com>,
+        Valentin Laurent <valentin.laurent@trustonic.com>,
+        Lukas Hanel <lukas.hanel@trustonic.com>,
+        Coboy Chen <coboy.chen@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-08-31 at 10:50 +0200, Vitaly Kuznetsov wrote:
-> It may not be clear what 'msr->availble' means. The test actually
-> checks that accessing the particular MSR doesn't cause #GP, rename
-> the varialble accordingly.
-> 
-> Suggested-by: Maxim Levitsky <mlevitsk@redhat.com>
-> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Hi Sudeep,
+
+On Tue, 30 Aug 2022 at 15:39, Sudeep Holla <sudeep.holla@arm.com> wrote:
+>
+> There is a requirement to make memory APIs independent of the ffa_device.
+> One of the use-case is to have a common memory driver that manages the
+> memory for all the ffa_devices. That commom memory driver won't be a
+
+s/commom/common/
+
+> ffa_driver or won't have any ffa_device associated with it. So having
+> these memory APIs accessible without a ffa_device is needed and should
+> be possible as most of these are handled by the partition manager(SPM
+> or hypervisor).
+>
+> Drop the ffa_device argument to the memory APIs and make them ffa_device
+> independent.
+>
+> Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
 > ---
->  .../selftests/kvm/x86_64/hyperv_features.c    | 92 +++++++++----------
->  1 file changed, 46 insertions(+), 46 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_features.c b/tools/testing/selftests/kvm/x86_64/hyperv_features.c
-> index 79ab0152d281..4ec4776662a4 100644
-> --- a/tools/testing/selftests/kvm/x86_64/hyperv_features.c
-> +++ b/tools/testing/selftests/kvm/x86_64/hyperv_features.c
-> @@ -33,7 +33,7 @@ static inline uint8_t hypercall(u64 control, vm_vaddr_t input_address,
->  
->  struct msr_data {
->  	uint32_t idx;
-> -	bool available;
-> +	bool should_not_gp;
->  	bool write;
->  	u64 write_val;
+>  drivers/firmware/arm_ffa/driver.c | 6 ++----
+>  drivers/tee/optee/ffa_abi.c       | 2 +-
+>  include/linux/arm_ffa.h           | 6 ++----
+>  3 files changed, 5 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/firmware/arm_ffa/driver.c b/drivers/firmware/arm_ffa/driver.c
+> index 5f02b670e964..5c8484b05c50 100644
+> --- a/drivers/firmware/arm_ffa/driver.c
+> +++ b/drivers/firmware/arm_ffa/driver.c
+> @@ -640,8 +640,7 @@ static int ffa_sync_send_receive(struct ffa_device *dev,
+>                                        dev->mode_32bit, data);
+>  }
+>
+> -static int
+> -ffa_memory_share(struct ffa_device *dev, struct ffa_mem_ops_args *args)
+> +static int ffa_memory_share(struct ffa_mem_ops_args *args)
+>  {
+>         if (drv_info->mem_ops_native)
+>                 return ffa_memory_ops(FFA_FN_NATIVE(MEM_SHARE), args);
+> @@ -649,8 +648,7 @@ ffa_memory_share(struct ffa_device *dev, struct ffa_mem_ops_args *args)
+>         return ffa_memory_ops(FFA_MEM_SHARE, args);
+>  }
+>
+> -static int
+> -ffa_memory_lend(struct ffa_device *dev, struct ffa_mem_ops_args *args)
+> +static int ffa_memory_lend(struct ffa_mem_ops_args *args)
+>  {
+>         /* Note that upon a successful MEM_LEND request the caller
+>          * must ensure that the memory region specified is not accessed
+> diff --git a/drivers/tee/optee/ffa_abi.c b/drivers/tee/optee/ffa_abi.c
+> index 4c3b5d0008dd..7ec0a2f9a63b 100644
+> --- a/drivers/tee/optee/ffa_abi.c
+> +++ b/drivers/tee/optee/ffa_abi.c
+> @@ -294,7 +294,7 @@ static int optee_ffa_shm_register(struct tee_context *ctx, struct tee_shm *shm,
+>         if (rc)
+>                 return rc;
+>         args.sg = sgt.sgl;
+> -       rc = ffa_ops->memory_share(ffa_dev, &args);
+> +       rc = ffa_ops->memory_share(&args);
+>         sg_free_table(&sgt);
+>         if (rc)
+>                 return rc;
+> diff --git a/include/linux/arm_ffa.h b/include/linux/arm_ffa.h
+> index 556f50f27fb1..eafab07c9f58 100644
+> --- a/include/linux/arm_ffa.h
+> +++ b/include/linux/arm_ffa.h
+> @@ -262,10 +262,8 @@ struct ffa_dev_ops {
+>         int (*sync_send_receive)(struct ffa_device *dev,
+>                                  struct ffa_send_direct_data *data);
+>         int (*memory_reclaim)(u64 g_handle, u32 flags);
+> -       int (*memory_share)(struct ffa_device *dev,
+> -                           struct ffa_mem_ops_args *args);
+> -       int (*memory_lend)(struct ffa_device *dev,
+> -                          struct ffa_mem_ops_args *args);
+> +       int (*memory_share)(struct ffa_mem_ops_args *args);
+> +       int (*memory_lend)(struct ffa_mem_ops_args *args);
 >  };
-> @@ -56,7 +56,7 @@ static void guest_msr(struct msr_data *msr)
->  	else
->  		vector = wrmsr_safe(msr->idx, msr->write_val);
->  
-> -	if (msr->available)
-> +	if (msr->should_not_gp)
->  		GUEST_ASSERT_2(!vector, msr->idx, vector);
->  	else
->  		GUEST_ASSERT_2(vector == GP_VECTOR, msr->idx, vector);
-> @@ -153,12 +153,12 @@ static void guest_test_msrs_access(void)
->  			 */
->  			msr->idx = HV_X64_MSR_GUEST_OS_ID;
->  			msr->write = 0;
-> -			msr->available = 0;
-> +			msr->should_not_gp = 0;
->  			break;
->  		case 1:
->  			msr->idx = HV_X64_MSR_HYPERCALL;
->  			msr->write = 0;
-> -			msr->available = 0;
-> +			msr->should_not_gp = 0;
->  			break;
->  		case 2:
->  			feat->eax |= HV_MSR_HYPERCALL_AVAILABLE;
-> @@ -169,116 +169,116 @@ static void guest_test_msrs_access(void)
->  			msr->idx = HV_X64_MSR_GUEST_OS_ID;
->  			msr->write = 1;
->  			msr->write_val = LINUX_OS_ID;
-> -			msr->available = 1;
-> +			msr->should_not_gp = 1;
->  			break;
->  		case 3:
->  			msr->idx = HV_X64_MSR_GUEST_OS_ID;
->  			msr->write = 0;
-> -			msr->available = 1;
-> +			msr->should_not_gp = 1;
->  			break;
->  		case 4:
->  			msr->idx = HV_X64_MSR_HYPERCALL;
->  			msr->write = 0;
-> -			msr->available = 1;
-> +			msr->should_not_gp = 1;
->  			break;
->  
->  		case 5:
->  			msr->idx = HV_X64_MSR_VP_RUNTIME;
->  			msr->write = 0;
-> -			msr->available = 0;
-> +			msr->should_not_gp = 0;
->  			break;
->  		case 6:
->  			feat->eax |= HV_MSR_VP_RUNTIME_AVAILABLE;
->  			msr->idx = HV_X64_MSR_VP_RUNTIME;
->  			msr->write = 0;
-> -			msr->available = 1;
-> +			msr->should_not_gp = 1;
->  			break;
->  		case 7:
->  			/* Read only */
->  			msr->idx = HV_X64_MSR_VP_RUNTIME;
->  			msr->write = 1;
->  			msr->write_val = 1;
-> -			msr->available = 0;
-> +			msr->should_not_gp = 0;
->  			break;
->  
->  		case 8:
->  			msr->idx = HV_X64_MSR_TIME_REF_COUNT;
->  			msr->write = 0;
-> -			msr->available = 0;
-> +			msr->should_not_gp = 0;
->  			break;
->  		case 9:
->  			feat->eax |= HV_MSR_TIME_REF_COUNT_AVAILABLE;
->  			msr->idx = HV_X64_MSR_TIME_REF_COUNT;
->  			msr->write = 0;
-> -			msr->available = 1;
-> +			msr->should_not_gp = 1;
->  			break;
->  		case 10:
->  			/* Read only */
->  			msr->idx = HV_X64_MSR_TIME_REF_COUNT;
->  			msr->write = 1;
->  			msr->write_val = 1;
-> -			msr->available = 0;
-> +			msr->should_not_gp = 0;
->  			break;
->  
->  		case 11:
->  			msr->idx = HV_X64_MSR_VP_INDEX;
->  			msr->write = 0;
-> -			msr->available = 0;
-> +			msr->should_not_gp = 0;
->  			break;
->  		case 12:
->  			feat->eax |= HV_MSR_VP_INDEX_AVAILABLE;
->  			msr->idx = HV_X64_MSR_VP_INDEX;
->  			msr->write = 0;
-> -			msr->available = 1;
-> +			msr->should_not_gp = 1;
->  			break;
->  		case 13:
->  			/* Read only */
->  			msr->idx = HV_X64_MSR_VP_INDEX;
->  			msr->write = 1;
->  			msr->write_val = 1;
-> -			msr->available = 0;
-> +			msr->should_not_gp = 0;
->  			break;
->  
->  		case 14:
->  			msr->idx = HV_X64_MSR_RESET;
->  			msr->write = 0;
-> -			msr->available = 0;
-> +			msr->should_not_gp = 0;
->  			break;
->  		case 15:
->  			feat->eax |= HV_MSR_RESET_AVAILABLE;
->  			msr->idx = HV_X64_MSR_RESET;
->  			msr->write = 0;
-> -			msr->available = 1;
-> +			msr->should_not_gp = 1;
->  			break;
->  		case 16:
->  			msr->idx = HV_X64_MSR_RESET;
->  			msr->write = 1;
->  			msr->write_val = 0;
-> -			msr->available = 1;
-> +			msr->should_not_gp = 1;
->  			break;
->  
->  		case 17:
->  			msr->idx = HV_X64_MSR_REFERENCE_TSC;
->  			msr->write = 0;
-> -			msr->available = 0;
-> +			msr->should_not_gp = 0;
->  			break;
->  		case 18:
->  			feat->eax |= HV_MSR_REFERENCE_TSC_AVAILABLE;
->  			msr->idx = HV_X64_MSR_REFERENCE_TSC;
->  			msr->write = 0;
-> -			msr->available = 1;
-> +			msr->should_not_gp = 1;
->  			break;
->  		case 19:
->  			msr->idx = HV_X64_MSR_REFERENCE_TSC;
->  			msr->write = 1;
->  			msr->write_val = 0;
-> -			msr->available = 1;
-> +			msr->should_not_gp = 1;
->  			break;
->  
->  		case 20:
->  			msr->idx = HV_X64_MSR_EOM;
->  			msr->write = 0;
-> -			msr->available = 0;
-> +			msr->should_not_gp = 0;
->  			break;
->  		case 21:
->  			/*
-> @@ -287,145 +287,145 @@ static void guest_test_msrs_access(void)
->  			 */
->  			msr->idx = HV_X64_MSR_EOM;
->  			msr->write = 0;
-> -			msr->available = 0;
-> +			msr->should_not_gp = 0;
->  			break;
->  		case 22:
->  			feat->eax |= HV_MSR_SYNIC_AVAILABLE;
->  			msr->idx = HV_X64_MSR_EOM;
->  			msr->write = 0;
-> -			msr->available = 1;
-> +			msr->should_not_gp = 1;
->  			break;
->  		case 23:
->  			msr->idx = HV_X64_MSR_EOM;
->  			msr->write = 1;
->  			msr->write_val = 0;
-> -			msr->available = 1;
-> +			msr->should_not_gp = 1;
->  			break;
->  
->  		case 24:
->  			msr->idx = HV_X64_MSR_STIMER0_CONFIG;
->  			msr->write = 0;
-> -			msr->available = 0;
-> +			msr->should_not_gp = 0;
->  			break;
->  		case 25:
->  			feat->eax |= HV_MSR_SYNTIMER_AVAILABLE;
->  			msr->idx = HV_X64_MSR_STIMER0_CONFIG;
->  			msr->write = 0;
-> -			msr->available = 1;
-> +			msr->should_not_gp = 1;
->  			break;
->  		case 26:
->  			msr->idx = HV_X64_MSR_STIMER0_CONFIG;
->  			msr->write = 1;
->  			msr->write_val = 0;
-> -			msr->available = 1;
-> +			msr->should_not_gp = 1;
->  			break;
->  		case 27:
->  			/* Direct mode test */
->  			msr->idx = HV_X64_MSR_STIMER0_CONFIG;
->  			msr->write = 1;
->  			msr->write_val = 1 << 12;
-> -			msr->available = 0;
-> +			msr->should_not_gp = 0;
->  			break;
->  		case 28:
->  			feat->edx |= HV_STIMER_DIRECT_MODE_AVAILABLE;
->  			msr->idx = HV_X64_MSR_STIMER0_CONFIG;
->  			msr->write = 1;
->  			msr->write_val = 1 << 12;
-> -			msr->available = 1;
-> +			msr->should_not_gp = 1;
->  			break;
->  
->  		case 29:
->  			msr->idx = HV_X64_MSR_EOI;
->  			msr->write = 0;
-> -			msr->available = 0;
-> +			msr->should_not_gp = 0;
->  			break;
->  		case 30:
->  			feat->eax |= HV_MSR_APIC_ACCESS_AVAILABLE;
->  			msr->idx = HV_X64_MSR_EOI;
->  			msr->write = 1;
->  			msr->write_val = 1;
-> -			msr->available = 1;
-> +			msr->should_not_gp = 1;
->  			break;
->  
->  		case 31:
->  			msr->idx = HV_X64_MSR_TSC_FREQUENCY;
->  			msr->write = 0;
-> -			msr->available = 0;
-> +			msr->should_not_gp = 0;
->  			break;
->  		case 32:
->  			feat->eax |= HV_ACCESS_FREQUENCY_MSRS;
->  			msr->idx = HV_X64_MSR_TSC_FREQUENCY;
->  			msr->write = 0;
-> -			msr->available = 1;
-> +			msr->should_not_gp = 1;
->  			break;
->  		case 33:
->  			/* Read only */
->  			msr->idx = HV_X64_MSR_TSC_FREQUENCY;
->  			msr->write = 1;
->  			msr->write_val = 1;
-> -			msr->available = 0;
-> +			msr->should_not_gp = 0;
->  			break;
->  
->  		case 34:
->  			msr->idx = HV_X64_MSR_REENLIGHTENMENT_CONTROL;
->  			msr->write = 0;
-> -			msr->available = 0;
-> +			msr->should_not_gp = 0;
->  			break;
->  		case 35:
->  			feat->eax |= HV_ACCESS_REENLIGHTENMENT;
->  			msr->idx = HV_X64_MSR_REENLIGHTENMENT_CONTROL;
->  			msr->write = 0;
-> -			msr->available = 1;
-> +			msr->should_not_gp = 1;
->  			break;
->  		case 36:
->  			msr->idx = HV_X64_MSR_REENLIGHTENMENT_CONTROL;
->  			msr->write = 1;
->  			msr->write_val = 1;
-> -			msr->available = 1;
-> +			msr->should_not_gp = 1;
->  			break;
->  		case 37:
->  			/* Can only write '0' */
->  			msr->idx = HV_X64_MSR_TSC_EMULATION_STATUS;
->  			msr->write = 1;
->  			msr->write_val = 1;
-> -			msr->available = 0;
-> +			msr->should_not_gp = 0;
->  			break;
->  
->  		case 38:
->  			msr->idx = HV_X64_MSR_CRASH_P0;
->  			msr->write = 0;
-> -			msr->available = 0;
-> +			msr->should_not_gp = 0;
->  			break;
->  		case 39:
->  			feat->edx |= HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE;
->  			msr->idx = HV_X64_MSR_CRASH_P0;
->  			msr->write = 0;
-> -			msr->available = 1;
-> +			msr->should_not_gp = 1;
->  			break;
->  		case 40:
->  			msr->idx = HV_X64_MSR_CRASH_P0;
->  			msr->write = 1;
->  			msr->write_val = 1;
-> -			msr->available = 1;
-> +			msr->should_not_gp = 1;
->  			break;
->  
->  		case 41:
->  			msr->idx = HV_X64_MSR_SYNDBG_STATUS;
->  			msr->write = 0;
-> -			msr->available = 0;
-> +			msr->should_not_gp = 0;
->  			break;
->  		case 42:
->  			feat->edx |= HV_FEATURE_DEBUG_MSRS_AVAILABLE;
->  			dbg->eax |= HV_X64_SYNDBG_CAP_ALLOW_KERNEL_DEBUGGING;
->  			msr->idx = HV_X64_MSR_SYNDBG_STATUS;
->  			msr->write = 0;
-> -			msr->available = 1;
-> +			msr->should_not_gp = 1;
->  			break;
->  		case 43:
->  			msr->idx = HV_X64_MSR_SYNDBG_STATUS;
->  			msr->write = 1;
->  			msr->write_val = 0;
-> -			msr->available = 1;
-> +			msr->should_not_gp = 1;
->  			break;
->  
->  		case 44:
+>
 
+Since these are included under "struct ffa_dev_ops", wouldn't it be
+better to rename the struct (ffa_ops?) as well?
 
-Thanks,
+-Sumit
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-
-Best regards,
-	Maxim Levitsky
-
-
+>  #endif /* _LINUX_ARM_FFA_H */
+> --
+> 2.37.2
+>
