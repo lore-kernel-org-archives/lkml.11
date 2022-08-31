@@ -2,149 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD91CECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:38:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1708BECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:38:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232901AbiHaSia (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 14:38:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59114 "EHLO
+        id S233052AbiHaSiz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 14:38:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233037AbiHaSiA (ORCPT
+        with ESMTP id S233076AbiHaSiG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 14:38:00 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37D1213D3C
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:34:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=qXmrCnpitzVik2ZwdtpGRAJ60eJb5DPfzzZ5ouE/xSM=; b=F1HPRY50KyFQ1m4Fm249FFJryG
-        HdFlbL6Subz/RRlIK6Sn8ZJlMTVBHCcULdA/W9QKh5LDaNqtOI7yWHEM4E+fiPmtK9QL0fBO3doAa
-        UeBy/73QQ9C5vYDWaTCYyL90q2EakS/dJqkY6OTB9Yk19OkgigiXManT588KhsjrNPcwyc/mv+FMv
-        ebVIoMZft/Zyo0mzE7KnDoqaixblffjcBxlgGx+5RhSaaDjr/Zlq3UaTKEVgUcwfEpxPMFIIY5PT5
-        y0tDH/Q8msYyuT5BTmqO6Xj67zWnmiCL/jyYS+L3HWaS5TKwlHf4YTjmZ1HsLMjoH/XKNAS0U7UmZ
-        9oVVDGSA==;
-Received: from [2601:1c0:6280:3f0::a6b3]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oTSYD-007csW-Ts; Wed, 31 Aug 2022 18:34:57 +0000
-Message-ID: <e61a6903-550d-df70-6297-f49cc2750244@infradead.org>
-Date:   Wed, 31 Aug 2022 11:34:56 -0700
+        Wed, 31 Aug 2022 14:38:06 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB322A404;
+        Wed, 31 Aug 2022 11:35:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661970914; x=1693506914;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=oZ81GBOoxsRgNamHItqt8q6nDc0jiyU7IDPS+Ea0r+4=;
+  b=LWusMo6P62gbPWSXVorSKmkVHwjSUUNBLDvsPBLmfjp5LXO/JKezxHju
+   lIBcN0KN8zMYsVBfR902fplhM/W+9qwRS+xt5AH26jksyc1hsfIBVAtVc
+   YxfeJHvFnlSHoJ9Mw0R/niMv1gWtvxrYmNnmxG/UC8l6xIOkBUeB9928/
+   6lowxvXYPuGtt1DbxXvkYMGtQ2Ud3KhOGplo3Hki6mX4pWxPUOWdiLDno
+   WomEeT9SFyWJohnhVlQxAirP8cl/l6zb6n1PC6W8rd/hZTzxA8cju/XAY
+   SG+pVvq1xtyEnqCgK9NU8kCgf1A0Xqt2pHjNAuBk3DQfbls+iH+0fnSN3
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="296798210"
+X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
+   d="scan'208";a="296798210"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 11:35:11 -0700
+X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
+   d="scan'208";a="612191393"
+Received: from nkrobins-mobl2.amr.corp.intel.com (HELO [10.212.220.19]) ([10.212.220.19])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 11:35:11 -0700
+Message-ID: <ea61a9ee-96dc-4f23-9de3-34e033391abc@intel.com>
+Date:   Wed, 31 Aug 2022 11:35:10 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH v2] drm/scheduler: quieten kernel-doc warnings
-To:     Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
-        linux-kernel@vger.kernel.org
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Nayan Deshmukh <nayan26deshmukh@gmail.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        Jiawei Gu <Jiawei.Gu@amd.com>, dri-devel@lists.freedesktop.org,
-        airlied@gmail.com
-References: <20220404213040.12912-1-rdunlap@infradead.org>
- <68961bab-6448-9a98-8916-9c3cb0c5d020@amd.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 1/6] x86/sgx: Do not consider unsanitized pages an error
 Content-Language: en-US
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <68961bab-6448-9a98-8916-9c3cb0c5d020@amd.com>
+To:     "jarkko@kernel.org" <jarkko@kernel.org>,
+        Haitao Huang <haitao.huang@linux.intel.com>
+Cc:     "Huang, Kai" <kai.huang@intel.com>,
+        "pmenzel@molgen.mpg.de" <pmenzel@molgen.mpg.de>,
+        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "Dhanraj, Vijay" <vijay.dhanraj@intel.com>,
+        "Chatre, Reinette" <reinette.chatre@intel.com>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220830031206.13449-2-jarkko@kernel.org>
+ <1f43e7b9-c101-3872-bd1b-add66933b285@intel.com>
+ <1b3308a364317d36ad41961ea9cfee24aa122f02.camel@intel.com>
+ <Yw7EX5GCrEaLzpHV@kernel.org>
+ <d07577c3f0b4b3fff0ce470c56f91fb634653703.camel@intel.com>
+ <Yw7LJa7eRG+WZ0wv@kernel.org>
+ <c3c085d69311ed759bff5bb325a2c182d423f91f.camel@intel.com>
+ <Yw7OEh7QP8tb7BR1@kernel.org>
+ <a91f65ad5c392b6e34f07bc6d3f35c89a76a98db.camel@intel.com>
+ <op.1rrt4aecwjvjmi@hhuan26-mobl1.mshome.net> <Yw+oR3FKlwbeOl6I@kernel.org>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <Yw+oR3FKlwbeOl6I@kernel.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ping?
+Jarkko, Kai and Haitao,
 
-On 4/4/22 14:58, Andrey Grodzovsky wrote:
-> Reviewed-by: Andrey Grodzovsky <andrey.grodzovsky@amd.com>
-> Andrey
+Can you three please start trimming your replies?  You don't need to and
+should not quote the entirety of your messages every time you reply.
+
+On 8/31/22 11:28, jarkko@kernel.org wrote:
+>> Will it cause racing if we expose dev nodes to user space before
+>> ksgxd is started and sensitization done?
+> I'll to explain this.
 > 
-> On 2022-04-04 17:30, Randy Dunlap wrote:
->> Fix kernel-doc warnings in gpu_scheduler.h and sched_main.c.
->>
->> Quashes these warnings:
->>
->> include/drm/gpu_scheduler.h:332: warning: missing initial short description on line:
->>   * struct drm_sched_backend_ops
->> include/drm/gpu_scheduler.h:412: warning: missing initial short description on line:
->>   * struct drm_gpu_scheduler
->> include/drm/gpu_scheduler.h:461: warning: Function parameter or member 'dev' not described in 'drm_gpu_scheduler'
->>
->> drivers/gpu/drm/scheduler/sched_main.c:201: warning: missing initial short description on line:
->>   * drm_sched_dependency_optimized
->> drivers/gpu/drm/scheduler/sched_main.c:995: warning: Function parameter or member 'dev' not described in 'drm_sched_init'
->>
->> Fixes: 2d33948e4e00 ("drm/scheduler: add documentation")
->> Fixes: 8ab62eda177b ("drm/sched: Add device pointer to drm_gpu_scheduler")
->> Fixes: 542cff7893a3 ("drm/sched: Avoid lockdep spalt on killing a processes")
->> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
->> Cc: David Airlie <airlied@linux.ie>
->> Cc: Daniel Vetter <daniel@ffwll.ch>
->> Cc: Andrey Grodzovsky <andrey.grodzovsky@amd.com>
->> Cc: Nayan Deshmukh <nayan26deshmukh@gmail.com>
->> Cc: Alex Deucher <alexander.deucher@amd.com>
->> Cc: Christian König <christian.koenig@amd.com>
->> Cc: Jiawei Gu <Jiawei.Gu@amd.com>
->> Cc: dri-devel@lists.freedesktop.org
->> Acked-by: Christian König <christian.koenig@amd.com>
->> ---
->> Feel free to make changes or suggest changes...
->>
->> v2: drop @work description (already done by Andrey)
->>
->>   drivers/gpu/drm/scheduler/sched_main.c |    3 ++-
->>   include/drm/gpu_scheduler.h            |    9 +++++----
->>   2 files changed, 7 insertions(+), 5 deletions(-)
->>
->> --- linux-next-20220404.orig/drivers/gpu/drm/scheduler/sched_main.c
->> +++ linux-next-20220404/drivers/gpu/drm/scheduler/sched_main.c
->> @@ -198,7 +198,7 @@ static void drm_sched_job_done_cb(struct
->>   }
->>     /**
->> - * drm_sched_dependency_optimized
->> + * drm_sched_dependency_optimized - test if the dependency can be optimized
->>    *
->>    * @fence: the dependency fence
->>    * @entity: the entity which depends on the above fence
->> @@ -984,6 +984,7 @@ static int drm_sched_main(void *param)
->>    *        used
->>    * @score: optional score atomic shared with other schedulers
->>    * @name: name used for debugging
->> + * @dev: target &struct device
->>    *
->>    * Return 0 on success, otherwise error code.
->>    */
->> --- linux-next-20220404.orig/include/drm/gpu_scheduler.h
->> +++ linux-next-20220404/include/drm/gpu_scheduler.h
->> @@ -328,10 +328,10 @@ enum drm_gpu_sched_stat {
->>   };
->>     /**
->> - * struct drm_sched_backend_ops
->> + * struct drm_sched_backend_ops - Define the backend operations
->> + *    called by the scheduler
->>    *
->> - * Define the backend operations called by the scheduler,
->> - * these functions should be implemented in driver side.
->> + * These functions should be implemented in the driver side.
->>    */
->>   struct drm_sched_backend_ops {
->>       /**
->> @@ -408,7 +408,7 @@ struct drm_sched_backend_ops {
->>   };
->>     /**
->> - * struct drm_gpu_scheduler
->> + * struct drm_gpu_scheduler - scheduler instance-specific data
->>    *
->>    * @ops: backend operations provided by the driver.
->>    * @hw_submission_limit: the max size of the hardware queue.
->> @@ -434,6 +434,7 @@ struct drm_sched_backend_ops {
->>    * @_score: score used when the driver doesn't provide one
->>    * @ready: marks if the underlying HW is ready to work
->>    * @free_guilty: A hit to time out handler to free the guilty job.
->> + * @dev: system &struct device
->>    *
->>    * One scheduler is implemented for each hardware ring.
->>    */
+> So the point is to fix the issue at hand, and fix it locally.
+> 
+> Changing initialization order is simply out of context. It's
+> not really an argument for or against changing it
+> 
+> We are fixing sanitization here, and only that with zero
+> side-effects to any other semantics.
+> 
+> It's dictated by the development process [*] but more
+> importantly it's also just plain common sense.
 
--- 
-~Randy
+Kai, I think your suggestion is reasonable.  You make a good point about
+not needing ksgxd for vepc.
+
+*But*, I think it's a bit too much for a bugfix that's headed to
+-stable.  I'm concerned that it will have unintended side effects,
+*especially* when there's a working, tested alternative.
