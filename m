@@ -2,111 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A0DEECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 07:13:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9F9FECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 07:18:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230420AbiHaHNv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 03:13:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54236 "EHLO
+        id S231160AbiHaHR6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 03:17:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230202AbiHaHMk (ORCPT
+        with ESMTP id S229998AbiHaHRS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 03:12:40 -0400
-Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A309C8FD5C;
-        Wed, 31 Aug 2022 00:10:48 -0700 (PDT)
-Received: by mail-qv1-xf32.google.com with SMTP id kh8so10458111qvb.1;
-        Wed, 31 Aug 2022 00:10:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=4H6Ap5iYRv7tpvy1RQr8BbbT4SuQAg4q/F9AMK7kUsE=;
-        b=nQsvUMM7gPD0MfxFck6Gx7rnh5GgDRrLnxF5+lzgvgGP2W0neOwAOpnIkihVmYmhnj
-         g/QozrVUh/ut5/ZBecYX4GKEHTXw6Nd1YMXccL6CHC8ZMtaEnuR4keOMXxnei7fElw6W
-         oS0orSOhbkNbPdl1lPwSkH5VxGgZWZ5Ewd6Pn/lfBPC+HxtHLc3g/VwDqZbfk1v1qB28
-         mRyFWEfi1nINqBgE6N0zuT4nozA0kkypJeIzTRYxfkeq/uypYJRWO0sj4StHJQlYNA2v
-         GrU/f6K5aRfZpApcdRyrFGNv/mUenugIMbl9ryj4q948MOTJI/qKaLfKS93VRBJbqCk0
-         N8Jw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=4H6Ap5iYRv7tpvy1RQr8BbbT4SuQAg4q/F9AMK7kUsE=;
-        b=CFobw5+Bi1aaSyYdmueK8fhlqN/iL2rOSe+p2iLoosRFCav9XNCcNS/ZvcTOe0eaZl
-         d4hferDFpiFr1rZOJDexIUlF7CEHDSsBDSUFknnRRUgWCsytONcJB0u5exqe1aqaaT0n
-         M6GWsK/9Ydqvq1asswKXFRpX9RypyJGvx7lPveRc2dUALwGTbqDmBiyC+pHOP+HAHVST
-         +GSRCCMdnhL5BVMoo2W7MWqKXgbh0bsltFJpZuvEnJoDsnp7AD41XvG+/ABZbzHNh+UA
-         HmtEPiWGfHKQKzvVVX8EUap1CZ8T/72Rqc/6hTIGRKec3HNg/Jpur5DSkHzyrtW267Ml
-         Mn+Q==
-X-Gm-Message-State: ACgBeo3vaHQxPo9d9/k/P88ZTO7xgjSAyn8fPkw3iFEb67l+LcGZXXw0
-        +k0jjJ0OVrx4L8tLkHsO132inMg7LlqCv3phgq8=
-X-Google-Smtp-Source: AA6agR6pVIwGsshTqW4W1Ww2G4fQrnbCfhAxvo2a0nXNTfKZi/6YL5FJH3r6Gmd9tQShyqtgATCNZIDlS+4HFxhktbc=
-X-Received: by 2002:a05:6214:27e3:b0:497:f73:7c2 with SMTP id
- jt3-20020a05621427e300b004970f7307c2mr18196483qvb.1.1661929837495; Wed, 31
- Aug 2022 00:10:37 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220817144045.3206-1-ubizjak@gmail.com> <Yv0QFZUdePurfjKh@google.com>
-In-Reply-To: <Yv0QFZUdePurfjKh@google.com>
-From:   Uros Bizjak <ubizjak@gmail.com>
-Date:   Wed, 31 Aug 2022 09:10:26 +0200
-Message-ID: <CAFULd4bVQ73Cur85Oj=oXHiMRvfrxkAVy=V4TfHcbtNWbqOQzw@mail.gmail.com>
-Subject: Re: [PATCH] KVM/VMX: Do not declare vmread_error asmlinkage
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 31 Aug 2022 03:17:18 -0400
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E516F8C014;
+        Wed, 31 Aug 2022 00:13:45 -0700 (PDT)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 34E12202067;
+        Wed, 31 Aug 2022 09:13:39 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id F030A20203E;
+        Wed, 31 Aug 2022 09:13:38 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 478E8180222C;
+        Wed, 31 Aug 2022 15:13:37 +0800 (+08)
+From:   Richard Zhu <hongxing.zhu@nxp.com>
+To:     a.fatoum@pengutronix.de, l.stach@pengutronix.de,
+        bhelgaas@google.com, lorenzo.pieralisi@arm.com, vkoul@kernel.org,
+        marcel.ziswiler@toradex.com, kishon@ti.com
+Cc:     hongxing.zhu@nxp.com, linux-phy@lists.infradead.org,
+        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        linux-imx@nxp.com
+Subject: [PATCH v2] phy: freescale: imx8m-pcie: Fix the wrong order of phy_init() and phy_power_on()
+Date:   Wed, 31 Aug 2022 14:55:56 +0800
+Message-Id: <1661928956-12727-1-git-send-email-hongxing.zhu@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 5:58 PM Sean Christopherson <seanjc@google.com> wrote:
->
-> +PeterZ
->
-> On Wed, Aug 17, 2022, Uros Bizjak wrote:
-> > There is no need to declare vmread_error asmlinkage, its arguments
-> > can be passed via registers for both, 32-bit and 64-bit targets.
-> > Function argument registers are considered call-clobbered registers,
-> > they are saved in the trampoline just before the function call and
-> > restored afterwards.
->
-> I'm officially confused.  What's the purpose of asmlinkage when used in the kernel?
-> Is it some historical wart that's no longer truly necessary and only causes pain?
->
-> When I wrote this code, I thought that the intent was that it should be applied to
-> any and all asm => C function calls.  But that's obviously not required as there
-> are multiple instances of asm code calling C functions without annotations of any
-> kind.
+Refer to phy_core driver, phy_init() must be called before phy_power_on().
+Fix the wrong order of phy_init() and phy_power_on() here.
+Squash the changes into one patch to avoid the possible bi-section hole.
 
-It is the other way around. As written in coding-style.rst:
+Fixes: 1aa97b002258 ("phy: freescale: pcie: Initialize the imx8 pcie standalone phy driver")
+Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+Tested-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+---
+ drivers/pci/controller/dwc/pci-imx6.c      | 6 +++---
+ drivers/phy/freescale/phy-fsl-imx8m-pcie.c | 8 ++++----
+ 2 files changed, 7 insertions(+), 7 deletions(-)
 
-Large, non-trivial assembly functions should go in .S files, with corresponding
-C prototypes defined in C header files.  The C prototypes for assembly
-functions should use ``asmlinkage``.
+diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
+index 6e5debdbc55b..b5f0de455a7b 100644
+--- a/drivers/pci/controller/dwc/pci-imx6.c
++++ b/drivers/pci/controller/dwc/pci-imx6.c
+@@ -935,7 +935,7 @@ static int imx6_pcie_host_init(struct dw_pcie_rp *pp)
+ 	}
+ 
+ 	if (imx6_pcie->phy) {
+-		ret = phy_power_on(imx6_pcie->phy);
++		ret = phy_init(imx6_pcie->phy);
+ 		if (ret) {
+ 			dev_err(dev, "pcie PHY power up failed\n");
+ 			goto err_clk_disable;
+@@ -949,7 +949,7 @@ static int imx6_pcie_host_init(struct dw_pcie_rp *pp)
+ 	}
+ 
+ 	if (imx6_pcie->phy) {
+-		ret = phy_init(imx6_pcie->phy);
++		ret = phy_power_on(imx6_pcie->phy);
+ 		if (ret) {
+ 			dev_err(dev, "waiting for PHY ready timeout!\n");
+ 			goto err_phy_off;
+@@ -961,7 +961,7 @@ static int imx6_pcie_host_init(struct dw_pcie_rp *pp)
+ 
+ err_phy_off:
+ 	if (imx6_pcie->phy)
+-		phy_power_off(imx6_pcie->phy);
++		phy_exit(imx6_pcie->phy);
+ err_clk_disable:
+ 	imx6_pcie_clk_disable(imx6_pcie);
+ err_reg_disable:
+diff --git a/drivers/phy/freescale/phy-fsl-imx8m-pcie.c b/drivers/phy/freescale/phy-fsl-imx8m-pcie.c
+index ad7d2edfc414..c93286483b42 100644
+--- a/drivers/phy/freescale/phy-fsl-imx8m-pcie.c
++++ b/drivers/phy/freescale/phy-fsl-imx8m-pcie.c
+@@ -59,7 +59,7 @@ struct imx8_pcie_phy {
+ 	bool			clkreq_unused;
+ };
+ 
+-static int imx8_pcie_phy_init(struct phy *phy)
++static int imx8_pcie_phy_power_on(struct phy *phy)
+ {
+ 	int ret;
+ 	u32 val, pad_mode;
+@@ -137,14 +137,14 @@ static int imx8_pcie_phy_init(struct phy *phy)
+ 	return ret;
+ }
+ 
+-static int imx8_pcie_phy_power_on(struct phy *phy)
++static int imx8_pcie_phy_init(struct phy *phy)
+ {
+ 	struct imx8_pcie_phy *imx8_phy = phy_get_drvdata(phy);
+ 
+ 	return clk_prepare_enable(imx8_phy->clk);
+ }
+ 
+-static int imx8_pcie_phy_power_off(struct phy *phy)
++static int imx8_pcie_phy_exit(struct phy *phy)
+ {
+ 	struct imx8_pcie_phy *imx8_phy = phy_get_drvdata(phy);
+ 
+@@ -155,8 +155,8 @@ static int imx8_pcie_phy_power_off(struct phy *phy)
+ 
+ static const struct phy_ops imx8_pcie_phy_ops = {
+ 	.init		= imx8_pcie_phy_init,
++	.exit		= imx8_pcie_phy_exit,
+ 	.power_on	= imx8_pcie_phy_power_on,
+-	.power_off	= imx8_pcie_phy_power_off,
+ 	.owner		= THIS_MODULE,
+ };
+ 
+-- 
+2.25.1
 
-So, prototypes for *assembly functions* should use asmlinkage.
-
-That said, asmlinkage for i386 just switches ABI to the default
-stack-passing ABI. However, we are calling assembly files, so the
-argument handling in the callee is totally under our control and there
-is no need to switch ABIs. It looks to me that besides syscalls,
-asmlinkage is and should be used only for a large imported body of asm
-functions that use standard stack-passing ABI (e.g. x86 crypto and
-math-emu functions), otherwise it is just a burden to push and pop
-registers to/from stack for no apparent benefit.
-
-> And vmread_error() isn't the only case where asmlinkage appears to be a burden, e.g.
-> schedule_tail_wrapper() => schedule_tail() seems to exist purely to deal with the
-> side affect of asmlinkage generating -regparm=0 on 32-bit kernels.
-
-schedule_tail is external to the x86 arch directory, and for some
-reason marked asmlinkage. So, the call from asm must follow asmlinkage
-ABI.
-
-FYI, there is some discussion about asmlinkage on stackoverflow:
-
-https://stackoverflow.com/questions/61635931/does-asmlinkage-mean-stack-or-registers
-
-Uros.
