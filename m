@@ -2,101 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A711CECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 09:42:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ECB7ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 09:43:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229909AbiHaJm5 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 05:42:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47972 "EHLO
+        id S229849AbiHaJm7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 05:42:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229885AbiHaJmx (ORCPT
+        with ESMTP id S229871AbiHaJmx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 31 Aug 2022 05:42:53 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6F33979F0
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 02:42:52 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1oTKF3-0007XE-60; Wed, 31 Aug 2022 11:42:37 +0200
-Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1oTKF1-0032Xk-Sl; Wed, 31 Aug 2022 11:42:35 +0200
-Received: from pza by lupine with local (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1oTKF1-0004Nl-9s; Wed, 31 Aug 2022 11:42:35 +0200
-Message-ID: <4ab6f79f54ad975d7c21c86c57fa2defbb8c98c0.camel@pengutronix.de>
-Subject: Re: [PATCH v3 14/19] dt-bindings: hwmon: (mr75203) add "moortec,
- ts-series" property
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     "Farber, Eliav" <farbere@amazon.com>, jdelvare@suse.com,
-        linux@roeck-us.net, robh+dt@kernel.org, rtanwar@maxlinear.com,
-        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     talel@amazon.com, hhhawa@amazon.com, jonnyc@amazon.com,
-        hanochu@amazon.com, ronenk@amazon.com, itamark@amazon.com,
-        shellykz@amazon.com, shorer@amazon.com, amitlavi@amazon.com,
-        almogbs@amazon.com, dkl@amazon.com, andriy.shevchenko@intel.com
-Date:   Wed, 31 Aug 2022 11:42:35 +0200
-In-Reply-To: <f49558fa-e987-145c-425e-0e8a7a9fba5f@amazon.com>
-References: <20220830192212.28570-1-farbere@amazon.com>
-         <20220830192212.28570-15-farbere@amazon.com>
-         <89806ee9a80652d5877ef5c4a86574e82af48da4.camel@pengutronix.de>
-         <f49558fa-e987-145c-425e-0e8a7a9fba5f@amazon.com>
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE70B777A;
+        Wed, 31 Aug 2022 02:42:51 -0700 (PDT)
+X-UUID: c12ef8bd3b9c47a3b89bbbc5f9ee6099-20220831
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=lBl/RPlIlb3KsjLgT/BWykSBimBWV4uOIzFGSIBye1k=;
+        b=NP3bk8Qcg+OAnR4BrjRuyc29EiFMBLNjFU2bxswrGkkwx0Ed7gqY5f+nx2oz1aOHuO4wWTzvDrS94qx4yMgayaaN07nrpFzQdo45ua+yWLAamI3+dbirCKmXNFItPyUOajBAIE2s4g0Io0pRR6g3cGRm4ELfN7UoxfZwJWSNuUg=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.10,REQID:76624fc3-ea14-4db1-8e73-11e8bd74bd8c,OB:0,L
+        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_
+        Ham,ACTION:release,TS:0
+X-CID-META: VersionHash:84eae18,CLOUDID:aac8ad20-1c20-48a5-82a0-25f9c331906d,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: c12ef8bd3b9c47a3b89bbbc5f9ee6099-20220831
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <johnson.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 996513629; Wed, 31 Aug 2022 17:42:47 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Wed, 31 Aug 2022 17:42:47 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
+ Transport; Wed, 31 Aug 2022 17:42:47 +0800
+Message-ID: <af5ce6dd2f359741506e6d91e1a7301846bfae35.camel@mediatek.com>
+Subject: Re: linux-next: build warnings after merge of the mediatek tree
+From:   Johnson Wang <johnson.wang@mediatek.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     Tinghan Shen <tinghan.shen@mediatek.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Date:   Wed, 31 Aug 2022 17:42:42 +0800
+In-Reply-To: <20220831154248.20da2b6c@canb.auug.org.au>
+References: <20220831154248.20da2b6c@canb.auug.org.au>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.38.3-1 
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mi, 2022-08-31 at 12:23 +0300, Farber, Eliav wrote:
-> On 8/31/2022 11:23 AM, Philipp Zabel wrote:
-> > On Di, 2022-08-30 at 19:22 +0000, Eliav Farber wrote:
-> > > Add optional "moortec,ts-series" property to define the temperature
-> > > equation and coefficients that shall be used to convert the digital
-> > > output to value in milli-Celsius.
-> > > Supported series: 5 (default) and 6.
-> > 
-> > Is this the difference between mr75xxx and mr76xxx series?
-> > If so, should be a compatible "moortec,mr76006" instead?
-> > If the temperature equation could be derived from the compatible, this
-> > property would not be necessary.
-> The PVT (Process, Voltage, Temperature) monitoring logic can be
-> constructed from many different sub-blocks:
-> *) CONTROLLER (mr75203) - controlling TS, PD and VM.
-> *) TS (mr74137) - for measuring temperature in ring.
-> *) PD (mr74139) - for measuring IO based transistors.
-> *) VM (mr74138) - for measuring voltage rails across the SoC.
-> *) Ring oscillators (mr76007/mr76008)
-> *) Pre-scalers (mr76006)
->
-> Besides mr75203 which is digital all other IPs are analog.
-> There is a single mr75203 and there can be several or none of the other
-> units.
-
-Thank you for the explanation, I think this information would be nice
-to have in a description in moortec,mr75203.yaml.
-
-> The kernel driver is only for the controller (mr75203).
-> The series 5 or 6 is relevant for the TS (mr74137) and not for the
-> controller (mr75203).
-> Each of the analog units can have a different series number (for example
-> we use series 3 of the VM).
+On Wed, 2022-08-31 at 15:42 +1000, Stephen Rothwell wrote:
+> Hi all,
 > 
-> That is why I didn't change the compatible of mr75203, and instead added
-> a TS-series parameter.
+> After merging the mediatek tree, today's linux-next build (arm64
+> defconfi)
+> produced these warnings:
+> 
+> arch/arm64/boot/dts/mediatek/mt8173.dtsi:1450.35-1471.5: Warning
+> (power_domains_property): /soc/vcodec@18002000: Missing property
+> '#power-domain-cells' in node /soc/syscon@10006000 or bad phandle
+> (referred from power-domains[0])
+> arch/arm64/boot/dts/mediatek/mt8173.dtsi:1502.35-1522.5: Warning
+> (power_domains_property): /soc/vcodec@19002000: Missing property
+> '#power-domain-cells' in node /soc/syscon@10006000 or bad phandle
+> (referred from power-domains[0])
+> arch/arm64/boot/dts/mediatek/mt8173.dtsi:1450.35-1471.5: Warning
+> (power_domains_property): /soc/vcodec@18002000: Missing property
+> '#power-domain-cells' in node /soc/syscon@10006000 or bad phandle
+> (referred from power-domains[0])
+> arch/arm64/boot/dts/mediatek/mt8173.dtsi:1502.35-1522.5: Warning
+> (power_domains_property): /soc/vcodec@19002000: Missing property
+> '#power-domain-cells' in node /soc/syscon@10006000 or bad phandle
+> (referred from power-domains[0])
+> arch/arm64/boot/dts/mediatek/mt8173.dtsi:1450.35-1471.5: Warning
+> (power_domains_property): /soc/vcodec@18002000: Missing property
+> '#power-domain-cells' in node /soc/syscon@10006000 or bad phandle
+> (referred from power-domains[0])
+> arch/arm64/boot/dts/mediatek/mt8173.dtsi:1502.35-1522.5: Warning
+> (power_domains_property): /soc/vcodec@19002000: Missing property
+> '#power-domain-cells' in node /soc/syscon@10006000 or bad phandle
+> (referred from power-domains[0])
+> arch/arm64/boot/dts/mediatek/mt8173.dtsi:1450.35-1471.5: Warning
+> (power_domains_property): /soc/vcodec@18002000: Missing property
+> '#power-domain-cells' in node /soc/syscon@10006000 or bad phandle
+> (referred from power-domains[0])
+> arch/arm64/boot/dts/mediatek/mt8173.dtsi:1502.35-1522.5: Warning
+> (power_domains_property): /soc/vcodec@19002000: Missing property
+> '#power-domain-cells' in node /soc/syscon@10006000 or bad phandle
+> (referred from power-domains[0])
+> 
+> Introduced by commit
+> 
+>   d3dfd4688574 ("arm64: dts: mediatek: Update mt81xx scpsys node to
+> align with dt-bindings")
+> 
 
-I see, I mistakenly assumed mr76006 referred to a new controller
-version. This also invalidates my comment on patch 4.
+Hi Stephen,
 
-regards
-Philipp
+
+I help TingHan to send this email because he encounters some IT issue.
+---
+I send a patch to fix these warnings.
+
+https://lore.kernel.org/all/20220831065100.27722-1-tinghan.shen@mediatek.com/
+
+
+I'm sorry to produce these warnings.
+
+
+
+Best regards,
+TingHan
+---
+
+BRs,
+Johnson Wang
+
