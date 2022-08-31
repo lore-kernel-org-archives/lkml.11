@@ -2,94 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5491DECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 21:29:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D53FEECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 21:30:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232384AbiHaV3w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 17:29:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57610 "EHLO
+        id S232371AbiHaVaZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 17:30:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232367AbiHaV3p (ORCPT
+        with ESMTP id S232329AbiHaVaV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 17:29:45 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A87C312AD5;
-        Wed, 31 Aug 2022 14:19:56 -0700 (PDT)
-Date:   Wed, 31 Aug 2022 21:19:52 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1661980794;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XzhVrNi6J1T5m/BEp6srs+QkCTsVaCof0plMFx3wRs8=;
-        b=jAOcWl/MR9qE63zK4l19mNAvRuoD3Yzj8JohkwGufEQF/5Jz8oJxlXum2x4cmr2MCWyoQ4
-        QCgRIfl+tdrq85LaVoVj+6zIa5KdJdjmpnnIgJH7XqXLg+Qfmt4Syl1ff4exOb8CrmCqMJ
-        EnyWALF/Iu2RUYuUKUpKIo2i2gN3magNAMH/UEAQ/hxELvrOXkv6w82NOzCE+8rNHtnn+R
-        J8BlV0k1qPZAuYE5x6yVBsXrPCJlMCzAUNGDOEHg2WWm2+gfoFL7z/9e/AbN0sUp8YGwqZ
-        VLotpCl48hJKtbCds3HnwM+Xu0v0auOxR2jMJ9Mu4M65CEbKIQucflz9Anm30A==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1661980794;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XzhVrNi6J1T5m/BEp6srs+QkCTsVaCof0plMFx3wRs8=;
-        b=59sI/aopzGXxBoFE0/UkPEy61NHgx6Kmp9s4lPepxnTgMEYmi51Y7NZrmGeb/E0zv+ig7K
-        VOSCsInkiL+DH2CQ==
-From:   "tip-bot2 for Tony Luck" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/urgent] x86/cpu: Add CPU model numbers for Meteor Lake
-Cc:     Tony Luck <tony.luck@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220824175718.232384-1-tony.luck@intel.com>
-References: <20220824175718.232384-1-tony.luck@intel.com>
+        Wed, 31 Aug 2022 17:30:21 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E4746EF13
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 14:30:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661981420; x=1693517420;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=rSnUoGMhuC5zlijS2vBa0BR4NHyX4MpKBuKfLDQV5ng=;
+  b=jEE0mtnw0yyzTn/dBLUX6Pnzuh+O/TP2c5WGGdBQaLVuRAuu2DvJb/s9
+   qS60Ylj/ZloilwOSCc7n8Ww2b9iTrhNYU9Jkjr5jzmLouuL39mv2WV2kP
+   r6EILR8huNkYHzEMFl4/Sq3aCFme6Unv0mY7sDSWPYufJyW8BeNvQVY95
+   ecB9FJYC2ygCB2VCDvJIyHQpNOw03DHpouKepPhkeQFYRAYYiw+/cKDQk
+   HHTqG2i83ih3yrJrdGNG9wJeTKIhv9frwcsvoy8+P+CYavEp3hJ8tPGnq
+   8hkN3GumsvoqLcN6LFfm/t6/3Sao848IxPEEe9fPA3TpKQclUwwb4euNR
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="357266532"
+X-IronPort-AV: E=Sophos;i="5.93,279,1654585200"; 
+   d="scan'208";a="357266532"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 14:30:20 -0700
+X-IronPort-AV: E=Sophos;i="5.93,279,1654585200"; 
+   d="scan'208";a="680579063"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 14:30:18 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oTVHs-006Zzf-1N;
+        Thu, 01 Sep 2022 00:30:16 +0300
+Date:   Thu, 1 Sep 2022 00:30:16 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] regmap: mmio: Fix rebase error
+Message-ID: <Yw/S6NjDcd/JeZCG@smile.fi.intel.com>
+References: <20220831141303.501548-1-linus.walleij@linaro.org>
 MIME-Version: 1.0
-Message-ID: <166198079277.401.11078019641098059546.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220831141303.501548-1-linus.walleij@linaro.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/urgent branch of tip:
+On Wed, Aug 31, 2022 at 04:13:03PM +0200, Linus Walleij wrote:
+> A dangling pointless "ret 0" was left in and some unneeded
+> whitespace can go too.
 
-Commit-ID:     5515d21c6817bc27b0b13c61edf22b09b58bc647
-Gitweb:        https://git.kernel.org/tip/5515d21c6817bc27b0b13c61edf22b09b58bc647
-Author:        Tony Luck <tony.luck@intel.com>
-AuthorDate:    Wed, 24 Aug 2022 10:57:18 -07:00
-Committer:     Dave Hansen <dave.hansen@linux.intel.com>
-CommitterDate: Wed, 31 Aug 2022 14:17:00 -07:00
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-x86/cpu: Add CPU model numbers for Meteor Lake
+> Fixes: 81c0386c1376 ("regmap: mmio: Support accelerared noinc operations")
+> Reported-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+>  drivers/base/regmap/regmap-mmio.c | 3 ---
+>  1 file changed, 3 deletions(-)
+> 
+> diff --git a/drivers/base/regmap/regmap-mmio.c b/drivers/base/regmap/regmap-mmio.c
+> index e8d2675463ac..b47ee3e8d050 100644
+> --- a/drivers/base/regmap/regmap-mmio.c
+> +++ b/drivers/base/regmap/regmap-mmio.c
+> @@ -410,14 +410,11 @@ static int regmap_mmio_noinc_read(void *context, unsigned int reg,
+>  		}
+>  	}
+>  
+> -
+>  out_clk:
+>  	if (!IS_ERR(ctx->clk))
+>  		clk_disable(ctx->clk);
+>  
+>  	return ret;
+> -
+> -	return 0;
+>  }
+>  
+>  
+> -- 
+> 2.37.2
+> 
 
-Add model numbers for client and mobile parts.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Signed-off-by: Tony Luck <tony.luck@intel.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Link: https://lkml.kernel.org/r/20220824175718.232384-1-tony.luck@intel.com
----
- arch/x86/include/asm/intel-family.h | 3 +++
- 1 file changed, 3 insertions(+)
 
-diff --git a/arch/x86/include/asm/intel-family.h b/arch/x86/include/asm/intel-family.h
-index aeb3802..5d75fe2 100644
---- a/arch/x86/include/asm/intel-family.h
-+++ b/arch/x86/include/asm/intel-family.h
-@@ -115,6 +115,9 @@
- #define INTEL_FAM6_RAPTORLAKE_P		0xBA
- #define INTEL_FAM6_RAPTORLAKE_S		0xBF
- 
-+#define INTEL_FAM6_METEORLAKE		0xAC
-+#define INTEL_FAM6_METEORLAKE_L		0xAA
-+
- /* "Small Core" Processors (Atom) */
- 
- #define INTEL_FAM6_ATOM_BONNELL		0x1C /* Diamondville, Pineview */
