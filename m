@@ -2,111 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3627ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 20:23:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1199DECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 20:38:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229916AbiHaUXK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 16:23:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53554 "EHLO
+        id S230474AbiHaUii (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 16:38:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231136AbiHaUXI (ORCPT
+        with ESMTP id S229737AbiHaUif (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 16:23:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BF47D99C3;
-        Wed, 31 Aug 2022 13:23:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76521B82301;
-        Wed, 31 Aug 2022 20:23:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 563B7C433D6;
-        Wed, 31 Aug 2022 20:23:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661977383;
-        bh=5uN7nzPwfI/1N2ti9Lp5VrCgxZVrN89dYdqpAIQOF6s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CA23Eldvy/3ULld1WpL1lAnDzzQD1phusjI7CK4wIZvslO1aL8OOfNQ69a8J2Q57A
-         COq0zBpdM2bF/6wmcWgj2SMyQ+AoP83IR8EQxGFb2mtdhwuAK1YnBu2Ye7LIElOsrq
-         Lb/E943++QUC9yMiSZQoPWJalkuufXONeR4YG/3ddH0k6h2fmi6eE6k32Qf2wnpeRx
-         o1o/Ff0E0LUCfcULCF88iJ509Gy964IRaXir+h1Mf/GjC5GQSPhBSDyUJk5/s1CSpx
-         weomMrDW+vvhYUhBxrNS7l6Do6OICJRQKOVKucSNDd3DTvYe0lU+zAl/6DOoEyme3w
-         1js6ugKD51U9A==
-Date:   Wed, 31 Aug 2022 13:23:00 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Tom Rix <trix@redhat.com>, linux-kbuild@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev, x86@kernel.org,
-        Dmitrii Bundin <dmitrii.bundin.a@gmail.com>,
-        Fangrui Song <maskray@google.com>,
-        Alexey Alexandrov <aalexand@google.com>,
-        Bill Wendling <morbo@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Andi Kleen <ak@linux.intel.com>
-Subject: Re: [PATCH v2 5/5] Makefile.debug: set -g unconditional on
- CONFIG_DEBUG_INFO_SPLIT
-Message-ID: <Yw/DJLu10nw4aUDw@dev-arch.thelio-3990X>
-References: <20220831184408.2778264-1-ndesaulniers@google.com>
- <20220831184408.2778264-6-ndesaulniers@google.com>
+        Wed, 31 Aug 2022 16:38:35 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D686EE3956
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 13:38:34 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id p185so15535288pfb.13
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 13:38:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=CCmnkqfGKHR/ON3gNrTQzrwetbHYAD+7v2zifG9dM50=;
+        b=RtSaqcWk+ltgPsCb9uVdNp/i5srYHnIIr55HaWe1QYcKqCb3ZUenJNi7OfXzgb6ZrS
+         uBDdvE17sYzjYv3HvRzsTkMTKC03jsXNCMituxFfC9yGWsu+rX69VdkLNn8AH0vLG/QG
+         hI7Hfl6Sd4nHoNbJ7B80GuIVIuMgZL08NAlqGL0nzIuu27ru0eK9W07Yk4ZqSj8yxuJQ
+         ODaRi7yop03Ww3p5f4fo2j4hNWUNPLy3xQwrO37jJNleyCgjRXU0Ny4IA0mIPi0upB4/
+         GgZ1cydKufj+1ZzggMUC4Gp2jCUqRVr583/uYeOgmm8KU2qygiGuKWWFbb76c+66LjSz
+         Notg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=CCmnkqfGKHR/ON3gNrTQzrwetbHYAD+7v2zifG9dM50=;
+        b=qD3nZDJ+fbavQzfEwBsh4fOrgdVq6plEWH7V3u3KS/fYzVmGp/bmVoYhe8QPF/zNN3
+         TiR78bOkfCKJQFHAZ9TLqOLVwFFLfqdS363xHDmU+d5rIVDwTvklsv7gYYGQO3lhhIEp
+         YCj/PYX2/ozIYrS/1UfJtyyjLZmMQYRzXFOPRlWPlcleSqkqsaD685HuQI7OahhxlK5n
+         TPrMzJw5EB0iPBK257M1OjAl2n39SzWvu6BXjKiRvYghnI4urUbxHSBPeGdRTj6U8IKb
+         wwrZuxRphG8DSCFjDNzc3bAb9i2KAKB1j/GBiAEBVXWaQFSQakf8lVTx7PAvZXt1JgVl
+         +jug==
+X-Gm-Message-State: ACgBeo3AC4hoGhwhu1jJw9D9hjlVGavJD6le8xJPzxqE3/nTD3fTNlZi
+        xafxEeIVOhNSgehVR2esM+pN3yK4VeUBs1uhigY=
+X-Google-Smtp-Source: AA6agR4vskFQkjaeTlcg+3ZueXBytfEkdhsxLidFnFNziE3Do3YDUjjJyob7Mf70s+T4y6fKLNbA+i0ljEyj1T3MlmI=
+X-Received: by 2002:a65:6a05:0:b0:42c:87a0:ea77 with SMTP id
+ m5-20020a656a05000000b0042c87a0ea77mr9238994pgu.75.1661978314393; Wed, 31 Aug
+ 2022 13:38:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220831184408.2778264-6-ndesaulniers@google.com>
+References: <20220831083024.37138-1-david@redhat.com> <CAHbLzkqeDAnCdt3q4E2RZw64QEzVaO_pseR3VaoHUhB+rZFcZQ@mail.gmail.com>
+ <Yw+uASvgWU5+9PvI@xz-m1.local>
+In-Reply-To: <Yw+uASvgWU5+9PvI@xz-m1.local>
+From:   Yang Shi <shy828301@gmail.com>
+Date:   Wed, 31 Aug 2022 13:38:21 -0700
+Message-ID: <CAHbLzkpH=a-gbwZYfJx6qD_Rvz6AEP+xwCKDbwJRPNt9W3Anxg@mail.gmail.com>
+Subject: Re: [PATCH v1] mm/ksm: update stale comment in write_protect_page()
+To:     Peter Xu <peterx@redhat.com>
+Cc:     David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Hugh Dickins <hughd@google.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 11:44:08AM -0700, Nick Desaulniers wrote:
-> Dmitrii, Fangrui, and Mashahiro note:
-> 
->   Before GCC 11 and Clang 12 -gsplit-dwarf implicitly uses -g2.
-> 
-> Fix CONFIG_DEBUG_INFO_SPLIT for gcc-11+ & clang-12+ which now need -g
-> specified in order for -gsplit-dwarf to work at all.
-> 
-> -gsplit-dwarf has been mutually exclusive with -g since support for
-> CONFIG_DEBUG_INFO_SPLIT was introduced in
-> commit 866ced950bcd ("kbuild: Support split debug info v4")
-> I don't think it ever needed to be.
-> 
-> Link: https://lore.kernel.org/lkml/20220815013317.26121-1-dmitrii.bundin.a@gmail.com/
-> Link: https://lore.kernel.org/lkml/CAK7LNARPAmsJD5XKAw7m_X2g7Fi-CAAsWDQiP7+ANBjkg7R7ng@mail.gmail.com/
-> Link: https://reviews.llvm.org/D80391
-> Cc: Andi Kleen <ak@linux.intel.com>
-> Reported-by: Dmitrii Bundin <dmitrii.bundin.a@gmail.com>
-> Reported-by: Fangrui Song <maskray@google.com>
-> Reported-by: Masahiro Yamada <masahiroy@kernel.org>
-> Suggested-by: Dmitrii Bundin <dmitrii.bundin.a@gmail.com>
-> Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+On Wed, Aug 31, 2022 at 11:52 AM Peter Xu <peterx@redhat.com> wrote:
+>
+> On Wed, Aug 31, 2022 at 10:55:43AM -0700, Yang Shi wrote:
+> > On Wed, Aug 31, 2022 at 1:30 AM David Hildenbrand <david@redhat.com> wrote:
+> > >
+> > > The comment is stale, because a TLB flush is no longer sufficient and
+> > > required to synchronize against concurrent GUP-fast. This used to be true
+> > > in the past, whereby a TLB flush would have implied an IPI on architectures
+> > > that support GUP-fast, resulting in GUP-fast that disables local interrupts
+> > > from completing before completing the flush.
+> >
+> > Hmm... it seems there might be problem for THP collapse IIUC. THP
+> > collapse clears and flushes pmd before doing anything on pte and
+> > relies on interrupt disable of fast GUP to serialize against fast GUP.
+> > But if TLB flush is no longer sufficient, then we may run into the
+> > below race IIUC:
+> >
+> >          CPU A                                                CPU B
+> > THP collapse                                             fast GUP
+> >
+> > gup_pmd_range() <-- see valid pmd
+> >
+> > gup_pte_range() <-- work on pte
+> > clear pmd and flush TLB
+> > __collapse_huge_page_isolate()
+> >     isolate page <-- before GUP bump refcount
+> >
+> >    pin the page
+> > __collapse_huge_page_copy()
+> >     copy data to huge page
+> >     clear pte (don't flush TLB)
+> > Install huge pmd for huge page
+> >
+> > return the obsolete page
+>
+> Maybe the pmd level tlb flush is still needed, but on pte level it's
+> optional (where we can rely on fast-gup rechecking on the pte change)?
 
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+Do you mean in khugepaged? It does TLB flush, but some arches may not use IPI.
 
-> ---
-> Changes v1 -> v2:
-> * Add reference to 866ced950bcd, cc Andi, in commit message.
-> 
->  scripts/Makefile.debug | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/scripts/Makefile.debug b/scripts/Makefile.debug
-> index 46e88f0ca998..b6eb532af3cc 100644
-> --- a/scripts/Makefile.debug
-> +++ b/scripts/Makefile.debug
-> @@ -1,10 +1,8 @@
-> -DEBUG_CFLAGS	:=
-> +DEBUG_CFLAGS	:= -g
-> +KBUILD_AFLAGS	+= -g
->  
->  ifdef CONFIG_DEBUG_INFO_SPLIT
->  DEBUG_CFLAGS	+= -gsplit-dwarf
-> -else
-> -DEBUG_CFLAGS	+= -g
-> -KBUILD_AFLAGS	+= -g
->  endif
->  
->  ifdef CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT
-> -- 
-> 2.37.2.672.g94769d06f0-goog
-> 
+>
+> --
+> Peter Xu
+>
