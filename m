@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9464EECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:27:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0D0CECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:27:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232979AbiHaS1H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 14:27:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58320 "EHLO
+        id S232787AbiHaS1K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 14:27:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232799AbiHaSZp (ORCPT
+        with ESMTP id S230151AbiHaSZq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 14:25:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96C7BEE68C
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:21:56 -0700 (PDT)
+        Wed, 31 Aug 2022 14:25:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 269E21F2C2
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:21:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C52F261CEE
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:21:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0BF3C4315A;
+        by ams.source.kernel.org (Postfix) with ESMTPS id A2998B82282
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:21:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D974C4314B;
         Wed, 31 Aug 2022 18:21:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1661970110;
-        bh=hpw3dacwnLzPWl5y8Cq3vm7W0XF8HCMlGL9rQUzjRhc=;
+        bh=fmmGXrtft4WY+vYxlsPoch8NfKf9311WO6goU05GNWY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XwG15xQ84Pqok3dWN53SvRS0c71ccK6xdN94X/s2EA9txx3fA5/W7v7pN8PJH3aAp
-         1jqCLk313zaNhCtJ5i5jUc4jB6AyWc51fLis87H4MplTHfBYxUrOqx5UQN3IfRfBBa
-         2yzxgPHU4oLYatGUzpsQ9HYmeItCN/Q327hjKX2ZlgNLHYjSlVFLmkn0grHGc8Vhdh
-         vIWB5TGlrPLOrEw98BxzKHcyBZrt3jvPigYqYgCcG8lhUCspnmZJERmvBCeUYLc8n2
-         4/PSAhnzqe3Bh3+BWBRjIqS4NvXD/YXEzyA7gNJn+GOaO0MHAcDF+2Pwd7JRtOokIU
-         BLfpC2Bs7+8mw==
+        b=sKiFWYHWw3ttCgjlsyc2E1INvfoTWR9OpKuHkufgBVo5RJr1haye3k19z1zICIyDb
+         Y45L3NkcrTYqzl/LkYwzg5PEUkYcD805Z7uE2apsuloFYftTH4YQzhM7j/d3XNuoeg
+         MfL5xtC8p0wpAAX4Fs3nPbsVNVt7zWosCh7uyJS3Fad2BLZJWZokgEL4qUOSu70PDc
+         9RUgK9CLEwMyHj5aXhhiZSORjNQ6LdA+Kve3cAd59VQudoFtoQJ0AxO0HHReRvjiHM
+         2fuvLc4A7HqzuLtjUP63Xr8qhwsDIrDvVXgVDm0GuyUcYzk23lmoSRE2BdoTjM/Pr/
+         fdcXIe0stWfYA==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id F046B5C0E68; Wed, 31 Aug 2022 11:21:49 -0700 (PDT)
+        id E09525C0A6B; Wed, 31 Aug 2022 11:21:49 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     gwml@vger.gnuweeb.org, kernel-team@fb.com, w@lwt.eu,
         Willy Tarreau <w@1wt.eu>,
         "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH nolibc 17/18] selftests/nolibc: add a "help" target
-Date:   Wed, 31 Aug 2022 11:21:47 -0700
-Message-Id: <20220831182148.2698489-19-paulmck@kernel.org>
+Subject: [PATCH nolibc 08/18] selftests/nolibc: exit with poweroff on success when getpid() == 1
+Date:   Wed, 31 Aug 2022 11:21:38 -0700
+Message-Id: <20220831182148.2698489-10-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220831182113.GA2697286@paulmck-ThinkPad-P17-Gen-1>
 References: <20220831182113.GA2697286@paulmck-ThinkPad-P17-Gen-1>
@@ -53,55 +53,43 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Willy Tarreau <w@1wt.eu>
 
-It presents the supported targets, and becomes the default target to
-save the user from having to read the makefile. The "all" target was
-placed after it and now points to "run" to do everything since it's
-no longer the default one.
+The idea is to ease automated testing under qemu. If the test succeeds
+while running as PID 1, indicating the system was booted with init=/test,
+let's just power off so that qemu can exit with a successful code. In
+other situations it will exit and provoke a panic, which may be caught
+for example with CONFIG_PVPANIC.
 
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- tools/testing/selftests/nolibc/Makefile | 27 ++++++++++++++++++++++++-
- 1 file changed, 26 insertions(+), 1 deletion(-)
+ tools/testing/selftests/nolibc/nolibc-test.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/tools/testing/selftests/nolibc/Makefile b/tools/testing/selftests/nolibc/Makefile
-index 210f5369fdfc4..69ea659caca98 100644
---- a/tools/testing/selftests/nolibc/Makefile
-+++ b/tools/testing/selftests/nolibc/Makefile
-@@ -65,7 +65,32 @@ endif
- CFLAGS  ?= -Os -fno-ident -fno-asynchronous-unwind-tables
- LDFLAGS := -s
+diff --git a/tools/testing/selftests/nolibc/nolibc-test.c b/tools/testing/selftests/nolibc/nolibc-test.c
+index b928f099431f7..291d96bfd7c12 100644
+--- a/tools/testing/selftests/nolibc/nolibc-test.c
++++ b/tools/testing/selftests/nolibc/nolibc-test.c
+@@ -626,6 +626,20 @@ int main(int argc, char **argv, char **envp)
+ 	}
  
--all: nolibc-test
-+help:
-+	@echo "Supported targets under selftests/nolibc:"
-+	@echo "  all          call the \"run\" target below"
-+	@echo "  help         this help"
-+	@echo "  sysroot      create the nolibc sysroot here (uses \$$ARCH)"
-+	@echo "  nolibc-test  build the executable (uses \$$CC and \$$CROSS_COMPILE)"
-+	@echo "  initramfs    prepare the initramfs with nolibc-test"
-+	@echo "  defconfig    create a fresh new default config (uses \$$ARCH)"
-+	@echo "  kernel       (re)build the kernel with the initramfs (uses \$$ARCH)"
-+	@echo "  run          runs the kernel in QEMU after building it (uses \$$ARCH, \$$TEST)"
-+	@echo "  rerun        runs a previously prebuilt kernel in QEMU (uses \$$ARCH, \$$TEST)"
-+	@echo "  clean        clean the sysroot, initramfs, build and output files"
-+	@echo ""
-+	@echo "The output file is \"run.out\". Test ranges may be passed using \$$TEST."
-+	@echo ""
-+	@echo "Currently using the following variables:"
-+	@echo "  ARCH          = $(ARCH)"
-+	@echo "  CROSS_COMPILE = $(CROSS_COMPILE)"
-+	@echo "  CC            = $(CC)"
-+	@echo "  OUTPUT        = $(OUTPUT)"
-+	@echo "  TEST          = $(TEST)"
-+	@echo "  QEMU_ARCH     = $(if $(QEMU_ARCH),$(QEMU_ARCH),UNKNOWN_ARCH) [determined from \$$ARCH]"
-+	@echo "  IMAGE_NAME    = $(if $(IMAGE_NAME),$(IMAGE_NAME),UNKNOWN_ARCH) [determined from \$$ARCH]"
-+	@echo ""
+ 	printf("Total number of errors: %d\n", ret);
 +
-+all: run
- 
- sysroot: sysroot/$(ARCH)/include
- 
++	if (getpid() == 1) {
++		/* we're running as init, there's no other process on the
++		 * system, thus likely started from a VM for a quick check.
++		 * Exiting will provoke a kernel panic that may be reported
++		 * as an error by Qemu or the hypervisor, while stopping
++		 * cleanly will often be reported as a success. This allows
++		 * to use the output of this program for bisecting kernels.
++		 */
++		printf("Leaving init with final status: %d\n", !!ret);
++		if (ret == 0)
++			reboot(LINUX_REBOOT_CMD_POWER_OFF);
++	}
++
+ 	printf("Exiting with status %d\n", !!ret);
+ 	return !!ret;
+ }
 -- 
 2.31.1.189.g2e36527f23
 
