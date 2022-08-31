@@ -2,101 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6A8CECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 09:48:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74170ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 09:48:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229556AbiHaJsN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 05:48:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57916 "EHLO
+        id S229472AbiHaJss (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 05:48:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229710AbiHaJsL (ORCPT
+        with ESMTP id S230133AbiHaJsk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 05:48:11 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CEA2CE469
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 02:48:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Cf9TnC387IwylnNLFGlULWkgPWH/rPct++G8BVlv86g=; b=n1LtHZnGkloKyDttaheg6s8LlQ
-        EFm0uswU6Dlgx2QtbcwuSJUAQqRNDAq/qt+tQte1ZyZ0cAbQYQt1m7BsSTp2Rvv9G19wnW/O1zJsA
-        gwfr7Dr7L+8jLco0d9Kg9TO5YBD2ZVgWhxVh9vI2pKUjSqqFAPN4QhJThNLgXrvRJC1ngw9mPbTrB
-        jQz/zfdkrEWwCyWOettyc46Kw5PWtAschgjEQXlrH8bG5OhTl7U2qZBo9LFEabsCnqAKuuY+vDau4
-        jMgM2leoCwq7Swxrb5dWGOwjGaJf7mv2wRztBsAieVd0d5Udi/aW5+tLjzoHCfzz1ZB3GZcMEHr74
-        HORX1eVw==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oTKKE-004yjN-Bn; Wed, 31 Aug 2022 09:47:58 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id DF2803002AF;
-        Wed, 31 Aug 2022 11:47:55 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id BBBA62B846314; Wed, 31 Aug 2022 11:47:55 +0200 (CEST)
-Date:   Wed, 31 Aug 2022 11:47:55 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Ingo Molnar <mingo@redhat.com>, Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>
-Subject: Re: [PATCH v6 4/5] sched: Handle set_cpus_allowed_ptr() &
- sched_setaffinity() race
-Message-ID: <Yw8uS0Ibavb/5s4D@hirez.programming.kicks-ass.net>
-References: <20220826010119.1265764-1-longman@redhat.com>
- <20220826010119.1265764-5-longman@redhat.com>
+        Wed, 31 Aug 2022 05:48:40 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 254F9CEB13;
+        Wed, 31 Aug 2022 02:48:39 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MHfRF6VD9zkWm8;
+        Wed, 31 Aug 2022 17:44:57 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 31 Aug 2022 17:48:37 +0800
+Received: from [127.0.0.1] (10.174.177.249) by kwepemm600003.china.huawei.com
+ (7.193.23.202) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 31 Aug
+ 2022 17:48:36 +0800
+Subject: Re: [PATCH] xfs: donot need to check return value of xlog_kvmalloc()
+To:     Eric Sandeen <sandeen@sandeen.net>,
+        "Darrick J. Wong" <djwong@kernel.org>, <linux-xfs@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     linfeilong <linfeilong@huawei.com>,
+        wuguanghao <wuguanghao3@huawei.com>
+References: <514e5e4b-e7c8-365f-8459-75974c067993@huawei.com>
+ <0ba12a13-6cc4-5f44-fa06-ead350f819d5@sandeen.net>
+From:   Zhiqiang Liu <liuzhiqiang26@huawei.com>
+Message-ID: <b83283b2-39b3-c659-1b9f-f774af47d3f8@huawei.com>
+Date:   Wed, 31 Aug 2022 17:48:35 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220826010119.1265764-5-longman@redhat.com>
+In-Reply-To: <0ba12a13-6cc4-5f44-fa06-ead350f819d5@sandeen.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.174.177.249]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 09:01:18PM -0400, Waiman Long wrote:
-> @@ -2722,6 +2734,7 @@ static int affine_move_task(struct rq *rq, struct task_struct *p, struct rq_flag
->  			complete = true;
->  		}
->  
-> +		swap_user_cpus_ptr(p, puser_mask);
->  		task_rq_unlock(rq, p, rf);
->  
->  		if (push_task) {
-> @@ -2793,6 +2806,7 @@ static int affine_move_task(struct rq *rq, struct task_struct *p, struct rq_flag
->  		if (flags & SCA_MIGRATE_ENABLE)
->  			p->migration_flags &= ~MDF_PUSH;
->  
-> +		swap_user_cpus_ptr(p, puser_mask);
->  		task_rq_unlock(rq, p, rf);
->  
->  		if (!stop_pending) {
-> @@ -2813,6 +2827,8 @@ static int affine_move_task(struct rq *rq, struct task_struct *p, struct rq_flag
->  				complete = true;
->  			}
->  		}
-> +
-> +		swap_user_cpus_ptr(p, puser_mask);
->  		task_rq_unlock(rq, p, rf);
->  
->  		if (complete)
 
-I'm not at all sure about those.
+On 2022/8/30 0:06, Eric Sandeen wrote:
+> On 8/22/22 6:46 AM, Zhiqiang Liu wrote:
+>> In xfs_attri_log_nameval_alloc(), xlog_kvmalloc() is called
+>> to alloc memory, which will always return
+>> successfully, so we donot need to check return value.
+>>
+>> Signed-off-by: Zhiqiang Liu <liuzhiqiang26@huawei.com>
+> I think this is fine. xlog_kvmalloc loops until success, and its other
+> caller does not check the return value.
+>
+> This isn't really strictly a fix (it's harmless) but it "fixes"
+>
+> Fixes: commit 4183e4f27f402 ("xfs: share xattr name and value buffers when logging xattr updates")
+>
+> Reviewed-by: Eric Sandeen <sandeen@redhat.com>
 
-Would it not be much simpler to keep the update of cpus_mask and
-cpus_user_mask together, always ensuring that cpus_user_mask is a strict
-superset of cpus_mask ? That is, set_cpus_allowed_common() seems like
-the right place to me.
+Thanks for your reply.
 
-I'm thinking this also means blowing away user_mask when we do a full
-reset of the cpus_mask when we do an affnity break.
+Before xlog_kvmalloc was changed to "loops until success", the sanity check was necessary.
+
+As you said, this isn't really strictly a fix, so I think we should not add the Fix tag.
+
+> That said, I think that xfs_attri_log_nameval_alloc() also cannot fail, so
+> perhaps its callers don't need checks either?
+Yes, you are right. I will clean it up in the V2 patch.
+
+>> ---
+>>  fs/xfs/xfs_attr_item.c | 2 --
+>>  1 file changed, 2 deletions(-)
+>>
+>> diff --git a/fs/xfs/xfs_attr_item.c b/fs/xfs/xfs_attr_item.c
+>> index 5077a7ad5646..667e151a2bca 100644
+>> --- a/fs/xfs/xfs_attr_item.c
+>> +++ b/fs/xfs/xfs_attr_item.c
+>> @@ -86,8 +86,6 @@ xfs_attri_log_nameval_alloc(
+>>  	 */
+>>  	nv = xlog_kvmalloc(sizeof(struct xfs_attri_log_nameval) +
+>>  					name_len + value_len);
+>> -	if (!nv)
+>> -		return nv;
+>>
+>>  	nv->name.i_addr = nv + 1;
+>>  	nv->name.i_len = name_len;
+> .
+
