@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73313ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:26:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 914FEECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:26:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232825AbiHaS0M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 14:26:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57128 "EHLO
+        id S232913AbiHaS0S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 14:26:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232650AbiHaSZg (ORCPT
+        with ESMTP id S232739AbiHaSZg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 31 Aug 2022 14:25:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4639DFBA5C
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45EE4FB294
         for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:21:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8C4C2B82275
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6377861CDE
         for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:21:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B220C433B5;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CFE2C43145;
         Wed, 31 Aug 2022 18:21:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1661970110;
-        bh=nNEzh9yptkWyGVGTNGnwj/QZ/DlDOZpEjF3yTgBo8vo=;
+        bh=SQPsyy9Vw1zAhKnxU2HPB0epktjeTQk3RDWN/C0VtjM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZMnDNVNxWh37xzFyn2SrR0BhE+uv0Vc4Uxki6au7y/gH1lspujGeOBnLqPIzK1Jjv
-         Dn4GMm6dYqHJCxUTvZS18tUBCUADxMVrtUqAoUQVGIBIZCHCVfrC1Cm81W8DbmEfih
-         7ohz0ZrsCMYtcEY+WOuKhuKejvuGE0UqKynP+UctXusRUOsrFFBBsUjvaHCx3sVaXO
-         o6I1mg1hRT7AltbA2/V8HUYVqhA13YOTsPrqASjCsqPfv0bfG75h8VPah12kFJ/idP
-         +pAoeCaiwkeaDQMhiPzCkoQmy2jsPOcY2AbXNC2p0j0R63EXbF0WpO8dXQIcmMvK76
-         m1sFC6vRoVjcw==
+        b=uTzY4pGiBFNhDe/LhkJfWLA/OI5kQxPv6QKYYcFwxRtIUjY78yHG37at6JH/4OW5g
+         +w7eektmCnuAFAfpVKmj/Uf6icornAmMnfLXnsrTYFwwQVrGfQf0CM88Wjjejz4xG/
+         DYcV7RpnyMbd8/gFqdlTXecUV201Qeq76KsFMdkter6gv3OtI8H1NR/pG33P2b32UW
+         PhuwFc8PrinDnU43L1je4T7tJ4Fw3qVRi24lMbt377VtcvOghQZvVM8vtyUaSciG+I
+         nq7kR3RNOl4F0r07WO5TvC24Zhd9y7wSLfj011I38LqXq0mGLwMATJLMhyI9ahGNFK
+         a1oJ/gRaG9cnw==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id D712E5C06A7; Wed, 31 Aug 2022 11:21:49 -0700 (PDT)
+        id DBBD65C0950; Wed, 31 Aug 2022 11:21:49 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     gwml@vger.gnuweeb.org, kernel-team@fb.com, w@lwt.eu,
         Willy Tarreau <w@1wt.eu>,
         "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH nolibc 03/18] tools/nolibc: make sys_mmap() automatically use the right __NR_mmap definition
-Date:   Wed, 31 Aug 2022 11:21:33 -0700
-Message-Id: <20220831182148.2698489-5-paulmck@kernel.org>
+Subject: [PATCH nolibc 05/18] selftests/nolibc: support a test definition format
+Date:   Wed, 31 Aug 2022 11:21:35 -0700
+Message-Id: <20220831182148.2698489-7-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220831182113.GA2697286@paulmck-ThinkPad-P17-Gen-1>
 References: <20220831182113.GA2697286@paulmck-ThinkPad-P17-Gen-1>
@@ -53,29 +53,146 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Willy Tarreau <w@1wt.eu>
 
-__NR_mmap2 was used for i386 but it's also needed for other archs such
-as RISCV32 or ARM. Let's decide to use it based on the __NR_mmap2
-definition as it's not defined on other archs.
+It now becomes possible to pass a string either in argv[1] or in the
+NOLIBC_TEST environment variable (the former having precedence), to
+specify which tests to run. The format is:
+
+   testname[:range]*[,testname...]
+
+Where a range is either a single value or the min and max numbers of the
+test IDs in a sequence, delimited by a dash. Multiple ranges are possible.
+This should provide enough flexibility to focus on certain failing parts
+just by playing with the boot command line in a boot loader or in qemu
+depending on what is accessible.
 
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- tools/include/nolibc/sys.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/nolibc/nolibc-test.c | 91 ++++++++++++++++++++
+ 1 file changed, 91 insertions(+)
 
-diff --git a/tools/include/nolibc/sys.h b/tools/include/nolibc/sys.h
-index b8c96878c9ce0..ce3ee03aa6794 100644
---- a/tools/include/nolibc/sys.h
-+++ b/tools/include/nolibc/sys.h
-@@ -697,7 +697,7 @@ void *sys_mmap(void *addr, size_t length, int prot, int flags, int fd,
+diff --git a/tools/testing/selftests/nolibc/nolibc-test.c b/tools/testing/selftests/nolibc/nolibc-test.c
+index 6c050d4381fec..49177ea9943cc 100644
+--- a/tools/testing/selftests/nolibc/nolibc-test.c
++++ b/tools/testing/selftests/nolibc/nolibc-test.c
+@@ -17,6 +17,12 @@
+ /* will be used by nolibc by getenv() */
+ char **environ;
  
- 	int n;
++/* definition of a series of tests */
++struct test {
++	const char *name;              // test name
++	int (*func)(int min, int max); // handler
++};
++
+ #define CASE_ERR(err) \
+ 	case err: return #err
  
--#if defined(__i386__)
-+#if defined(__NR_mmap2)
- 	n = __NR_mmap2;
- 	offset >>= 12;
- #else
+@@ -376,19 +382,104 @@ static int expect_strne(const char *expr, int llen, const char *cmp)
+ 	return ret;
+ }
+ 
++
+ /* declare tests based on line numbers. There must be exactly one test per line. */
+ #define CASE_TEST(name) \
+ 	case __LINE__: llen += printf("%d %s", test, #name);
+ 
+ 
++/* This is the definition of known test names, with their functions */
++static struct test test_names[] = {
++	/* add new tests here */
++	{ 0 }
++};
++
+ int main(int argc, char **argv, char **envp)
+ {
+ 	int min = 0;
+ 	int max = __INT_MAX__;
+ 	int ret = 0;
++	int err;
++	int idx;
++	char *test;
+ 
+ 	environ = envp;
+ 
++	/* the definition of a series of tests comes from either argv[1] or the
++	 * "NOLIBC_TEST" environment variable. It's made of a comma-delimited
++	 * series of test names and optional ranges:
++	 *    syscall:5-15[:.*],stdlib:8-10
++	 */
++	test = argv[1];
++	if (!test)
++		test = getenv("NOLIBC_TEST");
++
++	if (test) {
++		char *comma, *colon, *dash, *value;
++
++		do {
++			comma = strchr(test, ',');
++			if (comma)
++				*(comma++) = '\0';
++
++			colon = strchr(test, ':');
++			if (colon)
++				*(colon++) = '\0';
++
++			for (idx = 0; test_names[idx].name; idx++) {
++				if (strcmp(test, test_names[idx].name) == 0)
++					break;
++			}
++
++			if (test_names[idx].name) {
++				/* The test was named, it will be called at least
++				 * once. We may have an optional range at <colon>
++				 * here, which defaults to the full range.
++				 */
++				do {
++					min = 0; max = __INT_MAX__;
++					value = colon;
++					if (value && *value) {
++						colon = strchr(value, ':');
++						if (colon)
++							*(colon++) = '\0';
++
++						dash = strchr(value, '-');
++						if (dash)
++							*(dash++) = '\0';
++
++						/* support :val: :min-max: :min-: :-max: */
++						if (*value)
++							min = atoi(value);
++						if (!dash)
++							max = min;
++						else if (*dash)
++							max = atoi(dash);
++
++						value = colon;
++					}
++
++					/* now's time to call the test */
++					printf("Running test '%s'\n", test_names[idx].name);
++					err = test_names[idx].func(min, max);
++					ret += err;
++					printf("Errors during this test: %d\n\n", err);
++				} while (colon && *colon);
++			} else
++				printf("Ignoring unknown test name '%s'\n", test);
++
++			test = comma;
++		} while (test && *test);
++	} else {
++		/* no test mentioned, run everything */
++		for (idx = 0; test_names[idx].name; idx++) {
++			printf("Running test '%s'\n", test_names[idx].name);
++			err = test_names[idx].func(min, max);
++			ret += err;
++			printf("Errors during this test: %d\n\n", err);
++		}
++	}
++
+ 	printf("Total number of errors: %d\n", ret);
+ 	printf("Exiting with status %d\n", !!ret);
+ 	return !!ret;
 -- 
 2.31.1.189.g2e36527f23
 
