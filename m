@@ -2,68 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06E7FC0502A
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:40:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 688CFECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:42:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231739AbiHaOk4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 10:40:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55490 "EHLO
+        id S231915AbiHaOmQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 10:42:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231210AbiHaOkv (ORCPT
+        with ESMTP id S230425AbiHaOmO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 10:40:51 -0400
-Received: from out199-17.us.a.mail.aliyun.com (out199-17.us.a.mail.aliyun.com [47.90.199.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9D7AC252;
-        Wed, 31 Aug 2022 07:40:47 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=liusong@linux.alibaba.com;NM=1;PH=DS;RN=3;SR=0;TI=SMTPD_---0VNrX9FG_1661956807;
-Received: from localhost(mailfrom:liusong@linux.alibaba.com fp:SMTPD_---0VNrX9FG_1661956807)
-          by smtp.aliyun-inc.com;
-          Wed, 31 Aug 2022 22:40:43 +0800
-From:   Liu Song <liusong@linux.alibaba.com>
-To:     axboe@kernel.dk
-Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFC PATCH] blk-mq: move set RQF_RESV flag codes outside retry scope
-Date:   Wed, 31 Aug 2022 22:40:07 +0800
-Message-Id: <1661956807-24481-1-git-send-email-liusong@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        Wed, 31 Aug 2022 10:42:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E88F4BD2A0;
+        Wed, 31 Aug 2022 07:42:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A038BB8217B;
+        Wed, 31 Aug 2022 14:42:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAEEAC433D6;
+        Wed, 31 Aug 2022 14:42:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661956930;
+        bh=oMbQGoVTKwMbnxWochLoB76e2l7bAr3cdp+gMVYp92M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nlMvwRJBCoZSqrbHhr+9nEmaktC3bh+Vg/LNGQglZ+Z9jZ5tPNsxO9qZu7LzHWNed
+         ICMsZLvTh4XofSQg7MEvWzd9mQrKGSuutE4oPDqLLPnONkftqTTk2lQRviS3otGdIq
+         EYO7hJqPWmExHoiTS1yKdfpTN1u85NTg7xTTNuaopCbHfX0/O+BQu8VEMjxGs4+n61
+         LGjwfD5Z2sansNCa36UkjgtDJ3Fh3ygE6OTTnA8UifJU+UEVWkPg+pndK3Zq8eDx2C
+         2mZN0gQVXBsTiU6SkgD7nGgls5rNRXZk8ZuFE5U5t/zn4IzJU6NwazaayeF8t9CcOS
+         KSiMB3zL910qg==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 3C2FB404A1; Wed, 31 Aug 2022 11:42:07 -0300 (-03)
+Date:   Wed, 31 Aug 2022 11:42:07 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        James Clark <james.clark@arm.com>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        John Garry <john.garry@huawei.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Florian Fischer <florian.fischer@muhq.space>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        perry.taylor@intel.com, caleb.biggers@intel.com,
+        kshipra.bopardikar@intel.com, Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH v1 6/8] perf stat: Delay metric parsing
+Message-ID: <Yw9zPxVqbfkSOdbu@kernel.org>
+References: <20220830164846.401143-1-irogers@google.com>
+ <20220830164846.401143-7-irogers@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220830164846.401143-7-irogers@google.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liu Song <liusong@linux.alibaba.com>
+Em Tue, Aug 30, 2022 at 09:48:44AM -0700, Ian Rogers escreveu:
+> Having metric parsing as part of argument processing causes issues as
+> flags like metric-no-group may be specified later. It also denies the
+> opportunity to optimize the events on SMT systems where fewer events
+> may be possible if we know the target is system-wide. Move metric
+> parsing to after command line option parsing. Because of how stat runs
+> this moves the parsing after record/report which fail to work with
+> metrics currently anyway.
+> 
+> Signed-off-by: Ian Rogers <irogers@google.com>
+> ---
+>  tools/perf/builtin-stat.c     | 48 ++++++++++++++++++++++++-----------
+>  tools/perf/util/metricgroup.c |  3 +--
+>  tools/perf/util/metricgroup.h |  2 +-
+>  3 files changed, 35 insertions(+), 18 deletions(-)
+> 
+> diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
+> index 7fb81a44672d..c813b1aa7d7c 100644
+> --- a/tools/perf/builtin-stat.c
+> +++ b/tools/perf/builtin-stat.c
+> @@ -191,6 +191,7 @@ static bool			append_file;
+>  static bool			interval_count;
+>  static const char		*output_name;
+>  static int			output_fd;
+> +static char			*metrics;
+>  
+>  struct perf_stat {
+>  	bool			 record;
+> @@ -1147,14 +1148,21 @@ static int enable_metric_only(const struct option *opt __maybe_unused,
+>  	return 0;
+>  }
+>  
+> -static int parse_metric_groups(const struct option *opt,
+> +static int append_metric_groups(const struct option *opt __maybe_unused,
+>  			       const char *str,
+>  			       int unset __maybe_unused)
+>  {
+> -	return metricgroup__parse_groups(opt, str,
+> -					 stat_config.metric_no_group,
+> -					 stat_config.metric_no_merge,
+> -					 &stat_config.metric_events);
+> +	if (metrics) {
+> +		char *tmp;
+> +
+> +		if (asprintf(&tmp, "%s,%s", metrics, str) < 0)
+> +			return -ENOMEM;
 
-There is no need to set the RQF_RESV flag again on retry, so move that
-code to a more appropriate place.
+We check if we managed to allocate memory here, but not later at
+strdup()?
 
-Signed-off-by: Liu Song <liusong@linux.alibaba.com>
----
- block/blk-mq.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+> +		free(metrics);
+> +		metrics = tmp;
+> +	} else {
+> +		metrics = strdup(str);
+> +	}
+> +	return 0;
+>  }
+>  
+>  static int parse_control_option(const struct option *opt,
+> @@ -1298,7 +1306,7 @@ static struct option stat_options[] = {
+>  			"measure SMI cost"),
+>  	OPT_CALLBACK('M', "metrics", &evsel_list, "metric/metric group list",
+>  		     "monitor specified metrics or metric groups (separated by ,)",
+> -		     parse_metric_groups),
+> +		     append_metric_groups),
+>  	OPT_BOOLEAN_FLAG(0, "all-kernel", &stat_config.all_kernel,
+>  			 "Configure all used events to run in kernel space.",
+>  			 PARSE_OPT_EXCLUSIVE),
+> @@ -1791,11 +1799,9 @@ static int add_default_attributes(void)
+>  		 * on an architecture test for such a metric name.
+>  		 */
+>  		if (metricgroup__has_metric("transaction")) {
+> -			struct option opt = { .value = &evsel_list };
+> -
+> -			return metricgroup__parse_groups(&opt, "transaction",
+> +			return metricgroup__parse_groups(evsel_list, "transaction",
+>  							 stat_config.metric_no_group,
+> -							stat_config.metric_no_merge,
+> +							 stat_config.metric_no_merge,
+>  							 &stat_config.metric_events);
+>  		}
+>  
+> @@ -2260,8 +2266,6 @@ int cmd_stat(int argc, const char **argv)
+>  	argc = parse_options_subcommand(argc, argv, stat_options, stat_subcommands,
+>  					(const char **) stat_usage,
+>  					PARSE_OPT_STOP_AT_NON_OPTION);
+> -	perf_stat__collect_metric_expr(evsel_list);
+> -	perf_stat__init_shadow_stats();
+>  
+>  	if (stat_config.csv_sep) {
+>  		stat_config.csv_output = true;
+> @@ -2428,6 +2432,23 @@ int cmd_stat(int argc, const char **argv)
+>  			target.system_wide = true;
+>  	}
+>  
+> +	if ((stat_config.aggr_mode == AGGR_THREAD) && (target.system_wide))
+> +		target.per_thread = true;
+> +
+> +	/*
+> +	 * Metric parsing needs to be delayed as metrics may optimize events
+> +	 * knowing the target is system-wide.
+> +	 */
+> +	if (metrics) {
+> +		metricgroup__parse_groups(evsel_list, metrics,
+> +					stat_config.metric_no_group,
+> +					stat_config.metric_no_merge,
+> +					&stat_config.metric_events);
+> +		zfree(&metrics);
+> +	}
+> +	perf_stat__collect_metric_expr(evsel_list);
+> +	perf_stat__init_shadow_stats();
+> +
+>  	if (add_default_attributes())
+>  		goto out;
+>  
+> @@ -2447,9 +2468,6 @@ int cmd_stat(int argc, const char **argv)
+>  		}
+>  	}
+>  
+> -	if ((stat_config.aggr_mode == AGGR_THREAD) && (target.system_wide))
+> -		target.per_thread = true;
+> -
+>  	if (evlist__fix_hybrid_cpus(evsel_list, target.cpu_list)) {
+>  		pr_err("failed to use cpu list %s\n", target.cpu_list);
+>  		goto out;
+> diff --git a/tools/perf/util/metricgroup.c b/tools/perf/util/metricgroup.c
+> index b144c3e35264..9151346a16ab 100644
+> --- a/tools/perf/util/metricgroup.c
+> +++ b/tools/perf/util/metricgroup.c
+> @@ -1646,13 +1646,12 @@ static int parse_groups(struct evlist *perf_evlist, const char *str,
+>  	return ret;
+>  }
+>  
+> -int metricgroup__parse_groups(const struct option *opt,
+> +int metricgroup__parse_groups(struct evlist *perf_evlist,
+>  			      const char *str,
+>  			      bool metric_no_group,
+>  			      bool metric_no_merge,
+>  			      struct rblist *metric_events)
+>  {
+> -	struct evlist *perf_evlist = *(struct evlist **)opt->value;
+>  	const struct pmu_events_table *table = pmu_events_table__find();
+>  
+>  	if (!table)
+> diff --git a/tools/perf/util/metricgroup.h b/tools/perf/util/metricgroup.h
+> index 016b3b1a289a..af9ceadaec0f 100644
+> --- a/tools/perf/util/metricgroup.h
+> +++ b/tools/perf/util/metricgroup.h
+> @@ -64,7 +64,7 @@ struct metric_expr {
+>  struct metric_event *metricgroup__lookup(struct rblist *metric_events,
+>  					 struct evsel *evsel,
+>  					 bool create);
+> -int metricgroup__parse_groups(const struct option *opt,
+> +int metricgroup__parse_groups(struct evlist *perf_evlist,
+>  			      const char *str,
+>  			      bool metric_no_group,
+>  			      bool metric_no_merge,
+> -- 
+> 2.37.2.672.g94769d06f0-goog
 
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index a17bc83..ccedb93 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -451,6 +451,9 @@ static struct request *__blk_mq_alloc_requests(struct blk_mq_alloc_data *data)
- 	if (data->cmd_flags & REQ_NOWAIT)
- 		data->flags |= BLK_MQ_REQ_NOWAIT;
- 
-+	if (data->flags & BLK_MQ_REQ_RESERVED)
-+		data->rq_flags |= RQF_RESV;
-+
- 	if (q->elevator) {
- 		struct elevator_queue *e = q->elevator;
- 
-@@ -474,9 +477,6 @@ static struct request *__blk_mq_alloc_requests(struct blk_mq_alloc_data *data)
- 	if (!(data->rq_flags & RQF_ELV))
- 		blk_mq_tag_busy(data->hctx);
- 
--	if (data->flags & BLK_MQ_REQ_RESERVED)
--		data->rq_flags |= RQF_RESV;
--
- 	/*
- 	 * Try batched alloc if we want more than 1 tag.
- 	 */
 -- 
-1.8.3.1
 
+- Arnaldo
