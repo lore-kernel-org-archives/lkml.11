@@ -2,85 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68303ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 12:20:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB41ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 12:21:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230315AbiHaMT6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 08:19:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60582 "EHLO
+        id S230443AbiHaMVY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 08:21:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiHaMTz (ORCPT
+        with ESMTP id S230180AbiHaMVV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 08:19:55 -0400
-Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A69FBDE9E
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 05:19:52 -0700 (PDT)
-Received: by mail-qv1-xf2d.google.com with SMTP id j1so10876711qvv.8
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 05:19:52 -0700 (PDT)
+        Wed, 31 Aug 2022 08:21:21 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC39CE49A
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 05:21:19 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id og21so28000192ejc.2
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 05:21:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=mwJLeATdgOg1rnZj29Oz/GTglRl8iBOl1EtW0EiIxFU=;
-        b=VBkeHywsm9g8hjA9KvTjv2pPkj+/Mfl3u+7ucrCrrovwIMPfEH57SX9UOKZ5X7DKgF
-         IetKElzKcKPC1vKTuvHEXejXqHmEUhEp4gBosLe/tnyurDcb3YNBIDApE71TF5IxrJoL
-         bnnl9S43i7t2lRfSi6J1RY9g6/5dRp7GRU1JU=
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=3deuHTbgt68FZtumNl8QakR6BCKlpcTobGFH5+SIwxQ=;
+        b=WbC/jQehX0sc3K9UA1wtLvp69wnyLXnZSWUzYC9sQqcUUUYmekRudDvToByniNhWgM
+         PJMpOc+DADLEb2mBDmHoFpl4SkOKDf7eFw7UrftOW6aZ8gaKbngMQ/wCdoEKehYn4+Hh
+         XNc0R2nF1ZsFW/spP/+ZLuJvXVfZB6owJWDhsrIaideNqm3jTOflfE8VZm0yXo2QlRqe
+         H156A/dmG177/dowVXfFewi2G16neuIXio5IuqGuSBFaUqf8J8S98Fu4BlQjSEu9YTiG
+         rKAmUz6g/zzpv3GQ/NJ7+pdIXNu6pGAOHqobQksISRIJKVebLxNmuMib/LkH8Y9qzWa4
+         ywdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=mwJLeATdgOg1rnZj29Oz/GTglRl8iBOl1EtW0EiIxFU=;
-        b=xjISDloMc6Z5LIc0nq7sLdgzgcRnSCiy4eHu8L3IPBJulqy6c/vJliUGMEjeVXZkt/
-         pRxpXxG+y88YYCENWmhBl/hwscDqiNdvH2neKtJVPJLmN96PQdzcgRoVMcX79p+/S/Ul
-         otBxC5HkC3NtAidKWbw75NLhu/A/cJUE8YbMqP3w8NWvo300CLTe3JCq6GkqEgyblIuK
-         ZgvHYA5qnkyI4r12KSGtR6qGYu3UWjzl2SGXyRYyKKtWmDNpakz6n3c8K5ud24R2c7Az
-         AjjrIU+dWSVNaWDcy+htR7QbU0MBk98IzrOSC75UwdcM9ACadLFFkd4RzE2xXSFgh0uG
-         lHZA==
-X-Gm-Message-State: ACgBeo3GxUhHVMLYndJux53qhKGixmdFDcPG6wz2O61zJULyiW7zEjE2
-        azaus0xlI2ykmTCTEvg8MfV7LasvOQzoIw==
-X-Google-Smtp-Source: AA6agR7KKVQAW5SvPM2EemzurGrLr/rzek01IBlX3IZTGbTuX4WncaCa/DqdBrTGgsxC8BLi8xx4WQ==
-X-Received: by 2002:a05:6214:190f:b0:498:f0ee:5ab3 with SMTP id er15-20020a056214190f00b00498f0ee5ab3mr18772495qvb.117.1661948391743;
-        Wed, 31 Aug 2022 05:19:51 -0700 (PDT)
-Received: from meerkat.local (bras-base-mtrlpq5031w-grc-33-142-113-79-147.dsl.bell.ca. [142.113.79.147])
-        by smtp.gmail.com with ESMTPSA id f5-20020ac80685000000b00342f844e30fsm8307695qth.31.2022.08.31.05.19.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Aug 2022 05:19:51 -0700 (PDT)
-Date:   Wed, 31 Aug 2022 08:19:49 -0400
-From:   Konstantin Ryabitsev <konstantin@linuxfoundation.org>
-To:     Maxime Ripard <maxime@cerno.tech>
-Cc:     linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 01/41] drm/tests: Order Kunit tests in Makefile
-Message-ID: <20220831121949.xj2bdykhvs3cvvm7@meerkat.local>
-References: <20220728-rpi-analog-tv-properties-v2-0-459522d653a7@cerno.tech>
- <20220728-rpi-analog-tv-properties-v2-1-459522d653a7@cerno.tech>
- <f6289e5d-98e3-1a0d-f514-136e2b7978c1@tronnes.org>
- <20220829190242.tk2hinttzzmzhnaj@meerkat.local>
- <20220830083027.4iyi2s5r5bto4h2e@houat>
- <20220830122217.h52zswusnlb3iggq@meerkat.local>
- <20220831073026.rjlqkznm6qf2yri5@houat>
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=3deuHTbgt68FZtumNl8QakR6BCKlpcTobGFH5+SIwxQ=;
+        b=pf1UJX5hNI+00kqw81/Brs+0un/DexT5XP+pjHeNwBcmV6zSqGeiupo0f432Vd7RC3
+         KPjGFvPrIffsOqILnbuwYo15jYnuenXkmh5KhEGiC/9QiVzFjONViBZNZ63PU/TR2dy1
+         Wq6F0lTFUjoeNoFuRNINMVY8Izo4L6J3fvAvyWl6RP7yV29Um6k+Ij3ne0vGX84qbgoJ
+         Yt2OXjrb3UGykTwA+nzH5p3yDB/xY9I3O6VQiPjT2So0+iRF7dKhvRs1RGnR785msiTH
+         T6V10dbIwK49lwPGGixwyvXCrzp4bAV2wDTc8q18zjl/ypT2Co5deWNkmk0o/syCpbb1
+         nx/Q==
+X-Gm-Message-State: ACgBeo1XXUxaN01lDQ5Ds/ZSEu44x3pRHrkTfUWc6rVNNUeq78ot3TkJ
+        MDIk4hbC080/Wkv0jgNL86pCgQVhtlku2DehLz2wVQ==
+X-Google-Smtp-Source: AA6agR7nxBSRmXKCoQQUr1oF+8aqdDCvlAHX1BLSgaBGBA7fWJIA2GHZt1ecaCU1w9t3xRmG/zBQAqjqtkGjoN+7ruY=
+X-Received: by 2002:a17:907:7242:b0:741:770b:dfc6 with SMTP id
+ ds2-20020a170907724200b00741770bdfc6mr11166567ejc.203.1661948478103; Wed, 31
+ Aug 2022 05:21:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220831073026.rjlqkznm6qf2yri5@houat>
+References: <20220829131553.690063-1-nuno.sa@analog.com> <20220829131553.690063-3-nuno.sa@analog.com>
+In-Reply-To: <20220829131553.690063-3-nuno.sa@analog.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Wed, 31 Aug 2022 14:21:06 +0200
+Message-ID: <CACRpkdZYNhmqGPED0ghcT+y9uCeEVsPzHRxG9GyXt=r2pAPQKg@mail.gmail.com>
+Subject: Re: [PATCH v4 02/10] gpio: gpio-adp5588: drop the driver
+To:     =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>
+Cc:     linux-kernel@vger.kernel.org, Bartosz Golaszewski <brgl@bgdev.pl>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        devicetree@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-input@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Hennerich <michael.hennerich@analog.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 09:30:26AM +0200, Maxime Ripard wrote:
-> Another thing I noticed when using b4 send is that I'm not sure how to
-> increment the version number of a series. With b4 send --dry-run it
-> wasn't happening automatically, and I couldn't find anything related in
-> the options (except for --force-revision but that wasn't permanent I
-> think?)
+On Mon, Aug 29, 2022 at 3:15 PM Nuno S=C3=A1 <nuno.sa@analog.com> wrote:
 
-It is, but I don't blame you being confused seeing as there's no documentation
-yet at this point. :) I hope to make some final changes to flags and features
-in the near future, so documentation should start appearing soon.
+> With commit 70466baac3de
+> ("input: keyboard: adp5588-keys: support gpi key events as 'gpio keys'"),
 
-> I ended up amending the commit json by hand to set the proper revision
-> number, but I'm almost sure it isn't the right way :)
+This commit isn't in the upstream kernel.
 
-This is certainly a valid way to go about it as well.
+Are you using some Analog devices internal tree? Upstream
+those changes first.
 
-Regards,
--K
+Yours,
+Linus Walleij
