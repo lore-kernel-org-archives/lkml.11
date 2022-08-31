@@ -2,67 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81111ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:23:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF5E0ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:23:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232830AbiHaSXB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 14:23:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47544 "EHLO
+        id S232778AbiHaSXX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 14:23:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232778AbiHaSWf (ORCPT
+        with ESMTP id S232806AbiHaSW7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 14:22:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B12C26392;
-        Wed, 31 Aug 2022 11:18:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 31 Aug 2022 14:22:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78DCB107C6D
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:19:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661969901;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wMtbO1FbesK3cKbZsffWEHVIk034aLkgY1xkmc6yWxs=;
+        b=dHwdAHksWb1HSYCdU4xB2rMOIHvNmCLkGezdmZfM1Bz0PUdQMDxV7VNrEZ4U6ZQ9rK+Esz
+        7DAK6YbDZK49AnTFRFB6Pisv/77iaFZoap5cf+gu1z2xTcO+ZASWLLOtgXagnGbipmDR18
+        2FPt8wRPn7+8nKu2spf51YljmopMgWY=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-480-pI-tEFw6MQqpS3Wk6-nY5g-1; Wed, 31 Aug 2022 14:18:16 -0400
+X-MC-Unique: pI-tEFw6MQqpS3Wk6-nY5g-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 216CEB82274;
-        Wed, 31 Aug 2022 18:17:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8880C433C1;
-        Wed, 31 Aug 2022 18:17:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661969820;
-        bh=0sDnYptc08FWB8kG7eorPS+nmpd5VtGv81FjBwB21Gc=;
-        h=Date:From:To:Cc:Subject:Reply-To:From;
-        b=ozp3AS+ZkjdKwGA24ZQ8R9QNRXdsOwTLJnsgOqKSYN6fuFNb9EJns9XX+pg+PAD9o
-         eK/zvdssnccifhbkuNrxuFL+MxQ8UWk8IM4ltdf3gX6Df4ATwbvhBYUVAR8ZVJlBBj
-         6FX16rhi2wGsXoULEmQZ52bLfoHsMABqL4Kl9RsugO6Q3tYPEZPXAxpqpIn51E3GjM
-         VccVTRMTFB+0MnLFPZw1DDSu3VYaGfdbdo+6JVlUaqTIPM/0LFkwcD+soUjPkHY+GR
-         P5psz5RsU6kdAAKJR5mW3XXVv1Li9XFX4CpbnjWkGnvor4dmniGZKaRLknRF0uNmHC
-         V87E8AtrSxVdA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 7AA8F5C015D; Wed, 31 Aug 2022 11:17:00 -0700 (PDT)
-Date:   Wed, 31 Aug 2022 11:17:00 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     rcu@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        rostedt@goodmis.org
-Subject: [PATCH rcu 0/7] Torture-test updates for v6.1
-Message-ID: <20220831181700.GA2696707@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4584C1C004E6;
+        Wed, 31 Aug 2022 18:18:16 +0000 (UTC)
+Received: from starship (unknown [10.40.194.96])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A4E0E1121314;
+        Wed, 31 Aug 2022 18:18:14 +0000 (UTC)
+Message-ID: <2543befdf757fca54d1b56b6a980159e16e1d5a6.camel@redhat.com>
+Subject: Re: [PATCH 06/19] KVM: SVM: Get x2APIC logical dest bitmap from
+ ICRH[15:0], not ICHR[31:16]
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Li RongQing <lirongqing@baidu.com>
+Date:   Wed, 31 Aug 2022 21:18:13 +0300
+In-Reply-To: <Yw+N1BdfSansWh8h@google.com>
+References: <20220831003506.4117148-1-seanjc@google.com>
+         <20220831003506.4117148-7-seanjc@google.com>
+         <7a7827ec2652a8409fccfe070659497df229211b.camel@redhat.com>
+         <b660f600ff5f6c107d899ced46c04de3b99c425f.camel@redhat.com>
+         <Yw+N1BdfSansWh8h@google.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello!
+On Wed, 2022-08-31 at 16:35 +0000, Sean Christopherson wrote:
+> On Wed, Aug 31, 2022, Maxim Levitsky wrote:
+> > On Wed, 2022-08-31 at 09:09 +0300, Maxim Levitsky wrote:
+> > > On Wed, 2022-08-31 at 00:34 +0000, Sean Christopherson wrote:
+> > > > When attempting a fast kick for x2AVIC, get the destination bitmap from
+> > > > ICR[15:0], not ICHR[31:16].  The upper 16 bits contain the cluster, the
+> > > > lower 16 bits hold the bitmap.
+> > > > 
+> > > > Fixes: 603ccef42ce9 ("KVM: x86: SVM: fix avic_kick_target_vcpus_fast")
+> > > > Cc: Maxim Levitsky <mlevitsk@redhat.com>
+> > > > Signed-off-by: Sean Christopherson <seanjc@google.com>
+> > > > ---
+> > > >  arch/x86/kvm/svm/avic.c | 2 +-
+> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > 
+> > > > diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+> > > > index 3ace0f2f52f0..3c333cd2e752 100644
+> > > > --- a/arch/x86/kvm/svm/avic.c
+> > > > +++ b/arch/x86/kvm/svm/avic.c
+> > > > @@ -368,7 +368,7 @@ static int avic_kick_target_vcpus_fast(struct kvm *kvm, struct kvm_lapic *source
+> > > >  
+> > > >  		if (apic_x2apic_mode(source)) {
+> > > >  			/* 16 bit dest mask, 16 bit cluster id */
+> > > > -			bitmap = dest & 0xFFFF0000;
+> > > > +			bitmap = dest & 0xFFFF;
+> > > >  			cluster = (dest >> 16) << 4;
+> > > >  		} else if (kvm_lapic_get_reg(source, APIC_DFR) == APIC_DFR_FLAT) {
+> > > >  			/* 8 bit dest mask*/
+> > > 
+> > > I swear I have seen a patch from Suravee Suthikulpanit fixing this my mistake, I don't know why it was not
+> > > accepted upstream.
+> > 
+> > This is the patch, which I guess got forgotten.
+> > 
+> > https://www.spinics.net/lists/kernel/msg4417427.html
+> 
+> Ah, we just missed it, doubt there's anything more than that to the story.
 
-This series provides a couple of torture-test updates:
+100% sure about it.
 
-1.	Optionally flush printk() buffers before powering off.
+BTW there another minor bug I need to fix which was pointed to me by Suravee Suthikulpanit,
+just so that I don't forget about it:
 
-2.	Use the barrier operation specified by cur_ops, courtesy of
-	Zqiang.
+My code which inhibits APIC when APIC_ID != vcpu_id has a bug in regard that
+when we have more that 255 vCPUs, this condition becames always true, but it is
+to some extent wrong to inhibit the AVIC always in this case - there is a use case
+when the guest uses only 255 vCPUs, then AVIC will work.
 
-						Thanx, Paul
+The relaxed condition for inhibit should be that APIC_ID == (vcpu_id & 0xFF), and it AVIC
+is actually used on vCPU > 255, then it will be inhibited ( I need to check if the code
+for this exists).
 
-------------------------------------------------------------------------
+Best regards,
+	Maxim Levitsky
 
- Documentation/admin-guide/kernel-parameters.txt |    6 ++++++
- kernel/rcu/rcutorture.c                         |    4 ++--
- kernel/torture.c                                |    7 +++++++
- 3 files changed, 15 insertions(+), 2 deletions(-)
+
+
+> 
+> > Since it is literaly the same patch, you can just add credit to Suravee Suthikulpanit.
+> > 
+> > So with the credit added:
+> > 
+> > Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+> 
+> I'll grab Suravee's patch and added your review.  Thanks!
+> 
+
+
