@@ -2,88 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19C38ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 08:15:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2118C3DA6B
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 08:15:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230449AbiHaIPS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 04:15:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58584 "EHLO
+        id S230226AbiHaIPq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 04:15:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229742AbiHaIPM (ORCPT
+        with ESMTP id S231292AbiHaIPi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 04:15:12 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E4F022B23
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 01:15:11 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1oTIs1-0004bv-Ab; Wed, 31 Aug 2022 10:14:45 +0200
-Received: from mfe by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1oTIs0-0002sI-CE; Wed, 31 Aug 2022 10:14:44 +0200
-Date:   Wed, 31 Aug 2022 10:14:44 +0200
-From:   Marco Felsch <m.felsch@pengutronix.de>
-To:     mchehab@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, vkoul@kernel.org, kishon@ti.com,
-        sakari.ailus@linux.intel.com, hverkuil@xs4all.nl,
-        jacopo@jmondi.org, laurent.pinchart+renesas@ideasonboard.com
-Cc:     linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        linux-media@vger.kernel.org
-Subject: Re: [PATCH 0/4] Add support for Toshiba TC358746
-Message-ID: <20220831081444.foupf6nfhqrk63ej@pengutronix.de>
-References: <20220818143307.967150-1-m.felsch@pengutronix.de>
+        Wed, 31 Aug 2022 04:15:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3A9B67177;
+        Wed, 31 Aug 2022 01:15:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 860606198E;
+        Wed, 31 Aug 2022 08:15:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DED04C433C1;
+        Wed, 31 Aug 2022 08:15:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661933735;
+        bh=+7v+mKDgW+IHX/GhERatR6jBtG0aN65CVgOFZj60fjc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UiA32G8nKw2SXdNn1AShGphfXahL8TREP5HGgwmK28xdzoy8/C2hzzQKfclaG0SJl
+         NwqNzqDtlJxcKhvWq5bK3RiiUnzr1RdWmXTK3b3dZE6jLc7zkptDs6YofhHac/twxz
+         CGY0frtsQRDdoafslByShDYajCXpnBR5qw/yWU+qQjSnZ/RG/lFLq0TVb/VwYQbn90
+         3H/MtXKUwL/N436BpvwfZVxd/FLVTQVw/OdkrAepv/6nIX+ZrvPErQ+MXNg8Gmi8Uf
+         AVMdd9yYqBOI19xCf9S5soT8fkvOZhFc8E07U26j7iKJMa+J7m5TyAStcKQu99z8Ci
+         Q/wbedYc6YYEg==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oTIsn-0007xA-NM; Wed, 31 Aug 2022 10:15:33 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Johan Hovold <johan@kernel.org>,
+        Jonathan Woithe <jwoithe@just42.net>
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: [PATCH 1/2] USB: serial: ch341: fix lost character on LCR updates
+Date:   Wed, 31 Aug 2022 10:15:24 +0200
+Message-Id: <20220831081525.30557-2-johan@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220831081525.30557-1-johan@kernel.org>
+References: <20220831081525.30557-1-johan@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220818143307.967150-1-m.felsch@pengutronix.de>
-User-Agent: NeoMutt/20180716
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: mfe@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Disable LCR updates for pre-0x30 devices which use a different (unknown)
+protocol for line control and where the current register write causes
+the next received character to be lost.
 
-gentle ping on this series.
+Note that updating LCR using the INIT command has no effect on these
+devices either.
 
-On 22-08-18, Marco Felsch wrote:
-> Hi,
-> 
-> this small series adds the support for the Toshiba TC358746 MIPI-CSI to
-> Parallel converter chip. After a long period I finally had the time to
-> include Sakaris points made on my v2 [1]. Since [1] is long time ago
-> and I reworked the driver a lot, I don't add a v3 on this series. Also
-> all already provided RB tags are dropped.
-> 
-> Regards,
->   Marco
-> 
-> [1] https://www.mail-archive.com/linux-media@vger.kernel.org/msg147901.html
-> 
-> Marco Felsch (4):
->   phy: dphy: refactor get_default_config
->   phy: dphy: add support to calculate the timing based on hs_clk_rate
->   media: dt-bindings: add bindings for Toshiba TC358746
->   media: tc358746: add Toshiba TC358746 Parallel to CSI-2 bridge driver
-> 
->  .../bindings/media/i2c/toshiba,tc358746.yaml  |  157 ++
->  drivers/media/i2c/Kconfig                     |   17 +
->  drivers/media/i2c/Makefile                    |    1 +
->  drivers/media/i2c/tc358746.c                  | 1645 +++++++++++++++++
->  drivers/phy/phy-core-mipi-dphy.c              |   31 +-
->  include/linux/phy/phy-mipi-dphy.h             |    3 +
->  6 files changed, 1850 insertions(+), 4 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/media/i2c/toshiba,tc358746.yaml
->  create mode 100644 drivers/media/i2c/tc358746.c
-> 
-> -- 
-> 2.30.2
-> 
-> 
-> 
+Reported-by: Jonathan Woithe <jwoithe@just42.net>
+Link: https://lore.kernel.org/r/Ys1iPTfiZRWj2gXs@marvin.atrad.com.au
+Fixes: 4e46c410e050 ("USB: serial: ch341: reinitialize chip on reconfiguration")
+Fixes: 55fa15b5987d ("USB: serial: ch341: fix baud rate and line-control handling")
+Cc: stable@vger.kernel.org      # 4.10
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
+ drivers/usb/serial/ch341.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/usb/serial/ch341.c b/drivers/usb/serial/ch341.c
+index 2798fca71261..2bcce172355b 100644
+--- a/drivers/usb/serial/ch341.c
++++ b/drivers/usb/serial/ch341.c
+@@ -97,7 +97,10 @@ struct ch341_private {
+ 	u8 mcr;
+ 	u8 msr;
+ 	u8 lcr;
++
+ 	unsigned long quirks;
++	u8 version;
++
+ 	unsigned long break_end;
+ };
+ 
+@@ -265,6 +268,9 @@ static int ch341_set_baudrate_lcr(struct usb_device *dev,
+ 	 * (stop bits, parity and word length). Version 0x30 and above use
+ 	 * CH341_REG_LCR only and CH341_REG_LCR2 is always set to zero.
+ 	 */
++	if (priv->version < 0x30)
++		return 0;
++
+ 	r = ch341_control_out(dev, CH341_REQ_WRITE_REG,
+ 			      CH341_REG_LCR2 << 8 | CH341_REG_LCR, lcr);
+ 	if (r)
+@@ -308,7 +314,9 @@ static int ch341_configure(struct usb_device *dev, struct ch341_private *priv)
+ 	r = ch341_control_in(dev, CH341_REQ_READ_VERSION, 0, 0, buffer, size);
+ 	if (r)
+ 		return r;
+-	dev_dbg(&dev->dev, "Chip version: 0x%02x\n", buffer[0]);
++
++	priv->version = buffer[0];
++	dev_dbg(&dev->dev, "Chip version: 0x%02x\n", priv->version);
+ 
+ 	r = ch341_control_out(dev, CH341_REQ_SERIAL_INIT, 0, 0);
+ 	if (r < 0)
+-- 
+2.35.1
+
