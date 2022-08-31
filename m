@@ -2,323 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 293D9ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 13:57:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2115EECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 13:59:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231754AbiHaN5z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 09:57:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34132 "EHLO
+        id S230078AbiHaN7l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 09:59:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229717AbiHaN5l (ORCPT
+        with ESMTP id S229449AbiHaN7h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 09:57:41 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3B82D5E9D;
-        Wed, 31 Aug 2022 06:57:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661954259; x=1693490259;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=wVYBeApWBrXW28ipFXA+497DDONmi5lD6jxGs4Jsx2M=;
-  b=DYf9+eaQylVzIrztfCm/ouErVXGD43578O0wYEMhXU3Nshm3NlPyyIEM
-   ZZkxCW/zCftUY2+MH75SjJQDrtUEuPbEH0U8a5V1a2AzN/xY/6+FnnvGf
-   Z6A5aCuaAsTVsk8bBBNqBk9xpBWHUMaTJBUOU2v87wqrn1lvLN1NL77bf
-   VCKm0A9R2Z1dcu2+RlTEDnjWGhpl6dPRykfxKnxyH64MafRSvTc+uOaY5
-   JZPIM4fxdEEyKR8OpcqBl97RRDHXGHrTfApjIS059G3Xg16tWoxj2c7JK
-   cVHoMwijHv/ICgwCHycluIfZaFV1/lbhpI0KaKFe/XwHBB94XxXl9UPMw
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="296236054"
-X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
-   d="scan'208";a="296236054"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 06:57:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
-   d="scan'208";a="612102517"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga002.jf.intel.com with ESMTP; 31 Aug 2022 06:57:36 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id EA6CEAD; Wed, 31 Aug 2022 16:57:50 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Andy Shevchenko <andy@kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH v3 2/3] ACPI: PMIC: Replace open coded be16_to_cpu()
-Date:   Wed, 31 Aug 2022 16:57:48 +0300
-Message-Id: <20220831135749.78743-2-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220831135749.78743-1-andriy.shevchenko@linux.intel.com>
-References: <20220831135749.78743-1-andriy.shevchenko@linux.intel.com>
+        Wed, 31 Aug 2022 09:59:37 -0400
+Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50054.outbound.protection.outlook.com [40.107.5.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91AB0D5E8B;
+        Wed, 31 Aug 2022 06:59:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MvYukudJnYwwJuydeepo3nEs8ZHGf/j0b9cn7/WzAFIgJuBrzkXAE+b0cKdWyVJ+PviQqTb2Ot9UiM4n144kDlNQ3RMiQ1ndVUdDjwl4ZXEiSWHViGwx2Eo3AJFAOqXjVVQejU0kMEe1FklmpD2lR2uCSB5Llpx+PMie2EB3r9H9Q0KbuLpDCaugm7icaDZdft+2zVon5XCyzW2ZTVNjHchxa3dnOqAP3ycL/GZFMwyd65dU7JO+FbBV5KdDiGmvVaEdQkxjZ6nLv8Ue4AwKtHJl5wv+J1pAhhyXMxPi9uTBiaQUwPRKCUGttNjF9Uez8i7RMlfrzpAq6Co5OWVOHw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FQzyUmR2FVd83+eV6xFMecDHxvTu2l1J9CQpEvlIjdE=;
+ b=HydCF13IDr9CpNZh/EqP+inTZUQ0LrWHeDJOtVQ9Sq0qqvN7vKyWm5OsEw9QQ/xsQr7hJn5fHNeju0DQ4aHR6/E00T3HicBH67UGnM7gPrEnwx7IQAeQ1l8YNxb2E2EEvBOcv+XfbZBVl56w4nxZMBCAdO1B4ZM64XNwgk1JRVtrLlZ8ou6zDh9pxDwa8dNUtx/StxtLLQozPOWF/mRPwtEQzRUFAW3GdfHqorgzBoXU+l8WtwESwn/uVw0zmQXeaHhQ1Og86tdO/GIkJzyxjv7d45PBjV5WUYzaSeL8YWdL9XguD2YACZj+XGlcEt2CN5R1vWtV41mZo4GECb5WQQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FQzyUmR2FVd83+eV6xFMecDHxvTu2l1J9CQpEvlIjdE=;
+ b=Fueit1dNuyXyBPCTRZn07QyeYyhhtIv8JLScVRtboJCrGwFTgZnQ/vczMOF5wRoEFqpvbbPq9F4chqrY3JvfxtE2elG2/nYcaD1SawGXx/2/Z64DQk1PCEAGLiMYC/B5iC5iLyxb5OjepIApIMxuI9H8sT1PAXpEx5cHcYPZi3I=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+ by DU0PR04MB9465.eurprd04.prod.outlook.com (2603:10a6:10:359::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.21; Wed, 31 Aug
+ 2022 13:59:33 +0000
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::2d22:3315:6f9b:82c7]) by DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::2d22:3315:6f9b:82c7%5]) with mapi id 15.20.5588.010; Wed, 31 Aug 2022
+ 13:59:33 +0000
+Message-ID: <4c060e3d-5a2c-2073-099d-1dcd649e469e@oss.nxp.com>
+Date:   Wed, 31 Aug 2022 21:59:20 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0
+Subject: Re: [PATCH V2 1/8] dt-bindings: soc: imx: add binding for i.MX9
+ syscon
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de
+Cc:     kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        aisheng.dong@nxp.com, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Peng Fan <peng.fan@nxp.com>
+References: <20220831074923.3085937-1-peng.fan@oss.nxp.com>
+ <20220831074923.3085937-2-peng.fan@oss.nxp.com>
+ <cb3870bc-451a-ff62-e671-f2045eecc781@linaro.org>
+ <9c7854a2-bc9c-f4e6-3b37-f740e05768c5@oss.nxp.com>
+ <7f8a4f33-4bde-384f-f541-f383c8e0b27d@linaro.org>
+ <0cacdfc0-b62d-ddd4-825e-3118071fe365@oss.nxp.com>
+ <8d1328bb-9484-9c32-b059-bdebfc18663d@linaro.org>
+From:   Peng Fan <peng.fan@oss.nxp.com>
+In-Reply-To: <8d1328bb-9484-9c32-b059-bdebfc18663d@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SG2PR04CA0159.apcprd04.prod.outlook.com (2603:1096:4::21)
+ To DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8b9ed861-839a-4308-1168-08da8b5907f3
+X-MS-TrafficTypeDiagnostic: DU0PR04MB9465:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: LVWpAP5CPoibd0P1Q02HPJ+VjFWsfOcE249/QP2Zwx4glPw+ppC2ImDdcg1lNrPf//0VAw+tgF2KzILO9jYi3oWAOCYF4nMe9TvPxjDcrBJRKYEkxo/Hngps0Pqf3O5LDgzcVYStrtw4XpjQRm8pBg6VVh0Jy8zKut0vX8DayuvGe/VbTPq0HOYnuBQwx0ptoW3f01ocucDIcWQ7pntdel1bNxPy/D/kblQK0W2vXNDD68miebpCZRPs+fKmOJDW9DpTerNna7hQ13Y+0LMSrrJ93CxzXWgNpUbPQUMJBT4N1n5rOmmAwBcTGY3DLsr1zXD4W6OmvVFRF/Rik9W8wU7Lx3wBjzkdpoAc6AHABGyQlj82kfAUjyzco5MVupfMrd7Y50obJEGuR2XgSlATvShf0FSvodm9nYIG5hcSTxihlfpToLa0vaopXKoICrmULxSXnUza3qfSs9/4gGbsDtRYA6te63HiD31snNAa6gFhKL7uBdcVqSTfycQ/8DzJMN8o6tEaOM1Reki7EQTlcGB0gCeI4wv8XBJtS2pXz152NJLbJWD+1qPQcQelKHzd9z2qLj8udrrbZpaVTq3ExUHI2L52rxffbEPRN92HJ2dV7UT95qZrNDSv14EwWVIwhSrao2JXIlH65BIGmL4jb9mk8P86Q6VpqIwtTEr7PnDP6jegz1PGib6jQ5l7aRdQKfdPvbABrvrbPz9MGXWHT0w7w6jovM5nT7/dop4Lq6AioGScvUPcnDy5bklgj1798LxNv8zMwg5d1z4woPmC6sFXVnAk13lli+J6+Hd5+ztYfaIPuiNcVO+dXyOAdzM0xv3D/JvelcPzIbjCIYrJgVhVZuGjzDJDFQQzsFdLZebTRsOjgWSNcfLCpJfoFqoUQ0h/ciSqjmFOZfNBvHsVBg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(136003)(366004)(39860400002)(396003)(376002)(186003)(316002)(2616005)(31686004)(44832011)(26005)(6506007)(6666004)(83380400001)(53546011)(6512007)(2906002)(52116002)(86362001)(38100700002)(38350700002)(6486002)(66476007)(5660300002)(41300700001)(8936002)(478600001)(7416002)(8676002)(31696002)(4326008)(66946007)(66556008)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ek83R1NBKy9wM0VZaFYyNGxrRW9DTC8ranQ0YS9Yb2JxMFhmcWhjWWR4NVd0?=
+ =?utf-8?B?aXJKcnZLZTdHYjdVVU8zSE1DVXYzeE1GZkRjSkFVTThwUEdESDhjMk50OHF2?=
+ =?utf-8?B?cGtUUENTcy9XZGtrSE1hWFNFMkR6NXR1MDlQS3JaZ3p3R2NDSGovTVlWNFR5?=
+ =?utf-8?B?TzNtTVRYM3VxeWtwTWpYdmhRQThhZUNTb3dOeHZHbVlKZmZobWZvUzAveS9l?=
+ =?utf-8?B?Ujl4Q1BDa2RrR0cydjRyVHJnandRWU1YK3cvNURuTDRhRHo1WVVVd09CRE1U?=
+ =?utf-8?B?YmdPNFl4Nmg3dlZJdnZiZUtIck9EeVRBbmVkZkN1ZHJyWkozb004Q3VWeERF?=
+ =?utf-8?B?YVFGN3hFK3Fzc2pLcHNwN1lSVFYyOW9lR2ZzZjRCMnRiSnoveS9UOUp1Umsr?=
+ =?utf-8?B?NFJjTk9NdTZ2a3B2K2FlVmRWSG4wdGtTbEE5UEZ0QzEwMi9JeSt1aVpKc3J2?=
+ =?utf-8?B?cVV6SHhIVGtCWktoeEpHSlVzS3J3eS9HQmROK1ZkQzcxOXJpSVBkL285amlo?=
+ =?utf-8?B?QkppdzNKZFkvRDFYSUhZNDlSNkRxTWFXZSt3TVJDNzZvRWNDcDdwT1pRMUNB?=
+ =?utf-8?B?S2J6cmhIR2lCcmZJeGlCMlRadnpjRml3TENLVWxEU2NvUEs1S3YxaGpGNjRE?=
+ =?utf-8?B?SVZjTXVidVRIM0hmeUNiM05MN0xzdm04WmdOMno4T0J2ODFDSGhVc3l1VEFX?=
+ =?utf-8?B?ajRCK3ArYjFnYThwa1p1OHYwUFRCcngyNk1NQW1COC9lVjZwb0w0bG5PUzVS?=
+ =?utf-8?B?dGl2cWpFcDhFaTVLbzk0dVQzUitWSm1SY2J1QkNrV2FsUGJ5MWIxbEYzY2pl?=
+ =?utf-8?B?TDhIQm0zOUZKSXRtaVlUSTl1STlVMHBuemtXZUVBdWFCcHJSc2dKWnloaWJW?=
+ =?utf-8?B?MmRTLzFPWjRteW1FRkNiWHA5L3pQNUI3a0ZUOWpRYTVmckRTNU45SVRvSzNO?=
+ =?utf-8?B?VzNRV29ndWJQSVRPbk9mY2NOcElGUlBHTGlod3plRkVBS0ZPaTUrSHFKQmFl?=
+ =?utf-8?B?S1B6QTYwNzk5NExPaDB3UXVpekFIcHFqWkhlWFp6a211bWNMeCsrbGVtVStB?=
+ =?utf-8?B?c3ZKakFMOG1kK0ZlTEQxQjVmY3Z5amNrVDZSbFJIREZZNmZrN2wrd3d2QUk1?=
+ =?utf-8?B?aVBCVFNnSURLR0crMGpnOVVqd1JkZ2hGeVBORVVuUkVvS3g0UFAvc2Q4ckpJ?=
+ =?utf-8?B?emlkTkdkMXFIbWtaOHRWR3d4eDBtSHBnVDZCYVB4emlHZGJFWW1MQ25SWXAy?=
+ =?utf-8?B?RkovcTE3Mk4xd3p0aGdwbmc5ZXJNWWJWWHhlNFRWNFpSRkdCR2JKbU96bGs5?=
+ =?utf-8?B?T1Q4ZDZZMm1iZWVML2JEM3d2NENhMzc5bXBWcDZvWDkxckxHUndhb2JjZkVk?=
+ =?utf-8?B?OHRqSisrTnFLdjR1enZsenYwMm96blZ0Y2NwaHBjQ05SYWtkd0dZdDdmYUg1?=
+ =?utf-8?B?SzBydkY2M2hmaUNpVmlmckVhelVwZUVMRllsVThmbG02SnRDOXNBbzRoaytO?=
+ =?utf-8?B?MWFmSTdRYWZrZ25vRVlBMjIwRVJkbkZNMTFnR1gwSlJnRUw5cHRScENXMWJY?=
+ =?utf-8?B?WUhJZGJNZDFFTlorcmcwb3k2Vm0vQUhJVXJ2dzVlQXhVVHIxcTVrZmRoTDJv?=
+ =?utf-8?B?alp2YkwvRFQ5M3liaFNnNlFnS01VTlJyKzJLWWNodHVDUlFTZUhLekZHdEJQ?=
+ =?utf-8?B?cmI5ZkR5NUdIb0lpRklwbk9XdG1JSTd3ZzBHQ0xNNXBzeWhXN3NHNHNXQlJ4?=
+ =?utf-8?B?ODVYSWNBS2lKd3EvT0wyaC9WL2t1Z3l6R01wd0VRakdUQlpSWmIzV1pZTWZG?=
+ =?utf-8?B?M3R6S3NNQlBNWk4xVzNMTjNqUHpqcEFNTzdrZ2h4Y3J1SHlnV0J3bGJxS3RD?=
+ =?utf-8?B?MXlWRzU2eFdXa0l2cWdxR0dVdDlnR2hST3dPeFB6NlY0QmlBaEJiYlczd3Uw?=
+ =?utf-8?B?c0daUm1BL2hHNEl1bEJkSXh6K3hOMTJteFdpdXdJem5CcTdFYXdoUUp3M2Vh?=
+ =?utf-8?B?YzhwQ0lkV0gxNkJFaWJjN2UwVGE2UERFU2ZaVkdhMnI5R0g0SjhINGdFYjhq?=
+ =?utf-8?B?V0MxMGVEaWk2b2Vzb3REa1dOU09qRWpoeFVERWRIM2RPaitLa0I5d2EvQmhn?=
+ =?utf-8?Q?6QDHEa4T/yW4nnfgJVfPGeSYD?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8b9ed861-839a-4308-1168-08da8b5907f3
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2022 13:59:33.1204
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lN/DUrx6FrKAGYE0e+lmJekxCHAY18+d8z2DdxI0bFKhqcwOya+l0/tu1ga8vPiMLRjWKU//wWd1ekiUZaCxoA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR04MB9465
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It's easier to understand the nature of a data type when
-it's written explicitly. With that, replace open coded
-endianess conversion.
 
-As a side effect it fixes the returned value of
-intel_crc_pmic_update_aux() since ACPI PMIC core code
-expects negative or zero and never uses positive one.
 
-While at it, use macros from bits.h to reduce a room for mistake.
+On 8/31/2022 9:45 PM, Krzysztof Kozlowski wrote:
+> On 31/08/2022 16:41, Peng Fan wrote:
+>>
+>>
+>> On 8/31/2022 8:54 PM, Krzysztof Kozlowski wrote:
+>>> On 31/08/2022 13:08, Peng Fan wrote:
+>>>>
+>>>>
+>>>> On 8/31/2022 5:15 PM, Krzysztof Kozlowski wrote:
+>>>>> On 31/08/2022 10:49, Peng Fan (OSS) wrote:
+>>>>>> From: Peng Fan <peng.fan@nxp.com>
+>>>>>>
+>>>>>> Add binding doc for i.MX9 blk_ctrl_ns_aonmix and blk_ctrl_wakeupmix
+>>>>>>
+>>>>>> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+>>>>>> ---
+>>>>>>     .../bindings/soc/imx/fsl,imx9-syscon.yaml     | 37 +++++++++++++++++++
+>>>>>>     1 file changed, 37 insertions(+)
+>>>>>>     create mode 100644 Documentation/devicetree/bindings/soc/imx/fsl,imx9-syscon.yaml
+>>>>>>
+>>>>>> diff --git a/Documentation/devicetree/bindings/soc/imx/fsl,imx9-syscon.yaml b/Documentation/devicetree/bindings/soc/imx/fsl,imx9-syscon.yaml
+>>>>>> new file mode 100644
+>>>>>> index 000000000000..90c5e354f86c
+>>>>>> --- /dev/null
+>>>>>> +++ b/Documentation/devicetree/bindings/soc/imx/fsl,imx9-syscon.yaml
+>>>>>> @@ -0,0 +1,37 @@
+>>>>>> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+>>>>>> +%YAML 1.2
+>>>>>> +---
+>>>>>> +$id: "http://devicetree.org/schemas/soc/imx/fsl,imx9-syscon.yaml#"
+>>>>>> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+>>>>>
+>>>>> One more - drop the quotes both lines above.
+>>>>
+>>>> There will be dtbs_check error. I updated schema with:
+>>>> pip3 install git+https://github.com/devicetree-org/dt-schema.git@main
+>>>>
+>>>> So it is ok the drop the two quotes above? Is there
+>>>> any new update in dt-schema that not landed in repo?
+>>>
+>>> This is something new to me, can you paste the error?
+>>
+>> I have renamed the file to "fsl,imx93-syscon.yaml"
+>>
+>> $DT_SCHEMA_FILES=Documentation/devicetree/bindings/soc/imx/fsl,imx93-syscon.yaml
+>> make ARCH=arm64 DT_CHECKER_FLAGS=-m dtbs_check
+>>
+>>     LINT    Documentation/devicetree/bindings
+>>     CHKDT   Documentation/devicetree/bindings/processed-schema.json
+>> ./Documentation/devicetree/bindings/soc/imx/fsl,imx93-syscon.yaml: error
+>> checking schema file
+>>     SCHEMA  Documentation/devicetree/bindings/processed-schema.json
+> 
+> Hm, not much of an actual message. Most - or almost all - bindings do
+> not have quotes, you know...
+> 
+> This is something with your setup because above error is not reproducible.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
----
-v3: added tag (Mika)
- drivers/acpi/pmic/intel_pmic_bxtwc.c    | 50 +++++++++++--------------
- drivers/acpi/pmic/intel_pmic_bytcrc.c   | 20 +++++++---
- drivers/acpi/pmic/intel_pmic_chtdc_ti.c | 13 ++++---
- drivers/acpi/pmic/intel_pmic_xpower.c   | 10 +++--
- 4 files changed, 51 insertions(+), 42 deletions(-)
+I got something wrong in my side, my bad. It passes check now.
 
-diff --git a/drivers/acpi/pmic/intel_pmic_bxtwc.c b/drivers/acpi/pmic/intel_pmic_bxtwc.c
-index e247615189fa..90a2e62a37e4 100644
---- a/drivers/acpi/pmic/intel_pmic_bxtwc.c
-+++ b/drivers/acpi/pmic/intel_pmic_bxtwc.c
-@@ -7,19 +7,20 @@
- 
- #include <linux/init.h>
- #include <linux/acpi.h>
-+#include <linux/bits.h>
-+#include <linux/byteorder/generic.h>
- #include <linux/mfd/intel_soc_pmic.h>
- #include <linux/regmap.h>
- #include <linux/platform_device.h>
- #include "intel_pmic.h"
- 
--#define WHISKEY_COVE_ALRT_HIGH_BIT_MASK 0x0F
--#define WHISKEY_COVE_ADC_HIGH_BIT(x)	(((x & 0x0F) << 8))
--#define WHISKEY_COVE_ADC_CURSRC(x)	(((x & 0xF0) >> 4))
--#define VR_MODE_DISABLED        0
--#define VR_MODE_AUTO            BIT(0)
--#define VR_MODE_NORMAL          BIT(1)
--#define VR_MODE_SWITCH          BIT(2)
--#define VR_MODE_ECO             (BIT(0)|BIT(1))
-+#define PMIC_REG_MASK		GENMASK(11, 0)
-+
-+#define VR_MODE_DISABLED        (0 << 0)
-+#define VR_MODE_AUTO            (1 << 0)
-+#define VR_MODE_NORMAL          (2 << 0)
-+#define VR_MODE_ECO             (3 << 0)
-+#define VR_MODE_SWITCH          (4 << 0)
- #define VSWITCH2_OUTPUT         BIT(5)
- #define VSWITCH1_OUTPUT         BIT(4)
- #define VUSBPHY_CHARGE          BIT(1)
-@@ -297,25 +298,20 @@ static int intel_bxtwc_pmic_update_power(struct regmap *regmap, int reg,
- 
- static int intel_bxtwc_pmic_get_raw_temp(struct regmap *regmap, int reg)
- {
--	unsigned int val, adc_val, reg_val;
--	u8 temp_l, temp_h, cursrc;
- 	unsigned long rlsb;
- 	static const unsigned long rlsb_array[] = {
- 		0, 260420, 130210, 65100, 32550, 16280,
- 		8140, 4070, 2030, 0, 260420, 130210 };
-+	unsigned int adc_val, reg_val;
-+	__be16 buf;
- 
--	if (regmap_read(regmap, reg, &val))
-+	if (regmap_bulk_read(regmap, reg - 1, &buf, sizeof(buf)))
- 		return -EIO;
--	temp_l = (u8) val;
- 
--	if (regmap_read(regmap, (reg - 1), &val))
--		return -EIO;
--	temp_h = (u8) val;
-+	reg_val = be16_to_cpu(buf);
- 
--	reg_val = temp_l | WHISKEY_COVE_ADC_HIGH_BIT(temp_h);
--	cursrc = WHISKEY_COVE_ADC_CURSRC(temp_h);
--	rlsb = rlsb_array[cursrc];
--	adc_val = reg_val * rlsb / 1000;
-+	rlsb = rlsb_array[reg_val >> 12];
-+	adc_val = (reg_val & PMIC_REG_MASK) * rlsb / 1000;
- 
- 	return adc_val;
- }
-@@ -325,7 +321,9 @@ intel_bxtwc_pmic_update_aux(struct regmap *regmap, int reg, int raw)
- {
- 	u32 bsr_num;
- 	u16 resi_val, count = 0, thrsh = 0;
--	u8 alrt_h, alrt_l, cursel = 0;
-+	u16 mask = PMIC_REG_MASK;
-+	__be16 buf;
-+	u8 cursel;
- 
- 	bsr_num = raw;
- 	bsr_num /= (1 << 5);
-@@ -336,15 +334,11 @@ intel_bxtwc_pmic_update_aux(struct regmap *regmap, int reg, int raw)
- 	thrsh = raw / (1 << (4 + cursel));
- 
- 	resi_val = (cursel << 9) | thrsh;
--	alrt_h = (resi_val >> 8) & WHISKEY_COVE_ALRT_HIGH_BIT_MASK;
--	if (regmap_update_bits(regmap,
--				reg - 1,
--				WHISKEY_COVE_ALRT_HIGH_BIT_MASK,
--				alrt_h))
--		return -EIO;
- 
--	alrt_l = (u8)resi_val;
--	return regmap_write(regmap, reg, alrt_l);
-+	if (regmap_bulk_read(regmap, reg - 1, &buf, sizeof(buf)))
-+		return -EIO;
-+	buf = cpu_to_be16((be16_to_cpu(buf) & ~mask) | (resi_val & mask));
-+	return regmap_bulk_write(regmap, reg - 1, &buf, sizeof(buf));
- }
- 
- static int
-diff --git a/drivers/acpi/pmic/intel_pmic_bytcrc.c b/drivers/acpi/pmic/intel_pmic_bytcrc.c
-index 9ea79f210965..ce647bc46978 100644
---- a/drivers/acpi/pmic/intel_pmic_bytcrc.c
-+++ b/drivers/acpi/pmic/intel_pmic_bytcrc.c
-@@ -6,6 +6,8 @@
-  */
- 
- #include <linux/acpi.h>
-+#include <linux/bits.h>
-+#include <linux/byteorder/generic.h>
- #include <linux/init.h>
- #include <linux/mfd/intel_soc_pmic.h>
- #include <linux/platform_device.h>
-@@ -14,6 +16,8 @@
- 
- #define PWR_SOURCE_SELECT	BIT(1)
- 
-+#define PMIC_REG_MASK		GENMASK(9, 0)
-+
- #define PMIC_A0LOCK_REG		0xc5
- 
- static struct pmic_table power_table[] = {
-@@ -219,23 +223,27 @@ static int intel_crc_pmic_update_power(struct regmap *regmap, int reg,
- 
- static int intel_crc_pmic_get_raw_temp(struct regmap *regmap, int reg)
- {
--	int temp_l, temp_h;
-+	__be16 buf;
- 
- 	/*
- 	 * Raw temperature value is 10bits: 8bits in reg
- 	 * and 2bits in reg-1: bit0,1
- 	 */
--	if (regmap_read(regmap, reg, &temp_l) ||
--	    regmap_read(regmap, reg - 1, &temp_h))
-+	if (regmap_bulk_read(regmap, reg - 1, &buf, sizeof(buf)))
- 		return -EIO;
- 
--	return temp_l | (temp_h & 0x3) << 8;
-+	return be16_to_cpu(buf) & PMIC_REG_MASK;
- }
- 
- static int intel_crc_pmic_update_aux(struct regmap *regmap, int reg, int raw)
- {
--	return regmap_write(regmap, reg, raw) ||
--		regmap_update_bits(regmap, reg - 1, 0x3, raw >> 8) ? -EIO : 0;
-+	u16 mask = PMIC_REG_MASK;
-+	__be16 buf;
-+
-+	if (regmap_bulk_read(regmap, reg - 1, &buf, sizeof(buf)))
-+		return -EIO;
-+	buf = cpu_to_be16((be16_to_cpu(buf) & ~mask) | (raw & mask));
-+	return regmap_bulk_write(regmap, reg - 1, &buf, sizeof(buf));
- }
- 
- static int intel_crc_pmic_get_policy(struct regmap *regmap,
-diff --git a/drivers/acpi/pmic/intel_pmic_chtdc_ti.c b/drivers/acpi/pmic/intel_pmic_chtdc_ti.c
-index 6c2a6da430ed..1e80969c4d89 100644
---- a/drivers/acpi/pmic/intel_pmic_chtdc_ti.c
-+++ b/drivers/acpi/pmic/intel_pmic_chtdc_ti.c
-@@ -8,12 +8,16 @@
-  */
- 
- #include <linux/acpi.h>
-+#include <linux/bits.h>
-+#include <linux/byteorder/generic.h>
- #include <linux/init.h>
- #include <linux/mfd/intel_soc_pmic.h>
- #include <linux/platform_device.h>
- #include "intel_pmic.h"
- 
- /* registers stored in 16bit BE (high:low, total 10bit) */
-+#define PMIC_REG_MASK		GENMASK(9, 0)
-+
- #define CHTDC_TI_VBAT		0x54
- #define CHTDC_TI_DIETEMP	0x56
- #define CHTDC_TI_BPTHERM	0x58
-@@ -73,7 +77,7 @@ static int chtdc_ti_pmic_get_power(struct regmap *regmap, int reg, int bit,
- 	if (regmap_read(regmap, reg, &data))
- 		return -EIO;
- 
--	*value = data & 1;
-+	*value = data & BIT(0);
- 	return 0;
- }
- 
-@@ -85,13 +89,12 @@ static int chtdc_ti_pmic_update_power(struct regmap *regmap, int reg, int bit,
- 
- static int chtdc_ti_pmic_get_raw_temp(struct regmap *regmap, int reg)
- {
--	u8 buf[2];
-+	__be16 buf;
- 
--	if (regmap_bulk_read(regmap, reg, buf, sizeof(buf)))
-+	if (regmap_bulk_read(regmap, reg, &buf, sizeof(buf)))
- 		return -EIO;
- 
--	/* stored in big-endian */
--	return ((buf[0] & 0x03) << 8) | buf[1];
-+	return be16_to_cpu(buf) & PMIC_REG_MASK;
- }
- 
- static const struct intel_pmic_opregion_data chtdc_ti_pmic_opregion_data = {
-diff --git a/drivers/acpi/pmic/intel_pmic_xpower.c b/drivers/acpi/pmic/intel_pmic_xpower.c
-index 33c5e85294cd..3c7380ec8203 100644
---- a/drivers/acpi/pmic/intel_pmic_xpower.c
-+++ b/drivers/acpi/pmic/intel_pmic_xpower.c
-@@ -6,11 +6,15 @@
-  */
- 
- #include <linux/acpi.h>
-+#include <linux/bits.h>
-+#include <linux/byteorder/generic.h>
- #include <linux/init.h>
- #include <linux/mfd/axp20x.h>
- #include <linux/regmap.h>
- #include <linux/platform_device.h>
-+
- #include <asm/iosf_mbi.h>
-+
- #include "intel_pmic.h"
- 
- #define XPOWER_GPADC_LOW	0x5b
-@@ -218,7 +222,7 @@ static int intel_xpower_pmic_update_power(struct regmap *regmap, int reg,
- static int intel_xpower_pmic_get_raw_temp(struct regmap *regmap, int reg)
- {
- 	int ret, adc_ts_pin_ctrl;
--	u8 buf[2];
-+	__be16 buf;
- 
- 	/*
- 	 * The current-source used for the battery temp-sensor (TS) is shared
-@@ -255,9 +259,9 @@ static int intel_xpower_pmic_get_raw_temp(struct regmap *regmap, int reg)
- 	if (ret)
- 		return ret;
- 
--	ret = regmap_bulk_read(regmap, AXP288_GP_ADC_H, buf, sizeof(buf));
-+	ret = regmap_bulk_read(regmap, AXP288_GP_ADC_H, &buf, sizeof(buf));
- 	if (ret == 0)
--		ret = (buf[0] << 4) + ((buf[1] >> 4) & 0x0f);
-+		ret = be16_to_cpu(buf) >> 4;
- 
- 	if (adc_ts_pin_ctrl & AXP288_ADC_TS_CURRENT_ON_OFF_MASK) {
- 		regmap_update_bits(regmap, AXP288_ADC_TS_PIN_CTRL,
--- 
-2.35.1
+Thanks,
+Peng.
 
+> 
+> Best regards,
+> Krzysztof
