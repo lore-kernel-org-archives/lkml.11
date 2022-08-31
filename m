@@ -2,69 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 736C5ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 12:53:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03D7DECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 12:53:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231574AbiHaMxK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 08:53:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35318 "EHLO
+        id S231571AbiHaMxP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 08:53:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231532AbiHaMxG (ORCPT
+        with ESMTP id S231538AbiHaMxG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 31 Aug 2022 08:53:06 -0400
-Received: from smtpbg.qq.com (bg4.exmail.qq.com [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2545BADB6;
-        Wed, 31 Aug 2022 05:53:01 -0700 (PDT)
-X-QQ-mid: bizesmtp83t1661950345tkzp3z64
-Received: from localhost.localdomain ( [182.148.13.26])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 31 Aug 2022 20:52:23 +0800 (CST)
-X-QQ-SSF: 01000000002000D0E000B00A0000000
-X-QQ-FEAT: LG+NUo/f6sFJ1naBvVM3Jw2zlzxf8bHDBwjhkZXh1Mg91itde6dtpey/Einvu
-        jIRgmuZmy5QdeVYjJYOB0nBSNjZKbgNGFWELQvbHVitnMduFTzK49VWs/u53mqK2a3Smx1C
-        HbFk0AKxW+vcMuK8FdxFjMWlZFSctN3ZYy6SqvcEBkN7odxbZl89oi+2nzJDwl2EppBO9oM
-        w7Y+rHYF4Dq6gWPJ8acrkBt1LgaHD+yD9vNB2wmcbSs8WlDPa8XvVuPVEdzlDW8HIMQ4kSD
-        9vYGyKjy08w4JyiX0LAsR0LcEu8/QfDU8rm9p/V5S5EjtVo/nURFAy581HcUNTzADyHuu0o
-        wJ9J9bW1EaltL3UzxiGIolttnkJsRa2CobqBPknbndujSqm39HgO3FEHaeGWsvf6amCtcGp
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     seanjc@google.com, pbonzini@redhat.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] KVM: x86/mmu: fix repeated words in comments
-Date:   Wed, 31 Aug 2022 20:52:17 +0800
-Message-Id: <20220831125217.12313-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51835B8A54;
+        Wed, 31 Aug 2022 05:53:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E7F8A61A27;
+        Wed, 31 Aug 2022 12:53:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08D36C4314B;
+        Wed, 31 Aug 2022 12:52:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661950382;
+        bh=dGvlxWA+Q7QU9nq7L7VQgKMY4srrIa1uYv+f3xokFnU=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=aIQvwTntpJHXV3hd+ksJeY0N2s/A5bfTvXwwPShHyhcz+dRW0xaLI+OAzEjOgig1Y
+         lFMmGdaiA14oiC35gSK/Ac8A+pljsvWcvyhIE3n/g8Av+UFDZqatU4HhhvMw9nSYQD
+         vNQW5P5gIeaSzL4heUkARWiIMtbpctHvq0MR/DfU0JoiYlKkQnMv0X2Fqf4/JPQTch
+         A+FIIDakjHzaUUOTBBom98xddR2t/hoNUuQ9FaH7Eh4l2v8uY4nFf8AGLyMKMV8hU8
+         LHjweaOF4e4eSaeFXNH0s5S/bLXWWPAa1twXHLQNBovb4f0PmU5x6elDsejaSrnDpV
+         ZtRuOGa7vr1uA==
+From:   Mark Brown <broonie@kernel.org>
+To:     Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        lgirdwood@gmail.com
+Cc:     devicetree@vger.kernel.org, Rob Herring <robh@kernel.org>,
+        robh+dt@kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, agross@kernel.org,
+        konrad.dybcio@somainline.org, bjorn.andersson@linaro.org,
+        robimarko@gmail.com, krzysztof.kozlowski+dt@linaro.org
+In-Reply-To: <20220831080503.17600-1-jean-philippe@linaro.org>
+References: <20220831080503.17600-1-jean-philippe@linaro.org>
+Subject: Re: [PATCH v2] dt-bindings: regulator: Fix qcom,spmi-regulator schema
+Message-Id: <166195037974.99335.15195185114132333580.b4-ty@kernel.org>
+Date:   Wed, 31 Aug 2022 13:52:59 +0100
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+X-Mailer: b4 0.10.0-dev-0c1df
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'to'.
+On Wed, 31 Aug 2022 09:05:04 +0100, Jean-Philippe Brucker wrote:
+> The DT validator reports an error in the schema:
+> 
+> Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.yaml: ignoring, error in schema: patternProperties: ^(5vs[1-2]|(l|s)[1-9][0-9]?|lvs[1-3])$: properties
+> 
+> Move the unevaluatedProperties statement out of the properties section
+> to fix it.
+> 
+> [...]
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- arch/x86/kvm/mmu/paging_tmpl.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Applied to
 
-diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
-index 39e0205e7300..5ab5f94dcb6f 100644
---- a/arch/x86/kvm/mmu/paging_tmpl.h
-+++ b/arch/x86/kvm/mmu/paging_tmpl.h
-@@ -472,7 +472,7 @@ static int FNAME(walk_addr_generic)(struct guest_walker *walker,
- 
- #if PTTYPE == PTTYPE_EPT
- 	/*
--	 * Use PFERR_RSVD_MASK in error_code to to tell if EPT
-+	 * Use PFERR_RSVD_MASK in error_code to tell if EPT
- 	 * misconfiguration requires to be injected. The detection is
- 	 * done by is_rsvd_bits_set() above.
- 	 *
--- 
-2.36.1
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git for-next
 
+Thanks!
+
+[1/1] dt-bindings: regulator: Fix qcom,spmi-regulator schema
+      commit: 475043fabe8c58fb18c32c7942d8754897bd11fa
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
