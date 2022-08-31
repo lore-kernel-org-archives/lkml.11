@@ -2,180 +2,285 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 732E0ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 08:50:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD6E4ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 08:51:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231549AbiHaIuq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 04:50:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39284 "EHLO
+        id S231667AbiHaIvg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 04:51:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231521AbiHaIu3 (ORCPT
+        with ESMTP id S231547AbiHaIvS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 04:50:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F14ABF3E
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 01:50:25 -0700 (PDT)
+        Wed, 31 Aug 2022 04:51:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A042ACACA0
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 01:51:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661935823;
+        s=mimecast20190719; t=1661935847;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=XHyUtmZKTvqRsLyAaBPYNj0r2rPPf5NCNaNATfvyTPs=;
-        b=DdT74hKkZBZ+I4fV5xLSJJDiSKmR7BeZBaLDEluhGYgv1q4/HvLWNby7RSbD8W2Mpnn+rn
-        ScZOeOZWRpuRtsJPQRUJzM2w/cAvQ4K41oW7YFQBkv08KDroPuvgBgrM71ELEqwvM9me++
-        n7yIcxUuUQx9gWtw6t7avf1c5wi4wJU=
+        bh=BcuExXOje6YQsvLQPHuRRDjqA+jrbJ+6wXiicLOONYo=;
+        b=Lim4u0ocyvjVcdunFtcS5oPaYu+qqUUJoqOwscgeymc14OSTW6nM7kivWv1bBw9sGUDqGe
+        KZqpn2HHo283I0dPrBaa12BgcFF4YM0TsaW3ku0AjBaDWNMZoWBznEYHwHXNh/0q5menFv
+        d7eUN+jPyNyRLe7TAjC03oCj7D8SdIE=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-207-pEGGZMsOM7aC1VteFWclbQ-1; Wed, 31 Aug 2022 04:50:20 -0400
-X-MC-Unique: pEGGZMsOM7aC1VteFWclbQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+ us-mta-508-MWdj9omAOaSzhl6Kj6s-nw-1; Wed, 31 Aug 2022 04:50:46 -0400
+X-MC-Unique: MWdj9omAOaSzhl6Kj6s-nw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C131580A0B7;
-        Wed, 31 Aug 2022 08:50:19 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.194.186])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B264FC15BB3;
-        Wed, 31 Aug 2022 08:50:17 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/3] KVM: selftests: Test Hyper-V invariant TSC control
-Date:   Wed, 31 Aug 2022 10:50:09 +0200
-Message-Id: <20220831085009.1627523-4-vkuznets@redhat.com>
-In-Reply-To: <20220831085009.1627523-1-vkuznets@redhat.com>
-References: <20220831085009.1627523-1-vkuznets@redhat.com>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4B9AE800124;
+        Wed, 31 Aug 2022 08:50:45 +0000 (UTC)
+Received: from localhost (ovpn-13-50.pek2.redhat.com [10.72.13.50])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 991F51415133;
+        Wed, 31 Aug 2022 08:50:42 +0000 (UTC)
+Date:   Wed, 31 Aug 2022 16:50:38 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Niklas Schnelle <schnelle@linux.ibm.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        akpm@linux-foundation.org, hch@infradead.org,
+        agordeev@linux.ibm.com, wangkefeng.wang@huawei.com,
+        linux-arm-kernel@lists.infradead.org,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>, linux-s390@vger.kernel.org
+Subject: Re: [PATCH v2 09/11] s390: mm: Convert to GENERIC_IOREMAP
+Message-ID: <Yw8g3igVMrlde0QA@MiWiFi-R3L-srv>
+References: <20220820003125.353570-1-bhe@redhat.com>
+ <20220820003125.353570-10-bhe@redhat.com>
+ <376889563c9da4d6f97ea8a412697e0867a0d4bd.camel@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <376889563c9da4d6f97ea8a412697e0867a0d4bd.camel@linux.ibm.com>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a test for the newly introduced Hyper-V invariant TSC control feature:
-- HV_X64_MSR_TSC_INVARIANT_CONTROL is not available without
- HV_ACCESS_TSC_INVARIANT CPUID bit set and available with it.
-- BIT(0) of HV_X64_MSR_TSC_INVARIANT_CONTROL controls the filtering of
-architectural invariant TSC (CPUID.80000007H:EDX[8]) bit.
+Hi Niklas,
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
----
- .../selftests/kvm/x86_64/hyperv_features.c    | 67 +++++++++++++++++++
- 1 file changed, 67 insertions(+)
+On 08/23/22 at 02:30pm, Niklas Schnelle wrote:
+> On Sat, 2022-08-20 at 08:31 +0800, Baoquan He wrote:
+> > Add hooks arch_ioremap() and arch_iounmap() for s390's special
+> > operation when ioremap() and iounmap(), then ioremap_[wc|wt]() are
+> > converted to use ioremap_prot() from GENERIC_IOREMAP.
+> > 
+> > Signed-off-by: Baoquan He <bhe@redhat.com>
+> > Cc: Heiko Carstens <hca@linux.ibm.com>
+> > Cc: Vasily Gorbik <gor@linux.ibm.com>
+> > Cc: Alexander Gordeev <agordeev@linux.ibm.com>
+> > Cc: Christian Borntraeger <borntraeger@linux.ibm.com>
+> > Cc: Sven Schnelle <svens@linux.ibm.com>
+> > Cc: linux-s390@vger.kernel.org
+> > ---
+> >  arch/s390/Kconfig          |  1 +
+> >  arch/s390/include/asm/io.h | 26 +++++++++++------
+> >  arch/s390/pci/pci.c        | 60 +++++---------------------------------
+> >  3 files changed, 26 insertions(+), 61 deletions(-)
+> > 
+> > diff --git a/arch/s390/Kconfig b/arch/s390/Kconfig
+> > index 318fce77601d..c59e1b25f59d 100644
+> > --- a/arch/s390/Kconfig
+> > +++ b/arch/s390/Kconfig
+> > @@ -135,6 +135,7 @@ config S390
+> >  	select GENERIC_SMP_IDLE_THREAD
+> >  	select GENERIC_TIME_VSYSCALL
+> >  	select GENERIC_VDSO_TIME_NS
+> > +	select GENERIC_IOREMAP
+> >  	select HAVE_ALIGNED_STRUCT_PAGE if SLUB
+> >  	select HAVE_ARCH_AUDITSYSCALL
+> >  	select HAVE_ARCH_JUMP_LABEL
+> > diff --git a/arch/s390/include/asm/io.h b/arch/s390/include/asm/io.h
+> > index e3882b012bfa..f837e20b7bbd 100644
+> > --- a/arch/s390/include/asm/io.h
+> > +++ b/arch/s390/include/asm/io.h
+> > @@ -22,11 +22,23 @@ void unxlate_dev_mem_ptr(phys_addr_t phys, void *addr);
+> >  
+> >  #define IO_SPACE_LIMIT 0
+> >  
+> > -void __iomem *ioremap_prot(phys_addr_t addr, size_t size, unsigned long prot);
+> > -void __iomem *ioremap(phys_addr_t addr, size_t size);
+> > -void __iomem *ioremap_wc(phys_addr_t addr, size_t size);
+> > -void __iomem *ioremap_wt(phys_addr_t addr, size_t size);
+> > -void iounmap(volatile void __iomem *addr);
+> > +
+> 
 
-diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_features.c b/tools/testing/selftests/kvm/x86_64/hyperv_features.c
-index 4ec4776662a4..26e8c5f7677e 100644
---- a/tools/testing/selftests/kvm/x86_64/hyperv_features.c
-+++ b/tools/testing/selftests/kvm/x86_64/hyperv_features.c
-@@ -15,6 +15,9 @@
- 
- #define LINUX_OS_ID ((u64)0x8100 << 48)
- 
-+/* CPUID.80000007H:EDX */
-+#define X86_FEATURE_INVTSC (1 << 8)
-+
- static inline uint8_t hypercall(u64 control, vm_vaddr_t input_address,
- 				vm_vaddr_t output_address, uint64_t *hv_status)
- {
-@@ -60,6 +63,24 @@ static void guest_msr(struct msr_data *msr)
- 		GUEST_ASSERT_2(!vector, msr->idx, vector);
- 	else
- 		GUEST_ASSERT_2(vector == GP_VECTOR, msr->idx, vector);
-+
-+	/* Invariant TSC bit appears when TSC invariant control MSR is written to */
-+	if (msr->idx == HV_X64_MSR_TSC_INVARIANT_CONTROL) {
-+		u32 eax, ebx, ecx, edx;
-+
-+		cpuid(0x80000007, &eax, &ebx, &ecx, &edx);
-+
-+		/*
-+		 * TSC invariant bit is present without the feature (legacy) or
-+		 * when the feature is present and enabled.
-+		 */
-+		if ((!msr->should_not_gp && !msr->write) || (msr->write && msr->write_val == 1))
-+			GUEST_ASSERT(edx & X86_FEATURE_INVTSC);
-+		else
-+			GUEST_ASSERT(!(edx & X86_FEATURE_INVTSC));
-+	}
-+
-+
- 	GUEST_DONE();
- }
- 
-@@ -104,6 +125,15 @@ static void vcpu_reset_hv_cpuid(struct kvm_vcpu *vcpu)
- 	vcpu_clear_cpuid_entry(vcpu, HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES);
- }
- 
-+static bool guest_has_invtsc(void)
-+{
-+	const struct kvm_cpuid_entry2 *cpuid;
-+
-+	cpuid = kvm_get_supported_cpuid_entry(0x80000007);
-+
-+	return cpuid->edx & X86_FEATURE_INVTSC;
-+}
-+
- static void guest_test_msrs_access(void)
- {
- 	struct kvm_cpuid2 *prev_cpuid = NULL;
-@@ -115,6 +145,7 @@ static void guest_test_msrs_access(void)
- 	int stage = 0;
- 	vm_vaddr_t msr_gva;
- 	struct msr_data *msr;
-+	bool has_invtsc = guest_has_invtsc();
- 
- 	while (true) {
- 		vm = vm_create_with_one_vcpu(&vcpu, guest_msr);
-@@ -429,6 +460,42 @@ static void guest_test_msrs_access(void)
- 			break;
- 
- 		case 44:
-+			/* MSR is not available when CPUID feature bit is unset */
-+			if (!has_invtsc)
-+				continue;
-+			msr->idx = HV_X64_MSR_TSC_INVARIANT_CONTROL;
-+			msr->write = 0;
-+			msr->should_not_gp = 0;
-+			break;
-+		case 45:
-+			/* MSR is vailable when CPUID feature bit is set */
-+			if (!has_invtsc)
-+				continue;
-+			feat->eax |= HV_ACCESS_TSC_INVARIANT;
-+			msr->idx = HV_X64_MSR_TSC_INVARIANT_CONTROL;
-+			msr->write = 0;
-+			msr->should_not_gp = 1;
-+			break;
-+		case 46:
-+			/* Writing bits other than 0 is forbidden */
-+			if (!has_invtsc)
-+				continue;
-+			msr->idx = HV_X64_MSR_TSC_INVARIANT_CONTROL;
-+			msr->write = 1;
-+			msr->write_val = 0xdeadbeef;
-+			msr->should_not_gp = 0;
-+			break;
-+		case 47:
-+			/* Setting bit 0 enables the feature */
-+			if (!has_invtsc)
-+				continue;
-+			msr->idx = HV_X64_MSR_TSC_INVARIANT_CONTROL;
-+			msr->write = 1;
-+			msr->write_val = 1;
-+			msr->should_not_gp = 1;
-+			break;
-+
-+		default:
- 			kvm_vm_free(vm);
- 			return;
- 		}
--- 
-2.37.2
+Thanks a lot for reviewing, and sorry for late response.
+
+> Checkpatch nitpick, remove the empty line addition above so as not to
+> create two consecutive empty lines.
+
+Will do, thanks.
+
+> 
+> > +/*
+> > + * I/O memory mapping functions.
+> > + */
+> > +void __iomem *
+> > +arch_ioremap(phys_addr_t *paddr, size_t size, unsigned long *prot_val);
+> > +#define arch_ioremap arch_ioremap
+> > +
+> > +int arch_iounmap(void __iomem *addr);
+> > +#define arch_iounmap arch_iounmap
+> > +
+> > +#define _PAGE_IOREMAP pgprot_val(PAGE_KERNEL)
+> > +
+> > +#define ioremap_wc(addr, size)  \
+> > +	ioremap_prot((addr), (size), pgprot_val(pgprot_writecombine(PAGE_KERNEL)))
+> > +#define ioremap_wt(addr, size)  \
+> > +	ioremap_prot((addr), (size), pgprot_val(pgprot_writethrough(PAGE_KERNEL)))
+> >  
+> >  static inline void __iomem *ioport_map(unsigned long port, unsigned int nr)
+> >  {
+> > @@ -51,10 +63,6 @@ static inline void ioport_unmap(void __iomem *p)
+> >  #define pci_iomap_wc pci_iomap_wc
+> >  #define pci_iomap_wc_range pci_iomap_wc_range
+> >  
+> > -#define ioremap ioremap
+> > -#define ioremap_wt ioremap_wt
+> > -#define ioremap_wc ioremap_wc
+> > -
+> >  #define memcpy_fromio(dst, src, count)	zpci_memcpy_fromio(dst, src, count)
+> >  #define memcpy_toio(dst, src, count)	zpci_memcpy_toio(dst, src, count)
+> >  #define memset_io(dst, val, count)	zpci_memset_io(dst, val, count)
+> > diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
+> > index 73cdc5539384..984cad9cd5a1 100644
+> > --- a/arch/s390/pci/pci.c
+> > +++ b/arch/s390/pci/pci.c
+> > @@ -244,64 +244,20 @@ void __iowrite64_copy(void __iomem *to, const void *from, size_t count)
+> >         zpci_memcpy_toio(to, from, count);
+> >  }
+> >  
+> > -static void __iomem *__ioremap(phys_addr_t addr, size_t size, pgprot_t prot)
+> > +void __iomem *
+> > +arch_ioremap(phys_addr_t *paddr, size_t size, unsigned long *prot_val)
+> >  {
+> > -	unsigned long offset, vaddr;
+> > -	struct vm_struct *area;
+> > -	phys_addr_t last_addr;
+> > -
+> > -	last_addr = addr + size - 1;
+> > -	if (!size || last_addr < addr)
+> > -		return NULL;
+> > -
+> >  	if (!static_branch_unlikely(&have_mio))
+> > -		return (void __iomem *) addr;
+> > -
+> > -	offset = addr & ~PAGE_MASK;
+> > -	addr &= PAGE_MASK;
+> > -	size = PAGE_ALIGN(size + offset);
+> > -	area = get_vm_area(size, VM_IOREMAP);
+> > -	if (!area)
+> > -		return NULL;
+> > -
+> > -	vaddr = (unsigned long) area->addr;
+> > -	if (ioremap_page_range(vaddr, vaddr + size, addr, prot)) {
+> > -		free_vm_area(area);
+> > -		return NULL;
+> > -	}
+> > -	return (void __iomem *) ((unsigned long) area->addr + offset);
+> > -}
+> > -
+> > -void __iomem *ioremap_prot(phys_addr_t addr, size_t size, unsigned long prot)
+> > -{
+> > -	return __ioremap(addr, size, __pgprot(prot));
+> > +		return (void __iomem *) *paddr;
+> 
+> Another checkpatch nitpick no space after the cast.
+
+Will fix.
+
+> 
+> > +	return NULL;
+> >  }
+> > -EXPORT_SYMBOL(ioremap_prot);
+> >  
+> > -void __iomem *ioremap(phys_addr_t addr, size_t size)
+> > +int arch_iounmap(void __iomem *addr)
+> >  {
+> > -	return __ioremap(addr, size, PAGE_KERNEL);
+> > -}
+> > -EXPORT_SYMBOL(ioremap);
+> > -
+> > -void __iomem *ioremap_wc(phys_addr_t addr, size_t size)
+> > -{
+> > -	return __ioremap(addr, size, pgprot_writecombine(PAGE_KERNEL));
+> > -}
+> > -EXPORT_SYMBOL(ioremap_wc);
+> > -
+> > -void __iomem *ioremap_wt(phys_addr_t addr, size_t size)
+> > -{
+> > -	return __ioremap(addr, size, pgprot_writethrough(PAGE_KERNEL));
+> > -}
+> > -EXPORT_SYMBOL(ioremap_wt);
+> > -
+> > -void iounmap(volatile void __iomem *addr)
+> > -{
+> > -	if (static_branch_likely(&have_mio))
+> > -		vunmap((__force void *) ((unsigned long) addr & PAGE_MASK));
+> > +	if (!static_branch_likely(&have_mio))
+> > +		return -EINVAL;
+> 
+> As Christoph suggested this might be a good opportunity to add a
+> comment for this branch.
+> 
+> One other nitpick. The return value doesn't really matter here since
+> anything != NULL turns iounmap() into a no-op so this looks correct but
+> semantically I think returning -EINVAL wrongly suggests that addr was
+> invalid. Maybe -ENXIO would be better at conveying that there is
+> nothing to unmap.
+> 
+> Looking at your patch 1 another idea would be to have 3 kinds of return
+> values for arch_iounmap() too e.g.:
+> 
+>  arch_iounmap() return an __iomem pointer
+>    - IS_ERR means skip vunmap and return directly
+>    - NULL means continue to vunmap
+>    - a non-NULL, non-IS_ERR pointer has been unmapped successfully
+
+I agree with you, The returned -EINVAL does cause confusion.
+
+I checked all ARCHes related in this patchset, we only do the arch
+specific address filtering (or address checking), then call vunmap().
+Seems no error case or error handling in iounmap(). I'm thinking if
+we should make the return value as boolean value. Ture indicates
+address checking passed, false indicates not passed.
+
+
+> 
+> Then we would simply return addr in case of
+> !static_branch_likely(&have_mio) and NULL otherwise.
+> 
+> What do you think? Either way no strong opinion on my side,
+> functionally it makes no difference.
+> 
+> > +	return 0;
+> >  }
+> > -EXPORT_SYMBOL(iounmap);
+> >  
+> >  /* Create a virtual mapping cookie for a PCI BAR */
+> >  static void __iomem *pci_iomap_range_fh(struct pci_dev *pdev, int bar,
+> 
+> Apart from the above nitpicks and suggestion this looks good to me.
+> I did also test this with and without PCI MIO support including use of
+> PCI MIO instructions in user-space (added in rdma-core v40).
+> 
+> So feel free to add:
+> Tested-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> Acked-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> 
+> Since it looks like there will be a v3 due to other comments anyway
+> please Cc me on that directly and I'm sure I can upgrade the Acked-by
+> to Reviewed-by when we're closer to the final code.
+
+Sure, I will add you in Cc when repost. Thank again for these details.
+
+
+> 
 
