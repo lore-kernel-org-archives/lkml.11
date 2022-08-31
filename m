@@ -2,135 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E842ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 20:56:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87AEFECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 20:59:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231992AbiHaU4z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 16:56:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39258 "EHLO
+        id S232065AbiHaU7t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 16:59:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231802AbiHaU4t (ORCPT
+        with ESMTP id S231992AbiHaU7o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 16:56:49 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02F73DC089
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 13:56:46 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id c7so13136725wrp.11
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 13:56:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=Q+TlttOrTWNB3q3o6Zbb04N1wsFemMMzZbBDHk1hdbY=;
-        b=VyP3SbNsuyxc5blP2FoCVyjA1CBQu5fk1qPBiWwHnsN7KbhALhPVRs+hdxfauKkrjN
-         HjpFIvR9qflpc5b/NaZbUp4Qe+yoyJx8jmIG71feNwOicipxd4Z45zOK95SSSmFlFqg1
-         JlDxmSa+dos6d565oincRG6QsILc3r0lbpSqflqmVfv9TWNY+mQW2VINkINO6wGxloda
-         V9BbsnXdjx9TWnVhm9AxW/SNuwlNLiahxr1xh25VEX0zm/Rv6sxPCVqP3nUxZGj48fmq
-         8freUAXARJQoL1m1MzSBuxjvucYwjbHks6tBHAAViJ2OqT1E6YeDUp+dfTHOL3fNg2CJ
-         OS0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=Q+TlttOrTWNB3q3o6Zbb04N1wsFemMMzZbBDHk1hdbY=;
-        b=MRYTNdyBTBC6Qvj2hDX5iEBULRgnej0VxwTSVts5FrhZGUhETartKQTYff/PbfXqx2
-         xINuQ4eYUGZGkWwHjlcA1olKfzbzdlu6Kllw8HdgEKCz6MI/ErXYWwAn6l11mV2L4S2L
-         sI6jeFq+ToggsD4KqBkZ8CRahVqRHNqOqX3/yycYA2J/3sfiI4QwapD4fNT0aBZR6Qjg
-         93zZfi0Agy0zE5AgqaWmEh/o2m2krX5X8yRX7lVeKQL3mG2NZYpnLjGgc8yLe+cwjJti
-         75L+fBAe1jmcS4Nqw/LfYDJSpGp842eHKJ1iq4eoQInv/dy/KU+t+Hty3I+rW93pSU9n
-         4/zA==
-X-Gm-Message-State: ACgBeo1KIGpTaRjVhpm7VfpijQoBS+eLrjA9RZKGpo4hLYXob15VVPGa
-        V5P6jm05PmqfuzgxeiEwtmm7y8cVsk22G8hbYdCRIg==
-X-Google-Smtp-Source: AA6agR7XK78VXHUjktIpBA+ayr5Wvv6QyZC54NZbTQlygRhYLtBkkgViGprvNovg9YVhzd6mrhctznnyhI9ADAmQ4D4=
-X-Received: by 2002:a05:6000:1188:b0:220:6c20:fbf6 with SMTP id
- g8-20020a056000118800b002206c20fbf6mr13193874wrx.372.1661979404912; Wed, 31
- Aug 2022 13:56:44 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220830214919.53220-1-surenb@google.com> <Yw8P8xZ4zqu121xL@hirez.programming.kicks-ass.net>
- <20220831084230.3ti3vitrzhzsu3fs@moria.home.lan> <20220831101948.f3etturccmp5ovkl@suse.de>
- <Yw88RFuBgc7yFYxA@dhcp22.suse.cz> <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
-In-Reply-To: <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Wed, 31 Aug 2022 13:56:08 -0700
-Message-ID: <CAJD7tkaev9B=UDYj2RL6pz-1454J8tv4gEr9y-2dnCksoLK0bw@mail.gmail.com>
-Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
-To:     Kent Overstreet <kent.overstreet@linux.dev>
-Cc:     Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@suse.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Suren Baghdasaryan <surenb@google.com>,
+        Wed, 31 Aug 2022 16:59:44 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2082.outbound.protection.outlook.com [40.107.92.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8500DDC0A4
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 13:59:42 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=R2tNn+wPrxt5HBXezQgbrKpnEPUbmeIHE5s1DVSZoh7U/PgaMMDxnF6UcJlwxMtnJE2jn5tI3fjC8fUuoijVJLZoGye+TJxRXU3PmbneXWYlkT7uJM5Q19pdB2LewavejHbhVL1fW4yFPycFiaRV1a9vNMgVePvLhP81Ph6972JrUdPH+O70voWhuR+N1mKO2poNiGQ/vAFH1eNOAyNtnu13PkHI7gdQgUSvvaqEIwqD8FgEb2e8NHXGpl1aV64zIkEDh0zGgt/QrP2plROAC4OzyDj/oYCZXK6Z15J8micuRHAfMh/efsuKsKASmdikdOHjE82i2n+U2KZ2B3PP3A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6TpELw+MjTniD2rOJfQPekXTuZA0t5BD6ZWhfXrZkDQ=;
+ b=U234iA06j5xdBQBdxYDOVe3yf5w7Ezsr5eUfzutIVkZEDUxnq4IAJlt7+LBfl3xz1iWzjQ5crI8c/4MWUh6thN0osLUuAReTdSiDH9dQqQLJecjUnr8le4UmiubtBOfROEGlCjQ59o/n9/ULX9s5MHzN8oyQsyScrOuaPNoTZ18b2RmkvvcmgyfmhBfaVHdbFCL0db0lHV+Cm+yIh2Sflq7lxI2k7mEmOOIY5i4MhXzR1StAGSdcYRRMxGwr49Sa6zNorcoKGsizpmZ7STvTIms9gWqPVfdFiiKXsrJKeGmgei/60Gku6sVMau1Xjbd7WuG6OtbYI1DInQhYfnXXTw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6TpELw+MjTniD2rOJfQPekXTuZA0t5BD6ZWhfXrZkDQ=;
+ b=Iykvdeq1GTGIYPo56Fndt/Rgepr/sIGUVOMy0CQCWJFgVtHq9yKoO+86k+gaFRv4FwwwWdZDETT1bbDmVn0FJwJSulXFJFNNGqYD/e3/CMpiGSi/DtKAXCQxsBeh4TVU6FktQ1HEzVF8cO9AucbrOWgm2HRd0KbP5GTjmTL4Ze16O4ie2yASIS5Ttm51Mppoc5iAJ5ALjsegIpV8HJ1hHlLmEuv9OQfAjBsmxnI0TyXm6MEAS9wI6uFc2i/91UqrwsRfZhrMiCsKRJtf4OO8cfQn0nfAHIeUGcvrVZK9H5TKlG4+FRjv7/M5o5IXaBhO3IBhOCUAsIc4c7QCLifYyA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BY5PR12MB4130.namprd12.prod.outlook.com (2603:10b6:a03:20b::16)
+ by SJ0PR12MB6830.namprd12.prod.outlook.com (2603:10b6:a03:47c::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Wed, 31 Aug
+ 2022 20:59:40 +0000
+Received: from BY5PR12MB4130.namprd12.prod.outlook.com
+ ([fe80::508d:221c:9c9e:e1a5]) by BY5PR12MB4130.namprd12.prod.outlook.com
+ ([fe80::508d:221c:9c9e:e1a5%9]) with mapi id 15.20.5588.010; Wed, 31 Aug 2022
+ 20:59:40 +0000
+Message-ID: <f69772bf-1f42-fd0a-f23a-ed933888adc8@nvidia.com>
+Date:   Wed, 31 Aug 2022 13:59:38 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH v1] mm/ksm: update stale comment in write_protect_page()
+Content-Language: en-US
+To:     Yang Shi <shy828301@gmail.com>,
+        David Hildenbrand <david@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
         Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>, dave@stgolabs.net,
-        Matthew Wilcox <willy@infradead.org>, liam.howlett@oracle.com,
-        void@manifault.com, juri.lelli@redhat.com, ldufour@linux.ibm.com,
-        Peter Xu <peterx@redhat.com>,
-        David Hildenbrand <david@redhat.com>, axboe@kernel.dk,
-        mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org,
-        changbin.du@intel.com, ytcoode@gmail.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        Steven Rostedt <rostedt@goodmis.org>, bsegall@google.com,
-        bristot@redhat.com, vschneid@redhat.com,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>, 42.hyeyoo@gmail.com,
-        glider@google.com, elver@google.com, dvyukov@google.com,
-        Shakeel Butt <shakeelb@google.com>,
-        Muchun Song <songmuchun@bytedance.com>, arnd@arndb.de,
-        jbaron@akamai.com, David Rientjes <rientjes@google.com>,
-        minchan@google.com, kaleshsingh@google.com,
-        kernel-team@android.com, Linux-MM <linux-mm@kvack.org>,
-        iommu@lists.linux.dev, kasan-dev@googlegroups.com,
-        io-uring@vger.kernel.org, linux-arch@vger.kernel.org,
-        xen-devel@lists.xenproject.org, linux-bcache@vger.kernel.org,
-        linux-modules@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Hugh Dickins <hughd@google.com>, Peter Xu <peterx@redhat.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+References: <20220831083024.37138-1-david@redhat.com>
+ <CAHbLzkqeDAnCdt3q4E2RZw64QEzVaO_pseR3VaoHUhB+rZFcZQ@mail.gmail.com>
+ <4845ae71-b7dd-1707-ebc3-2eb3521e7fa0@redhat.com>
+ <CAHbLzkoMMWAgai2bvgu7y5EAcKOhhx3gK+OA4v2+kOHBW4cauw@mail.gmail.com>
+ <ab41f458-eb0f-5edb-ccab-643bf00d5110@redhat.com>
+ <CAHbLzkpFqSBTv3HVye4UCKj93NPW8VRqCGZO1p5hk_wfNA_GtQ@mail.gmail.com>
+ <94c3217d-df73-2b6b-21f0-95baf117c584@redhat.com>
+ <CAHbLzkp+HNmz7hGS5uDrfDDW0HpSj5Z+xmmkRbwvgn1qYk8Btg@mail.gmail.com>
+From:   John Hubbard <jhubbard@nvidia.com>
+In-Reply-To: <CAHbLzkp+HNmz7hGS5uDrfDDW0HpSj5Z+xmmkRbwvgn1qYk8Btg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BYAPR06CA0049.namprd06.prod.outlook.com
+ (2603:10b6:a03:14b::26) To BY5PR12MB4130.namprd12.prod.outlook.com
+ (2603:10b6:a03:20b::16)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 06007733-a662-4867-896d-08da8b93b90b
+X-MS-TrafficTypeDiagnostic: SJ0PR12MB6830:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pfRWgIM2q9RdmOWQk28fR6NN+PU+wB2tJskHUOBUTIlO2hzSN9foMDqDmiNTt8uO/dnSXF0RwT6NNI2rL+u6oAI+4WMmEhXcDN4O+lnHHVnB63HNp5ItVKRiENdEYyswhT+TXGSsq32d/vNNNKDzxVA3pZ4qLf9jSXd3ZRaFHIUWIR/hdvfwXILhKu79Lkb3mr29rIuQdQy2rOB9Q76f4i8DaV+h6shKE9ZBb8b766wt3X/cowI5zQz6CcACmJZPyZCcczHT7s2Jr4imVBbJLqCS3sjdjJE6bzCikKy+1iMTW6vxdRtzt44P6aH+4SFKCz8Wob7QTq1wSowKXlyrV8ORw6F2MvQQCTQAeUUJZVlr89DoP6KTlbBKHFh/FEVy8X2Nd/G7VZyPdu9F42yPZ8AKjzK+ZpFF6h+qT+pdgvg1mUo4aSqv+ugWTAd54wHVo70RXmKmad4giwuvo7IobAdjGAmZpAPk/bxqfaDIleEIjPtPjXXwK0t85QDnsP81irwDMiNAEuMDhVwFhmFFTbNrznt38rQpO70bxtRHShFll1vtgMoYbiIrd18zA017Ikyw5LAXhvxOW6jlg7Dui/WrtPkNZ3lcO/2NRT8QyGFLDrLQg3doHqq1tjAuhPADeCqREvwAGdZkvMMH7aD8nVI7n3SNfPVZLXhCe8Zk89jbzC1L8Pd5BtPT23CRZNV3jJFL/vnmxWoetPMHNbl+Yf6a4Lu0HDipTrGK1WHRFo+X1nRGZEge+h3pkXudTrYp2XpTE/yLZHS0qQxGNPOQQoDxnmgoF4uy29SF1CTCxCs=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4130.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(136003)(376002)(366004)(39860400002)(346002)(110136005)(38100700002)(31696002)(36756003)(4326008)(66476007)(66946007)(2616005)(316002)(54906003)(6486002)(31686004)(66556008)(86362001)(8676002)(186003)(2906002)(53546011)(83380400001)(8936002)(5660300002)(478600001)(6506007)(26005)(6512007)(41300700001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bnJjUHpmREhTREZDRGluTG11c1pxUklqYTREaUhNQit1dkRocTdDUWp4VFo1?=
+ =?utf-8?B?eW11MGNZRHAxaUx0alFOY3U3ckFTOUJ3elVCeGc5aUdyM0ZRWFQ4ZDU5L0lV?=
+ =?utf-8?B?cFBNZXRXV2VFYzNqcmJrVmR2c3VZK1dHb1hKWjZXd1dBV1lvRmNmc0pMdHZi?=
+ =?utf-8?B?N1h6aFJ6TzA0NFBDM29TaC85KzNWSlVEZU1BR0pmbEdXZ21idTMxZkVrYjdY?=
+ =?utf-8?B?TWVwSHJLUUhPeUFzOVVpdjhzc1JrclhRYjVzZklwK0pycGNpcjZ1VDl3S3lR?=
+ =?utf-8?B?ZnVwK3lza2RLNHNTdXBjQ0NJancrUXIxbTV0SXh6ZFlMVW9CMmZ1THAwSUkz?=
+ =?utf-8?B?dmY2ZEdkYUpOcHJXWjlaL2xCYVVoUkxCZWQ5TUdPRzRmTFFwbEhBMWk0ZmZF?=
+ =?utf-8?B?eHR5SG9qbDNxb0lqN0tJeDl3NkZGclFTOTdCS1RmK2pwN3FYSjNmdGIyT3hY?=
+ =?utf-8?B?azlQZzBOUlB3WXpRRWdkSGlhMXpIRm1TZTZCZDR5aWpIUUhCemVKaGh2dnNM?=
+ =?utf-8?B?WjU0ZEtNeS9wdFFrQWM5bXFMUDhjR1hGRjNxUmlIdXpjSkR1ZDM2NEJDYTBT?=
+ =?utf-8?B?UU8ycGVWSXNSYU9sa1FZTVZEMG05YWFsN2N4T08wOEJGQ3R3M25zZmdBQ3RG?=
+ =?utf-8?B?VkRWdE01UnNJRmg4Q283NmUvbDNrNlZiM2M4RXpFUitKc3J4cHNEMjd2MFkz?=
+ =?utf-8?B?NFZzMW1LUjEybnR2emJ5eDhjcG5QYXdicnBqMmJ5V3FjNVpIaEI0MnJhZWoy?=
+ =?utf-8?B?aFpYcnM4R04xdXZiekJMQlJ5cTlMSk85dVFuNGJCSjJRWjhjRk5HWTVzeDBT?=
+ =?utf-8?B?WXpsaklhWlBvWlhRMmlkc1A2NHliazY2WUpjZXd6ZnFtS2d3ZXRyR01GRnIr?=
+ =?utf-8?B?MjFTRFh5OWpNcXFxb2ttMjNBWld3SDFKN1hIaHNGaytJUDdBbmk2OGpEcVVO?=
+ =?utf-8?B?a0tjN1NvMXpjTHdLY01ra0N0Z21oWnZkbUNmQ2RweTdtK0lreFNrNWpjS25r?=
+ =?utf-8?B?WTJGNGp6RXp3TWswY1JhVnRIczFjM041UVRFZENxU1RUSU5FR3RBTHZjNXJj?=
+ =?utf-8?B?c3NTeWhOZzJrSDNMdTN2MnFVNXhtczQ0WmZkeWZONmJBZnNaVmFhVjMwUllL?=
+ =?utf-8?B?VXNnVzBMUWx4eVcyOVNPdStWYkpYOTNsNkQrZDkxY1RwVy8ySVQza01SZzJP?=
+ =?utf-8?B?eVp4RzZJYzFvRVdxaGhFVURCckdleEs1OW5wYTFNM1M1d2h5WVRYcHhSamFB?=
+ =?utf-8?B?RExmQ3NNcERZeXJZdk1vRHoyeHhBVjROczRhd1p4QUdmVWc2UWhubVdVaU5k?=
+ =?utf-8?B?cFc5eUhqNUZPVElmcEdqQXptdzg2OU1tek1YY3JjS3ArZkgwYkQ1L1pWL2tV?=
+ =?utf-8?B?RDlpaWhDZGpSZVlyeFdkYkl5SzNuMTR3cVN0dkNINmtsU01CU0krT1cyQnlL?=
+ =?utf-8?B?aUhaYnJKQ1RJTUR0N0k4MWYzT24rU1lkbzZFbHk5Q0lMMHl3OWltaFF1Vkhn?=
+ =?utf-8?B?MGpwZ0VndkF2ZndxYkRlRVhlQWtwRWF0d3N5dkdWb2tTV0x6MFZUczJpeThj?=
+ =?utf-8?B?WG9TMVZqeis0eXF0b3doTlZ1aGNESTBvNHJjWlQzYXFBQnJXUWUrQTRhMWxP?=
+ =?utf-8?B?NDcyTnVJU0lVSUhVUDFmVHd5U3RLZFdUemt5eWhKYW1xVDdSL2JGd25BdFJM?=
+ =?utf-8?B?K1NRLzJsazFqQ0sxUXpSb3p4OHdBMk5zTVhOdEtvMzVDOFBRREZyd2ozOU1N?=
+ =?utf-8?B?alR4QzBDTkJ5RmsxRnZUN1ZjamtxUHFteHE1cXdLOXNuK1dYUCthdnpja0xl?=
+ =?utf-8?B?YWpBbC9XbHpOSzNDd0lPSittdnlCQVRpR3ZZb2RhT2JnaE0zaHZJNk9way9W?=
+ =?utf-8?B?ZHhVWEU4T05KQk5xTmY3T3h6d2xvUUt2M1lyUVZZQWVoRGR1MzRmcEtUeHZh?=
+ =?utf-8?B?N1d6MENQVEFKQzV3LzhoOVFuM0RleUNtai9LR0lsd3lUUUVjU3l1VURCeS9F?=
+ =?utf-8?B?QjNld3l3TFZKS3I5Q3Rzd21tRTI3bVFyK0hoMzBLVFdTVHhkRWtlZ0dYYlBn?=
+ =?utf-8?B?WFZUOTd3MXdJZnpnK1lyT0pPNUg2UXQ0aVMyR2ZBcjROQnVpUE03N0JXT0Fn?=
+ =?utf-8?Q?2ph3yLdcfFUwqnJagaOcH2hP9?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 06007733-a662-4867-896d-08da8b93b90b
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4130.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2022 20:59:40.8590
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: AarqRiyoqCAgAsTp2DBz848EZ39YNl4huGq5oAGbQ/q66/kMCd6HP2Ll3B2rfGFT1oYzU/acUqfypwsGQ9fkSA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB6830
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 12:02 PM Kent Overstreet
-<kent.overstreet@linux.dev> wrote:
->
-> On Wed, Aug 31, 2022 at 12:47:32PM +0200, Michal Hocko wrote:
-> > On Wed 31-08-22 11:19:48, Mel Gorman wrote:
-> > > Whatever asking for an explanation as to why equivalent functionality
-> > > cannot not be created from ftrace/kprobe/eBPF/whatever is reasonable.
-> >
-> > Fully agreed and this is especially true for a change this size
-> > 77 files changed, 3406 insertions(+), 703 deletions(-)
->
-> In the case of memory allocation accounting, you flat cannot do this with ftrace
-> - you could maybe do a janky version that isn't fully accurate, much slower,
-> more complicated for the developer to understand and debug and more complicated
-> for the end user.
->
-> But please, I invite anyone who's actually been doing this with ftrace to
-> demonstrate otherwise.
->
-> Ftrace just isn't the right tool for the job here - we're talking about adding
-> per callsite accounting to some of the fastest fast paths in the kernel.
->
-> And the size of the changes for memory allocation accounting are much more
-> reasonable:
->  33 files changed, 623 insertions(+), 99 deletions(-)
->
-> The code tagging library should exist anyways, it's been open coded half a dozen
-> times in the kernel already.
->
-> And once we've got that, the time stats code is _also_ far simpler than doing it
-> with ftrace would be. If anyone here has successfully debugged latency issues
-> with ftrace, I'd really like to hear it. Again, for debugging latency issues you
-> want something that can always be on, and that's not cheap with ftrace - and
-> never mind the hassle of correlating start and end wait trace events, builting
-> up histograms, etc. - that's all handled here.
->
-> Cheap, simple, easy to use. What more could you want?
->
+On 8/31/22 12:43, Yang Shi wrote:
+>>> It looks powerpc does issue IPI for pmd flush. But arm64 doesn't IIRC.
+>>>
+>>> So maybe we should implement pmdp_collapse_flush() for those arches to
+>>> issue IPI.
+>>
+>> ... or find another way to detect and handle this in GUP-fast?
+>>
+>> Not sure if, for handling PMDs, it could be sufficient to propagate the
+>> pmdp pointer + value and double check that the values didn't change.
+> 
+> Should work too, right before pinning the page.
+> 
+> pmdp_collapse_flush() is actually just called by khugepaged, so arch
+> specific implementation should not be a problem and we avoid making
+> gup fast more complicated.
+> 
 
-This is very interesting work! Do you have any data about the overhead
-this introduces, especially in a production environment? I am
-especially interested in memory allocations tracking and detecting
-leaks.
-(Sorry if you already posted this kind of data somewhere that I missed)
+And just to pile on, about that gup fast complexity: depending upon IPIs
+added a lot of complexity, not just because of the IPI dependency, but
+more importantly because only some arches even *have* IPIs. So an
+entirely different set of reasoning has to be used *in addition* to
+working through the IPI story. And sure enough, we can see the fallout:
+you are uncovering lots of half-correct comments in that area.
+
+So getting rid of the dependency on IPIs in gup fast would go a long way
+to simplifying it, and maybe even improving overall CPU load (insert
+some hand-wavy notes here about IPIs being worse than things like RCU).
+
+But the real win is in the complexity reduction in gup fast.
+
+
+thanks,
+
+-- 
+John Hubbard
+NVIDIA
