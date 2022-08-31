@@ -2,127 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10341ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:47:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC6DFECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:48:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230251AbiHaKrj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 06:47:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42354 "EHLO
+        id S230341AbiHaKs3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 06:48:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229607AbiHaKrg (ORCPT
+        with ESMTP id S229607AbiHaKsZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 06:47:36 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5478FC9276;
-        Wed, 31 Aug 2022 03:47:35 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 130151F8B4;
-        Wed, 31 Aug 2022 10:47:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1661942854; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=aUzDVspS6J0BJDe/V//gF5+N5LyMdFoI/5xdVcYfQNM=;
-        b=hx3jXnZOgBCn3O0WO5J/LlyY4IiYG5gqZXnpoO+NYEqMohd/U77AF74Flu0p9pljpDRGno
-        sMp8XYRkBw5hCVEmHJBlQYPVx0BIUes6WerAjPMj8ahTkMIBlfO+J5Y3xm3LewxX5zGMbB
-        lhArCO8EcmvjMet8opjkPdqbWHMxN8I=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id DA44113A7C;
-        Wed, 31 Aug 2022 10:47:33 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 3HtANUU8D2PVawAAMHmgww
-        (envelope-from <mhocko@suse.com>); Wed, 31 Aug 2022 10:47:33 +0000
-Date:   Wed, 31 Aug 2022 12:47:32 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Mel Gorman <mgorman@suse.de>
-Cc:     Kent Overstreet <kent.overstreet@linux.dev>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        akpm@linux-foundation.org, vbabka@suse.cz, hannes@cmpxchg.org,
-        roman.gushchin@linux.dev, dave@stgolabs.net, willy@infradead.org,
-        liam.howlett@oracle.com, void@manifault.com, juri.lelli@redhat.com,
-        ldufour@linux.ibm.com, peterx@redhat.com, david@redhat.com,
-        axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
-        nathan@kernel.org, changbin.du@intel.com, ytcoode@gmail.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
-        vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
-        iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
-        elver@google.com, dvyukov@google.com, shakeelb@google.com,
-        songmuchun@bytedance.com, arnd@arndb.de, jbaron@akamai.com,
-        rientjes@google.com, minchan@google.com, kaleshsingh@google.com,
-        kernel-team@android.com, linux-mm@kvack.org, iommu@lists.linux.dev,
-        kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
-        linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
-        linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
-Message-ID: <Yw88RFuBgc7yFYxA@dhcp22.suse.cz>
-References: <20220830214919.53220-1-surenb@google.com>
- <Yw8P8xZ4zqu121xL@hirez.programming.kicks-ass.net>
- <20220831084230.3ti3vitrzhzsu3fs@moria.home.lan>
- <20220831101948.f3etturccmp5ovkl@suse.de>
+        Wed, 31 Aug 2022 06:48:25 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA10EC9E81;
+        Wed, 31 Aug 2022 03:48:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1661942902; x=1693478902;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=MUC2g2Ul/jEILmkvZfsyyrU9fgVCsWlJId9WqkZpeu4=;
+  b=CPH/FPMJOPK6oaSfq1LxV6vRZpZZq/KiDEyaSkkbyTUbVm24w5OeloHw
+   B5erSdIwpgukXgBSIVkjGlpoFn7uGGMcqxYnVY8DgEIIzfGwUgSrGlduE
+   3MyQnJDdxVrP8YAhRgRIt3GVH6k+4CwyFC9fWlrdIL/FPmOR8vyVO4jrO
+   ztDPGhZ7ndcypw07mlGuPO3jMz+Z3ZxwOyQrLLzBxDE2QcVoduAoH+gxA
+   hwUNFX0IpcrqgcRaMNFGQZ4x3qKVR3s+mph2MCS1CI18eRAyLXKH1amMA
+   6Gzx/Ims0Se/QXa++yJQTZtiKGFuzMc3Y1WTVelYf/FY5swbpY301cSUi
+   g==;
+X-IronPort-AV: E=Sophos;i="5.93,277,1654585200"; 
+   d="scan'208";a="171750964"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 Aug 2022 03:48:21 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Wed, 31 Aug 2022 03:48:20 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
+ Transport; Wed, 31 Aug 2022 03:48:19 -0700
+Date:   Wed, 31 Aug 2022 12:52:37 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <srinivas.kandagatla@linaro.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH v3 2/2] nvmem: lan9662-otp: add support.
+Message-ID: <20220831105237.ot5aaawnrwjqmjgj@soft-dev3-1.localhost>
+References: <20220831064238.102267-1-horatiu.vultur@microchip.com>
+ <20220831064238.102267-3-horatiu.vultur@microchip.com>
+ <1ddf261e-55fb-e30c-93b0-efb9bc0987b3@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <20220831101948.f3etturccmp5ovkl@suse.de>
+In-Reply-To: <1ddf261e-55fb-e30c-93b0-efb9bc0987b3@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 31-08-22 11:19:48, Mel Gorman wrote:
-> On Wed, Aug 31, 2022 at 04:42:30AM -0400, Kent Overstreet wrote:
-> > On Wed, Aug 31, 2022 at 09:38:27AM +0200, Peter Zijlstra wrote:
-> > > On Tue, Aug 30, 2022 at 02:48:49PM -0700, Suren Baghdasaryan wrote:
-> > > > ===========================
-> > > > Code tagging framework
-> > > > ===========================
-> > > > Code tag is a structure identifying a specific location in the source code
-> > > > which is generated at compile time and can be embedded in an application-
-> > > > specific structure. Several applications of code tagging are included in
-> > > > this RFC, such as memory allocation tracking, dynamic fault injection,
-> > > > latency tracking and improved error code reporting.
-> > > > Basically, it takes the old trick of "define a special elf section for
-> > > > objects of a given type so that we can iterate over them at runtime" and
-> > > > creates a proper library for it.
-> > > 
-> > > I might be super dense this morning, but what!? I've skimmed through the
-> > > set and I don't think I get it.
-> > > 
-> > > What does this provide that ftrace/kprobes don't already allow?
-> > 
-> > You're kidding, right?
-> 
-> It's a valid question. From the description, it main addition that would
-> be hard to do with ftrace or probes is catching where an error code is
-> returned. A secondary addition would be catching all historical state and
-> not just state since the tracing started.
-> 
-> It's also unclear *who* would enable this. It looks like it would mostly
-> have value during the development stage of an embedded platform to track
-> kernel memory usage on a per-application basis in an environment where it
-> may be difficult to setup tracing and tracking. Would it ever be enabled
-> in production? Would a distribution ever enable this? If it's enabled, any
-> overhead cannot be disabled/enabled at run or boot time so anyone enabling
-> this would carry the cost without never necessarily consuming the data.
-> 
-> It might be an ease-of-use thing. Gathering the information from traces
-> is tricky and would need combining multiple different elements and that
-> is development effort but not impossible.
-> 
-> Whatever asking for an explanation as to why equivalent functionality
-> cannot not be created from ftrace/kprobe/eBPF/whatever is reasonable.
+The 08/31/2022 10:29, Krzysztof Kozlowski wrote:
 
-Fully agreed and this is especially true for a change this size
-77 files changed, 3406 insertions(+), 703 deletions(-)
+Hi Krzysztof,
+
+> 
+> On 31/08/2022 09:42, Horatiu Vultur wrote:
+> 
+> > +static const struct of_device_id lan9662_otp_match[] = {
+> > +     { .compatible = "microchip,lan9662-otp", },
+> > +     { .compatible = "microchip,lan9668-otp", },
+> 
+> This is still wrong, does not match your bindings at all and still
+> duplicates entries without driver data. One entry - 9662.
+
+I have look at some other drivers, where I can see they don't have any
+driver data. For example [1] and the bindings are here [2].
+
+[1] https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/ti/cpsw_new.c#L1832
+[2] https://elixir.bootlin.com/linux/latest/source/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml#L23
+
+Is this also wrong, or I still can't understand how the bindings are
+working?
+
+If I put only one entry:
+---
+static const struct of_device_id lan9662_otp_match[] = {
+     { .compatible = "microchip,lan9662-otp", },
+---
+
+Wouldn't be a problem that the binding mentions also lan9668?
+
+> 
+> Best regards,
+> Krzysztof
 
 -- 
-Michal Hocko
-SUSE Labs
+/Horatiu
