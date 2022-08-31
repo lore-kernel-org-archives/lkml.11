@@ -2,150 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72ADBECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 07:13:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A0DEECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 07:13:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229914AbiHaHNF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 03:13:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56572 "EHLO
+        id S230420AbiHaHNv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 03:13:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229998AbiHaHLu (ORCPT
+        with ESMTP id S230202AbiHaHMk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 03:11:50 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1577220E0;
-        Wed, 31 Aug 2022 00:10:12 -0700 (PDT)
-Received: from canpemm500005.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MHZyb1BlmzHnXc;
-        Wed, 31 Aug 2022 15:08:23 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by canpemm500005.china.huawei.com
- (7.192.104.229) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 31 Aug
- 2022 15:10:09 +0800
-From:   Zhang Yi <yi.zhang@huawei.com>
-To:     <linux-ext4@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <cluster-devel@redhat.com>,
-        <ntfs3@lists.linux.dev>, <ocfs2-devel@oss.oracle.com>,
-        <reiserfs-devel@vger.kernel.org>
-CC:     <jack@suse.cz>, <tytso@mit.edu>, <akpm@linux-foundation.org>,
-        <axboe@kernel.dk>, <viro@zeniv.linux.org.uk>,
-        <rpeterso@redhat.com>, <agruenba@redhat.com>,
-        <almaz.alexandrovich@paragon-software.com>, <mark@fasheh.com>,
-        <dushistov@mail.ru>, <hch@infradead.org>, <yi.zhang@huawei.com>,
-        <chengzhihao1@huawei.com>, <yukuai3@huawei.com>
-Subject: [PATCH 09/14] reiserfs: replace ll_rw_block()
-Date:   Wed, 31 Aug 2022 15:21:06 +0800
-Message-ID: <20220831072111.3569680-10-yi.zhang@huawei.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220831072111.3569680-1-yi.zhang@huawei.com>
-References: <20220831072111.3569680-1-yi.zhang@huawei.com>
+        Wed, 31 Aug 2022 03:12:40 -0400
+Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A309C8FD5C;
+        Wed, 31 Aug 2022 00:10:48 -0700 (PDT)
+Received: by mail-qv1-xf32.google.com with SMTP id kh8so10458111qvb.1;
+        Wed, 31 Aug 2022 00:10:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=4H6Ap5iYRv7tpvy1RQr8BbbT4SuQAg4q/F9AMK7kUsE=;
+        b=nQsvUMM7gPD0MfxFck6Gx7rnh5GgDRrLnxF5+lzgvgGP2W0neOwAOpnIkihVmYmhnj
+         g/QozrVUh/ut5/ZBecYX4GKEHTXw6Nd1YMXccL6CHC8ZMtaEnuR4keOMXxnei7fElw6W
+         oS0orSOhbkNbPdl1lPwSkH5VxGgZWZ5Ewd6Pn/lfBPC+HxtHLc3g/VwDqZbfk1v1qB28
+         mRyFWEfi1nINqBgE6N0zuT4nozA0kkypJeIzTRYxfkeq/uypYJRWO0sj4StHJQlYNA2v
+         GrU/f6K5aRfZpApcdRyrFGNv/mUenugIMbl9ryj4q948MOTJI/qKaLfKS93VRBJbqCk0
+         N8Jw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=4H6Ap5iYRv7tpvy1RQr8BbbT4SuQAg4q/F9AMK7kUsE=;
+        b=CFobw5+Bi1aaSyYdmueK8fhlqN/iL2rOSe+p2iLoosRFCav9XNCcNS/ZvcTOe0eaZl
+         d4hferDFpiFr1rZOJDexIUlF7CEHDSsBDSUFknnRRUgWCsytONcJB0u5exqe1aqaaT0n
+         M6GWsK/9Ydqvq1asswKXFRpX9RypyJGvx7lPveRc2dUALwGTbqDmBiyC+pHOP+HAHVST
+         +GSRCCMdnhL5BVMoo2W7MWqKXgbh0bsltFJpZuvEnJoDsnp7AD41XvG+/ABZbzHNh+UA
+         HmtEPiWGfHKQKzvVVX8EUap1CZ8T/72Rqc/6hTIGRKec3HNg/Jpur5DSkHzyrtW267Ml
+         Mn+Q==
+X-Gm-Message-State: ACgBeo3vaHQxPo9d9/k/P88ZTO7xgjSAyn8fPkw3iFEb67l+LcGZXXw0
+        +k0jjJ0OVrx4L8tLkHsO132inMg7LlqCv3phgq8=
+X-Google-Smtp-Source: AA6agR6pVIwGsshTqW4W1Ww2G4fQrnbCfhAxvo2a0nXNTfKZi/6YL5FJH3r6Gmd9tQShyqtgATCNZIDlS+4HFxhktbc=
+X-Received: by 2002:a05:6214:27e3:b0:497:f73:7c2 with SMTP id
+ jt3-20020a05621427e300b004970f7307c2mr18196483qvb.1.1661929837495; Wed, 31
+ Aug 2022 00:10:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500005.china.huawei.com (7.192.104.229)
-X-CFilter-Loop: Reflected
+References: <20220817144045.3206-1-ubizjak@gmail.com> <Yv0QFZUdePurfjKh@google.com>
+In-Reply-To: <Yv0QFZUdePurfjKh@google.com>
+From:   Uros Bizjak <ubizjak@gmail.com>
+Date:   Wed, 31 Aug 2022 09:10:26 +0200
+Message-ID: <CAFULd4bVQ73Cur85Oj=oXHiMRvfrxkAVy=V4TfHcbtNWbqOQzw@mail.gmail.com>
+Subject: Re: [PATCH] KVM/VMX: Do not declare vmread_error asmlinkage
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ll_rw_block() is not safe for the sync read/write path because it cannot
-guarantee that submitting read/write IO if the buffer has been locked.
-We could get false positive EIO after wait_on_buffer() in read path if
-the buffer has been locked by others. So stop using ll_rw_block() in
-reiserfs. We also switch to new bh_readahead_batch() helper for the
-buffer array readahead path.
+On Wed, Aug 17, 2022 at 5:58 PM Sean Christopherson <seanjc@google.com> wrote:
+>
+> +PeterZ
+>
+> On Wed, Aug 17, 2022, Uros Bizjak wrote:
+> > There is no need to declare vmread_error asmlinkage, its arguments
+> > can be passed via registers for both, 32-bit and 64-bit targets.
+> > Function argument registers are considered call-clobbered registers,
+> > they are saved in the trampoline just before the function call and
+> > restored afterwards.
+>
+> I'm officially confused.  What's the purpose of asmlinkage when used in the kernel?
+> Is it some historical wart that's no longer truly necessary and only causes pain?
+>
+> When I wrote this code, I thought that the intent was that it should be applied to
+> any and all asm => C function calls.  But that's obviously not required as there
+> are multiple instances of asm code calling C functions without annotations of any
+> kind.
 
-Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
----
- fs/reiserfs/journal.c | 11 ++++++-----
- fs/reiserfs/stree.c   |  4 ++--
- fs/reiserfs/super.c   |  4 +---
- 3 files changed, 9 insertions(+), 10 deletions(-)
+It is the other way around. As written in coding-style.rst:
 
-diff --git a/fs/reiserfs/journal.c b/fs/reiserfs/journal.c
-index 94addfcefede..699b1b8d5b73 100644
---- a/fs/reiserfs/journal.c
-+++ b/fs/reiserfs/journal.c
-@@ -868,7 +868,7 @@ static int write_ordered_buffers(spinlock_t * lock,
- 		 */
- 		if (buffer_dirty(bh) && unlikely(bh->b_page->mapping == NULL)) {
- 			spin_unlock(lock);
--			ll_rw_block(REQ_OP_WRITE, 1, &bh);
-+			write_dirty_buffer(bh, 0);
- 			spin_lock(lock);
- 		}
- 		put_bh(bh);
-@@ -1054,7 +1054,7 @@ static int flush_commit_list(struct super_block *s,
- 		if (tbh) {
- 			if (buffer_dirty(tbh)) {
- 		            depth = reiserfs_write_unlock_nested(s);
--			    ll_rw_block(REQ_OP_WRITE, 1, &tbh);
-+			    write_dirty_buffer(tbh, 0);
- 			    reiserfs_write_lock_nested(s, depth);
- 			}
- 			put_bh(tbh) ;
-@@ -2240,7 +2240,7 @@ static int journal_read_transaction(struct super_block *sb,
- 		}
- 	}
- 	/* read in the log blocks, memcpy to the corresponding real block */
--	ll_rw_block(REQ_OP_READ, get_desc_trans_len(desc), log_blocks);
-+	bh_read_batch(log_blocks, get_desc_trans_len(desc));
- 	for (i = 0; i < get_desc_trans_len(desc); i++) {
- 
- 		wait_on_buffer(log_blocks[i]);
-@@ -2342,10 +2342,11 @@ static struct buffer_head *reiserfs_breada(struct block_device *dev,
- 		} else
- 			bhlist[j++] = bh;
- 	}
--	ll_rw_block(REQ_OP_READ, j, bhlist);
-+	bh = bhlist[0];
-+	bh_read_nowait(bh, 0);
-+	bh_readahead_batch(&bhlist[1], j - 1, 0);
- 	for (i = 1; i < j; i++)
- 		brelse(bhlist[i]);
--	bh = bhlist[0];
- 	wait_on_buffer(bh);
- 	if (buffer_uptodate(bh))
- 		return bh;
-diff --git a/fs/reiserfs/stree.c b/fs/reiserfs/stree.c
-index 9a293609a022..84c12a1947b2 100644
---- a/fs/reiserfs/stree.c
-+++ b/fs/reiserfs/stree.c
-@@ -579,7 +579,7 @@ static int search_by_key_reada(struct super_block *s,
- 		if (!buffer_uptodate(bh[j])) {
- 			if (depth == -1)
- 				depth = reiserfs_write_unlock_nested(s);
--			ll_rw_block(REQ_OP_READ | REQ_RAHEAD, 1, bh + j);
-+			bh_readahead(bh[j], REQ_RAHEAD);
- 		}
- 		brelse(bh[j]);
- 	}
-@@ -685,7 +685,7 @@ int search_by_key(struct super_block *sb, const struct cpu_key *key,
- 			if (!buffer_uptodate(bh) && depth == -1)
- 				depth = reiserfs_write_unlock_nested(sb);
- 
--			ll_rw_block(REQ_OP_READ, 1, &bh);
-+			bh_read_nowait(bh, 0);
- 			wait_on_buffer(bh);
- 
- 			if (depth != -1)
-diff --git a/fs/reiserfs/super.c b/fs/reiserfs/super.c
-index c88cd2ce0665..8b1db82b6949 100644
---- a/fs/reiserfs/super.c
-+++ b/fs/reiserfs/super.c
-@@ -1702,9 +1702,7 @@ static int read_super_block(struct super_block *s, int offset)
- /* after journal replay, reread all bitmap and super blocks */
- static int reread_meta_blocks(struct super_block *s)
- {
--	ll_rw_block(REQ_OP_READ, 1, &SB_BUFFER_WITH_SB(s));
--	wait_on_buffer(SB_BUFFER_WITH_SB(s));
--	if (!buffer_uptodate(SB_BUFFER_WITH_SB(s))) {
-+	if (bh_read(SB_BUFFER_WITH_SB(s), 0)) {
- 		reiserfs_warning(s, "reiserfs-2504", "error reading the super");
- 		return 1;
- 	}
--- 
-2.31.1
+Large, non-trivial assembly functions should go in .S files, with corresponding
+C prototypes defined in C header files.  The C prototypes for assembly
+functions should use ``asmlinkage``.
 
+So, prototypes for *assembly functions* should use asmlinkage.
+
+That said, asmlinkage for i386 just switches ABI to the default
+stack-passing ABI. However, we are calling assembly files, so the
+argument handling in the callee is totally under our control and there
+is no need to switch ABIs. It looks to me that besides syscalls,
+asmlinkage is and should be used only for a large imported body of asm
+functions that use standard stack-passing ABI (e.g. x86 crypto and
+math-emu functions), otherwise it is just a burden to push and pop
+registers to/from stack for no apparent benefit.
+
+> And vmread_error() isn't the only case where asmlinkage appears to be a burden, e.g.
+> schedule_tail_wrapper() => schedule_tail() seems to exist purely to deal with the
+> side affect of asmlinkage generating -regparm=0 on 32-bit kernels.
+
+schedule_tail is external to the x86 arch directory, and for some
+reason marked asmlinkage. So, the call from asm must follow asmlinkage
+ABI.
+
+FYI, there is some discussion about asmlinkage on stackoverflow:
+
+https://stackoverflow.com/questions/61635931/does-asmlinkage-mean-stack-or-registers
+
+Uros.
