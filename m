@@ -2,98 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F119ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:21:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACFBFECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:24:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232113AbiHaOVm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 10:21:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51756 "EHLO
+        id S232047AbiHaOYG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 10:24:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232067AbiHaOVj (ORCPT
+        with ESMTP id S232169AbiHaOXf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 10:21:39 -0400
-Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id B4358B07E0
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 07:21:37 -0700 (PDT)
-Received: (qmail 191439 invoked by uid 1000); 31 Aug 2022 10:21:36 -0400
-Date:   Wed, 31 Aug 2022 10:21:36 -0400
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-usb@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Rob Herring <robh@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] USB: hcd: remove unused hcd_name variables
-Message-ID: <Yw9ucDxO7huIl/2W@rowland.harvard.edu>
-References: <20220831073032.1409291-1-gregkh@linuxfoundation.org>
+        Wed, 31 Aug 2022 10:23:35 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D320DABF30;
+        Wed, 31 Aug 2022 07:23:34 -0700 (PDT)
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27VCXBgo023511;
+        Wed, 31 Aug 2022 10:23:31 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3j7d48m9m5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 31 Aug 2022 10:23:31 -0400
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 27VENUpO026320
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 31 Aug 2022 10:23:30 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Wed, 31 Aug
+ 2022 10:23:29 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Wed, 31 Aug 2022 10:23:29 -0400
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 27VENHMm022580;
+        Wed, 31 Aug 2022 10:23:19 -0400
+From:   George Mois <george.mois@analog.com>
+To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <lucas.p.stankus@gmail.com>, George Mois <george.mois@analog.com>
+Subject: [PATCH v3 1/2] bindings: iio: accel: extend adxl313 documentation file
+Date:   Wed, 31 Aug 2022 17:35:37 +0300
+Message-ID: <20220831143538.65816-1-george.mois@analog.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220831073032.1409291-1-gregkh@linuxfoundation.org>
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: 6FdupHY1SRfZfOOMA7hr3pfRSdNh_LPQ
+X-Proofpoint-ORIG-GUID: 6FdupHY1SRfZfOOMA7hr3pfRSdNh_LPQ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-31_09,2022-08-31_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
+ impostorscore=0 priorityscore=1501 bulkscore=0 clxscore=1015
+ malwarescore=0 lowpriorityscore=0 mlxlogscore=999 mlxscore=0 adultscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208310072
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 09:30:32AM +0200, Greg Kroah-Hartman wrote:
-> In the commit 10174220f55a ("usb: reduce kernel log spam on driver
-> registration") a lot of unneeded kernel log messages were removed, but
-> that caused a few build warnings to show up where the variable
-> `hcd_name` was being set but never used anymore.
-> 
-> Resolve this by just removing these variables as they are not needed
-> anymore
-> 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Cc: Ard Biesheuvel <ardb@kernel.org>
-> Cc: Alan Stern <stern@rowland.harvard.edu>
-> Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Cc: Alim Akhtar <alim.akhtar@samsung.com>
-> Cc: Rob Herring <robh@kernel.org>
-> Cc: linux-usb@vger.kernel.org
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-samsung-soc@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Fixes: 10174220f55a ("usb: reduce kernel log spam on driver registration")
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> ---
->  drivers/usb/host/ehci-exynos.c   | 1 -
->  drivers/usb/host/ehci-platform.c | 2 --
->  drivers/usb/host/ohci-platform.c | 2 --
->  3 files changed, 5 deletions(-)
+Extend the adi,adxl313.yaml file with information regrding the
+ADXL312 and ADXL314 devices.
 
-This isn't enough, as you can see from this kernel test robot excerpt:
+Signed-off-by: George Mois <george.mois@analog.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+no changes in v3.
+ .../devicetree/bindings/iio/accel/adi,adxl313.yaml     | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-clang_recent_errors
-|-- arm-s5pv210_defconfig
-|   |-- drivers-usb-host-ehci-exynos.c:warning:unused-variable-hcd_name
-|   `-- drivers-usb-host-ohci-exynos.c:warning:unused-variable-hcd_name
-|-- hexagon-randconfig-r024-20220830
-|   |-- drivers-usb-host-ehci-atmel.c:warning:unused-variable-hcd_name
-|   |-- drivers-usb-host-ehci-exynos.c:warning:unused-variable-hcd_name
-|   |-- drivers-usb-host-ehci-orion.c:warning:unused-variable-hcd_name
-|   |-- 
-drivers-usb-host-ehci-platform.c:warning:unused-variable-hcd_name
-|   |-- drivers-usb-host-ehci-spear.c:warning:unused-variable-hcd_name
-|   `-- 
-drivers-usb-host-ohci-platform.c:warning:unused-variable-hcd_name
-|-- hexagon-randconfig-r036-20220830
-|   |-- drivers-usb-host-ehci-atmel.c:warning:unused-variable-hcd_name
-|   |-- drivers-usb-host-ehci-npcm7xx.c:warning:unused-variable-hcd_name
-|   |-- 
-drivers-usb-host-ehci-platform.c:warning:unused-variable-hcd_name
-|   |-- drivers-usb-host-ehci-st.c:warning:unused-variable-hcd_name
-|   |-- drivers-usb-host-ohci-at91.c:warning:unused-variable-hcd_name
-|   |-- 
-drivers-usb-host-ohci-platform.c:warning:unused-variable-hcd_name
-|   |-- drivers-usb-host-ohci-s3c2410.c:warning:unused-variable-hcd_name
-|   |-- drivers-usb-host-ohci-spear.c:warning:unused-variable-hcd_name
-|   `-- drivers-usb-host-ohci-st.c:warning:unused-variable-hcd_name
+diff --git a/Documentation/devicetree/bindings/iio/accel/adi,adxl313.yaml b/Documentation/devicetree/bindings/iio/accel/adi,adxl313.yaml
+index d6afc1b8c272..59d48ff1a16c 100644
+--- a/Documentation/devicetree/bindings/iio/accel/adi,adxl313.yaml
++++ b/Documentation/devicetree/bindings/iio/accel/adi,adxl313.yaml
+@@ -4,20 +4,24 @@
+ $id: http://devicetree.org/schemas/iio/accel/adi,adxl313.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+-title: Analog Devices ADXL313 3-Axis Digital Accelerometer
++title: Analog Devices ADXL312, ADXL313, and ADXL314 3-Axis Digital Accelerometers
+ 
+ maintainers:
+   - Lucas Stankus <lucas.p.stankus@gmail.com>
+ 
+ description: |
+-  Analog Devices ADXL313 3-Axis Digital Accelerometer that supports
+-  both I2C & SPI interfaces.
++  Analog Devices ADXL312, ADXL313, and ADXL314 3-Axis Digital Accelerometer that
++  support both I2C & SPI interfaces.
++    https://www.analog.com/en/products/adxl312.html
+     https://www.analog.com/en/products/adxl313.html
++    https://www.analog.com/en/products/adxl314.html
+ 
+ properties:
+   compatible:
+     enum:
++      - adi,adxl312
+       - adi,adxl313
++      - adi,adxl314
+ 
+   reg:
+     maxItems: 1
+-- 
+2.30.2
 
-Yes, it has duplicates and your patch handles some of these.  But there 
-are others that still need to be fixed.  Also, this list is missing 
-ohci-pxa27x.c.
-
-Alan Stern
