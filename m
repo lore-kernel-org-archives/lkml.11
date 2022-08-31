@@ -2,92 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE7F2ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 21:19:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06AD4ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 21:23:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232201AbiHaVTt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 17:19:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41516 "EHLO
+        id S232154AbiHaVXe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 17:23:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232211AbiHaVTk (ORCPT
+        with ESMTP id S230478AbiHaVXa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 17:19:40 -0400
+        Wed, 31 Aug 2022 17:23:30 -0400
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8E43F5CC4
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 14:19:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2528BA7AA8
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 14:23:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661980769; x=1693516769;
+  t=1661981010; x=1693517010;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=nden09wHw+7qvxDuZ4teofu7WMUZp3ya1vYxeeSmh34=;
-  b=WoAlr9+bcNXUhAiK+OVeKKuftgy7myyrfOn9sE1yN4UXsvNavnhs9WPF
-   QaKr+jaALO8b9rY7qcSVLclxbVWIyqfMpCOgGAykhRIP/LqEVeMSO1CjN
-   PfHGZA5NWRpXmPo31YbqQs6jxUW1VESZ5DZzBwoQwJSy46VpS8mpchuxe
-   UwKyNROgL6cGO6j9ew+ILfEXhwfBnJcd8h0+fYSTY5XyiNxQSI1heVkP8
-   yE76BasgZ7x52BfVn7N+n7Q8FwdvWhVsx2gQElHf3f9ShFIyPgv75F8P1
-   vNh7IJgfoS6cx9HoXw92MFx2ACCEqnjzNWaaVK3pt5AE8mXFKRuPYhGcg
+  bh=l+xXkWuuCi6rF4D2yXyu4H40LQSFIn3eOKHFcrv/pTU=;
+  b=Le9Dh+GKOFj2Lw3bf/UALXN6TwAYOfQGVKCyHNoSafvzR/Euhf/ilF9W
+   JO/aBSZSoxACylBQ/eAV1VJIscdyGoNWGEk8fzBqhuUuXKIHsud+z0xqN
+   v835949qvLhH4/WA3b2m3QrHidH5Y7IZ006UWAAKT7u7BwInK+vRw8ErA
+   03G+7j/iKcw2O2InL5FmVBZp2ijaO+UIDz48xcDALvYAdrdhL/XSk22rw
+   +hdDNpViD2ZQXO7idftrQKBtIDZKL8KCvJYjVzGmIvlVO70kVMjqkHdCI
+   GpdzpcsRwTxqPEYJPdfVubUYcO3L0LUg7EEILvRp5BqV7EQPeilteip/n
    A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="275295439"
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="275295985"
 X-IronPort-AV: E=Sophos;i="5.93,279,1654585200"; 
-   d="scan'208";a="275295439"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 14:19:29 -0700
+   d="scan'208";a="275295985"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 14:23:29 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,279,1654585200"; 
-   d="scan'208";a="701498490"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 14:19:26 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oTV7L-006Zl7-0J;
-        Thu, 01 Sep 2022 00:19:23 +0300
-Date:   Thu, 1 Sep 2022 00:19:22 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, kbuild-all@lists.01.org,
+   d="scan'208";a="680577062"
+Received: from lkp-server02.sh.intel.com (HELO 811e2ceaf0e5) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 31 Aug 2022 14:23:28 -0700
+Received: from kbuild by 811e2ceaf0e5 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oTVBH-0000if-1W;
+        Wed, 31 Aug 2022 21:23:27 +0000
+Date:   Thu, 1 Sep 2022 05:22:59 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
         Linus Walleij <linus.walleij@linaro.org>
 Subject: Re: [PATCH v1 3/3] regmap: spi-avmm: Use swabXX_array() helpers
-Message-ID: <Yw/QWshWH9L/+Hwp@smile.fi.intel.com>
+Message-ID: <202209010548.ZC5MnsXX-lkp@intel.com>
 References: <20220831145407.78166-3-andriy.shevchenko@linux.intel.com>
- <202209010444.n3YAkNP1-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202209010444.n3YAkNP1-lkp@intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220831145407.78166-3-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 01, 2022 at 04:12:01AM +0800, kernel test robot wrote:
+Hi Andy,
 
-...
+I love your patch! Yet something to improve:
 
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/base/
-> 
-> If you fix the issue, kindly add following tag where applicable
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All errors (new ones prefixed by >>):
+[auto build test ERROR on broonie-regmap/for-next]
+[also build test ERROR on next-20220831]
+[cannot apply to linus/master v6.0-rc3]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Indeed, I compiled only first two patches on x86.
+url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/swab-Add-array-operations/20220831-225514
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git for-next
+config: x86_64-randconfig-a013 (https://download.01.org/0day-ci/archive/20220901/202209010548.ZC5MnsXX-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/783618682b27b5d06605086a386d64d355914b38
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Andy-Shevchenko/swab-Add-array-operations/20220831-225514
+        git checkout 783618682b27b5d06605086a386d64d355914b38
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-> >> drivers/base/regmap/regmap-spi-avmm.c:171:15: error: incompatible pointer types passing 'char *' to parameter of type 'u32 *' (aka 'unsigned int *') [-Werror,-Wincompatible-pointer-types]
->            swab32_array(buf, len / 4);
->                         ^~~
->    include/linux/swab.h:32:38: note: passing argument to parameter 'buf' here
->    static inline void swab32_array(u32 *buf, unsigned int words)
->                                         ^
->    6 warnings and 1 error generated.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-While error message is valid, I believe the warnings are not related to the
-patch in question and were before it.
+All errors (new ones prefixed by >>):
+
+   drivers/base/regmap/regmap-spi-avmm.c: In function 'br_swap_words_32':
+>> drivers/base/regmap/regmap-spi-avmm.c:171:22: error: passing argument 1 of 'swab32_array' from incompatible pointer type [-Werror=incompatible-pointer-types]
+     171 |         swab32_array(buf, len / 4);
+         |                      ^~~
+         |                      |
+         |                      char *
+   In file included from include/uapi/linux/byteorder/little_endian.h:14,
+                    from include/linux/byteorder/little_endian.h:5,
+                    from arch/x86/include/uapi/asm/byteorder.h:5,
+                    from arch/x86/include/asm/orc_types.h:43,
+                    from arch/x86/include/asm/unwind_hints.h:6,
+                    from arch/x86/include/asm/nospec-branch.h:13,
+                    from arch/x86/include/asm/paravirt_types.h:40,
+                    from arch/x86/include/asm/ptrace.h:97,
+                    from arch/x86/include/asm/math_emu.h:5,
+                    from arch/x86/include/asm/processor.h:13,
+                    from arch/x86/include/asm/timex.h:5,
+                    from include/linux/timex.h:67,
+                    from include/linux/time32.h:13,
+                    from include/linux/time.h:60,
+                    from include/linux/stat.h:19,
+                    from include/linux/module.h:13,
+                    from drivers/base/regmap/regmap-spi-avmm.c:7:
+   include/linux/swab.h:32:38: note: expected 'u32 *' {aka 'unsigned int *'} but argument is of type 'char *'
+      32 | static inline void swab32_array(u32 *buf, unsigned int words)
+         |                                 ~~~~~^~~
+   cc1: some warnings being treated as errors
+
+
+vim +/swab32_array +171 drivers/base/regmap/regmap-spi-avmm.c
+
+   168	
+   169	static void br_swap_words_32(char *buf, unsigned int len)
+   170	{
+ > 171		swab32_array(buf, len / 4);
+   172	}
+   173	
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
