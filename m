@@ -2,79 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14405ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 09:19:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF40CC0502C
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 09:20:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231764AbiHaJTH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 05:19:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60654 "EHLO
+        id S231401AbiHaJUA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 05:20:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231809AbiHaJS7 (ORCPT
+        with ESMTP id S231842AbiHaJTf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 05:18:59 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFC2CCC32F
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 02:18:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=FJBQUniwgWSASvXreg4vLlVkMxLkErd8CubArxprFvg=; b=Oqu5JbzpdfnrOcdqYhOu//IDa6
-        M+2AokEK9Wjavi4nT9GB9ZsyQVo53TgrBJ9+k2pF8ALzuKaXzrQLyKP34ePJahT+q3BW1nk9eoOyu
-        ZNquuKudoE5xK2zvJlx1rFKQ5AcGPiYg44WulolR3ekyOxPjLL1F5219xYe1WZL+QZuclVnEBYIpm
-        Ft4pnrBsP02Roo/Z1GmPY+XWLeG0PO8rfwXJEi1ADFoIbq/4Raas+9cLRnHWln4IU/ohMJOLbEggW
-        T0ThoZE5P+pwWAPIyCML6L+4S3clqJzaDLPYS9WmvMNcv1t63Zg9JkuY9ertUEh4jJ8m/SelU5grf
-        B2bBJfcA==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oTJrb-0087Lu-3y; Wed, 31 Aug 2022 09:18:23 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 8090A3002A3;
-        Wed, 31 Aug 2022 11:18:22 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 6863C20A3C659; Wed, 31 Aug 2022 11:18:22 +0200 (CEST)
-Date:   Wed, 31 Aug 2022 11:18:22 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Ingo Molnar <mingo@redhat.com>, Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>
-Subject: Re: [PATCH v6 3/5] sched: Enforce user requested affinity
-Message-ID: <Yw8nXttOnNjK/1y4@hirez.programming.kicks-ass.net>
-References: <20220826010119.1265764-1-longman@redhat.com>
- <20220826010119.1265764-4-longman@redhat.com>
+        Wed, 31 Aug 2022 05:19:35 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88AD4C9E9A
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 02:19:14 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id bq23so19081241lfb.7
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 02:19:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=+pwFDg0e0j+yXSWZO1QdYOdmfRiXIedB2SifAAmn8XI=;
+        b=l/XeKVh2yJtrLsYPx4G5AdOSXv4Uyh0J3MSLro6syYpwPvq4Bw46hy3wZ1Ilkv5dIF
+         LSrnQ8tjtKNc3SxxPH9lKvuWdhPfJWFUJecLJDYORyahIXTErnRyW3KvzdLT6dWyTS22
+         LfHjdoH9FWpyguDshL/AnL4NhAZInG/YKh7uk/OgCF2cFCbslvKn/CpTS4jApAS0SctR
+         6yWLpZClaTeXOwjlUxJcMexUH/xsdqd5XvWOl54wSjlSJBxPYUlWq/5f0EEPMoZxQaht
+         Pl9RzmQ4ZrU9r4j58FNmeP0pK1WLGmry0jC2QaO+4hG6HChazS+CDQ5ATVb4RSAJ4Mzc
+         sw+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=+pwFDg0e0j+yXSWZO1QdYOdmfRiXIedB2SifAAmn8XI=;
+        b=xzzeZP5ODcobGldcZr9NzbZ7tNqR+jojZOHEShgNyKY+X0MeTbd4MZFekSpWuzQd9+
+         jujDWzaNwiHLWswEg3FUUuHAW5Gxj6zW0uM9OxWehNVQ6mvWyA00rWcjupRRxcJLrV5G
+         QASMKzOHBg1hF3TBdJhpYtMNpP5wjHRjZ/yW6zJngiKjJgSdbuJLgCcnPifXpe2FeFAa
+         0WsubxciKoSKZoGDnsa5BO+cETk+FTrrTqm61J70aDBBwigdYMgf0hr/xybXuONygMu2
+         iOnHt6mklvP+vQlwraKAsaqQhlYBP3QdWl3Jxmpx56OdfwC96uMDRbKsaDiee+IhHU99
+         2ujg==
+X-Gm-Message-State: ACgBeo1aiteRJUmt6vIWS585uFnnJEnNHfhhYAbD/Umua3eq4dtJ2C0g
+        ol6ogX4JSq4tkC+5BnypDb63PQ==
+X-Google-Smtp-Source: AA6agR4uihFpaG8nK8poPhUm9j3r98rElE4l/J0Vn5UOIDcFiGql16aEPEIcKVvDvdd4p7q8DsLUng==
+X-Received: by 2002:ac2:5b50:0:b0:494:5ec2:1ea5 with SMTP id i16-20020ac25b50000000b004945ec21ea5mr6367241lfp.276.1661937552410;
+        Wed, 31 Aug 2022 02:19:12 -0700 (PDT)
+Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
+        by smtp.gmail.com with ESMTPSA id r7-20020a2e8e27000000b0025dd8b42c64sm1108430ljk.79.2022.08.31.02.19.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 31 Aug 2022 02:19:11 -0700 (PDT)
+Message-ID: <5da6171a-4949-9cc7-2967-6cc39a7955c8@linaro.org>
+Date:   Wed, 31 Aug 2022 12:19:10 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220826010119.1265764-4-longman@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH 2/6] ASoC: codecs: wsa-macro: add support for sm8450 and
+ sc8280xp
+Content-Language: en-US
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Rob Herring <robh@kernel.org>
+Cc:     broonie@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        perex@perex.cz, tiwai@suse.com,
+        pierre-louis.bossart@linux.intel.com,
+        linux-arm-msm@vger.kernel.org, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220818134619.3432-1-srinivas.kandagatla@linaro.org>
+ <20220818134619.3432-3-srinivas.kandagatla@linaro.org>
+ <20220818171222.GG1978870-robh@kernel.org>
+ <9c9226d9-8470-6672-d8ce-3fb1e4df3fda@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <9c9226d9-8470-6672-d8ce-3fb1e4df3fda@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 09:01:17PM -0400, Waiman Long wrote:
+On 31/08/2022 12:17, Srinivas Kandagatla wrote:
+> 
+> 
+> On 18/08/2022 18:12, Rob Herring wrote:
+>> On Thu, Aug 18, 2022 at 02:46:15PM +0100, Srinivas Kandagatla wrote:
+>>> Add compatible for sm8450 and sc8280xp.
+>>>
+>>> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+>>> ---
+>>>   sound/soc/codecs/lpass-wsa-macro.c | 2 ++
+>>>   1 file changed, 2 insertions(+)
+>>>
+>>> diff --git a/sound/soc/codecs/lpass-wsa-macro.c b/sound/soc/codecs/lpass-wsa-macro.c
+>>> index 27da6c6c3c5a..f82c297ea3ab 100644
+>>> --- a/sound/soc/codecs/lpass-wsa-macro.c
+>>> +++ b/sound/soc/codecs/lpass-wsa-macro.c
+>>> @@ -2561,6 +2561,8 @@ static const struct dev_pm_ops wsa_macro_pm_ops = {
+>>>   static const struct of_device_id wsa_macro_dt_match[] = {
+>>>   	{.compatible = "qcom,sc7280-lpass-wsa-macro"},
+>>>   	{.compatible = "qcom,sm8250-lpass-wsa-macro"},
+>>> +	{.compatible = "qcom,sm8450-lpass-wsa-macro"},
+>>> +	{.compatible = "qcom,sc8280xp-lpass-wsa-macro" },
+>>
+>> Looks like these are backwards compatible with the existing versions,
+>> why not reflect that in the binding?
+> Backward compatibility is not always true, some of the registers and 
+> there defaults tend to change across SoCs. Having SoC specific 
+> compatible could help us deal with this and also make code more inline 
+> with other codec macros in LPASS IP.
 
-> @@ -9352,6 +9381,11 @@ int sched_cpu_activate(unsigned int cpu)
->  		sched_update_numa(cpu, true);
->  		sched_domains_numa_masks_set(cpu);
->  		cpuset_cpu_active();
-> +		/*
-> +		 * Preallocated scratch cpumask
-> +		 */
-> +		if (!rq->scratch_mask)
-> +			rq->scratch_mask = kmalloc(cpumask_size(), GFP_KERNEL);
->  	}
+I am not saying that there should be no SoC specific compatible. This
+one is a must, but the question why duplicating the entries and not
+using fallback?
 
-this is too late; I think you'll have to add a sched_cpu_prepare() and
-simply fail the cpu-up when the allocation fails.
+Best regards,
+Krzysztof
