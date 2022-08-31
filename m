@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 144C5ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 21:55:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 703C5ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 21:56:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232541AbiHaVz5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 17:55:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34714 "EHLO
+        id S232549AbiHaV4B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 17:56:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232389AbiHaVy5 (ORCPT
+        with ESMTP id S232387AbiHaVy5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 31 Aug 2022 17:54:57 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A0F75F85;
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98D2255BD;
         Wed, 31 Aug 2022 14:54:54 -0700 (PDT)
 Received: from jupiter.universe (dyndsl-091-096-057-024.ewe-ip-backbone.de [91.96.57.24])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (No client certificate requested)
         (Authenticated sender: sre)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 79BDA6601EAA;
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 4755E6601E36;
         Wed, 31 Aug 2022 22:54:47 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
         s=mail; t=1661982887;
-        bh=zj4EycsA2up3moyNszlj5tFIZU3qPDoqX2acH/vKHBY=;
+        bh=R4fBrM9rqeqbOvgCgAUdSKO4cpSM8keuJE8guAqZn9c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JO7V20XeyEkqpd7XnIy8ZTyadpIPHhvJMckDr62JmG5AI/s/aJ5StEUvpC2uB/ZvY
-         e0Gfbh+R5bTZilV789Y6KNoAfdSLxJgOD+D53m7SKnbcP7QYFf3wjez1b/BX8EKPZE
-         GzO8QaYpWUg18Jzd1PSXRj8GS3sfjlzOStLOHSL41bxXXQAFY41O7cVwcjdxoqJVp5
-         L8qr/SMz738sxsOlOb8K4eLVOTjOkbjKzH1GbYf2pyCoKa5n7R4/WBIMalK0McI6VK
-         e69bD1tzosB5PX0gG+lC16DoCwyglVm6lDqbNLe/aKZ+QEXpQj3Shi/6PZcdl18kgo
-         OizTHtbRzmJBQ==
+        b=goIa8C14+4amkitdwx4vWfZ0nrDE1rHpvJC5r2NrdJVS5l5RnGTdJIAk+BDPlsrGh
+         ZzmzaTbz+68AXlkISA4rE6aG1TIg/UETtNk//50oWFWCfO64zpL2gBizvAEb9dlk2a
+         UMDlDtfvh2+6jYiz15PomsqL54zp3qMgNx1xfWgr2QN7m68jVEQiJlZClIw8XunGnk
+         0PzOY7RfUweXqjlR2E1wiQhYYkerQL6bW9gWOXPvYZsu6VAziaeLHhBvI3jZHVjdmn
+         lIkv5qhyGTOyDBxpAkYObbGzKai/IqpoX2Gqep5hrSAI466qP1a70/3ysRtbg7aoY8
+         opCjGfZUkfISA==
 Received: by jupiter.universe (Postfix, from userid 1000)
-        id 4C013481743; Wed, 31 Aug 2022 23:54:43 +0200 (CEST)
+        id 3B00748078D; Wed, 31 Aug 2022 23:54:43 +0200 (CEST)
 From:   Sebastian Reichel <sebastian.reichel@collabora.com>
 To:     Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -49,9 +49,9 @@ Cc:     Michael Turquette <mturquette@baylibre.com>,
         linux-kernel@vger.kernel.org,
         Sebastian Reichel <sebastian.reichel@collabora.com>,
         kernel@collabora.com
-Subject: [PATCH 13/13] ASoC: rk817: Remove 'select REGMAP_I2C'
-Date:   Wed, 31 Aug 2022 23:54:37 +0200
-Message-Id: <20220831215437.117880-14-sebastian.reichel@collabora.com>
+Subject: [PATCH 06/13] mfd: rk808: replace 'struct i2c_client' with 'struct device'
+Date:   Wed, 31 Aug 2022 23:54:30 +0200
+Message-Id: <20220831215437.117880-7-sebastian.reichel@collabora.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220831215437.117880-1-sebastian.reichel@collabora.com>
 References: <20220831215437.117880-1-sebastian.reichel@collabora.com>
@@ -61,28 +61,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With the changed rk808 driver (it now can be used with either SPI
-or I2C) a configuration without I2C is possible in theory. In that
-case selecting REGMAP_I2C is not ok. Since the audio codec driver
-does not really care about the regmap binding just drop the select.
+Put 'struct device' pointer into the MFD platform_data instead
+of the 'struct i2c_client' pointer. This simplifies the code
+and prepares the MFD for SPI support.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 ---
- sound/soc/codecs/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/mfd/rk808.c       | 6 +++---
+ include/linux/mfd/rk808.h | 2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
-index d16b4efb88a7..646494973cfd 100644
---- a/sound/soc/codecs/Kconfig
-+++ b/sound/soc/codecs/Kconfig
-@@ -1192,7 +1192,6 @@ config SND_SOC_RK3328
- config SND_SOC_RK817
- 	tristate "Rockchip RK817 audio CODEC"
- 	depends on MFD_RK808
--	select REGMAP_I2C
+diff --git a/drivers/mfd/rk808.c b/drivers/mfd/rk808.c
+index e793de9146f7..7baa0e484ac0 100644
+--- a/drivers/mfd/rk808.c
++++ b/drivers/mfd/rk808.c
+@@ -556,7 +556,7 @@ static int rk808_power_off(struct sys_off_data *data)
+ 	}
+ 	ret = regmap_update_bits(rk808->regmap, reg, bit, bit);
+ 	if (ret)
+-		dev_err(&rk808->i2c->dev, "Failed to shutdown device!\n");
++		dev_err(rk808->dev, "Failed to shutdown device!\n");
  
- config SND_SOC_RL6231
- 	tristate
+ 	return NOTIFY_DONE;
+ }
+@@ -579,7 +579,7 @@ static int rk808_restart(struct sys_off_data *data)
+ 	}
+ 	ret = regmap_update_bits(rk808->regmap, reg, bit, bit);
+ 	if (ret)
+-		dev_err(&rk808->i2c->dev, "Failed to restart device!\n");
++		dev_err(rk808->dev, "Failed to restart device!\n");
+ 
+ 	return NOTIFY_DONE;
+ }
+@@ -702,7 +702,7 @@ static int rk808_probe(struct i2c_client *client,
+ 		return -EINVAL;
+ 	}
+ 
+-	rk808->i2c = client;
++	rk808->dev = &client->dev;
+ 	i2c_set_clientdata(client, rk808);
+ 
+ 	rk808->regmap = devm_regmap_init_i2c(client, rk808->regmap_cfg);
+diff --git a/include/linux/mfd/rk808.h b/include/linux/mfd/rk808.h
+index 58602032e642..9937b068fa82 100644
+--- a/include/linux/mfd/rk808.h
++++ b/include/linux/mfd/rk808.h
+@@ -696,7 +696,7 @@ enum {
+ };
+ 
+ struct rk808 {
+-	struct i2c_client		*i2c;
++	struct device			*dev;
+ 	struct regmap_irq_chip_data	*irq_data;
+ 	struct regmap			*regmap;
+ 	long				variant;
 -- 
 2.35.1
 
