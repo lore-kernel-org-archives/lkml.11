@@ -2,69 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB0FFECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 13:52:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18415ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 13:53:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231958AbiHaNwc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 09:52:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52532 "EHLO
+        id S230020AbiHaNxd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 09:53:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231739AbiHaNw1 (ORCPT
+        with ESMTP id S229837AbiHaNxa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 09:52:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 766C7D4F75
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 06:52:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661953944;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Xm51xcub1wuRQLMM4F6btrUxwFJHZ9ruPTJ/iTp6tbc=;
-        b=J5MOJR2gUFqHZfsH9qpjVj4FKsHaa7lIos3ike7BZRBxnNHS2jNQiZQ9Eju9aKUIa1ILQx
-        SHXAfUMDMA9XOJAA8oAlCjqudY5vphe7DXdGuFpBDRlKCkAWqboYNqEfLBo1c+ZjiIYCiR
-        kL7pcjiI6i2WllQvr4j07APxcXM/y3s=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-496-vb5iahavMR6409xh4Jft7w-1; Wed, 31 Aug 2022 09:52:21 -0400
-X-MC-Unique: vb5iahavMR6409xh4Jft7w-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C20561C20AEC;
-        Wed, 31 Aug 2022 13:52:20 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.72])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B31BA2026D4C;
-        Wed, 31 Aug 2022 13:52:19 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20220826043706.GC2071@kadam>
-References: <20220826043706.GC2071@kadam> <20220826023515.3437469-1-sunke32@huawei.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     dhowells@redhat.com, Sun Ke <sunke32@huawei.com>,
-        linux-cachefs@redhat.com, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        jefflexu@linux.alibaba.com, hsiangkao@linux.alibaba.com
-Subject: Re: [PATCH v4] cachefiles: fix error return code in cachefiles_ondemand_copen()
+        Wed, 31 Aug 2022 09:53:30 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 568CCD51E9
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 06:53:28 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id h5so16947522ejb.3
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 06:53:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=qCFKBCshFxCZkTA7wPsRFv4K+TP8z0HvHgBKmfL+tX4=;
+        b=hXugw4WFK9xiaD0ujfmVvgUEVXtEl22pvyborwblEtGrXY+9/qC82Gi+QWfLGmF9+L
+         6s7PaeOph9riij42lvZ9WKvJZLNplGx4t+1G5vLJjcqKCMr3RVMcc9UV4CsDeT53dWFD
+         FobrUdhWTUE+s/OG7IKwFPFmThSb4V5Qu5fPBI1UQN6IZLgVhrCZ8cdFPaqplLx/YFya
+         tyTur/H+Na7ZvsAQKxsSmzytBy9OzU6gHTJUUpDvwgHeUiAHl74mOZlyStaxp7JswkRA
+         mPfQSYW85x2jn0XQAr17zP/eOAedVs+LxICagzJYbLqs1Wo71wK5v9tQ5lmvCPTD2yW5
+         omrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=qCFKBCshFxCZkTA7wPsRFv4K+TP8z0HvHgBKmfL+tX4=;
+        b=A6/h4SXrgyblmpN0dSek4c8GieNufeWWdEp4xLAecMg0GAxq8d7bJsXWIJtj8XVxUE
+         16XTIQKjycdGMM5kCBPA9yzy4Ou5Sx2GVi92/1gKtWjlU3tmpe9fQJiAn7gobwo9y8CP
+         fM+BU7AY4E9Mss7lw+mBBR/tRwC1tgKlx8XLoa2fmGUJLELflo61W+UBJHwaUgvprTTz
+         k4YGdPYpwgkD5To9b+yr3UEYmhcEc3neofXgXjAPWA9YoVl5mrgbcFSOuowULO7W5/QM
+         Ei+3ZfZmmgHU9KDcZcK7QRULywrSUqvH3XwAAfgnGGkFqugf6O52U40ibWHec4uIDUyb
+         uGrg==
+X-Gm-Message-State: ACgBeo1ZcsCY8H7iHxyqDfZXRU+ds8AdVIcOZBSsZWL9FB8D5z4pv1E4
+        deqNxo43ZetAcLERSJoYCUz72/zb6j7Ughhch7viCw==
+X-Google-Smtp-Source: AA6agR66PUMI3NeWwQ5XuYbnrXxr7gJ8zCpLbXbI0G/I16dHLaRY3u4lhiIjjt0A2xVJHfzo3kUBkvP1VHNvVdJebWs=
+X-Received: by 2002:a17:907:7242:b0:741:770b:dfc6 with SMTP id
+ ds2-20020a170907724200b00741770bdfc6mr11431806ejc.203.1661954006840; Wed, 31
+ Aug 2022 06:53:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1544478.1661953939.1@warthog.procyon.org.uk>
-Date:   Wed, 31 Aug 2022 14:52:19 +0100
-Message-ID: <1544479.1661953939@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+References: <20220816204832.265837-1-linus.walleij@linaro.org> <Yw46t9Y1PYoMLSKq@smile.fi.intel.com>
+In-Reply-To: <Yw46t9Y1PYoMLSKq@smile.fi.intel.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Wed, 31 Aug 2022 15:53:15 +0200
+Message-ID: <CACRpkdZEVYDAPbBkATr=6sea8gu6JmuAjU_sDRV=ZgswfhD-Kg@mail.gmail.com>
+Subject: Re: [PATCH 1/2 v5] regmap: Support accelerated noinc operations
+To:     Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dan Carpenter <dan.carpenter@oracle.com> wrote:
+On Tue, Aug 30, 2022 at 6:36 PM Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+> On Tue, Aug 16, 2022 at 10:48:31PM +0200, Linus Walleij wrote:
 
-> Thanks!
+> > +                     ret = regcache_write(map, reg, lastval);
+> > +                     if (ret != 0)
+>
+> if (ret) ?
 
-Can I put that down as a Reviewed-by?
+This was done to follow the style of the rest of the .c file.
 
-David
+Could be patched everywhere though.
 
+> > +             dev_info(map->dev, "%x %s [", reg, write ? "<=" : "=>");
+> > +             for (i = 0; i < val_len; i++) {
+> > +                     switch (val_bytes) {
+> > +                     case 1:
+> > +                             pr_cont("%x", u8p[i]);
+> > +                             break;
+> > +                     case 2:
+> > +                             pr_cont("%x", u16p[i]);
+> > +                             break;
+> > +                     case 4:
+> > +                             pr_cont("%x", u32p[i]);
+> > +                             break;
+> > +#ifdef CONFIG_64BIT
+> > +                     case 8:
+> > +                             pr_cont("%llx", u64p[i]);
+> > +                             break;
+> > +#endif
+> > +                     default:
+> > +                             break;
+> > +                     }
+> > +                     if (i == (val_len - 1))
+> > +                             pr_cont("]\n");
+> > +                     else
+> > +                             pr_cont(",");
+> > +             }
+>
+> I'm wondering why we can't use hex_dump_to_buffer() approach? Or even better,
+> introduce eventually dev_hex_dump() (as it's done for seq_file and printk)
+> and use it.
+
+Hmmmmm this is under regmap_should_log() which turns on
+dev_info() simple prints like x <= y and y => x to the console.
+e.g. dev_info(map->dev, "%x <= %x\n", reg, val);
+It would be rather print_hex_dump() the problem being
+that hex_dump_* accessors assumes line oriented
+linebufs "must be 16 or 32" (values per line), and here we probably
+don't want that:
+we want to show what we shoehorned into the FIFO.
+
+Yours,
+Linus Walleij
