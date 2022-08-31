@@ -2,88 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8BECECAAA1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 00:20:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 759CAECAAA1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 00:22:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229962AbiHaAUy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 20:20:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59238 "EHLO
+        id S230092AbiHaAWi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 20:22:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229876AbiHaAUt (ORCPT
+        with ESMTP id S229720AbiHaAWg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 20:20:49 -0400
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A62E967CB9
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:20:47 -0700 (PDT)
-Received: by mail-io1-xd2e.google.com with SMTP id y187so10708477iof.0
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:20:47 -0700 (PDT)
+        Tue, 30 Aug 2022 20:22:36 -0400
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCE129D138
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:22:34 -0700 (PDT)
+Received: by mail-qt1-x82b.google.com with SMTP id cb8so9920358qtb.0
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:22:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=bxn9VxVOYsV90b/AXcl+X3+2JZebJQygb6zbgA67ISw=;
-        b=Sax+ObM4Va+lRmzJXxMoChcy8XRYUkndNMWBeoahPTarzKOmZ1LTVW8XPU++/jAkId
-         VwcNtXaxJfXwL5CW/Qyrf84i54KvuKBetFq/9P6Na7HasaWkpIBvyed9a4OopHB07wKq
-         jABVmxH5VCkvoy92YucmEexM/2dKC5CHLSCd1wY5FBtIkB1ElEaCS4whihdmsvW3fV72
-         brRfMi7fasCZQqzYT5VXDhKoCizFKO2tiybzrK7y+CoSbUkVncuJYZ+rkOlaOolgR7wl
-         6BPUbomzUxdtQpAZwp6zyZ7NPnb/JTH0YBVvCUeBd948VCJCNmP5DsyN3OOq2VBbQIKB
-         Ifdg==
+        d=ziepe.ca; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=Lh16XHf3++MO2LHtmJix5HtkGiD8BuHOsdyLRFTSe/A=;
+        b=XOSFBC16BR5ImEycq6Wxwt1WfjQIyjlHjo1i7V7SOlXSW7tiL+kBgt85+T6v4LbJL0
+         qpcT3EFRoQSSF59qi4Crv72crwblNLEVb88+boK4Qw0Gs/leowXS/n7K6EjwDf7a/HER
+         q2sBk9M9X08hJphAz+SsXYOzkqISAcKFgWTVN449dwieuLckpF7BA14iO5l3RzFjXP4o
+         gyl6FF0GxEX+/UPEyTric08qzhnPSPhsonOcIUIG7An6PY2X/GggY3Irn3C+2HX48htF
+         JrguD1dDyhidTXj/hx3ft/CekMn3SB332Z09qXmb7OuMbunnSgJPt4pmcsFpQLNd4Qko
+         FcRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=bxn9VxVOYsV90b/AXcl+X3+2JZebJQygb6zbgA67ISw=;
-        b=yhTlFXzx4WzTePQ/W71gxB/ZtP29iSwfXuGba4ICPWmJfaq5temxAfqcl2hhyx4cNN
-         ut1BMKyriZVHx03KPwYEEKbThFj5LHkTQvZAFbqVbYa9Zl8VOEQGJaD9IgUCioesvj5V
-         wM06ZpuKvSKoxLfJUWUXFf6cqZ1xAisBUyhdPKkFa2lvPGjmKJLvuuqDcYI1N3TbjTWc
-         Vd/UsxYfkgjqSWHJIBOofqX29T82CdZUcB2G0agLUIiZe1xQaIVOqX4t9r5w5o2aEHH8
-         QULSTmrgFFtOf0bhoSeEET346DhMtSAAngxRw2WKNqsncDtgDV+rPUxahNqbXBUrSlxZ
-         HwRg==
-X-Gm-Message-State: ACgBeo2f92KfGR+HHONe+pg7xAd6fM6qOaFkVOaAwn3XnHBK7E6Qx/FP
-        fNRsHLt5f31o0M1Pf5Aj/w12l41abRUcD3mUxNAV5Q==
-X-Google-Smtp-Source: AA6agR6zE6Tb6rAbgoVoGjxVMOS2HvKQJsnQ103/b24iLrHMlTfvVys1QxPbUMXlSm7+O1yBlpV4SXcGzjERV/4KBjU=
-X-Received: by 2002:a05:6638:42c3:b0:349:fdfc:4543 with SMTP id
- bm3-20020a05663842c300b00349fdfc4543mr13316697jab.223.1661905246787; Tue, 30
- Aug 2022 17:20:46 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=Lh16XHf3++MO2LHtmJix5HtkGiD8BuHOsdyLRFTSe/A=;
+        b=K94XL3Ro1gW009ILHtFVP1GbXNtiHFoORphGyi3gnr0ffobxKFz28KuovWdWJhyd27
+         gb3ea2h2UempJAJ94tP/NRbkA/elLNBlxxnogbzt3i6DKCzvVrLP7qyXeDH6gEkvt4k5
+         NkZvARnT0A0jckwILJUWSVQy5/oke/IZZD42ojGGHDqFG3nDZoEmCT8TyblFM4sNzUfm
+         FiYifr8eBN5/J6WEIa1/z1N19u/phc79JICWFFph7XMKlwstWxEDEJ6JS2R/lix3Q3pE
+         dYXpvC6yEhRUWMJ2zysR8U24MuSogcwn/2p5uiX/063Au5PCm5CzaRwnRTvujFxilgoe
+         YFGQ==
+X-Gm-Message-State: ACgBeo3XkYXdeZF0O+m8gk4N1F2PCj9pKQD8UJwDd+/kKfYhDM+2h0MI
+        NoLduruvrrOkKDJQoys9b57eHQ==
+X-Google-Smtp-Source: AA6agR7GGtySRj3a31twDnb1mH9EFCJRgojy3h78HnLRKB2gSIxypXh8P0l2OQoGAZF+RRxoexfLDw==
+X-Received: by 2002:a05:622a:5c8a:b0:344:ba8f:8892 with SMTP id ge10-20020a05622a5c8a00b00344ba8f8892mr16671557qtb.297.1661905353877;
+        Tue, 30 Aug 2022 17:22:33 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id bk42-20020a05620a1a2a00b006aedb35d8a1sm9280435qkb.74.2022.08.30.17.22.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Aug 2022 17:22:32 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1oTBV0-0040ym-RW;
+        Tue, 30 Aug 2022 21:22:30 -0300
+Date:   Tue, 30 Aug 2022 21:22:30 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Kevin Tian <kevin.tian@intel.com>
+Cc:     Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Zhi Wang <zhi.a.wang@intel.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Eric Farman <farman@linux.ibm.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Tony Krowiak <akrowiak@linux.ibm.com>,
+        Jason Herne <jjherne@linux.ibm.com>,
+        Harald Freudenberger <freude@linux.ibm.com>,
+        Diana Craciun <diana.craciun@oss.nxp.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Longfang Liu <liulongfang@huawei.com>,
+        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Kirti Wankhede <kwankhede@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Abhishek Sahu <abhsahu@nvidia.com>,
+        intel-gvt-dev@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org, Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH 10/15] vfio/fsl-mc: Use the new device life cycle helpers
+Message-ID: <Yw6pxrS1zb5JKt8q@ziepe.ca>
+References: <20220827171037.30297-1-kevin.tian@intel.com>
+ <20220827171037.30297-11-kevin.tian@intel.com>
 MIME-Version: 1.0
-References: <20220826084001.3341215-1-badhri@google.com> <20220826084001.3341215-3-badhri@google.com>
- <Yw4J9wv1N2Z5/qbN@kroah.com>
-In-Reply-To: <Yw4J9wv1N2Z5/qbN@kroah.com>
-From:   Badhri Jagan Sridharan <badhri@google.com>
-Date:   Tue, 30 Aug 2022 17:20:10 -0700
-Message-ID: <CAPTae5KFmEXKLJD+A-adb7LpFVY3fDKjNXR8W_wBxDaBZkCa9g@mail.gmail.com>
-Subject: Re: [PATCH v1 3/4] usb: typec: tcpci_maxim: Export helper function
- for register reads
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        USB <linux-usb@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Kyle Tso <kyletso@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220827171037.30297-11-kevin.tian@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks for the feedback ! Brain fade moment of not including commit message.
-Not exporting symbols anymore and I have squashed the patch as well into
-"[PATCH v2 3/3] usb: typec: maxim_contaminant: Implement
-check_contaminant callback"
-which I just sent out.
+On Sun, Aug 28, 2022 at 01:10:32AM +0800, Kevin Tian wrote:
+> From: Yi Liu <yi.l.liu@intel.com>
+> 
+> Export symbol of vfio_release_device_set() so fsl-mc @init can handle
+> the error path cleanly instead of assuming certain vfio core API can
+> help release device_set afterwards.
 
-On Tue, Aug 30, 2022 at 6:00 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Fri, Aug 26, 2022 at 01:40:00AM -0700, Badhri Jagan Sridharan wrote:
-> > Signed-off-by: Badhri Jagan Sridharan <badhri@google.com>
->
-> As Heikki pointed out, I can not accept changes with no changelog text
-> at all, you know this.
->
-> Please write a good changelog text that explains why you are doing this
-> so we can properly review it.  As it is, we have no idea what is going
-> on here at all.
->
-> thanks,
->
-> greg k-h
+I think you should leave it as is, the "device_set" cleanup is just
+something handled completely internally to vfio
+
+If ops->init fails then we expect the core code to clean the
+device_set, and it does because it calls vfio_init_device() already.
+
+Having a single weirdly placed release in the driver is pretty
+confusing, IMHO.
+
+Jason
