@@ -2,192 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DFC7ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 15:19:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 106F1ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 15:19:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231706AbiHaPTR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 11:19:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59176 "EHLO
+        id S231819AbiHaPTf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 11:19:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231400AbiHaPTJ (ORCPT
+        with ESMTP id S231754AbiHaPT3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 11:19:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AB65D87DA
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 08:19:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661959144;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4Ujg0LqL4Zf7QSMNntgyL7zhBHA2KE0VEhGl9dm9Aa8=;
-        b=e8G3+XfObMLlbixQE9WG7buL5K5FL+tdzU029ovwh0vSDsh4IBoOQBNhdg5g0u2lwLg88a
-        kyoI6Oj4WlxK5XxdlxrOA3QY5PNUvmNxM8+4+ZpdVlzGCfXywAf3GijAk3yHAH22HT1q4s
-        lHTh0a2BmzpIk3y1XjmdDmG5orHx6kA=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-458-O48HEPqAPM2iwOn7Ol4NFQ-1; Wed, 31 Aug 2022 11:19:02 -0400
-X-MC-Unique: O48HEPqAPM2iwOn7Ol4NFQ-1
-Received: by mail-ej1-f72.google.com with SMTP id qb39-20020a1709077ea700b0073ddc845586so5429277ejc.2
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 08:19:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=4Ujg0LqL4Zf7QSMNntgyL7zhBHA2KE0VEhGl9dm9Aa8=;
-        b=65sYoju1BXo47rB6N6NwJwK2JI41/+EG0goGm04WwN+S4KKk2MHuPV0vRf9WeZEm7G
-         XvoS3Ndt30g4hSnzzqUZxL1GqtLk48e/vUFlNFAmkmX89hXxfVxxV2gWcWmv7fGw4HTL
-         RbM8cqaZaA1Q8evvzSsq+qJPeXqXOl0f8aTUbTNEN/s5K4UGf/WcCQjNbTYV+TMVhDu8
-         /20+HA0cbtdWNevryKCZxnQ7+x3HXlT2SAt/dSAzMRtn1JOTsV7gVLIatHB9407r3cQT
-         XqsJ7iVcbnrdNJ6faqi6XhzM45GNLHWvLqGqtoe7HjMrRSKGX2UWfNMWIjX2slfo/7s/
-         VaKg==
-X-Gm-Message-State: ACgBeo1DiDUCKY0qzCBZgzQ1/UK1ChYfla4zwF+Kt1GMsRAcLlDBsNhe
-        0wGUQFXTaTHhhQmoxMEeZKBi2+Pud2NkGWqsGT7LBpba9S49ey+3355u9VvBt0FC1ROvBIfsxo3
-        Yx8q9TBrb2zIvJDJlzT2gisUK
-X-Received: by 2002:a05:6402:1013:b0:448:dc53:752e with SMTP id c19-20020a056402101300b00448dc53752emr6030299edu.30.1661959141259;
-        Wed, 31 Aug 2022 08:19:01 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6FlKsO4zgVlNGD3cI2hGVtIC9Q8ir2eq28ILAW4L6wdIHEW/bWr5ocfIhSZ2PI7kbJ+ZZKOA==
-X-Received: by 2002:a05:6402:1013:b0:448:dc53:752e with SMTP id c19-20020a056402101300b00448dc53752emr6030275edu.30.1661959140988;
-        Wed, 31 Aug 2022 08:19:00 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
-        by smtp.gmail.com with ESMTPSA id u16-20020a170906125000b0073d6093ac93sm7359153eja.16.2022.08.31.08.19.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 31 Aug 2022 08:19:00 -0700 (PDT)
-Message-ID: <8aa159a1-f7e0-e54a-6a03-b76c563c62a6@redhat.com>
-Date:   Wed, 31 Aug 2022 17:18:59 +0200
+        Wed, 31 Aug 2022 11:19:29 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 075DCD8B2D;
+        Wed, 31 Aug 2022 08:19:21 -0700 (PDT)
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27VEt0ai016618;
+        Wed, 31 Aug 2022 15:19:02 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=b4mSvOEH+vP34dG48xtqm5QYnL6FD+Wz1XH17FHzmWA=;
+ b=a6Q7gBbyj8YMBZZ0jAvlVD9Q2pCL/ETx22in1LXv/TNMYt3M+z3fxWWo+uaDwKmREUyU
+ BmtKjAjeaX3IXl7ed7xsKJbLc3S8lC6L2KRGNFa4SAe7WTvXzGTuGz6QBHfxACngL4pS
+ pgmn4ZUnHRZa7F5hAVnAib/tdMqce3Uo9AMy3LoBUAjcPjG+xikrct/m3iEQJB5R+bso
+ wYjsEKqyx9YycDS4ix2DZT0Y0W14faWg5lcfRSzTPDVcJPE74zJ6HMcDhmw6eyfEwo4+
+ uc69s+g6IW0DR/hp7KzwlFKjh97dqzLeg+0MmtRhFtQf5OVZ0kB/xaDJWn/asN2wqNy7 YA== 
+Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j9mwjkqk8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 31 Aug 2022 15:19:02 +0000
+Received: from pps.filterd (NALASPPMTA01.qualcomm.com [127.0.0.1])
+        by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 27VFIcQi011417;
+        Wed, 31 Aug 2022 15:19:01 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by NALASPPMTA01.qualcomm.com (PPS) with ESMTPS id 3j7cbkqubm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 31 Aug 2022 15:19:01 +0000
+Received: from NALASPPMTA01.qualcomm.com (NALASPPMTA01.qualcomm.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27VFJ1Ev012265;
+        Wed, 31 Aug 2022 15:19:01 GMT
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+        by NALASPPMTA01.qualcomm.com (PPS) with ESMTPS id 27VFJ1G0012263
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 31 Aug 2022 15:19:01 +0000
+Received: from [10.110.0.200] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Wed, 31 Aug
+ 2022 08:19:00 -0700
+Message-ID: <24ee0926-1f56-f3d4-5531-f615352cda0c@quicinc.com>
+Date:   Wed, 31 Aug 2022 08:18:59 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 0/8] acpi: i2c: Use SharedAndWake and ExclusiveAndWake to
- enable wake irq
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH] wifi: mac80211_hwsim: check length for virtio packets
 Content-Language: en-US
-To:     Raul Rangel <rrangel@chromium.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Linux ACPI <linux-acpi@vger.kernel.org>,
-        linux-input <linux-input@vger.kernel.org>,
-        "Limonciello, Mario" <mario.limonciello@amd.com>,
-        Tim Van Patten <timvp@google.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Alistair Francis <alistair@alistair23.me>,
-        Angela Czubak <acz@semihalf.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Bartosz Szczepanek <bsz@semihalf.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Jiri Kosina <jikos@kernel.org>, Len Brown <lenb@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Rob Herring <robh@kernel.org>, Wolfram Sang <wsa@kernel.org>,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        "jingle.wu" <jingle.wu@emc.com.tw>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:I2C SUBSYSTEM HOST DRIVERS" <linux-i2c@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-References: <20220830231541.1135813-1-rrangel@chromium.org>
- <Yw9LdxWQMpnzgFe/@smile.fi.intel.com>
- <CAHQZ30BemtpHiZHOh+Wvh3N9wz5SSD9VdoQHNbArKhZUmudkwQ@mail.gmail.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <CAHQZ30BemtpHiZHOh+Wvh3N9wz5SSD9VdoQHNbArKhZUmudkwQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+To:     Soenke Huster <soenke.huster@eknoes.de>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220831132205.129922-1-soenke.huster@eknoes.de>
+From:   Jeff Johnson <quic_jjohnson@quicinc.com>
+In-Reply-To: <20220831132205.129922-1-soenke.huster@eknoes.de>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: PACf5UHZvt2zBIsW2CmIEZnqjxQaP8ZT
+X-Proofpoint-ORIG-GUID: PACf5UHZvt2zBIsW2CmIEZnqjxQaP8ZT
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-31_09,2022-08-31_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 adultscore=0
+ malwarescore=0 bulkscore=0 lowpriorityscore=0 impostorscore=0
+ clxscore=1011 mlxlogscore=505 phishscore=0 priorityscore=1501 mlxscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208310076
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On 8/31/2022 6:22 AM, Soenke Huster wrote:
+> An invalid packet with a length shorther than the specified length in the
 
-On 8/31/22 16:37, Raul Rangel wrote:
-> Interesting... The patch series is here:
-> https://patchwork.kernel.org/project/linux-input/cover/20220830231541.1135813-1-rrangel@chromium.org/
-> 
-> I'll look into why you only got added to 2 of the emails.
-
-FWIW I also received the full series without problems.
-
-I'll try to reply to this soon-ish, but I have a bit of
-a patch backlog to process and I'm trying to process
-the backlog in FIFO order and this is one of the last
-series in the backlog ...
-
-Regards,
-
-Hans
-
-
-> 
-> On Wed, Aug 31, 2022 at 5:52 AM Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
->>
->> On Tue, Aug 30, 2022 at 05:15:33PM -0600, Raul E Rangel wrote:
->>> Today, i2c drivers are making the assumption that their IRQs can also
->>> be used as wake IRQs. This isn't always the case and it can lead to
->>> spurious wakes. This has recently started to affect AMD Chromebooks.
->>> With the introduction of
->>> d62bd5ce12d7 ("pinctrl: amd: Implement irq_set_wake"), the AMD GPIO
->>> controller gained the capability to set the wake bit on each GPIO. The
->>> ACPI specification defines two ways to inform the system if a device is
->>> wake capable:
->>> 1) The _PRW object defines the GPE that can be used to wake the system.
->>> 2) Setting ExclusiveAndWake or SharedAndWake in the _CRS GpioInt.
->>>
->>> Currently only the first method is supported. The i2c drivers don't have
->>> any indication that the IRQ is wake capable, so they guess. This causes
->>> spurious interrupts, for example:
->>> * We have an ACPI HID device that has `_PR0` and `_PR3`. It doesn't have
->>>   `_PRW` or `ExclusiveAndWake` so that means the device can't wake the
->>>   system.
->>> * The IRQ line is active level low for this device and is pulled up by
->>>   the power resource defined in `_PR0`/`_PR3`.
->>> * The i2c driver will (incorrectly) arm the GPIO for wake by calling
->>>   `enable_irq_wake` as part of its suspend hook.
->>> * ACPI will power down the device since it doesn't have a wake GPE
->>>   associated with it.
->>> * When the device is powered down, the IRQ line will drop, and it will
->>>   trigger a wake event.
->>>
->>> See the following debug log:
->>> [   42.335804] PM: Suspending system (s2idle)
->>> [   42.340186] amd_gpio AMD0030:00: RX: Setting wake for pin 89 to enable
->>> [   42.467736]     power-0416 __acpi_power_off      : Power resource [PR00] turned off
->>> [   42.467739] device_pm-0280 device_set_power      : Device [H05D] transitioned to D3cold
->>> [   42.475210] PM: pm_system_irq_wakeup: 11 triggered pinctrl_amd
->>> [   42.535293] PM: Wakeup unrelated to ACPI SCI
->>> [   42.535294] PM: resume from suspend-to-idle
->>>
->>> In order to fix this, we need to take into account the wake capable bit
->>> defined on the GpioInt. This is accomplished by:
->>> * Migrating some of the i2c drivers over to using the PM subsystem to
->>>   manage the wake IRQ. max8925-i2c, elants_i2c, and raydium_i2c_ts still
->>>   need to be migrated, I can do that depending on the feedback to this
->>>   patch series.
->>> * Expose the wake_capable bit from the ACPI GpioInt resource to the
->>>   i2c core.
->>> * Use the wake_capable bit in the i2c core to call
->>>   `dev_pm_set_wake_irq`. This reuses the existing device tree flow.
->>> * Make the i2c drivers stop calling `dev_pm_set_wake_irq` since it's now
->>>   handled by the i2c core.
->>> * Make the ACPI device PM system aware of the wake_irq. This is
->>>   necessary so the device doesn't incorrectly get powered down when a
->>>   wake_irq is enabled.
->>>
->>> I've tested this code with various combinations of having _PRW,
->>> ExclusiveAndWake and power resources all defined or not defined, but it
->>> would be great if others could test this out on their hardware.
->>
->> I have got only cover letter and a single patch (#3). What's going on?
->>
->> Note: I'm also reviewer of I涎 DesignWare driver, you really have to
->> fix your tools / submission process and try again. No review for this
->> series.
->>
->> --
->> With Best Regards,
->> Andy Shevchenko
->>
->>
-> 
+nit: s/shorther/shorter/
 
