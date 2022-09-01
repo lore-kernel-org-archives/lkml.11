@@ -2,64 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10925ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 08:11:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13478ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 08:12:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232977AbiIAILm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 04:11:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42134 "EHLO
+        id S233736AbiIAIMq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 04:12:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229679AbiIAILi (ORCPT
+        with ESMTP id S233296AbiIAIMo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 04:11:38 -0400
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D91365A1
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 01:11:37 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VNzpRVY_1662019892;
-Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VNzpRVY_1662019892)
-          by smtp.aliyun-inc.com;
-          Thu, 01 Sep 2022 16:11:33 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     alexander.deucher@amd.com
-Cc:     harry.wentland@amd.com, sunpeng.li@amd.com,
-        Rodrigo.Siqueira@amd.com, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH -next] drm/amd/display: Simplify bool conversion
-Date:   Thu,  1 Sep 2022 16:11:31 +0800
-Message-Id: <20220901081131.76486-1-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
-MIME-Version: 1.0
+        Thu, 1 Sep 2022 04:12:44 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A689312BF5D
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 01:12:42 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id E86C22236B;
+        Thu,  1 Sep 2022 08:12:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1662019961; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=og2E6r4BlfREBBntCzJImLCjpmEPg9cD/ZtzU17hoqY=;
+        b=JmHXj8DzGhM7Op0QLbkP1W0I4gb5cFD6xBhIWgtbWcGmDgm7+x3LA3bY9R5973dOCnHsKy
+        augmuzi3EuQ0wZMyVjTteEnP/khiBip/s/EnTioxrvSsGGWPlzMJ8ykTGOInKEZriu6SiD
+        HHowhRXFIv5HQHznMD7Zq2ElMYmdT5s=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1662019961;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=og2E6r4BlfREBBntCzJImLCjpmEPg9cD/ZtzU17hoqY=;
+        b=7qb7YsZAfYI255EE3Hc0LuHc/1WJyE/r+x4nfST7R+Ku1tw1WjcUGeiETe6jmP5RDDd1mP
+        +sy2eYiR2UosxoBA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id EBB2E13A89;
+        Thu,  1 Sep 2022 08:12:40 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id H/HLOHhpEGOPJQAAMHmgww
+        (envelope-from <tiwai@suse.de>); Thu, 01 Sep 2022 08:12:40 +0000
+Date:   Thu, 01 Sep 2022 10:12:40 +0200
+Message-ID: <874jxrh5s7.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: [GIT PULL] sound fixes for 6.0-rc4
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=ISO-8859-2
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The result of relational operation is Boolean, and the question mark
-expression is redundant.
+Linus,
 
-Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=2027
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+please pull sound fixes for v6.0-rc4 from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git tags/sound-6.0-rc4
+
+The topmost commit is 5f3d9e8161bb8cb23ab3b4678cd13f6e90a06186
+
+----------------------------------------------------------------
+
+sound fixes for 6.0-rc4
+
+Just handful changes at this time.  The only major change is the
+regression fix about the x86 WC-page buffer allocation.
+The rest are trivial data-race fixes for ALSA sequencer core,
+the possible out-of-bounds access fixes in the new ALSA control
+hash code, and a few device-specific workarounds and fixes.
+
+----------------------------------------------------------------
+
+Dan Carpenter (1):
+      ALSA: control: Re-order bounds checking in get_ctl_id_hash()
+
+Kacper Michaj³ow (1):
+      ALSA: hda/realtek: Add speaker AMP init for Samsung laptops with ALC298
+
+Peter Ujfalusi (1):
+      ALSA: hda: intel-nhlt: Correct the handling of fmt_config flexible array
+
+Takashi Iwai (4):
+      ALSA: memalloc: Revive x86-specific WC page allocations again
+      ALSA: seq: oss: Fix data-race for max_midi_devs access
+      ALSA: seq: Fix data-race at module auto-loading
+      ALSA: usb-audio: Add quirk for LH Labs Geek Out HD Audio 1V5
+
+Zheyu Ma (1):
+      ALSA: control: Fix an out-of-bounds bug in get_ctl_id_hash()
+
 ---
- .../gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_util_32.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_util_32.c b/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_util_32.c
-index dc501ee7d01a..e4fd540dec0f 100644
---- a/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_util_32.c
-+++ b/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_util_32.c
-@@ -1873,7 +1873,7 @@ void dml32_CalculateSurfaceSizeInMall(
- 		if (UseMALLForStaticScreen[k] == dm_use_mall_static_screen_enable)
- 			TotalSurfaceSizeInMALL = TotalSurfaceSizeInMALL + SurfaceSizeInMALL[k];
- 	}
--	*ExceededMALLSize =  (TotalSurfaceSizeInMALL <= MALLAllocatedForDCN * 1024 * 1024 ? false : true);
-+	*ExceededMALLSize =  (TotalSurfaceSizeInMALL > MALLAllocatedForDCN * 1024 * 1024);
- } // CalculateSurfaceSizeInMall
- 
- void dml32_CalculateVMRowAndSwath(
--- 
-2.20.1.7.g153144c
+ sound/core/control.c              |  6 +--
+ sound/core/memalloc.c             | 87 ++++++++++++++++++++++++++++++++-------
+ sound/core/seq/oss/seq_oss_midi.c |  2 +
+ sound/core/seq/seq_clientmgr.c    | 12 +++---
+ sound/hda/intel-nhlt.c            |  8 +++-
+ sound/pci/hda/patch_realtek.c     | 63 ++++++++++++++++++++++++----
+ sound/usb/quirks.c                |  2 +
+ 7 files changed, 146 insertions(+), 34 deletions(-)
 
