@@ -2,99 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E907ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 09:15:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25B99ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 09:16:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234027AbiIAJPI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 05:15:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42362 "EHLO
+        id S233746AbiIAJQF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 05:16:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233839AbiIAJO7 (ORCPT
+        with ESMTP id S233496AbiIAJQC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 05:14:59 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E288186E9
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 02:14:57 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id w88-20020a17090a6be100b001fbb0f0b013so1910907pjj.5
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 02:14:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=quanta-corp-partner-google-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=u2QS6fg72hwaCjD3sPqvtQp+8aS8fo77aTYpyXjXL8Y=;
-        b=PZ+CH7EXjkNOGhZq8PDnXpvC/rs7V5KmsN+G9ndQPrmNIwdLfdESoA8UJ+InSHTsez
-         4SuPCXQ8LlFheSraJQcoydEcyKZOyxxciV+8TuAKKvzNcibV42y+eTFtDaDDJ5513JTL
-         kPWjBsieaCYl5n5YG/cXLiVkTFw9uX5Msk88LjpWvtLRvl/oUKgh5054t8zAH8GRju+y
-         6P57VLWb3kQaHU1Va2AHi3/y/v/rgNmH1pgQbp3LHeiN4UdsQVF3ESwzp5CApQa7HwJ7
-         ZgBVtiWLrwiKGlJ0h5wj2KZ3uxMcmgqsvvkf2W24dRxma2qaDG+edK0Bv+HwocR+ZHHp
-         g/ZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=u2QS6fg72hwaCjD3sPqvtQp+8aS8fo77aTYpyXjXL8Y=;
-        b=uW3VFQ0SBN3QHRg2QZFvM1XmxMTkzlP0hbRHXGBJkWoolbZDvE7EHwvWf21MtfGG7j
-         TVXRTtveub9kbi9J4J/oqyGSdGAnYlHIJUQjKap1ilHbxJQXiebTjOMZ1mH2ayW60nZ0
-         VauUCGj2O6JUGZ2cgpNvzWQaCzIpFNmQirsih3HR/JRPdD9HUg3xNA1MYzK2nCxIr4Uo
-         Q23JiHKaCHH+IhwZ3N13zKdBZUUhtvd9n4xi0o0e1L78vZkkNvzS0D2FpoKNmNfDGpA5
-         YOkfDkVgtyI+SvQQpwdua7kJKMZWMiP2v4htsFiz1d2iXbYvZ+1SFaFmZvZM1M+UK5cu
-         xM/w==
-X-Gm-Message-State: ACgBeo20j0HTiWApKWnDqOzDKfVbxvuZx3V7Gm9d6zdDk0vR7o1D3Qn7
-        n1tHavpkOPoFoGQZzoVM9mSlbyMxmh83pA==
-X-Google-Smtp-Source: AA6agR46ay4uWAyG0W62enE08jDIaDsaC4/Vabm9eAdkyK0tCeaSUZg3V9EQHH3duG/T7jtqgADLxA==
-X-Received: by 2002:a17:902:694a:b0:172:bd15:3ece with SMTP id k10-20020a170902694a00b00172bd153ecemr30260732plt.116.1662023696569;
-        Thu, 01 Sep 2022 02:14:56 -0700 (PDT)
-Received: from liang-Predator-PH517-52.. (60-250-232-247.hinet-ip.hinet.net. [60.250.232.247])
-        by smtp.gmail.com with ESMTPSA id n12-20020a170902e54c00b0016efad0a63csm13553284plf.100.2022.09.01.02.14.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 02:14:56 -0700 (PDT)
-From:   Sheng-Liang Pan <sheng-liang.pan@quanta.corp-partner.google.com>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     mka@chromium.org, dianders@chromium.org,
-        Sheng-Liang Pan <sheng-liang.pan@quanta.corp-partner.google.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-Subject: [PATCH 2/2] dt-bindings: arm: qcom: document sc7280 and evoker board
-Date:   Thu,  1 Sep 2022 17:12:53 +0800
-Message-Id: <20220901170958.2.Ief93544cd0cbfa412092f5de92de10d59a2a5b3a@changeid>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220901091253.93333-1-sheng-liang.pan@quanta.corp-partner.google.com>
-References: <20220901091253.93333-1-sheng-liang.pan@quanta.corp-partner.google.com>
+        Thu, 1 Sep 2022 05:16:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 194CE11E812;
+        Thu,  1 Sep 2022 02:16:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AC40061736;
+        Thu,  1 Sep 2022 09:16:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC3A0C433C1;
+        Thu,  1 Sep 2022 09:15:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662023760;
+        bh=EOXV8/cxgZ9U2fhKP5zijCVI58O0ja1whVreiypMn0M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=HBTItFdg+aO72LMccCwXO/ZSbg5egTSitZro6yL2n+9DXVolU3x0MnXALco5OFeQr
+         iaoi8KafwGvhV6pduixN0/SXolGBfmL96mbhNlPSwqCGpCztP17rr+WI2bispBaAuL
+         HnZtLu7lwpUQXwdAFA6yt/VE5GI152rpfrnKftKJ0IsRddS9Ef1SzjKL34IT/IAYOr
+         7euYVJ8U9LyWEjtVFGebbUR+aLaRwBtN8T8LX/bTbRBQMiigfgVIgAtm5Vyw3v+JeD
+         9RhFuH+wr76XP16Pq0HrQ7vo0c2csCCBQfgrb5C1MDKQoIH/ujw+hYwsCyuqKVwes8
+         1w0cxhJTIntdA==
+Date:   Thu, 1 Sep 2022 11:15:57 +0200
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@fb.com, rostedt@goodmis.org,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Joel Fernandes <joel@joelfernandes.org>
+Subject: Re: [PATCH rcu 3/3] rcu: Simplify rcu_init_nohz() cpumask handling
+Message-ID: <20220901091557.GA101341@lothringen>
+References: <20220831181040.GA2694278@paulmck-ThinkPad-P17-Gen-1>
+ <20220831181044.2694488-3-paulmck@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220831181044.2694488-3-paulmck@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds Chromebook Evoker to the yaml.
+On Wed, Aug 31, 2022 at 11:10:44AM -0700, Paul E. McKenney wrote:
+> From: Zhen Lei <thunder.leizhen@huawei.com>
+> 
+> In kernels built with either CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y or
+> CONFIG_NO_HZ_FULL=y, additional CPUs must be added to rcu_nocb_mask.
+> Except that kernels booted without the rcu_nocbs= will not have
+> allocated rcu_nocb_mask.  And the current rcu_init_nohz() function uses
+> its need_rcu_nocb_mask and offload_all local variables to track the
+> rcu_nocb and nohz_full state.
+> 
+> But there is a much simpler approach, namely creating a cpumask pointer
+> to track the default and then using cpumask_available() to check the
+> rcu_nocb_mask state.  This commit takes this approach, thereby simplifying
+> and shortening the rcu_init_nohz() function.
+> 
+> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+> Reviewed-by: Joel Fernandes (Google) <joel@joelfernandes.org>
+> ---
+>  kernel/rcu/tree_nocb.h | 32 +++++++++-----------------------
+>  1 file changed, 9 insertions(+), 23 deletions(-)
+> 
+> diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
+> index 0a5f0ef414845..c8167be2288fa 100644
+> --- a/kernel/rcu/tree_nocb.h
+> +++ b/kernel/rcu/tree_nocb.h
+> @@ -1210,45 +1210,31 @@ EXPORT_SYMBOL_GPL(rcu_nocb_cpu_offload);
+>  void __init rcu_init_nohz(void)
+>  {
+>  	int cpu;
+> -	bool need_rcu_nocb_mask = false;
+> -	bool offload_all = false;
+>  	struct rcu_data *rdp;
+> +	const struct cpumask *cpumask = NULL;
+>  
+>  #if defined(CONFIG_RCU_NOCB_CPU_DEFAULT_ALL)
+> -	if (!rcu_state.nocb_is_setup) {
+> -		need_rcu_nocb_mask = true;
+> -		offload_all = true;
+> -	}
+> -#endif /* #if defined(CONFIG_RCU_NOCB_CPU_DEFAULT_ALL) */
+> -
+> -#if defined(CONFIG_NO_HZ_FULL)
+> -	if (tick_nohz_full_running && !cpumask_empty(tick_nohz_full_mask)) {
+> -		need_rcu_nocb_mask = true;
+> -		offload_all = false; /* NO_HZ_FULL has its own mask. */
+> -	}
+> -#endif /* #if defined(CONFIG_NO_HZ_FULL) */
+> +	cpumask = cpu_possible_mask;
 
-Signed-off-by: Sheng-Liang Pan <sheng-liang.pan@quanta.corp-partner.google.com>
----
+You're missing the rcu_state.nocb_is_setup check, so
+CONFIG_RCU_NOCB_CPU_DEFAULT_ALL will now always override the rcu_nocbs=
+parameter (should be the other way around).
 
- Documentation/devicetree/bindings/arm/qcom.yaml | 5 +++++
- 1 file changed, 5 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-index fb1d00bcc847c..d4b2d947859d4 100644
---- a/Documentation/devicetree/bindings/arm/qcom.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -565,6 +565,11 @@ properties:
-           - const: google,piglin
-           - const: qcom,sc7280
- 
-+      - description: Google Evoker (newest rev)
-+        items:
-+          - const: google,evoker
-+          - const: qcom,sc7280
-+
-       - description: Google Herobrine (newest rev)
-         items:
-           - const: google,herobrine
--- 
-2.34.1
+> +#elif defined(CONFIG_NO_HZ_FULL)
+> +	if (tick_nohz_full_running && !cpumask_empty(tick_nohz_full_mask))
+> +		cpumask = tick_nohz_full_mask;
+> +#endif
 
+A subtle behaviour difference here too: CONFIG_RCU_NOCB_CPU_DEFAULT_ALL will
+now override nohz_full=
+
+I don't mind, it's probably what we want in the end, but the changelog should
+tell about it, or even better, this should be a separate change.
+
+Thanks.
+
+>  
+> -	if (need_rcu_nocb_mask) {
+> +	if (cpumask) {
+>  		if (!cpumask_available(rcu_nocb_mask)) {
+>  			if (!zalloc_cpumask_var(&rcu_nocb_mask, GFP_KERNEL)) {
+>  				pr_info("rcu_nocb_mask allocation failed, callback offloading disabled.\n");
+>  				return;
+>  			}
+>  		}
+> +
+> +		cpumask_or(rcu_nocb_mask, rcu_nocb_mask, cpumask);
+>  		rcu_state.nocb_is_setup = true;
+>  	}
+>  
+>  	if (!rcu_state.nocb_is_setup)
+>  		return;
+>  
+> -#if defined(CONFIG_NO_HZ_FULL)
+> -	if (tick_nohz_full_running)
+> -		cpumask_or(rcu_nocb_mask, rcu_nocb_mask, tick_nohz_full_mask);
+> -#endif /* #if defined(CONFIG_NO_HZ_FULL) */
+> -
+> -	if (offload_all)
+> -		cpumask_setall(rcu_nocb_mask);
+> -
+>  	if (!cpumask_subset(rcu_nocb_mask, cpu_possible_mask)) {
+>  		pr_info("\tNote: kernel parameter 'rcu_nocbs=', 'nohz_full', or 'isolcpus=' contains nonexistent CPUs.\n");
+>  		cpumask_and(rcu_nocb_mask, cpu_possible_mask,
+> -- 
+> 2.31.1.189.g2e36527f23
+> 
