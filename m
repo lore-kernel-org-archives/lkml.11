@@ -2,140 +2,338 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4EB5ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 18:46:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41496ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 18:47:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232776AbiIASqw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 14:46:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38152 "EHLO
+        id S231455AbiIASrr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 14:47:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231589AbiIASqj (ORCPT
+        with ESMTP id S234057AbiIASrh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 14:46:39 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 240F4B498;
-        Thu,  1 Sep 2022 11:46:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=XRAc12CEffd6UPewH7ccY0GIxlcGsZ0nDr5uMann2po=; b=LrIm/0Nee/5kQPChCwKM5mR7cS
-        x/tkmOjSOkF21LeaUXzbtHiYXJ2G2eDB6PjOHrdhA2NLbODRKysIiHWX2Po/jLSxA73LX6AIjwYpo
-        uCDMRwWffp9Kg0N64hh/CRmZC7fZcdH3jRzGf/QBtsIG+2D62NB6yaZUbjUg7yneBzT2wipVCed1D
-        4DmdJ7Vqo2DmckjAUvu07vzR3BOLdjqRWCUSL4VI7ycxabym8A6kaMOb9fBZJNXoFafQWFaltEg6v
-        r6IJYn+myeJlTUWsnMrHYZukWw90sMtyav3tRe2tTXpkn07uGfn8Uu7z8pyTHbB1qq7eVnevSVL4u
-        KuIgAf0Q==;
-Received: from 189-69-202-182.dial-up.telesp.net.br ([189.69.202.182] helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1oTpCz-007tqI-1P; Thu, 01 Sep 2022 20:46:33 +0200
-Message-ID: <b050f00b-6c3a-a0d9-a3c1-175a724faf1c@igalia.com>
-Date:   Thu, 1 Sep 2022 15:46:17 -0300
+        Thu, 1 Sep 2022 14:47:37 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AB2A7F0B8;
+        Thu,  1 Sep 2022 11:47:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662058045; x=1693594045;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=1WMCjEyHaC+wtyRq4u2T3mWuHuAU/JtguUjyVOcbWWc=;
+  b=BxAYypORPz0scx/pgHudlGHAdOvdMdvLKw5CBbNQfhtjE+QHEQK/JW30
+   ZLoKVdvIS3sYJfDvFxvfUVU6KACC1gLcBlDVXhIM4WMwzLtLtv6gg2BA3
+   AftDJUE0AYBG0GPSLtQXuUhDORtSrJag0GHUujUfnHFGw0bNNLLLrWK1Z
+   tacCeA9SS9J+psLM1CtiU5tlBWAOHZIeJx605aJ7HOpUJ/Vl1/yXmMluF
+   44lMiXQZs0lsuiOF99gFol10P/Uwlt4YIoXI8kgxWDy+R9Z1NnCZwKarS
+   qLOoaD1e5Hf75//hwCRRaeyU0jRmaljd3lIhMVk3IoOKoyKjM3aeqFila
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="359758947"
+X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
+   d="scan'208";a="359758947"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 11:47:25 -0700
+X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
+   d="scan'208";a="563576409"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 11:47:21 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oTpDi-00708r-0C;
+        Thu, 01 Sep 2022 21:47:18 +0300
+Date:   Thu, 1 Sep 2022 21:47:17 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
+Cc:     linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
+        wsa@kernel.org, krzk@kernel.org, jarkko.nikula@linux.intel.com,
+        robh@kernel.org, semen.protsenko@linaro.org, sven@svenpeter.dev,
+        jsd@semihalf.com, rafal@milecki.pl, olof@lixom.net, arnd@arndb.de,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH v2 i2c-master] i2c: microchip: pci1xxxx: Add driver for
+ I2C host controller in multifunction endpoint of pci1xxxx switch
+Message-ID: <YxD+NTWok2vkYos/@smile.fi.intel.com>
+References: <20220901013626.2213100-1-tharunkumar.pasumarthi@microchip.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH V3] firmware: google: Test spinlock on panic path to avoid
- lockups
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     evgreen@chromium.org, arnd@arndb.de, linux-efi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@gpiccoli.net, ardb@kernel.org,
-        davidgow@google.com, jwerner@chromium.org,
-        Petr Mladek <pmladek@suse.com>
-References: <20220819155059.451674-1-gpiccoli@igalia.com>
- <YxDVPqVkdgQbAIvY@kroah.com>
- <f89cd87c-7d1c-d8e6-ed95-6876f0201872@igalia.com>
- <YxDX9+p+58q2sip2@kroah.com>
- <6bc5dbc3-2cdd-5cb8-1632-11de2008a85a@igalia.com>
- <YxDhiSDs4YcUrqV5@kroah.com>
- <85683284-db85-7e3a-57bd-750e1c204e3e@igalia.com>
- <YxD56RTI9v/P2QOL@kroah.com>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <YxD56RTI9v/P2QOL@kroah.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220901013626.2213100-1-tharunkumar.pasumarthi@microchip.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/09/2022 15:28, Greg KH wrote:
-> [...]
->> I honestly didn't understand exactly what you're suggesting Greg...
->> Mind clarifying?
-> 
-> Something like this totally untested code:
-> 
-> diff --git a/drivers/firmware/google/gsmi.c b/drivers/firmware/google/gsmi.c
-> index adaa492c3d2d..6ad41b22671c 100644
-> --- a/drivers/firmware/google/gsmi.c
-> +++ b/drivers/firmware/google/gsmi.c
-> @@ -19,6 +19,7 @@
->  #include <linux/dma-mapping.h>
->  #include <linux/fs.h>
->  #include <linux/slab.h>
-> +#include <linux/panic.h>
->  #include <linux/panic_notifier.h>
->  #include <linux/ioctl.h>
->  #include <linux/acpi.h>
-> @@ -611,6 +612,11 @@ static const struct attribute *gsmi_attrs[] = {
->  	NULL,
->  };
->  
-> +static bool panic_in_progress(void)
+On Thu, Sep 01, 2022 at 07:06:26AM +0530, Tharun Kumar P wrote:
+> Microchip pci1xxxx is an unmanaged PCIe3.1a Switch for Consumer,
+> Industrial and Automotive applications. This switch has multiple
+> downstream ports. In one of the Switch's Downstream port, there
+> is a multifunction endpoint for peripherals which includes an I2C
+> host controller. The I2C function in the endpoint operates at 100KHz,
+> 400KHz and 1 MHz and has buffer depth of 128 bytes.
+> This patch provides the I2C controller driver for the I2C function
+> of the switch.
+
+...
+
+> +#define SMB_IDLE_SCALING_100KHZ		((FAIR_IDLE_DELAY_100KHZ_TICKS << 16) | \
+> +					FAIR_BUS_IDLE_MIN_100KHZ_TICKS)
+
+This kind of indentation harder to read than
+
+#define SMB_IDLE_SCALING_100KHZ		\
+	((FAIR_IDLE_DELAY_100KHZ_TICKS << 16) | FAIR_BUS_IDLE_MIN_100KHZ_TICKS)
+
+Ditto for other similar cases.
+
+...
+
+> +/*
+
+If it's a kernel doc, make it kernel doc.
+
+> + * struct pci1xxxx_i2c - private structure for the I2C controller
+> + * @i2c_xfer_done: used for synchronisation between foreground & isr
+> + * @i2c_xfer_in_progress: boolean to indicate whether a transfer is in
+> + *				progress or not
+> + * @adap: I2C adapter instance
+> + * @i2c_base: pci base address of the I2C controller
+> + * @freq: frequency of I2C transfer
+> + * @flags: internal flags to store transfer conditions
+> + */
+
+...
+
+> +static int set_sys_lock(void __iomem *addr)
+
+Why not to take pointer to your private structure and offset instead of address
+and calc the address here?
+
+...
+
+> +static int release_sys_lock(void __iomem *addr)
+
+Ditto.
+
+...
+
+> +static void pci1xxxx_i2c_buffer_write(struct pci1xxxx_i2c *i2c, u8 slaveaddr,
+> +				      u8 transferlen, unsigned char *buf)
 > +{
-> +	return unlikely(atomic_read(&panic_cpu) != PANIC_CPU_INVALID);
+> +	if (slaveaddr) {
+> +		writeb(slaveaddr, i2c->i2c_base + SMBUS_MST_BUF);
+> +		if (buf)
+> +			memcpy_toio((i2c->i2c_base + SMBUS_MST_BUF + 1), buf, transferlen);
+> +	} else {
+> +		if (buf)
+> +			memcpy_toio((i2c->i2c_base + SMBUS_MST_BUF), buf, transferlen);
+> +	}
+
+Why do you need buf checks? Is your code can shoot itself in the foot?
+
 > +}
+
+...
+
+> +		regval &= ~(intr_msk);
+
+> +		regval |= (I2C_INPUT_EN | I2C_OUTPUT_EN);
+
+> +		regval |= (I2C_INPUT_EN | I2C_OUTPUT_EN);
+
+And in a plenty places you add extra parentheses. Reread your code and drop
+them and in some cases (I will show below an example) move code to shorter
+amount of LoCs.
+
+...
+
+> +		regval &=  ~(I2C_INPUT_EN | I2C_OUTPUT_EN);
+
+Extra space.
+
+...
+
+> +	pci1xxxx_i2c_config_high_level_intr(i2c, (I2C_BUF_MSTR_INTR_MASK),
+> +					    true);
+
+Why parentheses? Why it can't be one line?
+There are more examples like this. Fix them all.
+
+...
+
+> +			if (i2c->flags & I2C_FLAGS_SMB_BLK_READ)
+> +				pci1xxxx_i2c_set_readm(i2c, true);
+
 > +
->  static int gsmi_shutdown_reason(int reason)
->  {
->  	struct gsmi_log_entry_type_1 entry = {
-> @@ -629,7 +635,8 @@ static int gsmi_shutdown_reason(int reason)
->  	if (saved_reason & (1 << reason))
->  		return 0;
->  
-> -	spin_lock_irqsave(&gsmi_dev.lock, flags);
-> +	if (!panic_in_progress())
-> +		spin_lock_irqsave(&gsmi_dev.lock, flags);
->  
->  	saved_reason |= (1 << reason);
->  
-> @@ -644,7 +651,8 @@ static int gsmi_shutdown_reason(int reason)
->  
->  	rc = gsmi_exec(GSMI_CALLBACK, GSMI_CMD_SET_EVENT_LOG);
->  
-> -	spin_unlock_irqrestore(&gsmi_dev.lock, flags);
-> +	if (!panic_in_progress())
-> +		spin_unlock_irqrestore(&gsmi_dev.lock, flags);
->  
->  	if (rc < 0)
->  		printk(KERN_ERR "gsmi: Log Shutdown Reason failed\n");
-> 
-> 
->
 
-Thanks! Personally, I feel the approach a bit more complex than mine,
-and...racy!
-Imagine CPU0 runs your tests, right after the if (!panic_in_progress())
-is done, spinlock is taken and boom - panic on CPU1. This would cause
-the same issue...
+We don't need useless blank lines.
 
-My approach is zero racy, since it checks if spinlock was taken in a
-moment that the machine is like a no-SMP, only a single CPU running...
+> +		} else {
+> +			pci1xxxx_i2c_set_count(i2c, 0, 0, transferlen);
+> +
+> +			pci1xxxx_i2c_config_asr(i2c, false);
+> +
+> +			pci1xxxx_i2c_clear_flags(i2c);
+> +
+> +			pci1xxxx_i2c_set_transfer_dir(i2c, I2C_DIRN_READ);
+> +		}
+
+...
+
+> +		if (i2c->flags & I2C_FLAGS_SMB_BLK_READ) {
+
+> +			buf[0] = readb(i2c->i2c_base +
+> +				      SMBUS_MST_BUF);
+
+Why not on one line?
+
+> +			read_count = buf[0];
+> +			memcpy_fromio(&buf[1], (i2c->i2c_base +
+> +						SMBUS_MST_BUF + 1),
+> +						read_count);
+> +		} else {
+> +			memcpy_fromio(&buf[count], (i2c->i2c_base +
+> +						SMBUS_MST_BUF), transferlen);
+> +		}
+
+These accessors may copy from 1 to 4 bytes at a time. Does your hardware
+supports this kind of accesses?
 
 
-> That being said, are you sure spinlocks are still held in the panic
-> notifier?  What about the call to bust_spinlocks() that is called in
-> panic() already?  Wouldn't that have already dropped whatever you were
-> worried about here?
+...
 
-This function is very weird. Basically, the call of "bust_spinlocks(1);"
-in panic effectively means "++oops_in_progress;" IIUC.
-So, I still think we can have lockups in panic notifiers with locks
-previously taken =)
+> +static int pci1xxxx_i2c_suspend(struct device *dev)
+> +{
+> +	struct pci1xxxx_i2c *i2c = dev_get_drvdata(dev);
+> +	struct pci_dev *pdev = to_pci_dev(dev);
+> +	u32 regval;
+> +
+> +	i2c_mark_adapter_suspended(&i2c->adap);
+> +
+> +	while ((i2c->i2c_xfer_in_progress))
+> +		msleep(20);
 
-Cheers,
+Each long sleep (20 ms is quite long) has to be explained. But this entire loop
+looks like a band-aid of lack of IRQ or so. Why do you need to poll?
+
+> +	pci1xxxx_i2c_config_high_level_intr(i2c,
+> +					    SMBALERT_WAKE_INTR_MASK,
+> +					    true);
+> +
+> +	/*
+> +	 * Enable the PERST_DIS bit to mask the PERST from
+> +	 * resetting the core registers
+> +	 */
+> +	regval = readl(i2c->i2c_base + SMBUS_RESET_REG);
+> +	regval |= PERI_SMBUS_D3_RESET_DIS;
+> +	writel(regval, i2c->i2c_base + SMBUS_RESET_REG);
+> +	/* Enable PCI wake in the PMCSR register */
+> +	device_set_wakeup_enable(dev, TRUE);
+> +	pci_wake_from_d3(pdev, TRUE);
+> +
+> +	return 0;
+> +}
+
+...
+
+> +	pci_wake_from_d3(pdev, FALSE);
+
+What's FALSE and why false can't be used?
+
+...
+
+> +static SIMPLE_DEV_PM_OPS(pci1xxxx_i2c_pm_ops, pci1xxxx_i2c_suspend,
+> +			 pci1xxxx_i2c_resume);
+
+Use new macro which starts with DEFINE prefix.
+
+...
+
+> +	/*
+> +	 * We are getting the base address of the SMB core. SMB core uses
+> +	 * BAR0 and size is 32K
+
+Missed period.
+
+> +	 */
+
+> +
+
+Useless blank line.
+
+> +	ret = pcim_iomap_regions(pdev, BIT(0), pci_name(pdev));
+> +	if (ret < 0)
+> +		return -ENOMEM;
+
+> +	i2c->i2c_base =	pcim_iomap_table(pdev)[0];
+> +
+> +	init_completion(&i2c->i2c_xfer_done);
+> +
+> +	pci1xxxx_i2c_init(i2c);
+
+Here you need to wrap pci1xxxx_i2c_shutdown() to be devm_. See below.
+
+> +	ret = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_ALL_TYPES);
+> +	if (ret < 0) {
+> +		pci1xxxx_i2c_shutdown(i2c);
+> +		return ret;
+> +	}
+> +
+> +	/* Register the isr. We are not using any isr flags here. */
+> +	ret = devm_request_irq(&pdev->dev, pci_irq_vector(pdev, 0),
+
+With
+
+	struct device *dev = &pdev->dev;
+
+you may have some lines of code neater and shorter.
+
+> +			       pci1xxxx_i2c_isr, PCI1XXXX_IRQ_FLAGS,
+> +			       pci_name(pdev), i2c);
+> +	if (ret) {
+> +		pci1xxxx_i2c_shutdown(i2c);
+> +		return ret;
+> +	}
+> +
+> +	i2c->adap = pci1xxxx_i2c_ops;
+> +	i2c->adap.class = I2C_CLASS_SPD;
+> +	i2c->adap.dev.parent = &pdev->dev;
+> +
+> +	snprintf(i2c->adap.name, sizeof(i2c->adap.name),
+> +		 "MCHP PCI1xxxx i2c adapter at %s", pci_name(pdev));
+> +
+> +	i2c_set_adapdata(&i2c->adap, i2c);
+> +
+> +	ret = devm_i2c_add_adapter(&pdev->dev, &i2c->adap);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "i2c add adapter failed = %d\n", ret);
+
+> +		pci1xxxx_i2c_shutdown(i2c);
+
+You can't mix devm_ and non-devm_ in such manner. It's asking for troubles at
+->remove() or unbind stages.
+
+> +		return ret;
+
+After fixing above, convert the error messages to use
+
+	return dev_err_probe(...);
+
+pattern.
+
+> +	}
+
+...
+
+> +static void pci1xxxx_i2c_remove_pci(struct pci_dev *pdev)
+> +{
+> +	struct pci1xxxx_i2c *i2c = pci_get_drvdata(pdev);
+> +
+> +	pci1xxxx_i2c_shutdown(i2c);
+> +}
+
+This will be gone.
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-Guilherme
