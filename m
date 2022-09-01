@@ -2,76 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C50C7ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 22:20:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B021C6FA83
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 22:21:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234945AbiIAWUN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 18:20:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48214 "EHLO
+        id S235213AbiIAWVL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 18:21:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235058AbiIAWTf (ORCPT
+        with ESMTP id S235093AbiIAWUn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 18:19:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43D1A9836A;
-        Thu,  1 Sep 2022 15:18:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 1 Sep 2022 18:20:43 -0400
+Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55043A1A63;
+        Thu,  1 Sep 2022 15:19:10 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9CDD7B8295F;
-        Thu,  1 Sep 2022 22:18:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E68B9C433C1;
-        Thu,  1 Sep 2022 22:18:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662070714;
-        bh=P11/1T5vHWH0SCcpyWwUdgCzRVkbP+ssblCg6//orxA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=e4ZXSvTa25bXtQ4JOhN6MHYEzRmAHL5dr5fAFHDNj4qHH4lJzlUVfzJVTrc4sterB
-         v0TbdY23FmZ9U3rsB9+Tffiwq6STUgVrVhzJrTE676a8p5id8KOpvPs0jIF89pkBxI
-         oyCYPAg26t6YDYdpuwBZzd9+yu4WBB0OYqi0bZFK2gGuWz2GecnjEiohWPyVyPGj6j
-         JWmlCKbpIFgVNffPV5RB9mXnGSKpNMRsRY6E499dtKSWkMYfFFlbTe+j9iVm0BprOi
-         6pnCFt0xqZTRFUctkptNL1rMkSBtxumvRChXOQ/qEZ8iwSfEhh2B1NeocGTTGpQE8r
-         ngQkItbH/r88A==
-Date:   Fri, 2 Sep 2022 01:18:29 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     Reinette Chatre <reinette.chatre@intel.com>,
-        linux-sgx@vger.kernel.org,
-        Haitao Huang <haitao.huang@linux.intel.com>,
-        Vijay Dhanraj <vijay.dhanraj@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Shuah Khan <shuah@kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 5/6] selftests/sgx: retry the ioctls returned with EAGAIN
-Message-ID: <YxEvtWpCQHpy3Vzf@kernel.org>
-References: <20220830031206.13449-1-jarkko@kernel.org>
- <20220830031206.13449-6-jarkko@kernel.org>
- <5d19be91-3aef-5cbe-6063-3ff3dbd5572b@intel.com>
- <Yw7IFcnjbfm3Xgqk@kernel.org>
- <709d9f58-0ae9-833a-ca54-7b50307b377e@intel.com>
+        by mail.3ffe.de (Postfix) with ESMTPSA id DCC132010;
+        Fri,  2 Sep 2022 00:19:07 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
+        t=1662070748;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wdjSL3TiHg3qFpviZsE8DP2S5RzCHH4DKzPfG+JMhKc=;
+        b=MD31gvVbYo7tM0nTjHtSpj+l08HOGGoGiWF6xKQiUjq68ekoSRL++w3Q4T1lJIaMTgX8hF
+        Dn5laG5VT2yoyNqpvBuuHnH9UOkfphV5B+jn0SWPSEQtuzaNQTUyx3LpNFWg6BdLDALDWL
+        A35GGTTMPmhrr+ZwOnXXjVOnOkOGIPwDvNC8lubbocR1C/eu341/xSUSvXzs9SI37y9Icj
+        LdLR/xMA+hRltry8fFAP7sKWHQhGLw1QJFAlpuMEyC9B7I5guVEGlhF+7zdY9BWGl04QW8
+        QVlnsB1qZcsPx+iuszGFE1ezn0hgNlyShJPek5X4+3wRG6nVgHKYv+2Kp27+cw==
+From:   Michael Walle <michael@walle.cc>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Frank Rowand <frowand.list@gmail.com>
+Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Michael Walle <michael@walle.cc>, Andrew Lunn <andrew@lunn.ch>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH v2 01/20] net: add helper eth_addr_add()
+Date:   Fri,  2 Sep 2022 00:18:38 +0200
+Message-Id: <20220901221857.2600340-2-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220901221857.2600340-1-michael@walle.cc>
+References: <20220901221857.2600340-1-michael@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <709d9f58-0ae9-833a-ca54-7b50307b377e@intel.com>
+Content-Transfer-Encoding: 8bit
+X-Spam: Yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 11:14:02AM -0700, Dave Hansen wrote:
-> On 8/30/22 19:31, Jarkko Sakkinen wrote:
-> >> On 8/29/2022 8:12 PM, Jarkko Sakkinen wrote:
-> >>> From: Haitao Huang <haitao.huang@linux.intel.com>
-> >>>
-> >>> For EMODT and EREMOVE ioctls with a large range, kernel
-> >> ioctl()s?
-> > Ioctl is common enough to be considered as noun and is
-> > widely phrased like that in commit messages. I don't
-> > see any added clarity.
-> 
-> I definitely prefer ioctl().
+Add a helper to add an offset to a ethernet address. This comes in handy
+if you have a base ethernet address for multiple interfaces.
 
-I can use it.
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Acked-by: Jakub Kicinski <kuba@kernel.org>
+---
+changes since v1:
+ - none
 
-BR, Jarkko
+ include/linux/etherdevice.h | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/include/linux/etherdevice.h b/include/linux/etherdevice.h
+index a541f0c4f146..f144cadbe99d 100644
+--- a/include/linux/etherdevice.h
++++ b/include/linux/etherdevice.h
+@@ -507,6 +507,20 @@ static inline void eth_addr_inc(u8 *addr)
+ 	u64_to_ether_addr(u, addr);
+ }
+ 
++/**
++ * eth_addr_add() - Add (or subtract) and offset to/from the given MAC address.
++ *
++ * @offset: Offset to add.
++ * @addr: Pointer to a six-byte array containing Ethernet address to increment.
++ */
++static inline void eth_addr_add(u8 *addr, long offset)
++{
++	u64 u = ether_addr_to_u64(addr);
++
++	u += offset;
++	u64_to_ether_addr(u, addr);
++}
++
+ /**
+  * is_etherdev_addr - Tell if given Ethernet address belongs to the device.
+  * @dev: Pointer to a device structure
+-- 
+2.30.2
+
