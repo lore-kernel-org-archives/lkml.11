@@ -2,204 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DA88ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 18:13:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF083ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 18:14:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233101AbiIASNR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 14:13:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34286 "EHLO
+        id S233668AbiIASOJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 14:14:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229781AbiIASNP (ORCPT
+        with ESMTP id S229781AbiIASOH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 14:13:15 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A23E2474D8;
-        Thu,  1 Sep 2022 11:13:12 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 476A56CD;
-        Thu,  1 Sep 2022 20:13:10 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1662055990;
-        bh=w3cnA7QpTZH9H6rGUREb2H83enbsbvl5uMVJxERt/tg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rhnRqGz9TFyiYKIK2CaTWyN0MB8FLWTcnXcmfyvXrsZD0YnkrGc5EGUKCUnENitbn
-         0Q1Z/815H54UeYyOvzJu2p6uq8X72wHo+nqgpahotmtHu7OcAqVBhXVR6Ceorq7nRH
-         az8Kw0vX0PQjO85K3rRbbE5B4O0v8rDUbfHMKO1s=
-Date:   Thu, 1 Sep 2022 21:12:58 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v6 1/6] dt-bindings: media: Add Allwinner A31 ISP
- bindings documentation
-Message-ID: <YxD2Kvrs+RjnPOnn@pendragon.ideasonboard.com>
-References: <20220826184144.605605-1-paul.kocialkowski@bootlin.com>
- <20220826184144.605605-2-paul.kocialkowski@bootlin.com>
- <Ywk3W6pTOOlzLYVn@pendragon.ideasonboard.com>
- <YxDJtYgW/NYLw77u@aptenodytes>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+        Thu, 1 Sep 2022 14:14:07 -0400
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AB06246DAE
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 11:14:05 -0700 (PDT)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 281I7qru032240;
+        Thu, 1 Sep 2022 13:07:52 -0500
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 281I7phS032237;
+        Thu, 1 Sep 2022 13:07:51 -0500
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Thu, 1 Sep 2022 13:07:51 -0500
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Gabriel Paubert <paubert@iram.es>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Zhouyi Zhou <zhouzhouyi@gmail.com>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Nicholas Piggin <npiggin@gmail.com>
+Subject: Re: [PATCH v2] powerpc: Fix irq_soft_mask_set() and irq_soft_mask_return() with sanitizer
+Message-ID: <20220901180751.GH25951@gate.crashing.org>
+References: <c0b486e782b6695092dcdb2cd340a3d44c8c266d.1661272738.git.christophe.leroy@csgroup.eu> <CMJ3VICKD1CI.SVFJOKYJPKZQ@bobo> <e022754d-b4d3-bc9f-cc79-2cf556180459@csgroup.eu> <CMJ8P06JA9OY.1S8VDV2XRU3W5@bobo> <7c11b659-5b8e-256c-508e-39395041fccb@csgroup.eu> <20220831224522.GX25951@gate.crashing.org> <ad5ebb37-6b6f-372c-dd07-fc4cfc5f5fe5@csgroup.eu> <YxBhRtTuJ4Ut7wUt@lt-gp.iram.es>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <YxDJtYgW/NYLw77u@aptenodytes>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YxBhRtTuJ4Ut7wUt@lt-gp.iram.es>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paul,
-
-On Thu, Sep 01, 2022 at 05:03:17PM +0200, Paul Kocialkowski wrote:
-> On Sat 27 Aug 22, 00:12, Laurent Pinchart wrote:
-> > On Fri, Aug 26, 2022 at 08:41:39PM +0200, Paul Kocialkowski wrote:
-> > > This introduces YAML bindings documentation for the Allwinner A31 Image
-> > > Signal Processor (ISP).
-> > > 
-> > > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> > > Reviewed-by: Rob Herring <robh@kernel.org>
-> > > ---
-> > >  .../media/allwinner,sun6i-a31-isp.yaml        | 97 +++++++++++++++++++
-> > >  1 file changed, 97 insertions(+)
-> > >  create mode 100644 Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
-> > > 
-> > > diff --git a/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
-> > > new file mode 100644
-> > > index 000000000000..2fda6e05e16c
-> > > --- /dev/null
-> > > +++ b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
-> > > @@ -0,0 +1,97 @@
-> > > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> > > +%YAML 1.2
-> > > +---
-> > > +$id: http://devicetree.org/schemas/media/allwinner,sun6i-a31-isp.yaml#
-> > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > > +
-> > > +title: Allwinner A31 Image Signal Processor Driver (ISP) Device Tree Bindings
-> > > +
-> > > +maintainers:
-> > > +  - Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> > > +
-> > > +properties:
-> > > +  compatible:
-> > > +    enum:
-> > > +      - allwinner,sun6i-a31-isp
-> > > +      - allwinner,sun8i-v3s-isp
-> > > +
-> > > +  reg:
-> > > +    maxItems: 1
-> > > +
-> > > +  interrupts:
-> > > +    maxItems: 1
-> > > +
-> > > +  clocks:
-> > > +    items:
-> > > +      - description: Bus Clock
-> > > +      - description: Module Clock
-> > > +      - description: DRAM Clock
-> > > +
-> > > +  clock-names:
-> > > +    items:
-> > > +      - const: bus
-> > > +      - const: mod
-> > > +      - const: ram
-> > > +
-> > > +  resets:
-> > > +    maxItems: 1
-> > > +
-> > > +  ports:
-> > > +    $ref: /schemas/graph.yaml#/properties/ports
-> > > +
-> > > +    properties:
-> > > +      port@0:
-> > > +        $ref: /schemas/graph.yaml#/properties/port
-> > > +        description: CSI0 input port
-> > > +
-> > > +      port@1:
-> > > +        $ref: /schemas/graph.yaml#/properties/port
-> > > +        description: CSI1 input port
-> > > +
-> > > +    anyOf:
-> > > +      - required:
-> > > +          - port@0
-> > > +      - required:
-> > > +          - port@1
+On Thu, Sep 01, 2022 at 09:37:42AM +0200, Gabriel Paubert wrote:
+> On Thu, Sep 01, 2022 at 05:22:32AM +0000, Christophe Leroy wrote:
+> > Le 01/09/2022 à 00:45, Segher Boessenkool a écrit :
+> > > I would have used real assembler code here (in a .s file).  But there
+> > > probably are reasons to do things this way, performance probably?
 > > 
-> > I'd still like to see all ports that exist in the hardware being
-> > mandatory. I assume at least one of the A31 and V3s has two connected
-> > ports in the SoC or you wouldn't declare them both here :-)
+> > We changed it to inline asm in order to ... inline it in the caller.
 > 
-> Some SoCs (e.g. A83T) only have one CSI controller so we can't require both.
-> This could be a decision based on the compatible but my personal opinion is
-> that it's not really worth making this binding so complex.
-> 
-> We can always informally enforce that all possible links should be present
-> when merging changes to the soc dts.
-> 
-> What do you think?
+> And there is a single caller it seems. Typically GCC inlines function
+> with a single call site, but it may be confused by asm statements.
 
-It makes the binding more complex, but it allows catching issues in an
-automated way instead of relying on reviews. Lowering the review burden
-is something I usually welcome :-) It's probably less of an issue here
-as this is all about the SoC integration, not about board files, so I
-won't insist too strongly even if I prefer bindings that are more
-descriptive.
+"Confused"...  It might estimate the assembler statement to be
+significantly more expensive than it really is.  The compiler has to be
+somewhat conservative, to be able to generate code that can be assembled
+without errors.  It counts instructions by counting newlines and semis
+and that kind of thing.  Since GCC 7 there is "asm inline", to make the
+compiler think for inlining purposes that the asm outputs minimum size
+code.  You can use asm_inline in the kernel for this.
 
-> > Apart from that, this looks good.
-> > 
-> > > +
-> > > +required:
-> > > +  - compatible
-> > > +  - reg
-> > > +  - interrupts
-> > > +  - clocks
-> > > +  - clock-names
-> > > +  - resets
-> > > +
-> > > +additionalProperties: false
-> > > +
-> > > +examples:
-> > > +  - |
-> > > +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> > > +    #include <dt-bindings/clock/sun8i-v3s-ccu.h>
-> > > +    #include <dt-bindings/reset/sun8i-v3s-ccu.h>
-> > > +
-> > > +    isp: isp@1cb8000 {
-> > > +        compatible = "allwinner,sun8i-v3s-isp";
-> > > +        reg = <0x01cb8000 0x1000>;
-> > > +        interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
-> > > +        clocks = <&ccu CLK_BUS_CSI>,
-> > > +             <&ccu CLK_CSI1_SCLK>,
-> > > +             <&ccu CLK_DRAM_CSI>;
-> > > +        clock-names = "bus", "mod", "ram";
-> > > +        resets = <&ccu RST_BUS_CSI>;
-> > > +
-> > > +        ports {
-> > > +            #address-cells = <1>;
-> > > +            #size-cells = <0>;
-> > > +
-> > > +            port@0 {
-> > > +                reg = <0>;
-> > > +
-> > > +                isp_in_csi0: endpoint {
-> > > +                    remote-endpoint = <&csi0_out_isp>;
-> > > +                };
-> > > +            };
-> > > +        };
-> > > +    };
-> > > +
-> > > +...
+> > I also find that those operand names make it awull more difficult to 
+> > read that traditional numbering. I really dislike that new trend.
 
--- 
-Regards,
+Yup.  All the extra markup it needs doesn't benefit readability either.
 
-Laurent Pinchart
+> > And same with those // comments, better use meaningfull C variable names.
+
+I wrote:
+
+> > > Comments like "// Inputs" are just harmful.  As is the "creative"
+> > > indentation here.  Both harm readability and do not help understanding
+> > > in any other way either.
+
+This is a comment trying to explain (GNU) C syntax.  I certainly agree
+that variable naming is very important, but this was meant as commentary
+on a worse comment offence :-)
+
+
+Segher
