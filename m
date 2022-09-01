@@ -2,92 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B613ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:51:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 956FFECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:53:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234238AbiIAOvB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 10:51:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60056 "EHLO
+        id S233640AbiIAOxh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 10:53:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233918AbiIAOuv (ORCPT
+        with ESMTP id S233825AbiIAOxa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 10:50:51 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56F984AD72;
-        Thu,  1 Sep 2022 07:50:43 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id n17-20020a05600c501100b003a84bf9b68bso1616714wmr.3;
-        Thu, 01 Sep 2022 07:50:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=+ZP6o1gBBlBVeWAFEqgtYPLn6+d3r7xqEVeih0fyUso=;
-        b=iFrD1NozxA6YVu/pF75I5AvknHZH0pFYr0Ht2CqUidAoEzNuE45O8UivGswS3F+2MO
-         tI+GAGT4gXRqxaJpTMNjUivI7L77XgfmnnqwhkJ50GCb3FuakSkrZoL75xX6mzwfjWTQ
-         P/HRjyOYZIcBL0/qfDmABdX/0BxlNqU0FAtQkEqfMMHYCSxGdm9rLlcmYLe43pg1cc7h
-         WrC5+1ddVMQ9PANwg4bP8KGiX8+1J0Fmr2cT8nvimFiL4wA+FXtebFDs3LAPQm9aJinE
-         6jSG5eD0hBWEMBn/s/r8tyiGdnqNkHVGxoIib3crCA772KUd1huXzl5Inl1JdlR9HJbC
-         L+vw==
+        Thu, 1 Sep 2022 10:53:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5E5D8051F
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 07:53:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662044009;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=A0g1blcGod6K82z7PHFW5jtZohl7FHhnQON5Wk+LVyQ=;
+        b=S3EV/+vPYAy1cW7/4C/yQ1rVTrB1E/2GV5Czy7Q8GXM8eMZGmxllsTvMC9inBOxxXFtjNA
+        zjsJBQ5QWNxNChqvMP1q7iHlHTLUnE+v1RABekj/FS2r44/vAtScVmX3dvteN+7+X2iHzV
+        TuedTHRwQMJeqK1+8JSfGXFdAJFAMss=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-645-HJdqUyzXPrm32-Z4PXGB9Q-1; Thu, 01 Sep 2022 10:53:28 -0400
+X-MC-Unique: HJdqUyzXPrm32-Z4PXGB9Q-1
+Received: by mail-ed1-f69.google.com with SMTP id s19-20020a056402521300b00448954f38c9so7363809edd.14
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 07:53:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=+ZP6o1gBBlBVeWAFEqgtYPLn6+d3r7xqEVeih0fyUso=;
-        b=LTvxVjBE9I89pKPLnne1PQzDDrh6PBRwoqlQHFtgIle6f8eloSErGTCFrxEjaOUnBy
-         tDZNLXeJF5GSD/0LUvPdxJIYzDno20Q8MQqCd3GGXZWPhgs5kmAGfWxgp4+sBa8RjAc+
-         IZU/aKro+UThCt+5CFPJroeofKdOcWWXh+44UbwW9K8jdWYo+p7yjkQ7f7JuWuTfo2ED
-         AHpK8haaUF3TdCR/KwCvcLMneVT3LiErcrh230EQf0jXq+fJ2mrz5yKizNpFsGPphrNE
-         lZnsHMfSZLyum97xci8XPh3qtWEeQtMqiYbZpZ+mQvCoGsSxQ1ngi3zP2zYsEU37Ig8v
-         aYFA==
-X-Gm-Message-State: ACgBeo0230T5eL5XTwSiiRKmlVadv2TxpBdxc98ZGcNBa5ummNY1b5NJ
-        Djy0Kxvd+Mh6b7G1suiGalY=
-X-Google-Smtp-Source: AA6agR6QGHgUJ6JL78VmA9OekXr5ZRCUaKHcp8uzSaCgosq6wKYvw6oMjyK6sGuqR3194MMhIKcKkw==
-X-Received: by 2002:a05:600c:3790:b0:3a5:435d:b2d3 with SMTP id o16-20020a05600c379000b003a5435db2d3mr5611084wmr.134.1662043841499;
-        Thu, 01 Sep 2022 07:50:41 -0700 (PDT)
-Received: from debian ([89.238.191.199])
-        by smtp.gmail.com with ESMTPSA id r21-20020adfa155000000b0022585f6679dsm14872979wrr.106.2022.09.01.07.50.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 07:50:41 -0700 (PDT)
-Date:   Thu, 1 Sep 2022 16:48:47 +0200
-From:   Richard Gobert <richardbgobert@gmail.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Martin KaFai Lau <kafai@fb.com>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linux-wpan@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
-Subject: Re: [PATCH 2/4] net-next: ip6: fetch inetpeer in ip6frag_init
-Message-ID: <20220901144810.GA31767@debian>
-References: <20220829114600.GA2374@debian>
- <CANn89iLH4nDuOHS-0AzYBYOz4f3byZndKXG3_VefVxUbujJZNg@mail.gmail.com>
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:subject:from:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=A0g1blcGod6K82z7PHFW5jtZohl7FHhnQON5Wk+LVyQ=;
+        b=bZBF6h6rB198v9HUVdFk/mTjYfeBgUNRFG5MIJ1she+OKD1spgX2Op75n7nfeULpjj
+         NwJJRS+dMaCiegrDLZTQUPWTkIRF83dBluOsiRxP86rzZNAIlGWAzYLgqPkII6m4JjwW
+         C/D0izd8fHfuUVlOAxbZDreWcf0in8F1PTETrIpcjuPCpyECRuxgeLk5JMbxCcXMAlDG
+         CRTQu8Ah4uhDJGqU9tVhUUQb6y5ufD+gr9QqV1YBQ5t5vPUXoCgLWE8PKpPJEqTGMhBK
+         F+uV8kUSf0YSyUj9eZfYB7MSSfV7X1VD761FiTCVy6/39autIVfjGieXK1/DG383yCqy
+         nYJg==
+X-Gm-Message-State: ACgBeo3YiDR81dvng0PdZ8rg3+qQ1QxpGz3F6juvVj/DWsoH2m77apJ7
+        8gWuw1MXa60rnxwAKoTz9Goigov3z7m4/BS2lxp7DlOtLWoR/zXhzcMipP3pHwFhmJQngE4VAWE
+        YFy09BimJxT5JUluJUCK4apVK
+X-Received: by 2002:a17:907:97d3:b0:73d:8b9b:a6c1 with SMTP id js19-20020a17090797d300b0073d8b9ba6c1mr23841552ejc.71.1662044006876;
+        Thu, 01 Sep 2022 07:53:26 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6A5xb5zxDdAmIlrBKOAQ/kfMCQXQVATSUFSS8Zk3+p7j3ebhCP6gZtK0drupcmwhEfsr5TTQ==
+X-Received: by 2002:a17:907:97d3:b0:73d:8b9b:a6c1 with SMTP id js19-20020a17090797d300b0073d8b9ba6c1mr23841540ejc.71.1662044006697;
+        Thu, 01 Sep 2022 07:53:26 -0700 (PDT)
+Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
+        by smtp.gmail.com with ESMTPSA id vs23-20020a170907139700b0072ed9efc9dfsm8530465ejb.48.2022.09.01.07.53.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Sep 2022 07:53:26 -0700 (PDT)
+Message-ID: <298e6d86-dc7b-ed24-893d-2211017463bb@redhat.com>
+Date:   Thu, 1 Sep 2022 16:53:25 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANn89iLH4nDuOHS-0AzYBYOz4f3byZndKXG3_VefVxUbujJZNg@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+From:   Hans de Goede <hdegoede@redhat.com>
+Subject: [GIT PULL] Immutable branch with 6.0-rc1 + "[PATCH v6 0/7] add
+ support for another simatic board" series
+To:     Henning Schild <henning.schild@siemens.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Pavel Machek <pavel@ucw.cz>, Mark Gross <markgross@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lee Jones <lee@kernel.org>, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org
+Cc:     Sheng-Yuan Huang <syhuang3@nuvoton.com>,
+        Tasanakorn Phaipool <tasanakorn@gmail.com>,
+        simon.guinot@sequanux.org
+References: <20220825104422.14156-1-henning.schild@siemens.com>
+Content-Language: en-US
+In-Reply-To: <20220825104422.14156-1-henning.schild@siemens.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 03:20:54PM -0700, Eric Dumazet wrote:
-> Sorry, this is adding yet another bottleneck, and will make DDOS
-> attacks based on fragments more effective.
-> 
-> Whole concept of 'peers' based on IPv6 addresses is rather weak, as
-> hosts with IPv6 can easily
-> get millions of different 'addresses'.
+Dear GPIO and LED subsystem maintainers,
 
-I understand the problem with the implementation. Since peers don't 
-carry much weight in IPv6, this patch can be dropped.
+Here is a pull-request for v6.0-rc1 + the
+"[PATCH v6 0/7] add support for another simatic board" series
+for merging into the gpio and leds subsystems.
+
+Regards,
+
+Hans
+
+
+The following changes since commit 568035b01cfb107af8d2e4bd2fb9aea22cf5b868:
+
+  Linux 6.0-rc1 (2022-08-14 15:50:18 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git tags/platform-drivers-x86-simatec-1
+
+for you to fetch changes up to 8f5c9858c5db129359b5de2f60f5f034bf5d56c0:
+
+  platform/x86: simatic-ipc: add new model 427G (2022-09-01 16:15:03 +0200)
+
+----------------------------------------------------------------
+Tag (immutable branch) for:
+v6.0-rc1 + "[PATCH v6 0/7] add support for another simatic board" series
+for merging into the gpio, leds and pdx86 subsystems.
+
+----------------------------------------------------------------
+Henning Schild (7):
+      gpio-f7188x: switch over to using pr_fmt
+      gpio-f7188x: add a prefix to macros to keep gpio namespace clean
+      gpio-f7188x: Add GPIO support for Nuvoton NCT6116
+      gpio-f7188x: use unique labels for banks/chips
+      leds: simatic-ipc-leds-gpio: add new model 227G
+      platform/x86: simatic-ipc: enable watchdog for 227G
+      platform/x86: simatic-ipc: add new model 427G
+
+ drivers/gpio/Kconfig                               |   3 +-
+ drivers/gpio/gpio-f7188x.c                         | 275 ++++++++++++---------
+ drivers/leds/simple/simatic-ipc-leds-gpio.c        |  42 +++-
+ drivers/platform/x86/simatic-ipc.c                 |  10 +-
+ include/linux/platform_data/x86/simatic-ipc-base.h |   1 +
+ include/linux/platform_data/x86/simatic-ipc.h      |   2 +
+ 6 files changed, 216 insertions(+), 117 deletions(-)
+
