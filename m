@@ -2,121 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7AEAECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 15:59:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08B17ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 15:59:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234750AbiIAP7R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 11:59:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43334 "EHLO
+        id S234749AbiIAP7Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 11:59:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234733AbiIAP7P (ORCPT
+        with ESMTP id S233264AbiIAP7P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 1 Sep 2022 11:59:15 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC7DF8E0F8;
-        Thu,  1 Sep 2022 08:59:13 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73ADD82FA7;
+        Thu,  1 Sep 2022 08:59:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 6F8A321B35;
-        Thu,  1 Sep 2022 15:59:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1662047952; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=KBfsBLjkBk+MOp0nQfi/nmYmADNsHmXsxHUoLjnY3bA=;
-        b=eTkuxs55IxFpE7hDRb6Zude0PNe42Rg2iDMXK6ovgOmLJ8ol+1hu0xPXSwQoqG9TGCaDc3
-        i42+WNdKtbB6Lfrn3L5KkY4OhWhqvQdspBys/xSEJGbnPDDd/Ub0fAQLxecq4hpNU8HyuG
-        G6/KF4WT3KI1yrz/XlU9iNhXieN8XTA=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1662047952;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=KBfsBLjkBk+MOp0nQfi/nmYmADNsHmXsxHUoLjnY3bA=;
-        b=Z4hcUx2ha2YSNK1fJxrz+uxnK+d2neX9kSNscLfnZg2OLnp020u8KVt2k2u2P+l6DPBLZE
-        LGa6Pt9b/QN5juCQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5C72C13A89;
-        Thu,  1 Sep 2022 15:59:12 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id XmaNFtDWEGMSCAAAMHmgww
-        (envelope-from <jack@suse.cz>); Thu, 01 Sep 2022 15:59:12 +0000
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id E1C2BA067C; Thu,  1 Sep 2022 17:59:11 +0200 (CEST)
-Date:   Thu, 1 Sep 2022 17:59:11 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Zhang Yi <yi.zhang@huawei.com>
-Cc:     linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, cluster-devel@redhat.com,
-        ntfs3@lists.linux.dev, ocfs2-devel@oss.oracle.com,
-        reiserfs-devel@vger.kernel.org, jack@suse.cz, tytso@mit.edu,
-        akpm@linux-foundation.org, axboe@kernel.dk,
-        viro@zeniv.linux.org.uk, rpeterso@redhat.com, agruenba@redhat.com,
-        almaz.alexandrovich@paragon-software.com, mark@fasheh.com,
-        dushistov@mail.ru, hch@infradead.org, chengzhihao1@huawei.com,
-        yukuai3@huawei.com
-Subject: Re: [PATCH v2 11/14] ufs: replace ll_rw_block()
-Message-ID: <20220901155911.fbdsdn26kaj7ehjb@quack3>
-References: <20220901133505.2510834-1-yi.zhang@huawei.com>
- <20220901133505.2510834-12-yi.zhang@huawei.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 068C0B82841;
+        Thu,  1 Sep 2022 15:59:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A064C433D6;
+        Thu,  1 Sep 2022 15:59:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662047951;
+        bh=TY+3JNGsmVP31B0gqfliPrc5PDpyouCFib5eIBdb/cw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kKrIXPXazfWGZURlJasnI78CokOXK89HMELlDMpDsIUhu7ydMIleOAt0l+gFycRgr
+         lgFv/N/CqciZRY507JMwhxgcuDDqQlomvw6d1V32QgYQxJSi9Lz2j9l/4IGZd1gVIe
+         ZQftD2GqIVkYc9oDWR+BmREgh3CXCg0RIkmgxcLM=
+Date:   Thu, 1 Sep 2022 17:59:08 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Salvatore Bonaccorso <carnil@debian.org>
+Cc:     Jonathan Corbet <corbet@lwn.net>, Sasha Levin <sashal@kernel.org>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] Documentation: stable: Document alternative for
+ referring upstream commit hash
+Message-ID: <YxDWzCoQJwWEnKXw@kroah.com>
+References: <20220809045543.2049293-1-carnil@debian.org>
+ <8735e5a864.fsf@meer.lwn.net>
+ <YwiEDsngUL//ogBL@eldamar.lan>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220901133505.2510834-12-yi.zhang@huawei.com>
+In-Reply-To: <YwiEDsngUL//ogBL@eldamar.lan>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 01-09-22 21:35:02, Zhang Yi wrote:
-> ll_rw_block() is not safe for the sync read path because it cannot
-> guarantee that submitting read IO if the buffer has been locked. We
-> could get false positive EIO after wait_on_buffer() if the buffer has
-> been locked by others. So stop using ll_rw_block() in ufs.
+On Fri, Aug 26, 2022 at 10:27:58AM +0200, Salvatore Bonaccorso wrote:
+> Hi Jonathan,
 > 
-> Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
-
-Looks good to me. Feel free to add:
-
-Reviewed-by: Jan Kara <jack@suse.cz>
-
-								Honza
-
-> ---
->  fs/ufs/balloc.c | 12 ++++--------
->  1 file changed, 4 insertions(+), 8 deletions(-)
+> On Tue, Aug 09, 2022 at 06:54:59AM -0600, Jonathan Corbet wrote:
+> > Salvatore Bonaccorso <carnil@debian.org> writes:
+> > 
+> > > Additionally to the "commit <sha1> upstream." variant, "[ Upstream
+> > > commit <sha1> ]" is used as well as alternative to refer to the upstream
+> > > commit hash.
+> > >
+> > > Signed-off-by: Salvatore Bonaccorso <carnil@debian.org>
+> > > ---
+> > >  Documentation/process/stable-kernel-rules.rst | 6 ++++++
+> > >  1 file changed, 6 insertions(+)
+> > 
+> > So this is a nit but...
+> > 
+> > > diff --git a/Documentation/process/stable-kernel-rules.rst b/Documentation/process/stable-kernel-rules.rst
+> > > index c61865e91f52..2fd8aa593a28 100644
+> > > --- a/Documentation/process/stable-kernel-rules.rst
+> > > +++ b/Documentation/process/stable-kernel-rules.rst
+> > > @@ -97,6 +97,12 @@ text, like this:
+> > >  
+> > >      commit <sha1> upstream.
+> > >  
+> > > +or alternatively:
+> > > +
+> > > +.. code-block:: none
+> > > +
+> > > +    [ Upstream commit <sha1> ]
+> > 
+> > Can this just be:
+> > 
+> >   or alternatively::
+> > 
+> >     [ Upstream commit <sha1> ]
+> > 
+> > That extra RST markup just clutters things without any advantage.
 > 
-> diff --git a/fs/ufs/balloc.c b/fs/ufs/balloc.c
-> index bd810d8239f2..2436e3f82147 100644
-> --- a/fs/ufs/balloc.c
-> +++ b/fs/ufs/balloc.c
-> @@ -295,14 +295,10 @@ static void ufs_change_blocknr(struct inode *inode, sector_t beg,
->  
->  			if (!buffer_mapped(bh))
->  					map_bh(bh, inode->i_sb, oldb + pos);
-> -			if (!buffer_uptodate(bh)) {
-> -				ll_rw_block(REQ_OP_READ, 1, &bh);
-> -				wait_on_buffer(bh);
-> -				if (!buffer_uptodate(bh)) {
-> -					ufs_error(inode->i_sb, __func__,
-> -						  "read of block failed\n");
-> -					break;
-> -				}
-> +			if (bh_read(bh, 0) < 0) {
-> +				ufs_error(inode->i_sb, __func__,
-> +					  "read of block failed\n");
-> +				break;
->  			}
->  
->  			UFSD(" change from %llu to %llu, pos %u\n",
-> -- 
-> 2.31.1
+> Btw, after revisiting, I think Greg actually can pick up the first
+> version of the patch. Changing the above without adding the
+> code-block:node will reformat the
 > 
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+>      [ Upstream commit <sha1> ]
+> 
+> differently when rendering to html.
+> 
+> Greg, so as the patch has not yet been commited, can you pick up the
+> first version from
+> https://lore.kernel.org/lkml/20220809045543.2049293-1-carnil@debian.org/
+> ?
+
+Please resend it as v3 so that our tools don't try to apply v2.
+
+thanks,
+
+greg k-h
