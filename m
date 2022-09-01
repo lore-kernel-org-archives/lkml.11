@@ -2,125 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4FB0ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 11:59:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52009ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 12:00:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232757AbiIAL7X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 07:59:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47534 "EHLO
+        id S232939AbiIAMAv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 08:00:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232176AbiIAL7T (ORCPT
+        with ESMTP id S231843AbiIAMAr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 07:59:19 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 022F710DB;
-        Thu,  1 Sep 2022 04:59:16 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id j14so13707237lfu.4;
-        Thu, 01 Sep 2022 04:59:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date;
-        bh=40zYa817WiYSxmkmnaNfAHCBlLNPSiOlFf7sX4yoJeY=;
-        b=T/EwlpB3rUFtrQv+/vpPYHHm7dpjqJzOF6Z6f4Gv5jqeXBxbp4M+HCCYHQ6OYmYtMR
-         wM7S6P/Tb3AgWTYWxpNFSkEEzdDRt3KWZr1H+dhcnsIao96u9ICE0u8Q8KCDE5oT5z6c
-         uylDs6v4/OCsUvrIhDuRWTsLstEUydlLXAGQxaaz1P+qb+h6PyCw23U1iPlWMaHZSCWd
-         cZ1unMz/5re6lMtOr68EqCj61XlzG24baRrjJemgEvTwWK8mv5uaR+18ybepEy8xw0Uw
-         xmsh4EXw/PlbNxA5OyK2Ye02K+4bmiVFAhmbB7EkpAwpBQNa/FQPGE7ZuDuYBBeOGU/n
-         i2XQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=40zYa817WiYSxmkmnaNfAHCBlLNPSiOlFf7sX4yoJeY=;
-        b=UgaMudbhhjxjs3xFeNkN7+TNbaygd5iJZRsedmkXUfknQ5HCF8dEP4ceLtTBJ686IR
-         onIQEqiuypqoqQs08pzU4jmzemTgZ3nEDVIMw5LYnoZooJhUWysc5+74SDlKgamdFnjU
-         nXAQqgCcfiExEKqBM7LO+5z1gGqIeek1nO2qlvPzeH5/54zhl1g3p/R3EBYVE7kEqNla
-         OZD91tgYwdKEGtrkej3cXPXc/HrmpbhH8eg+yq3m+LLHrXj8hSNzKZ8KvEUnTLaAI5LG
-         anGxAEgzAxawkIPUAqMJMsKbiqf4FjECWuMjMjPI8Q0VsgpYQIuYc82+RWTyu6P8NoUG
-         sLxQ==
-X-Gm-Message-State: ACgBeo2R8vPoMp+sOoVQPQs8D1BVm9aSj8mu2ZIetVMUp9oWl4E8pIHM
-        jaOn47Dj0qXDBDkZk+Qtuss=
-X-Google-Smtp-Source: AA6agR4iR/Yl/YnCJelF2gPpHtDHWFrtwzT65hUeeSTtAjxHpwt5arYO7w0vJ0s5ETpDRvEMMmifcg==
-X-Received: by 2002:a05:6512:1524:b0:485:b21c:6015 with SMTP id bq36-20020a056512152400b00485b21c6015mr11381879lfb.611.1662033554181;
-        Thu, 01 Sep 2022 04:59:14 -0700 (PDT)
-Received: from pc636 (host-217-213-139-238.mobileonline.telia.com. [217.213.139.238])
-        by smtp.gmail.com with ESMTPSA id p5-20020a2e9a85000000b0025e4c49969fsm1577526lji.98.2022.09.01.04.59.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 04:59:13 -0700 (PDT)
-From:   Uladzislau Rezki <urezki@gmail.com>
-X-Google-Original-From: Uladzislau Rezki <urezki@pc636>
-Date:   Thu, 1 Sep 2022 13:59:10 +0200
-To:     Frederic Weisbecker <frederic@kernel.org>
-Cc:     Uladzislau Rezki <urezki@gmail.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Rushikesh S Kadam <rushikesh.s.kadam@intel.com>,
-        Neeraj upadhyay <neeraj.iitr10@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        rcu <rcu@vger.kernel.org>,
-        Vineeth Pillai <vineeth@bitbyteword.org>
-Subject: Re: [PATCH v4 00/14] Implement call_rcu_lazy() and miscellaneous
- fixes
-Message-ID: <YxCejoKH8dGIeW22@pc636>
-References: <1f7dd31b-f4d0-5c1c-ce28-c27f75c17f05@joelfernandes.org>
- <20220829194622.GA58291@lothringen>
- <CAEXW_YS593n8Gget+REaD-c8vT8Ht_AzOY0kXA_uc674LOyvVw@mail.gmail.com>
- <20220829204202.GQ6159@paulmck-ThinkPad-P17-Gen-1>
- <20220830105324.GA71266@lothringen>
- <20220830114343.GS6159@paulmck-ThinkPad-P17-Gen-1>
- <20220830160316.GC71266@lothringen>
- <20220830162244.GA73392@lothringen>
- <Yw4+g/0yEf7fpHrh@pc636>
- <20220901112947.GA105556@lothringen>
+        Thu, 1 Sep 2022 08:00:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF7FB4C629
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 05:00:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 78B64B825CD
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 12:00:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BC42C433D6;
+        Thu,  1 Sep 2022 12:00:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662033644;
+        bh=I2YcNy/LQ9DJXgnVrsxQO9sNuDEkqdgvN1fXue0mYXM=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=sONoq7eL4xBkKXtUSHvjG7NmPdmVvjgBy7DXixgG0Z7qKgmjTf37BJXkib9t5hp2I
+         mJn7phYF8qOMrKMZ6awFInOk+kTnOmea8/zZOytpSm2TQMiZYZaZoHdRWgxjCFOAs2
+         fe+UKz38ZfMg6JmajxOvltUOY1nGOO6DQFK+cu8pFuneICU+Jc/tBMn/YiCYQwq2Md
+         Sosn1ef6K8fN8XmMFneZjQo/9iub6efUNqNzMwT5mATHoX+tNfvzAZtX+gem1KRzQu
+         VzOgTTtPZ3Xb8Nxz62nl1lNbYG3U8SahKciPlLG0ZCaGc9ZbHzDJVsA5EqGd84adqk
+         GsAoTy5U3MssQ==
+From:   Mark Brown <broonie@kernel.org>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@intel.com>
+In-Reply-To: <20220831141303.501548-1-linus.walleij@linaro.org>
+References: <20220831141303.501548-1-linus.walleij@linaro.org>
+Subject: Re: [PATCH] regmap: mmio: Fix rebase error
+Message-Id: <166203364321.46725.14616363536013598249.b4-ty@kernel.org>
+Date:   Thu, 01 Sep 2022 13:00:43 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220901112947.GA105556@lothringen>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Mailer: b4 0.10.0-dev-0c1df
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 01, 2022 at 01:29:47PM +0200, Frederic Weisbecker wrote:
-> On Tue, Aug 30, 2022 at 06:44:51PM +0200, Uladzislau Rezki wrote:
-> > Hello, Frederic.
-> > 
-> > > 
-> > > Although who knows, may be some periodic file operation while idle are specific
-> > > to Android. I'll try to trace lazy callbacks while idle and the number of grace
-> > > periods associated.
-> > > 
-> > > 
-> > Everything related to lazy call-backs is about not waking "nocb"
-> > kthreads in order to offload one or i should say few callbacks
-> > because it is more or less useless. Currently if incoming callback
-> > is the only one, it will kick a GP whereas a GP will kick nocb_kthread
-> > to offload.
+On Wed, 31 Aug 2022 16:13:03 +0200, Linus Walleij wrote:
+> A dangling pointless "ret 0" was left in and some unneeded
+> whitespace can go too.
 > 
-> Not sure this is only about not waking "nocb" kthreads. The grace period
-> kthread is also awaken in !NOCB and has quite some work to do. And there,
-> having a server expands the issue because you may have a lot of CPUs's extended
-> quiescent states to check.
 > 
-I mean here the following combination: NOCB + call_rcu_lazy() tandem.
-The !NOCB is not about power save, IMHO. Because it implies callbacks
-to be processed on CPUs they are landed.
 
-In this scenario you can not let the EAS scheduler to find a more
-efficient CPU for further handling.
+Applied to
 
->
-> Also in !NOCB, pending callbacks retain the timer tick of a CPU (see
-> rcu_needs_cpu()), and cpuidle relies on the tick to be stopped before
-> allowing the CPU into low power mode. So a lazy callback may delay a CPU from
-> entering into low power mode for a few milliseconds.
-> 
-> And I can observe those retained ticks on my idle box.
->
-Maybe !NOCB is more about performance. But i have no clue about
-workloads and if such workloads exist nowadays.
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git for-next
 
---
-Uladzislau Rezki
+Thanks!
+
+[1/1] regmap: mmio: Fix rebase error
+      commit: d57f2035c0455dfd5e4d29caa0266fad6febe6d6
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
