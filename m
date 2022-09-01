@@ -2,105 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC37CECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 11:37:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63F6DECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 11:38:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232666AbiIALg7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 07:36:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44488 "EHLO
+        id S232731AbiIALiC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 07:38:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232644AbiIALg4 (ORCPT
+        with ESMTP id S232713AbiIALh7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 07:36:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0957139D5F;
-        Thu,  1 Sep 2022 04:36:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 1 Sep 2022 07:37:59 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 780F1139F7C
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 04:37:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662032278; x=1693568278;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=9ol9KceXIsX2CqIU3qCXqseU84Oohu14rAOJ5CsNSNw=;
+  b=UzoZemdwNK0c5YBNn4yO7ORNo6RfS8BF9TF7fhxMZU1FM+bxjbeNRVZX
+   10wIK+k6wDFTuGC6OVLvl1E+KiWGi/sN11Xfq3PHjZx5vNvCUHIAokzJO
+   /RIGWOvOcbyjACQQt8EJONaZyPEDYrFVpjXw1UtG84Lxhmsb3ecAuZ/A0
+   Nx24EnHySu7B1QqVU2IkEdMgXUYF6+/6CcqsUhfIhec12LjFgMegTiGhN
+   rTXuulq5Wza9ixh97VmQVaMcjG4VpZaEEFZsJUmy78qXnlXaJRBHVweDH
+   V6dVrchabycQJLXJW6l3XpFDhU5N6VEzI57gGc3dHzP6WPcmMNImSM6SA
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="321838471"
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="321838471"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 04:37:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="716079918"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga002.fm.intel.com with ESMTP; 01 Sep 2022 04:37:58 -0700
+Received: from [10.252.213.4] (kamenshx-mobl.amr.corp.intel.com [10.252.213.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5074A61DF9;
-        Thu,  1 Sep 2022 11:36:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68177C433D6;
-        Thu,  1 Sep 2022 11:36:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662032214;
-        bh=ewEocTavTH3WLePXZx0WQKi1iSVGpePM071lhwzenwE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kSK4p/lXj05Q+pMU3J2fEreCJ3o+u3JqJj1NnO5KQgfiQWsRLQgzgS0Vl9g7snOqm
-         XK3XzY2Lcu8oxeia2I8g2AwxrFl5/F7WHWYCanDC5OUqiTTqZ4WX+oEid2L4q9uCd+
-         owyQtj+gx4VuYUOQlK1PuPRIn/O6dXghOPdDayCTQlUI5FtpMNDHpH0duO5gSnJP2s
-         JLVIo2U41WbZFkMC2amje8hFjb8A24UC1y8YBEXO6KAIxq6p8iXkn5v1lEcEUbl+w+
-         mTJxbYwc4iFIDnQ8mapI24FiM5FyjR++TIrOCY2CObdcm0XDQGztwJebQ4eaFjEc3u
-         xL/mZdzJ2fqSw==
-Date:   Thu, 1 Sep 2022 12:36:48 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Sebastian Reichel <sebastian.reichel@collabora.com>
-Cc:     Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lee Jones <lee@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@collabora.com,
-        shengfei Xu <xsf@rock-chips.com>
-Subject: Re: [PATCH 12/13] regulator: rk808: add rk806 support
-Message-ID: <YxCZUGPVQwrefLJi@sirena.org.uk>
-References: <20220831215437.117880-1-sebastian.reichel@collabora.com>
- <20220831215437.117880-13-sebastian.reichel@collabora.com>
+        by linux.intel.com (Postfix) with ESMTPS id 950D4580AA7;
+        Thu,  1 Sep 2022 04:37:56 -0700 (PDT)
+Message-ID: <883ef80c-4adb-c77b-7cc6-dab50bef490e@linux.intel.com>
+Date:   Thu, 1 Sep 2022 07:37:55 -0400
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="1rNgShYEpulPv2NW"
-Content-Disposition: inline
-In-Reply-To: <20220831215437.117880-13-sebastian.reichel@collabora.com>
-X-Cookie: This bag is recyclable.
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH v2 8/9] perf/x86/intel: Shadow
+ MSR_ARCH_PERFMON_FIXED_CTR_CTRL
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     x86@kernel.org, eranian@google.com, ravi.bangoria@amd.com,
+        linux-kernel@vger.kernel.org, acme@kernel.org,
+        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        jolsa@kernel.org, namhyung@kernel.org
+References: <20220829100959.917169441@infradead.org>
+ <20220829101321.905673933@infradead.org>
+ <0b8477e2-6e85-b349-0e92-e6a298531c18@linux.intel.com>
+ <YxB3GWVCNHg5RutQ@hirez.programming.kicks-ass.net>
+ <YxCDr2uugoBQ5z27@hirez.programming.kicks-ass.net>
+Content-Language: en-US
+From:   "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <YxCDr2uugoBQ5z27@hirez.programming.kicks-ass.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---1rNgShYEpulPv2NW
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 
-On Wed, Aug 31, 2022 at 11:54:36PM +0200, Sebastian Reichel wrote:
+On 2022-09-01 6:04 a.m., Peter Zijlstra wrote:
+> On Thu, Sep 01, 2022 at 11:10:49AM +0200, Peter Zijlstra wrote:
+>> On Wed, Aug 31, 2022 at 09:52:19AM -0400, Liang, Kan wrote:
+>>>
+>>>
+>>> On 2022-08-29 6:10 a.m., Peter Zijlstra wrote:
+>>>> Less RDMSR is more better.
+>>>
+>>> I had an RFC patch which does a further step to move the fixed
+>>> control register write to right before the entire PMU re-enabling, which
+>>> could also save some writes if there are several fixed counters enabled.
+>>> https://lore.kernel.org/lkml/20220804140729.2951259-1-kan.liang@linux.intel.com/
+>>>
+>>> Do you have any comments for the RFC patch?
+>>>
+>>
+>> Oh, I like that better, let me just replace my patch with that.
+> 
+> git://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git perf/wip.cleanup
+> 
+> Should have your patch instead of mine for the FIXED_CTR_CTRL and have
+> the pmu methods in the right place.
 
-> +static int rk806_get_reg_offset(int id)
-> +{
-> +	int reg_offset = 0;
-> +
-> +	if (id >= RK806_ID_DCDC1 && id <= RK806_ID_DCDC10)
-> +		reg_offset = RK806_DCDC_SLP_REG_OFFSET;
-> +	else if ((id >= RK806_ID_NLDO1 && id <= RK806_ID_NLDO4) ||
-> +		 (id == RK806_ID_NLDO5))
-> +		reg_offset = RK806_NLDO_SLP_REG_OFFSET;
-> +	else if (id >= RK806_ID_PLDO1 && id <= RK806_ID_PLDO6)
-> +		reg_offset = RK806_PLDO_SLP_REG_OFFSET;
-> +
-> +	return reg_offset;
-> +}
+Thanks. I will do more test today with the updated branch.
 
-Use separate operations and/or separate data and decide at probe time
-which data to use for which regulator, don't have a switch statement at
-runtime like this.  This reduces the amount of open coding in the driver
-and opens up more opportinuties for improving things in the framework.
+Thanks,
+Kan
 
---1rNgShYEpulPv2NW
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmMQmU8ACgkQJNaLcl1U
-h9CRugf+IFSbYZyNpZZAJ0NCoJUOq60Qb6DA8UROFSEA3TkVEQoul5Ham4Yrq7it
-FHsju/eJgQi3CQ4N2qArbobHqmpOb71XeSqzDO1k88n8cO8PZnf2RF0abTLWSrt/
-OHzjVdsoX2RACLl1yO60Q2qSLXK2/J/txmXjnA2Qpbrhso/dys/WP7dQ5JazLp/P
-tWJwTdGN0KU/gnQOHJ5zArfIn0lOAtj6pvm0r+m8/IGt9zqOth7sWnTpv2MEhMIO
-ur6TaG6fJeFbL93iSH0aGw2OpDTixVR3OXOtt6zjPbWGCJfepDEQRVQXLzyMCyNd
-ASmRWm8owazfYIqvvbLo1NGLW2giug==
-=xni7
------END PGP SIGNATURE-----
-
---1rNgShYEpulPv2NW--
