@@ -2,331 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7873FECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 11:30:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD7C4ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 11:31:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232790AbiIALa1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 07:30:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59256 "EHLO
+        id S231755AbiIALbS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 07:31:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229706AbiIALaX (ORCPT
+        with ESMTP id S229706AbiIALbP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 07:30:23 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 784DD2A403;
-        Thu,  1 Sep 2022 04:30:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=7ABU14MNOZEUh1mSDrdSB+ug3ovCSl4qqs3yLXXVi68=; b=bi2BPVk9FnZ6w+M+6dwV/WS0kP
-        o87SjSiZzhYoe0uTZYIVL2ANWgkVKPO05VvmfFgiU9gxOBuYFpipmJgrR0+CpsOyKO2RGHRQiwulN
-        Ni/e9XPkk/hD3HTPqIiiOSd6iTAGayXoDcDZj4HiG1AevNA37safV/rL+WGT0z2WHq+YFuxTlE6nq
-        jfftY6CPYtYaefYfoXyt1vRDvAI54RrOA2heLdTK0k0UBtg/L5ZXDhR5WIbsSbMWGLVU+WNi29eWk
-        XFgAeghthl8gNDNi0Mz8F1k6hd2DmNtqd+k4OpT+mK5+wNqHZxuWS6CrY1krApr5hLrxnxLxP96uP
-        eD1xaxwA==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oTiOJ-008ODY-Vf; Thu, 01 Sep 2022 11:29:48 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id D0B4530010B;
-        Thu,  1 Sep 2022 13:29:46 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id B97BF2B8BBAF9; Thu,  1 Sep 2022 13:29:46 +0200 (CEST)
-Date:   Thu, 1 Sep 2022 13:29:46 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Ravi Bangoria <ravi.bangoria@amd.com>
-Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
-        jolsa@redhat.com, namhyung@kernel.org, songliubraving@fb.com,
-        eranian@google.com, ak@linux.intel.com, mark.rutland@arm.com,
-        frederic@kernel.org, maddy@linux.ibm.com, irogers@google.com,
-        will@kernel.org, robh@kernel.org, mingo@redhat.com,
-        catalin.marinas@arm.com, linux-arm-kernel@lists.infradead.org,
-        linux-perf-users@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sandipan.das@amd.com, ananth.narayan@amd.com, kim.phillips@amd.com,
-        santosh.shukla@amd.com
-Subject: Re: [PATCH] perf: Rewrite core context handling
-Message-ID: <YxCXqjfiJca3izQd@hirez.programming.kicks-ass.net>
-References: <20220829113347.295-1-ravi.bangoria@amd.com>
- <YwyrUYS30gVbxc2D@hirez.programming.kicks-ass.net>
- <YwzP+AFWCx4Ni/kx@hirez.programming.kicks-ass.net>
- <c5a6aea9-4f3a-495e-78fa-e426de9b0496@amd.com>
+        Thu, 1 Sep 2022 07:31:15 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC405E42D0;
+        Thu,  1 Sep 2022 04:31:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1662031869; x=1693567869;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=577d3eBFf329KevDvz9nlRewIUtUuwuq+GS7cytYkOY=;
+  b=MR30qyMFlb4/we0pH+4swaHPC77xaTnOO/WV4YGjEUqI9h1PpnsXXO82
+   bzEvCcM1mVAw1Aa4KjrIfSzxNXGRz/LyeP+05I/wkNlEj4NMv+CefGvL4
+   D5BxaNGJJI2G9V297d2aZhjum3hrsQb1APCatu9vZFPx57M5Ok9waF9EZ
+   /8IBDy07ZVVybS3CJ2GcOQaEI70S3NBylVyOD92SvkhyjUXV936cM4bbF
+   VSb8KnqZhS0Juyk0diD+J6zsNXWRYUrf+qTSohWSP+l5Hto8a6XFEptIi
+   cidyKU5DWkCnpcenzCBsDYJn2xvKnaXtWx7/RzbFkyk050pJRu86+02JU
+   A==;
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="111729602"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Sep 2022 04:31:08 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Thu, 1 Sep 2022 04:31:05 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12 via Frontend Transport; Thu, 1 Sep 2022 04:31:05 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=K2cy17NcYs9F1deRHsfw766b6TxH76QW9Zhsg6JoOOQeYRIg7VE3aayW60L0fGsJymJ8JzVWFL0XtT/PYfqTWRAzP1UuOINK+GqlsjjIFTryLX12g9yu0bR1ImRPD0pD6heLTcLLfndFgo0sbwIdk/+pdSios8zvIAOLDD1VRKNoWqDfroZAj3g93XNTMIrrd8ehO4OiIkMB/1EkrIbCoccSqKj4dmmWSYBaxguaV7HCBsFmbf9I/705dR6sS0g6aC0w2aODjVbFTvFLWSnJlKpow5mE4QwRNRvC//Uhlg4F9exi4KH1da9qXAuv1m6/DpK6zrP5b/okF/VfiCC9+g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=577d3eBFf329KevDvz9nlRewIUtUuwuq+GS7cytYkOY=;
+ b=H0QxHsluGK+8ZScqQIE8jd0LSC71vXpTDwZBGr75dWxqsTQeSopwX4ztVmlSunWVyMd7X+c/r1OzI259cSHYmSlB7KStdn5U6TQ7A8yHg6hkGbpPgsh+vTjOgbr+cOrCkUky6fMcOFgkE4mXDFeH2A58y58/FZm8IQ5mU/RQAQ9vfY7GwUV9jrLx1YmzYxrLaZyJEvCzHwtzL+cEn4np61auP55fJQy4ZOkNXjszudFeIWHdj6MCq22KLeQ1j/MQzDMq0wCaa7xKqD8tXzUTF8sFLKVrOumsBLYfIuoHG3SEa6rkyizxAZQWBf0P/JkaHi+s4NTKcfWYhTbVDEMIYQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=577d3eBFf329KevDvz9nlRewIUtUuwuq+GS7cytYkOY=;
+ b=nM66aZilaSpW4UkeeGELAhFXPWGLYqN9H8nYqiidWV0rd3YaiuciDnFtkSgMvo9dEdbjwemSyFsn2u69w2eMWzxgoQq3sDFA2/fDd+9c6f0kMI2OzzqIhTE19/6mqvxuwzYvpDH6QfPEfLmOqAvx+vZWsdh+NbXLYUHx+9nk/6Y=
+Received: from BL1PR11MB5384.namprd11.prod.outlook.com (2603:10b6:208:311::14)
+ by SA1PR11MB6757.namprd11.prod.outlook.com (2603:10b6:806:25c::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.16; Thu, 1 Sep
+ 2022 11:31:03 +0000
+Received: from BL1PR11MB5384.namprd11.prod.outlook.com
+ ([fe80::157:bd28:ee31:c6ab]) by BL1PR11MB5384.namprd11.prod.outlook.com
+ ([fe80::157:bd28:ee31:c6ab%6]) with mapi id 15.20.5588.010; Thu, 1 Sep 2022
+ 11:31:03 +0000
+From:   <Eugen.Hristev@microchip.com>
+To:     <krzysztof.kozlowski@linaro.org>, <Sergiu.Moga@microchip.com>,
+        <lee@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <Nicolas.Ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <Claudiu.Beznea@microchip.com>,
+        <radu_nicolae.pirea@upb.ro>, <richard.genoud@gmail.com>,
+        <mturquette@baylibre.com>, <sboyd@kernel.org>,
+        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <admin@hifiphile.com>, <Kavyasree.Kotagiri@microchip.com>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-clk@vger.kernel.org>, <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH 2/5] dt-bindings: mfd: atmel,at91-usart: convert to
+ json-schema
+Thread-Topic: [PATCH 2/5] dt-bindings: mfd: atmel,at91-usart: convert to
+ json-schema
+Thread-Index: AQHYshAIm2HQUST33kmommbXuaTdQK20V98AgAGSFwCAAAKPgIAABQQAgBSW+AA=
+Date:   Thu, 1 Sep 2022 11:31:03 +0000
+Message-ID: <f2fdaf34-ad66-9e6d-2f11-34171fb7aaa9@microchip.com>
+References: <20220817075517.49575-1-sergiu.moga@microchip.com>
+ <20220817075517.49575-3-sergiu.moga@microchip.com>
+ <942accc5-70aa-3bb2-63dd-306a39ee5ea4@linaro.org>
+ <d1aad8ea-3852-f36b-366b-7aa67d2dd9d5@microchip.com>
+ <ec86420c-a210-facd-ab3a-5baf84a736f3@linaro.org>
+ <0aba8906-ed30-786e-cff4-6cb70d6e73c5@linaro.org>
+In-Reply-To: <0aba8906-ed30-786e-cff4-6cb70d6e73c5@linaro.org>
+Accept-Language: en-US, ro-RO
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 663a6c08-7443-4d45-d86c-08da8c0d73fd
+x-ms-traffictypediagnostic: SA1PR11MB6757:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: UN7d96q9KFK0EN5MBG98C9hPQ2DGNHfbzm76QSK2GGKdSPQzOQ4/TQTYXtEUAWupYKCPVI7YphxDHyB3NGmYxmaF+AO+6a9QL5lOm3oVv637WI0y9NwFg3s8BiNy7+65OCNJLXBBBftq92wUqxltiffoCdAcLhQm9LMmCIg1BRhy9G2+71cJfNCUfXOC3Ha9RJZpCudNmK9IkQ6UBFjlVzySEli+qJQ8bjspc8Z/lQIQkEB0aHed996e7S1vJmmh12OPTX/TrF8t1/b4T6mv6YYzGafBUaz7H0BmxeyXZp5Tt13uo8R5Qk2CF820cx0HNv3o5Vi9Ydf1JDWodlVeAUBS18V8rW6t9+t918SguCh0rcr8xDB0d9rKc9nBQKVQCmIXwUU2LmXtdOJTu7OwYk0/Czt04st6AXGWX1B4FhG+8JM2XE8hcmn82s1wVy3RLwgXUJRr2n1AL/XAoWZi0IlUC1uTQfojabuustlVu0Ia3LASedzLp+ImdLl2XqgaGEsBITSH5Ujb0iKOrzHm4Vdgv56kM0mts2XXppj4fgRCo6VM/lZmpYmi+zbXssZGBlf9ZLkmOVsAEkGFoLZVfMlP+rR7CGBk7aQsLQYzUo/I0kSKCbhCvloHYrGlL0tm5L1zITIyVLACEiSJwwX4C3u2cLdWfb9xwRJ9E5DP+m3SZxxsJ4666VfIPqCBqrQ7omq/3hnUDRXVWfIvSrCuLo2gLrI81hfJflnR5CgPkUmuPSptjiroR0516/8nX6AbZxp7uSTNKqtCV/YkICPh6JTNIcEppjUmUwX3BwJrWhrnyLZC5L1uypN3Zy93VnHlSVkF1ueSwWA8fuz8/PQDJbrq4xjzz8lM3iWtZsA9Wn6y0Q58LRCcpdM8yQE2a3bp
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR11MB5384.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(376002)(136003)(396003)(39860400002)(366004)(2616005)(91956017)(2906002)(71200400001)(6636002)(316002)(186003)(31686004)(53546011)(36756003)(6506007)(83380400001)(26005)(6512007)(921005)(38070700005)(86362001)(66556008)(66946007)(8936002)(6486002)(66476007)(478600001)(122000001)(7416002)(38100700002)(41300700001)(54906003)(966005)(5660300002)(64756008)(31696002)(110136005)(4326008)(66446008)(76116006)(8676002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?YVNOZFAzVkp6cDd4MytISlFETlJGTkZHSHg3VGNuQTM1NHFjY2xidXVkcHRZ?=
+ =?utf-8?B?Q1VCZTAxa3J0RzFSRnZQTitWNXQ0S2VKeXhTQ29RZm5XSWcvSkludEZJd21S?=
+ =?utf-8?B?ZEFXa1ZNRk9XQUVOZUpucURNUjdtWEJOQW4wN0Y3TUJJUHF3bXExRy84eVpl?=
+ =?utf-8?B?cCt3dEtSWjYzVldLVlltMGJ0N0lSdTBSelk5bThFSFE2eWdiZW1WcW5mRnFL?=
+ =?utf-8?B?eThsS25iQWxCMDlzdndYc1VRSTVnMVRIK2J2OUZYaTF0ZjN0QkdYVzNXQ1Iw?=
+ =?utf-8?B?c08rK3VRVlJEZXdlY0N5N3gzc0NIL3ppZ0RuUXAzOVQxSFZVTlpzdllLbHUw?=
+ =?utf-8?B?VU9ERWtHZFMrWHk4L0VFL3p0U2E0bjVBWnNLcVZJbTFhRGI4bFlmYUg0REov?=
+ =?utf-8?B?dEt5bDlDdlVPN2l3UUpNZG5KeDdBZkhNNHgvQlR4YlhvV1plbmdxMkJMTCtR?=
+ =?utf-8?B?SXYya1l2QTFkRkNhaDdVWUk2VVBKaVFKWUZyYUFhTDJiaVV3bW0yN0d4M0Ns?=
+ =?utf-8?B?SmpwNzUyL2JkQkNUMjExb0JBVjhVQlZPSmwzVlRoYlpWS29ZR2IwWGlUM200?=
+ =?utf-8?B?WHFJd2Iva1BCU0tKVVZTZSsrdGZKaEFUTVRRREYvWDROR0g4ZG0wTnBac2Fj?=
+ =?utf-8?B?QUx5QS9id1RxNW1uMW53WXg5NWx6TnllbXJUUGpLMmJXRVN0QmVQaVBsUDJx?=
+ =?utf-8?B?RXEzY2txc0dna2dVTC9aYWk5Um1oSC9XTmFXTUN2enErRmR2Y2RGVDFDZGxu?=
+ =?utf-8?B?NEtPWkpySTJ1TitFZWR4bFNreWREbWd2VlBWOUFtNkd2bndsK0VuRkRPakM2?=
+ =?utf-8?B?UkZTZVlJekszN2NER3JaYWduZTJQcmcvYkJ1Qkt5QU00Vnowcjl1S29uOW51?=
+ =?utf-8?B?RUxrMEhEalFJeGs3YkorWk84NzlISDJqKzNpK0FKSHN2aExJQUJRMXVzNTZ4?=
+ =?utf-8?B?SnJhYzRjeStZekZRWGNpRGZjeDZ3ZGsvRlZyQWpqM01pb2F6dGhnY0ErUGQ1?=
+ =?utf-8?B?b1pmbDBVTHhnRmQvRFpVNkNQMEpJTm02Y2JNdVlPb3l5NFRGQWNoODA3cGxR?=
+ =?utf-8?B?ZmxwY0ZHZ3lQandRazJMQUI2cUtaZEFOYXd6czZUMnZkV1FvUEsrcWNPRnFw?=
+ =?utf-8?B?OUxNUkpWWWlMeEhHalNTQ2t0aE9rbGE2Q0cyRU02Zmxla3g0Y1lGNTJyR0lQ?=
+ =?utf-8?B?T2ZkdjdBWlZRWmltUm5OaVNiMkZ5MXJkS0NlYTV5V2c3d2NNbTRkdzUySWtv?=
+ =?utf-8?B?c2xmT1M5bHFkaHF1NWhqdEU4UWFoeWhTT3g0ajVVek9vUmg4bDl5czIxU0Np?=
+ =?utf-8?B?dlpMUGNKeU9ZK214Q0hyV2ZudUxMSWllL3RFZ2dLajRZSjdFSVJsN0dmcXFh?=
+ =?utf-8?B?VitIanJmVTMwSXowZ0VyVjVvdHNOTE9vZXhMK0xVQUQwZmUySWFlb0s2NFJi?=
+ =?utf-8?B?K3dqbkZNWW9NZVh0aC95SmVKdXdvNXV1ajk5OThXSlA0dEx1OWNVekFxSlNi?=
+ =?utf-8?B?MjB1c1pPZWh1QlZXMnp1eDZMZ2tORG5XdjZ5UkwvdkVXUVZoTk9NV0psSU92?=
+ =?utf-8?B?NTlZNE1kVGtBTGNtTDhiR2FJWEdYMDMzWUo0dWhWbmxEVHQ3dEJRRm1UVzc1?=
+ =?utf-8?B?dHloNXZTRFBNQkNMTENENlkxbTFJVXp0b2Y1RitwNVpmWXNHZmU4YUR1Mk1I?=
+ =?utf-8?B?QTBnNjR1bnlrNitRYWtNYXh1d1NQdWV2YjFPOVpLbDZyZWVxdHlWc2VnSmhs?=
+ =?utf-8?B?VFVtdVN0VkdUenpwUzk3bDdabUZXb0hjWkcwSUF2Qi8vQU5VL2VZaWdhTnFT?=
+ =?utf-8?B?eDhLUEQ2YnNVNlMrYytYQitneXFYVVdBOVhuUm1HWllSNFlMaUVpWERPZSsr?=
+ =?utf-8?B?QXJVaCtrRzVoNnpaYVg5QW9qUVUzQ3NKeVo5QmQrYzR0ZEhxbWZWYmk3TDh6?=
+ =?utf-8?B?Q2ZKQThvdWtyMk1qanZIamdWWDRPampqQ2NmcG15NmwyeGpLeW5hV3hGR2tI?=
+ =?utf-8?B?L3ZIWjBIRzd6MTZld1BvMTdFcE10cnNtejhUZkpFUSs5VUVyRm5LVjRJTmVW?=
+ =?utf-8?B?OXFEU1dIT2QxWnZDYVBNdlJ5VlcrQzNkQ1VNa2NvM0tzY0NFNWZoTnVqSXFV?=
+ =?utf-8?Q?bqFSxMBpCN8TcQUJPuZcItfRT?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <7E31C11B6AA9CC488F57D6371D8FAFA7@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c5a6aea9-4f3a-495e-78fa-e426de9b0496@amd.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BL1PR11MB5384.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 663a6c08-7443-4d45-d86c-08da8c0d73fd
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Sep 2022 11:31:03.4670
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: dcb/t7lvre3aHfwsWnZn0SDDqcmx8/i5TVZGjr8nykwtEjvUACapn87SxjGjgtIMgRNpmmq/4WTBdKLjeTtxn4aClbXPJKHdJBgx+9dYN00=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB6757
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 01, 2022 at 04:05:53PM +0530, Ravi Bangoria wrote:
-> On 29-Aug-22 8:10 PM, Peter Zijlstra wrote:
-> > On Mon, Aug 29, 2022 at 02:04:33PM +0200, Peter Zijlstra wrote:
-> >> On Mon, Aug 29, 2022 at 05:03:47PM +0530, Ravi Bangoria wrote:
-> >>> @@ -12598,6 +12590,7 @@ EXPORT_SYMBOL_GPL(perf_event_create_kernel_counter);
-> >>>  
-> >>>  void perf_pmu_migrate_context(struct pmu *pmu, int src_cpu, int dst_cpu)
-> >>>  {
-> >>> +#if 0 // XXX buggered - cpu hotplug, who cares
-> >>>  	struct perf_event_context *src_ctx;
-> >>>  	struct perf_event_context *dst_ctx;
-> >>>  	struct perf_event *event, *tmp;
-> >>> @@ -12658,6 +12651,7 @@ void perf_pmu_migrate_context(struct pmu *pmu, int src_cpu, int dst_cpu)
-> >>>  	}
-> >>>  	mutex_unlock(&dst_ctx->mutex);
-> >>>  	mutex_unlock(&src_ctx->mutex);
-> >>> +#endif
-> >>>  }
-> >>>  EXPORT_SYMBOL_GPL(perf_pmu_migrate_context);
-> >>>  
-> >>
-> >> Note to self; fix this :-) I'll see if I have time for that later today.
-> > 
-> > Urgh, while going through that it appears the whole refcounting thing
-> > isn't fully done either.
-> 
-> Not sure I follow. Can you please elaborate.
-
-Sure, and sorry, I've not been feeling too well the past few days; I
-meant to post something, but I just couldn't find it in me to finish it
-let alone make it work.
-
-So the basic issue I mentioned is that:
-
-
-/*
- *           ,------------------------[1:n]---------------------.
- *           V                                                  V
- * perf_event_context <-[1:n]-> perf_event_pmu_context <--- perf_event
- *           ^                      ^     |                     |
- *           `--------[1:n]---------'     `-[n:1]-> pmu <-[1:n]-'
- *
- *
- * XXX destroy epc when empty
- *   refcount, !rcu
- *
- * XXX epc locking
- *
- *   event->pmu_ctx            ctx->mutex && inactive
- *   ctx->pmu_ctx_list         ctx->mutex && ctx->lock
- *
- */
-struct perf_event_pmu_context {
-	...
-        atomic_t                        refcount; /* event <-> epc */
-	...
-}
-
-But that then also suggests that:
-
-struct perf_event_context {
-	...
-        refcount_t                      refcount;
-	...
-}
-
-should be: ctx <-> epc, and that is not so, the ctx::refcount still
-counts the number of events.
-
-Now this might not be bad, but it is confusing.
-
-Anywya; below is what I have, but it is entirely unfinished untested
-might eat your ganny etc..
-
-
----
-Index: linux-2.6/include/linux/perf_event.h
-===================================================================
---- linux-2.6.orig/include/linux/perf_event.h
-+++ linux-2.6/include/linux/perf_event.h
-@@ -883,7 +883,7 @@ struct perf_event_context {
- 	int				nr_freq;
- 	int				rotate_disable;
- 
--	refcount_t			refcount;
-+	refcount_t			refcount; /* ctx <-> epc */
- 	struct task_struct		*task;
- 
- 	/*
-Index: linux-2.6/kernel/events/core.c
-===================================================================
---- linux-2.6.orig/kernel/events/core.c
-+++ linux-2.6/kernel/events/core.c
-@@ -2750,7 +2750,7 @@ perf_install_in_context(struct perf_even
- 	WARN_ON_ONCE(!exclusive_event_installable(event, ctx));
- 
- 	if (event->cpu != -1)
--		event->cpu = cpu;
-+		WARN_ON_ONCE(event->cpu != cpu);
- 
- 	/*
- 	 * Ensures that if we can observe event->ctx, both the event and ctx
-@@ -4764,6 +4764,7 @@ find_get_pmu_context(struct pmu *pmu, st
- 			list_add(&epc->pmu_ctx_entry, &ctx->pmu_ctx_list);
- 			epc->ctx = ctx;
- 			raw_spin_unlock_irq(&ctx->lock);
-+			// XXX get_ctx(ctx);
- 		} else {
- 			WARN_ON_ONCE(epc->ctx != ctx);
- 			atomic_inc(&epc->refcount);
-@@ -4800,6 +4801,7 @@ find_get_pmu_context(struct pmu *pmu, st
- 
- 	list_add(&epc->pmu_ctx_entry, &ctx->pmu_ctx_list);
- 	epc->ctx = ctx;
-+	// XXX get_ctx(ctx)
- 
- found_epc:
- 	if (task_ctx_data && !epc->task_ctx_data) {
-@@ -4837,6 +4839,8 @@ static void put_pmu_ctx(struct perf_even
- 		list_del_init(&epc->pmu_ctx_entry);
- 		epc->ctx = NULL;
- 		raw_spin_unlock_irqrestore(&ctx->lock, flags);
-+		
-+		// XXX put_ctx(ctx)
- 	}
- 
- 	WARN_ON_ONCE(!list_empty(&epc->pinned_active));
-@@ -12444,6 +12448,8 @@ SYSCALL_DEFINE5(perf_event_open,
- 	perf_unpin_context(ctx);
- 
- 	mutex_unlock(&ctx->mutex);
-+	
-+	// XXX put_ctx(ctx);
- 
- 	if (task) {
- 		up_read(&task->signal->exec_update_lock);
-@@ -12588,34 +12594,44 @@ err:
- }
- EXPORT_SYMBOL_GPL(perf_event_create_kernel_counter);
- 
--void perf_pmu_migrate_context(struct pmu *pmu, int src_cpu, int dst_cpu)
-+static void __perf_pmu_remove(struct perf_event_context *ctx,
-+			      int cpu, struct pmu *pmu,
-+			      struct perf_event_groups *groups,
-+			      struct list_head *events)
- {
--#if 0 // XXX buggered - cpu hotplug, who cares
--	struct perf_event_context *src_ctx;
--	struct perf_event_context *dst_ctx;
--	struct perf_event *event, *tmp;
--	LIST_HEAD(events);
-+	struct perf_event *event;
- 
--	src_ctx = &per_cpu_ptr(pmu->pmu_cpu_context, src_cpu)->ctx;
--	dst_ctx = &per_cpu_ptr(pmu->pmu_cpu_context, dst_cpu)->ctx;
-+	for (event = perf_event_groups_first(groups, cpu, pmu, NULL);
-+	     event;
-+	     event = perf_event_groups_next(event, pmu)) {
- 
--	/*
--	 * See perf_event_ctx_lock() for comments on the details
--	 * of swizzling perf_event::ctx.
--	 */
--	mutex_lock_double(&src_ctx->mutex, &dst_ctx->mutex);
--	list_for_each_entry_safe(event, tmp, &src_ctx->event_list,
--				 event_entry) {
- 		perf_remove_from_context(event, 0);
--		unaccount_event_cpu(event, src_cpu);
--		put_ctx(src_ctx);
--		list_add(&event->migrate_entry, &events);
-+		unaccount_event_cpu(event, cpu);
-+		put_pmu_ctx(event->pmu_ctx);
-+		list_add(&event->migrate_event, events);
- 	}
-+}
- 
--	/*
--	 * Wait for the events to quiesce before re-instating them.
--	 */
--	synchronize_rcu();
-+static void __perf_pmu_install_event(struct pmu *pmu,
-+				     struct perf_event_context *ctx,
-+				     int cpu, struct perf_event *event)
-+{
-+	struct perf_event_pmu_context *epc;
-+
-+	event->cpu = cpu;
-+	epc = find_get_pmu_context(pmu, ctx, event);
-+	event->pmu_ctx = epc;
-+
-+	if (event->state >= PERF_EVENT_STATE_OFF)
-+		event->state = PERF_EVENT_STATE_INACTIVE;
-+	account_event_cpu(event, cpu);
-+	perf_install_in_context(ctx, event, cpu);
-+}
-+
-+static void __perf_pmu_install(struct perf_event_context *ctx,
-+			       int cpu, struct pmu *pmu, struct list_head *events)
-+{
-+	struct perf_event *event, *tmp;
- 
- 	/*
- 	 * Re-instate events in 2 passes.
-@@ -12625,33 +12641,50 @@ void perf_pmu_migrate_context(struct pmu
- 	 * leader will enable its siblings, even if those are still on the old
- 	 * context.
- 	 */
--	list_for_each_entry_safe(event, tmp, &events, migrate_entry) {
-+	list_for_each_entry_safe(event, tmp, events, migrate_entry) {
- 		if (event->group_leader == event)
- 			continue;
- 
- 		list_del(&event->migrate_entry);
--		if (event->state >= PERF_EVENT_STATE_OFF)
--			event->state = PERF_EVENT_STATE_INACTIVE;
--		account_event_cpu(event, dst_cpu);
--		perf_install_in_context(dst_ctx, event, dst_cpu);
--		get_ctx(dst_ctx);
-+		__perf_pmu_install_event(pmu, ctx, cpu, event);
- 	}
- 
- 	/*
- 	 * Once all the siblings are setup properly, install the group leaders
- 	 * to make it go.
- 	 */
--	list_for_each_entry_safe(event, tmp, &events, migrate_entry) {
-+	list_for_each_entry_safe(event, tmp, events, migrate_entry) {
- 		list_del(&event->migrate_entry);
--		if (event->state >= PERF_EVENT_STATE_OFF)
--			event->state = PERF_EVENT_STATE_INACTIVE;
--		account_event_cpu(event, dst_cpu);
--		perf_install_in_context(dst_ctx, event, dst_cpu);
--		get_ctx(dst_ctx);
-+		__perf_pmu_install_event(pmu, ctx, cpu, event);
- 	}
-+}
-+
-+void perf_pmu_migrate_context(struct pmu *pmu, int src_cpu, int dst_cpu)
-+{
-+	struct perf_event_context *src_ctx, *dst_ctx;
-+	LIST_HEAD(events);
-+
-+	src_ctx = &per_cpu_ptr(&cpu_context, src_cpu)->ctx;
-+	dst_ctx = &per_cpu_ptr(&cpu_context, dst_cpu)->ctx;
-+
-+	/*
-+	 * See perf_event_ctx_lock() for comments on the details
-+	 * of swizzling perf_event::ctx.
-+	 */
-+	mutex_lock_double(&src_ctx->mutex, &dst_ctx->mutex);
-+
-+	__perf_pmu_remove(src_ctx, src_cpu, pmu, &src_src->pinned_groups, &events);
-+	__perf_pmu_remove(src_ctx, src_cpu, pmu, &src_src->flexible_groups, &events);
-+
-+	/*
-+	 * Wait for the events to quiesce before re-instating them.
-+	 */
-+	synchronize_rcu();
-+
-+	__perf_pmu_install(dst_ctx, dst_cpu, pmu, &events);
-+
- 	mutex_unlock(&dst_ctx->mutex);
- 	mutex_unlock(&src_ctx->mutex);
--#endif
- }
- EXPORT_SYMBOL_GPL(perf_pmu_migrate_context);
- 
+T24gOC8xOS8yMiAxMjowNSBQTSwgS3J6eXN6dG9mIEtvemxvd3NraSB3cm90ZToNCj4gT24gMTkv
+MDgvMjAyMiAxMTo0NywgS3J6eXN6dG9mIEtvemxvd3NraSB3cm90ZToNCj4+IE9uIDE5LzA4LzIw
+MjIgMTE6MzgsIFNlcmdpdS5Nb2dhQG1pY3JvY2hpcC5jb20gd3JvdGU6DQo+Pj4gT24gMTguMDgu
+MjAyMiAxMTozOSwgS3J6eXN6dG9mIEtvemxvd3NraSB3cm90ZToNCj4+Pj4gRVhURVJOQUwgRU1B
+SUw6IERvIG5vdCBjbGljayBsaW5rcyBvciBvcGVuIGF0dGFjaG1lbnRzIHVubGVzcyB5b3Uga25v
+dyB0aGUgY29udGVudCBpcyBzYWZlDQo+Pj4+DQo+Pj4+IE9uIDE3LzA4LzIwMjIgMTA6NTUsIFNl
+cmdpdSBNb2dhIHdyb3RlOg0KPj4+Pj4gQ29udmVydCBhdDkxIFVTQVJUIERUIEJpbmRpbmcgZm9y
+IEF0bWVsL01pY3JvY2hpcCBTb0NzIHRvDQo+Pj4+PiBqc29uLXNjaGVtYSBmb3JtYXQuDQo+Pj4+
+Pg0KPj4+Pj4gU2lnbmVkLW9mZi1ieTogU2VyZ2l1IE1vZ2EgPHNlcmdpdS5tb2dhQG1pY3JvY2hp
+cC5jb20+DQo+Pj4+PiAtLS0NCj4+Pj4+ICAgIC4uLi9iaW5kaW5ncy9tZmQvYXRtZWwsYXQ5MS11
+c2FydC55YW1sICAgICAgICB8IDE5MCArKysrKysrKysrKysrKysrKysNCj4+Pj4+ICAgIC4uLi9k
+ZXZpY2V0cmVlL2JpbmRpbmdzL21mZC9hdG1lbC11c2FydC50eHQgICB8ICA5OCAtLS0tLS0tLS0N
+Cj4+Pj4+ICAgIDIgZmlsZXMgY2hhbmdlZCwgMTkwIGluc2VydGlvbnMoKyksIDk4IGRlbGV0aW9u
+cygtKQ0KPj4+Pj4gICAgY3JlYXRlIG1vZGUgMTAwNjQ0IERvY3VtZW50YXRpb24vZGV2aWNldHJl
+ZS9iaW5kaW5ncy9tZmQvYXRtZWwsYXQ5MS11c2FydC55YW1sDQo+Pj4+PiAgICBkZWxldGUgbW9k
+ZSAxMDA2NDQgRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL21mZC9hdG1lbC11c2Fy
+dC50eHQNCj4+Pj4+DQo+Pj4+PiBkaWZmIC0tZ2l0IGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVl
+L2JpbmRpbmdzL21mZC9hdG1lbCxhdDkxLXVzYXJ0LnlhbWwgYi9Eb2N1bWVudGF0aW9uL2Rldmlj
+ZXRyZWUvYmluZGluZ3MvbWZkL2F0bWVsLGF0OTEtdXNhcnQueWFtbA0KPj4+Pj4gbmV3IGZpbGUg
+bW9kZSAxMDA2NDQNCj4+Pj4+IGluZGV4IDAwMDAwMDAwMDAwMC4uY2YxNWQ3M2ZhMWU4DQo+Pj4+
+PiAtLS0gL2Rldi9udWxsDQo+Pj4+PiArKysgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmlu
+ZGluZ3MvbWZkL2F0bWVsLGF0OTEtdXNhcnQueWFtbA0KPj4+PiBPbmUgbW9yZSB0aGluZyAtIEkg
+dGhpbmsgdGhpcyBzaG91bGQgYmUgaW4gc2VyaWFsIGRpcmVjdG9yeSwgbm90IG1mZCwNCj4+Pj4g
+ZXZlbiB0aG91Z2ggaXQgaW5jbHVkZXMgU1BJLiBNRkQgaXMganVzdCBhIExpbnV4IG5hbWluZy93
+cmFwcGVyIGRldmljZS4NCj4+Pj4NCj4+Pj4gQmVzdCByZWdhcmRzLA0KPj4+PiBLcnp5c3p0b2YN
+Cj4+Pg0KPj4+IEkgd291bGQgcmF0aGVyIGtlZXAgaXQgaW4gdGhpcyBkaXJlY3RvcnksIHNpbmNl
+IGl0cyBjb3JyZXNwb25kaW5nIGRyaXZlcg0KPj4+IGlzIGFsc28gaW4gdGhlIG1mZCBkaXJlY3Rv
+cnkuDQo+Pg0KPj4gU29ycnksIGJ1dCB0aGF0J3MgcG9vciBhcmd1bWVudC4gRHJpdmVyIHN1YnN5
+c3RlbXMgbWF0Y2ggTGludXgNCj4+IGNvbnZlbnRpb24sIG5vdCBuZWNlc3NhcmlseSBoYXJkd2Fy
+ZSB0eXBlL25hbWluZy4gQmluZGluZ3MgZGlyZWN0b3JpZXMNCj4+IG1hdGNoIGhhcmR3YXJlLiBN
+RkQgYmluZGluZ3MgYXJlIG9ubHkgZm9yIE1GRCB3cmFwcGVyIGRyaXZlcnMgYW5kIHRoaXMNCj4+
+IGlzIGEgc2VyaWFsIGludGVyZmFjZS4gTm90IGEgTUZELiBZb3UgZXZlbiBkbyBub3QgYWRkIE1G
+RCBkZXZpY2VzIGluIHRoZQ0KPj4gZHJpdmVyIGJ1dCBhZGQgKmFsd2F5cyBvbmUqIGRldmljZSBk
+ZXBlbmRpbmcgb24gc2VyaWFsIGZlYXR1cmUgeW91IHdhbnQuDQo+PiBUaGlzIGlzIG5vdCBldmVu
+IE1GRCBkZXZpY2UgYnV0IHJlZ3VsYXIgcGxhdGZvcm0gZGV2aWNlIHdpdGggY2hpbGRyZW4uDQo+
+Pg0KPj4gWW91IHB1dCBpdCBpbiBTb0MsIHRob3VnaCwgYmVjYXVzZSBhbGwgb3RoZXIgU29DcyBz
+dG9yZSBpdCB0aGVyZS4uLg0KPiANCj4gVGhlIGxhc3Qgb25lIHNob3VsZCBiZToNCj4gDQo+IFlv
+dSBjb3VsZCBwdXQgaXQgaW4gU29DLCB0aG91Z2gsIGJlY2F1c2UgYWxsIG90aGVyIFNvQ3Mgc3Rv
+cmUgaXQgdGhlcmUuLi4NCg0KSGksDQoNCklmIGl0IHRoaXMgaXMgb25seSBhIGNvbnZlcnNpb24g
+dG8geWFtbCwgd2h5IGRvIHlvdSB3YW50IGl0IG1vdmVkIHRvIA0KYW5vdGhlciBkaXIgPw0KUGVy
+aGFwcyBpZiB5b3UgY29uc2lkZXIgU29DIG9yIHNlcmlhbCBhcyBhIGJldHRlciBwbGFjZSwgaXQg
+c2hvdWxkIGJlIA0KZG9uZSB0aHJvdWdoIGEgZGlmZmVyZW50IHBhdGNoLg0KDQpBbHNvLCBkaXNw
+dXRpbmcgd2hldGhlciB0aGlzIGlzIHJlYWxseSBhIE1GRCBvciBub3QsIGlzIG5vdCBpbiB0aGUg
+c2NvcGUgDQpvZiB0aGlzIHBhdGNoLg0KDQpFdWdlbg0KDQo+IA0KPiBCZXN0IHJlZ2FyZHMsDQo+
+IEtyenlzenRvZg0KPiANCj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18NCj4gbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QNCj4gbGludXgtYXJtLWtl
+cm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnDQo+IGh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21h
+aWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbA0KPiANCg0K
