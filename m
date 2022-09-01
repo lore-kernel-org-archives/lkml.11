@@ -2,78 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19A09ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 00:47:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DCDAECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 00:49:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231645AbiIAAry (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 20:47:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41838 "EHLO
+        id S231874AbiIAAtG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 20:49:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229638AbiIAArv (ORCPT
+        with ESMTP id S231700AbiIAAtE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 20:47:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 231BFEA88B
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 17:47:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DEAA1B82149
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 00:47:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66A12C4347C
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 00:47:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661993267;
-        bh=8TtrzEUYcTXrbSMvbPpUN1sNEwmJ5oI3rmo8szseH7Y=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=eZ5bBQmnf/WjM7gj2RIm0Qga7vpv4b793kawGgvIV/q+W4A0RSY6pXWBBmUskCOc7
-         rmjd2PmdIjreon3nshdFG24v3AWm7AEbznGmYIPm//h1+1Ffk6TYeLixGPkdyCfv0N
-         LR6QRUHOAA45vtUYd76PEVjj1Gof9ILK0ID3GtaT8jkQvRwP/5xfVRL4cGSk+mla/a
-         vlgauD/UgTAtz8c+eA0APimpOn31kufY0PDnNnuhQmQrst0OoP6N/yPGdjNiu4N18h
-         333TUkpwoK+W6EwnlAPbDQjfQiqgwmGwLcCEtkI1wulrrwc5EekCRY9zhYOqiUjDJM
-         YiRq7NMfdm/XQ==
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-3376851fe13so322772017b3.6
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 17:47:47 -0700 (PDT)
-X-Gm-Message-State: ACgBeo3qkSya8c/CyiNPiwj7xahCaTJnH3vETzA9cfIjhxPQtnvpbugn
-        O4SRWX3S7pbFJAbwygJL+3Z7Z+FlSBA48w9izJU=
-X-Google-Smtp-Source: AA6agR76MRlOJDBg7OBvdr2IqlIMjdntMxlk3Mo1tO4Jwz0AEWnVUfZGx6koTK3buPquKIY+TgZlzOPC7dvbWzCsTRc=
-X-Received: by 2002:a81:7489:0:b0:33e:dca7:9750 with SMTP id
- p131-20020a817489000000b0033edca79750mr20866790ywc.73.1661993266323; Wed, 31
- Aug 2022 17:47:46 -0700 (PDT)
+        Wed, 31 Aug 2022 20:49:04 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A0A411BE2A
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 17:49:03 -0700 (PDT)
+Received: from kwepemi500008.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MJ2SK28mxzHnVx;
+        Thu,  1 Sep 2022 08:47:13 +0800 (CST)
+Received: from huawei.com (10.67.175.83) by kwepemi500008.china.huawei.com
+ (7.221.188.139) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 1 Sep
+ 2022 08:49:00 +0800
+From:   ruanjinjie <ruanjinjie@huawei.com>
+To:     <lkundrak@v3.sk>, <linux@armlinux.org.uk>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <ruanjinjie@huawei.com>
+Subject: [PATCH -next] ARM: mmp: Make mmp2_resource_gpio static
+Date:   Thu, 1 Sep 2022 08:45:24 +0800
+Message-ID: <20220901004524.81383-1-ruanjinjie@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220831052734.3423079-1-song@kernel.org> <20220831160111.a6e7d17785ca21ce7c43981c@linux-foundation.org>
-In-Reply-To: <20220831160111.a6e7d17785ca21ce7c43981c@linux-foundation.org>
-From:   Song Liu <song@kernel.org>
-Date:   Wed, 31 Aug 2022 17:47:35 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW4SGguyoFKpN8S=jFCWfLiDM-f5QwV7UPwkQ=LjQEXaNg@mail.gmail.com>
-Message-ID: <CAPhsuW4SGguyoFKpN8S=jFCWfLiDM-f5QwV7UPwkQ=LjQEXaNg@mail.gmail.com>
-Subject: Re: [PATCH] mm/vmalloc: Extend find_vmap_lowest_match_check with
- extra arguments
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Linux-MM <linux-mm@kvack.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Uladzislau Rezki <urezki@gmail.com>,
-        Baoquan He <bhe@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.175.83]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemi500008.china.huawei.com (7.221.188.139)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 4:01 PM Andrew Morton <akpm@linux-foundation.org> wrote:
->
-> On Tue, 30 Aug 2022 22:27:34 -0700 Song Liu <song@kernel.org> wrote:
->
-> > find_vmap_lowest_match() is now able to handle different roots. Make
-> > similar changes to find_vmap_lowest_match_check() and
-> > find_vmap_lowest_linear_match() to handle different trees.
->
-> What are the runtime effects of this change?
+The symbol is not used outside of the file, so mark it static.
 
-The code is gated by DEBUG_AUGMENT_LOWEST_MATCH_CHECK. It
-is only compiled when the developer enables it explicitly. Therefore,
-there isn't
-any runtime effect.
+Fixes the following warning:
 
-Thanks,
-Song
+./arch/arm/mach-mmp/mmp2.c:157:17: warning: symbol 'mmp2_resource_gpio' was not declared. Should it be static?
+
+Signed-off-by: ruanjinjie <ruanjinjie@huawei.com>
+---
+ arch/arm/mach-mmp/mmp2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/mach-mmp/mmp2.c b/arch/arm/mach-mmp/mmp2.c
+index bbc4c2274de3..696bc1856e6d 100644
+--- a/arch/arm/mach-mmp/mmp2.c
++++ b/arch/arm/mach-mmp/mmp2.c
+@@ -154,7 +154,7 @@ MMP2_DEVICE(asram, "asram", -1, NONE, 0xe0000000, 0x4000);
+ /* 0xd1000000 ~ 0xd101ffff is reserved for secure processor */
+ MMP2_DEVICE(isram, "isram", -1, NONE, 0xd1020000, 0x18000);
+ 
+-struct resource mmp2_resource_gpio[] = {
++static struct resource mmp2_resource_gpio[] = {
+ 	{
+ 		.start	= 0xd4019000,
+ 		.end	= 0xd4019fff,
+-- 
+2.25.1
+
