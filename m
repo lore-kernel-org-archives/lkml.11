@@ -2,139 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81741ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:19:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33AD1C54EE9
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:20:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233961AbiIANTZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 09:19:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48616 "EHLO
+        id S233613AbiIANUI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 09:20:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234346AbiIANSv (ORCPT
+        with ESMTP id S233505AbiIANTo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 09:18:51 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99CDF5C9C4;
-        Thu,  1 Sep 2022 06:16:05 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MJM0M1hJJzlWh9;
-        Thu,  1 Sep 2022 21:12:35 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 1 Sep 2022 21:16:01 +0800
-Received: from thunder-town.china.huawei.com (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 1 Sep 2022 21:16:00 +0800
-From:   Zhen Lei <thunder.leizhen@huawei.com>
-To:     "Paul E . McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        "Josh Triplett" <josh@joshtriplett.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>, <rcu@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH v6 1/2] rcu: Simplify rcu_init_nohz() cpumask handling
-Date:   Thu, 1 Sep 2022 21:14:35 +0800
-Message-ID: <20220901131436.986-2-thunder.leizhen@huawei.com>
-X-Mailer: git-send-email 2.26.0.windows.1
-In-Reply-To: <20220901131436.986-1-thunder.leizhen@huawei.com>
-References: <20220901131436.986-1-thunder.leizhen@huawei.com>
+        Thu, 1 Sep 2022 09:19:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D364093
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 06:17:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662038252;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dbU0ErSCeBzcqs0VQ9yr78KT5w2WG2r+58K65PvKptQ=;
+        b=SmZ0mNBCdhdJ5C4A4eefTfWvROV2ESKzaw9sRo71lrdkiS7CFT5swtpSXbSvRXGKtzv45f
+        f7Jd52dJHE6TFuXfXACO9KSEPtE7Ejc/HqZFiZnjdYbc3IRWW97PPEwnk8IR7h5Fy6xYsh
+        bsklvI8mKNDgJo1CFiUiPowRNVdsBrQ=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-14-etL34ZKRMMGLBmJEl_h11g-1; Thu, 01 Sep 2022 09:17:31 -0400
+X-MC-Unique: etL34ZKRMMGLBmJEl_h11g-1
+Received: by mail-wm1-f71.google.com with SMTP id v3-20020a1cac03000000b003a7012c430dso1261400wme.3
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 06:17:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=dbU0ErSCeBzcqs0VQ9yr78KT5w2WG2r+58K65PvKptQ=;
+        b=sOIbcGJLc9BCgXHa9TpZKvnjUzoim9GBiLxkFC1UlR9b0KW6CwnxFOx6jzN70AHlVx
+         zySSqOF1FYoYAh+MWgC5gXycR/l/uDRlhwgvj8Frg6Tp8RQxmRvwzlh8q86bftpEz25W
+         jXu1JvwloGZ61iGtPlv9Ry5p7H2eagyYFmGqaS0GBdx9e+rH9k8TJyfxJ6b5CL3tgpnJ
+         0yIsfU3PIzx1sQdCRiUJ5FO6OwITSsYLUwKa6iwQ99faM5rg+aJTPnNjb14v9wOUpEqt
+         wjmnXy9+2QuaLaaeY8cXVEfBcJMbfoDXtNmC5Nn1IOtATk2xKnCbuqqjnbG40aPhEs5j
+         jP0Q==
+X-Gm-Message-State: ACgBeo0+27tp6ENwd+/NHSg03GGs2lEMC6n8abYES+dt3OoXaT5Q+YjL
+        IrmQISN9j3h0OGcqGW4E873qnKmd3z4Ek01EirkIG3gmyWzFT8U+tt9EdOqjbmLehWfkEaf6Z6m
+        QjiyWE/IHcnemEpI8iPhbkbb2
+X-Received: by 2002:adf:eb10:0:b0:225:70d5:e994 with SMTP id s16-20020adfeb10000000b0022570d5e994mr14332336wrn.425.1662038248615;
+        Thu, 01 Sep 2022 06:17:28 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7MFLzLBOV4HiscaGRSbKZajVvC/dHCpC9549jZEyDkd1lo6YzUYUmct/A+r7uLnmWiTNjnrA==
+X-Received: by 2002:adf:eb10:0:b0:225:70d5:e994 with SMTP id s16-20020adfeb10000000b0022570d5e994mr14332322wrn.425.1662038248419;
+        Thu, 01 Sep 2022 06:17:28 -0700 (PDT)
+Received: from [192.168.1.130] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id z14-20020adfd0ce000000b002253fd19a6asm17374003wrh.18.2022.09.01.06.17.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Sep 2022 06:17:27 -0700 (PDT)
+Message-ID: <087acab2-c230-fe5d-9ab3-2b8a18e42175@redhat.com>
+Date:   Thu, 1 Sep 2022 15:17:25 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 2/2] drm/tests: Change "igt_" prefix to "test_drm_"
+Content-Language: en-US
+To:     Maxime Ripard <maxime@cerno.tech>,
+        =?UTF-8?Q?Ma=c3=adra_Canal?= <mairacanal@riseup.net>
+Cc:     michal.winiarski@intel.com, David Gow <davidgow@google.com>,
+        siqueirajordao@riseup.net, magalilemes00@gmail.com,
+        David Airlie <airlied@linux.ie>, tales.aparecida@gmail.com,
+        Arthur Grillo <arthur.grillo@usp.br>,
+        brendanhiggins@google.com, linux-kernel@vger.kernel.org,
+        mwen@igalia.com, dri-devel@lists.freedesktop.org,
+        kunit-dev@googlegroups.com,
+        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        Isabella Basso <isabbasso@riseup.net>, andrealmeid@riseup.net
+References: <20220901124210.591994-1-mairacanal@riseup.net>
+ <20220901124210.591994-2-mairacanal@riseup.net>
+ <20220901125530.b56s4zisnkfuigvc@houat>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <20220901125530.b56s4zisnkfuigvc@houat>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In kernels built with either CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y or
-CONFIG_NO_HZ_FULL=y, additional CPUs must be added to rcu_nocb_mask.
-Except that kernels booted without the rcu_nocbs= will not have
-allocated rcu_nocb_mask.  And the current rcu_init_nohz() function uses
-its need_rcu_nocb_mask and offload_all local variables to track the
-rcu_nocb and nohz_full state.
+On 9/1/22 14:55, Maxime Ripard wrote:
+> Hi,
+> 
+> On Thu, Sep 01, 2022 at 09:42:10AM -0300, Maíra Canal wrote:
+>> With the introduction of KUnit, IGT is no longer the only option to run
+>> the DRM unit tests, as the tests can be run through kunit-tool or on
+>> real hardware with CONFIG_KUNIT.
+>>
+>> Therefore, remove the "igt_" prefix from the tests and replace it with
+>> the "test_drm_" prefix, making the tests' names independent from the tool
+>> used.
+>>
+>> Signed-off-by: Maíra Canal <mairacanal@riseup.net>
+>>
+>> ---
+>> v1 -> v2: https://lore.kernel.org/dri-devel/20220830211603.191734-1-mairacanal@riseup.net/
+>> - Change "drm_" prefix to "test_drm_", as "drm_" can be a bit confusing (Jani Nikula).
+> 
+> I appreciate it's a bit of a bikeshed but I disagree with this. The
+> majority of the kunit tests already out there start with the framework
+> name, including *all* the examples in the kunit doc. Plus, it's fairly
+> obvious that it's a test, kunit is only about running tests in the first
+> place.
+>
 
-But there is a much simpler approach, namely creating a cpumask pointer
-to track the default and then using cpumask_available() to check the
-rcu_nocb_mask state.  This commit takes this approach, thereby simplifying
-and shortening the rcu_init_nohz() function.
+Agree with Maxime on this.
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-Reviewed-by: Joel Fernandes (Google) <joel@joelfernandes.org>
----
- kernel/rcu/tree_nocb.h | 35 ++++++++++++-----------------------
- 1 file changed, 12 insertions(+), 23 deletions(-)
-
-diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
-index 0a5f0ef41484518..8b6dceeabde0b4d 100644
---- a/kernel/rcu/tree_nocb.h
-+++ b/kernel/rcu/tree_nocb.h
-@@ -1210,45 +1210,34 @@ EXPORT_SYMBOL_GPL(rcu_nocb_cpu_offload);
- void __init rcu_init_nohz(void)
- {
- 	int cpu;
--	bool need_rcu_nocb_mask = false;
--	bool offload_all = false;
- 	struct rcu_data *rdp;
--
--#if defined(CONFIG_RCU_NOCB_CPU_DEFAULT_ALL)
--	if (!rcu_state.nocb_is_setup) {
--		need_rcu_nocb_mask = true;
--		offload_all = true;
--	}
--#endif /* #if defined(CONFIG_RCU_NOCB_CPU_DEFAULT_ALL) */
-+	const struct cpumask *cpumask = NULL;
- 
- #if defined(CONFIG_NO_HZ_FULL)
--	if (tick_nohz_full_running && !cpumask_empty(tick_nohz_full_mask)) {
--		need_rcu_nocb_mask = true;
--		offload_all = false; /* NO_HZ_FULL has its own mask. */
--	}
--#endif /* #if defined(CONFIG_NO_HZ_FULL) */
-+	if (tick_nohz_full_running && !cpumask_empty(tick_nohz_full_mask))
-+		cpumask = tick_nohz_full_mask;
-+#endif
-+
-+#if defined(CONFIG_RCU_NOCB_CPU_DEFAULT_ALL)
-+	if (!rcu_state.nocb_is_setup && !cpumask)
-+		cpumask = cpu_possible_mask;
-+#endif
- 
--	if (need_rcu_nocb_mask) {
-+	if (cpumask) {
- 		if (!cpumask_available(rcu_nocb_mask)) {
- 			if (!zalloc_cpumask_var(&rcu_nocb_mask, GFP_KERNEL)) {
- 				pr_info("rcu_nocb_mask allocation failed, callback offloading disabled.\n");
- 				return;
- 			}
- 		}
-+
-+		cpumask_or(rcu_nocb_mask, rcu_nocb_mask, cpumask);
- 		rcu_state.nocb_is_setup = true;
- 	}
- 
- 	if (!rcu_state.nocb_is_setup)
- 		return;
- 
--#if defined(CONFIG_NO_HZ_FULL)
--	if (tick_nohz_full_running)
--		cpumask_or(rcu_nocb_mask, rcu_nocb_mask, tick_nohz_full_mask);
--#endif /* #if defined(CONFIG_NO_HZ_FULL) */
--
--	if (offload_all)
--		cpumask_setall(rcu_nocb_mask);
--
- 	if (!cpumask_subset(rcu_nocb_mask, cpu_possible_mask)) {
- 		pr_info("\tNote: kernel parameter 'rcu_nocbs=', 'nohz_full', or 'isolcpus=' contains nonexistent CPUs.\n");
- 		cpumask_and(rcu_nocb_mask, cpu_possible_mask,
 -- 
-2.25.1
+Best regards,
+
+Javier Martinez Canillas
+Core Platforms
+Red Hat
 
