@@ -2,92 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF357ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:38:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04ADFECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:38:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233908AbiIAHiK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 03:38:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52250 "EHLO
+        id S233941AbiIAHiZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 03:38:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233610AbiIAHiE (ORCPT
+        with ESMTP id S229639AbiIAHiW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 03:38:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C274E991A
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 00:38:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662017882;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/MJQpcPd8ilsE+iHuPOM0sBVZL0bmjk6Frq1r8jdmRQ=;
-        b=eTRS3bLAQiMedJeS/gCTU8XgiHkCmjesYPptxj/tNnsZuoi+JiLDhxk0hMlZGWPD93mx26
-        ZDOBtw+/1FbdjfRkKmWXSHOMKf+V/iQYEmzLY3oGX/mqob8jk5ID9xEsRLVpwdxxzXThAi
-        aCmcN/CbFZRm3hefaSqpYCOKYh3JvFo=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-392-HCEYagDgO0Sx1mYmiM2nWQ-1; Thu, 01 Sep 2022 03:38:01 -0400
-X-MC-Unique: HCEYagDgO0Sx1mYmiM2nWQ-1
-Received: by mail-wm1-f71.google.com with SMTP id b4-20020a05600c4e0400b003a5a96f1756so895807wmq.0
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 00:38:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc;
-        bh=/MJQpcPd8ilsE+iHuPOM0sBVZL0bmjk6Frq1r8jdmRQ=;
-        b=m2NvIwhthh+RtHWxOttEy/6dAXtewHZVCvuFon7jLWAotqPhLxGBZeWtGDx3IqMVTs
-         oTX21rH3BgbVKrvZ40BxOrh6xgSdpQiJ5qykFvJfgEjUpph1+3vT72BsDgNk9UdShJwi
-         GxTDIhUm7L9AIxo5L8yiG+OcNz7DkgfvYQAMT0OE09BKiCeZaEq3Rg5GswKh3vD739oM
-         VF49qwA2Bup45vF7VisjvGYe7C8Tv/4LG0qbVaQzND0fb85AT2f9LjsNOQHcZQy5gGSy
-         lukkOqjEC5De+C76Kw2bjW9c6G5pvK15EB+8kRU+/FSjW35EjTQeYi0qgZuzegmZrFWO
-         Pjhw==
-X-Gm-Message-State: ACgBeo1MgN1sOJK3aRO5rReiBAh2bMsf4109IAAnDhAetat0hHXdK8nr
-        4qqOvgVvhWlP0wj2PwpsKitXxEpjUQshY3/7aZTV6LX/PdM8klzzjADKSTNc4uYCaiXhnRxN9GL
-        XXA2HFpxPNFqW4L0Prhf3It4+
-X-Received: by 2002:a5d:684e:0:b0:220:63df:3760 with SMTP id o14-20020a5d684e000000b0022063df3760mr13049998wrw.508.1662017880480;
-        Thu, 01 Sep 2022 00:38:00 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6uAAlaEbliOr8SEscGeiKdIVPCDI4GZRY0wtVuL4pwMDIZvg9GHwC4eItvjQFlTCKwU7FAFQ==
-X-Received: by 2002:a5d:684e:0:b0:220:63df:3760 with SMTP id o14-20020a5d684e000000b0022063df3760mr13049988wrw.508.1662017880199;
-        Thu, 01 Sep 2022 00:38:00 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c707:9e00:fec0:7e96:15cb:742? (p200300cbc7079e00fec07e9615cb0742.dip0.t-ipconnect.de. [2003:cb:c707:9e00:fec0:7e96:15cb:742])
-        by smtp.gmail.com with ESMTPSA id n2-20020a7bc5c2000000b003a5c064717csm4402765wmk.22.2022.09.01.00.37.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Sep 2022 00:37:59 -0700 (PDT)
-Message-ID: <ff5ccb8b-adc7-8d74-6693-0e94785084a2@redhat.com>
-Date:   Thu, 1 Sep 2022 09:37:58 +0200
+        Thu, 1 Sep 2022 03:38:22 -0400
+Received: from mx01.puc.rediris.es (outbound4mad.lav.puc.rediris.es [130.206.19.145])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA851108A2
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 00:38:20 -0700 (PDT)
+Received: from sim.rediris.es (mta-out04.sim.rediris.es [130.206.24.46])
+        by mx01.puc.rediris.es  with ESMTP id 2817bp7d004582-2817bp7f004582
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Thu, 1 Sep 2022 09:37:51 +0200
+Received: from sim.rediris.es (localhost.localdomain [127.0.0.1])
+        by sim.rediris.es (Postfix) with ESMTPS id 377EB39C39;
+        Thu,  1 Sep 2022 09:37:50 +0200 (CEST)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by sim.rediris.es (Postfix) with ESMTP id 9F7C239C3C;
+        Thu,  1 Sep 2022 09:37:49 +0200 (CEST)
+X-Amavis-Modified: Mail body modified (using disclaimer) -
+        mta-out04.sim.rediris.es
+Received: from sim.rediris.es ([127.0.0.1])
+        by localhost (mta-out04.sim.rediris.es [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id Aco7_lIICjnn; Thu,  1 Sep 2022 09:37:49 +0200 (CEST)
+Received: from lt-gp.iram.es (haproxy01.sim.rediris.es [130.206.24.69])
+        by sim.rediris.es (Postfix) with ESMTPA id 1498139C39;
+        Thu,  1 Sep 2022 09:37:46 +0200 (CEST)
+Date:   Thu, 1 Sep 2022 09:37:42 +0200
+From:   Gabriel Paubert <paubert@iram.es>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Segher Boessenkool <segher@kernel.crashing.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Zhouyi Zhou <zhouzhouyi@gmail.com>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Nicholas Piggin <npiggin@gmail.com>
+Subject: Re: [PATCH v2] powerpc: Fix irq_soft_mask_set() and
+ irq_soft_mask_return() with sanitizer
+Message-ID: <YxBhRtTuJ4Ut7wUt@lt-gp.iram.es>
+References: <c0b486e782b6695092dcdb2cd340a3d44c8c266d.1661272738.git.christophe.leroy@csgroup.eu>
+ <CMJ3VICKD1CI.SVFJOKYJPKZQ@bobo>
+ <e022754d-b4d3-bc9f-cc79-2cf556180459@csgroup.eu>
+ <CMJ8P06JA9OY.1S8VDV2XRU3W5@bobo>
+ <7c11b659-5b8e-256c-508e-39395041fccb@csgroup.eu>
+ <20220831224522.GX25951@gate.crashing.org>
+ <ad5ebb37-6b6f-372c-dd07-fc4cfc5f5fe5@csgroup.eu>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH] mm: remove BUG_ON() in __isolate_free_page()
-Content-Language: en-US
-To:     Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
-Cc:     linux-kernel@vger.kernel.org
-References: <20220901015043.189276-1-wangkefeng.wang@huawei.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220901015043.189276-1-wangkefeng.wang@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+In-Reply-To: <ad5ebb37-6b6f-372c-dd07-fc4cfc5f5fe5@csgroup.eu>
+Content-Transfer-Encoding: quoted-printable
+X-FE-Policy-ID: 23:8:0:SYSTEM
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; d=iram.es; s=DKIM; c=relaxed/relaxed;
+ h=date:from:to:cc:subject:message-id:references:mime-version:content-type;
+ bh=8oRtUt8n6oJO2slKo6oCUf7IVvigM4Ug71hTwGM018E=;
+ b=naAOJdS5nF1l3osWGt5jM0E8jjERSjBSaLXL2U3f5R2uLCZHhOI7XyYC+1YfORGLXI/MXoftea7T
+        pvc4WmzeX1Xp+QO+2DY/aelXWhKhWJhn4oo/ajxPFmH2Rxdi2NtaA3pV6/z1O81TH7O54ixy5loJ
+        QrlW0VVVz5Z/YkEbl+afZzQYk1vgNyTqXu3/3XdnDFEBbQdvVbj6d99CbdM8b8xFRb7UcF1F0X4S
+        gxotryTbBL/b+gcWNqiNweqgyOTFreoPrfmH8utRyjG9KHR6mlJHePZelMdv9umKQ4Zq3p0HsOwB
+        WAQnre8JHZRNrJs8osQRzSl80jPc5bJkwYVf0Q==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01.09.22 03:50, Kefeng Wang wrote:
-> Drop unneed comment and blank, adjust the variable, and the most
-> important is to delete BUG_ON(). The page passed is always buddy
-> page into __isolate_free_page() from compaction, page_isolation
-> and page_reporting, and the caller also check the return, BUG_ON()
-> is a too drastic measure, remove it.
+On Thu, Sep 01, 2022 at 05:22:32AM +0000, Christophe Leroy wrote:
+>=20
+>=20
+> Le 01/09/2022 =E0 00:45, Segher Boessenkool a =E9crit=A0:
+> > Hi!
+> >=20
+> > On Tue, Aug 30, 2022 at 09:10:02AM +0000, Christophe Leroy wrote:
+> >> Le 30/08/2022 =E0 11:01, Nicholas Piggin a =E9crit=A0:
+> >>> On Tue Aug 30, 2022 at 3:24 PM AEST, Christophe Leroy wrote:
+> >>>>> This is still slightly concerning to me. Is there any guarantee t=
+hat the
+> >>>>> compiler would not use a different sequence for the address here?
+> >>>>>
+> >>>>> Maybe explicit r13 is required.
+> >>>>>
+> >>>>
+> >>>> local_paca is defined as:
+> >>>>
+> >>>> 	register struct paca_struct *local_paca asm("r13");
+> >=20
+> > And this is in global scope, making it a global register variable.
+> >=20
+> >>>> Why would the compiler use another register ?
+> >>>
+> >>> Hopefully it doesn't. Is it guaranteed that it won't?
+> >=20
+> > Yes, this is guaranteed.
+> >=20
+> > For a local register variable this is guaranteed only for operands to=
+ an
+> > extended inline asm; any other access to the variable does not have t=
+o
+> > put it in the specified register.
+> >=20
+> > But this is a global register variable.  The only thing that would ma=
+ke
+> > this crash and burn is if *any* translation unit did not see this
+> > declaration: it could then use r13 (if that was allowed by the ABI in
+> > effect, heh).
+> >=20
+> >>> I'm sure Segher will be delighted with the creative asm in __do_IRQ
+> >>> and call_do_irq :) *Grabs popcorn*
+> >=20
+> > All that %% is blinding, yes.
+> >=20
+> > Inline tabs are bad taste.
+> >=20
+> > Operand names instead of numbers are great for obfuscation, and nothi=
+ng
+> > else -- unless you have more than four or five operands, in which cas=
+e
+> > you have bigger problems already.
+> >=20
+> > Oh, this function is a good example of proper use of local register a=
+sm,
+> > btw.
+> >=20
+> > Comments like "// Inputs" are just harmful.  As is the "creative"
+> > indentation here.  Both harm readability and do not help understandin=
+g
+> > in any other way either.
+> >=20
+> > The thing about inline asm is the smallest details change meaning of =
+the
+> > whole, it is a very harsh environment, you are programming both in C =
+and
+> > directly assembler code as well, and things have to be valid for both=
+,
+> > although on the other hand there is almost no error checking.  Keepin=
+g
+> > it small, simple, readable is paramount.
+> >=20
+> > The rules for using inline asm:
+> >=20
+> > 0) Do no use inline asm.
+> > 1) Use extended asm, unless you know all differences with basic asm, =
+and
+> >     you know you want that.  And if you answer "yes I do" to the latt=
+er,
+> >     you answered wrong to the former.
+> > 2) Do not use toplevel asm.
+> > 3) Do no use inline asm.
+> > 4) Do no use inline asm.
+> > 5) Do no use inline asm.
+> >=20
+> > Inline asm is a very powerful escape hatch.  Like all emergency exits=
+,
+> > you should not use them if you do not need them!  :-)
+> >=20
+> > But, you are talking about the function calling and the frame change =
+I
+> > bet :-)  Both of these are only okay because everything is back as it
+> > was when this (single!) asm is done, and the state created is perfect=
+ly
+> > fine (this is very dependent on exact ABI used, etc.)
+> >=20
+> > I would have used real assembler code here (in a .s file).  But there
+> > probably are reasons to do things this way, performance probably?
+>=20
+> We changed it to inline asm in order to ... inline it in the caller.
 
-Why not WARN_ON_ONCE then? But yeah, maybe this really isn't of any
-value anymore.
+And there is a single caller it seems. Typically GCC inlines function
+with a single call site, but it may be confused by asm statements.
 
--- 
-Thanks,
+>=20
+> I also find that those operand names make it awull more difficult to=20
+> read that traditional numbering. I really dislike that new trend.
+> And same with those // comments, better use meaningfull C variable name=
+s.
 
-David / dhildenb
+Agree, but there is one thing which escapes me: why is r3 listed in the
+outputs section (actually as a read write operand with the "+"
+constraint modifier) but is not used after the asm which is the last
+statement of function returning void?
+
+Do I miss something?
+
+	Gabriel
+
+ 
 
