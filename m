@@ -2,103 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E2F9C6FA83
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 19:39:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7054AECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 19:39:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234642AbiIATjX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 15:39:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43050 "EHLO
+        id S234659AbiIATja (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 15:39:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234595AbiIATjT (ORCPT
+        with ESMTP id S234595AbiIATjZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 15:39:19 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 559779A99F;
-        Thu,  1 Sep 2022 12:39:17 -0700 (PDT)
-Received: from fabians-envy.localnet ([217.234.194.43]) by
- mrelayeu.kundenserver.de (mreue108 [212.227.15.183]) with ESMTPSA (Nemesis)
- id 1Mw9Hm-1pLwgW1FR6-00s9J9; Thu, 01 Sep 2022 21:39:04 +0200
-From:   Fabian Vogt <fabian@ritter-vogt.de>
-To:     Andrew Davis <afd@ti.com>, Daniel Tang <dt.tangr@gmail.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/2] TI-Nspire cleanups
-Date:   Thu, 01 Sep 2022 21:38:40 +0200
-Message-ID: <5597784.DvuYhMxLoT@fabians-envy>
-In-Reply-To: <CAPnH9d=HhPRVNkveEPBe01g-JK0K5bR7suiTZzmCwm80Vpo0sw@mail.gmail.com>
-References: <20220822232046.1230-1-afd@ti.com> <CAPnH9d=HhPRVNkveEPBe01g-JK0K5bR7suiTZzmCwm80Vpo0sw@mail.gmail.com>
+        Thu, 1 Sep 2022 15:39:25 -0400
+Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B6C59A98B
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 12:39:23 -0700 (PDT)
+Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-33dc31f25f9so347061627b3.11
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 12:39:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=rw5PRlxl7tO0yi2f42RcudRuneYpC4HLzAgnvXZWG5E=;
+        b=lG3CtwEra2JQqN/veO23yk3cgaTJHFCiebuuRZY/xNehRm+m0fM4bIsWwBppGA+dxf
+         mGwrLGImeNf4NmD+qiiJAgJrRcvEAfMmmsjPutkxq2y7CzoFE7qGuyTBDkwrYwo0ghp+
+         DIdTURnQpZf4mS51OcBm4/JauLAis6X1OUJhsFMZ1Eii1uGdRpU21Q08G5BpjTO5hJLN
+         9L5Fsbu9o5yfqdUojSVuS9kjs1tQfCEVguOYiQkyDJxdrNwv3a8BIeLV7PQsB1938bTI
+         TTsL41uELqXnesIe6dBtowmfUnvD7Y1/Zc9uEXdIILlsmZXFDiVnDH9hCWWOHKwToPd1
+         MnoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=rw5PRlxl7tO0yi2f42RcudRuneYpC4HLzAgnvXZWG5E=;
+        b=bWNkzZG9iJ6buoH0Ac5qdBaVoEvU7M3m4ZOfv/h4YEqkZWE57yvEC6I5Ua5OxLxqt5
+         yLImqqhnQGCXiLX2PVHJwvDis2zrYsRhiAeYRDcucbgu932SHBLreafahWkq6ZAyQIZ6
+         GKRES0o3cVeK9Gi3UYtXBBLhWGNZzn7DruY2ktMlKayM3irdGd0pE7fA2l+EnBlPc+cj
+         LskQGqf2YB/+sgzx33QYHz/pp+/7TE1Ae8B/75/AKsH1pLBPJZWxlwZUdBvyWpvKNxWU
+         poYIi7RdPXHt8CwVENAu7NRchF6zCrK7MOXRK1fZ1DEp/n2x8U6hAErNgoRsnUw6dcer
+         WgGw==
+X-Gm-Message-State: ACgBeo0BwDtUMMSQnvx7Qa3eSAEtYj2CxR/spjdp6uxGUgToic1/X/yV
+        pem35TDPlNzsFSyRmjFzOwbQIZSh57QO6HGMfU903A==
+X-Google-Smtp-Source: AA6agR43mbcplTcd3Q6E6SWUR/a0QzgezQxqYw6L8vriq8koQ7chGwVsb4h58VmaT16qZLx9mcJbzjGRj/xFE0GH57Q=
+X-Received: by 2002:a0d:d850:0:b0:340:d2c0:b022 with SMTP id
+ a77-20020a0dd850000000b00340d2c0b022mr21758237ywe.469.1662061162404; Thu, 01
+ Sep 2022 12:39:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
+References: <20220830214919.53220-1-surenb@google.com> <Yw8P8xZ4zqu121xL@hirez.programming.kicks-ass.net>
+ <20220831084230.3ti3vitrzhzsu3fs@moria.home.lan> <20220831101948.f3etturccmp5ovkl@suse.de>
+ <Yw88RFuBgc7yFYxA@dhcp22.suse.cz> <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
+ <YxBc1xuGbB36f8zC@dhcp22.suse.cz> <CAJuCfpGhwPFYdkOLjwwD4ra9JxPqq1T5d1jd41Jy3LJnVnhNdg@mail.gmail.com>
+ <YxEE1vOwRPdzKxoq@dhcp22.suse.cz>
+In-Reply-To: <YxEE1vOwRPdzKxoq@dhcp22.suse.cz>
+From:   Suren Baghdasaryan <surenb@google.com>
+Date:   Thu, 1 Sep 2022 12:39:11 -0700
+Message-ID: <CAJuCfpHuzJGTA_-m0Jfawc7LgJLt4GztUUY4K9N9-7bFqJuXnw@mail.gmail.com>
+Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     Kent Overstreet <kent.overstreet@linux.dev>,
+        Mel Gorman <mgorman@suse.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Liam R. Howlett" <liam.howlett@oracle.com>,
+        David Vernet <void@manifault.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Laurent Dufour <ldufour@linux.ibm.com>,
+        Peter Xu <peterx@redhat.com>,
+        David Hildenbrand <david@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, mcgrof@kernel.org,
+        masahiroy@kernel.org, nathan@kernel.org, changbin.du@intel.com,
+        ytcoode@gmail.com, Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Benjamin Segall <bsegall@google.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Valentin Schneider <vschneid@redhat.com>,
+        Christopher Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>, 42.hyeyoo@gmail.com,
+        Alexander Potapenko <glider@google.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Muchun Song <songmuchun@bytedance.com>, arnd@arndb.de,
+        jbaron@akamai.com, David Rientjes <rientjes@google.com>,
+        Minchan Kim <minchan@google.com>,
+        Kalesh Singh <kaleshsingh@google.com>,
+        kernel-team <kernel-team@android.com>,
+        linux-mm <linux-mm@kvack.org>, iommu@lists.linux.dev,
+        kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
+        linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
+        linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:q0MZYE1ez3SPDiKjT+yBGh94jYNaudKtIEAT0KUibGe61OaCJor
- 0GV+r+WOERPPKC3hP58O32lTqSRZZBKRKvYid/fYmgkAAfilcMZhvjdgwSZ41deFb6aMx3f
- W3QkHfC3CgqrqCjrXI1No07BV65A7tvHzthQ4hCjAVKIMAbLtmBQNo+cIFSHf4UV51O/t7O
- sz5t2mwoel4rQQ2GtdBhw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:hfYIt94BQFE=:XxIMDUc2X/3OKPnipmQf5m
- w4uglJFMPLRH6wcsSv1/ObM7nJzCSOQclMAMgJWvZWM9Pti4hzI4eEYizNZOwuXpKtgqgEZjm
- stKs0A60WD54+h8dHIV/ZCzFLY0n9qAzxv/QT+o9u3qsRx8zw3epxMG38Efexo4x+dXHDrrHm
- 2OreDYwWx7bOJMwUqqDr1RIpAV/cF5C5slqem6CvZKTSUIM/mkSJEXYGHzMjcMy0gAwkYjHBq
- OR/FANcG4L2dMreQAUUkscvwqXvdYafDuv1NfO87KzlI7OS9eisbgqM7EzQ8V49xcuv99tkWn
- jTqFm4FW7emwmF5mJindn5gW/n+iNLuDOrWl8g6vVqgMBIeNoPXsSNHhknpZXxAph47OH/dd3
- 8aDW8siKCId24lN5PSd2/p/OGlc4eHOPd6xRwIn3uNCdnb4ExA2cASB/FhUTHS6lc5AAC3ACh
- BKBWE5QrNxGiSOJfaiZ4ePrAtWxOEpe2tkbTMEZAmhvQxNNcdG8a1BVL9NUnsIKMDR20TfJED
- pDABIe7PRSGN/yu3UUr4XzC1ihiTr6mb/ImxaaQS8AjCF477GUPjUgqfJxJMoQU+w2dP/FU6d
- AD0hGvK/oZPH3aOs9K0t+/WsFjmPYr67nY0xJd+Mcyd0n7mMB/U0MI/1YSKm05THLbfOOaLgO
- p1vNSVH0jYHaMq2zi7odboiaSjdqXxaW+qiEK/YmSELA4dXwQP2nzWx2vgPRf9h/16bmzD5GU
- 8alLODAN9V3zMkXCd6PGfsSjbxPFcEYlCbfiIUfhYErx72iJ8OA+cVP2D+H+8+yrsIXFyNIw2
- Hkp32RcDvio3PFrThnHVfUaMHScnw==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Thu, Sep 1, 2022 at 12:15 PM Michal Hocko <mhocko@suse.com> wrote:
+>
+> On Thu 01-09-22 08:33:19, Suren Baghdasaryan wrote:
+> > On Thu, Sep 1, 2022 at 12:18 AM Michal Hocko <mhocko@suse.com> wrote:
+> [...]
+> > > So I find Peter's question completely appropriate while your response to
+> > > that not so much! Maybe ftrace is not the right tool for the intented
+> > > job. Maybe there are other ways and it would be really great to show
+> > > that those have been evaluated and they are not suitable for a), b) and
+> > > c) reasons.
+> >
+> > That's fair.
+> > For memory tracking I looked into using kmemleak and page_owner which
+> > can't match the required functionality at an overhead acceptable for
+> > production and pre-production testing environments.
+>
+> Being more specific would be really helpful. Especially when your cover
+> letter suggests that you rely on page_owner/memcg metadata as well to
+> match allocation and their freeing parts.
 
-Am Dienstag, 23. August 2022, 11:16:17 CEST schrieb Daniel Tang:
-> I've CC'd in Fabian, who has previously been able to assist testing
-> kernel patches for this platform.
-> 
-> 
-> On Tue, 23 Aug 2022 at 09:20, Andrew Davis <afd@ti.com> wrote:
-> >
-> > Hello all,
-> >
-> > I don't have the hardware to test this (yes I know who my current
-> > employer is), but it does look right and this lets us remove the rest
-> > of mach-nspire/ without losing any functionality.
-> > Does anyone have one of these to test with?
-> >
-> > The second patch removes a couple defines that do not seem to have ever
-> > been used, but if one want to implement it, then it should be a simple
-> > generic syscon DT node.
+kmemleak is known to be slow and it's even documented [1], so I hope I
+can skip that part. For page_owner to provide the comparable
+information we would have to capture the call stacks for all page
+allocations unlike our proposal which allows to do that selectively
+for specific call sites. I'll post the overhead numbers of call stack
+capturing once I'm finished with profiling the latest code, hopefully
+sometime tomorrow, in the worst case after the long weekend.
 
-I applied both patches on current master (c5e4d5e99162) and they work fine in
-the emulator (including rebooting). On real HW the kernel does unfortunately
-not boot, so I'll have to do some further testing and debugging. The changes
-look good to me, so it's probably some other change which broke it though.
+>
+> > traces + BPF I
+> > haven't evaluated myself but heard from other members of my team who
+> > tried using that in production environment with poor results. I'll try
+> > to get more specific information on that.
+>
+> That would be helpful as well.
 
-Cheers,
-Fabian
+Ack.
 
-> > Thanks,
-> > Andrew
+>
+> > > E.g. Oscar has been working on extending page_ext to track number of
+> > > allocations for specific calltrace[1]. Is this 1:1 replacement? No! But
+> > > it can help in environments where page_ext can be enabled and it is
+> > > completely non-intrusive to the MM code.
 > >
-> > Andrew Davis (2):
-> >   ARM: nspire: Use syscon-reboot to handle restart
-> >   ARM: nspire: Remove unused header file mmio.h
+> > Thanks for pointing out this work. I'll need to review and maybe
+> > profile it before making any claims.
 > >
-> >  arch/arm/boot/dts/nspire.dtsi |  7 ++++
-> >  arch/arm/mach-nspire/Kconfig  |  2 ++
-> >  arch/arm/mach-nspire/mmio.h   | 16 ----------
-> >  arch/arm/mach-nspire/nspire.c | 60 +++++++++++------------------------
-> >  4 files changed, 27 insertions(+), 58 deletions(-)
-> >  delete mode 100644 arch/arm/mach-nspire/mmio.h
-> >  rewrite arch/arm/mach-nspire/nspire.c (61%)
+> > >
+> > > If the page_ext overhead is not desirable/acceptable then I am sure
+> > > there are other options. E.g. kprobes/LivePatching framework can hook
+> > > into functions and alter their behavior. So why not use that for data
+> > > collection? Has this been evaluated at all?
 > >
-> > --
-> > 2.36.1
-> >
+> > I'm not sure how I can hook into say alloc_pages() to find out where
+> > it was called from without capturing the call stack (which would
+> > introduce an overhead at every allocation). Would love to discuss this
+> > or other alternatives if they can be done with low enough overhead.
+>
+> Yes, tracking back the call trace would be really needed. The question
+> is whether this is really prohibitively expensive. How much overhead are
+> we talking about? There is no free lunch here, really.  You either have
+> the overhead during runtime when the feature is used or on the source
+> code level for all the future development (with a maze of macros and
+> wrappers).
 
+Will post the overhead numbers soon.
+What I hear loud and clear is that we need a kernel command-line kill
+switch that mitigates the overhead for having this feature. That seems
+to be the main concern.
+Thanks,
+Suren.
 
+[1] https://docs.kernel.org/dev-tools/kmemleak.html#limitations-and-drawbacks
+
+>
+> Thanks!
+> --
+> Michal Hocko
+> SUSE Labs
