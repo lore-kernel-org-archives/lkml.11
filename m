@@ -2,83 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69312ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:22:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77443C0502C
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:22:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232852AbiIAOWq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 10:22:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49996 "EHLO
+        id S234663AbiIAOWw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 10:22:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234254AbiIAOWN (ORCPT
+        with ESMTP id S234697AbiIAOWQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 10:22:13 -0400
-Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B101872FDE;
-        Thu,  1 Sep 2022 07:22:09 -0700 (PDT)
+        Thu, 1 Sep 2022 10:22:16 -0400
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FC6E74DDB;
+        Thu,  1 Sep 2022 07:22:11 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-3378303138bso338299287b3.9;
+        Thu, 01 Sep 2022 07:22:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1662042130; x=1693578130;
-  h=message-id:date:mime-version:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:subject;
-  bh=j54X/ITS6tgzqC3T+IugH3QtlmM6KAu5Ywq09+fA7VY=;
-  b=io9KztNusIB3QiqRLURWBnH4fonj0tBAvK5ZsdKPBP11mWmhEe/XKxRC
-   HrE4vvMc0K5XrNQt1gU8g056UVXVVcFOHiEYejH/49zeCFbPjUGFRTDXu
-   cVEF/Ue28fVl266HBII0J5lKdiLY4NB+RdkS/xGnaN4uCCIdJX8EfekBA
-   M=;
-X-IronPort-AV: E=Sophos;i="5.93,281,1654560000"; 
-   d="scan'208";a="222658418"
-Subject: Re: [PATCH v3 19/19] hwmon: (mr75203) fix coding style space errors
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-fc41acad.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 14:21:52 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1e-fc41acad.us-east-1.amazon.com (Postfix) with ESMTPS id CB081C09A1;
-        Thu,  1 Sep 2022 14:21:49 +0000 (UTC)
-Received: from EX19D013UWB003.ant.amazon.com (10.13.138.111) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Thu, 1 Sep 2022 14:21:48 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (10.43.161.207) by
- EX19D013UWB003.ant.amazon.com (10.13.138.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Thu, 1 Sep 2022 14:21:49 +0000
-Received: from [192.168.93.228] (10.85.143.172) by mail-relay.amazon.com
- (10.43.161.249) with Microsoft SMTP Server id 15.0.1497.38 via Frontend
- Transport; Thu, 1 Sep 2022 14:21:43 +0000
-Message-ID: <0074475d-04bc-153a-2df8-dd5f7d014c97@amazon.com>
-Date:   Thu, 1 Sep 2022 17:21:43 +0300
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=llgzYf8llaL/EQFs3tuAuAqt9Z5KoWpl+4uUr05iaK8=;
+        b=fcbSSEhR2ZsvmYNnB/aQXc9F/i+SM/d8jxzsdHWSMPfcgdbV3linpJ3wj3+SnkwD/F
+         o2AqZR86xlBVfHaLatuNGZp/wIvsXTblUOiZhNZ0VGvX05Zas9Iy9jJ6Yd7UqidYl8jp
+         HqNqfkE3mL8FomBZh6rlRAQANs9ddDhQ6WeoLi402TMQnOzCD73ebnojKbyajx7ZhVvc
+         aNOk7ww7q9txqFLIwp3OA4NGG6nnNwHH5ZoxKJ0EWKjQEsRMa6olk9yvYTbD7afvYMVY
+         oUxxCFYT5z78M7jb1PlHwG/YwY+6FJ8jrhbEXt6/0ansIhBJ7G9n1mxaebM3nIwx1me4
+         bO6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=llgzYf8llaL/EQFs3tuAuAqt9Z5KoWpl+4uUr05iaK8=;
+        b=2wbW5l1mZKQjHq97p7jrRkmRLrIdnpDYaBGBlORlXAYsxfMFuRYQRrAWEjSrLfD6PR
+         UJUr6BdHPjf9+byWWULwdUXFOnttbbtgq6+BGsFv/4YLyDV+Yaic31hn2+UAUF1F7Mcu
+         X2Y3GgD+JGzvJ3QxdmbX8oRakNPKoDU5nak2vA2v+lNLXv6dwYtoW2v3jRIxmc6rIkXM
+         SuAaNkYrxL5NJw+FABYmjElZRMVb1pcH2CK3rzWyWQlXvyxQ0Ur4NpOFi3+/142D3Vyy
+         QS1k8H5j2apULSYjs1YVADt+WV/j5u19WHIXe3iFCVwPqt7/u5+CdyjJrb6IxZ3PSKzj
+         4NFw==
+X-Gm-Message-State: ACgBeo2ZwfwJnQeEbXcbkyZft8mG4zPKQIUijiuR+KPiY6u7FMlM5w3h
+        qzL+7sEQzOKpyHIYbTbZ4nwDgZf4kl4XN/FdhI6MRK/Ayrw=
+X-Google-Smtp-Source: AA6agR6fFQP4CuyJerD+YutxFwlcsRBQyahL7qL90WE1xL3YQzvbookqIiRTL+KO+aqqpWa+nD9OWIyOWVuuhH0vIko=
+X-Received: by 2002:a81:8984:0:b0:33e:1114:2598 with SMTP id
+ z126-20020a818984000000b0033e11142598mr23329655ywf.75.1662042129959; Thu, 01
+ Sep 2022 07:22:09 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@intel.com>
-CC:     <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
-        <p.zabel@pengutronix.de>, <rtanwar@maxlinear.com>,
-        <linux-hwmon@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <talel@amazon.com>,
-        <hhhawa@amazon.com>, <jonnyc@amazon.com>, <hanochu@amazon.com>,
-        <ronenk@amazon.com>, <itamark@amazon.com>, <shellykz@amazon.com>,
-        <shorer@amazon.com>, <amitlavi@amazon.com>, <almogbs@amazon.com>,
-        <dkl@amazon.com>, "Farber, Eliav" <farbere@amazon.com>
-References: <20220830192212.28570-1-farbere@amazon.com>
- <20220830192212.28570-20-farbere@amazon.com>
- <Yw9Q5krebHnb73vC@smile.fi.intel.com>
-From:   "Farber, Eliav" <farbere@amazon.com>
-In-Reply-To: <Yw9Q5krebHnb73vC@smile.fi.intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220829065239.4531-1-lf32.dev@gmail.com> <87wnarnf4k.fsf@meer.lwn.net>
+In-Reply-To: <87wnarnf4k.fsf@meer.lwn.net>
+From:   lf32 dev <lf32.dev@gmail.com>
+Date:   Thu, 1 Sep 2022 19:51:59 +0530
+Message-ID: <CAOUyfw0aoZaaJ0yZzAVDQO=RHvNa=ZAXRDTO7yiNEomtyKb9-g@mail.gmail.com>
+Subject: Re: [PATCH] Delete duplicate words from kernel docs
+To:     Jonathan Corbet <corbet@lwn.net>,
+        Shuah Khan <skhan@linuxfoundation.org>
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/31/2022 3:15 PM, Andy Shevchenko wrote:
-> On Tue, Aug 30, 2022 at 07:22:12PM +0000, Eliav Farber wrote:
->> Fix: "ERROR: space required before the open parenthesis '('"
->
-> This patch may have other fixes like adding new blank lines (noted in one
-> of the patches in the series), etc.
-This patch fixed a specific space error which existed before my changes
-and repeated many time.
-I fixed the blank line I added a previous patch (but is it isn’t an error
-reported by checkpatch).
+Awesome, thanks for merging this!
 
---
-Regards, Eliav
+
+On Mon, Aug 29, 2022 at 10:47 PM Jonathan Corbet <corbet@lwn.net> wrote:
+>
+> Akhil Raj <lf32.dev@gmail.com> writes:
+>
+> > I have deleted duplicate words like
+> >
+> > to, guest, trace, when, we
+> >
+> > Signed-off-by: Akhil Raj <lf32.dev@gmail.com>
+> > ---
+> >  Documentation/RCU/checklist.rst         | 2 +-
+> >  Documentation/RCU/lockdep.rst           | 2 +-
+> >  Documentation/bpf/instruction-set.rst   | 2 +-
+> >  Documentation/trace/histogram.rst       | 2 +-
+> >  Documentation/trace/timerlat-tracer.rst | 2 +-
+> >  Documentation/virt/kvm/x86/mmu.rst      | 2 +-
+> >  6 files changed, 6 insertions(+), 6 deletions(-)
+>
+> Applied, thanks,
+>
+> jon
