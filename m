@@ -2,96 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 257BEC0502C
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:23:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F8E8ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:23:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234688AbiIAOXG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 10:23:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50556 "EHLO
+        id S234496AbiIAOXP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 10:23:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234668AbiIAOWd (ORCPT
+        with ESMTP id S234693AbiIAOWl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 10:22:33 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75EE06D9D0;
-        Thu,  1 Sep 2022 07:22:31 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 281EMKnL010605;
-        Thu, 1 Sep 2022 09:22:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1662042141;
-        bh=awSms/zrm3/z03j0jaf3Mn+GXIkGpbifO7ZSK7KWhms=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=Df0EgcyRa2Teu+WfkJz5no3NVBESNZTnRtdEkXRKl7D3mTVvkWLPXKXa9/L+IjS7y
-         lanHWVZPBw/tX1Thj/UgyIS3Xev/BCLRRwatciEUW90UwyKVdAXgkxD+ZlzvZ2ixGU
-         yv/nqI2x5lC1TuIhLvq3qoxBQyps8G/Js8XFVRf0=
-Received: from DLEE110.ent.ti.com (dlee110.ent.ti.com [157.170.170.21])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 281EMKTZ020762
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 1 Sep 2022 09:22:20 -0500
-Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE110.ent.ti.com
- (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Thu, 1 Sep
- 2022 09:22:20 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
- Frontend Transport; Thu, 1 Sep 2022 09:22:20 -0500
-Received: from uda0132425.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 281EMHRG106883;
-        Thu, 1 Sep 2022 09:22:18 -0500
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-To:     Rob Herring <robh+dt@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>,
-        Tero Kristo <kristo@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-CC:     Vignesh Raghavendra <vigneshr@ti.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] arm64: dts: ti: k3-am64-main: Add main_cpts label
-Date:   Thu, 1 Sep 2022 19:52:13 +0530
-Message-ID: <166204207691.900930.679252325275485828.b4-ty@ti.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220822095943.18563-1-christian.gmeiner@gmail.com>
-References: <20220822095943.18563-1-christian.gmeiner@gmail.com>
+        Thu, 1 Sep 2022 10:22:41 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3052376961
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 07:22:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662042157; x=1693578157;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=ZJ1FNqyM0820GOqm315h/CJsZrVNV65e5jirFPU3+Ug=;
+  b=IIevYZZ1De0Bd4fsF8vRfIHtEL/b/QR4GpWDYGBJHQSw0EI4OTax5aK4
+   C5/SAZoaq/ke7WVCbM06S0aKucvtkdo4srcyg8SnYMN05fpDohUDpXBEx
+   gUh3YJEYxCYl1PUczvsYKnkIadQ75ZJM/OsX23j+KLOXeNLHNBXr0XlUJ
+   z4m3d4zDu8/k48DvcSIE73Ar0r1jHHaaJz+la5OYHp9d6Fqc+gauPr3My
+   Aeuqy6W6ulj8dZjx5TTv7Vs31KKC9C3CJOOEfEUrP/czEaGVyKd2KvbGC
+   UfCtX5o2os1ivHicvTPBCn2abow/zV6WoexT3MK/F6nsfAHcxouOtQDWU
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="275474521"
+X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
+   d="scan'208";a="275474521"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 07:22:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
+   d="scan'208";a="563479413"
+Received: from lkp-server02.sh.intel.com (HELO b138c9e8658c) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 01 Sep 2022 07:22:34 -0700
+Received: from kbuild by b138c9e8658c with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oTl5V-0000NX-2o;
+        Thu, 01 Sep 2022 14:22:33 +0000
+Date:   Thu, 1 Sep 2022 22:21:57 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Will Deacon <will@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: include/linux/compiler_types.h:338:45: error: call to
+ '__compiletime_assert_302' declared with attribute error: BUILD_BUG_ON
+ failed: (24-12) >= 12
+Message-ID: <202209012255.kdvo6EYi-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Christian Gmeiner,
+Hi Will,
 
-On Mon, 22 Aug 2022 11:59:43 +0200, Christian Gmeiner wrote:
-> Makes it easier to reference the node in board dts files.
-> 
-> 
+FYI, the error/warning still remains.
 
-I have applied the following to branch ti-k3-dts-next on [1].
-Thank you!
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   c5e4d5e99162ba8025d58a3af7ad103f155d2df7
+commit: eb5c2d4b45e3d2d5d052ea6b8f1463976b1020d5 compiler.h: Move compiletime_assert() macros into compiler_types.h
+date:   2 years, 1 month ago
+config: arc-randconfig-r031-20220901 (https://download.01.org/0day-ci/archive/20220901/202209012255.kdvo6EYi-lkp@intel.com/config)
+compiler: arc-elf-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=eb5c2d4b45e3d2d5d052ea6b8f1463976b1020d5
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout eb5c2d4b45e3d2d5d052ea6b8f1463976b1020d5
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
 
-[1/1] arm64: dts: ti: k3-am64-main: Add main_cpts label
-      commit: 0058d4814faadf4134d5f2cd22fbe721d4c9155e
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent up the chain during
-the next merge window (or sooner if it is a relevant bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+All errors (new ones prefixed by >>):
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
+   In file included from <command-line>:
+   mm/huge_memory.c: In function 'hugepage_init':
+>> include/linux/compiler_types.h:338:45: error: call to '__compiletime_assert_302' declared with attribute error: BUILD_BUG_ON failed: (24-12) >= 12
+     338 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+         |                                             ^
+   include/linux/compiler_types.h:319:25: note: in definition of macro '__compiletime_assert'
+     319 |                         prefix ## suffix();                             \
+         |                         ^~~~~~
+   include/linux/compiler_types.h:338:9: note: in expansion of macro '_compiletime_assert'
+     338 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+         |         ^~~~~~~~~~~~~~~~~~~
+   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
+      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
+         |                                     ^~~~~~~~~~~~~~~~~~
+   include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
+      50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
+         |         ^~~~~~~~~~~~~~~~
+   include/linux/bug.h:24:25: note: in expansion of macro 'BUILD_BUG_ON'
+      24 |                         BUILD_BUG_ON(cond);             \
+         |                         ^~~~~~~~~~~~
+   mm/huge_memory.c:403:9: note: in expansion of macro 'MAYBE_BUILD_BUG_ON'
+     403 |         MAYBE_BUILD_BUG_ON(HPAGE_PMD_ORDER >= MAX_ORDER);
+         |         ^~~~~~~~~~~~~~~~~~
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
+vim +/__compiletime_assert_302 +338 include/linux/compiler_types.h
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/ti/linux.git
---
-Vignesh
+   324	
+   325	#define _compiletime_assert(condition, msg, prefix, suffix) \
+   326		__compiletime_assert(condition, msg, prefix, suffix)
+   327	
+   328	/**
+   329	 * compiletime_assert - break build and emit msg if condition is false
+   330	 * @condition: a compile-time constant condition to check
+   331	 * @msg:       a message to emit if condition is false
+   332	 *
+   333	 * In tradition of POSIX assert, this macro will break the build if the
+   334	 * supplied condition is *false*, emitting the supplied error message if the
+   335	 * compiler has support to do so.
+   336	 */
+   337	#define compiletime_assert(condition, msg) \
+ > 338		_compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+   339	
 
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
