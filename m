@@ -2,89 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 803AEECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:54:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1741BECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:56:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232728AbiIAHyq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 03:54:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32858 "EHLO
+        id S233254AbiIAH41 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 03:56:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233387AbiIAHym (ORCPT
+        with ESMTP id S229798AbiIAH4Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 03:54:42 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13B54FD02
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 00:54:41 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id bx38so16995234ljb.10
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 00:54:40 -0700 (PDT)
+        Thu, 1 Sep 2022 03:56:24 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5847DC22BB
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 00:56:22 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id bx38so16998789ljb.10
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 00:56:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:to
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=FFlieosKO32wdKJZJjDDtA+NZoT61yyyQGScspHk1lk=;
-        b=d49WR95EqH0kRDu6zJxUyoXOm4bSR7C3VSLDMIgnWdsuO31bgORh3e6Gkls/6Ocd27
-         6YfSgC4+ZSV2ZnEwB+65MHrcE5GxRqiOiNJW/56lGIv8w59XHd4aiG+kRzkryJ0D6MX5
-         EompPulevihO1KN3em962V2MyFUYjyvKA5NWX9k5xVIlA7lyHLeENq8/a8pNDZLwir0Q
-         TFfbvx6AaohR6hMJJd+VpxSIPRI0YDYBGcnmtnAuQInNcAFh6DkoTHLIN0tJncsQlrBH
-         EyWGE9tB6UyIp+3UJ5nicLafQHPPrS3zZUgjZU/leR0Q1mRu1vcuJTQpfvVRtfLxYFzZ
-         84Ww==
+         :from:to:cc;
+        bh=r8eeyBUz/AejyYcfK9aDruO5TFd1r/0aWMzRXUi01rA=;
+        b=Qtph0lOE/qbpWfkG8HO7vELfP8Rw1uUguP0CrXIrkXL16FdDT/XQadqIBIOTDN1Lxe
+         9sngKQPoFyKpMk0O+N3quz2IZpbswTuW8aVFYTYT1qVP+OeVDuOIqpf06tygeBEFVU4+
+         6zBmQRIgSBc+5tgEHNmoaqTG6j1EikX6hORXR7HZIrDRNbMnNzO9PN+0twaVEI5+nkGu
+         TxRZNtODuRjaO+Hw6RZEb9oUu7nYJga8Py08MOmCJYIWEmMTQJISiaaz4rGTfrQuXa+2
+         XWLgaOzwDzFUtjpqWr5bB+Cjz8O7BV72B/5R1UDx72Esh/RJjfUq6ESyKLXR0NKda7n1
+         74Dw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=FFlieosKO32wdKJZJjDDtA+NZoT61yyyQGScspHk1lk=;
-        b=2AqcZukrzqtc/ETbnKGnPpEHX5tFoZzlYMXaHV3CRBMZ8ihfRSnPPzmMxszkrEn/R1
-         hxW8jmTLUAjpT51TGrsg4PXysUfnMaqnvxHu0OFw1gcaJxorHBJG69cwFR7+jhbCLow6
-         LmqiUiwIEvWz/taXfd5I3lxLF426S+m47Rrmk/BSW1Oz/2+mEs/xjrVxVLtyUiHdyFnK
-         uN6trja48YYHzEQsUmxGFFuMVAikZ35k0AAEcu0WntHq9Ou1mNRcUbDZv7FisedpqsX8
-         R5ahD6HBOQMfDDEJ8eAqb1tUy9KkW8xl5CPmweKCp0f2y7lDX1+UJDWoP7veln3TmZI/
-         QEOQ==
-X-Gm-Message-State: ACgBeo3qq4Ux1vAZFaGhBnZUhqAZK18EKzReqWw3CV78hwVNDi6kTYSG
-        t0tR9fSq+WpnihgyMsoK/2sSEg==
-X-Google-Smtp-Source: AA6agR5+p1lidwj1DavTuZYkl9AqzdCbWhSYYYntVRLSzMQKCYVVHVmnf3rv9F/JrVYqQjfnyTkrrg==
-X-Received: by 2002:a2e:bf29:0:b0:25f:fbd5:b693 with SMTP id c41-20020a2ebf29000000b0025ffbd5b693mr9956867ljr.372.1662018879474;
-        Thu, 01 Sep 2022 00:54:39 -0700 (PDT)
-Received: from [192.168.1.102] (88-112-131-206.elisa-laajakaista.fi. [88.112.131.206])
-        by smtp.gmail.com with ESMTPSA id c20-20020a056512075400b004947984bc78sm866615lfs.188.2022.09.01.00.54.38
+         :x-gm-message-state:from:to:cc;
+        bh=r8eeyBUz/AejyYcfK9aDruO5TFd1r/0aWMzRXUi01rA=;
+        b=x6gNot4lmW+HZJwcCp8TsSBNeFBsv4yxSshGyQ2niTwfS+YnQv508iaeTvPZTC/K/X
+         73BgcJAFuKzLxqaseIemRjfZ7t8PABb3q/omVp++ngEBPUgcY4oioG05licSoGOYkBrm
+         hynfmg6pXp9MZ0kuXzyRSgleQ1rHpD4TqRjEmubEABSk+79IVAVfcMM5/UJQjhpmjyoj
+         tbwMY8Z9cEssfPl34Q4lJqKvadiQ4DTPvLFcyRHu4nSoQZWIgviCkfn199eVI4NM2ahK
+         9OruubulBPKzBT7TJCMfxWBR9Kyeg+Vj1NXYLjHwNQ21I+cMxzr0eU6oeQgb7M66YpEo
+         8HsQ==
+X-Gm-Message-State: ACgBeo3pvvxtM4HxDRPWGFrdMI0HiIw9lMkyvrSVlnqKbpFkaQEhSYxk
+        Vn0XypnEVlsu/2Em1pxB0mEZxQ==
+X-Google-Smtp-Source: AA6agR7nX/X8aC54yXCn5glhEfcjq587P8aXcd+d9X6kHSUljHmf4I9rbPjvsR36jIJPljXf/DS4Dw==
+X-Received: by 2002:a2e:9942:0:b0:265:e313:7fb7 with SMTP id r2-20020a2e9942000000b00265e3137fb7mr4534739ljj.449.1662018980742;
+        Thu, 01 Sep 2022 00:56:20 -0700 (PDT)
+Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
+        by smtp.gmail.com with ESMTPSA id c22-20020a056512325600b0049496855494sm377446lfr.104.2022.09.01.00.56.19
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Sep 2022 00:54:38 -0700 (PDT)
-Message-ID: <96b0ba3a-eff5-7807-d6fb-a30392e8aec2@linaro.org>
-Date:   Thu, 1 Sep 2022 10:54:28 +0300
+        Thu, 01 Sep 2022 00:56:20 -0700 (PDT)
+Message-ID: <6b06f88e-128d-7ce6-b97b-b5cacfc4834d@linaro.org>
+Date:   Thu, 1 Sep 2022 10:56:19 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: [PATCH] dt-bindings: i2c: qcom,i2c-cci: specify SM8450 CCI clocks
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v2 1/2] dt-bindings: mtd: spi-nor: Add reset-gpios
+ property
 Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Robert Foss <robert.foss@linaro.org>,
+To:     Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <pratyush@kernel.org>,
+        Michael Walle <michael@walle.cc>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220901074218.21108-1-krzysztof.kozlowski@linaro.org>
-From:   Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
-In-Reply-To: <20220901074218.21108-1-krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     devicetree@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-kernel@vger.kernel.org, saikrishna12468@gmail.com,
+        git@amd.com
+References: <20220901072914.30205-1-sai.krishna.potthuri@amd.com>
+ <20220901072914.30205-2-sai.krishna.potthuri@amd.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220901072914.30205-2-sai.krishna.potthuri@amd.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 9/1/22 10:42, Krzysztof Kozlowski wrote:
-> Document clocks for SM8450 Camera Control Interface I2C controller.
+On 01/09/2022 10:29, Sai Krishna Potthuri wrote:
+> SPI-NOR flashes have RESET pin which can be toggled using GPIO
+> controller, for those platforms reset-gpios property can be used to
+> reset the flash device.
 > 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
+> Signed-off-by: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
 > ---
 
-Reviewed-by: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+You still miss the user (DTS) of this change... The JEDEC spec did not
+mention a reset pin. Can you provide the user?
 
---
-Best wishes,
-Vladimir
+Best regards,
+Krzysztof
