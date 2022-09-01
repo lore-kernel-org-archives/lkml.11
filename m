@@ -2,160 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DCE1ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:19:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2D44ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:19:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234264AbiIAOT1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 10:19:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41600 "EHLO
+        id S233949AbiIAOTa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 10:19:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234129AbiIAOTU (ORCPT
+        with ESMTP id S233968AbiIAOTU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 1 Sep 2022 10:19:20 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADC2A62A80
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 07:19:16 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id j17so13471869qtp.12
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 07:19:16 -0700 (PDT)
+Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F2B03A4A8;
+        Thu,  1 Sep 2022 07:19:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=sU5/spIoFFsSsjudnyeB7I5k2zVIg64jzdQC1Ln9LKI=;
-        b=L3vwZZLviUfz2/Qv1uuocskyzZF3TjqFQXBHeWunVdszNZkWU/5mL6r0ecwdvIn71h
-         QQvFH0ixCr7AuByn4N1CF2wwiAfPB/c7ge2uweWtQ/2RLAtRTaD8F/wLh/PSlE2/2xQk
-         0mHjqfOpYTviHShaGwJjrf7QTtVYJKZJZSLCwIxizsIaCaAQcYwxRiVUZ8uUDa4of+F+
-         C+4ZEc1vwuFRaFcjIxSWumpszXQNCTAGUkIERkRuob4qNrTTnvgMS/Z5Iu8/2AFdcoRu
-         VGu5ZVNgZ1sdCMi1Q9IRJtIbCEmIPO/LoG41W8Psc/GZ00z3W9xdly9o/IoASJmmkeWK
-         tHgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=sU5/spIoFFsSsjudnyeB7I5k2zVIg64jzdQC1Ln9LKI=;
-        b=7Ecv/Pq2XvOGiJhrGD14+Cq6mG6Sp3QxbMSdN3CmfGs6j6Ke2SGVIuf+sFp1vrc/9T
-         pvShFeQMh6z5kGlIgraThXf9jiTnLBbHn5s1JtfGf7MCUKulPNo9Os2oxSM8vmPeVsT7
-         hRe8wKZlNFJAJ0dEuEn1Po4dH0rgdd3XQded/VtcSfB2esKcvJAR2/XdY+5/Tm7J3Pw8
-         ZHKTG2NldBLQHyzVsFXNH0iIzvLVOUbaPNOT/7B9MrfLJhB10s64pv7FqyV8tU5G9V+O
-         mnAD5ceTJwyqOmiLcU64qHHAZu4F6+jp/LDTPzr6Su3bVpE3FVmCj40oJOs/3Smnfobp
-         R5jA==
-X-Gm-Message-State: ACgBeo3zFC16lHIGY1FS33h6v/5HZ2wU845ETmU3iy367I/QtjY2qu1k
-        Nc1dpgJ8Pbnsu7tDuwZMIW4=
-X-Google-Smtp-Source: AA6agR5z1NM1EyyB2pG7Q4h+Y42w4H3zINPSAaCyxrK/1RCpCBh2d5EoXNAzzSHnRTNqBwhuwMlPew==
-X-Received: by 2002:ac8:7dc1:0:b0:344:6104:eab6 with SMTP id c1-20020ac87dc1000000b003446104eab6mr23373266qte.455.1662041954828;
-        Thu, 01 Sep 2022 07:19:14 -0700 (PDT)
-Received: from localhost ([2601:4c1:c100:2270:f862:dbcc:aa84:4875])
-        by smtp.gmail.com with ESMTPSA id 138-20020a370390000000b006a5d2eb58b2sm11419968qkd.33.2022.09.01.07.19.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 07:19:14 -0700 (PDT)
-Date:   Thu, 1 Sep 2022 07:19:13 -0700
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc:     Borislav Petkov <bp@alien8.de>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, x86@kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, David Howells <dhowells@redhat.com>,
-        Jan Beulich <JBeulich@suse.com>,
-        Christophe Jaillet <christophe.jaillet@wanadoo.fr>,
-        Joe Perches <joe@perches.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>
-Subject: Re: [PATCH v6 0/2] x86/asm/bitops: optimize ff{s,z} functions for
- constant expressions
-Message-ID: <YxC+eShQLDor0B9D@yury-laptop>
-References: <20220511160319.1045812-1-mailhol.vincent@wanadoo.fr>
- <20220831075742.295-1-mailhol.vincent@wanadoo.fr>
- <Yw8hJS9f6SofG4/6@yury-laptop>
- <YxArx4UGoSQXljQd@yury-laptop>
- <CAMZ6Rq+XVWGEEHr9t5dkXN0E36hkpMb5kNEZJmMFgtJxyQntsg@mail.gmail.com>
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1662041955; x=1693577955;
+  h=message-id:date:mime-version:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:subject;
+  bh=N31b7BupwGEoU9ErDwflGUAKB637elD1wNkAbd+oWQw=;
+  b=Ws9OTQvKf6VRjprTZWvoUSHxgil6O8yp0PuBKch/4Y41pM82uHUuvkn/
+   gQcKjaJJ3ULZg3BFhJC5ft/o6+9+uHUxy7EcilsiHU++ZRL7Jk+PsMS4Y
+   6qtwHzliaMI8QPw1vmNRFMb0XXlzfDxOAGnWCdlLz5XIDqLNrrUuXnasm
+   c=;
+X-IronPort-AV: E=Sophos;i="5.93,281,1654560000"; 
+   d="scan'208";a="1050337274"
+Subject: Re: [PATCH v3 11/19] hwmon: (mr75203) add VM pre-scaler support
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-a31e1d63.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 14:17:59 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1a-a31e1d63.us-east-1.amazon.com (Postfix) with ESMTPS id 80800829E3;
+        Thu,  1 Sep 2022 14:17:56 +0000 (UTC)
+Received: from EX19D013UWA003.ant.amazon.com (10.13.138.202) by
+ EX13MTAUWA001.ant.amazon.com (10.43.160.58) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Thu, 1 Sep 2022 14:17:47 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (10.43.161.207) by
+ EX19D013UWA003.ant.amazon.com (10.13.138.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
+ Thu, 1 Sep 2022 14:17:47 +0000
+Received: from [192.168.93.228] (10.85.143.172) by mail-relay.amazon.com
+ (10.43.161.249) with Microsoft SMTP Server id 15.0.1497.38 via Frontend
+ Transport; Thu, 1 Sep 2022 14:17:41 +0000
+Message-ID: <917126b6-3acc-48df-77d2-0a725e7475d6@amazon.com>
+Date:   Thu, 1 Sep 2022 17:17:40 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMZ6Rq+XVWGEEHr9t5dkXN0E36hkpMb5kNEZJmMFgtJxyQntsg@mail.gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@intel.com>
+CC:     <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
+        <p.zabel@pengutronix.de>, <rtanwar@maxlinear.com>,
+        <linux-hwmon@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <talel@amazon.com>,
+        <hhhawa@amazon.com>, <jonnyc@amazon.com>, <hanochu@amazon.com>,
+        <ronenk@amazon.com>, <itamark@amazon.com>, <shellykz@amazon.com>,
+        <shorer@amazon.com>, <amitlavi@amazon.com>, <almogbs@amazon.com>,
+        <dkl@amazon.com>, "Farber, Eliav" <farbere@amazon.com>
+References: <20220830192212.28570-1-farbere@amazon.com>
+ <20220830192212.28570-12-farbere@amazon.com>
+ <Yw9N6sr+k/4lcmT7@smile.fi.intel.com>
+From:   "Farber, Eliav" <farbere@amazon.com>
+In-Reply-To: <Yw9N6sr+k/4lcmT7@smile.fi.intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 01, 2022 at 07:30:10PM +0900, Vincent MAILHOL wrote:
-> On Tue. 1 sept. 2022 at 12:49, Yury Norov <yury.norov@gmail.com> wrote:
-> > On Wed, Aug 31, 2022 at 01:54:01AM -0700, Yury Norov wrote:
-> > > On Wed, Aug 31, 2022 at 04:57:40PM +0900, Vincent Mailhol wrote:
-> > > > The compilers provide some builtin expression equivalent to the ffs(),
-> > > > __ffs() and ffz() functions of the kernel. The kernel uses optimized
-> > > > assembly which produces better code than the builtin
-> > > > functions. However, such assembly code can not be folded when used
-> > > > with constant expressions.
-> > > >
-> > > > This series relies on __builtin_constant_p to select the optimal solution:
-> > > >
-> > > >   * use kernel assembly for non constant expressions
-> > > >
-> > > >   * use compiler's __builtin function for constant expressions.
-> > > >
-> > > >
-> > > > ** Statistics **
-> > > >
-> > > > Patch 1/2 optimizes 26.7% of ffs() calls and patch 2/2 optimizes 27.9%
-> > > > of __ffs() and ffz() calls (details of the calculation in each patch).
-> > >
-> > > Hi Vincent,
-> > >
-> > > Can you please add a test for this? We've recently added a very similar
-> > > test_bitmap_const_eval() in lib/test_bitmap.c.
-> > >
-> > > dc34d5036692c ("lib: test_bitmap: add compile-time optimization/evaluations
-> > > assertions")
-> > >
-> > > Would be nice to have something like this for ffs() and ffz() in
-> > > lib/test_bitops.c.
-> > >
-> > > Please keep me in loop in case of new versions.
-> 
-> Hi Yury,
-> 
-> My patch only takes care of the x86 architecture.
+On 8/31/2022 3:02 PM, Andy Shevchenko wrote:
+> On Tue, Aug 30, 2022 at 07:22:04PM +0000, Eliav Farber wrote:
+>> +static int pvt_get_pre_scaler(struct device *dev, struct pvt_device 
+>> *pvt)
+>> +{
+>> +     const struct device_node *np = dev->of_node;
+>> +     u32 total_channels = pvt->vm_channels.total;
+>> +     u32 channel;
+>> +     u8 *pre_scaler_ch_list;
+>> +     int i, ret, num_ch;
+>> +
+>> +     /* Set default pre-scaler value to be 1. */
+>> +     for (i = 0; i < total_channels; i++)
+>> +             pvt->vd[i].pre_scaler = PRE_SCALER_X1;
+>> +
+>> +     /* Get number of channels configured in 
+>> "moortec,vm-pre-scaler". */
+>> +     num_ch = of_property_count_u8_elems(np, "moortec,vm-pre-scaler");
+>
+> of_ ?!
+>
+Replaced of_property_count_u8_elems() with
+device_property_count_u8().
 
-OK, I just realized that you started submitting this at least back in May. 
+>> +     if (num_ch <= 0)
+>> +             return 0;
+>> +
+>> +     pre_scaler_ch_list = kcalloc(total_channels,
+>> +                                  sizeof(*pre_scaler_ch_list), 
+>> GFP_KERNEL);
+>> +     if (!pre_scaler_ch_list)
+>> +             return -ENOMEM;
+>> +
+>> +     /* Get list of all channels that have pre-scaler of 2. */
+>> +     ret = device_property_read_u8_array(dev, "moortec,vm-pre-scaler",
+>> +                                         pre_scaler_ch_list, num_ch);
+>> +     if (ret)
+>> +             goto out;
+>> +
+>> +     for (i = 0; i < num_ch; i++) {
+>> +             channel = pre_scaler_ch_list[i];
+>
+>> +
+>
+> Unnecessary blank line.
 
-For me, v6 is good enough and well-described. So, for the series:
-Reviewed-by: Yury Norov <yury.norov@gmail.com>
+Blank line removed.
 
-How are you going to merge it? If you haven't a specific tree in mind 
-already, I can take it in my bitmap tree because  ffs and ffz are closely
-related to find_bit() functions.
 
-> Assuming some other
-> architectures are not optimized yet, adding such a test might break
-> some builds. I am fine with adding the test, however, I will not write
-> patches for the other architecture because I do not have the
-> environment to compile and test it.
-> 
-> Does it still make sense to add the test before fixing all the architectures?
+>> +             if (channel >= total_channels) {
+>> +                     dev_err(dev,
+>> +                             "invalid channel (%u) in pre-scaler 
+>> list\n",
+>> +                             channel);
+>> +                     ret = -EINVAL;
+>
+>> +                     goto out;
+>
+> Wouldn't
+>
+>                        break;
+>
+> suffice? (I understand the point, up to you)
+I prefer to exit the moment I detect a problem.
+For now I can use a break but in the future someone else can add new code
+in between that will set ret to 0 and instead of failing driver flow will
+continue with incomplete pre-scaler value.
+So I prefer keeping it as it.
 
-All-arches fix should begin with changing the ffs design. Namely, there
-should be a generic ffs() in include/linux/bitops.h, and arch-specific
-arch__ffs() in arch/xxx/include/asm/bitops.h; like we do for the set_bit()
-family. I have a feeling that it's far beyond the scope of your series.
-
-The test is a different story. Good tests are always welcome, even if
-they don't cover all the arches.
-
-> > Also, what about fls? Is there any difference with ffs/ffz wrt compile
-> > time optimizations? If not, would be great if the series will take
-> > care of it too.
-> 
-> Agree. The fls() and fls64() can use __builtin_ctz() and
-> __builtin_ctzll(). However, those two functions are a bit less
-> trivial. I wanted to have this first series approved first before
-> working on *fls*().
-
-OK, the test and fls() can be a matter of a follow-up series, taking
-into account how long are these 2 patches moving.
-
-Thanks,
-Yury
+--
+Best regards, Eliav
