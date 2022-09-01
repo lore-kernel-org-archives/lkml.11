@@ -2,122 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A863BECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:11:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C224BECAAD5
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:12:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231873AbiIABLP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 21:11:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43660 "EHLO
+        id S232152AbiIABL7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 21:11:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230436AbiIABLK (ORCPT
+        with ESMTP id S230437AbiIABL5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 21:11:10 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D957DB7D6;
-        Wed, 31 Aug 2022 18:11:08 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Wed, 31 Aug 2022 21:11:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0848DC09E;
+        Wed, 31 Aug 2022 18:11:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4MJ2zp4792z4x3w;
-        Thu,  1 Sep 2022 11:11:02 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1661994663;
-        bh=bdwYw6Lw4PZEUz1P6wwyQRjfONTNQqkdi9285wuidR4=;
-        h=Date:From:To:Cc:Subject:From;
-        b=pMPqUX9lcpfkOKeVnUk2iNQKJAcx8Tcn3fvNgPZj9MLfG6xHcfE6RB4QSPeNE2zOD
-         snD7l6anTEuKX2X/78FbfwGUIRE/fYGuxlrMEKvfnRfpj3qvIxnVznk5+l+26EdfkY
-         Bi8okEiU8ovQCpcJTIzLXY8vXbzVH6IaDLNmDNaDyey2w3UAUCXmF1Faed0J8G5CaN
-         wCiO5sMcWbeUYpcZtMS7dhfX70dL4YpNiType01t+fIt1xV6MLaX0k3YReMxAWI1Ly
-         2SPJ/i9ntkTxjkuPLx/5RfbkMTy2vCeeWdbojtgKXdtatgyFiWjTeCSPrS9t1iurJh
-         nAEbfhxDrTirQ==
-Date:   Thu, 1 Sep 2022 11:11:01 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        David Miller <davem@davemloft.net>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Daniel =?UTF-8?B?TcO8bGxlcg==?= <deso@posteo.net>,
-        Hou Tao <houtao1@huawei.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Martin KaFai Lau <martin.lau@kernel.org>
-Subject: linux-next: manual merge of the bpf-next tree with the net tree
-Message-ID: <20220901111101.32e9026c@canb.auug.org.au>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5552961CD5;
+        Thu,  1 Sep 2022 01:11:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A264FC433D6;
+        Thu,  1 Sep 2022 01:11:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661994715;
+        bh=K0IlwXuix3BvINpGFkVRnlr166FlxhMBm++Ywj0zDcg=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=G34RDrEQDBcZAlf3xZr+fmbay6EBPT7wXw8i/eixWy2rw2QH+3sXm/2Y9zIW/YXuJ
+         kWTwirpkoRZLHAhorbAL5UPGOcHN3M60pr7AwJf30GbHp/hObb79sOKG9jMOI2thHK
+         YXxRYbQVD46K95SfdZS/+6tvb6J1TTK48UyaQxVPfZUV1cH2F7eITXy4vSro7hi+Md
+         qRAtnBWebBdonZWHJ3xHDSfpUQayPp4zT1q1C9gW0RK5D7jtYrX6iyepfDaan/Yv7z
+         fS9rG9zpVtAqW+osYtsvmDdnZuipqWDQwuN7S2bbIgYTJ4NjJZ3jmpT6RS+UzgjNI0
+         Wk5T8FjGKiQ3Q==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/vaLzHlUr1ypekTRcD5RedOW";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220720082934.17741-1-lukas.bulwahn@gmail.com>
+References: <20220720082934.17741-1-lukas.bulwahn@gmail.com>
+Subject: Re: [PATCH] clk: davinci: remove PLL and PSC clocks for DaVinci DM644x and DM646x
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     David Lechner <david@lechnology.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Sekhar Nori <nsekhar@ti.com>, linux-clk@vger.kernel.org
+Date:   Wed, 31 Aug 2022 18:11:53 -0700
+User-Agent: alot/0.10
+Message-Id: <20220901011155.A264FC433D6@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/vaLzHlUr1ypekTRcD5RedOW
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Quoting Lukas Bulwahn (2022-07-20 01:29:34)
+> Commit 7dd33764486d ("ARM: davinci: Delete DM644x board files") and commit
+> b4aed01de486 ("ARM: davinci: Delete DM646x board files") removes the
+> support for DaVinci DM644x and DM646x boards.
+>=20
+> Hence, remove the PLL and PSC clock descriptions for those boards as well.
+>=20
+> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+> ---
 
-Hi all,
-
-Today's linux-next merge of the bpf-next tree got a conflict in:
-
-  tools/testing/selftests/bpf/DENYLIST.s390x
-
-between commit:
-
-  27e23836ce22 ("selftests/bpf: Add lru_bug to s390x deny list")
-
-from the net tree and commit:
-
-  1c636b6277a2 ("selftests/bpf: Add test cases for htab update")
-
-from the bpf-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc tools/testing/selftests/bpf/DENYLIST.s390x
-index 5cadfbdadf36,ba02b559ca68..000000000000
---- a/tools/testing/selftests/bpf/DENYLIST.s390x
-+++ b/tools/testing/selftests/bpf/DENYLIST.s390x
-@@@ -65,4 -65,7 +65,8 @@@ send_signa
-  select_reuseport                         # intermittently fails on new s3=
-90x setup
-  xdp_synproxy                             # JIT does not support calling k=
-ernel function                                (kfunc)
-  unpriv_bpf_disabled                      # fentry
- +lru_bug                                  # prog 'printk': failed to auto-=
-attach: -524
-+ setget_sockopt                           # attach unexpected error: -524 =
-                                              (trampoline)
-+ cb_refs                                  # expected error message unexpec=
-ted error: -524                               (trampoline)
-+ cgroup_hierarchical_stats                # JIT does not support calling k=
-ernel function                                (kfunc)
-+ htab_update                              # failed to attach: ERROR: strer=
-ror_r(-524)=3D22                                (trampoline)
-
---Sig_/vaLzHlUr1ypekTRcD5RedOW
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmMQBqUACgkQAVBC80lX
-0Gz2pgf+Mp4AM6eo9MWGQGAQYpar1mLyZbRwh6n+bRv675VRkUX2df5LwXvEvNSM
-D+0C2J9E9kdeFOvljgvElyB7veTsJhKe7XYsxhdiugEAXDCP9jPipTSjUbw3N9/t
-0lVYQ7p1aL4AUCo1+BYjjn4zY04aod5vsmAZ/hSweoTmHwnSPWWfyYEr73GlrKQZ
-vTK9owY59ux+ffoEA8dQDzvMkqSjCARLEVOAZW8e8dQK8W5yqtc4+Xw/2sUyZdHU
-VjMqXThUHOKLuFqsulRafkcr2482jBuPEeCFgBXxMTZ46uRUEn0rhfSyPrBoqNoA
-0O0rCTRCapNpLMM8jCEWNuTdXkWJWw==
-=eWu3
------END PGP SIGNATURE-----
-
---Sig_/vaLzHlUr1ypekTRcD5RedOW--
+Applied to clk-next
