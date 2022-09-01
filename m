@@ -2,80 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 402E7ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 17:03:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D043ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 17:04:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234944AbiIARDO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 13:03:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54366 "EHLO
+        id S235115AbiIARED (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 13:04:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231133AbiIARDK (ORCPT
+        with ESMTP id S234444AbiIARD7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 13:03:10 -0400
-Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2771C8C01D;
-        Thu,  1 Sep 2022 10:03:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=t0tbXnpw9PoNHokbrL2mN8UkdNxPcPnmI53yrOl5Xwk=; b=PMi26llEoWLExTDhFnJPkFHXlY
-        5MdFVFSnLqtvcc/cePwW9IjH03dldOTbdGXeA7pP1jVjHo9TL5YFHbx3kmDCPoHp+/h8MnEDBXGQ4
-        H+lmlJzhvfVjqZyxT+8SwnMbEJFHmE2sqLrsFtnf+RctOM1K2p2X4fGucPh82y4oX0P/5+/zx95x/
-        N/AhKM9MHEWk4KdSYZwKijmrobfwbcXi1wj3WgoV+NHgS6OEq+lFypwu4qHvqvn7YIQvGRgeTQRcP
-        ouKuLdwvK6Mo1+nAe/auyke0aX13BLO3ni9sfIDhApr26y/2KbEKrDkgVTkoSa6LCgyIIfK0gdgZh
-        cflVhKrQ==;
-Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
-        id 1oTnaq-00B2ig-Ta;
-        Thu, 01 Sep 2022 17:03:05 +0000
-Date:   Thu, 1 Sep 2022 18:03:04 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-arch@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/8] termios: uninline conversion helpers
-Message-ID: <YxDlyBneTC/zBx4S@ZenIV>
-References: <YwF8vibZ2/Xz7a/g@ZenIV>
- <20220821010239.1554132-1-viro@zeniv.linux.org.uk>
- <20220821010239.1554132-3-viro@zeniv.linux.org.uk>
- <Yw4B6IU9WWKhN+1H@kroah.com>
+        Thu, 1 Sep 2022 13:03:59 -0400
+Received: from smtprelay08.ispgateway.de (smtprelay08.ispgateway.de [134.119.228.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9ECD8E0D8;
+        Thu,  1 Sep 2022 10:03:58 -0700 (PDT)
+Received: from [92.206.161.29] (helo=note-book.lan)
+        by smtprelay08.ispgateway.de with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <git@apitzsch.eu>)
+        id 1oTnbj-0000Tj-6m; Thu, 01 Sep 2022 19:03:59 +0200
+Message-ID: <fda5ff0efb44da0771f24f8031632962d023924f.camel@apitzsch.eu>
+Subject: Re: [PATCH] r8152: Add MAC passthrough support for Lenovo Travel Hub
+From:   =?ISO-8859-1?Q?Andr=E9?= Apitzsch <git@apitzsch.eu>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Aaron Ma <aaron.ma@canonical.com>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 01 Sep 2022 19:03:55 +0200
+In-Reply-To: <20220831121840.293837df@kernel.org>
+References: <20220827184729.15121-1-git@apitzsch.eu>
+         <20220831121840.293837df@kernel.org>
+Content-Type: multipart/signed; micalg="pgp-sha512";
+        protocol="application/pgp-signature"; boundary="=-MuvW9aafS2qhBjNHjPAr"
+User-Agent: Evolution 3.44.4 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yw4B6IU9WWKhN+1H@kroah.com>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+X-Df-Sender: YW5kcmVAYXBpdHpzY2guZXU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 02:26:16PM +0200, Greg Kroah-Hartman wrote:
-> On Sun, Aug 21, 2022 at 02:02:34AM +0100, Al Viro wrote:
-> > default go into drivers/tty/tty_ioctl.c, unusual - into
-> > arch/*/kernel/termios.c (only alpha and sparc have those).
-> > 
-> > Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
-> > ---
-> >  arch/alpha/include/asm/termios.h   |  77 ++--------------
-> >  arch/alpha/kernel/Makefile         |   2 +-
-> >  arch/alpha/kernel/termios.c        |  57 ++++++++++++
-> >  arch/ia64/include/asm/termios.h    |  41 ++-------
-> >  arch/mips/include/asm/termios.h    |  84 ++----------------
-> >  arch/parisc/include/asm/termios.h  |  41 ++-------
-> >  arch/sparc/include/asm/termios.h   | 136 ++---------------------------
-> >  arch/sparc/kernel/Makefile         |   4 +-
-> >  arch/sparc/kernel/termios.c        | 115 ++++++++++++++++++++++++
-> >  drivers/tty/tty_ioctl.c            |  74 ++++++++++++++++
-> >  include/asm-generic/termios-base.h |  69 ++-------------
-> >  include/asm-generic/termios.h      |  42 ++-------
-> >  12 files changed, 294 insertions(+), 448 deletions(-)
-> >  create mode 100644 arch/alpha/kernel/termios.c
-> >  create mode 100644 arch/sparc/kernel/termios.c
-> 
-> The build blows up on me with this commit added to my tty-testing tree:
 
-My apologies - reordering damage.  inlines in include/asm-generic/termios.h
-should've been removed in this commit, not in the next one.
+--=-MuvW9aafS2qhBjNHjPAr
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Anyway, fixed branch rebased on top of your #tty-next; see
-vfs.git #work.termios2.  Individual patches in followups...
+Am Mittwoch, dem 31.08.2022 um 12:18 -0700 schrieb Jakub Kicinski:
+> On Sat, 27 Aug 2022 20:47:29 +0200 Andr=C3=A9 Apitzsch wrote:
+> > The Lenovo USB-C Travel Hub supports MAC passthrough.
+> >=20
+> > Signed-off-by: Andr=C3=A9 Apitzsch <git@apitzsch.eu>
+>=20
+> Which tree did you base this patch on?
+>=20
+> Please rebase on top of net-next [1] and repost with [PATCH net-next] in
+> the subject.
+>=20
+> [1] https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/
+
+The patch was based on
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
+
+Rebased and repost, see
+https://lore.kernel.org/linux-usb/20220901170013.7975-1-git@apitzsch.eu/
+
+Andr=C3=A9 Apitzsch
+
+--=-MuvW9aafS2qhBjNHjPAr
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEazlg6L1sjNt+krNCgnfiFzZ+STsFAmMQ5fsACgkQgnfiFzZ+
+STsFhA/8CehSN2Xk0Jsbd0Ny+Rbzp37l8a9PeqLjIEc55ZoBmVcKa0FxmrSGQetp
+dvR+5L4tuy6e380l53ubvh7VcktN2vl99rIa2yYLG92O/OkWfL1erfXLyXILaKol
+eQoZZY2Odkh4e6PTlpCydcNlT35jbDZboFYP+p1tuHUqVz2LLP47i6dpxwN3++4I
+qxUs6nIi3NYSDvr/TYQiWMKW8k5wFlBMPWNZ6riXYj/QuBz0SvlUQ9jbwTwWSLjq
+rVe4pgH4VCysin43b0Sd92M5Jp9nYxGNLmlacp2MuwRPd9k+oWnlbyyfVb/C/3lK
+zPAgdvlyeGooKM+RFPfIliQ4akGLYUF+MB29je7POHT23YNZSMNgQhf9M7UdMPO2
+FssL8kOlcsY0kMrr9kxHCI7FxOy/c0DKj0w+g2tPg+urUzHyNxhQe4bbQjBOEv1S
+EpKXx7Epj/16eXB9Fij38dWH2KBIx0VoqpyM8dKKTcLs+KcSWlqIzeOpgsfQoJVM
+UsD9NcyCbjl3tp9zUAhPSKmcQY4++OB6JZxDqGG0S7a0wAsTltGGhjSBLpSl873d
+rMZp5oJ+s+lzPxoj5HH0D7iP/+Gv5YtyUc04ThEH2yjYU30YJQ+K/bsM5bwyTEGh
+dj3WNZgZvyD/8SvfmAQgf1lyjnfNjvmFIG6Ene8xAF69ZrhyFPw=
+=HF1e
+-----END PGP SIGNATURE-----
+
+--=-MuvW9aafS2qhBjNHjPAr--
