@@ -2,89 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB2F7C0502C
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:33:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3C8AECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:34:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232665AbiIANdZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 09:33:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49678 "EHLO
+        id S233350AbiIANeZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 09:34:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233798AbiIANcp (ORCPT
+        with ESMTP id S234679AbiIANeC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 09:32:45 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB70C286F2
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 06:29:25 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id h13-20020a17090a648d00b001fdb9003787so2548707pjj.4
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 06:29:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=d/dtvHsGzKChCFtBhbRFZrV5ckZUGK/bJoK4hbgII4U=;
-        b=lw71GbRMr86iOIzNa9lBOzhcHr3Ynvkvy2zVuyzX5264UmMPnKkxrLDwG3lKG01TEW
-         OFCVJJMX1H8dTB9b8RVTZ1KncLvxhswep4ZZzaABCXzfPJ6Ies7HfO516BtXXmq7Rwsx
-         vDDunr01Sxc+uuZejLYUhXPcspHRvXC4J0nQ350qCviY3JjEIW3aY2MT0rzwKy8RvfRh
-         RlWBvj+UFBzNZeyZ/9D9TllJp2YOf/myzvCZTeZjSzFpgFbMpT0EcpZeJyE/4OtKFwD/
-         zQXCSK+hdX1ekyHFdDrpRb38i380RI5s7TXhIAA330AVREwRvJ1caYRJ2puev5nhaSJ1
-         71mA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=d/dtvHsGzKChCFtBhbRFZrV5ckZUGK/bJoK4hbgII4U=;
-        b=lLUR3UziNyWBUVEsBCNQAsUc5ENbSxbH/MVllNu/Kba6Y3x8J1dkadJ86QZZGJ72Oc
-         Eec28MEJtYW+62TqAybvoiRMgCmIw998Q+ZCNT4JBvRhjZzLRpjRdgppJJnstYmdhRO2
-         NSq/7zPDeKJC2GWEUuE9rnwB1f28lK8g0GUsfyoLXx2ciO0mYG4ftyM6d11IQv96rjwG
-         e9EJOzbmuh5SSs6keWgEiEVeRxkUribjADqdP8as3m8ZFW8UJDOUiODVNnJK6iDSWMIi
-         BUPeDC3a+Bg13z7GA4kQTZFsyG4KTi8dxVtP9hIwjDHjOl4+5j5raK5hbZ4WrxFF6Av0
-         qrpg==
-X-Gm-Message-State: ACgBeo1D8vVx8DEwt3rBfgEqb0pNGVgi4+OGDa4YgmKsvzP0S4Un5bgf
-        Kam28kmGuvik3wd3H3E1hSt8Ew==
-X-Google-Smtp-Source: AA6agR41KtCX/CebMwsWMiPTzySwAYrctlLIBcBhRy5/3ZUyMDdEigjfkPm6JHETgY8FWTrGkpxPRA==
-X-Received: by 2002:a17:903:26c1:b0:174:ef08:6c75 with SMTP id jg1-20020a17090326c100b00174ef086c75mr16143944plb.94.1662038964840;
-        Thu, 01 Sep 2022 06:29:24 -0700 (PDT)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id v13-20020a17090a7c0d00b001fd6066284dsm3253361pjf.6.2022.09.01.06.29.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 06:29:24 -0700 (PDT)
-Date:   Thu, 1 Sep 2022 13:29:20 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Li RongQing <lirongqing@baidu.com>
-Subject: Re: [PATCH 03/19] Revert "KVM: SVM: Introduce hybrid-AVIC mode"
-Message-ID: <YxCzsFXy/sNYF0Ac@google.com>
-References: <20220831003506.4117148-1-seanjc@google.com>
- <20220831003506.4117148-4-seanjc@google.com>
- <17e776dccf01e03bce1356beb8db0741e2a13d9a.camel@redhat.com>
- <84c2e836d6ba4eae9fa20329bcbc1d19f8134b0f.camel@redhat.com>
- <Yw+MYLyVXvxmbIRY@google.com>
- <59206c01da236c836c58ff96c5b4123d18a28b2b.camel@redhat.com>
- <Yw+yjo4TMDYnyAt+@google.com>
- <c6e9a565d60fb602a9f4fc48f2ce635bf658f1ea.camel@redhat.com>
+        Thu, 1 Sep 2022 09:34:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAEE13CBF2;
+        Thu,  1 Sep 2022 06:31:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0360361F4F;
+        Thu,  1 Sep 2022 13:31:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 512ABC433D6;
+        Thu,  1 Sep 2022 13:31:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662039116;
+        bh=aAfFaNRSRlNYlMv6ajEpeKIZNVBhQeTMMAeMGgdKIUs=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=cRixDfeGIrQQYsuRLIJOVxj1LnnD47j/+SoOcmXOQkUUgs/l0qAEd8J1TpKVffgRm
+         /iEpP1X8QE9QT+5eXzz8E/SLfUX7Tmcm1/z7aHNId3oiLG7bOBucBD54XNPCuZDr50
+         JuIc0RiCc9FxYJFHp0Owm+d0EG8Yw/4ZtzjM9uMoz1CjNemmhaF2ZwwrVZLZZaPlZ0
+         aBo/+eOuLr844xsKEZ+AfPZni8QWJK6D8Vt/ERGD2kf7oY6ql+xSfi+JG8nMjPx/X4
+         ZRJcsYxu2dBWEOqsikPOwoc/urUpwUlWF4j+BsqGEUCB4pZBw6MtHKQfGQbnd3K/Sv
+         WU4OfbOplWayQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id DCA635C05A0; Thu,  1 Sep 2022 06:31:55 -0700 (PDT)
+Date:   Thu, 1 Sep 2022 06:31:55 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Frederic Weisbecker <frederic@kernel.org>
+Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@fb.com, rostedt@goodmis.org,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Joel Fernandes <joel@joelfernandes.org>
+Subject: Re: [PATCH rcu 3/3] rcu: Simplify rcu_init_nohz() cpumask handling
+Message-ID: <20220901133155.GT6159@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220831181040.GA2694278@paulmck-ThinkPad-P17-Gen-1>
+ <20220831181044.2694488-3-paulmck@kernel.org>
+ <20220901091557.GA101341@lothringen>
+ <20220901102520.GQ6159@paulmck-ThinkPad-P17-Gen-1>
+ <20220901111114.GA103483@lothringen>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <c6e9a565d60fb602a9f4fc48f2ce635bf658f1ea.camel@redhat.com>
+In-Reply-To: <20220901111114.GA103483@lothringen>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 01, 2022, Maxim Levitsky wrote:
-> On Wed, 2022-08-31 at 19:12 +0000, Sean Christopherson wrote:
-> > On Wed, Aug 31, 2022, Maxim Levitsky wrote:
-> > > If you are really hell bent on not having that MMIO exposed, then I say we
-> > > can just disable the AVIC memslot, and keep AVIC enabled in this case - this
-> > > should make us both happy.
+On Thu, Sep 01, 2022 at 01:11:14PM +0200, Frederic Weisbecker wrote:
+> On Thu, Sep 01, 2022 at 03:25:20AM -0700, Paul E. McKenney wrote:
+> > On Thu, Sep 01, 2022 at 11:15:57AM +0200, Frederic Weisbecker wrote:
+> > > > +#elif defined(CONFIG_NO_HZ_FULL)
+> > > > +	if (tick_nohz_full_running && !cpumask_empty(tick_nohz_full_mask))
+> > > > +		cpumask = tick_nohz_full_mask;
+> > > > +#endif
+> > > 
+> > > A subtle behaviour difference here too: CONFIG_RCU_NOCB_CPU_DEFAULT_ALL will
+> > > now override nohz_full=
+> > > 
+> > > I don't mind, it's probably what we want in the end, but the changelog should
+> > > tell about it, or even better, this should be a separate change.
 > > 
-> > I don't think that will work though, as I don't think it's possible to tell hardware
-> > not to accelerate AVIC accesses.  I.e. KVM can squash the unaccelerated traps, but
-> > anything that is handled by hardware will still go through.
+> > Good point.  Perhaps the key point is that if there is nohz_full=,
+> > rcu_nocbs=, and CONFIG_RCU_NOCB_CPU_DEFAULT_ALL, we still need rcu_nocbs=
+> > to include at least those bits set by nohz_full=.
 > 
-> Nope! Remember why do we have that APIC private memslot?
+> Not sure I get what you mean. nohz_full= should in any case always force
+> rcu_nocbs at least on the nohz_full CPUs.
+> 
+> For example assuming the following combination: rcu_nocbs=6, nohz_full=7 AND
+> CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y, then the result should be:
+> 
+> NOCB CPUs = 6,7
+> NOHZ_FULL CPUs = 7
+> 
+> (CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y is overriden by rcu_nocbs=6).
+> 
+> Now if we have nohz_full=7 AND CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y, then the
+> result is expected to be either:
+> 
+> NOCB CPUs = 7 (upstream behaviour)
+> NOHZ_FULL CPUs = 7
+> 
+> or 
+> 
+> NOCB CPUs = all
+> NOHZ_FULL CPUs = 7
+> 
+> The second makes more sense IMHO but that should be in a separate change.
 
-Heh, I finally understood what you were suggesting two minutes after I woke up
-this morning.   Apparently I needed to sleep on it?
+Your examples are consistent with what I was trying to say.  ;-)
+
+							Thanx, Paul
