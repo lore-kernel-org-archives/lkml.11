@@ -2,181 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 888ADECAAD8
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 05:39:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D38AECAAD8
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 05:40:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232608AbiIAFjs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 01:39:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53254 "EHLO
+        id S232648AbiIAFkH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 01:40:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233093AbiIAFjp (ORCPT
+        with ESMTP id S233090AbiIAFkB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 01:39:45 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6885A15A02;
-        Wed, 31 Aug 2022 22:29:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662010196; x=1693546196;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=DPLKyzOm3ELsXfbdUH7Li/C9QHZDGB9be4FjB6q9qnE=;
-  b=jpqWraSdq7pkwITD68dm/QVsRx9oSpbWMZhgXcZhYjJqUSmkOd32MVNG
-   NlDVKAQw3PqnR8OxtaXXnplNCCD+gM+FwnffpfaYTqRblSoaT1yRM+cZv
-   2GsbwCSW/TJofO0fuwUpDdKiX1SwOKz27YPaKLI4ejxcG2Ua/iCFYEmO1
-   pGlYhmXnRp5KY4IN0MAZ9hNkXPLpVyHdcUutdjFOMtYAJ1HGfv7/nMmvt
-   Mtb7XgSFxjz/76T0++KGSAfexvOKLOgewLEEXjymSFkIAKP2+fjAykyVz
-   5gTML+utyH2YxOcRk5Qcm9n+sZtve/P0/whlRipdbubiGxWuXj/JsR6lT
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="276022009"
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="276022009"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 22:29:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="788103820"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orsmga005.jf.intel.com with ESMTP; 31 Aug 2022 22:29:55 -0700
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 31 Aug 2022 22:29:55 -0700
-Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
- ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 31 Aug 2022 22:29:53 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Wed, 31 Aug 2022 22:29:53 -0700
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.42) by
- edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Wed, 31 Aug 2022 22:29:52 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VPTBqyMYlWBm5LxJJ86z0rh2/XG8rKhvZTFvouoDSobzCKgpGZUOo8qDvd7iq//cOc0kkFo9dZSUlZ6ElrPIGrllusWoV3G6KXdpMNRW5kr1TwdM5irb5LPrpx/f2tS89yU41IOSxydo0nv2CxwH95gcZI11Fjn2Z6foFmotL56p78Lmfoa1/IAzjuwF6X8Z8Er8SZ8g4l7Ejxc67WvanEAlLvHSHvAMGFfBHV2/W2Se1Hb6/IEOitsfgA5D12LaSdNYRDCnQeQz6tLeyK0FfoDOCcttaB606qNO2U0alMpYuHc3VfW1MRjxG7iiTCBPg/Fr8EG5x5Zg6XBOoVRaGg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sGkXloklDybq6V+aLnp8y7osn1YsFuFI6lyNKlQdJv0=;
- b=B+zXV3HYzbSgmUwDME5a9xvb7Ltj9mOdGTkEMihZv4lTvxCr9/OO4+3dCqXItbXZHC6s1OPPSN2dr0pfr9dV03qeIccZoGy8wb9/UQ0BzqePQSkDAa0qyU+dJ9eyfxWgH76aAQe6dFbcMgIGoR60FgCPXQ96ALL9Mmm/nfKvjt6yM3r0XEoi/W37Y7FNwPxtbzjh7MSfjvdyYAqn50L7g8PvvOigN1t47YB2Jg4i6VrZpFn8nUheh1CiB38iX+G+YBbTubUqQa+xwWIDekokJjL4EjIibltPVys4Mn7vcklVrmwlzx3d6j53q9HQ5RfUDYRXb9sucWG4P9NMM35B7Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from MWHPR1101MB2221.namprd11.prod.outlook.com
- (2603:10b6:301:53::18) by MW5PR11MB5785.namprd11.prod.outlook.com
- (2603:10b6:303:197::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.21; Thu, 1 Sep
- 2022 05:29:46 +0000
-Received: from MWHPR1101MB2221.namprd11.prod.outlook.com
- ([fe80::e9a3:201:f95c:891e]) by MWHPR1101MB2221.namprd11.prod.outlook.com
- ([fe80::e9a3:201:f95c:891e%7]) with mapi id 15.20.5566.021; Thu, 1 Sep 2022
- 05:29:46 +0000
-Date:   Thu, 1 Sep 2022 13:29:41 +0800
-From:   Chao Gao <chao.gao@intel.com>
-To:     <isaku.yamahata@intel.com>
-CC:     <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <isaku.yamahata@gmail.com>, Paolo Bonzini <pbonzini@redhat.com>,
-        "Sean Christopherson" <seanjc@google.com>,
-        Kai Huang <kai.huang@intel.com>,
-        "Will Deacon" <will@kernel.org>
-Subject: Re: [PATCH v2 01/19] KVM: x86: Drop kvm_user_return_msr_cpu_online()
-Message-ID: <YxBDRaAyRpyz/5Q+@gao-cwp>
-References: <cover.1661860550.git.isaku.yamahata@intel.com>
- <f63a395ead4204d44cab3b734c99b07f54c38463.1661860550.git.isaku.yamahata@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <f63a395ead4204d44cab3b734c99b07f54c38463.1661860550.git.isaku.yamahata@intel.com>
-X-ClientProxiedBy: SG2PR04CA0176.apcprd04.prod.outlook.com
- (2603:1096:4:14::14) To MWHPR1101MB2221.namprd11.prod.outlook.com
- (2603:10b6:301:53::18)
+        Thu, 1 Sep 2022 01:40:01 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D83B12AAF;
+        Wed, 31 Aug 2022 22:39:57 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2815dfXP039408;
+        Thu, 1 Sep 2022 00:39:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1662010781;
+        bh=CLucAmRdzDQNvBoahPBI20arD+x2VD/6P7PmYblwV0w=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=PtqD6COknhqeDRNxeq7zKOLAKIJ520MiOV7zYVHpHL/wP/0NWXSM3sYK/pJhT8XGz
+         w2SOohw4tDw+/+1jy2CDvrajXYvUQqagVMIjQimgiQHtD0plXV4mG29vggaAqRqbQg
+         f1ykGIwKo2Bfew8PM9XH/cLXaBUZ5m/S7W35X39U=
+Received: from DFLE110.ent.ti.com (dfle110.ent.ti.com [10.64.6.31])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2815dfLt017466
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 1 Sep 2022 00:39:41 -0500
+Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Thu, 1 Sep
+ 2022 00:39:41 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Thu, 1 Sep 2022 00:39:41 -0500
+Received: from [172.24.145.182] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2815dbxu031523;
+        Thu, 1 Sep 2022 00:39:38 -0500
+Message-ID: <f4b54ddb-3364-e765-f683-9af19076db13@ti.com>
+Date:   Thu, 1 Sep 2022 11:09:36 +0530
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9ed42109-8858-4597-4378-08da8bdafb21
-X-MS-TrafficTypeDiagnostic: MW5PR11MB5785:EE_
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: A1ij599KFsKl7hEkGHjdhernxGsqnYCL4Dbtqj1e3TQL8mauARoPbObbXODoQ9ROu1vWz3NlcZ1HvNBW1gtVPhq+YSeoHZArmERrs6/u8lPeq4SWM6YbcSqHbZKdhKiP5523n7KGOr3ZkUd1zAuMBFjSkMPuQa8OMug2iSFzR437eOYbdKe2E2RONBTClp9l/DH7A8BERTnHE96Fe6NF2bXSGHAwZTmO+tlqjoqaZ7uDCDu7JucwTaO/zYpQiACc/3drr/ZpEGVcWpPuVXNPyAhKrdai1v7zj++0L5UGa37if9C1Zp9n7Be/Gfq3dqM2ey0Ofq4dW2/aEdK/XErnQJCumvVtjmqJfJyIBfoMKVOKWX36Mx/QD3YcXZQHBhlVOJ04zVv52on8XqiHJhQ/ddczhrkV4UMUfL+iqtlB0l7zl90gcKzRuYSUCP1SFnqPSYsT2bLW8PrM4YVr/SwJrw73NR4+WjqMeLYpiECIoEII52e2YA6Zj1swtJhfFoVeakK60mtW1VK8LALNfAc+5uD0qfdvaeII+zIGEozWceRnZI5NEilZBiKc+507Valt8JmTfNhBrNXxsf13GLQIE5qiMy10v3qNnJv7h6EkIp5XeO0fPlTKxMNfYqRXYlomYFA7ZMPxM3h3OkXRSPVrTn2YNW3T62w/fArkNSMKpdytGpPRXYD4vug4yga+PGdhv8vouprKiKznApywUVjf6A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1101MB2221.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(346002)(136003)(39860400002)(376002)(366004)(396003)(33716001)(6512007)(44832011)(9686003)(38100700002)(6666004)(26005)(6506007)(2906002)(186003)(83380400001)(4326008)(66946007)(66556008)(316002)(66476007)(8676002)(5660300002)(82960400001)(6486002)(54906003)(41300700001)(6636002)(34206002)(478600001)(86362001)(8936002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?qwF9jb4SoFTj9DP+/Gfuci14XJiau0QoNkGp43ywt3ZnhVPN8NhMNHzdddVH?=
- =?us-ascii?Q?cLqY+m9ks/lQ/T8xKoZctouKB81NzTMZsx6+dVudkOSsn+YUmChM7V4VlWmW?=
- =?us-ascii?Q?K2lGdAO9j5w6yaajr7LZxcbZiVKPjJHQ1kZJbHF7AV5Eap3Un4YX+w2LeDOI?=
- =?us-ascii?Q?XGmhzy+PCZpx2NvKT3/CiKLA/T9us9FCmVRoDGOy4abAJYjTC37ztXAhmNtM?=
- =?us-ascii?Q?k5sjSCnVgsTYXclCvoQtoSu8TBc5i6nzZHOwkyQG7pMLS0R5kdmar+mHCqGo?=
- =?us-ascii?Q?I/+HxDF9wxGrzlgOYHZKtkc7ShUfxGt/FzidABGWxHRc5cs0qV4ddqIilSpy?=
- =?us-ascii?Q?jrjpqPzpfoBgfsiJYrEfBTRbWbydPhD0XICarYem35290bv0bgoQTHLQmRyS?=
- =?us-ascii?Q?UKYltzhLxyFSELEknIHcPyJjywm1DhETaHmL1um8Pz7F8d2X+K3iRIMHPj/R?=
- =?us-ascii?Q?NTwyTAFdJ2Cp60wpywT6Yq56vJMNFaKAIKO5ADI/cx5tl6jJmGR9wN9lMCK3?=
- =?us-ascii?Q?PgfnH1YaOV0fhzn8mm2OjzvgWyvRughEZuM7ZW/25k/+VhgIBE7L+rDe013b?=
- =?us-ascii?Q?tUVJdX5wXAuVdBOP8A33IEQ7YSx2QfdZNAhdBsB2Y2T2iomLZeKzDTcwTpk1?=
- =?us-ascii?Q?fk0lH04LxPCf7uOWS+46Q0KKlqwIPRy1Q8ReCNwgnLGpLu6b0JPQlUldmAqN?=
- =?us-ascii?Q?uVojW1WU8DxHLgXaez0qLCv6ZfNAdCBJPo6bfOX6aeoLK2isirLW0WG9gzrA?=
- =?us-ascii?Q?/yNHaajAAeziS6HEJzHGibj3TGZbP4WsdrOCa+PQHN6uMEEMXO3wgpZi9myp?=
- =?us-ascii?Q?MWFSrglYJ8i7Jm4xZnTw+P4fBFDDCzwmo4Q6Du9VKK9WDGONWcGS5aVW7169?=
- =?us-ascii?Q?PjLr9b5FTZppCkBMEYYJiwHO84fZKelkGnC7YqTFvVb8NEOFgjfDtNlHKeBP?=
- =?us-ascii?Q?vdcvWF3dedtA3VVICfE9kM1fdN3/EYM+M0fCaOjtiyWXvfLH8xx18bz5NqTJ?=
- =?us-ascii?Q?1Qv4ASYcRg3z5jxZZ+XlbMpqYomdLFC6X9RaYy+5e9UnSgtzBOS38LRSoiNM?=
- =?us-ascii?Q?MX96U76b+2E8pk5nWBq1nM9hurTwLHRFgEk/mtokKvVJniO2O1rOzoH+flrQ?=
- =?us-ascii?Q?LIBbQCFu5cmuKN0KN3ACz2iNsM8xKaRIxUTwrm/rzosL/gadPCF3R1n3g/X5?=
- =?us-ascii?Q?6ltp0t1D9JpYNZ8+P58b/RR0shHjYC7p3kYBmdMAf0kc3qEKdx25pd00xutb?=
- =?us-ascii?Q?FAgRxXlVbHtTtlRjkeO47o2RRfJpxHCN+D/lwfgI15+7/CoXJ82ievBXmN+s?=
- =?us-ascii?Q?AMKTPFF7ftjx0XsWpGy0tToBraMZ1SOxqyIQsNYIxXBWmos+W/L+zDhTaeH4?=
- =?us-ascii?Q?UsqzXxOmeL6+LxezDmzHkXipdiWnhoS2Br3UBtm+s21I0amlfDax+vAowvlq?=
- =?us-ascii?Q?HCZqGZJEszrQ8w7Ac3KMlVD0smKAKnd+3sznppzqPG2u/ZCw6P0eauEtGkJI?=
- =?us-ascii?Q?BaTBzuYw4/tJqjkY9pj1uC/n/ve76XydUX6oelfn78ntkvPOzbi2BB61MaE7?=
- =?us-ascii?Q?CZFBxlzTCloM+1KKT+agFRZ9zpLJJrwhpIxg7/9Z?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9ed42109-8858-4597-4378-08da8bdafb21
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1101MB2221.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2022 05:29:45.9832
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: TpMg7wps7Rs3Hz0I4z5ePgrgqEJa+Ke97SC07J0lQs+rpAWduGqZ4OBSHbTeHy9SK2tM1Ad3uNcOvc86f/rCTQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR11MB5785
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH 3/4] arm64: dts: ti: Introduce AM62A7 family of SoCs
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Nishanth Menon <nm@ti.com>, Tero Kristo <kristo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-gpio@vger.kernel.org>, Bryan Brattlof <bb@ti.com>
+References: <20220829082200.241653-1-vigneshr@ti.com>
+ <20220829082200.241653-4-vigneshr@ti.com>
+ <dc971b60-c2be-aabb-20d6-181ea34d55c4@linaro.org>
+From:   Vignesh Raghavendra <vigneshr@ti.com>
+In-Reply-To: <dc971b60-c2be-aabb-20d6-181ea34d55c4@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 05:01:16AM -0700, isaku.yamahata@intel.com wrote:
->From: Isaku Yamahata <isaku.yamahata@intel.com>
->
->KVM/X86 uses user return notifier to switch MSR for guest or user space.
->Snapshot host values on CPU online, change MSR values for guest, and
->restore them on returning to user space.  The current code abuses
->kvm_arch_hardware_enable() which is called on kvm module initialization or
->CPU online.
->
->Remove such the abuse of kvm_arch_hardware_enable by capturing the host
->value on the first change of the MSR value to guest VM instead of CPU
->online.
->
->Suggested-by: Sean Christopherson <seanjc@google.com>
->Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
->---
-> arch/x86/kvm/x86.c | 43 ++++++++++++++++++++++++-------------------
-> 1 file changed, 24 insertions(+), 19 deletions(-)
->
->diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
->index 205ebdc2b11b..16104a2f7d8e 100644
->--- a/arch/x86/kvm/x86.c
->+++ b/arch/x86/kvm/x86.c
->@@ -200,6 +200,7 @@ struct kvm_user_return_msrs {
-> 	struct kvm_user_return_msr_values {
-> 		u64 host;
-> 		u64 curr;
->+		bool initialized;
-> 	} values[KVM_MAX_NR_USER_RETURN_MSRS];
 
-The benefit of having an "initialized" state for each user return MSR on
-each CPU is small. A per-cpu state looks suffice. With it, you can keep
-kvm_user_return_msr_cpu_online() and simply call the function from
-kvm_set_user_return_msr() if initialized is false on current CPU.
+
+On 30/08/22 15:26, Krzysztof Kozlowski wrote:
+> On 29/08/2022 11:21, Vignesh Raghavendra wrote:
+> 
+> (...)
+> 
+>> +		/*
+>> +		 * vcpumntirq:
+>> +		 * virtual CPU interface maintenance interrupt
+>> +		 */
+>> +		interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
+>> +
+>> +		gic_its: msi-controller@1820000 {
+>> +			compatible = "arm,gic-v3-its";
+>> +			reg = <0x00 0x01820000 0x00 0x10000>;
+>> +			socionext,synquacer-pre-its = <0x1000000 0x400000>;
+>> +			msi-controller;
+>> +			#msi-cells = <1>;
+>> +		};
+>> +	};
+>> +
+>> +	main_conf: syscon@100000 {
+>> +		compatible = "syscon", "simple-mfd";
+> 
+> No, these are not allowed alone.
+
+Will add device specific compatible
+
+compatible = "ti,j721e-system-controller", "syscon", "simple-mfd";
+
+> 
+>> +		reg = <0x00 0x00100000 0x00 0x20000>;
+>> +		#address-cells = <1>;
+>> +		#size-cells = <1>;
+>> +		ranges = <0x00 0x00 0x00100000 0x20000>;
+>> +	};
+>> +
+>> +	dmss: bus@48000000 {
+>> +		compatible = "simple-mfd";
+> 
+> No. Not allowed alone.
+
+This can be "simple-bus". Will change accordingly
+
+> 
+>> +		#address-cells = <2>;
+>> +		#size-cells = <2>;
+>> +		dma-ranges;
+>> +		ranges = <0x00 0x48000000 0x00 0x48000000 0x00 0x06000000>;
+>> +
+>> +		ti,sci-dev-id = <25>;
+>> +
+>> +		secure_proxy_main: mailbox@4d000000 {
+>> +			compatible = "ti,am654-secure-proxy";
+>> +			#mbox-cells = <1>;
+>> +			reg-names = "target_data", "rt", "scfg";
+>> +			reg = <0x00 0x4d000000 0x00 0x80000>,
+>> +			      <0x00 0x4a600000 0x00 0x80000>,
+>> +			      <0x00 0x4a400000 0x00 0x80000>;
+>> +			interrupt-names = "rx_012";
+>> +			interrupts = <GIC_SPI 34 IRQ_TYPE_LEVEL_HIGH>;
+>> +		};
+>> +	};
+>> +
+>> +	dmsc: system-controller@44043000 {
+>> +		compatible = "ti,k2g-sci";
+>> +		ti,host-id = <12>;
+>> +		mbox-names = "rx", "tx";
+>> +		mboxes= <&secure_proxy_main 12>,
+>> +			<&secure_proxy_main 13>;
+>> +		reg-names = "debug_messages";
+>> +		reg = <0x00 0x44043000 0x00 0xfe0>;
+> 
+> First compatible, then reg, then the reset of properties.  This applies
+> everywhere.
+
+Will fix
+
+> 
+>> +
+>> +		k3_pds: power-controller {
+>> +			compatible = "ti,sci-pm-domain";
+>> +			#power-domain-cells = <2>;
+>> +		};
+>> +
+>> +		k3_clks: clock-controller {
+>> +			compatible = "ti,k2g-sci-clk";
+>> +			#clock-cells = <2>;
+>> +		};
+>> +
+>> +		k3_reset: reset-controller {
+>> +			compatible = "ti,sci-reset";
+>> +			#reset-cells = <2>;
+>> +		};
+>> +	};
+>> +
+[...]
+>> diff --git a/arch/arm64/boot/dts/ti/k3-am62a-wakeup.dtsi b/arch/arm64/boot/dts/ti/k3-am62a-wakeup.dtsi
+>> new file mode 100644
+>> index 000000000000..fe6d682a0f33
+>> --- /dev/null
+>> +++ b/arch/arm64/boot/dts/ti/k3-am62a-wakeup.dtsi
+>> @@ -0,0 +1,54 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +/*
+>> + * Device Tree Source for AM62A SoC Family Wakeup Domain peripherals
+>> + *
+>> + * Copyright (C) 2022 Texas Instruments Incorporated - https://www.ti.com/
+>> + */
+>> +
+>> +&cbass_wakeup {
+>> +	wkup_conf: syscon@43000000 {
+>> +		compatible = "syscon", "simple-mfd";
+> 
+> No. Not allowed alone.
+
+Will change to
+
+compatible = "ti,j721e-system-controller", "syscon", "simple-mfd";
+
+> 
+>> +		reg = <0x00 0x43000000 0x00 0x20000>;
+>> +		#address-cells = <1>;
+>> +		#size-cells = <1>;
+>> +		ranges = <0x00 0x00 0x43000000 0x20000>;
+>> +
+>> +		chipid: chipid@14 {
+>> +			compatible = "ti,am654-chipid";
+>> +			reg = <0x14 0x4>;
+>> +		};
+>> +	};
+>> +
+> 
+> 
+
+Thanks for the review!
+-- 
+Regards
+Vignesh
