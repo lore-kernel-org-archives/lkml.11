@@ -2,75 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F380AECAAD8
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 15:23:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B375C64991
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 15:26:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234170AbiIAPXh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 11:23:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57988 "EHLO
+        id S233362AbiIAP0S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 11:26:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233142AbiIAPXf (ORCPT
+        with ESMTP id S230149AbiIAP0O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 11:23:35 -0400
-Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C06E686077;
-        Thu,  1 Sep 2022 08:23:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1662045814;
-  x=1693581814;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=9ju/6wQLIcO2NCD3fn3ymvU+mw5s1Mi3lE03VQmfwKo=;
-  b=QqHUgo0H11c/Y4dn8KA++EkQCEJQl3rA1fSdtzpci1FQgm8KhjH5+4Ox
-   ulDRpULA0p19pxtyx+5cIy0F9flpcUCgDsy1ayyWHPu+AH7ZSn3ApwNIn
-   Lr6ggqReB+FW9of7tBZ28uF5DAOmGpAk0B2u2isAlf856VEDG6O5Fp3v1
-   F/DjRAUZ+crcbtaPF3QqK00tZVSAZuyQfLCre86D8/qKIPrdNR8H/PTHx
-   0aEk4mRRhprNyy4aDAO9LMdYyNriJvQ/yFcMWXtt80BR/letrBKtRbmdk
-   TdxJMCxhvOE3cLZIl+gFsJwtGt2OZoFgoRgDOEfshK++lJoA+tK5WxinC
-   A==;
-From:   Jesper Nilsson <jesper.nilsson@axis.com>
-To:     Bjorn Helgaas <bhelgaas@google.com>
-CC:     Jesper Nilsson <jesper.nilsson@axis.com>,
-        <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] PCI: Map PCI bios specific error to generic errno
-Date:   Thu, 1 Sep 2022 17:23:24 +0200
-Message-ID: <20220901152324.29654-1-jesper.nilsson@axis.com>
-X-Mailer: git-send-email 2.36.0
+        Thu, 1 Sep 2022 11:26:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DFB7248F8
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 08:25:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662045902;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=gkJGKge+6uIm46PgUxrIJL/kWjX9EjAB7hcnEhK4b9A=;
+        b=f4MRXWcjOnf/sPRzmQDY2F0qh9Kwbn1/gdsyYxHtAFf+KBucfHCYHVAP1Uq/0/VvLcrykj
+        9vSKYoNhWGupWiXrkdH2w1DpQiL3W1YYauAG5MNw2LmLjqC9nUeNfHrDImrsM593FP89PX
+        g2BueVSGflDWlMH58OWLIRUmuJfIMcw=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-615-XCMjSe21Pq-D-_HNjdzt6w-1; Thu, 01 Sep 2022 11:25:01 -0400
+X-MC-Unique: XCMjSe21Pq-D-_HNjdzt6w-1
+Received: by mail-wm1-f71.google.com with SMTP id f18-20020a05600c4e9200b003a5f81299caso9984739wmq.7
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 08:25:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=gkJGKge+6uIm46PgUxrIJL/kWjX9EjAB7hcnEhK4b9A=;
+        b=AAOKrfSdTWPmWUCal8kP1LvVWnbswf/MRrn1Q13fobLxWDPWSpfHEzfx3JDl3gfQm6
+         DCoAVUmS3BivuNMPylteDT06rYHC3HTPppWFet/SX0F89B1Jh4zJRxHCHe88lssRGWLg
+         IIzVshiN9CI+ztVm9yhauoVODasywC02ZpGuUqBr7ZpnEpP0ivMpLHYnV01Wb87U1Mkg
+         W1vtdnhaydZ1H6SSOvnZcZwn0jKW6DnIEzViBnbcsaUe5INz2pb6uJYCt5wjFlWfkKbV
+         4kyiwCG97KzLf0wXGRXK/9j8DVe7zuLbkg8DC0jTiuqKRbPrZHnEm2lP+SgMOzJwpuCO
+         v+oQ==
+X-Gm-Message-State: ACgBeo0OV4lWDWv6shcdg12TRKE6qG0PbZ8Qzf9qVBUhyyh77Q7QnE0r
+        kEjNboGnQQnuG8Kj9UyxXnZMBr5hDLyMNI4Nt75X8zpxlylPYlX1IkQcr1BhVCzK/WMmEKRkJyr
+        lDB6KVtWGpvIa6iKZo/BjlxE=
+X-Received: by 2002:a05:6000:100b:b0:226:d51d:8a76 with SMTP id a11-20020a056000100b00b00226d51d8a76mr13300038wrx.257.1662045899744;
+        Thu, 01 Sep 2022 08:24:59 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7D2pBQa6pfEp9i4xzRkLxHK53YKbsNFHMdsRHn9fb5ph5CjPweWQ+Tg0xAgynsLsK19y/A6w==
+X-Received: by 2002:a05:6000:100b:b0:226:d51d:8a76 with SMTP id a11-20020a056000100b00b00226d51d8a76mr13300029wrx.257.1662045899488;
+        Thu, 01 Sep 2022 08:24:59 -0700 (PDT)
+Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
+        by smtp.gmail.com with ESMTPSA id bd17-20020a05600c1f1100b003a540fef440sm6203845wmb.1.2022.09.01.08.24.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Sep 2022 08:24:55 -0700 (PDT)
+From:   Aaron Tomlin <atomlin@redhat.com>
+To:     mcgrof@kernel.org
+Cc:     petr.pavlu@suse.com, christophe.leroy@csgroup.eu,
+        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
+        atomlin@atomlin.com
+Subject: [PATCH v2 modules-next 0/1] module: Add debugfs interface to view unloaded tainted modules
+Date:   Thu,  1 Sep 2022 16:24:53 +0100
+Message-Id: <20220901152454.2394228-1-atomlin@redhat.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-pci_read_config_byte() may return a PCI bios specific error value
-(in my case PCIBIOS_DEVICE_NOT_FOUND 0x86) which is nonsensical
-to return to the caller of of_irq_parse_pci() which expects
-a negative errno if something goes wrong.
+Hi Luis,
 
-Use the appropriate mapping function before passing the error on.
+Changes since v1 [1]:
 
-Signed-off-by: Jesper Nilsson <jesper.nilsson@axis.com>
----
- drivers/pci/of.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+  - Replaced the use of module_mutex to instead mark
+    a RCU read-side critical section (Petr Pavlu)
+  - Added __acquires() and __releases() to support
+    sparse context checking
 
-diff --git a/drivers/pci/of.c b/drivers/pci/of.c
-index 196834ed44fe..130bcfe61e04 100644
---- a/drivers/pci/of.c
-+++ b/drivers/pci/of.c
-@@ -440,8 +440,10 @@ static int of_irq_parse_pci(const struct pci_dev *pdev, struct of_phandle_args *
- 	 * for PCI. If you do different, then don't use that routine.
- 	 */
- 	rc = pci_read_config_byte(pdev, PCI_INTERRUPT_PIN, &pin);
--	if (rc != 0)
-+	if (rc != 0) {
-+		rc = pcibios_err_to_errno(rc);
- 		goto err;
-+	}
- 	/* No pin, exit with no error message. */
- 	if (pin == 0)
- 		return -ENODEV;
+[1]: https://lore.kernel.org/lkml/20220823193225.2072649-1-atomlin@redhat.com/
+
+
+Aaron Tomlin (1):
+  module: Add debugfs interface to view unloaded tainted modules
+
+ kernel/module/tracking.c | 68 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 68 insertions(+)
+
+
+base-commit: 554694ba120b87e39cf732ed632e6a0c52fafb7c
 -- 
-2.36.0
+2.37.1
 
