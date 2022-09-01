@@ -2,164 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E8DECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:26:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CC26ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:26:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234073AbiIAH0u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 03:26:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50976 "EHLO
+        id S233983AbiIAH0y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 03:26:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232470AbiIAHZq (ORCPT
+        with ESMTP id S233974AbiIAHZs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 03:25:46 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E60F5E51;
-        Thu,  1 Sep 2022 00:24:48 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id az27so21107512wrb.6;
-        Thu, 01 Sep 2022 00:24:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=W4sHhBFT7l0RZw3UjJyqKYPr5puCq7omf6aKnnWND30=;
-        b=JQZZvUi6O0ekBj3q+z2Stpq3f90RJSDx3xoOvdXfAF8N0rSyGrLOA7leU6sDOpvgoO
-         50fduhhKDz94Yq/r9Z47JHLiyKu7sYX9pxM6CAk16dTsxL7oGIcsn1nGjO53Sv7l1X/+
-         wWDz3gEFby1KyOlMgu9+Urc3i5XFOA64jDY4Yqo3TTqyIVYvHTyyQ+355sjPNsLOY7Mb
-         nlEiEjI3FfWhofbgEqCCw7AdaGgb4GKr7+/D5exkDgxhZbbJ1TVyyYW0/2g/8HdMGEhv
-         0plb1kZ4T+rlBgOfx7Qo5hGJeylsBNcBFsQZlAhLjMr3XG3KmNY/KpQgJnox/qe+yXpj
-         EpNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=W4sHhBFT7l0RZw3UjJyqKYPr5puCq7omf6aKnnWND30=;
-        b=cslRbQgLzAHjfGwLBsKqG8reeIxfCtrM1Zp4Kj0Z3tNfkLJgyB6h4yMyEMhIAW9khd
-         U0DBYCULDZVtmYeHP9/MnbXZQIe5rrdbS05z/A+UAs57epaoLnfdsYOETkU7oLzP4EHc
-         ZWm090IFG1jVFTVmhoYy4VKXDoArGXIANKuPUuPazWWQxy/Bkzz+EX2P06vIp+me1Oa/
-         +bUIl2AUquXFbcVenPu8kD7FFbaFRLiwgO/a9WixUBOAZL0zMWhYq7dt+fKUSFW3KIT5
-         PNly91QXCtr/2YGqUsiXxLrxzKapHrpBMp7UF/316AUzmLKYbrioTiuzMHXbcfJbev9w
-         FUPg==
-X-Gm-Message-State: ACgBeo1qtIpwubKYWqQdz3iZjUgDDgRqQYC8z6vcb98BzExldsa4mkWh
-        kzStRIk3m8BDuvTR6Hbb+nc=
-X-Google-Smtp-Source: AA6agR5UAfAyP88xhdAn5WyYEnMT6lPL1ngs0NcfIIBlVKw6XqsJlHInPx6Gie40IB9NPz5vECUixA==
-X-Received: by 2002:a05:6000:904:b0:21a:3dca:4297 with SMTP id bz4-20020a056000090400b0021a3dca4297mr13599962wrb.487.1662017088630;
-        Thu, 01 Sep 2022 00:24:48 -0700 (PDT)
-Received: from localhost (87-126-55-15.ip.btc-net.bg. [87.126.55.15])
-        by smtp.gmail.com with ESMTPSA id x14-20020a5d60ce000000b002252e5a6841sm13952561wrt.57.2022.09.01.00.24.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Sep 2022 00:24:48 -0700 (PDT)
-From:   Iskren Chernev <iskren.chernev@gmail.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        Iskren Chernev <iskren.chernev@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Thu, 1 Sep 2022 03:25:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 528821144B;
+        Thu,  1 Sep 2022 00:24:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 91BA361D0B;
+        Thu,  1 Sep 2022 07:24:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC12FC433D6;
+        Thu,  1 Sep 2022 07:24:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662017093;
+        bh=stL9+yzK0zgdLie5xf0hjyraAlajedBKEBb65rMMvRw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Deo+YD+Qtg4Ei+JHnT2yXSe+uKnWw8TmyJIetCBkvgsk1Q7LlzsyoYoLTsOfoIi9H
+         OwhDTSuHW6wmK1UEXZdoB3V1y6jPaa6Gnl+RYAHD8O9Y3LVX5IfL7CRFiOeksw36Wm
+         EYmdTybxXyum1jTy27Dch3Ul5cE/l8TcGSQ6IV0XZkNiYbEcW7Nus1P8ePSG+R584J
+         ytYy7VQ/lm2hstwOzR4PGDiapbPxiRVClotXRc2TZgKCgbQB6oL7YeI8VElF+RKMDD
+         D5IhD/lqXpNx9SApSSGxj9pQdWDifYzzwY17Ei+NamHJpcHkmogcZb4K3wswvbiX13
+         GO2I5M6b6Bowg==
+Received: by pali.im (Postfix)
+        id E3E127B8; Thu,  1 Sep 2022 09:24:49 +0200 (CEST)
+Date:   Thu, 1 Sep 2022 09:24:49 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 09/14] arm64: dts: qcom: sm6115: Add UFS nodes
-Date:   Thu,  1 Sep 2022 10:24:08 +0300
-Message-Id: <20220901072414.1923075-10-iskren.chernev@gmail.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220901072414.1923075-1-iskren.chernev@gmail.com>
-References: <20220901072414.1923075-1-iskren.chernev@gmail.com>
+Subject: Re: [PATCH] powerpc/pci: Enable PCI domains in /proc when PCI bus
+ numbers are not unique
+Message-ID: <20220901072449.hswlq5fpnqrhgvcf@pali>
+References: <20220820115113.30581-1-pali@kernel.org>
+ <878rnclq47.fsf@mpe.ellerman.id.au>
+ <20220825083713.4glfivegmodluiun@pali>
+ <87wnanu4vf.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <87wnanu4vf.fsf@mpe.ellerman.id.au>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The SM6115 comes with UFS support, so add the related UFS and UFS PHY
-nodes.
+On Thursday 01 September 2022 13:53:56 Michael Ellerman wrote:
+> Pali Rohár <pali@kernel.org> writes:
+> > On Thursday 25 August 2022 17:49:28 Michael Ellerman wrote:
+> >> Pali Rohár <pali@kernel.org> writes:
+> >> > On 32-bit powerpc systems with more PCIe controllers and more PCI domains,
+> >> > where on more PCI domains are same PCI numbers, when kernel is compiled
+> >> > with CONFIG_PROC_FS=y and CONFIG_PPC_PCI_BUS_NUM_DOMAIN_DEPENDENT=y
+> >> > options, kernel prints "proc_dir_entry 'pci/01' already registered" error
+> >> > message.
+> >> 
+> >> Thanks, I'll pick this up.
+> >> 
+> >> > This regression started appearing after commit 566356813082 ("powerpc/pci:
+> >> > Add config option for using all 256 PCI buses") in case in each mPCIe slot
+> >> > is connected PCIe card and therefore PCI bus 1 is populated in for every
+> >> > PCIe controller / PCI domain.
+> >> >
+> >> > The reason is that PCI procfs code expects that when PCI bus numbers are
+> >> > not unique across all PCI domains, function pci_proc_domain() returns true
+> >> > for domain dependent buses.
+> >> >
+> >> > Fix this issue by setting PCI_ENABLE_PROC_DOMAINS and PCI_COMPAT_DOMAIN_0
+> >> > flags for 32-bit powerpc code when CONFIG_PPC_PCI_BUS_NUM_DOMAIN_DEPENDENT
+> >> > is enabled. Same approach is already implemented for 64-bit powerpc code
+> >> > (where PCI bus numbers are always domain dependent).
+> >> 
+> >> We also have the same in ppc4xx_pci_find_bridges().
+> >> 
+> >> And if we can eventually make CONFIG_PPC_PCI_BUS_NUM_DOMAIN_DEPENDENT
+> >> the standard behaviour on 32-bit then everything would behave the same
+> >> and we could simplify pci_proc_domain() to match what other arches do.
+> >
+> > I sent two patches which do another steps to achieve it:
+> > https://lore.kernel.org/linuxppc-dev/20220817163927.24453-1-pali@kernel.org/t/#u
+> >
+> > Main blocker is pci-OF-bus-map which is in direct conflict with
+> > CONFIG_PPC_PCI_BUS_NUM_DOMAIN_DEPENDENT and which used on chrp and pmac.
+> > And I have no idea if pci-OF-bus-map is still needed or not.
+> 
+> Yeah thanks, I saw those patches.
+> 
+> I can't find any code that refers to pci-OF-bus-map, so I'm inclined to
+> remove it entirely.
+> 
+> But I'll do some more searching to see if I can find any references to
+> it in old code.
+> 
+> cheers
 
-Signed-off-by: Iskren Chernev <iskren.chernev@gmail.com>
----
- arch/arm64/boot/dts/qcom/sm6115.dtsi | 70 ++++++++++++++++++++++++++++
- 1 file changed, 70 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/qcom/sm6115.dtsi b/arch/arm64/boot/dts/qcom/sm6115.dtsi
-index cde963c56ac9..491fffff8aa1 100644
---- a/arch/arm64/boot/dts/qcom/sm6115.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm6115.dtsi
-@@ -620,6 +620,76 @@ opp-202000000 {
- 			};
- 		};
- 
-+		ufs_mem_hc: ufshc@4804000 {
-+			compatible = "qcom,sm6115-ufshc", "qcom,ufshc",
-+				     "jedec,ufs-2.0";
-+			reg = <0x4804000 0x3000>, <0x4810000 0x8000>;
-+			reg-names = "std", "ice";
-+			interrupts = <GIC_SPI 356 IRQ_TYPE_LEVEL_HIGH>;
-+			phys = <&ufs_mem_phy_lanes>;
-+			phy-names = "ufsphy";
-+			lanes-per-direction = <1>;
-+			#reset-cells = <1>;
-+			resets = <&gcc GCC_UFS_PHY_BCR>;
-+			reset-names = "rst";
-+
-+			power-domains = <&gcc GCC_UFS_PHY_GDSC>;
-+			iommus = <&apps_smmu 0x100 0>;
-+
-+			clocks = <&gcc GCC_UFS_PHY_AXI_CLK>,
-+				 <&gcc GCC_SYS_NOC_UFS_PHY_AXI_CLK>,
-+				 <&gcc GCC_UFS_PHY_AHB_CLK>,
-+				 <&gcc GCC_UFS_PHY_UNIPRO_CORE_CLK>,
-+				 <&gcc GCC_UFS_PHY_ICE_CORE_CLK>,
-+				 <&rpmcc RPM_SMD_XO_CLK_SRC>,
-+				 <&gcc GCC_UFS_PHY_TX_SYMBOL_0_CLK>,
-+				 <&gcc GCC_UFS_PHY_RX_SYMBOL_0_CLK>;
-+			clock-names = "core_clk",
-+				      "bus_aggr_clk",
-+				      "iface_clk",
-+				      "core_clk_unipro",
-+				      "core_clk_ice",
-+				      "ref_clk",
-+				      "tx_lane0_sync_clk",
-+				      "rx_lane0_sync_clk";
-+
-+			freq-table-hz = <50000000 200000000>,
-+					<0 0>,
-+					<0 0>,
-+					<37500000 150000000>,
-+					<75000000 300000000>,
-+					<0 0>,
-+					<0 0>,
-+					<0 0>;
-+
-+			non-removable;
-+			status = "disabled";
-+		};
-+
-+		ufs_mem_phy: phy@4807000 {
-+			compatible = "qcom,sm6115-qmp-ufs-phy";
-+			reg = <0x4807000 0x1c4>;
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			ranges;
-+
-+			clocks = <&gcc GCC_UFS_CLKREF_CLK>,
-+				 <&gcc GCC_UFS_PHY_PHY_AUX_CLK>;
-+			clock-names = "ref", "ref_aux";
-+
-+			resets = <&ufs_mem_hc 0>;
-+			reset-names = "ufsphy";
-+			status = "disabled";
-+
-+			ufs_mem_phy_lanes: lanes@4807400 {
-+				reg = <0x4807400 0x098>,
-+				      <0x4807600 0x130>,
-+				      <0x4807c00 0x16c>;
-+				#phy-cells = <0>;
-+			};
-+		};
-+
-+
- 		usb3: usb@4ef8800 {
- 			compatible = "qcom,sm6115-dwc3", "qcom,dwc3";
- 			reg = <0x04ef8800 0x400>;
--- 
-2.37.2
-
+From the code itself I have feeling that some external programs or maybe
+some firmware can access or use this property. But I have really no idea.
