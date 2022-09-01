@@ -2,90 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55C86ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 06:15:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E4A1ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 06:16:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232897AbiIAGPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 02:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33530 "EHLO
+        id S233313AbiIAGP7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 02:15:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233316AbiIAGPn (ORCPT
+        with ESMTP id S232956AbiIAGPu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 02:15:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35046AB409
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 23:15:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662012934;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9AHSAQIfsvBERzOAtGZgWItZ9BraQujnqLwAcYfSRgQ=;
-        b=Ffp4Im38Mw937une5xz/glF8k7pGP6Mezkxeem5LvMprOkMoGOSlD/X1PxHsgfKviKYamC
-        hZwq7mSUcqOQM2wKr8EMpTMHFtz11CQsabP7DU5j/kTwf8IfTLqRJTfDyhe6sMgS45UNz0
-        DOHrMgn7PieCt1Z03Df9BOU2EA/qMUQ=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-600-GkAmRSIUMQiseLFiYFMpUA-1; Thu, 01 Sep 2022 02:15:32 -0400
-X-MC-Unique: GkAmRSIUMQiseLFiYFMpUA-1
-Received: by mail-ed1-f70.google.com with SMTP id v1-20020a056402348100b00448acc79177so5897076edc.23
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 23:15:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=9AHSAQIfsvBERzOAtGZgWItZ9BraQujnqLwAcYfSRgQ=;
-        b=haPDUxpubRvveTYHEF1hBzaV1ppXsm/L0Ho7u7CkR/YFdwjMuirl0gN8JkfoHWaqhe
-         4WKtpYg/1GX53GVi7xrKRpzXaYfEqHHG5OY1WOIEGTRsFZgAlHwgAcjm/BXKJj7J9Hb4
-         1r8nJ+Pu56fQcyWY51f4DZwWqG3+noINXMIct4heC21ZXsARM98DB8W6pZZ/0DaIgJv2
-         1d7oeqBTVLAtjbnH1pbJlSJ5CZQzZMEeMCOaGyn/MYz3OSKSdd2E179sb9jz5tBw8AHl
-         7EXnWS7W3AHM3khQPabTl4U7UvK39Um4hOCM/0MK1amoFlYDFeLRDK9WsYlixdNMQqNO
-         EJZA==
-X-Gm-Message-State: ACgBeo2r8Hw7uhlnHg/ABcmhExg1ZCrdrTowSZgvNF8YhCz/1f3EBbvC
-        WGPv8ZTB12+IRr/ovlc09ohzSmAiyoqPANtspJAjHW5KulQbmvZ5r/d0/Y3pY7zmvQJ4dLxkCjM
-        ictBcfE6ArTMZKMIYJCRK47uP
-X-Received: by 2002:a05:6402:4303:b0:448:7014:ed8f with SMTP id m3-20020a056402430300b004487014ed8fmr15462470edc.335.1662012931802;
-        Wed, 31 Aug 2022 23:15:31 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6ZxG9abLlCPNUlYBtiai7/mUX9HA6hwTyBhuniMdh4Hjfkn+Em7HoSkQpeL82UF56LB0NwTw==
-X-Received: by 2002:a05:6402:4303:b0:448:7014:ed8f with SMTP id m3-20020a056402430300b004487014ed8fmr15462446edc.335.1662012931604;
-        Wed, 31 Aug 2022 23:15:31 -0700 (PDT)
-Received: from [192.168.0.198] (host-87-8-60-205.retail.telecomitalia.it. [87.8.60.205])
-        by smtp.gmail.com with ESMTPSA id i14-20020aa7c9ce000000b00446473adeacsm733744edt.82.2022.08.31.23.15.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 31 Aug 2022 23:15:31 -0700 (PDT)
-Message-ID: <0e2af6c4-2854-c2e0-9705-e4a57bed31e0@redhat.com>
-Date:   Thu, 1 Sep 2022 08:15:29 +0200
+        Thu, 1 Sep 2022 02:15:50 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA0E8FE059;
+        Wed, 31 Aug 2022 23:15:44 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MJ9g55hYqz1N7bs;
+        Thu,  1 Sep 2022 14:12:01 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
+ (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 1 Sep
+ 2022 14:15:41 +0800
+From:   Ye Bin <yebin10@huawei.com>
+To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
+        <linux-ext4@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
+        Ye Bin <yebin10@huawei.com>
+Subject: [PATCH -next] ext4: ensure data forced to disk when rename
+Date:   Thu, 1 Sep 2022 14:26:57 +0800
+Message-ID: <20220901062657.1192732-1-yebin10@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH v2] sched/deadline: Add should_push_task_dl helper
-To:     Shang XiaoJing <shangxiaojing@huawei.com>, mingo@redhat.com,
-        peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        vschneid@redhat.com, linux-kernel@vger.kernel.org
-References: <20220901020855.29951-1-shangxiaojing@huawei.com>
-Content-Language: en-US
-From:   Daniel Bristot de Oliveira <bristot@redhat.com>
-In-Reply-To: <20220901020855.29951-1-shangxiaojing@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 9/1/22 04:08, Shang XiaoJing wrote:
-> Wrap complex and repeated code in helper function should_push_task_dl,
-> which will return true when task p should be pushed to other cores
-> because of current task.
-> 
-> Signed-off-by: Shang XiaoJing <shangxiaojing@huawei.com>
+There is issue that data lost when rename new file. Reason is dioread_nolock is
+enabled default now, which map blocks will mark extent unwritten. But inode
+size is changed after submit io. Then read file will return zero if extent is
+unwritten.
+To solve above isuue, wait all data force to disk before rename when enable
+dioread_nolock and enable delay allocate.
 
-Reviewed-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+---
+ fs/ext4/ext4.h  |  1 +
+ fs/ext4/inode.c | 16 ++++++++++++++++
+ fs/ext4/namei.c |  2 +-
+ 3 files changed, 18 insertions(+), 1 deletion(-)
 
-Thanks!
--- Daniel
+diff --git a/fs/ext4/ext4.h b/fs/ext4/ext4.h
+index 9bca5565547b..111296259b89 100644
+--- a/fs/ext4/ext4.h
++++ b/fs/ext4/ext4.h
+@@ -2998,6 +2998,7 @@ extern int ext4_break_layouts(struct inode *);
+ extern int ext4_punch_hole(struct file *file, loff_t offset, loff_t length);
+ extern void ext4_set_inode_flags(struct inode *, bool init);
+ extern int ext4_alloc_da_blocks(struct inode *inode);
++extern void ext4_flush_data(struct inode *inode);
+ extern void ext4_set_aops(struct inode *inode);
+ extern int ext4_writepage_trans_blocks(struct inode *);
+ extern int ext4_chunk_trans_blocks(struct inode *, int nrblocks);
+diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+index 601214453c3a..4df7ffd3f1b0 100644
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -3133,6 +3133,22 @@ int ext4_alloc_da_blocks(struct inode *inode)
+ 	return filemap_flush(inode->i_mapping);
+ }
+ 
++void ext4_flush_data(struct inode *inode)
++{
++	if (!EXT4_I(inode)->i_reserved_data_blocks)
++		return;
++
++	if (filemap_flush(inode->i_mapping))
++		return;
++
++	if (test_opt(inode->i_sb, DELALLOC) &&
++	    ext4_should_dioread_nolock(inode) &&
++	    atomic_read(&EXT4_I(inode)->i_unwritten))
++		filemap_fdatawait(inode->i_mapping);
++
++	return;
++}
++
+ /*
+  * bmap() is special.  It gets used by applications such as lilo and by
+  * the swapper to find the on-disk block of a specific piece of data.
+diff --git a/fs/ext4/namei.c b/fs/ext4/namei.c
+index 3a31b662f661..030402fe3b9f 100644
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -3820,7 +3820,7 @@ static int ext4_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
+ 		}
+ 	}
+ 	if (new.inode && !test_opt(new.dir->i_sb, NO_AUTO_DA_ALLOC))
+-		ext4_alloc_da_blocks(old.inode);
++		ext4_flush_data(old.inode);
+ 
+ 	credits = (2 * EXT4_DATA_TRANS_BLOCKS(old.dir->i_sb) +
+ 		   EXT4_INDEX_EXTRA_TRANS_BLOCKS + 2);
+-- 
+2.31.1
 
