@@ -2,109 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8465FECAAD5
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 19:35:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BFF1ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 19:35:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234379AbiIATfe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 15:35:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34476 "EHLO
+        id S234402AbiIATfm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 15:35:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234043AbiIATfb (ORCPT
+        with ESMTP id S234392AbiIATfh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 15:35:31 -0400
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D54C371B2
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 12:35:30 -0700 (PDT)
-Received: by mail-qv1-xf2c.google.com with SMTP id f9so10582574qvw.11
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 12:35:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=UTBH3ZdVXDU80DZLVRDqtIzjJqfExVq6UuHtVbe7ytw=;
-        b=cc6qIcfeYMZ/SYFhyoOYaOlejSar4fvt7eaC6hWph8Vm89PxHJePz6jHQuUA3uKOxW
-         xoTb/FIeZEjEW9w4NCFuhaYpPrfpJV/zJIvQufFLDvYJBV7rG0whxvGEaiET0X4TnOKI
-         CSxHkTzgBb8BNcBUXa8evSulFwvVWMOZxIt6Xq7Iy/0ifZixSTfYHgKw8O7+5E4bZSaz
-         IwcCzXTwudYYjaV7t+vQkIg8sXbOoMQYCDo7bFvAUQ9/3bNuTFPDqiIOzv11BkZhxiIH
-         0CtLSbVdwVcJ+EDSJAr48KcnueG6sU7NHnMJu9KdeaNijV2p21nG5lVZ1LSvqy8PbkTP
-         ARyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=UTBH3ZdVXDU80DZLVRDqtIzjJqfExVq6UuHtVbe7ytw=;
-        b=cmZuzl2HIeLZLe7uLj/CedRvMeROvgPI142qeVHu7qt6fnQ6Ld43KbaBid16e2setG
-         d8xcWfnYQGvF0IkQ5K72twy2KGOi9YtqkBMbGowTzPDbFY2yByTm0BA6PTVpbnVtIYRO
-         y6gytNL2HhUvJaeIUbiGMjFt97Wh4Q98ynApRTbTvRiMxxqnwMzV+E2FF900KKWW9NqC
-         wQ510PbDbF3P/IjCh/1UDYPdUhd1BwXVkbedJ11OP6yTEY5ieUbmZXhFYXMA/VsoF44O
-         SwJ/6ZVMhAuZZQmFE+NW9E2w8lOB1VYA6O4CWtMq1yRUeKGhF5THQei41paJQoycfQ9w
-         qFiw==
-X-Gm-Message-State: ACgBeo0L76pHbS84KCkFblQxx1j5gmOK0ppjvZrM/PWd03rNNNEJIsIu
-        X71JeOG8a2OJ/26j4uCKxqzRxT1U15tq1cAQnzE=
-X-Google-Smtp-Source: AA6agR7zE5vM3379YmH+8og+0FzDs/kfGFEcxRhQLFhYOuDVffSnUvhdWpR+hcl+9VqRuiFaxcnc+E962KezfuFf5sw=
-X-Received: by 2002:a05:6214:c8f:b0:499:21eb:ba3b with SMTP id
- r15-20020a0562140c8f00b0049921ebba3bmr7362076qvr.97.1662060929333; Thu, 01
- Sep 2022 12:35:29 -0700 (PDT)
+        Thu, 1 Sep 2022 15:35:37 -0400
+Received: from smtp.domeneshop.no (smtp.domeneshop.no [IPv6:2a01:5b40:0:3005::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21A1E4056D
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 12:35:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=tronnes.org
+        ; s=ds202112; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=HSmU8cbfTMrBaPDEft9ugvcLZ7df9DZiQiiVlzQT0Tw=; b=qLjy/48/HybrCZXhucwMbBtKJp
+        3TQbxLtZYMvSPYnBIV1FP4YMZdeVxZdeb8IrBeAhyjcHbR48eZ3cqwaUyKSRMM6DOQ9iZfJ2XCPD6
+        av7PC77mmiFG6qUN0YW2TLxNBmhG/OHSuD5qut6FTgE9i/x1rSJzTI8Sc2eAma98W6N4XxH64KZyD
+        nX//akYOhh3zihSmyGBz7pNFVaeuP5f+pGW5j4s9zWcQ2RNqzSMRDsGMOSZkpxU2nUJWqrKaD0MyS
+        K6gTTOv8Lx+Cv8ibktpYIIY5h542j1BJDWvYwCzIYBQPXPj6+c9B6PKY4gZZIneg3dathxMx/k1tv
+        4FK26vCQ==;
+Received: from [2a01:799:961:d200:cca0:57ac:c55d:a485] (port=52634)
+        by smtp.domeneshop.no with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <noralf@tronnes.org>)
+        id 1oTpyL-0002UR-US; Thu, 01 Sep 2022 21:35:29 +0200
+Message-ID: <24e09a29-6d04-3b1e-63ce-cd3c31d350e2@tronnes.org>
+Date:   Thu, 1 Sep 2022 21:35:23 +0200
 MIME-Version: 1.0
-References: <20220901175022.334824-1-cezary.rojewski@intel.com> <20220901175022.334824-2-cezary.rojewski@intel.com>
-In-Reply-To: <20220901175022.334824-2-cezary.rojewski@intel.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 1 Sep 2022 22:34:53 +0300
-Message-ID: <CAHp75VfO7_ASHGdpkcb1dwvhyHPT31eYuAkCm2q7B+2WmtZC4g@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] lib/string_helpers: Introduce tokenize_user_input()
-To:     Cezary Rojewski <cezary.rojewski@intel.com>
-Cc:     ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        amadeuszx.slawinski@linux.intel.com,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        =?UTF-8?Q?P=C3=A9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Matthew Wilcox <willy@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v2 00/41] drm: Analog TV Improvements
+To:     Maxime Ripard <maxime@cerno.tech>,
+        Maxime Ripard <mripard@kernel.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        David Airlie <airlied@linux.ie>, Chen-Yu Tsai <wens@csie.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Lyude Paul <lyude@redhat.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Karol Herbst <kherbst@redhat.com>,
+        Emma Anholt <emma@anholt.net>, Daniel Vetter <daniel@ffwll.ch>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Dom Cobley <dom@raspberrypi.com>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Phil Elwell <phil@raspberrypi.com>,
+        intel-gfx@lists.freedesktop.org,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        nouveau@lists.freedesktop.org, linux-sunxi@lists.linux.dev,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
+References: <20220728-rpi-analog-tv-properties-v2-0-459522d653a7@cerno.tech>
+From:   =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
+In-Reply-To: <20220728-rpi-analog-tv-properties-v2-0-459522d653a7@cerno.tech>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 1, 2022 at 8:40 PM Cezary Rojewski
-<cezary.rojewski@intel.com> wrote:
+
+
+Den 29.08.2022 15.11, skrev Maxime Ripard:
+> Hi,
+> 
+> 
+> 
+> Here's a series aiming at improving the command line named modes support,
+> 
+> and more importantly how we deal with all the analog TV variants.
+> 
+> 
+> 
+> The named modes support were initially introduced to allow to specify the
+> 
+> analog TV mode to be used.
+> 
+> 
+> 
+> However, this was causing multiple issues:
+> 
+> 
+> 
+>   * The mode name parsed on the command line was passed directly to the
+> 
+>     driver, which had to figure out which mode it was suppose to match;
+> 
+> 
+> 
+>   * Figuring that out wasn't really easy, since the video= argument or what
+> 
+>     the userspace might not even have a name in the first place, but
+> 
+>     instead could have passed a mode with the same timings;
+> 
+> 
+> 
+>   * The fallback to matching on the timings was mostly working as long as
+> 
+>     we were supporting one 525 lines (most likely NSTC) and one 625 lines
+> 
+>     (PAL), but couldn't differentiate between two modes with the same
+> 
+>     timings (NTSC vs PAL-M vs NSTC-J for example);
+> 
+> 
+> 
+>   * There was also some overlap with the tv mode property registered by
+> 
+>     drm_mode_create_tv_properties(), but named modes weren't interacting
+> 
+>     with that property at all.
+> 
+> 
+> 
+>   * Even though that property was generic, its possible values were
+> 
+>     specific to each drivers, which made some generic support difficult.
+> 
+> 
+> 
+> Thus, I chose to tackle in multiple steps:
+> 
+> 
+> 
+>   * A new TV norm property was introduced, with generic values, each driver
+> 
+>     reporting through a bitmask what standard it supports to the userspace;
+> 
+> 
+> 
+>   * This option was added to the command line parsing code to be able to
+> 
+>     specify it on the kernel command line, and new atomic_check and reset
+> 
+>     helpers were created to integrate properly into atomic KMS;
+> 
+> 
+> 
+>   * The named mode parsing code is now creating a proper display mode for
+> 
+>     the given named mode, and the TV standard will thus be part of the
+> 
+>     connector state;
+> 
+> 
+> 
+>   * Two drivers were converted and tested for now (vc4 and sun4i), with
+> 
+>     some backward compatibility code to translate the old TV mode to the
+> 
+>     new TV mode;
+> 
+> 
+> 
+> Unit tests were created along the way.
+> 
+> 
+> 
+> One can switch from NTSC to PAL now using (on vc4)
+> 
+> 
+> 
+> modetest -M vc4  -s 53:720x480i -w 53:'tv norm':0
+> 
+> 
+> 
+> modetest -M vc4 -s 53:720x480i -w 53:'tv norm':4
+> 
+
+The property name has changed, this gives me PAL:
+
+$ modetest -M vc4 -s 45:720x576i -w 45:'TV mode':4
+
+
+I have finally found a workaround for my kernel hangs.
+
+Dom had a look at my kernel and found that the VideoCore was fine, and
+he said this:
+
+> That suggests cause of lockup was on arm side rather than VC side.
 >
-> Add new helper function to allow for splitting specified user string
-> into a sequence of integers. Internally it makes use of get_options() so
-> the returned sequence contains the integers extracted plus an additional
-> element that begins the sequence and specifies the integers count.
+> But it's hard to diagnose further. Once you've had a peripheral not
+> respond, the AXI bus locks up and no further operations are possible.
+> Usual causes of this are required clocks being stopped or domains
+> disabled and then trying to access the hardware.
+>
 
-Thanks! In general it looks good to me, but a few minor comments below.
+So when I got this on my 64-bit build:
 
+[  166.702171] SError Interrupt on CPU1, code 0x00000000bf000002 -- SError
+[  166.702187] CPU: 1 PID: 8 Comm: kworker/u8:0 Tainted: G        W
+    5.19.0-rc6-00096-gba7973977976-dirty #1
+[  166.702200] Hardware name: Raspberry Pi 4 Model B Rev 1.1 (DT)
+[  166.702206] Workqueue: events_freezable_power_ thermal_zone_device_check
+[  166.702231] pstate: 200000c5 (nzCv daIF -PAN -UAO -TCO -DIT -SSBS
+BTYPE=--)
+[  166.702242] pc : regmap_mmio_read32le+0x10/0x28
+[  166.702261] lr : regmap_mmio_read+0x44/0x70
 ...
+[  166.702606]  bcm2711_get_temp+0x58/0xb0 [bcm2711_thermal]
 
-> +int tokenize_user_input(const char __user *from, size_t count, int **tkns);
+I wondered if that reg read was stalled due to a clock being stopped.
 
-Not sure how I can deduct from the name what function is actually
-doing. Suggested new name: int_array_parse_user().
+Lo and behold, disabling runtime pm and keeping the vec clock running
+all the time fixed it[1].
 
-int int_array_parse_user(const char __user *from, size_t count, int **array);
+I don't know what the problem is, but at least I can now test this patchset.
 
-(Note that we have _user suffix for many APIs in the kernel that does
-interact with user space memory)
+[1] https://gist.github.com/notro/23b984e7fa05cfbda2db50a421cac065
 
-...
-
-> + * @tkns:      Returned pointer to sequence of integers
-
-array
-
-...
-
-If you are okay with this, you may add my
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-
--- 
-With Best Regards,
-Andy Shevchenko
+Noralf.
