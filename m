@@ -2,140 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83E39ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:24:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B89EC65C0D
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:24:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233977AbiIANYB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 09:24:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52220 "EHLO
+        id S234381AbiIANYU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 09:24:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232405AbiIANX1 (ORCPT
+        with ESMTP id S234228AbiIANYJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 09:23:27 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4850C2ACE
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 06:23:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662038605; x=1693574605;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=TkYap6N2nVl+fHdzmVAB+UZ9ohSv0PHB/25HC4xpAyo=;
-  b=JwDwlaOTAH0cfr5fndjxWp4oQsH5gvf3ERgRJUdLY19comGjpPJG1onH
-   zVwEIq9UMH6SX1RPNjgyhHx0b/lRYh/RJnrWp48cxRG/GNRjYXROAOZyb
-   c1zuhDkh5EvGGQPmzYKl2+Jq778cqFA24OHwI2Gtt+gBBoDCC0hsQ0asG
-   VdwLTfuDd2APGJ7tCrrOUdzqn7P0fP4HMzEdxfOATA8jyoDjAkf5YkqEd
-   Ke1UPZg0TFvsMLNbnvwQsAkyRyYgOcpfAU6T+Uh/TLhvHG8AdD6FLHjqX
-   mKjIrZVkSLD+CWS7nK7+Ntrr0cqjm0OP85IJk13lTFd6iuIeB4dxJdg/4
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="295719710"
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="295719710"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 06:23:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="615333919"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga007.fm.intel.com with ESMTP; 01 Sep 2022 06:23:23 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 7A69B1C3; Thu,  1 Sep 2022 16:23:38 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Dmitry Rokosov <DDRokosov@sberdevices.ru>,
-        linux-kernel@vger.kernel.org
-Cc:     Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: [PATCH v1 3/3] regmap: trace: Remove unneeded blank lines
-Date:   Thu,  1 Sep 2022 16:23:36 +0300
-Message-Id: <20220901132336.33234-3-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220901132336.33234-1-andriy.shevchenko@linux.intel.com>
-References: <20220901132336.33234-1-andriy.shevchenko@linux.intel.com>
+        Thu, 1 Sep 2022 09:24:09 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29B3D1CB3A;
+        Thu,  1 Sep 2022 06:23:59 -0700 (PDT)
+Received: from canpemm500005.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MJMBd4yCxznTkK;
+        Thu,  1 Sep 2022 21:21:29 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by canpemm500005.china.huawei.com
+ (7.192.104.229) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 1 Sep
+ 2022 21:23:56 +0800
+From:   Zhang Yi <yi.zhang@huawei.com>
+To:     <linux-ext4@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <cluster-devel@redhat.com>,
+        <ntfs3@lists.linux.dev>, <ocfs2-devel@oss.oracle.com>,
+        <reiserfs-devel@vger.kernel.org>, <jack@suse.cz>
+CC:     <tytso@mit.edu>, <akpm@linux-foundation.org>, <axboe@kernel.dk>,
+        <viro@zeniv.linux.org.uk>, <rpeterso@redhat.com>,
+        <agruenba@redhat.com>, <almaz.alexandrovich@paragon-software.com>,
+        <mark@fasheh.com>, <dushistov@mail.ru>, <hch@infradead.org>,
+        <yi.zhang@huawei.com>, <chengzhihao1@huawei.com>,
+        <yukuai3@huawei.com>
+Subject: [PATCH v2 00/14] fs/buffer: remove ll_rw_block()
+Date:   Thu, 1 Sep 2022 21:34:51 +0800
+Message-ID: <20220901133505.2510834-1-yi.zhang@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500005.china.huawei.com (7.192.104.229)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a few unneeded blank lines in some of event definitions,
-remove them in order to make those definitions consistent with
-the rest.
+Changes since v1:
+ - Remove redundant uptodate check in __bh_read(), use
+   bh_uptodate_or_lock() in bh_read() and bh_read_nowait().
+ - Improve the lock order in __bh_read_batch().
+ - Add return value 1 to bh_read(), indicate the buffer has been
+   already uptodate and no need to submit read IO, ext2 code in patch
+   13 need to know this case.
+ - Remove bh_read_locked() helper.
+ - Exchange the parameter sequence of bhs[] array and it's number in
+   bh_read[*]_batch() helpers.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/base/regmap/trace.h | 8 --------
- 1 file changed, 8 deletions(-)
+v1: https://lore.kernel.org/linux-fsdevel/20220831072111.3569680-1-yi.zhang@huawei.com/T/#t
 
-diff --git a/drivers/base/regmap/trace.h b/drivers/base/regmap/trace.h
-index a0f83e44a9d1..704e106e5dbd 100644
---- a/drivers/base/regmap/trace.h
-+++ b/drivers/base/regmap/trace.h
-@@ -41,7 +41,6 @@ DEFINE_EVENT(regmap_reg, regmap_reg_write,
- 		 unsigned int val),
- 
- 	TP_ARGS(map, reg, val)
--
- );
- 
- DEFINE_EVENT(regmap_reg, regmap_reg_read,
-@@ -50,7 +49,6 @@ DEFINE_EVENT(regmap_reg, regmap_reg_read,
- 		 unsigned int val),
- 
- 	TP_ARGS(map, reg, val)
--
- );
- 
- DEFINE_EVENT(regmap_reg, regmap_reg_read_cache,
-@@ -59,7 +57,6 @@ DEFINE_EVENT(regmap_reg, regmap_reg_read_cache,
- 		 unsigned int val),
- 
- 	TP_ARGS(map, reg, val)
--
- );
- 
- DECLARE_EVENT_CLASS(regmap_bulk,
-@@ -199,7 +196,6 @@ DEFINE_EVENT(regmap_bool, regmap_cache_only,
- 	TP_PROTO(struct regmap *map, bool flag),
- 
- 	TP_ARGS(map, flag)
--
- );
- 
- DEFINE_EVENT(regmap_bool, regmap_cache_bypass,
-@@ -207,7 +203,6 @@ DEFINE_EVENT(regmap_bool, regmap_cache_bypass,
- 	TP_PROTO(struct regmap *map, bool flag),
- 
- 	TP_ARGS(map, flag)
--
- );
- 
- DECLARE_EVENT_CLASS(regmap_async,
-@@ -239,7 +234,6 @@ DEFINE_EVENT(regmap_async, regmap_async_io_complete,
- 	TP_PROTO(struct regmap *map),
- 
- 	TP_ARGS(map)
--
- );
- 
- DEFINE_EVENT(regmap_async, regmap_async_complete_start,
-@@ -247,7 +241,6 @@ DEFINE_EVENT(regmap_async, regmap_async_complete_start,
- 	TP_PROTO(struct regmap *map),
- 
- 	TP_ARGS(map)
--
- );
- 
- DEFINE_EVENT(regmap_async, regmap_async_complete_done,
-@@ -255,7 +248,6 @@ DEFINE_EVENT(regmap_async, regmap_async_complete_done,
- 	TP_PROTO(struct regmap *map),
- 
- 	TP_ARGS(map)
--
- );
- 
- TRACE_EVENT(regcache_drop_region,
+Thanks,
+Yi.
+
+ll_rw_block() will skip locked buffer before submitting IO, it assumes
+that locked buffer means it is under IO. This assumption is not always
+true because we cannot guarantee every buffer lock path would submit
+IO. After commit 88dbcbb3a484 ("blkdev: avoid migration stalls for
+blkdev pages"), buffer_migrate_folio_norefs() becomes one exceptional
+case, and there may be others. So ll_rw_block() is not safe on the sync
+read path, we could get false positive EIO return value when filesystem
+reading metadata. It seems that it could be only used on the readahead
+path.
+
+Unfortunately, many filesystem misuse the ll_rw_block() on the sync read
+path. This patch set just remove ll_rw_block() and add new friendly
+helpers, which could prevent false positive EIO on the read metadata
+path. Thanks for the suggestion from Jan, the original discussion is at
+[1].
+
+ patch 1: remove unused helpers in fs/buffer.c
+ patch 2: add new bh_read_[*] helpers
+ patch 3-11: remove all ll_rw_block() calls in filesystems
+ patch 12-14: do some leftover cleanups.
+
+[1]. https://lore.kernel.org/linux-mm/20220825080146.2021641-1-chengzhihao1@huawei.com/
+
+Zhang Yi (14):
+  fs/buffer: remove __breadahead_gfp()
+  fs/buffer: add some new buffer read helpers
+  fs/buffer: replace ll_rw_block()
+  gfs2: replace ll_rw_block()
+  isofs: replace ll_rw_block()
+  jbd2: replace ll_rw_block()
+  ntfs3: replace ll_rw_block()
+  ocfs2: replace ll_rw_block()
+  reiserfs: replace ll_rw_block()
+  udf: replace ll_rw_block()
+  ufs: replace ll_rw_block()
+  fs/buffer: remove ll_rw_block() helper
+  ext2: replace bh_submit_read() helper with bh_read_locked()
+  fs/buffer: remove bh_submit_read() helper
+
+ fs/buffer.c                 | 154 +++++++++++++++---------------------
+ fs/ext2/balloc.c            |   7 +-
+ fs/gfs2/meta_io.c           |   7 +-
+ fs/gfs2/quota.c             |   8 +-
+ fs/isofs/compress.c         |   2 +-
+ fs/jbd2/journal.c           |  15 ++--
+ fs/jbd2/recovery.c          |  16 ++--
+ fs/ntfs3/inode.c            |   7 +-
+ fs/ocfs2/aops.c             |   2 +-
+ fs/ocfs2/super.c            |   4 +-
+ fs/reiserfs/journal.c       |  11 +--
+ fs/reiserfs/stree.c         |   4 +-
+ fs/reiserfs/super.c         |   4 +-
+ fs/udf/dir.c                |   2 +-
+ fs/udf/directory.c          |   2 +-
+ fs/udf/inode.c              |   8 +-
+ fs/ufs/balloc.c             |  12 +--
+ include/linux/buffer_head.h |  48 ++++++++---
+ 18 files changed, 146 insertions(+), 167 deletions(-)
+
 -- 
-2.35.1
+2.31.1
 
