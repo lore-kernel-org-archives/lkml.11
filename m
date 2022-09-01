@@ -2,85 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75F9FECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 15:57:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6A08ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 15:58:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234639AbiIAP5t convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 11:57:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41114 "EHLO
+        id S234720AbiIAP6U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 11:58:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229720AbiIAP5r (ORCPT
+        with ESMTP id S229720AbiIAP6S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 11:57:47 -0400
-X-Greylist: delayed 498 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 01 Sep 2022 08:57:46 PDT
-Received: from relay.hostedemail.com (smtprelay0016.hostedemail.com [216.40.44.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C6138286D;
-        Thu,  1 Sep 2022 08:57:46 -0700 (PDT)
-Received: from omf02.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay02.hostedemail.com (Postfix) with ESMTP id C355D120B54;
-        Thu,  1 Sep 2022 15:49:26 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf02.hostedemail.com (Postfix) with ESMTPA id 4F6CC80014;
-        Thu,  1 Sep 2022 15:49:25 +0000 (UTC)
-Message-ID: <4f958a0c7c0aa2fce613371348477c002aa58e90.camel@perches.com>
-Subject: Re: [RFC PATCH v1] checkpatch: Handle FILE pointer type
-From:   Joe Perches <joe@perches.com>
-To:     =?ISO-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>,
-        Andy Whitcroft <apw@canonical.com>
-Cc:     Dwaipayan Ray <dwaipayanray1@gmail.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Date:   Thu, 01 Sep 2022 11:49:24 -0400
-In-Reply-To: <20220901145948.1456353-1-mic@digikod.net>
-References: <20220901145948.1456353-1-mic@digikod.net>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
+        Thu, 1 Sep 2022 11:58:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF0D482FB1
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 08:58:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BC8E61F2F
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 15:58:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84D60C433C1;
+        Thu,  1 Sep 2022 15:58:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662047896;
+        bh=j9IiE+cBGM6l+xNAPKSMRgz3GaWODjr55a3hhGAhTOM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=CjUBi8VVLZMQzzaILq62zqKIfDixy86GV7wrbEC5HRKz7L9m1Uoc7tcTD8g10b4ES
+         4CDQ+5VwKku9L2cwMhRnP764cPDtZZfvZZHUPBDThZhCLkAfOzjiF6nTGJH86t6xdx
+         hocDdyjmrglO/fb2uCgNnB/nL/zPkD6lfLRq6wN8=
+Date:   Thu, 1 Sep 2022 17:58:14 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Brian Norris <briannorris@chromium.org>
+Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] debugfs: Only clobber mode/uid/gid on remount if
+ asked
+Message-ID: <YxDWlgulBijTzj3y@kroah.com>
+References: <20220826174353.1.Icbd40fce59f55ad74b80e5d435ea233579348a78@changeid>
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 4F6CC80014
-X-Stat-Signature: osrgtkai3soscuwdadz7yu5j6usgcu3p
-X-Rspamd-Server: rspamout01
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX186WoNAtkhyX/vzDIDQ/MOm09E6x6e6lZU=
-X-HE-Tag: 1662047365-236167
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220826174353.1.Icbd40fce59f55ad74b80e5d435ea233579348a78@changeid>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-09-01 at 16:59 +0200, Mickaël Salaün wrote:
-> When using a "FILE *" type, checkpatch considers this an error.  Fix
-> this by explicitly defining "FILE" as a common type.
-[]
-> Another error may be throw when we use FIXTURE_{DATA,VARIANT}() structs,
-> as defined in kselftest_harness.h .
-[]
-> diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
-[]
-> @@ -576,10 +576,17 @@ our $typeKernelTypedefs = qr{(?x:
->  	(?:__)?(?:u|s|be|le)(?:8|16|32|64)|
->  	atomic_t
->  )};
-> +our $typeStdioTypedefs = qr{(?x:
-> +	FILE
-> +)};
+On Fri, Aug 26, 2022 at 05:44:16PM -0700, Brian Norris wrote:
+> Users may have explicitly configured their debugfs permissions; we
+> shouldn't overwrite those just because a second mount appeared.
 
-I'm fine with this.
+What userspace mounts debugfs twice?
 
-> +# our $typeKselftestHarnessTypedefs = qr{(?x:
-> +# 	FIXTURE_(?:DATA|VARIANT)\($Ident\)
-> +# )};
+> Only clobber if the options were provided at mount time.
+> 
+>   # Don't change /sys/kernel/debug/ permissions.
+>   mount -t debugfs none /mnt/foo
+> 
+>   # Change /sys/kernel/debug/ mode and uid, but not gid.
+>   mount -t debugfs -o uid=bar,mode=0750 none /mnt/baz
 
-But not this.  Random userspace typedefs should likely
-be kept in some local version of checkpatch.
+So what happens today with this change?  Without it?
 
-Or maybe add a command line option like --additional_typedefs=<file>.
+> 
+> Signed-off-by: Brian Norris <briannorris@chromium.org>
+> ---
+> I'm open to writing an LTP test case for this, if that seems like a good
+> idea.
 
->  our $typeTypedefs = qr{(?x:
->  	$typeC99Typedefs\b|
->  	$typeOtherOSTypedefs\b|
-> -	$typeKernelTypedefs\b
-> +	$typeKernelTypedefs\b|
-> +	$typeStdioTypedefs\b
->  )};
+If it's really needed, again, why would debugfs be ever mounted more
+than once?
 
+thanks,
+
+greg k-h
