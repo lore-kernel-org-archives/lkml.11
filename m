@@ -2,99 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 256AAECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 12:13:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 375B9ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 12:14:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229498AbiIAMM7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 08:12:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45744 "EHLO
+        id S232830AbiIAMO0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 08:14:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233317AbiIAMMz (ORCPT
+        with ESMTP id S231737AbiIAMOW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 08:12:55 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2986116E38;
-        Thu,  1 Sep 2022 05:12:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Z32zyNm2q9oNI20LFO4oRcR+yDJE4HnerOl4N12iFtc=; b=HMmdDxmavhLwaqId+oNxLibqnx
-        oQUdQEd2uBcf1xjgqu5yuxKOo2Uq7B27yE1CoyTv8xmgv0P28FQEERnsyRbFbIxM1eEcdLA6x0+mL
-        dPMCHdB5TeibVefHYtyVJmIwnvh4uk0M8UgS9em0LaXYS7CdRQm5URcdi6KByaNE1W3w=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oTj3k-00FIiu-A7; Thu, 01 Sep 2022 14:12:36 +0200
-Date:   Thu, 1 Sep 2022 14:12:36 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jagan Teki <jagan@edgeble.ai>
-Cc:     Anand Moon <anand@edgeble.ai>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Sugar Zhang <sugar.zhang@rock-chips.com>,
-        David Wu <david.wu@rock-chips.com>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] net: ethernet: stmicro: stmmac: dwmac-rk: Add rv1126
- support
-Message-ID: <YxChtBzavS1Fooxs@lunn.ch>
-References: <20220829065044.1736-1-anand@edgeble.ai>
- <20220829065044.1736-2-anand@edgeble.ai>
- <Ywy6o2d9j4Z7+WYX@lunn.ch>
- <CA+VMnFzNcPesS8Mn2mwr-RDXf5sRz-2A3K+syDmpCo1va6JwMw@mail.gmail.com>
+        Thu, 1 Sep 2022 08:14:22 -0400
+Received: from sonic308-11.consmr.mail.ne1.yahoo.com (sonic308-11.consmr.mail.ne1.yahoo.com [66.163.187.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D67F112EFB
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 05:14:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=att.net; s=s1024; t=1662034461; bh=1hNsVfqCY6LT7YTLp21HTSPBwyvmKxE/8qy+3OfbQzY=; h=Date:From:Subject:To:Cc:In-Reply-To:References:From:Subject:Reply-To; b=D5jqyRJcbm5ODwpKTfncxYUZqGUgSrHuEyIpQ9HJJwxPBT7mfGMy2rl4paE0vUzxoDYvQWtxlFbTFGO1uNNv0TnVu7Kr3tOaBe6t/sHqQcJ0qj5gM5bmPu1p4EfeOc/wg2azuFMkPPza7yfLR/fkGPVTitAaoctoE0M42sTHXvM=
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1662034461; bh=DGrXafvk06r5mx0Q9a9Vt2y9Y+hIhdCXStTis9GBvit=; h=X-Sonic-MF:Date:From:Subject:To:From:Subject; b=W1VQD2o9naV4tRQ6PXMzwy2suGaM/dyDypWjFHQ08g1DWoRO7y9hwz7dZPYJ4GepjvmI/j1q4MWHWq4zbk72YJU3aM2qrviTHmPb3/3CooQ2BipWBn5DWfQg0GdIp9Rh+ZtBrXEAGQbUjmnsSEgZbj8NSVJula0zO0WX06SvLLrqF7qvdRzDloHvNkgGQGNOvyBl8zwbgdWoWQk7d5Jk2yhRW0idsGN6LWj5GKZzVrnn6QgiSS6TpjhlB/G37dXNA8QoGNJVFnxkrM5dp/uoiOLn2bY5eyX25SuvzUibxOve0lQ91/pLN3eBTMhcC7KT+LZiuqnpkFStXOWO4MgwIg==
+X-YMail-OSG: KQIpQUwVM1lf43XIzdjnAhO08irtbFnwvjF0cRQ8JQhQ.INm64rfYIxm_4X.RA4
+ kTYuaKLGe2jon0KLudI03wh1bq2s6gqxkp0G6ev8P4IKSUVqPwJzpqB4wBge1ueIkY7tSokRPMFP
+ RaX.5oSb89DIgt4CrXFBvsRPhn.Jl5RWGzlon6ND3WcbGiDGdoXG3uWC5PtbT_x.2oZib2_r7Znc
+ PRe.p0BHHcmQC0z6FVmb9PemQhTzoZ2nJhsUTYxjzTTr3HqH16ES6UAqrmxD4uakLixmoBY2eNWF
+ GqXB8kom.t1n0YDiFF9WqbSzJCf3.8SS9QCUdA9nJuUp3jJKZRFDOq6yeCakmWqfN9zwqsaPxkMP
+ r8wPgX_3MxanRFFPSZgjMuGYVydbBWo2lNECRUDMHms9cUC58YFP4DTckP.4LbyB2uSbLPneTreH
+ ViqLc95HgZBvTDI9VUO76e.km7pLIfkoH6vJMmdv9ENEw6YYEyY5HcScERIzfhcvXBL1sWYRH6OM
+ 5y5lesT5PutmlvnjzbQUV2gx2lbp0iLhfv_JFcUE4Z9kwNeE7ivN3DXbGdrN6kibut3NOjKIQqpD
+ X_mqZxK1FNQSx95raSVDpQNqdWD_mcGH_ujpXsguI70OH0mB.ppqbJXD52ZjkjM0nxstAVz_jNM4
+ oXKBaNhsxbxXiKFmpwvaBP1unw5gvK5_55c8EJDO17wqv_cJDfdKokXwKbDkQGRmCj2zOp1EBrjL
+ FAjq0En2Bv4Yxd9t7sza9v8ID3re1b56xfFiXzNncYglY3hbwdfRRj0kNcivwsCTJbnUm3p2tZd0
+ PvxXuEu795ntY4ypDjjD4A7zucIKK3ZcyA9Xi0HLmIQgaX4z_yzYcksCbCjTY1Cr6aZxHjEr5710
+ uCuf1Lp_sVrZye5C4UstnUm_DZhm9svk7cy..Px8o4CAAZkXaiPFbtGoaMOR2DR36cNLrIA6Ny7l
+ ZpuTp9ZTx7omWhzSPVaj5rBqmiSVMi7kRyKy1KJcCR_KvSdgMUUa7jhGbV5DxXdGC.ZGlyKXpOl2
+ ET5rdqh18gYs7GG1j61DMZIaBrA8k4hgsQx0zMXk3EAzfo9vxGkYW65Ym8W_pd5x.y.HqI8P_q56
+ kvH0t9BYgVc0neHynukGKSfcox6sO0ebPN.zHw6y6pKgQiaq_dejssHjDq9Xd5pNgtWoM9n45jpY
+ xre_4qBuEZNMjuHkPpO1aIzEnYjngsBhNjwGOu8hFm2ZGQ7wuLbGUxELEjVXoRXCa1R1dpY6xa1n
+ DqOmu4Ncf10M5rNEt_MUNpIykxg5zXIPGY11uBRjzQwaV_ayUl8oI7njerZpad5wZhoc6qXIGTkp
+ 8PnsZosqY5XhVDye7poZrvkE67aBo7qW7w_ZRNMONlRgFhpXoKhobsBEpN3tKAR_BpK3HIVLTySo
+ xzUpeoiF5nQP0Kmxpc_qCbS73ft7YxvptQk9JosONu42uQAMfDDF5.aTvLl9DgO8Jp61Re0YIpGB
+ KTvaq3SKWYzeOYiuVC.DICIZ5XCaDodVkCjjFC6I.YGZUpR7wjwS9zynPnSZdo9RhQtzDrqo_2Fv
+ iOzI9hB5pjw3Pqsawkj6oIQwMtxwcmzmDYh50PdS5PjMQ9VnIJWAD4mnth8YtpJjELaQ5Qv6fNNB
+ XGUV_bLJ9sVyD8LtIOoLy6iRwE7UilMJxJ7WpaldZG40G0eWwdrQ5WUmSgEI1BgCtiBj2CGigq1b
+ Jr7kW_URHbyxBV.YygCaTn5WrBWa0FZ51uqRLZiMOErA_VOWNjOMNTcmSlPje2bh9rKusTbVoiqB
+ 0VpDNJoKZ62C1YphElWufc9vjSjDrf3wppA9cBn_AT9BKGFQC9x8SBZq3xY8hG.6QvAE3hQ4pJj4
+ wSVyRFTrtmgaxuclusH9TZKNn.l6L972UEC.aqHDlq.4z9DjBQKwxe5mEzUZQ34K.lcp6DJQdyGv
+ 4yz15e3c1IJIR_27QUEnrFxgaeNRyKt34JiPgnZMj4rmH2nghFJ9o2J3vWWeAoUuf39Usno15I69
+ kFWzj1NkFTyeE8v5FWR9jAaG8
+X-Sonic-MF: <pheonix.sja@att.net>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic308.consmr.mail.ne1.yahoo.com with HTTP; Thu, 1 Sep 2022 12:14:21 +0000
+Received: by hermes--production-ne1-7fdb795c57-j45rv (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID a9daef07438b8223431cc67a31a2c457;
+          Thu, 01 Sep 2022 12:14:18 +0000 (UTC)
+Date:   Thu, 01 Sep 2022 08:14:11 -0400
+From:   Steven J Abner <pheonix.sja@att.net>
+Subject: Re: thermal driver patch
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        linux-kernel@vger.kernel.org, Linux PM <linux-pm@vger.kernel.org>
+Message-Id: <NZ5JHR.JGO592OT0D961@att.net>
+In-Reply-To: <be354f9e-47c7-bd6e-c570-e7364858ced4@linaro.org>
+References: <DL9RGR.8W3XFSCFFYXI2.ref@att.net> <DL9RGR.8W3XFSCFFYXI2@att.net>
+        <0f961ea6-4948-0b7a-e01d-d62ca4065af8@infradead.org>
+        <L9MDHR.JVBXTJ2L6TPP2@att.net>
+        <cf3a3cbd-c189-a120-124f-98d6adac058d@infradead.org>
+        <be354f9e-47c7-bd6e-c570-e7364858ced4@linaro.org>
+X-Mailer: geary/3.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+VMnFzNcPesS8Mn2mwr-RDXf5sRz-2A3K+syDmpCo1va6JwMw@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 01, 2022 at 12:56:09PM +0530, Jagan Teki wrote:
-> On Mon, 29 Aug 2022 at 18:40, Andrew Lunn <andrew@lunn.ch> wrote:
-> >
-> > On Mon, Aug 29, 2022 at 06:50:42AM +0000, Anand Moon wrote:
-> > > Rockchip RV1126 has GMAC 10/100/1000M ethernet controller
-> > > via RGMII and RMII interfaces are configured via M0 and M1 pinmux.
-> > >
-> > > This patch adds rv1126 support by adding delay lines of M0 and M1
-> > > simultaneously.
-> >
-> > What does 'delay lines' mean with respect to RGMII?
-> 
-> These are MAC receive clock delay lengths.
-> 
-> >
-> > The RGMII signals need a 2ns delay between the clock and the data
-> > lines. There are three places this can happen:
-> >
-> > 1) In the PHY
-> > 2) Extra long lines on the PCB
-> > 3) In the MAC
-> >
-> > Generally, 1) is used, and controlled via phy-mode. A value of
-> > PHY_INTERFACE_MODE_RGMII_ID passed to the PHY driver means it will add
-> > these delays.
-> >
-> > You don't want both the MAC and the PHY adding delays.
-> 
-> Yes, but these are specific to MAC, not related to PHY delays. Similar
-> to what is there in other Rockchip SoC families like RK3366, 3368,
-> 3399, 3128, but these MAC clock delay lengths are grouped based on the
-> iomux group in RV1126. We have iomux group 0 (M0) and group 1 (M1), so
-> the rgmii has to set these lengths irrespective of whether PHY add's
-> or not.
 
-So this is just fine tuning, in the order of pico seconds?
+On Thu, Sep 1, 2022 at 05:59, Daniel Lezcano 
+<daniel.lezcano@linaro.org> wrote:
+> Could it be related to this bug?
+> 
+> https://bugzilla.kernel.org/show_bug.cgi?id=201761
+> 
+> Is it possible to give the thermal zone 'type'
 
-If that is all it is, then this is fine. It becomes a problem when it
-is 2ns.
+Did verify that that my thermal_zone0 is my wifi:
+used lm-sensor and cat /sys/class/thermal/thermal_zone0/temp
+along with wifi load to heat to temps different then others to check 
+outputs.
+The above mentioned bug page could have lead to this, I can't say or 
+track.
 
-	Andrew
+Prefix the following with I'm not an expert, just info provider:
+
+My guess is not supposed to be calling function during initial kernel 
+loading, based on following:
+
+from thermal_core.c:
+18:
+#include <linux/thermal.h>
+
+397:
+static void update_temperature(struct thermal_zone_device *tz)
+{
+	int temp, ret;
+
+	ret = thermal_zone_get_temp(tz, &temp);
+	if (ret) {
+		if (ret != -EAGAIN)
+			dev_warn(&tz->device,
+				 "failed to read out thermal zone (%d)\n",
+				 ret);
+		return;
+	}
+
+	mutex_lock(&tz->lock);
+	tz->last_temperature = tz->temperature;
+	tz->temperature = temp;
+	mutex_unlock(&tz->lock);
+
+	trace_thermal_temperature(tz);
+
+	thermal_genl_sampling_temp(tz->id, temp);
+}
+
+from linux/thermal.h:
+429:
+static inline int thermal_zone_get_temp(
+		struct thermal_zone_device *tz, int *temp)
+{ return -ENODEV; }
+
+
+compiler should then read:
+static void update_temperature(struct thermal_zone_device *tz)
+{
+	int temp, ret;
+
+	ret = -ENODEV;
+	if (ret) {
+		if (ret != -EAGAIN)
+			dev_warn(&tz->device,
+				 "failed to read out thermal zone (%d)\n",
+				 ret);
+		return;
+	}
+
+however did find with extra search:
+in /drivers/thermal/thermal_helpers.c:
+78:
+int thermal_zone_get_temp(struct thermal_zone_device *tz, int *temp)
+and
+115:
+EXPORT_SYMBOL_GPL(thermal_zone_get_temp);
+
+
+so is this bootup vs system hand off?
+where bootup call thermal_zone_get_temp() shouldn't occur?
+
+Steve
+
+
