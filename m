@@ -2,123 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 112ADECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 09:16:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BE01ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 09:17:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233632AbiIAJQn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 05:16:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48186 "EHLO
+        id S233833AbiIAJRB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 05:17:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232661AbiIAJQm (ORCPT
+        with ESMTP id S233511AbiIAJQ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 05:16:42 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 543CA11B3F2;
-        Thu,  1 Sep 2022 02:16:41 -0700 (PDT)
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28199FEo014094;
-        Thu, 1 Sep 2022 09:16:01 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=ToB2dSIlRM11vEL4doHMXqMu/GtaAHUycPtIU/eQv8o=;
- b=IBvaPP5+kQlsQM3phvTX0qOzh0p6JgPwPkJxqaeyMY5ZlcCYUy+jZETC3CvELOgdbYlA
- hEUTgK0FOi/o6hTe0geIEb0Ics0GykOkdQY7F8fxeoUF+S1vIlh9smatxHqOoEnLvXHA
- pbO4WVgwhwCIi4gTepojmX4YTUUmjriIjy+5mRp7q6zxCx/zfmCK1FgYI7GzhCKlRKJb
- ssd4Ob/sJgvZvt09d8qlKJYGDQsmbNKetAoI1sWB9TlM8TLthmFPYuIezc9kxlcGFk0f
- aHpBp5RD8Cpp0uACU9O7Z+rpR3bzBs5Q+6akZQKkbWoglLn6DIFSZw82JLJpw1n+A0/I sQ== 
-Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3jaaasb2yb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 09:16:01 +0000
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
-        by NASANPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 2819G08r012523
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 1 Sep 2022 09:16:00 GMT
-Received: from [10.216.21.166] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Thu, 1 Sep 2022
- 02:15:54 -0700
-Message-ID: <9b131ed3-f54b-9def-13dc-5e487a5d1502@quicinc.com>
-Date:   Thu, 1 Sep 2022 14:45:49 +0530
+        Thu, 1 Sep 2022 05:16:59 -0400
+Received: from mail-ua1-x932.google.com (mail-ua1-x932.google.com [IPv6:2607:f8b0:4864:20::932])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0673911E836
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 02:16:58 -0700 (PDT)
+Received: by mail-ua1-x932.google.com with SMTP id s5so6422474uar.1
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 02:16:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=0DavK3tZEl9/gW1tvRuU8853rjZL9v3RtTzVrdO9jBs=;
+        b=CLwtF0ktF1zQqhWHkRI/Q6SDdY2uwAO14CtmVnuN7Kxp130VgBgOurQXRX7jbw3xy9
+         VQYPsqq/zKxzf/2dC1DgRpDhp8dN2wpsYL/wxTTOa6L1+3gMbfFjtHQeq+fwNFDT8JvY
+         aBaBTk8sfHj8Z8KjpkLyBVjGI7TUrw4GNPLGA+jYcLxyOsozVgOsarJCSCONa3wc/egL
+         oqfrhZxgOOCsVWcPhj1zn87ROHjStDGP2r9tuOcYJWJuaLqCqfVr7/Ulgr0oOSRwqzzE
+         ebFGHtiHsZaYjqgYlEdNwYTPHFXvCJhpL6GB9IjQzMJe2Um6n6YpL1PYykqUx3rCczZq
+         Crbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=0DavK3tZEl9/gW1tvRuU8853rjZL9v3RtTzVrdO9jBs=;
+        b=h0VNgJoVjjhmAF7TsbGCvjJG6oZTxe4CTubyKwVL0i9BIhLRar3vl+H2i1HwlRrqiP
+         552LklcjEQW6BkK38tK8PPh03RJDqfQxl+v5EvtqK+IXK2jLzP0M37WntyIGHyZGPiod
+         meEwYgW9BlX1asL1zfoMpbJgfZw70mZjxUTocXmS91+bQaXFe2a7U/aWAa7dIjCEa12a
+         anKgV02/4SXvEMOSf02r3Ep8FstCx93dv9Eo85z8pZtRvaOpwwODTO6mU0raOFpcg+go
+         r3eKpbXliuXNYNvCsBUI8wIfzlHWsdHeWOFxvYwYccVdrP1R8quPcl3prap14Ck35viS
+         KhIQ==
+X-Gm-Message-State: ACgBeo1+WLhmgn2fXeGrN3v17rOmzIFeqc373mf32u8pyGpB+bwkc75Z
+        69JnWS+uJ3efPtTwXY6ryAoUp+hI2/KSNo1HHrv90w==
+X-Google-Smtp-Source: AA6agR4VHP6N0f2EIlgnEiWiCBfG8MZ+FiFFMODbGmcaj/Rm7oimUzkQgxkV0CmdsfvACZ76VkiuzborI4hQ90Pj2YA=
+X-Received: by 2002:ab0:70c6:0:b0:39e:ed14:806b with SMTP id
+ r6-20020ab070c6000000b0039eed14806bmr8753856ual.82.1662023817019; Thu, 01 Sep
+ 2022 02:16:57 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v3] arm: configs: Configs that had RPMSG_CHAR now get
- RPMSG_CTRL
-Content-Language: en-US
-To:     Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     <linux-kernel@vger.kernel.org>, <linux-remoteproc@vger.kernel.org>
-References: <20220826130402.2207808-1-arnaud.pouliquen@foss.st.com>
-From:   Mukesh Ojha <quic_mojha@quicinc.com>
-In-Reply-To: <20220826130402.2207808-1-arnaud.pouliquen@foss.st.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01c.na.qualcomm.com (10.45.79.139)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: FCA-4lj7_-WsNKFB2eftbBs1upR4tiqu
-X-Proofpoint-ORIG-GUID: FCA-4lj7_-WsNKFB2eftbBs1upR4tiqu
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-09-01_06,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- priorityscore=1501 phishscore=0 mlxlogscore=645 spamscore=0 adultscore=0
- clxscore=1011 mlxscore=0 bulkscore=0 suspectscore=0 impostorscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2209010041
+References: <00000000000043579605e6d0ce41@google.com> <87czcscvlf.wl-tiwai@suse.de>
+In-Reply-To: <87czcscvlf.wl-tiwai@suse.de>
+From:   Aleksandr Nogikh <nogikh@google.com>
+Date:   Thu, 1 Sep 2022 11:16:46 +0200
+Message-ID: <CANp29Y6cq0+3SBxQLWvtcsmQ-Pw0RqtEKDUSM2JV1R2no3gOsw@mail.gmail.com>
+Subject: Re: [syzbot] KASAN: use-after-free Read in udl_get_urb_timeout
+To:     Takashi Iwai <tiwai@suse.de>
+Cc:     syzbot <syzbot+f24934fe125a19d77eae@syzkaller.appspotmail.com>,
+        airlied@linux.ie, airlied@redhat.com, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org,
+        LKML <linux-kernel@vger.kernel.org>, sean@poorly.run,
+        "'Aleksandr Nogikh' via syzkaller-bugs" 
+        <syzkaller-bugs@googlegroups.com>, tzimmermann@suse.de
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Let's tell syzbot about the series
 
-On 8/26/2022 6:34 PM, Arnaud Pouliquen wrote:
-> In the commit 617d32938d1b ("rpmsg: Move the rpmsg control device
-> from rpmsg_char to rpmsg_ctrl"), we split the rpmsg_char driver in two.
-> By default give everyone who had the old driver enabled the rpmsg_ctrl
-> driver too.
-> 
-> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-> Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
-> ---
-> 
-> This patch is extracted from the series [1] that has been partially
-> integrated in the Linux Kernel 5.18-rc1.
-> 
-> Update vs previous version[2]:
->   - resent after rebase on Linux kernel v6.0-rc2.
-> 
-> [1]https://lore.kernel.org/lkml/15be2f08-ba03-2b80-6f53-2056359d5c41@gmail.com/T/
-> [2]https://lore.kernel.org/linux-arm-kernel/b301b3f5-f0be-47b7-4789-f9914497b819@foss.st.com/T/
-> ---
->   arch/arm/configs/qcom_defconfig | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/arch/arm/configs/qcom_defconfig b/arch/arm/configs/qcom_defconfig
-> index 8a59441701a8..57686857d08a 100644
-> --- a/arch/arm/configs/qcom_defconfig
-> +++ b/arch/arm/configs/qcom_defconfig
-> @@ -245,6 +245,7 @@ CONFIG_QCOM_Q6V5_PAS=y
->   CONFIG_QCOM_Q6V5_PIL=y
->   CONFIG_QCOM_WCNSS_PIL=y
->   CONFIG_RPMSG_CHAR=y
-> +CONFIG_RPMSG_CTRL=y
->   CONFIG_RPMSG_QCOM_GLINK_SMEM=y
->   CONFIG_RPMSG_QCOM_SMD=y
->   CONFIG_QCOM_COMMAND_DB=y
+#syz fix: Revert "drm/udl: Kill pending URBs at suspend and disconnect"
 
-LGTM.
-Reviewed-by: Mukesh Ojha <quic_mojha@quicinc.com>
-
--Mukesh
+On Mon, Aug 22, 2022 at 2:26 PM Takashi Iwai <tiwai@suse.de> wrote:
+>
+> On Mon, 22 Aug 2022 11:09:31 +0200,
+> syzbot wrote:
+> >
+> > Hello,
+> >
+> > syzbot found the following issue on:
+> >
+> > HEAD commit:    5b6a4bf680d6 Add linux-next specific files for 20220818
+> > git tree:       linux-next
+> > console+strace: https://syzkaller.appspot.com/x/log.txt?x=12341a3d080000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=ead6107a3bbe3c62
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=f24934fe125a19d77eae
+> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12731867080000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=165b64f3080000
+> >
+> > The issue was bisected to:
+> >
+> > commit e25d5954264d1871ab2792c7ca2298b811462500
+> > Author: Takashi Iwai <tiwai@suse.de>
+> > Date:   Thu Aug 4 07:58:25 2022 +0000
+> >
+> >     drm/udl: Kill pending URBs at suspend and disconnect
+>
+> FYI, the fix including the revert of this commit was already
+> submitted, waiting for review & merge:
+>   https://lore.kernel.org/r/20220816153655.27526-1-tiwai@suse.de
+>
+>
+> thanks,
+>
+> Takashi
+>
+> --
+> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/87czcscvlf.wl-tiwai%40suse.de.
