@@ -2,155 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC2A3ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:44:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27D2AECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:45:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233552AbiIAHov (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 03:44:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35820 "EHLO
+        id S233968AbiIAHpq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 03:45:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234197AbiIAHn5 (ORCPT
+        with ESMTP id S233322AbiIAHoP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 03:43:57 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05D0611E821;
-        Thu,  1 Sep 2022 00:43:54 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id mj6so11333538pjb.1;
-        Thu, 01 Sep 2022 00:43:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=LH5/T+JAcR+/3nB1kT+dQsDRLJaNe3+d31MxsOyLBkY=;
-        b=k1jr/kniDO54l18MbvwDKGuv4/WqGmMfLWlnHJfgX6OxIfa5wF667iuUh/JvQUXwsM
-         vBrxwNt96x+SScVsLYlZnKDQi6pETV4tMjwDyK8hNBbBZ5z0cyWdCRbiwdKHKRAdvjhh
-         LWnT1Tml1aINx2jTXFeL9dBGpitz/GSrGr4BgdXN3cyp2mXZ/m8Qp6mCzjBmVyxU/uty
-         kL8BLxpY3Dk/c9rSFVTR0LjA9AywbcA7c+gVRFAZ8X1FBL16LG5sxe46y9L3kUBYM8ri
-         cyQBdVZM7en3HvMqCNtQgsMUHNymxwsSyxzHtdqpEro/Ng+LLFmRR/gSwG77Mrq7Uq4x
-         lTzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=LH5/T+JAcR+/3nB1kT+dQsDRLJaNe3+d31MxsOyLBkY=;
-        b=cULeiZXtgrocFbYIJ0O2biy82w4B3Ym9H1RnGJV0v+9ON77LrHkcwfYC8PX9r9+LQI
-         8Cgm52Q4/fpbIas5sLu9Wlljs70utWcnbKfzfG444b36zRL7KhXBx8fgEqtD/kyq6YQT
-         YrEAX9uF0s+nC6WDL8DpUHMWi/NMT8Qccu3lQN9N6uhKTgvonl1TdEFa9T/2tcCCP4iE
-         Rar0Gq7OsufqXpTKnzJkw45r62cybYGycgNtoDZrveNh4lTYJCXG2jluUaFf2BIvjC1u
-         FWhzzacVesqpddF84M0HlZ4WimZhOCg84Yu94FMW453V9vUFgTHQq0wNy4LUvSOLsQ9Z
-         O3vw==
-X-Gm-Message-State: ACgBeo21Czx+YT36v4m0oIShyNrFoo48uWN0ODdFqVvUs3sSch80OHb/
-        VKfytHngS5CEXTyUl5q2bi0=
-X-Google-Smtp-Source: AA6agR51iOuqQtqbtePHerOOqwE7f2qKpLMzsLIvM9+zW9jLfTMiJi4vr6GLOZ+x6AxPPZS8OBLwag==
-X-Received: by 2002:a17:903:40c6:b0:174:c3fc:49d0 with SMTP id t6-20020a17090340c600b00174c3fc49d0mr18040783pld.172.1662018233552;
-        Thu, 01 Sep 2022 00:43:53 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id q19-20020aa79833000000b00537eacc8fa6sm10594230pfl.40.2022.09.01.00.43.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 00:43:53 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: ye.xingchen@zte.com.cn
-To:     bbrezillon@kernel.org
-Cc:     arno@natisbad.org, schalla@marvell.com,
-        herbert@gondor.apana.org.au, davem@davemloft.net,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ye xingchen <ye.xingchen@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] crypto: octeontx: Remove the unneeded result variable
-Date:   Thu,  1 Sep 2022 07:43:48 +0000
-Message-Id: <20220901074349.313117-1-ye.xingchen@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 1 Sep 2022 03:44:15 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A3BD126DC3;
+        Thu,  1 Sep 2022 00:44:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662018252; x=1693554252;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ejI/izm9+TYQ0O7NVLS4b04vZ6yIXtzj2hWSThsqVrQ=;
+  b=X+TQ4sSoUwqscFzt0ZQGW7bLk9Bv3+W6V87bmxtKEZ6AUT2dFCQsFilO
+   QoC8yIfMGDEPFVKF+YVJw5abGCoyp2ex2sPo7/lffe3rkN+ZNyE1zInP6
+   3yetuAWW+9YByri742mJk2SOVJuFhztQtOzw5yEddp8NcdHNsnnY45XKO
+   MXWCrK1qTG4BF2YGJfkB2fKj2Aow4t7yey4tu4QIMyyVe6eE4o+sIWAho
+   XiGsaynTPXDuL3gF68n24N2IIoE2p/3/YFjws+EQq8tRNPhMrSCz7ivfi
+   RZN6Jr+DeYo+O9HWf7dHhR65V8hn4e5oAEwfH5v/f2G4aIje6YakCyivn
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="276046328"
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="276046328"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 00:44:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="673731452"
+Received: from yy-desk-7060.sh.intel.com (HELO localhost) ([10.239.159.76])
+  by fmsmga008.fm.intel.com with ESMTP; 01 Sep 2022 00:44:09 -0700
+Date:   Thu, 1 Sep 2022 15:44:09 +0800
+From:   Yuan Yao <yuan.yao@linux.intel.com>
+To:     isaku.yamahata@intel.com
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>,
+        erdemaktas@google.com, Sean Christopherson <seanjc@google.com>,
+        Sagi Shahar <sagis@google.com>
+Subject: Re: [PATCH v8 041/103] KVM: x86/mmu: Add a new is_private member for
+ union kvm_mmu_page_role
+Message-ID: <20220901074408.lnmyrc5fmsd3kqdf@yy-desk-7060>
+References: <cover.1659854790.git.isaku.yamahata@intel.com>
+ <621bbca9e03f1350e393657da3f27f295b57a490.1659854790.git.isaku.yamahata@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <621bbca9e03f1350e393657da3f27f295b57a490.1659854790.git.isaku.yamahata@intel.com>
+User-Agent: NeoMutt/20171215
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ye xingchen <ye.xingchen@zte.com.cn>
+On Sun, Aug 07, 2022 at 03:01:26PM -0700, isaku.yamahata@intel.com wrote:
+> From: Isaku Yamahata <isaku.yamahata@intel.com>
+>
+> Because TDX support introduces private mapping, add a new member in union
+> kvm_mmu_page_role with access functions to check the member.
+>
+> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 
-Return the value cptvf_send_msg_to_pf_timeout() directly instead of
-storing it in another redundant variable.
+Reviewed-by: Yuan Yao <yuan.yao@intel.com>
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
----
- .../crypto/marvell/octeontx/otx_cptvf_mbox.c  | 20 +++++--------------
- 1 file changed, 5 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/crypto/marvell/octeontx/otx_cptvf_mbox.c b/drivers/crypto/marvell/octeontx/otx_cptvf_mbox.c
-index 5663787c7a62..90fdafb7c468 100644
---- a/drivers/crypto/marvell/octeontx/otx_cptvf_mbox.c
-+++ b/drivers/crypto/marvell/octeontx/otx_cptvf_mbox.c
-@@ -159,12 +159,10 @@ static int cptvf_send_msg_to_pf_timeout(struct otx_cptvf *cptvf,
- int otx_cptvf_check_pf_ready(struct otx_cptvf *cptvf)
- {
- 	struct otx_cpt_mbox mbx = {};
--	int ret;
- 
- 	mbx.msg = OTX_CPT_MSG_READY;
--	ret = cptvf_send_msg_to_pf_timeout(cptvf, &mbx);
- 
--	return ret;
-+	return cptvf_send_msg_to_pf_timeout(cptvf, &mbx);
- }
- 
- /*
-@@ -174,13 +172,11 @@ int otx_cptvf_check_pf_ready(struct otx_cptvf *cptvf)
- int otx_cptvf_send_vq_size_msg(struct otx_cptvf *cptvf)
- {
- 	struct otx_cpt_mbox mbx = {};
--	int ret;
- 
- 	mbx.msg = OTX_CPT_MSG_QLEN;
- 	mbx.data = cptvf->qsize;
--	ret = cptvf_send_msg_to_pf_timeout(cptvf, &mbx);
- 
--	return ret;
-+	return cptvf_send_msg_to_pf_timeout(cptvf, &mbx);
- }
- 
- /*
-@@ -208,14 +204,12 @@ int otx_cptvf_send_vf_to_grp_msg(struct otx_cptvf *cptvf, int group)
- int otx_cptvf_send_vf_priority_msg(struct otx_cptvf *cptvf)
- {
- 	struct otx_cpt_mbox mbx = {};
--	int ret;
- 
- 	mbx.msg = OTX_CPT_MSG_VQ_PRIORITY;
- 	/* Convey group of the VF */
- 	mbx.data = cptvf->priority;
--	ret = cptvf_send_msg_to_pf_timeout(cptvf, &mbx);
- 
--	return ret;
-+	return cptvf_send_msg_to_pf_timeout(cptvf, &mbx);
- }
- 
- /*
-@@ -224,12 +218,10 @@ int otx_cptvf_send_vf_priority_msg(struct otx_cptvf *cptvf)
- int otx_cptvf_send_vf_up(struct otx_cptvf *cptvf)
- {
- 	struct otx_cpt_mbox mbx = {};
--	int ret;
- 
- 	mbx.msg = OTX_CPT_MSG_VF_UP;
--	ret = cptvf_send_msg_to_pf_timeout(cptvf, &mbx);
- 
--	return ret;
-+	return cptvf_send_msg_to_pf_timeout(cptvf, &mbx);
- }
- 
- /*
-@@ -238,10 +230,8 @@ int otx_cptvf_send_vf_up(struct otx_cptvf *cptvf)
- int otx_cptvf_send_vf_down(struct otx_cptvf *cptvf)
- {
- 	struct otx_cpt_mbox mbx = {};
--	int ret;
- 
- 	mbx.msg = OTX_CPT_MSG_VF_DOWN;
--	ret = cptvf_send_msg_to_pf_timeout(cptvf, &mbx);
- 
--	return ret;
-+	return cptvf_send_msg_to_pf_timeout(cptvf, &mbx);
- }
--- 
-2.25.1
+> ---
+>  arch/x86/include/asm/kvm_host.h | 27 +++++++++++++++++++++++++++
+>  arch/x86/kvm/mmu/mmu_internal.h | 11 +++++++++++
+>  2 files changed, 38 insertions(+)
+>
+> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+> index e07294fc2219..25835b8c4c12 100644
+> --- a/arch/x86/include/asm/kvm_host.h
+> +++ b/arch/x86/include/asm/kvm_host.h
+> @@ -334,7 +334,12 @@ union kvm_mmu_page_role {
+>  		unsigned ad_disabled:1;
+>  		unsigned guest_mode:1;
+>  		unsigned passthrough:1;
+> +#ifdef CONFIG_KVM_MMU_PRIVATE
+> +		unsigned is_private:1;
+> +		unsigned :4;
+> +#else
+>  		unsigned :5;
+> +#endif
+>
+>  		/*
+>  		 * This is left at the top of the word so that
+> @@ -346,6 +351,28 @@ union kvm_mmu_page_role {
+>  	};
+>  };
+>
+> +#ifdef CONFIG_KVM_MMU_PRIVATE
+> +static inline bool kvm_mmu_page_role_is_private(union kvm_mmu_page_role role)
+> +{
+> +	return !!role.is_private;
+> +}
+> +
+> +static inline void kvm_mmu_page_role_set_private(union kvm_mmu_page_role *role)
+> +{
+> +	role->is_private = 1;
+> +}
+> +#else
+> +static inline bool kvm_mmu_page_role_is_private(union kvm_mmu_page_role role)
+> +{
+> +	return false;
+> +}
+> +
+> +static inline void kvm_mmu_page_role_set_private(union kvm_mmu_page_role *role)
+> +{
+> +	WARN_ON(1);
+> +}
+> +#endif
+> +
+>  /*
+>   * kvm_mmu_extended_role complements kvm_mmu_page_role, tracking properties
+>   * relevant to the current MMU configuration.   When loading CR0, CR4, or EFER,
+> diff --git a/arch/x86/kvm/mmu/mmu_internal.h b/arch/x86/kvm/mmu/mmu_internal.h
+> index e1b2e84c16b5..c9446e4e16e3 100644
+> --- a/arch/x86/kvm/mmu/mmu_internal.h
+> +++ b/arch/x86/kvm/mmu/mmu_internal.h
+> @@ -142,6 +142,17 @@ static inline int kvm_mmu_page_as_id(struct kvm_mmu_page *sp)
+>  	return kvm_mmu_role_as_id(sp->role);
+>  }
+>
+> +static inline bool is_private_sp(const struct kvm_mmu_page *sp)
+> +{
+> +	return kvm_mmu_page_role_is_private(sp->role);
+> +}
+> +
+> +static inline bool is_private_sptep(u64 *sptep)
+> +{
+> +	WARN_ON(!sptep);
+> +	return is_private_sp(sptep_to_sp(sptep));
+> +}
+> +
+>  static inline bool kvm_mmu_page_ad_need_write_protect(struct kvm_mmu_page *sp)
+>  {
+>  	/*
+> --
+> 2.25.1
+>
