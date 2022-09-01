@@ -2,143 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7CCCECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 17:48:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37E12ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 17:50:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233295AbiIARsQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 13:48:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52264 "EHLO
+        id S233889AbiIARuB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 13:50:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232107AbiIARsO (ORCPT
+        with ESMTP id S231304AbiIARt6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 13:48:14 -0400
-Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DF5D1D0DF
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 10:48:13 -0700 (PDT)
-Received: by mail-qv1-xf33.google.com with SMTP id cv7so11510037qvb.3
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 10:48:13 -0700 (PDT)
+        Thu, 1 Sep 2022 13:49:58 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C20B9B86D;
+        Thu,  1 Sep 2022 10:49:55 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id x19so16298743pfr.1;
+        Thu, 01 Sep 2022 10:49:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=XxzGcZxEvn6lqn3S+ejnJxVLBGgsRsaccRc4Cve+wRs=;
-        b=eX+c4tvw+WP34P9+Oh9i7JI4DrcHsssLX1AvxveMSyuN7PeNb6jogtV+DB1Y1RUnx/
-         ESMV3E/e1BKYQmnOIFBrB5oKGfevKZyyY/gw0nsWkh/TbVvDnXY6WT8cjvMw6DAY1NAy
-         aLiUawpXGB5/QTab5VA/SAVvBjrjiOb064t/RmDy3xtm7HE85VaP95IWlkkPJTDvoheg
-         fDoKUXFFZJ/PTE2vHHaw24TRhIl70y0DSnVs7C0U72n6SeEgQSMu2y9ScwCzH9UC6fQG
-         nrNk/P3AYp6F8OM7kGikbrk9hi9Rn6H5PhF2S3CNC/JGMlkC/ch/K/iCB7QcoFR2t/EY
-         8B8Q==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=qWpjRl4ZF6VPWjvFhKrl1KyHnirvLl4yMapa4BXRQks=;
+        b=OJCRgC1jpyrffufXczCD7jm2h7wjD3cisOSu9PONuvqge5obk8aYt5ZSgZiv2e6otx
+         VElkCUPXaoQhmYIBHDdWH+qE8Nsangsj2pLqJE8MwD65hxBhcNsdcXv3nP1TW68yRy54
+         hllrf9FSwpsAbAERkXHMh9QlDEF2QBgtRxLuzkiS/14NI63dbEhs5JpWjixI4Kj+glNo
+         jLel6UHLDlz0Y6z/WGGZQB96bN6wP+jGvOpgu7qd5Ela2MlQUwVhd1imDmIhDQCN6gat
+         GKh8M61lJY/xEWY2TiXDVPLTkTyILboz6YKjnAQnEyC9WFYFek/5LrSJxRJsXpNG/0lw
+         fR9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=XxzGcZxEvn6lqn3S+ejnJxVLBGgsRsaccRc4Cve+wRs=;
-        b=e6/lmXjdSGqMS0kZvAicQd1DRQNVwSlEJcZib4SwL2J3GeV3zb3kWgUCVMdA3RsoMM
-         fZZ/wfNBlnOxVOwAfm9aPZF//vzi9LC+m8eUIpWiTpF+FNFGxCl6fvfRRv8iZi86oPyC
-         y6V/anUJ5FmZ2IRLWPs7Ch+2Q0suPcr2PbEXlScyqMK0rbMgWskjh79OiJt8apb9UAru
-         J1dYcziCPJoq/iuh2ut2RmU++Y2MDy4MrdET9cPYcdP/xZnQ/aD4fQasEuX76FuCnOai
-         GHSszPk5sypZojuztl6fMS0h+P28YB8GcKwi7oSUS/NsHu/us3VX3CWgvueVsWxeMO96
-         1gDg==
-X-Gm-Message-State: ACgBeo3XwCHJvHjbxAY3I0mCgeGwykkGfECe4YCJYFmOeoRhPktMRsPM
-        YHe/WSyy7XHwRWrPTBKOK4jEwAVKjUD4H8Ke4L9gu3v/3MA=
-X-Google-Smtp-Source: AA6agR5W6544mL7LWhnEioeV9p9alWGGjlSQTDFcYNtuZrEzZjzNO9Xin13cgi9cinfMtgiZlyMHCL4An3SJpU2YsoI=
-X-Received: by 2002:a05:6214:27ca:b0:499:95f:6379 with SMTP id
- ge10-20020a05621427ca00b00499095f6379mr16365873qvb.82.1662054492332; Thu, 01
- Sep 2022 10:48:12 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=qWpjRl4ZF6VPWjvFhKrl1KyHnirvLl4yMapa4BXRQks=;
+        b=6tNTlALoipVcDiu1TrVcKe3V2eqf1zTs7CUx3C1ejPGM7oJr88c1wLiJZDZiNrgdUX
+         V4XOdr1Zz2hvLh7403XaucsR/YxOsX1DRs2XcqQT+I9zQid7e2Jv6qCJmVBsh2sLlg0i
+         1FCOaTvc4F5DsHiDGvkCBRTCSClcxObY9qUQFOICTKAS/pSuhl55W7vSwwCpfmLDmIDt
+         vfyjsnqiV/NqsbyYwreNyIE9lHvVO577wXneQiJd4LqqHJCpN7ixAjpGOIV9s2+3iEMy
+         4uRjYpKXCoBNn6O+QQo/CMbNCCVeXXiNqosSfPVYpIqHufYGjgAx989dWcir6CETeVO2
+         MmUA==
+X-Gm-Message-State: ACgBeo0y/D1vnTdJghWu/9MN8YMdN/t36w597of8GskzCGSqLH4fV5NS
+        5tG1azz73f1fGej5AwaVtQ4=
+X-Google-Smtp-Source: AA6agR4aO8Di/cWDdhmUMO0wTtgFwRM5MrZUvLiIlluz1xuXmuE9jKjIrBn3+UH2I03En12W+kR6yA==
+X-Received: by 2002:a63:81c6:0:b0:42b:c3fa:3a0 with SMTP id t189-20020a6381c6000000b0042bc3fa03a0mr21184925pgd.72.1662054594477;
+        Thu, 01 Sep 2022 10:49:54 -0700 (PDT)
+Received: from localhost ([192.55.55.51])
+        by smtp.gmail.com with ESMTPSA id d68-20020a621d47000000b00535e46171c1sm13508621pfd.117.2022.09.01.10.49.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Sep 2022 10:49:54 -0700 (PDT)
+Date:   Thu, 1 Sep 2022 10:49:53 -0700
+From:   Isaku Yamahata <isaku.yamahata@gmail.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Chao Gao <chao.gao@intel.com>, isaku.yamahata@intel.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>,
+        Kai Huang <kai.huang@intel.com>, Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v2 01/19] KVM: x86: Drop kvm_user_return_msr_cpu_online()
+Message-ID: <20220901174953.GH2711697@ls.amr.corp.intel.com>
+References: <cover.1661860550.git.isaku.yamahata@intel.com>
+ <f63a395ead4204d44cab3b734c99b07f54c38463.1661860550.git.isaku.yamahata@intel.com>
+ <YxBDRaAyRpyz/5Q+@gao-cwp>
+ <YxC96HujrBAwlgK0@google.com>
 MIME-Version: 1.0
-References: <1662030871-182688-1-git-send-email-john.garry@huawei.com> <1662030871-182688-6-git-send-email-john.garry@huawei.com>
-In-Reply-To: <1662030871-182688-6-git-send-email-john.garry@huawei.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 1 Sep 2022 20:47:36 +0300
-Message-ID: <CAHp75Vcg79sZjv24DD3ZhYf9aC-zoEZ59gfagS1Jw1-GYhpQug@mail.gmail.com>
-Subject: Re: [PATCH 5/5] bus: hisi_lpc: Use platform_device_register_full()
-To:     John Garry <john.garry@huawei.com>
-Cc:     "xuwei (O)" <xuwei5@hisilicon.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linuxarm <linuxarm@huawei.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        SoC Team <soc@kernel.org>,
-        Yang Yingliang <yangyingliang@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YxC96HujrBAwlgK0@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 1, 2022 at 2:37 PM John Garry <john.garry@huawei.com> wrote:
->
-> The code to create the child platform device is essentially the same as
-> what platform_device_register_full() does, so change over to use
-> that same function to reduce duplication.
+On Thu, Sep 01, 2022 at 02:12:56PM +0000,
+Sean Christopherson <seanjc@google.com> wrote:
 
-Thanks!
+> On Thu, Sep 01, 2022, Chao Gao wrote:
+> > On Tue, Aug 30, 2022 at 05:01:16AM -0700, isaku.yamahata@intel.com wrote:
+> > >From: Isaku Yamahata <isaku.yamahata@intel.com>
+> > >
+> > >KVM/X86 uses user return notifier to switch MSR for guest or user space.
+> > >Snapshot host values on CPU online, change MSR values for guest, and
+> > >restore them on returning to user space.  The current code abuses
+> > >kvm_arch_hardware_enable() which is called on kvm module initialization or
+> > >CPU online.
+> > >
+> > >Remove such the abuse of kvm_arch_hardware_enable by capturing the host
+> > >value on the first change of the MSR value to guest VM instead of CPU
+> > >online.
+> > >
+> > >Suggested-by: Sean Christopherson <seanjc@google.com>
+> > >Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+> > >---
+> > > arch/x86/kvm/x86.c | 43 ++++++++++++++++++++++++-------------------
+> > > 1 file changed, 24 insertions(+), 19 deletions(-)
+> > >
+> > >diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> > >index 205ebdc2b11b..16104a2f7d8e 100644
+> > >--- a/arch/x86/kvm/x86.c
+> > >+++ b/arch/x86/kvm/x86.c
+> > >@@ -200,6 +200,7 @@ struct kvm_user_return_msrs {
+> > > 	struct kvm_user_return_msr_values {
+> > > 		u64 host;
+> > > 		u64 curr;
+> > >+		bool initialized;
+> > > 	} values[KVM_MAX_NR_USER_RETURN_MSRS];
+> > 
+> > The benefit of having an "initialized" state for each user return MSR on
+> > each CPU is small. A per-cpu state looks suffice. With it, you can keep
+> > kvm_user_return_msr_cpu_online() and simply call the function from
+> > kvm_set_user_return_msr() if initialized is false on current CPU.
+> 
+> Yep, a per-CPU flag is I intended.  This is the completely untested patch that's
+> sitting in a development branch of mine.
 
->  drivers/bus/hisi_lpc.c | 70 ++++++++++++++++++++++--------------------
->  1 file changed, 36 insertions(+), 34 deletions(-)
+With the following fix, it worked.  I'll replace this patch with yours.
 
-Looking at the statistics I thought it was a scary "improvement", but...
-
-...
-
->                 /* ipmi */
->                 {
->                         .hid = "IPI0001",
-> -                       .name = "hisi-lpc-ipmi",
-> +                       .pdevinfo = (struct platform_device_info []) {
-> +                               {
-> +                                       .parent = hostdev,
-> +                                       .fwnode = acpi_fwnode_handle(child),
-> +
-> +                                       .name = "hisi-lpc-ipmi",
-> +                                       .id = PLATFORM_DEVID_AUTO,
-> +
-> +                                       .res = res,
-> +                                       .num_res = num_res,
-> +                               },
-
-...here and in the other cases you have a lot of blank lines, can we
-just get rid of them?
-
-> +                       },
->                 },
->                 /* 8250-compatible uart */
->                 {
->                         .hid = "HISI1031",
-> -                       .name = "serial8250",
-> -                       .pdata = (struct plat_serial8250_port []) {
-> +                       .pdevinfo = (struct platform_device_info []) {
->                                 {
-> -                                       .iobase = res->start,
-> -                                       .uartclk = 1843200,
-> -                                       .iotype = UPIO_PORT,
-> -                                       .flags = UPF_BOOT_AUTOCONF,
-> +                                       .parent = hostdev,
-> +                                       .fwnode = acpi_fwnode_handle(child),
-> +
-> +                                       .name = "serial8250",
-> +                                       .id = PLATFORM_DEVID_AUTO,
-> +
-> +                                       .res = res,
-> +                                       .num_res = num_res,
-> +
-> +                                       .data = (struct plat_serial8250_port []) {
-> +                                               {
-> +                                                       .iobase = res->start,
-> +                                                       .uartclk = 1843200,
-> +                                                       .iotype = UPIO_PORT,
-> +                                                       .flags = UPF_BOOT_AUTOCONF,
-> +                                               },
-> +                                               {}
-> +                                       },
-
-> +                                       .size_data =  2 *
-> +                                               sizeof(struct plat_serial8250_port),
-
-I believe this can be one line.
-
->                                 },
->                         },
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 205ebdc2b11b..0e200fe44b35 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -9212,7 +9217,12 @@ int kvm_arch_init(void *opaque)
+                return -ENOMEM;
+        }
+ 
+-       user_return_msrs = alloc_percpu(struct kvm_user_return_msrs);
++       /*
++        * __GFP_ZERO to ensure user_return_msrs.values[].initialized = false.
++        * See kvm_user_return_msr_init_cpu().
++        */
++       user_return_msrs = alloc_percpu_gfp(struct kvm_user_return_msrs,
++                                           GFP_KERNEL | __GFP_ZERO);
+        if (!user_return_msrs) {
+                printk(KERN_ERR "kvm: failed to allocate percpu kvm_user_return_msrs\n");
+                r = -ENOMEM;
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Isaku Yamahata <isaku.yamahata@gmail.com>
