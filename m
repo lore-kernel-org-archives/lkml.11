@@ -2,148 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE463ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 00:24:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22B76ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 00:25:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229786AbiIAAYV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 20:24:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38326 "EHLO
+        id S231698AbiIAAZB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 20:25:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231698AbiIAAYS (ORCPT
+        with ESMTP id S231837AbiIAAYz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 20:24:18 -0400
-Received: from esa1.hgst.iphmx.com (esa1.hgst.iphmx.com [68.232.141.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69F8AE01E7
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 17:24:18 -0700 (PDT)
+        Wed, 31 Aug 2022 20:24:55 -0400
+Received: from esa5.hgst.iphmx.com (esa5.hgst.iphmx.com [216.71.153.144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68AEF140B2
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 17:24:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1661991858; x=1693527858;
+  t=1661991892; x=1693527892;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=b+nLJgpn28rI8XB+tceCDIqsNDOgTwY8YQFEJt059HM=;
-  b=BhViqjnAIWncfaSvGVdgcthGu8rzpxkny2DeKzCAGxJiMsnjixH10vaw
-   bk2EZMa+F3BF/h5YIFqj0BoVJxh8Q1P5ujjBvnzkc/MLvuh1OZ7wqeH0G
-   DZhpOSTJXnHb+jkwycUKDTmOzr3Fzo6DBh9IRvBS6+1ndVNTPUpXc3iiB
-   Mdwl693+Gv3YLcxkWDGofILBIzpWWhPiuToJ4VSPE2A12t0kE1yyTRHza
-   Pjb1k7/Z/K/CNPYm1cGaWSkQT9YCF2h4dpnufv2S8IHqROXFvmId6ZPXC
-   wW+8JEU3afLs85F9m9k5Eujllu/tajq9mh4d95YoRj1xfLJzGa2gS9K6D
-   A==;
+  bh=ooxA17H90r4EJBbz/H4WAry0ZgcsiZQD5fz0PPvFxIs=;
+  b=Zk6zsIemNK4swmKCBtUfsMk6K/pOTvrXiYB4v7brXi+o2coM6DBm7z9d
+   KEo6v+VV5nUqm3PpugsljV9a/l+ppmRblSFs8MECjyy4IggVRUE6n4wVA
+   9Cw+d5wrczzJsMSkicgXcyRFV43jC20mImZmGtbVfAyNvRoU0uMwp7YPi
+   nIzbse3fRvnhSPw9cjmtqR/Cq5bLSDA+f7SqhPljJMd8VuhbOkDYxQFH4
+   RdVbqv2FqTXk5/MiojHD8T+wXNY0uVmNs5SJBvSmBztYh0bdme9rEDNwn
+   v5b3WGLxxy3MXYQXKsZmXDU4+QsE9Qc2qZd5uFjRSGM6Ao8SmBjFRYJD3
+   Q==;
 X-IronPort-AV: E=Sophos;i="5.93,279,1654531200"; 
-   d="scan'208";a="322283317"
+   d="scan'208";a="210170853"
 Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
-  by ob1.hgst.iphmx.com with ESMTP; 01 Sep 2022 08:24:03 +0800
-IronPort-SDR: bWfHGvBUtIsRhu2gW4wI1sQb+16uY48gizIIfO0SRv0TELyW0NZfuBam7xaFBqZaUiAFYutGyG
- AXqoS2bcQ2B8bjR5T9itRAxLDky/vDaNtQbJPYoKV1q1BUV2m2wbr/qDlZS9VvOcd+LzN8Xp/m
- Qk3zoe1JcyLkmvprsEyl9gUWqnQOKxJ5IRfIXyZk7W6+giR+KxmEkfLGl1CNPwPFymhrFbvePv
- w2fiIL0QSJQMjPBXqX3RzW8qV+ytPP9PuCN2FX2w4mrdFS7Rs/rIqeVPBBDUvgG98IaWN4RE8g
- AW5chsyrq7XAT11H0YhEb/Z9
+  by ob1.hgst.iphmx.com with ESMTP; 01 Sep 2022 08:24:50 +0800
+IronPort-SDR: h9VoCIT0I5D5WFHcbBBWFpyUXrwQL1zSd0ZIfHftmvpHyf1lJblJN08cBFgR7aCArlZTMT7UyK
+ hUZYnFAMco7BWfushG3+dRcd5C3kugGKasdmgY1myrvOjI9FAIyHnrdQAxaKFKEYUkmelFeQdR
+ nMb+4b8yeqmX/BRW79+y4lBq3Hk4tgEAwZSAtU6FMpooOz8ujxNWTuc/Km114UYX0RyH1dgFyA
+ VrBKyUx9MVMgInV42mOPkIVA+vNVVKBBWyJEuP5P8PnfNAj4Ldfnm+s1qxX+RxGTP0VgD/ErRr
+ MYIuFYPs3JynbQdH5gLBuslT
 Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
-  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 31 Aug 2022 16:44:32 -0700
-IronPort-SDR: v/9UOPcnz8Ems1wGGgYsjW22qvNwOzpwP3kgodGQsFvvcLSwTJUnycSZKyBr+Pqg7FzrXFw7hY
- Vn8IHZoID5WFaEzEQZl2RcejBUx6CuXxLjWAiGf1wPvJjSpSaZcJQcgsCPmGcCTBsgP1hVlNqw
- 0zOoUno28Sgt2MFAs875mdWhVdJdqCWklD+DR4suai5vKiCwYMYAdc1ZHyouk7w9poPFh5RTBo
- PewKLnGf/liUCGz2tMF4vbEjKimYo5NI2SThqRQrKi+0gdJa1h6N8uJzzg1yKTeYbCgTZYGC7w
- 9IE=
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 31 Aug 2022 16:45:20 -0700
+IronPort-SDR: esf0nDOP0DcThfqZTGnSOywtwd0a0/VbgCiUcIbIhCMNPc8/Jj6jXwQfoBGF8FZau2OkXUZtre
+ CS+I9ruBhldui7TqwCq6JC2WQytdLTMOUUtCJe5PHxcMoeBzEAAN8bJlzmDCpph+VMacuALdvB
+ Ygtv2/WtG+tntpAi8/zlQg8G/xN7WFQc3NP8/r6fzxPpSSgOBTGuGqgjocDxlFG5ULWK70tUSA
+ 220pteM2tu8AkDwxIReJVTe0YDWXIX5r9aTbzMN3LIHYJVMGwLJZSTTjxYQDor1MPjeq9F4sN1
+ cr0=
 WDCIronportException: Internal
 Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 31 Aug 2022 17:24:03 -0700
+  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 31 Aug 2022 17:24:51 -0700
 Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4MJ1xZ417vz1Rwtm
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 17:24:02 -0700 (PDT)
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4MJ1yW0k3Xz1RvTp
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 17:24:51 -0700 (PDT)
 Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
         reason="pass (just generated, assumed good)"
         header.d=opensource.wdc.com
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
         opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:content-language:references:to
+        :in-reply-to:organization:from:references:to:content-language
         :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1661991841; x=1664583842; bh=b+nLJgpn28rI8XB+tceCDIqsNDOgTwY8YQF
-        EJt059HM=; b=JTtFZkmw3v192aUDwLFkhQq3NUpdFAX9T6Tkbf6SytEuCZljEm0
-        0tdUyXI9KCRsrvUkH8MUnhWFEDYuntoSdItWs5IO43ThROrLE0RslYLWhRueFKwh
-        URGER98smDL4qW9BPDGBP9delJtcMgX6mJ6LvR5bRDz2WDXTnZKdzEpi6h+S6Z1L
-        MYhFhXqAE+xFbynyGtZavdV3lpN7LIaff7I7a5FxhRjNi7oWemdlhLpCD9pVYYr6
-        QribCWlWQujm+0XaHJIp1Bh8TGF9qXEAyQRKFi3SoG1tpoPgOJ8ZP2zwZFYuSLyv
-        3J2gu02nPatjI+INajmjSbwuRsWNN6Npsfg==
+        1661991890; x=1664583891; bh=ooxA17H90r4EJBbz/H4WAry0ZgcsiZQD5fz
+        0PPvFxIs=; b=sm28BkyJoQu2n/DP7jG1tYAQzBzENRq2rbMtWbMtT9u0tjKbVHg
+        xZ0mNNRQgboxwzmIzm7RRWP1g9+xKjxDd5KI0XG8Ic6qs1daIZeT9y8PLK+e2C1H
+        EGhZKRQhg7dNBJvNaY+5uSNjYqHbuZYBXv9gLY+zFy8WP3ngddfinR0uKCugEgZH
+        giVD5RjYgCPlVFgdQz9YYHd2BAhQPFRrfmcEcDrZcmNZiJleFFy5N1gzeWnFDHbT
+        6I4IbHFwYp/5NorqHFZr+H2tVysbxYBBEzU0V+3MYU3ermRweU/QxGUXbL6VTRmk
+        JGkjBp1qMVXesiHFCmn3cz3WXFyA4sEQHIQ==
 X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
 Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
         by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id NYy141TaSYGy for <linux-kernel@vger.kernel.org>;
-        Wed, 31 Aug 2022 17:24:01 -0700 (PDT)
+        with ESMTP id AsLfOZW8arkC for <linux-kernel@vger.kernel.org>;
+        Wed, 31 Aug 2022 17:24:50 -0700 (PDT)
 Received: from [10.225.163.56] (unknown [10.225.163.56])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4MJ1xX1klHz1RvLy;
-        Wed, 31 Aug 2022 17:24:00 -0700 (PDT)
-Message-ID: <b2a4ba8c-c67b-3041-9b81-783611de0763@opensource.wdc.com>
-Date:   Thu, 1 Sep 2022 09:23:58 +0900
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4MJ1yT0sCjz1RvLy;
+        Wed, 31 Aug 2022 17:24:48 -0700 (PDT)
+Message-ID: <a4a486b3-7acc-090f-d9c5-bac7a2239482@opensource.wdc.com>
+Date:   Thu, 1 Sep 2022 09:24:48 +0900
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.2.0
-Subject: Re: [PATCH] scsi: csiostor: convert sysfs snprintf to sysfs_emit
-To:     Xuezhi Zhang <zhangxuezhi3@gmail.com>, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, bvanassche@acm.org,
-        johannes.thumshirn@wdc.com, himanshu.madhani@oracle.com,
-        zhangxuezhi1@coolpad.com
-Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220831141046.406837-1-zhangxuezhi3@gmail.com>
+Subject: Re: [PATCH] scsi: megaraid: convert sysfs snprintf to sysfs_emit
 Content-Language: en-US
+To:     Xuezhi Zhang <zhangxuezhi3@gmail.com>, kashyap.desai@broadcom.com,
+        sumit.saxena@broadcom.com, shivasharan.srikanteshwara@broadcom.com,
+        jejb@linux.ibm.com, martin.petersen@oracle.com
+Cc:     megaraidlinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Xuezhi Zhang <zhangxuezhi1@coolpad.com>
+References: <20220831140325.396295-1-zhangxuezhi3@gmail.com>
 From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Organization: Western Digital Research
-In-Reply-To: <20220831141046.406837-1-zhangxuezhi3@gmail.com>
+In-Reply-To: <20220831140325.396295-1-zhangxuezhi3@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/31/22 23:10, Xuezhi Zhang wrote:
+On 8/31/22 23:03, Xuezhi Zhang wrote:
 > From: Xuezhi Zhang <zhangxuezhi1@coolpad.com>
 > 
 > Fix up all sysfs show entries to use sysfs_emit
 > 
 > Signed-off-by: Xuezhi Zhang <zhangxuezhi1@coolpad.com>
+
+Looks OK.
+
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+
 > ---
->  drivers/scsi/csiostor/csio_scsi.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+>  drivers/scsi/megaraid/megaraid_mbox.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/scsi/csiostor/csio_scsi.c b/drivers/scsi/csiostor/csio_scsi.c
-> index 9aafe0002ab1..39e8c3c26a19 100644
-> --- a/drivers/scsi/csiostor/csio_scsi.c
-> +++ b/drivers/scsi/csiostor/csio_scsi.c
-> @@ -1366,9 +1366,9 @@ csio_show_hw_state(struct device *dev,
->  	struct csio_hw *hw = csio_lnode_to_hw(ln);
+> diff --git a/drivers/scsi/megaraid/megaraid_mbox.c b/drivers/scsi/megaraid/megaraid_mbox.c
+> index 157c3bdb50be..132de68c14e9 100644
+> --- a/drivers/scsi/megaraid/megaraid_mbox.c
+> +++ b/drivers/scsi/megaraid/megaraid_mbox.c
+> @@ -3979,7 +3979,7 @@ megaraid_mbox_app_hndl_show(struct device *dev, struct device_attribute *attr, c
 >  
->  	if (csio_is_hw_ready(hw))
-> -		return snprintf(buf, PAGE_SIZE, "ready\n");
-> +		return sysfs_emit(buf, "ready\n");
->  	else
-
-While at it, you could remove this useless else here.
-
-> -		return snprintf(buf, PAGE_SIZE, "not ready\n");
-> +		return sysfs_emit(buf,  "not ready\n");
-
-Extra space after the ",".
-
+>  	app_hndl = mraid_mm_adapter_app_handle(adapter->unique_id);
+>  
+> -	return snprintf(buf, 8, "%u\n", app_hndl);
+> +	return sysfs_emit(buf, "%u\n", app_hndl);
 >  }
 >  
->  /* Device reset */
-> @@ -1430,7 +1430,7 @@ csio_show_dbg_level(struct device *dev,
->  {
->  	struct csio_lnode *ln = shost_priv(class_to_shost(dev));
 >  
-> -	return snprintf(buf, PAGE_SIZE, "%x\n", ln->params.log_level);
-> +	return sysfs_emit(buf, "%x\n", ln->params.log_level);
+> @@ -4048,7 +4048,7 @@ megaraid_mbox_ld_show(struct device *dev, struct device_attribute *attr, char *b
+>  		}
+>  	}
+>  
+> -	return snprintf(buf, 36, "%d %d %d %d\n", scsi_id, logical_drv,
+> +	return sysfs_emit(buf, "%d %d %d %d\n", scsi_id, logical_drv,
+>  			ldid_map, app_hndl);
 >  }
 >  
->  /* Store debug level */
-> @@ -1476,7 +1476,7 @@ csio_show_num_reg_rnodes(struct device *dev,
->  {
->  	struct csio_lnode *ln = shost_priv(class_to_shost(dev));
->  
-> -	return snprintf(buf, PAGE_SIZE, "%d\n", ln->num_reg_rnodes);
-> +	return sysfs_emit(buf, "%d\n", ln->num_reg_rnodes);
->  }
->  
->  static DEVICE_ATTR(num_reg_rnodes, S_IRUGO, csio_show_num_reg_rnodes, NULL);
 
 -- 
 Damien Le Moal
