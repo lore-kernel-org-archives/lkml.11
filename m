@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D65E4ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 19:37:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 164ACECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 19:37:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234571AbiIATg6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 15:36:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37518 "EHLO
+        id S234618AbiIAThC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 15:37:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234417AbiIATgm (ORCPT
+        with ESMTP id S234423AbiIATgn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 15:36:42 -0400
+        Thu, 1 Sep 2022 15:36:43 -0400
 Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A02B786F2;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 417E9792D8;
         Thu,  1 Sep 2022 12:36:42 -0700 (PDT)
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 281JHWZ0027791;
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 281JHW2B026328;
         Thu, 1 Sep 2022 19:36:38 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-type; s=qcppdkim1;
- bh=6AjiAER4+ZaB6b+RFmJR/jM7odXFYTlnWKfsob4i6iE=;
- b=auMzkBHb4mfpbQGPsKPDXIy9k0br2WZFq9EdPrdq1qG14UXqcqqCDBrOSowXlPABfC64
- WJSM3ZlQwn3jhumR2yERoJdXHo3XdB9HPmkQuYrrYVjqDpzXNlrtJbkvW2z8ScA7eksh
- cjoluytgislURQNzHAGbfGv08zO4QVxS6PQaTA+SzGmdFt3SCCEA1R2IXBzibdu8Ka0m
- 9byOcgcwnM06ffA6J4iWYH07M/UkS+UJU84N34Y0ylfBamwgsb505XSiwkLy3KdXXPzQ
- CteEQ52XVOZwa+KQugnCleMGgVGtBMyuu8R1QcDaW6GTQU5tWaMKQTCuBkopBdKO3nrN +w== 
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3javjc1k53-1
+ bh=DLf1K/HcpOUvHnFmWoIjVBH+QrBr/nv3FmUwEoUfmcs=;
+ b=FEl+AZZ0BLonawO2S8mE7lB5ILCLiR63Na8ebJeMWkmJhB0oaw3+jSrvSc0dOx0UZTlv
+ wKrrXVTow1757YqOU9KdS7IqrqyVuav+Q8ITOaEBB/poUwCql9HUFPQovnt2+//EshXi
+ T1vNeEUSLwiuXi55IaPhn0bQgEIwsg7H1B7CeITPNKofziGnhjppJ9TFCB4TbIP16mDv
+ 1sb0AIgFiC9//8GmFrc3n8cWIgcadt1IB1csuexX/NstJFOWKAFy6sy97619oR9UZKmC
+ WYl9viCJZKq+mwL2C4UZjmFjmHiWYW0zsgft4cLeCwlQorFsVDWtPHTHmfK2P71IX9R3 Tg== 
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3jaaasd56c-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Thu, 01 Sep 2022 19:36:38 +0000
 Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-        by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 281JacfC029172
+        by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 281Jab3l009968
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 1 Sep 2022 19:36:38 GMT
+        Thu, 1 Sep 2022 19:36:37 GMT
 Received: from hu-wcheng-lv.qualcomm.com (10.49.16.6) by
  nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
@@ -44,9 +44,9 @@ To:     <balbi@kernel.org>, <gregkh@linuxfoundation.org>,
         <Thinh.Nguyen@synopsys.com>
 CC:     <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
         <quic_jackp@quicinc.com>, Wesley Cheng <quic_wcheng@quicinc.com>
-Subject: [PATCH v8 5/5] usb: dwc3: gadget: Submit endxfer command if delayed during disconnect
-Date:   Thu, 1 Sep 2022 12:36:25 -0700
-Message-ID: <20220901193625.8727-6-quic_wcheng@quicinc.com>
+Subject: [PATCH v8 3/5] usb: dwc3: Increase DWC3 controller halt timeout
+Date:   Thu, 1 Sep 2022 12:36:23 -0700
+Message-ID: <20220901193625.8727-4-quic_wcheng@quicinc.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220901193625.8727-1-quic_wcheng@quicinc.com>
 References: <20220901193625.8727-1-quic_wcheng@quicinc.com>
@@ -57,58 +57,48 @@ X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
  nalasex01b.na.qualcomm.com (10.47.209.197)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: zLGpm7vtBpAo3Lew_RKkT8FSCdOoONp8
-X-Proofpoint-ORIG-GUID: zLGpm7vtBpAo3Lew_RKkT8FSCdOoONp8
+X-Proofpoint-GUID: JBGj-1lbSAxPpg5ZAAuNZM5i1Qjnq-XI
+X-Proofpoint-ORIG-GUID: JBGj-1lbSAxPpg5ZAAuNZM5i1Qjnq-XI
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-09-01_12,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- impostorscore=0 mlxscore=0 spamscore=0 phishscore=0 lowpriorityscore=0
- malwarescore=0 clxscore=1015 bulkscore=0 mlxlogscore=876 suspectscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ priorityscore=1501 phishscore=0 mlxlogscore=589 spamscore=0 adultscore=0
+ clxscore=1015 mlxscore=0 bulkscore=0 suspectscore=0 impostorscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2207270000 definitions=main-2209010085
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-During a cable disconnect sequence, if ep0state is not in the SETUP phase,
-then nothing will trigger any pending end transfer commands.  Force
-stopping of any pending SETUP transaction, and move back to the SETUP
-phase.
+Since EP0 transactions need to be completed before the controller halt
+sequence is finished, this may take some time depending on the host and the
+enabled functions.  Increase the controller halt timeout, so that we give
+the controller sufficient time to handle EP0 transfers.
 
-Reviewed-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
 Signed-off-by: Wesley Cheng <quic_wcheng@quicinc.com>
 ---
- drivers/usb/dwc3/gadget.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ drivers/usb/dwc3/gadget.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
-index 4721561e4ba5..515980bf61e2 100644
+index 08281c4f47e6..c9310645701d 100644
 --- a/drivers/usb/dwc3/gadget.c
 +++ b/drivers/usb/dwc3/gadget.c
-@@ -3776,13 +3776,24 @@ static void dwc3_gadget_disconnect_interrupt(struct dwc3 *dwc)
- 	reg &= ~DWC3_DCTL_INITU2ENA;
+@@ -2444,7 +2444,7 @@ static void __dwc3_gadget_set_speed(struct dwc3 *dwc)
+ static int dwc3_gadget_run_stop(struct dwc3 *dwc, int is_on, int suspend)
+ {
+ 	u32			reg;
+-	u32			timeout = 500;
++	u32			timeout = 2000;
+ 
+ 	if (pm_runtime_suspended(dwc->dev))
+ 		return 0;
+@@ -2477,6 +2477,7 @@ static int dwc3_gadget_run_stop(struct dwc3 *dwc, int is_on, int suspend)
  	dwc3_gadget_dctl_write_safe(dwc, reg);
  
-+	dwc->connected = false;
-+
- 	dwc3_disconnect_gadget(dwc);
- 
- 	dwc->gadget->speed = USB_SPEED_UNKNOWN;
- 	dwc->setup_packet_pending = false;
- 	usb_gadget_set_state(dwc->gadget, USB_STATE_NOTATTACHED);
- 
--	dwc->connected = false;
-+	if (dwc->ep0state != EP0_SETUP_PHASE) {
-+		unsigned int    dir;
-+
-+		dir = !!dwc->ep0_expect_in;
-+		if (dwc->ep0state == EP0_DATA_PHASE)
-+			dwc3_ep0_end_control_data(dwc, dwc->eps[dir]);
-+		else
-+			dwc3_ep0_end_control_data(dwc, dwc->eps[!dir]);
-+		dwc3_ep0_stall_and_restart(dwc);
-+	}
- }
- 
- static void dwc3_gadget_reset_interrupt(struct dwc3 *dwc)
+ 	do {
++		usleep_range(1000, 2000);
+ 		reg = dwc3_readl(dwc->regs, DWC3_DSTS);
+ 		reg &= DWC3_DSTS_DEVCTRLHLT;
+ 	} while (--timeout && !(!is_on ^ !reg));
