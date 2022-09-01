@@ -2,100 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB73ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:38:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B4E9ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:46:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233002AbiIABiV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 21:38:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34410 "EHLO
+        id S232433AbiIABp7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 21:45:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232708AbiIABhN (ORCPT
+        with ESMTP id S229555AbiIABp4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 21:37:13 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 360A415C34A;
-        Wed, 31 Aug 2022 18:37:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661996232; x=1693532232;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=iHqXyZCy9tIGBGeQjbzvZMSuslmfmnVqybscaUwo5Bc=;
-  b=gjrI7g1FGgI6iMwCxrTavYMIC6o8uiVfaXd5B4fsCDh9hFu3qpuQQ2L6
-   bSlnVxZRXRIbSjMb3gTlAN2nRnAyFJPmVo56ExbjrXV7GG5qCdkmJxCMX
-   UsOM8S3h8fZ4PMFjaqGhDTv0nabHvfo/7E3vczOZ89E9MTB8skhGIEpfP
-   Y8cn5gKVYTqcJCCPiTKCqowVFPX2idcW7h4LF2Pdj1X/PD0l6vgWp+m/k
-   FfQbHiQvu3QBTr0fWHyVZnQgllv0EpVQKHf/kpfZv+Do/3pIonFvyDBtO
-   5k2xNO/EvYnKub3BwTRaG6zdayEx+xxyFRq1pZHpYD+TzkhcQrYYAZacM
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="321735107"
-X-IronPort-AV: E=Sophos;i="5.93,279,1654585200"; 
-   d="scan'208";a="321735107"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 18:37:03 -0700
-X-IronPort-AV: E=Sophos;i="5.93,279,1654585200"; 
-   d="scan'208";a="754626054"
-Received: from embargo.jf.intel.com ([10.165.9.183])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 18:37:03 -0700
-From:   Yang Weijiang <weijiang.yang@intel.com>
-To:     pbonzini@redhat.com, seanjc@google.com, kvm@vger.kernel.org
-Cc:     like.xu.linux@gmail.com, kan.liang@linux.intel.com,
-        wei.w.wang@intel.com, linux-kernel@vger.kernel.org
-Subject: [PATCH 14/15] KVM: x86: Add Arch LBR data MSR access interface
-Date:   Wed, 31 Aug 2022 18:34:37 -0400
-Message-Id: <20220831223438.413090-15-weijiang.yang@intel.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220831223438.413090-1-weijiang.yang@intel.com>
-References: <20220831223438.413090-1-weijiang.yang@intel.com>
+        Wed, 31 Aug 2022 21:45:56 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0415D659E6
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:45:54 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MJ3jw2Cl1zHnbJ;
+        Thu,  1 Sep 2022 09:44:04 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 1 Sep 2022 09:45:52 +0800
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 1 Sep 2022 09:45:51 +0800
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+To:     Andrew Morton <akpm@linux-foundation.org>, <linux-mm@kvack.org>
+CC:     <linux-kernel@vger.kernel.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: [PATCH] mm: remove BUG_ON() in __isolate_free_page()
+Date:   Thu, 1 Sep 2022 09:50:43 +0800
+Message-ID: <20220901015043.189276-1-wangkefeng.wang@huawei.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Arch LBR MSRs are xsave-supported, but they're operated as "independent"
-xsave feature by PMU code, i.e., during thread/process context switch,
-the MSRs are saved/restored with perf_event_task_sched_{in|out} instead
-of generic kernel fpu switch code, i.e.,save_fpregs_to_fpstate() and
-restore_fpregs_from_fpstate(). When vcpu guest/host fpu state swap happens,
-Arch LBR MSRs are retained so they can be accessed directly.
+Drop unneed comment and blank, adjust the variable, and the most
+important is to delete BUG_ON(). The page passed is always buddy
+page into __isolate_free_page() from compaction, page_isolation
+and page_reporting, and the caller also check the return, BUG_ON()
+is a too drastic measure, remove it.
 
-Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
-Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
-Message-Id: <20220517154100.29983-16-weijiang.yang@intel.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
 ---
- arch/x86/kvm/vmx/pmu_intel.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ mm/page_alloc.c | 14 +++-----------
+ 1 file changed, 3 insertions(+), 11 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index e06de1f29fe7..006969bd00fe 100644
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -414,6 +414,11 @@ static int intel_pmu_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 			msr_info->data = vmcs_read64(GUEST_IA32_LBR_CTL);
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 9f2e250c2589..7ad0c7b14ad2 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -3600,16 +3600,11 @@ EXPORT_SYMBOL_GPL(split_page);
+ 
+ int __isolate_free_page(struct page *page, unsigned int order)
+ {
+-	unsigned long watermark;
+-	struct zone *zone;
+-	int mt;
+-
+-	BUG_ON(!PageBuddy(page));
+-
+-	zone = page_zone(page);
+-	mt = get_pageblock_migratetype(page);
++	struct zone *zone = page_zone(page);
++	int mt = get_pageblock_migratetype(page);
+ 
+ 	if (!is_migrate_isolate(mt)) {
++		unsigned long watermark;
+ 		/*
+ 		 * Obey watermarks as if the page was being allocated. We can
+ 		 * emulate a high-order watermark check with a raised order-0
+@@ -3623,8 +3618,6 @@ int __isolate_free_page(struct page *page, unsigned int order)
+ 		__mod_zone_freepage_state(zone, -(1UL << order), mt);
+ 	}
+ 
+-	/* Remove page from free list */
+-
+ 	del_page_from_free_list(page, zone, order);
+ 
+ 	/*
+@@ -3645,7 +3638,6 @@ int __isolate_free_page(struct page *page, unsigned int order)
  		}
- 		return 0;
-+	case MSR_ARCH_LBR_FROM_0 ... MSR_ARCH_LBR_FROM_0 + 31:
-+	case MSR_ARCH_LBR_TO_0 ... MSR_ARCH_LBR_TO_0 + 31:
-+	case MSR_ARCH_LBR_INFO_0 ... MSR_ARCH_LBR_INFO_0 + 31:
-+		rdmsrl(msr_info->index, msr_info->data);
-+		return 0;
- 	default:
- 		if ((pmc = get_gp_pmc(pmu, msr, MSR_IA32_PERFCTR0)) ||
- 		    (pmc = get_gp_pmc(pmu, msr, MSR_IA32_PMC0))) {
-@@ -528,6 +533,11 @@ static int intel_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 		    (data & ARCH_LBR_CTL_LBREN))
- 			intel_pmu_create_guest_lbr_event(vcpu);
- 		return 0;
-+	case MSR_ARCH_LBR_FROM_0 ... MSR_ARCH_LBR_FROM_0 + 31:
-+	case MSR_ARCH_LBR_TO_0 ... MSR_ARCH_LBR_TO_0 + 31:
-+	case MSR_ARCH_LBR_INFO_0 ... MSR_ARCH_LBR_INFO_0 + 31:
-+		wrmsrl(msr_info->index, msr_info->data);
-+		return 0;
- 	default:
- 		if ((pmc = get_gp_pmc(pmu, msr, MSR_IA32_PERFCTR0)) ||
- 		    (pmc = get_gp_pmc(pmu, msr, MSR_IA32_PMC0))) {
+ 	}
+ 
+-
+ 	return 1UL << order;
+ }
+ 
 -- 
-2.27.0
+2.35.3
 
