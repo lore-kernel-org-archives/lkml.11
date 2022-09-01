@@ -2,146 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFB2EECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 16:52:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6599BECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 16:52:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234361AbiIAQwc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 12:52:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37662 "EHLO
+        id S234554AbiIAQwq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 12:52:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234196AbiIAQwZ (ORCPT
+        with ESMTP id S231133AbiIAQwn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 12:52:25 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9478C98A68
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 09:52:22 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id fy31so35567161ejc.6
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 09:52:22 -0700 (PDT)
+        Thu, 1 Sep 2022 12:52:43 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7452C979F5;
+        Thu,  1 Sep 2022 09:52:42 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id w88-20020a17090a6be100b001fbb0f0b013so3238972pjj.5;
+        Thu, 01 Sep 2022 09:52:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=8gpXKd/rcgdoy4YCxJm6j2dyIOOgr77cRPkJmoI6lKk=;
-        b=z4NRuNJ+v1eoMoPIr5/iSOQDh/P+oZt6qu1ks9yWm6E3+hBVQqx5UHkIBVu6wNKuek
-         6fLQR7JWEhw0kIkMKd/PMB41NW875rLDJUMs2XD3vkxPEHxFI+5OzY9Ppkfma4UfJbH6
-         oUA1kG9c0AtV4cBS10sumKQJyB/2MQpbC0kHCh8ulo34jzIXKJ2GBhR5NbW4ZqkThChp
-         pimSpi2vdasOPf7PSkhSuhR7RFNbdWFRSvM8m3/10v8cfxtWkFL3Mk9DHk39GVUHCkhH
-         3wrE+PEC6Gwpj/4DwZz6DGskxwHH2o39PVfejubJyJJBZnqDQd1VjaZV0d6/uM9K+mki
-         xcfA==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=EyYzuAJICZEJkeXJX1j7tTOYHHP3WGLUevJ1ub5HhfA=;
+        b=bJYn0c4dA5o6LdUBFOu/jowBMOlO1js31IW99n1CfFxdw/+1+TLvhTiuB1Qhv7Mo9y
+         WRums3uISzLpDmLGIn23q+DxIrCeQa1xSNKNlHo+VFq417Slm+uxi4y+hGuFYaj05Jug
+         yylzuj47la/WnOnr64saKhbbW2MkmcMaPhXFSdAs3YIlCZkrdn2sKVBt7OFO5US37ShH
+         5ZqJp9tXHLvU9e6YGH6mCqgzDbeb6TCY+MTLLn0oWO/pjw1E/dXgiO4dNBdup3W4O3hz
+         dQLNmbBonzIA4BhH5zUNDf4xqi7ZCMD3DkqzsIMizLfYy15YPzXFUKW9PthwwU3qB8ot
+         sR1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=8gpXKd/rcgdoy4YCxJm6j2dyIOOgr77cRPkJmoI6lKk=;
-        b=f+fECZXRuiBzsrFfuSO9NhGTPek1uzhEnAiPGXwIQ5TEvc9erdiNivFWbyixzhVKM6
-         iwy189bISJwNNt0hKDfkLKupcatD129ovm8O4hS3wwMbmB4Gj/axd68V3WJM3B4n8jmw
-         WOORFToFuYYycyleOjPVNj8Kxg/2gDuxoweew1ymjXwx+jEAtZQRLzSHyAnvkUPk+vno
-         2kWKf4m6wCgplQnsFnufnqiLoGed/zc7dNmDsD12VpuC1W5H6AILrzdkFeBHg5sKTg4I
-         1rZzxGzTq8p77mt7E0Dh1Lb03bfXkGw87ovAyvgDCqrTjSzhcCXpTDukxJqJ9Fd6H5iF
-         Tb7Q==
-X-Gm-Message-State: ACgBeo302F34N4uGTJn+ufKm0+r4KlU0dvvLcqNS/TxXuNjQJisq6HY0
-        l60ziI6+AOmY2vowSrto1yGcebCP1aXaf0BMsg4Zgg==
-X-Google-Smtp-Source: AA6agR7BaAKxuDmGMYFoHkUOkW7cfwd7OH3CSzZWQSt0QnzsL8LHIoezQdLYgtxLWazJMZxRf8869xBolCRGGdZifj8=
-X-Received: by 2002:a17:907:760b:b0:73d:b5bc:feb6 with SMTP id
- jx11-20020a170907760b00b0073db5bcfeb6mr24486780ejc.407.1662051141088; Thu, 01
- Sep 2022 09:52:21 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=EyYzuAJICZEJkeXJX1j7tTOYHHP3WGLUevJ1ub5HhfA=;
+        b=ryQbcJCN1odW/kaLn7TjaO3RsijW5YFnbjDDCTTFp5UAqzo7yv9wrw2cceXEZCrc4u
+         6lueAJZ6xJNPCYz/sS8IQXIZhpkniXx1+ZD/RXBgz9Aas+gbLTfwuhkmP2OthbmSr28y
+         btmCPHLwLSlamE5NuGOcLpe6aAeRpz0YQTFvnTM05ViDfhOWWAGMMzyiXSlzCanq0Dkq
+         lqVkkEeEnjmxTxT3za+AtYckNog38BW7BBp9Z7K9YK0C+kazpv7s1xQgPzbsoskBRcuE
+         BIhUeXMBZ7XE1ElLRTew67LoHEU+cs5IdgA/OF2x2YnSVE4rblq4u0cgNrCJCsJxvAVG
+         fYvQ==
+X-Gm-Message-State: ACgBeo0pbo8MlG8JgddtrwVhGXCENwoAeoVL8vMnRMVoP4lTXuksJFfT
+        Tzbm03J163+k/JfLS48p198=
+X-Google-Smtp-Source: AA6agR67jmgSj2wsMKqv5E1HqgxQ3iSX+z5Id4efYN9RgT1LfhGxXwSgcEzKspAbxSmw7jMWpykDWQ==
+X-Received: by 2002:a17:903:244f:b0:175:34d6:97a8 with SMTP id l15-20020a170903244f00b0017534d697a8mr11727714pls.100.1662051161743;
+        Thu, 01 Sep 2022 09:52:41 -0700 (PDT)
+Received: from localhost ([192.55.55.51])
+        by smtp.gmail.com with ESMTPSA id s3-20020a170902ea0300b00174c5fb500dsm9301380plg.116.2022.09.01.09.52.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Sep 2022 09:52:41 -0700 (PDT)
+Date:   Thu, 1 Sep 2022 09:52:40 -0700
+From:   Isaku Yamahata <isaku.yamahata@gmail.com>
+To:     "Huang, Kai" <kai.huang@intel.com>
+Cc:     "Gao, Chao" <chao.gao@intel.com>,
+        "Yamahata, Isaku" <isaku.yamahata@intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "pbonzini@redhat.com" <pbonzini@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "isaku.yamahata@gmail.com" <isaku.yamahata@gmail.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "Christopherson,, Sean" <seanjc@google.com>
+Subject: Re: [PATCH v2 05/19] KVM: Rename and move CPUHP_AP_KVM_STARTING to
+ ONLINE section
+Message-ID: <20220901165240.GG2711697@ls.amr.corp.intel.com>
+References: <cover.1661860550.git.isaku.yamahata@intel.com>
+ <d2c8815a56be1712e189ddcbea16c8b6cbc53e4a.1661860550.git.isaku.yamahata@intel.com>
+ <YxBOoWckyP1wvzMZ@gao-cwp>
+ <933858c97f69bcf6fb00ea5dcb2ec9fa368eced3.camel@intel.com>
 MIME-Version: 1.0
-References: <20220818132231.28240-1-hejunhao3@huawei.com> <ab129d55-9b4f-1685-d102-fd963ed447bc@huawei.com>
-In-Reply-To: <ab129d55-9b4f-1685-d102-fd963ed447bc@huawei.com>
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-Date:   Thu, 1 Sep 2022 10:52:08 -0600
-Message-ID: <CANLsYkzWnEY2t-7Di5LXX6oYKzTUAwfBHT0dkPm0puGt6YhL3w@mail.gmail.com>
-Subject: Re: [PATCH v9 0/2] Add support for UltraSoc System Memory Buffer
-To:     hejunhao <hejunhao3@huawei.com>
-Cc:     suzuki.poulose@arm.com, mike.leach@linaro.org, leo.yan@linaro.org,
-        coresight@lists.linaro.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linuxarm@huawei.com,
-        rdunlap@infradead.org, liuqi115@huawei.com, f.fangjian@huawei.com,
-        prime.zeng@hisilicon.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <933858c97f69bcf6fb00ea5dcb2ec9fa368eced3.camel@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 1 Sept 2022 at 07:12, hejunhao <hejunhao3@huawei.com> wrote:
->
-> Gentle ping. Any comment or suggestion is appreciated.
->
+On Thu, Sep 01, 2022 at 10:58:04AM +0000,
+"Huang, Kai" <kai.huang@intel.com> wrote:
 
-There are a few patchset that are both substantial and complex to
-review on the log.  As such reviewing will take longer than usual.
+> On Thu, 2022-09-01 at 14:18 +0800, Gao, Chao wrote:
+> > On Tue, Aug 30, 2022 at 05:01:20AM -0700, isaku.yamahata@intel.com wrote:
+> > > From: Chao Gao <chao.gao@intel.com>
+> > > 
+> > > The CPU STARTING section doesn't allow callbacks to fail. Move KVM's
+> > > hotplug callback to ONLINE section so that it can abort onlining a CPU in
+> > > certain cases to avoid potentially breaking VMs running on existing CPUs.
+> > > For example, when kvm fails to enable hardware virtualization on the
+> > > hotplugged CPU.
+> > > 
+> > > Place KVM's hotplug state before CPUHP_AP_SCHED_WAIT_EMPTY as it ensures
+> > > when offlining a CPU, all user tasks and non-pinned kernel tasks have left
+> > > the CPU, i.e. there cannot be a vCPU task around. So, it is safe for KVM's
+> > > CPU offline callback to disable hardware virtualization at that point.
+> > > Likewise, KVM's online callback can enable hardware virtualization before
+> > > any vCPU task gets a chance to run on hotplugged CPUs.
+> > > 
+> > > KVM's CPU hotplug callbacks are renamed as well.
+> > > 
+> > > Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+> > > Signed-off-by: Chao Gao <chao.gao@intel.com>
+> > 
+> > Isaku, your signed-off-by is missing.
+> > 
+> > > Link: https://lore.kernel.org/r/20220216031528.92558-6-chao.gao@intel.com
+> > > ---
+> > > include/linux/cpuhotplug.h |  2 +-
+> > > virt/kvm/kvm_main.c        | 30 ++++++++++++++++++++++--------
+> > > 2 files changed, 23 insertions(+), 9 deletions(-)
+> > > 
+> > > diff --git a/include/linux/cpuhotplug.h b/include/linux/cpuhotplug.h
+> > > index f61447913db9..7972bd63e0cb 100644
+> > > --- a/include/linux/cpuhotplug.h
+> > > +++ b/include/linux/cpuhotplug.h
+> > > @@ -185,7 +185,6 @@ enum cpuhp_state {
+> > > 	CPUHP_AP_CSKY_TIMER_STARTING,
+> > > 	CPUHP_AP_TI_GP_TIMER_STARTING,
+> > > 	CPUHP_AP_HYPERV_TIMER_STARTING,
+> > > -	CPUHP_AP_KVM_STARTING,
+> > > 	CPUHP_AP_KVM_ARM_VGIC_INIT_STARTING,
+> > > 	CPUHP_AP_KVM_ARM_VGIC_STARTING,
+> > > 	CPUHP_AP_KVM_ARM_TIMER_STARTING,
+> > 
+> > The movement of CPUHP_AP_KVM_STARTING changes the ordering between
+> > CPUHP_AP_KVM_STARTING and CPUHP_AP_KVM_ARM_* above [1]. We need
+> > the patch [2] from Marc to avoid breaking ARM.
+> > 
+> > [1] https://lore.kernel.org/lkml/87sfsq4xy8.wl-maz@kernel.org/
+> > [2] https://lore.kernel.org/lkml/20220216031528.92558-5-chao.gao@intel.com/
+> 
+> How about Isaku just to take your series directly (+his SoB) and add additional
+> patches?
 
-> thanks.
->
-> On 2022/8/18 21:22, Junhao He wrote:
-> > Add support for UltraSoc System Memory Buffer.
-> >
-> > Change since v8:
-> > - Insert a blank line at the end of the config tag in Kconfig.
-> > - Fix the "llseek" initialization.
-> > - Link: https://lore.kernel.org/linux-arm-kernel/20220816131634.38195-1-hejunhao3@huawei.com/
-> >
-> > Change since v7:
-> > - Use the macros for register bit flags and numbers of resource.
-> > - Fix punctuation.
-> > - Update the Date tag and the KernelVersion tag in the document.
-> > - Link: https://lore.kernel.org/lkml/20220712091353.34540-1-hejunhao3@huawei.com/
-> >
-> > Change since v6:
-> > - Modify the code style and driver description according to Suzuki's comment.
-> > - Modify configuration of "drvdata->reading", to void problems in open/read
-> >    concurrency scenario.
-> > - Rename the macro of "SMB_FLOW_MASK".
-> > - Use the "handle->head" to determine the page number and offset.
-> > - Link: https://lore.kernel.org/linux-arm-kernel/20220606130223.57354-1-liuqi115@huawei.com/
-> >
-> > Change since v5:
-> > - Address the comments from Suzuki, add some comments in SMB document, and modify
-> >    configuration of "drvdata->reading", to void problems in multi-core concurrency scenario
-> > - Link: https://lore.kernel.org/linux-arm-kernel/20220416083953.52610-1-liuqi115@huawei.com/
-> >
-> > Change since v4:
-> > - Add a simple document of SMB driver according to Suzuki's comment.
-> > - Address the comments from Suzuki.
-> > - Link: https://lore.kernel.org/linux-arm-kernel/20220128061755.31909-1-liuqi115@huawei.com/
-> >
-> > Change since v3:
-> > - Modify the file header according to community specifications.
-> > - Address the comments from Mathieu.
-> > - Link: https://lore.kernel.org/linux-arm-kernel/20211118110016.40398-1-liuqi115@huawei.com/
-> >
-> > Change since v2:
-> > - Move ultrasoc driver to drivers/hwtracing/coresight.
-> > - Link: https://lists.linaro.org/pipermail/coresight/2021-November/007310.html
-> >
-> > Change since v1:
-> > - Drop the document of UltraSoc according to Mathieu's comment.
-> > - Add comments to explain some private hardware settings.
-> > - Address the comments from Mathieu.
-> > - Link: https://lists.linaro.org/pipermail/coresight/2021-August/006842.html
-> >
-> > Change since RFC:
-> > - Move driver to drivers/hwtracing/coresight/ultrasoc.
-> > - Remove ultrasoc-axi-com.c, as AXI-COM doesn't need to be configured in
-> >    basic tracing function.
-> > - Remove ultrasoc.c as SMB does not need to register with the ultrasoc core.
-> > - Address the comments from Mathieu and Suzuki.
-> > - Link: https://lists.linaro.org/pipermail/coresight/2021-June/006535.html
-> >
-> > Qi Liu (2):
-> >    drivers/coresight: Add UltraSoc System Memory Buffer driver
-> >    Documentation: Add document for UltraSoc SMB drivers
-> >
-> >   .../sysfs-bus-coresight-devices-ultra_smb     |  31 +
-> >   .../trace/coresight/ultrasoc-smb.rst          |  80 +++
-> >   drivers/hwtracing/coresight/Kconfig           |  11 +
-> >   drivers/hwtracing/coresight/Makefile          |   1 +
-> >   drivers/hwtracing/coresight/ultrasoc-smb.c    | 636 ++++++++++++++++++
-> >   drivers/hwtracing/coresight/ultrasoc-smb.h    | 115 ++++
-> >   6 files changed, 874 insertions(+)
-> >   create mode 100644 Documentation/ABI/testing/sysfs-bus-coresight-devices-ultra_smb
-> >   create mode 100644 Documentation/trace/coresight/ultrasoc-smb.rst
-> >   create mode 100644 drivers/hwtracing/coresight/ultrasoc-smb.c
-> >   create mode 100644 drivers/hwtracing/coresight/ultrasoc-smb.h
-> >
->
+Ok will do.  Although I hoped to slim it down, I've ended up to take most of it.
+four out of six.  Now why not two more.
+-- 
+Isaku Yamahata <isaku.yamahata@gmail.com>
