@@ -2,111 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E877ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:04:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B47BAECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:04:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233446AbiIAHEk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 03:04:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50850 "EHLO
+        id S233505AbiIAHEs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 03:04:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233498AbiIAHEQ (ORCPT
+        with ESMTP id S233271AbiIAHEW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 03:04:16 -0400
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19CDB122697;
-        Thu,  1 Sep 2022 00:04:05 -0700 (PDT)
-Received: by mail-io1-xd2c.google.com with SMTP id 10so13850935iou.2;
-        Thu, 01 Sep 2022 00:04:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=i383AFik6yhsG3iX8RnrTI6xwTdG+YMrBsOjo22c5D0=;
-        b=ffOiZdh+jXh3qPYSKprm0GZhBE7CDrzYPAQGXFDWZxwlLLJoNTCVqwXaGa5WgDKTc+
-         Zt5y/pM/SYacoDCtW6mw9azEBvAxi4fdA35C5FkYPeGmpcTjziE2SenK/l2HoxQiOGNr
-         ZxMsJB2PPXzrzG/D0Pl2iCk4Qzy4f5mvBpklYarIMYp8BT6z46ZY2orBhMXiPLgBLllw
-         DmiGxMcysqbSX5yDTHCD9RG2FGAuLbHT5ffTwngf1w2MPhIMCFKydng0pdQmx9Ltp0Xr
-         UsJhcPwMDwFtaFZ7+57STIUQHRAv0/xwxOrHqRMrXGW8/SargF7R9f0ZKGU8H/6nkntA
-         z/ng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=i383AFik6yhsG3iX8RnrTI6xwTdG+YMrBsOjo22c5D0=;
-        b=TRnQEpHUJqaDcjwdwI5e36jVt8wGjyprUoxPlQzlAEwfuu0glq8B/YNjffl8khqoaf
-         KmIz67L+zSO7MnntETh+PJh6MN3cnJ8xiu37hE8/7A9qdt46EzryMGGrOVcp283CjhI4
-         nfRc7xcxDLDBpaDXaqPAY2QQN33XCCYw+kDzmE/zW5kbeha0VGUON3roT0AG/MMmx1gN
-         CXcId/Rrp5pRdFBIM528UX/8PJuOAt2/beE+yjxOtBO1vwx6fwnElqCcXE/TKKTwmMHb
-         lRmTPW4LzAkvQUg9oBlkEVmR+3GRAI/URNG2FQHdJyHTo8mxVmKovgOE+cmpYaxtlJSz
-         W5lQ==
-X-Gm-Message-State: ACgBeo0FM5D/nS275o2kZaHCTPnlbP4Ba7fqO3qEjp/D6VMoyYQcRU3u
-        jnLB138r3TZR/ldmpH0QdX70NdkzkaEGGFEJZp4=
-X-Google-Smtp-Source: AA6agR6mveoPidXd7UAaBrslM4w5PmPciUvkUWfEG9bL0YPOzXuVhofd+d8O8emP0wcVtN4LDpgeOq+eDdozuUXJ+0I=
-X-Received: by 2002:a6b:5f08:0:b0:688:9846:2f61 with SMTP id
- t8-20020a6b5f08000000b0068898462f61mr13831703iob.65.1662015845142; Thu, 01
- Sep 2022 00:04:05 -0700 (PDT)
+        Thu, 1 Sep 2022 03:04:22 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB15A6C115;
+        Thu,  1 Sep 2022 00:04:08 -0700 (PDT)
+Date:   Thu, 1 Sep 2022 09:04:05 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1662015847;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+6TS55y82TYJlsjJwC1/zBEVFCDtqxUms69ssI0wGGA=;
+        b=3RxOlbonJl5WFm8YJXSc0uAQRFGPk+DSXUCw++ela5eCvo5xJkEVEUbMFxjkRyt19MarwZ
+        DNPfLMrc24rrP9cADg9WhtlDUH6D5/PLLhdIz0NBges7lyBseRZRYTfcJvMhwU5BukTgcj
+        Qkk+/yYaiT1ncZcPjrLdFt457h+D1Q6GEFoPPsoEmThVEozsGEjuWS+sS3soDzXHd1a43A
+        dgejUhFMJAQ3RGqwdu3fieeFS22nB1+g+aMmCins0gGqPEumNbs5hm3ZU3rb4FW6BLdtIK
+        rfO0argpb218v1MWsH+roKH4nSfLKhYboE/AEt+Wjj88GouOyYLDeNyhzyd4LQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1662015847;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+6TS55y82TYJlsjJwC1/zBEVFCDtqxUms69ssI0wGGA=;
+        b=0lKMXKwZ85CHlGzucCsfuA1C4+BIzcDZjLS7nOki0RRQQtjslBtagCDNvKZIOeW3XCncam
+        fnw0X6HxbUgwxXAQ==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Jisheng Zhang <jszhang@kernel.org>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Anup Patel <anup@brainfault.org>,
+        Atish Patra <atishp@atishpatra.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, kvm-riscv@lists.infradead.org
+Subject: Re: [PATCH v2 0/5] riscv: add PREEMPT_RT support
+Message-ID: <YxBZZWopVftK/WBk@linutronix.de>
+References: <20220831175920.2806-1-jszhang@kernel.org>
 MIME-Version: 1.0
-References: <00000000000092839d0581fd74ad@google.com> <20220901040307.4674-1-khalid.masum.92@gmail.com>
- <YxAyd6++6oWPu9L1@gondor.apana.org.au>
-In-Reply-To: <YxAyd6++6oWPu9L1@gondor.apana.org.au>
-From:   Khalid Masum <khalid.masum.92@gmail.com>
-Date:   Thu, 1 Sep 2022 13:03:53 +0600
-Message-ID: <CAABMjtGgv1GP0F9TJCMFN2psx7ok23BR9pEOyemWHeKvc_LfqA@mail.gmail.com>
-Subject: Re: [PATCH v3] xfrm: Update ipcomp_scratches with NULL if not allocated
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-kernel-mentees 
-        <linux-kernel-mentees@lists.linuxfoundation.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        syzbot+5ec9bb042ddfe9644773@syzkaller.appspotmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220831175920.2806-1-jszhang@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 1, 2022 at 10:18 AM Herbert Xu <herbert@gondor.apana.org.au> wrote:
->
-> On Thu, Sep 01, 2022 at 10:03:07AM +0600, Khalid Masum wrote:
-> >
-> > diff --git a/net/xfrm/xfrm_ipcomp.c b/net/xfrm/xfrm_ipcomp.c
-> > index cb40ff0ff28d..3774d07c5819 100644
-> > --- a/net/xfrm/xfrm_ipcomp.c
-> > +++ b/net/xfrm/xfrm_ipcomp.c
-> > @@ -203,6 +203,7 @@ static void ipcomp_free_scratches(void)
-> >               vfree(*per_cpu_ptr(scratches, i));
-> >
-> >       free_percpu(scratches);
-> > +     ipcomp_scratches = NULL;
-> >  }
->
-> Good catch! This is probably the root cause of all the crashes.
->
-> >  static void * __percpu *ipcomp_alloc_scratches(void)
-> > @@ -215,7 +216,7 @@ static void * __percpu *ipcomp_alloc_scratches(void)
-> >
-> >       scratches = alloc_percpu(void *);
-> >       if (!scratches)
-> > -             return NULL;
-> > +             return ipcomp_scratches = NULL;
->
-> This is unnecessary as with your first hunk, ipcomp_scratches
-> is guaranteed to be NULL.
->
-> Thanks,
-> --
+On 2022-09-01 01:59:15 [+0800], Jisheng Zhang wrote:
+> I assume patch1, patch2 and patch3 can be reviewed and merged for
+> riscv-next, patch4 and patch5 can be reviewed and maintained in rt tree,
+> and finally merged once the remaining patches in rt tree are all
+> mainlined.
 
-You are right. Instead of setting it to NULL at both places, it makes
-more sense to
-do it when memory is freed.
+I would say so, yes.
 
-I shall send a v4 with the suggested change.
+What about JUMP_LABEL support? Do you halt all CPUs while patching the
+code?
 
-thanks,
- -- Khalid Masum
+Sebastian
