@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 473DDECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:13:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44FD3ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:13:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233940AbiIANNB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 09:13:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55260 "EHLO
+        id S234209AbiIANNI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 09:13:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234106AbiIANML (ORCPT
+        with ESMTP id S233884AbiIANMO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 09:12:11 -0400
+        Thu, 1 Sep 2022 09:12:14 -0400
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D8FCDECC
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 06:10:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4382E0B7
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 06:10:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662037804; x=1693573804;
+  t=1662037810; x=1693573810;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=W90ukXHTqD3/ytQV1eaV6HB5Q17e2Jfw0GZUVVJ897A=;
-  b=Aw+DyveaCcGMx+MYowAdzP+es+dO/l0CFU5Vf2l271DTLzKySWfQWavm
-   P8FlA+aJXrbvRieFd3htyynZlrDe13aFkO6UehxV78M4dp9GaMTxYv9wW
-   YxgMjNUcaEwpB5vVv/EpCQcG51BhS1pY3HH8uSvmU2sCmvR+qc/A2+zqY
-   +g4R6LQotibNUF2rW6HM/5tqORbhKz2fcj74AnJx9dmKIEKBqwdNRx1vp
-   1MUJwVm1duFQH8qezYpS4S2lUQ8grfITqCSxQL+WCLJOh/U+LJitO6lqj
-   RBQ8QitnvNrljqJhqv/5boPHpvqmj4BK+A5AEmEDyvm7vRwVG6zjdVSpA
+  bh=aYEJXQp4LMSuhaEYUhvioL84bOLWTKxZFDPBy+R5Et4=;
+  b=ky84W9liK7jSws8XccfKU4c91lAQwAU7AI1y22LMaT1V+QBDKOVlndhI
+   N3E9B+Z60JxI6XM/AvXRMSd7c7p3I4nXQWRSYSULHv3zuzeYtAGhBgGr/
+   8RejXa1rZFNVre0WL0n3KpvUme7QsbLPHu4BDhDJfkm4I4e/qaMuLaV96
+   OLQLAm0hwnVIY7DQRKFbFQrG3j5cwTqr3pgyjo8GesSHGZbiELIUB4pm7
+   zy97CQaAsOmc9qxm9n/jM/p2kA13VhEpITQd8C5CVoJsItvMOxtLBPAg5
+   P+amzdgT1/Xp/PJUw0/h56vfRvj+VxLuBgfvSeTASDiJve2NQsVXBapA1
    Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="321858085"
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="321858097"
 X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="321858085"
+   d="scan'208";a="321858097"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 06:10:02 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 06:10:04 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="612485311"
+   d="scan'208";a="612485357"
 Received: from kanliang-dev.jf.intel.com ([10.165.154.102])
-  by orsmga002.jf.intel.com with ESMTP; 01 Sep 2022 06:10:01 -0700
+  by orsmga002.jf.intel.com with ESMTP; 01 Sep 2022 06:10:03 -0700
 From:   kan.liang@linux.intel.com
 To:     peterz@infradead.org, acme@kernel.org, mingo@redhat.com,
         eranian@google.com, mpe@ellerman.id.au,
@@ -45,9 +45,9 @@ To:     peterz@infradead.org, acme@kernel.org, mingo@redhat.com,
 Cc:     ak@linux.intel.com, andreas.kogler.0x@gmail.com,
         atrajeev@linux.vnet.ibm.com, namhyung@kernel.org,
         ravi.bangoria@amd.com, Kan Liang <kan.liang@linux.intel.com>
-Subject: [PATCH V2 1/6] perf: Add sample_flags to indicate the PMU-filled sample data
-Date:   Thu,  1 Sep 2022 06:09:54 -0700
-Message-Id: <20220901130959.1285717-2-kan.liang@linux.intel.com>
+Subject: [PATCH V2 3/6] perf: Use sample_flags for branch stack
+Date:   Thu,  1 Sep 2022 06:09:56 -0700
+Message-Id: <20220901130959.1285717-4-kan.liang@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220901130959.1285717-1-kan.liang@linux.intel.com>
 References: <20220901130959.1285717-1-kan.liang@linux.intel.com>
@@ -59,112 +59,158 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kan Liang <kan.liang@linux.intel.com>
 
-On some platforms, some data e.g., timestamps, can be retrieved from
-the PMU driver. Usually, the data from the PMU driver is more accurate.
-The current perf kernel should output the PMU-filled sample data if
-it's available.
+Use the new sample_flags to indicate whether the branch stack is filled
+by the PMU driver.
 
-To check the availability of the PMU-filled sample data, the current
-perf kernel initializes the related fields in the
-perf_sample_data_init(). When outputting a sample, the perf checks
-whether the field is updated by the PMU driver. If yes, the updated
-value will be output. If not, the perf uses an SW way to calculate the
-value or just outputs the initialized value if an SW way is unavailable
-either.
+Remove the br_stack from the perf_sample_data_init() to minimize the number
+of cache lines touched.
 
-With more and more data being provided by the PMU driver, more fields
-has to be initialized in the perf_sample_data_init(). That will
-increase the number of cache lines touched in perf_sample_data_init()
-and be harmful to the performance.
-
-Add new "sample_flags" to indicate the PMU-filled sample data. The PMU
-driver should set the corresponding PERF_SAMPLE_ flag when the field is
-updated. The initialization of the corresponding field is not required
-anymore. The following patches will make use of it and remove the
-corresponding fields from the perf_sample_data_init(), which will
-further minimize the number of cache lines touched.
-
-Only clear the sample flags that have already been done by the PMU
-driver in the perf_prepare_sample() for the PERF_RECORD_SAMPLE. For the
-other PERF_RECORD_ event type, the sample data is not available.
-
-Suggested-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
 ---
- include/linux/perf_event.h |  2 ++
- kernel/events/core.c       | 17 +++++++++++------
- 2 files changed, 13 insertions(+), 6 deletions(-)
+ arch/powerpc/perf/core-book3s.c | 1 +
+ arch/x86/events/amd/core.c      | 4 +++-
+ arch/x86/events/core.c          | 4 +++-
+ arch/x86/events/intel/core.c    | 4 +++-
+ arch/x86/events/intel/ds.c      | 5 ++++-
+ include/linux/perf_event.h      | 4 ++--
+ kernel/events/core.c            | 4 ++--
+ 7 files changed, 18 insertions(+), 8 deletions(-)
 
-diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
-index 1999408a9cbb..0978165a2d87 100644
---- a/include/linux/perf_event.h
-+++ b/include/linux/perf_event.h
-@@ -1008,6 +1008,7 @@ struct perf_sample_data {
- 	 * Fields set by perf_sample_data_init(), group so as to
- 	 * minimize the cachelines touched.
- 	 */
-+	u64				sample_flags;
- 	u64				addr;
- 	struct perf_raw_record		*raw;
- 	struct perf_branch_stack	*br_stack;
-@@ -1057,6 +1058,7 @@ static inline void perf_sample_data_init(struct perf_sample_data *data,
- 					 u64 addr, u64 period)
- {
- 	/* remaining struct members initialized in perf_prepare_sample() */
-+	data->sample_flags = 0;
- 	data->addr = addr;
- 	data->raw  = NULL;
- 	data->br_stack = NULL;
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 2621fd24ad26..c9b9cb79231a 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -6794,11 +6794,10 @@ static void perf_aux_sample_output(struct perf_event *event,
+diff --git a/arch/powerpc/perf/core-book3s.c b/arch/powerpc/perf/core-book3s.c
+index 13919eb96931..1ad1efdb33f9 100644
+--- a/arch/powerpc/perf/core-book3s.c
++++ b/arch/powerpc/perf/core-book3s.c
+@@ -2297,6 +2297,7 @@ static void record_and_restart(struct perf_event *event, unsigned long val,
+ 			cpuhw = this_cpu_ptr(&cpu_hw_events);
+ 			power_pmu_bhrb_read(event, cpuhw);
+ 			data.br_stack = &cpuhw->bhrb_stack;
++			data.sample_flags |= PERF_SAMPLE_BRANCH_STACK;
+ 		}
  
- static void __perf_event_header__init_id(struct perf_event_header *header,
- 					 struct perf_sample_data *data,
--					 struct perf_event *event)
-+					 struct perf_event *event,
-+					 u64 sample_type)
- {
--	u64 sample_type = event->attr.sample_type;
--
--	data->type = sample_type;
-+	data->type = event->attr.sample_type;
- 	header->size += event->id_header_size;
+ 		if (event->attr.sample_type & PERF_SAMPLE_DATA_SRC &&
+diff --git a/arch/x86/events/amd/core.c b/arch/x86/events/amd/core.c
+index 9fbdfbcaf25a..8b70237c33f7 100644
+--- a/arch/x86/events/amd/core.c
++++ b/arch/x86/events/amd/core.c
+@@ -929,8 +929,10 @@ static int amd_pmu_v2_handle_irq(struct pt_regs *regs)
+ 		if (!x86_perf_event_set_period(event))
+ 			continue;
  
- 	if (sample_type & PERF_SAMPLE_TID) {
-@@ -6827,7 +6826,7 @@ void perf_event_header__init_id(struct perf_event_header *header,
- 				struct perf_event *event)
- {
- 	if (event->attr.sample_id_all)
--		__perf_event_header__init_id(header, data, event);
-+		__perf_event_header__init_id(header, data, event, event->attr.sample_type);
+-		if (has_branch_stack(event))
++		if (has_branch_stack(event)) {
+ 			data.br_stack = &cpuc->lbr_stack;
++			data.sample_flags |= PERF_SAMPLE_BRANCH_STACK;
++		}
+ 
+ 		if (perf_event_overflow(event, &data, regs))
+ 			x86_pmu_stop(event, 0);
+diff --git a/arch/x86/events/core.c b/arch/x86/events/core.c
+index c3d6d139a3c1..b30b8bbcd1e2 100644
+--- a/arch/x86/events/core.c
++++ b/arch/x86/events/core.c
+@@ -1701,8 +1701,10 @@ int x86_pmu_handle_irq(struct pt_regs *regs)
+ 
+ 		perf_sample_data_init(&data, 0, event->hw.last_period);
+ 
+-		if (has_branch_stack(event))
++		if (has_branch_stack(event)) {
+ 			data.br_stack = &cpuc->lbr_stack;
++			data.sample_flags |= PERF_SAMPLE_BRANCH_STACK;
++		}
+ 
+ 		if (perf_event_overflow(event, &data, regs))
+ 			x86_pmu_stop(event, 0);
+diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
+index 7c1e3d36bc65..b5c02627a155 100644
+--- a/arch/x86/events/intel/core.c
++++ b/arch/x86/events/intel/core.c
+@@ -3017,8 +3017,10 @@ static int handle_pmi_common(struct pt_regs *regs, u64 status)
+ 
+ 		perf_sample_data_init(&data, 0, event->hw.last_period);
+ 
+-		if (has_branch_stack(event))
++		if (has_branch_stack(event)) {
+ 			data.br_stack = &cpuc->lbr_stack;
++			data.sample_flags |= PERF_SAMPLE_BRANCH_STACK;
++		}
+ 
+ 		if (perf_event_overflow(event, &data, regs))
+ 			x86_pmu_stop(event, 0);
+diff --git a/arch/x86/events/intel/ds.c b/arch/x86/events/intel/ds.c
+index 01cbe26225c2..5dcfd2de6ef8 100644
+--- a/arch/x86/events/intel/ds.c
++++ b/arch/x86/events/intel/ds.c
+@@ -1648,8 +1648,10 @@ static void setup_pebs_fixed_sample_data(struct perf_event *event,
+ 		data->sample_flags |= PERF_SAMPLE_TIME;
+ 	}
+ 
+-	if (has_branch_stack(event))
++	if (has_branch_stack(event)) {
+ 		data->br_stack = &cpuc->lbr_stack;
++		data->sample_flags |= PERF_SAMPLE_BRANCH_STACK;
++	}
  }
  
- static void __perf_event__output_id_sample(struct perf_output_handle *handle,
-@@ -7303,6 +7302,7 @@ void perf_prepare_sample(struct perf_event_header *header,
- 			 struct pt_regs *regs)
- {
- 	u64 sample_type = event->attr.sample_type;
-+	u64 filtered_sample_type;
+ static void adaptive_pebs_save_regs(struct pt_regs *regs,
+@@ -1799,6 +1801,7 @@ static void setup_pebs_adaptive_sample_data(struct perf_event *event,
+ 		if (has_branch_stack(event)) {
+ 			intel_pmu_store_pebs_lbrs(lbr);
+ 			data->br_stack = &cpuc->lbr_stack;
++			data->sample_flags |= PERF_SAMPLE_BRANCH_STACK;
+ 		}
+ 	}
  
- 	header->type = PERF_RECORD_SAMPLE;
- 	header->size = sizeof(*header) + event->header_size;
-@@ -7310,7 +7310,12 @@ void perf_prepare_sample(struct perf_event_header *header,
- 	header->misc = 0;
- 	header->misc |= perf_misc_flags(regs);
+diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
+index 0978165a2d87..1e12e79454e0 100644
+--- a/include/linux/perf_event.h
++++ b/include/linux/perf_event.h
+@@ -1011,7 +1011,6 @@ struct perf_sample_data {
+ 	u64				sample_flags;
+ 	u64				addr;
+ 	struct perf_raw_record		*raw;
+-	struct perf_branch_stack	*br_stack;
+ 	u64				period;
+ 	union perf_sample_weight	weight;
+ 	u64				txn;
+@@ -1021,6 +1020,8 @@ struct perf_sample_data {
+ 	 * The other fields, optionally {set,used} by
+ 	 * perf_{prepare,output}_sample().
+ 	 */
++	struct perf_branch_stack	*br_stack;
++
+ 	u64				type;
+ 	u64				ip;
+ 	struct {
+@@ -1061,7 +1062,6 @@ static inline void perf_sample_data_init(struct perf_sample_data *data,
+ 	data->sample_flags = 0;
+ 	data->addr = addr;
+ 	data->raw  = NULL;
+-	data->br_stack = NULL;
+ 	data->period = period;
+ 	data->weight.full = 0;
+ 	data->data_src.val = PERF_MEM_NA;
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index c9b9cb79231a..104c0c9f4e6f 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -7052,7 +7052,7 @@ void perf_output_sample(struct perf_output_handle *handle,
+ 	}
  
--	__perf_event_header__init_id(header, data, event);
-+	/*
-+	 * Clear the sample flags that have already been done by the
-+	 * PMU driver.
-+	 */
-+	filtered_sample_type = sample_type & ~data->sample_flags;
-+	__perf_event_header__init_id(header, data, event, filtered_sample_type);
+ 	if (sample_type & PERF_SAMPLE_BRANCH_STACK) {
+-		if (data->br_stack) {
++		if (data->sample_flags & PERF_SAMPLE_BRANCH_STACK) {
+ 			size_t size;
  
- 	if (sample_type & (PERF_SAMPLE_IP | PERF_SAMPLE_CODE_PAGE_SIZE))
- 		data->ip = perf_instruction_pointer(regs);
+ 			size = data->br_stack->nr
+@@ -7358,7 +7358,7 @@ void perf_prepare_sample(struct perf_event_header *header,
+ 
+ 	if (sample_type & PERF_SAMPLE_BRANCH_STACK) {
+ 		int size = sizeof(u64); /* nr */
+-		if (data->br_stack) {
++		if (data->sample_flags & PERF_SAMPLE_BRANCH_STACK) {
+ 			if (perf_sample_save_hw_index(event))
+ 				size += sizeof(u64);
+ 
 -- 
 2.35.1
 
