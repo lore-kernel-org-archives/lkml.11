@@ -2,161 +2,244 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07C4BECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:34:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BFD3ECAAD8
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:34:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233798AbiIAHde (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 03:33:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37944 "EHLO
+        id S233666AbiIAHeD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 03:34:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233948AbiIAHdD (ORCPT
+        with ESMTP id S233913AbiIAHdJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 03:33:03 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2054.outbound.protection.outlook.com [40.107.220.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BD4D1BEA5;
-        Thu,  1 Sep 2022 00:32:08 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nV21mEatNSlDNlBCtLPNOfIXwPNiMjf8aIg6CpXD2uz0/NPTvmLThd2Gf6R0fbK8NJNyBSRa4HElVVoC+dKch4oVPQFqvzbDwM/qz6rMVypXHjNtTiucMTzT7FLZpb9Z908mJ8nWpMBoAAOM6jfICQEP1PhV9JKPMDaN1WGAIdmAFpUJngFoobGQWfAr7JV9HweAtq5aFjhhF5mmJURyleu6JLjawILs/NuyeHq/+ov77tSKeKw6h0Bk0RxXvta+5jwE/UU/XwKz4cxQOvQ1GElTqirjd6mciNMJogldQpRDqwClrhoCH/lUHU+yWKTkIA3q4dIzbF4hjF5pJ4oxYw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CAbXyVyPx8ggiwfsva4hr5bZta4OKVjO+ggy7gDhhbY=;
- b=lbLALLzjwk2Et0scjppxJH0fsNS/XUXhT0/MmFKyV8NU7iuwUZR/BpWsI67pjshNZKGaucQLEi32Lor8IbG/Dqr8DcBkXObCZyA5do66BpmTzSsBb4mMGPVrDO9Q2u55FW40YBtQiXzNVRI1etvKONgt1wEVgXoKUdJYCIReiRfle+N1hlXaaYnmm4W3bmMM1EqgYamlYEgTWP9mgEC050aoMgpPxbo6qVdD94B3E3nsZcHpm+/oPvfKI1qCvN6M97LIgwO8nCIp/7OHrt8w18iHgIk3Vy7UtmxPGvsoW8vAECs+IN2KVSu1cHVIDzkosLGduy5WkJEJp2wmYyBmqQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=microchip.com smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CAbXyVyPx8ggiwfsva4hr5bZta4OKVjO+ggy7gDhhbY=;
- b=oBKwbCF/gMASBDR+g61CAM2xPuFxzVqHT/grFVpMtwxhw4Igjago8WAaNmkn5eKwK9CuIGM2L8+cyJYMgcR3EqXv9cSDDPGuxFAl26YLdZv2XoqeVKIuhokaQqJ85surCuQTO7O0Q/CeWcmD3vn3K1YuK+GPZzxLj287fCGHj7E=
-Received: from MW2PR2101CA0021.namprd21.prod.outlook.com (2603:10b6:302:1::34)
- by CH2PR12MB4199.namprd12.prod.outlook.com (2603:10b6:610:a7::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Thu, 1 Sep
- 2022 07:32:06 +0000
-Received: from CO1NAM11FT021.eop-nam11.prod.protection.outlook.com
- (2603:10b6:302:1:cafe::3a) by MW2PR2101CA0021.outlook.office365.com
- (2603:10b6:302:1::34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.6 via Frontend
- Transport; Thu, 1 Sep 2022 07:32:06 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT021.mail.protection.outlook.com (10.13.175.51) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5588.10 via Frontend Transport; Thu, 1 Sep 2022 07:32:05 +0000
-Received: from SATLEXMB06.amd.com (10.181.40.147) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 1 Sep
- 2022 02:31:14 -0500
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB06.amd.com
- (10.181.40.147) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 1 Sep
- 2022 02:30:38 -0500
-Received: from xhdlakshmis40.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
- Transport; Thu, 1 Sep 2022 02:30:02 -0500
-From:   Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <pratyush@kernel.org>,
-        Michael Walle <michael@walle.cc>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        "Vignesh Raghavendra" <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>
-CC:     <devicetree@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <saikrishna12468@gmail.com>,
-        <git@amd.com>, Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
-Subject: [PATCH v2 2/2] mtd: spi-nor: Add support for flash reset
-Date:   Thu, 1 Sep 2022 12:59:14 +0530
-Message-ID: <20220901072914.30205-3-sai.krishna.potthuri@amd.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220901072914.30205-1-sai.krishna.potthuri@amd.com>
-References: <20220901072914.30205-1-sai.krishna.potthuri@amd.com>
+        Thu, 1 Sep 2022 03:33:09 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B26B7213
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 00:32:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662017553; x=1693553553;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=zbD3mEf6CnfaKUc7mVObNw2BqsH1QNHbnxeeVuWi7RY=;
+  b=ZDR+WDlqjdA0HFtX1/S2OU1o8zgL289txM4DfMXJscacUE/NKo8KDiZ1
+   ofYYNQSkDnZK2WRvXcWAUiY+3lboQFsJPck9SNtbDhKlHqU7qSm5fambM
+   TXzRM+V+IGjFBDDt1qs0D+xUgJPJorK7sPotQJKPM1Q3OaBj5P8JfiaV9
+   Pg9vh4leYaGYI3bBwUjFXj+XpDbu4pGaluHrmbNibzPm3Ys+NPjHYt3M0
+   a8Mh/rpO3J9gN240RMpNxvf5Jw64QYFbGvMyyWt11+n0YtbXBtelpc3X4
+   HFDScdK/1S1qxWLI3PMinLX6A6r0ABW/Hw8KhI7ud1yOG2LU3z9rvF5xQ
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="296427052"
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="296427052"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 00:32:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="642218793"
+Received: from lkp-server02.sh.intel.com (HELO b138c9e8658c) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 01 Sep 2022 00:32:14 -0700
+Received: from kbuild by b138c9e8658c with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oTegP-00003v-1f;
+        Thu, 01 Sep 2022 07:32:13 +0000
+Date:   Thu, 1 Sep 2022 15:31:53 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: arch/arm/kernel/tcm.c:256:13: warning: no previous prototype for
+ function 'tcm_init'
+Message-ID: <202209011540.DTgSvBbw-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9178107f-6e61-471a-0cab-08da8bec1236
-X-MS-TrafficTypeDiagnostic: CH2PR12MB4199:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: riC2EN2tFGUZm96Nfja8Gy7IGKjNSILqIUcloSv7FiZRBbvl47A8U/xLmSQdqGuhAXin0/ErmUZgyIkAfcJ+bASL4R3XqOUPB/a3L/bMFLKqT24bW5b9BmKcGYLTFVdsrfk4vQYC5em33Nd73BAVVdmw+Pq2EaMvxmpR/FjdMc2rQv+g53VfPFQ9PUil9EuboVWrC1hy8Y9rOg4pEc3Wc00WJgs7I4WbE+yA+FmKH8YXi35f1sQX1IMtjcFKuMjiHIIF2ZLHe128i2FAXY4BVvYk3rmn+T9dtWneNX/21PacmJLZWEhmCmtlmkUmX2mYpuA1anlouGI4uQUtfr+jQDaTHlStz9qEOmqzKT8r++2J2zPPDCmlIFAj3Tdq6HP1UzS8gOc0CG80zRJV6wHDTdGJMtaVGUt56/Fzfv66CSsLuwIEgYVLNZ/qfHQPtnbPNfLvxN4EyckTdLHCyoSiddQy0VSNqtIBr/qhdD5MGtYn5ZI0YViXDg13TkT0tHFy4nxI2bPfN25lQVtvmMjB6vD9ezuB8T+/ZNM24Zd6cxmyDPvCI58T/UIAbwPBxDKdxPOoQ+6wC3m8dwCn1hs/J16xKli7whC3LWbDzb1m7E+RuW4y41nzHugdsbRlYi9mkTFwNqLEEs/P4e/rwlnaZilFKR5G3sElur43yQprPhfe8d/wrYxrMFp9pPxp8RslBJmz3bzxp5nzaisZbYiRU+9n6nkTvZ0sjKLK7158N4ZlUWjwGEjC46P9fViDDPqMNWpL5TX/COvimKWr/5M6ykT96kLcvj7QERP2xCTLvj9dVMl6BAFRLNvLh/lufiOn
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(136003)(396003)(346002)(46966006)(36840700001)(40470700004)(356005)(82740400003)(2616005)(336012)(186003)(1076003)(36860700001)(36756003)(103116003)(86362001)(41300700001)(81166007)(47076005)(426003)(26005)(6666004)(54906003)(40480700001)(70586007)(316002)(478600001)(70206006)(110136005)(40460700003)(7416002)(2906002)(4326008)(82310400005)(5660300002)(8676002)(8936002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2022 07:32:05.8546
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9178107f-6e61-471a-0cab-08da8bec1236
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT021.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4199
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for spi-nor flash reset via GPIO controller by reading the
-reset-gpio property. If there is a valid GPIO specifier then reset will
-be performed by asserting and deasserting the GPIO using gpiod APIs
-otherwise it will not perform any operation.
+Hi Arnd,
 
-Signed-off-by: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
----
- drivers/mtd/spi-nor/core.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+First bad commit (maybe != root cause):
 
-diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-index f2c64006f8d7..a78ab9bae2be 100644
---- a/drivers/mtd/spi-nor/core.c
-+++ b/drivers/mtd/spi-nor/core.c
-@@ -2933,6 +2933,27 @@ static void spi_nor_set_mtd_info(struct spi_nor *nor)
- 	mtd->_put_device = spi_nor_put_device;
- }
- 
-+static int spi_nor_hw_reset(struct spi_nor *nor)
-+{
-+	struct gpio_desc *reset;
-+
-+	reset = devm_gpiod_get_optional(nor->dev, "reset", GPIOD_OUT_LOW);
-+	if (IS_ERR_OR_NULL(reset))
-+		return PTR_ERR_OR_ZERO(reset);
-+
-+	/*
-+	 * Experimental delay values by looking at different flash device
-+	 * vendors datasheets.
-+	 */
-+	usleep_range(1, 5);
-+	gpiod_set_value_cansleep(reset, 1);
-+	usleep_range(100, 150);
-+	gpiod_set_value_cansleep(reset, 0);
-+	usleep_range(1000, 1200);
-+
-+	return 0;
-+}
-+
- int spi_nor_scan(struct spi_nor *nor, const char *name,
- 		 const struct spi_nor_hwcaps *hwcaps)
- {
-@@ -2965,6 +2986,10 @@ int spi_nor_scan(struct spi_nor *nor, const char *name,
- 	if (!nor->bouncebuf)
- 		return -ENOMEM;
- 
-+	ret = spi_nor_hw_reset(nor);
-+	if (ret)
-+		return ret;
-+
- 	info = spi_nor_get_flash_info(nor, name);
- 	if (IS_ERR(info))
- 		return PTR_ERR(info);
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   c5e4d5e99162ba8025d58a3af7ad103f155d2df7
+commit: 09f6b27d5ddd9ad0ec096d1b0f8decdacc70f0f8 ARM: dove: multiplatform support
+date:   5 months ago
+config: arm-randconfig-c002-20220831 (https://download.01.org/0day-ci/archive/20220901/202209011540.DTgSvBbw-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 1c66bacd6cde1f37d6ac96c45b389666a1334ec0)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=09f6b27d5ddd9ad0ec096d1b0f8decdacc70f0f8
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 09f6b27d5ddd9ad0ec096d1b0f8decdacc70f0f8
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash arch/arm/kernel/ drivers/clk/ti/ dtbs
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> arch/arm/kernel/tcm.c:256:13: warning: no previous prototype for function 'tcm_init' [-Wmissing-prototypes]
+   void __init tcm_init(void)
+               ^
+   arch/arm/kernel/tcm.c:256:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void __init tcm_init(void)
+   ^
+   static 
+   1 warning generated.
+--
+>> drivers/clk/ti/dpll.c:107:29: warning: unused variable 'omap3_dpll_core_ck_ops' [-Wunused-const-variable]
+   static const struct clk_ops omap3_dpll_core_ck_ops = {};
+                               ^
+   1 warning generated.
+--
+>> drivers/clk/ti/apll.c:95:5: warning: variable 'state' set but not used [-Wunused-but-set-variable]
+           u8 state = 1;
+              ^
+   1 warning generated.
+
+
+vim +/tcm_init +256 arch/arm/kernel/tcm.c
+
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  252  
+bc581770cfdd8c Linus Walleij              2009-09-15  253  /*
+bc581770cfdd8c Linus Walleij              2009-09-15  254   * This initializes the TCM memory
+bc581770cfdd8c Linus Walleij              2009-09-15  255   */
+bc581770cfdd8c Linus Walleij              2009-09-15 @256  void __init tcm_init(void)
+bc581770cfdd8c Linus Walleij              2009-09-15  257  {
+90b9222ec632bc Linus Walleij              2011-12-12  258  	u32 tcm_status;
+90b9222ec632bc Linus Walleij              2011-12-12  259  	u8 dtcm_banks;
+90b9222ec632bc Linus Walleij              2011-12-12  260  	u8 itcm_banks;
+9715efb8dc9ffa Linus Walleij              2011-07-01  261  	size_t dtcm_code_sz = &__edtcm_data - &__sdtcm_data;
+9715efb8dc9ffa Linus Walleij              2011-07-01  262  	size_t itcm_code_sz = &__eitcm_text - &__sitcm_text;
+bc581770cfdd8c Linus Walleij              2009-09-15  263  	char *start;
+bc581770cfdd8c Linus Walleij              2009-09-15  264  	char *end;
+bc581770cfdd8c Linus Walleij              2009-09-15  265  	char *ram;
+1dbd30e9890fd6 Linus Walleij              2010-07-12  266  	int ret;
+598509779e5b80 Linus Walleij              2010-07-12  267  	int i;
+bc581770cfdd8c Linus Walleij              2009-09-15  268  
+90b9222ec632bc Linus Walleij              2011-12-12  269  	/*
+90b9222ec632bc Linus Walleij              2011-12-12  270  	 * Prior to ARMv5 there is no TCM, and trying to read the status
+90b9222ec632bc Linus Walleij              2011-12-12  271  	 * register will hang the processor.
+90b9222ec632bc Linus Walleij              2011-12-12  272  	 */
+90b9222ec632bc Linus Walleij              2011-12-12  273  	if (cpu_architecture() < CPU_ARCH_ARMv5) {
+90b9222ec632bc Linus Walleij              2011-12-12  274  		if (dtcm_code_sz || itcm_code_sz)
+90b9222ec632bc Linus Walleij              2011-12-12  275  			pr_info("CPU TCM: %u bytes of DTCM and %u bytes of "
+90b9222ec632bc Linus Walleij              2011-12-12  276  				"ITCM code compiled in, but no TCM present "
+90b9222ec632bc Linus Walleij              2011-12-12  277  				"in pre-v5 CPU\n", dtcm_code_sz, itcm_code_sz);
+90b9222ec632bc Linus Walleij              2011-12-12  278  		return;
+90b9222ec632bc Linus Walleij              2011-12-12  279  	}
+90b9222ec632bc Linus Walleij              2011-12-12  280  
+90b9222ec632bc Linus Walleij              2011-12-12  281  	tcm_status = read_cpuid_tcmstatus();
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  282  
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  283  	/*
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  284  	 * This code only supports v6-compatible TCMTR implementations.
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  285  	 */
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  286  	if (tcm_status & TCMTR_FORMAT_MASK)
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  287  		return;
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  288  
+90b9222ec632bc Linus Walleij              2011-12-12  289  	dtcm_banks = (tcm_status >> 16) & 0x03;
+90b9222ec632bc Linus Walleij              2011-12-12  290  	itcm_banks = (tcm_status & 0x03);
+90b9222ec632bc Linus Walleij              2011-12-12  291  
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  292  	register_undef_hook(&tcm_hook);
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  293  
+9715efb8dc9ffa Linus Walleij              2011-07-01  294  	/* Values greater than 2 for D/ITCM banks are "reserved" */
+9715efb8dc9ffa Linus Walleij              2011-07-01  295  	if (dtcm_banks > 2)
+9715efb8dc9ffa Linus Walleij              2011-07-01  296  		dtcm_banks = 0;
+9715efb8dc9ffa Linus Walleij              2011-07-01  297  	if (itcm_banks > 2)
+9715efb8dc9ffa Linus Walleij              2011-07-01  298  		itcm_banks = 0;
+9715efb8dc9ffa Linus Walleij              2011-07-01  299  
+bc581770cfdd8c Linus Walleij              2009-09-15  300  	/* Setup DTCM if present */
+1dbd30e9890fd6 Linus Walleij              2010-07-12  301  	if (dtcm_banks > 0) {
+598509779e5b80 Linus Walleij              2010-07-12  302  		for (i = 0; i < dtcm_banks; i++) {
+1dbd30e9890fd6 Linus Walleij              2010-07-12  303  			ret = setup_tcm_bank(0, i, dtcm_banks, &dtcm_end);
+1dbd30e9890fd6 Linus Walleij              2010-07-12  304  			if (ret)
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  305  				goto unregister;
+1dbd30e9890fd6 Linus Walleij              2010-07-12  306  		}
+9715efb8dc9ffa Linus Walleij              2011-07-01  307  		/* This means you compiled more code than fits into DTCM */
+9715efb8dc9ffa Linus Walleij              2011-07-01  308  		if (dtcm_code_sz > (dtcm_end - DTCM_OFFSET)) {
+9715efb8dc9ffa Linus Walleij              2011-07-01  309  			pr_info("CPU DTCM: %u bytes of code compiled to "
+9715efb8dc9ffa Linus Walleij              2011-07-01  310  				"DTCM but only %lu bytes of DTCM present\n",
+9715efb8dc9ffa Linus Walleij              2011-07-01  311  				dtcm_code_sz, (dtcm_end - DTCM_OFFSET));
+9715efb8dc9ffa Linus Walleij              2011-07-01  312  			goto no_dtcm;
+9715efb8dc9ffa Linus Walleij              2011-07-01  313  		}
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  314  		/*
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  315  		 * This means that the DTCM sizes were 0 or the DTCM banks
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  316  		 * were inaccessible due to TrustZone configuration.
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  317  		 */
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  318  		if (!(dtcm_end - DTCM_OFFSET))
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  319  			goto no_dtcm;
+1dbd30e9890fd6 Linus Walleij              2010-07-12  320  		dtcm_res.end = dtcm_end - 1;
+bc581770cfdd8c Linus Walleij              2009-09-15  321  		request_resource(&iomem_resource, &dtcm_res);
+1dbd30e9890fd6 Linus Walleij              2010-07-12  322  		dtcm_iomap[0].length = dtcm_end - DTCM_OFFSET;
+bc581770cfdd8c Linus Walleij              2009-09-15  323  		iotable_init(dtcm_iomap, 1);
+bc581770cfdd8c Linus Walleij              2009-09-15  324  		/* Copy data from RAM to DTCM */
+bc581770cfdd8c Linus Walleij              2009-09-15  325  		start = &__sdtcm_data;
+bc581770cfdd8c Linus Walleij              2009-09-15  326  		end   = &__edtcm_data;
+bc581770cfdd8c Linus Walleij              2009-09-15  327  		ram   = &__dtcm_start;
+9715efb8dc9ffa Linus Walleij              2011-07-01  328  		memcpy(start, ram, dtcm_code_sz);
+9715efb8dc9ffa Linus Walleij              2011-07-01  329  		pr_debug("CPU DTCM: copied data from %p - %p\n",
+9715efb8dc9ffa Linus Walleij              2011-07-01  330  			 start, end);
+201043f227576d Linus Walleij              2011-07-01  331  		dtcm_present = true;
+9715efb8dc9ffa Linus Walleij              2011-07-01  332  	} else if (dtcm_code_sz) {
+9715efb8dc9ffa Linus Walleij              2011-07-01  333  		pr_info("CPU DTCM: %u bytes of code compiled to DTCM but no "
+9715efb8dc9ffa Linus Walleij              2011-07-01  334  			"DTCM banks present in CPU\n", dtcm_code_sz);
+bc581770cfdd8c Linus Walleij              2009-09-15  335  	}
+bc581770cfdd8c Linus Walleij              2009-09-15  336  
+9715efb8dc9ffa Linus Walleij              2011-07-01  337  no_dtcm:
+bc581770cfdd8c Linus Walleij              2009-09-15  338  	/* Setup ITCM if present */
+1dbd30e9890fd6 Linus Walleij              2010-07-12  339  	if (itcm_banks > 0) {
+598509779e5b80 Linus Walleij              2010-07-12  340  		for (i = 0; i < itcm_banks; i++) {
+1dbd30e9890fd6 Linus Walleij              2010-07-12  341  			ret = setup_tcm_bank(1, i, itcm_banks, &itcm_end);
+1dbd30e9890fd6 Linus Walleij              2010-07-12  342  			if (ret)
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  343  				goto unregister;
+1dbd30e9890fd6 Linus Walleij              2010-07-12  344  		}
+9715efb8dc9ffa Linus Walleij              2011-07-01  345  		/* This means you compiled more code than fits into ITCM */
+9715efb8dc9ffa Linus Walleij              2011-07-01  346  		if (itcm_code_sz > (itcm_end - ITCM_OFFSET)) {
+9715efb8dc9ffa Linus Walleij              2011-07-01  347  			pr_info("CPU ITCM: %u bytes of code compiled to "
+9715efb8dc9ffa Linus Walleij              2011-07-01  348  				"ITCM but only %lu bytes of ITCM present\n",
+9715efb8dc9ffa Linus Walleij              2011-07-01  349  				itcm_code_sz, (itcm_end - ITCM_OFFSET));
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  350  			goto unregister;
+9715efb8dc9ffa Linus Walleij              2011-07-01  351  		}
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  352  		/*
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  353  		 * This means that the ITCM sizes were 0 or the ITCM banks
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  354  		 * were inaccessible due to TrustZone configuration.
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  355  		 */
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  356  		if (!(itcm_end - ITCM_OFFSET))
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  357  			goto unregister;
+1dbd30e9890fd6 Linus Walleij              2010-07-12  358  		itcm_res.end = itcm_end - 1;
+bc581770cfdd8c Linus Walleij              2009-09-15  359  		request_resource(&iomem_resource, &itcm_res);
+1dbd30e9890fd6 Linus Walleij              2010-07-12  360  		itcm_iomap[0].length = itcm_end - ITCM_OFFSET;
+bc581770cfdd8c Linus Walleij              2009-09-15  361  		iotable_init(itcm_iomap, 1);
+bc581770cfdd8c Linus Walleij              2009-09-15  362  		/* Copy code from RAM to ITCM */
+bc581770cfdd8c Linus Walleij              2009-09-15  363  		start = &__sitcm_text;
+bc581770cfdd8c Linus Walleij              2009-09-15  364  		end   = &__eitcm_text;
+bc581770cfdd8c Linus Walleij              2009-09-15  365  		ram   = &__itcm_start;
+9715efb8dc9ffa Linus Walleij              2011-07-01  366  		memcpy(start, ram, itcm_code_sz);
+9715efb8dc9ffa Linus Walleij              2011-07-01  367  		pr_debug("CPU ITCM: copied code from %p - %p\n",
+9715efb8dc9ffa Linus Walleij              2011-07-01  368  			 start, end);
+201043f227576d Linus Walleij              2011-07-01  369  		itcm_present = true;
+9715efb8dc9ffa Linus Walleij              2011-07-01  370  	} else if (itcm_code_sz) {
+9715efb8dc9ffa Linus Walleij              2011-07-01  371  		pr_info("CPU ITCM: %u bytes of code compiled to ITCM but no "
+9715efb8dc9ffa Linus Walleij              2011-07-01  372  			"ITCM banks present in CPU\n", itcm_code_sz);
+bc581770cfdd8c Linus Walleij              2009-09-15  373  	}
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  374  
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  375  unregister:
+0bbe6b5a73c00f Michael van der Westhuizen 2015-06-04  376  	unregister_undef_hook(&tcm_hook);
+bc581770cfdd8c Linus Walleij              2009-09-15  377  }
+bc581770cfdd8c Linus Walleij              2009-09-15  378  
+
+:::::: The code at line 256 was first introduced by commit
+:::::: bc581770cfdd8c17ea17d324dc05e2f9c599e7ca ARM: 5580/2: ARM TCM (Tightly-Coupled Memory) support v3
+
+:::::: TO: Linus Walleij <linus.walleij@stericsson.com>
+:::::: CC: Russell King <rmk+kernel@arm.linux.org.uk>
+
 -- 
-2.17.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
