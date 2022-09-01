@@ -2,119 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0181ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 03:51:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2938ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 03:52:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232329AbiIADvs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 23:51:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51376 "EHLO
+        id S232374AbiIADwm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 23:52:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229706AbiIADvl (ORCPT
+        with ESMTP id S229706AbiIADwg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 23:51:41 -0400
-Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B1BD162161
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 20:51:39 -0700 (PDT)
-Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-11eab59db71so24932349fac.11
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 20:51:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=FMeFb1DKNrRW4XTw+2AUilPkuq6lPd1YD7bO8dxWl6s=;
-        b=ByOcugM+LZVu3LuzIKRmYBcj8KWgL4G7ve6wG4Vn0qoJvpyjNqGF0cyV+0oQVj7j58
-         WuNe3l77T9LEvgoTH+w7H1pVPIyGRZAaOiV1cWXfChXXsm1LZtefpsIDIE7RvVLSHA4f
-         Wwwtd1IJ+y9eB1DG61eaolq0kyWrCQv+OjXE96DdxLqMuGv+MTUo7sGPj2UM53rtrPNS
-         swQqutm5fJ2lxDJEiVMUsXVk4UPO0w2tb57hyw/N5GafGbIsLS1fSXSIkj0D9QWiPh1D
-         ESk93IMou7GCvFIDeupXNfI16QVMICInA28JP8OLxS4wdsluU5KnQDK0kBPi3XZxl4Zj
-         wCYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=FMeFb1DKNrRW4XTw+2AUilPkuq6lPd1YD7bO8dxWl6s=;
-        b=hU64d3bmvBH59hu4VyC2c/Add065FTFwLunzJ3Cpm98CzQ9rDdU6qUdz5NjrbjkOX4
-         V7uVAl4Xyva4t7dpNaW+hsH+rZDAP6FUYoRdWaByjYnW9iOJfsunkVsab+w7EbwdD++x
-         opXogJVR2uwH6r/xgYt1f3qn2qhTnCQRSxFO3BsLfTq0QE0MHaxr15VjQ+kwGbrt+e2J
-         Dxgr0By+Ka4ElyI6pcPYZeJ0TgeBMrNPXt8+LCni0Xa8UJ3S+8a8VFhX6u5AOW8iHRvW
-         OJtchm+/FIQa1kLeZONYl+hZlmKP/IFSTCrtYqEk+3ecuE1pR3XreWsaHJnS1hTKNKWn
-         03ZQ==
-X-Gm-Message-State: ACgBeo1jLp5QRtEZsHjmz/qSLSRj5sC57/vuifYN/5aeym0te4Ar/KBK
-        M7FLq0pHAPJiBsdSpb1fd+k=
-X-Google-Smtp-Source: AA6agR4p7F4GBqihoJuFKRYYOZ0Wb+JZLdStHGZEH7IwD5hH4fmexnWwUavQ8c9sZGSy6l7Zmza78A==
-X-Received: by 2002:a05:6870:3127:b0:11c:8c2c:9015 with SMTP id v39-20020a056870312700b0011c8c2c9015mr2880965oaa.31.1662004298634;
-        Wed, 31 Aug 2022 20:51:38 -0700 (PDT)
-Received: from localhost ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id p5-20020a4a95c5000000b00448985f1f17sm9033176ooi.9.2022.08.31.20.51.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Aug 2022 20:51:37 -0700 (PDT)
-Date:   Wed, 31 Aug 2022 20:49:27 -0700
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Cc:     Borislav Petkov <bp@alien8.de>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, x86@kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, David Howells <dhowells@redhat.com>,
-        Jan Beulich <JBeulich@suse.com>,
-        Christophe Jaillet <christophe.jaillet@wanadoo.fr>,
-        Joe Perches <joe@perches.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>
-Subject: Re: [PATCH v6 0/2] x86/asm/bitops: optimize ff{s,z} functions for
- constant expressions
-Message-ID: <YxArx4UGoSQXljQd@yury-laptop>
-References: <20220511160319.1045812-1-mailhol.vincent@wanadoo.fr>
- <20220831075742.295-1-mailhol.vincent@wanadoo.fr>
- <Yw8hJS9f6SofG4/6@yury-laptop>
+        Wed, 31 Aug 2022 23:52:36 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CBDC5209B;
+        Wed, 31 Aug 2022 20:52:34 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4MJ6Z84CcQz4xFv;
+        Thu,  1 Sep 2022 13:52:32 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1662004352;
+        bh=5yDbNoSQwiy0KVaH3KjxS+ug2ZzGG74/pIpd6vLL5yI=;
+        h=Date:From:To:Cc:Subject:From;
+        b=ucxWbyiV8YXXSKUBv7B1A2I1T0InKMKo9qKA+yhc7MMyFrjSSgU5Xm7YJV66RYz5a
+         4KRpzr8+ikq0rlSlSZ6Bqgzm2rG/RfIenDSFKEvp1R52UU0QOs1pwuTNLe9SEK/ATZ
+         rBrQj/fyQfdJSzOTUou/duj7vmOcooqSkelWk5I5d0uidJvH1J0WHdT/NhRhxD41/v
+         jLaa/jAXlgms/FuLtusRbFCkoBEfVOMCyXXmQpvdANZQ7rO+eeTCGjTdvH72QaqZQ6
+         QEmyS2TrLWlN12l5reL+wnEiQ5+A6wfz70H/hmlZh0Ws0rA2mXTGA5T3fY12tzKwA3
+         OJXXfo8LTLISA==
+Date:   Thu, 1 Sep 2022 13:52:30 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Greg KH <greg@kroah.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Wesley Cheng <quic_wcheng@quicinc.com>
+Subject: linux-next: manual merge of the usb tree with the usb.current tree
+Message-ID: <20220901135230.37584d32@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yw8hJS9f6SofG4/6@yury-laptop>
+Content-Type: multipart/signed; boundary="Sig_/9X=jE5oqJ2cpPILf/Sxt752";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 01:54:01AM -0700, Yury Norov wrote:
-> On Wed, Aug 31, 2022 at 04:57:40PM +0900, Vincent Mailhol wrote:
-> > The compilers provide some builtin expression equivalent to the ffs(),
-> > __ffs() and ffz() functions of the kernel. The kernel uses optimized
-> > assembly which produces better code than the builtin
-> > functions. However, such assembly code can not be folded when used
-> > with constant expressions.
-> > 
-> > This series relies on __builtin_constant_p to select the optimal solution:
-> > 
-> >   * use kernel assembly for non constant expressions
-> > 
-> >   * use compiler's __builtin function for constant expressions.
-> > 
-> > 
-> > ** Statistics **
-> > 
-> > Patch 1/2 optimizes 26.7% of ffs() calls and patch 2/2 optimizes 27.9%
-> > of __ffs() and ffz() calls (details of the calculation in each patch).
-> 
-> Hi Vincent,
-> 
-> Can you please add a test for this? We've recently added a very similar
-> test_bitmap_const_eval() in lib/test_bitmap.c.
-> 
-> dc34d5036692c ("lib: test_bitmap: add compile-time optimization/evaluations
-> assertions")
-> 
-> Would be nice to have something like this for ffs() and ffz() in
-> lib/test_bitops.c.
-> 
-> Please keep me in loop in case of new versions.
+--Sig_/9X=jE5oqJ2cpPILf/Sxt752
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Also, what about fls? Is there any difference with ffs/ffz wrt compile
-time optimizations? If not, would be great if the series will take
-care of it too.
+Hi all,
 
-Thanks,
-Yury
+Today's linux-next merge of the usb tree got a conflict in:
+
+  drivers/usb/dwc3/gadget.c
+
+between commit:
+
+  040f2dbd2010 ("usb: dwc3: gadget: Avoid duplicate requests to enable Run/=
+Stop")
+
+from the usb.current tree and commit:
+
+  9711c67de748 ("usb: dwc3: gadget: Synchronize IRQ between soft connect/di=
+sconnect")
+
+from the usb tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/usb/dwc3/gadget.c
+index eca945feeec3,d6c0cb79ace3..000000000000
+--- a/drivers/usb/dwc3/gadget.c
++++ b/drivers/usb/dwc3/gadget.c
+@@@ -2563,11 -2569,8 +2566,13 @@@ static int dwc3_gadget_pullup(struct us
+  		return 0;
+  	}
+ =20
+ +	if (dwc->pullups_connected =3D=3D is_on) {
+ +		pm_runtime_put(dwc->dev);
+ +		return 0;
+ +	}
+ +
++ 	synchronize_irq(dwc->irq_gadget);
++=20
+  	if (!is_on) {
+  		ret =3D dwc3_gadget_soft_disconnect(dwc);
+  	} else {
+
+--Sig_/9X=jE5oqJ2cpPILf/Sxt752
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmMQLH4ACgkQAVBC80lX
+0Gx9WAf/YjOODJPzPQjutdOWEKpTypBcRjzCQnZnhdcmCN7A5LDiH3J3wHEMONLY
+E18vMO9QsQ9HTSgHRCyLNYH/yuFiTBhdrjUm5Q7B/rGhhUmRzJ/JYoUh+LTrHPd9
+zpQPSS/NEjCcSoIW98HOo8rCdJMcikk1L8jS1CLt7SGiImoPIUcvD6VbeTY4ekj2
+muxgQD2tp7YhbsStpZ5U2ASUG5+wLHQSdWwKCYX6pkXmBfz/Pe2KFrqAR2JKR9Xe
+PTsu4l4r9R0clqq2RkMSWsaz0GhbOPRuiZsG1RrEhKRp/2hqU6wRS8QcCUraJrMY
+AWmqter8RINhDM44taQvWPX1SdyQEg==
+=pOhH
+-----END PGP SIGNATURE-----
+
+--Sig_/9X=jE5oqJ2cpPILf/Sxt752--
