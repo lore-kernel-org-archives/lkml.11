@@ -2,69 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F68AECAAD2
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 05:57:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDA7AECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 05:58:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233346AbiIAF5E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 01:57:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55906 "EHLO
+        id S233374AbiIAF6h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 01:58:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233293AbiIAF4w (ORCPT
+        with ESMTP id S233244AbiIAF6Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 01:56:52 -0400
-Received: from smtp236.sjtu.edu.cn (smtp236.sjtu.edu.cn [202.120.2.236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E043118234;
-        Wed, 31 Aug 2022 22:56:43 -0700 (PDT)
-Received: from proxy02.sjtu.edu.cn (smtp188.sjtu.edu.cn [202.120.2.188])
-        by smtp236.sjtu.edu.cn (Postfix) with ESMTPS id 227C81008B399;
-        Thu,  1 Sep 2022 13:56:15 +0800 (CST)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by proxy02.sjtu.edu.cn (Postfix) with ESMTP id 9D9CA2009BEAF;
-        Thu,  1 Sep 2022 13:56:14 +0800 (CST)
-X-Virus-Scanned: amavisd-new at 
-Received: from proxy02.sjtu.edu.cn ([127.0.0.1])
-        by localhost (proxy02.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id dsRbT5RbWGbv; Thu,  1 Sep 2022 13:56:14 +0800 (CST)
-Received: from localhost.localdomain (unknown [202.120.40.82])
-        (Authenticated sender: qtxuning1999@sjtu.edu.cn)
-        by proxy02.sjtu.edu.cn (Postfix) with ESMTPSA id 1498E200A5BFF;
-        Thu,  1 Sep 2022 13:56:02 +0800 (CST)
-From:   Guo Zhi <qtxuning1999@sjtu.edu.cn>
-To:     eperezma@redhat.com, jasowang@redhat.com, sgarzare@redhat.com,
-        mst@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        Guo Zhi <qtxuning1999@sjtu.edu.cn>
-Subject: [RFC v3 7/7] virtio: announce VIRTIO_F_IN_ORDER support
-Date:   Thu,  1 Sep 2022 13:54:34 +0800
-Message-Id: <20220901055434.824-8-qtxuning1999@sjtu.edu.cn>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220901055434.824-1-qtxuning1999@sjtu.edu.cn>
-References: <20220901055434.824-1-qtxuning1999@sjtu.edu.cn>
+        Thu, 1 Sep 2022 01:58:16 -0400
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B655611D925
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 22:57:46 -0700 (PDT)
+Received: by mail-il1-x135.google.com with SMTP id e7so7389041ilc.5
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 22:57:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=wB71mxz9sZZ6MrmdLLN+L5oPjA7Db42fd3yvoP7ITlE=;
+        b=j+6RvxtEzxfiZJ0UDAc2gOcGkw+uqI/fHvxwZRPA/yeDT/9+LAM2FKCYcpM3qzlM8p
+         WVeYFURqEbCwWULAdBoQzm8/q+Rfh9N77Kt1TiUyZR4lwvo67VqtHUYWDXlEUnXvNA+6
+         x36A4UWfqj7sGb4Nq9Yp8Bke2h1VGpTk0jTRwwDdZu8joaUwmUYvuhLU4WBqMHhSC9Au
+         RJzwA582AIrJ5JettZNKAEvLa/F41Ftr3g8fl/KN5gySYEhTSmijWO8351pmtqMXBB02
+         nX3DoKqj9TAl+ZDdTE/UunFi6XZUVmlazC16PiiQ9O6Cj2dEpk8qhVb0W9n/YCdeUTb4
+         EegA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=wB71mxz9sZZ6MrmdLLN+L5oPjA7Db42fd3yvoP7ITlE=;
+        b=Gp+XsDYGujbmdDKMb2PWLvJHj9zjE5CcAw7X3yxEn/4I9bG5YMUCz74lPJig0WUrIA
+         qyxw0c+2n5N0vUv1sR5UPsQsDFYKCFNePnDAS5oH6YB4PGAFhOfO54ZUz32e8UgfWhqt
+         3MBKJZBhHCzBHJpURTh1v+2ZVfQG68R6vO4MUZZYbwJVSqwn2rs3KrCuhp7ZUzYdWkk4
+         VpGY4uGrbS++OMrYdFeHYw1ZWNgGqu5Hfa2xofcMRYFwWxOghAMXY9afu0EoQ2oT+zZK
+         G/qkvd2M/QVnJhw8xA9uCTOlKwIJ46goLSLxl0QR6gUoG07Ljld3Yd/Us1atp0Ra7IMc
+         Ef/g==
+X-Gm-Message-State: ACgBeo0W3LJUeD+EbMEpGF5dfIgalWEOSiFjF0VRrsbbFYsWQKHqIJ9e
+        S78Hf49HAWbS3gdPJe2pVQIgBhZ0jdteLNzZNFL9OChSk10=
+X-Google-Smtp-Source: AA6agR6xefaf7USZwlxLIWwGM36QJLwI5omqHhij2aogBV5iiU+XyfDLWU4vSFCNsu66cWa2lzNQlpEszhPDJ1qoMUA=
+X-Received: by 2002:a92:d5cf:0:b0:2e9:4cb4:57e4 with SMTP id
+ d15-20020a92d5cf000000b002e94cb457e4mr15618513ilq.224.1662011852348; Wed, 31
+ Aug 2022 22:57:32 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220826023504.6183-1-steve.lee.analog@gmail.com> <Yw+OCnOgYUOWdIEx@sirena.org.uk>
+In-Reply-To: <Yw+OCnOgYUOWdIEx@sirena.org.uk>
+From:   Lee Steve <steve.lee.analog@gmail.com>
+Date:   Thu, 1 Sep 2022 14:57:19 +0900
+Message-ID: <CA+Fz0PZStYOZhNpRQCCVKxaDmPPq_PwvWrxfWbq=sBNKrZzzNg@mail.gmail.com>
+Subject: Re: [PATCH] ASoC: max98390: Remove unnecessary amp on/off conrtol
+To:     Mark Brown <broonie@kernel.org>
+Cc:     lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
+        krzk@kernel.org, ryans.lee@analog.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order feature is supported by default in virtio.
+On Thu, Sep 1, 2022 at 1:36 AM Mark Brown <broonie@kernel.org> wrote:
+>
+> On Fri, Aug 26, 2022 at 11:35:04AM +0900, Steve Lee wrote:
+>
+> >  The Amp is already control in userspace before trigger calibrate function.
+> > Remove unnecessary control in calibrate function.
+>
+> I can't see anything which ensures that this is the case?  Should there
+> be a check which returns an error if the output is not enabled, or
+> should the function check the current state and preserve it at the end?
+> I can see that this would fix problems with it being disabled when
+> callibrating.
 
-Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
----
- drivers/virtio/virtio_ring.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index d52624179b43..63a6381913a5 100644
---- a/drivers/virtio/virtio_ring.c
-+++ b/drivers/virtio/virtio_ring.c
-@@ -2432,6 +2432,8 @@ void vring_transport_features(struct virtio_device *vdev)
- 			break;
- 		case VIRTIO_F_ORDER_PLATFORM:
- 			break;
-+		case VIRTIO_F_IN_ORDER:
-+			break;
- 		default:
- 			/* We don't understand this bit. */
- 			__virtio_clear_bit(vdev, i);
--- 
-2.17.1
-
+ As your comment, this can fix amp being disabled when calibrating.
+And this also fix the case that music play right after calibration.
+Actually, calibration process should start mute playback before
+trigger this function.
+AMP disable/enable control in calibration function can break sync with
+userspace enable/disable control.
