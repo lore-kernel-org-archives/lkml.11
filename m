@@ -2,149 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15DFEECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:46:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5480CECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:46:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234380AbiIAOq0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 10:46:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49852 "EHLO
+        id S233263AbiIAOqe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 10:46:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231484AbiIAOqE (ORCPT
+        with ESMTP id S231484AbiIAOq1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 10:46:04 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 547E875CF8;
-        Thu,  1 Sep 2022 07:46:01 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 82A1F2015A;
-        Thu,  1 Sep 2022 14:45:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1662043559; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=d7JBI/07yd8WyaO8RcKiT0B2kXWtniRx5v9bl5XBNpQ=;
-        b=GS1zPTgzUE7SA44v31qD+AF4XlSoLr11tpr0vjqCs+efGkDBBFb84tSlbKYIVFvq+9Bbxg
-        1gChdqfyylgk0jM/3/KNCh57buu3X/Asiq54vFxcf6MyZrYILVJzzn+0uFG07K6PhaUaoX
-        3+RP+L1VtsfNVpeMC7kf8MDnB3x4wgU=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 629F413A79;
-        Thu,  1 Sep 2022 14:45:59 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id h5jOFafFEGPNZQAAMHmgww
-        (envelope-from <mhocko@suse.com>); Thu, 01 Sep 2022 14:45:59 +0000
-Date:   Thu, 1 Sep 2022 16:45:58 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        cgroups@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH v2 5/8] mm/memcontrol: Replace the PREEMPT_RT conditionals
-Message-ID: <YxDFplJXPudU4AS7@dhcp22.suse.cz>
-References: <20220825164131.402717-1-bigeasy@linutronix.de>
- <20220825164131.402717-6-bigeasy@linutronix.de>
+        Thu, 1 Sep 2022 10:46:27 -0400
+Received: from cstnet.cn (smtp21.cstnet.cn [159.226.251.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AC5B672B74
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 07:46:25 -0700 (PDT)
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-01 (Coremail) with SMTP id qwCowADHHy+8xRBj8rYgAA--.1962S2;
+        Thu, 01 Sep 2022 22:46:20 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     gregkh@linuxfoundation.org
+Cc:     hdegoede@redhat.com, arnd@arndb.de, linux-kernel@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH v3 2/2] virt: vbox: Remove unproper information
+Date:   Thu,  1 Sep 2022 22:46:19 +0800
+Message-Id: <20220901144619.3550352-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220825164131.402717-6-bigeasy@linutronix.de>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: qwCowADHHy+8xRBj8rYgAA--.1962S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7Jw4DKw43uF1kZry8XFyDAwb_yoWfKrbE9F
+        yqvF9FgrWkCFn5tr1qvwnxur9YvFW2qF1fWFyUtFyrX3sFvrnxu3W8ury3X3y3ur48AFW5
+        Jr4DAr10vr1rWjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUb2kFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
+        Cr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s
+        1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0
+        cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJVW8Jw
+        ACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6ry5MxAI
+        w28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr
+        4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxG
+        rwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8Jw
+        CI42IY6xAIw20EY4v20xvaj40_JFI_Gr1lIxAIcVC2z280aVAFwI0_Gr0_Cr1lIxAIcVC2
+        z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUjtEf5UUUUU==
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 25-08-22 18:41:28, Sebastian Andrzej Siewior wrote:
-> From: Thomas Gleixner <tglx@linutronix.de>
-> 
-> Use VM_WARN_ON_IRQS_ENABLED() and preempt_disable/enable_nested() to
-> replace the CONFIG_PREEMPT_RT #ifdeffery.
-> 
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Johannes Weiner <hannes@cmpxchg.org>
-> Cc: Michal Hocko <mhocko@kernel.org>
-> Cc: Roman Gushchin <roman.gushchin@linux.dev>
-> Cc: Shakeel Butt <shakeelb@google.com>
-> Cc: Muchun Song <songmuchun@bytedance.com>
-> Cc: cgroups@vger.kernel.org
-> Cc: linux-mm@kvack.org
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> Acked-by: Johannes Weiner <hannes@cmpxchg.org>
-> Reviewed-by: Muchun Song <songmuchun@bytedance.com>
-> Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+When drivers are working properly, they are quiet.
+Therefore, the vbg_info() should be removed.
 
-Acked-by: Michal Hocko <mhocko@suse.com>
-Thanks!
+Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+ drivers/virt/vboxguest/vboxguest_linux.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-> ---
->  mm/memcontrol.c | 19 ++++++-------------
->  1 file changed, 6 insertions(+), 13 deletions(-)
-> 
-> diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-> index b69979c9ced5c..d35b6fa560f0a 100644
-> --- a/mm/memcontrol.c
-> +++ b/mm/memcontrol.c
-> @@ -597,25 +597,18 @@ static u64 flush_next_time;
->   */
->  static void memcg_stats_lock(void)
->  {
-> -#ifdef CONFIG_PREEMPT_RT
-> -      preempt_disable();
-> -#else
-> -      VM_BUG_ON(!irqs_disabled());
-> -#endif
-> +	preempt_disable_nested();
-> +	VM_WARN_ON_IRQS_ENABLED();
->  }
->  
->  static void __memcg_stats_lock(void)
->  {
-> -#ifdef CONFIG_PREEMPT_RT
-> -      preempt_disable();
-> -#endif
-> +	preempt_disable_nested();
->  }
->  
->  static void memcg_stats_unlock(void)
->  {
-> -#ifdef CONFIG_PREEMPT_RT
-> -      preempt_enable();
-> -#endif
-> +	preempt_enable_nested();
->  }
->  
->  static inline void memcg_rstat_updated(struct mem_cgroup *memcg, int val)
-> @@ -715,7 +708,7 @@ void __mod_memcg_lruvec_state(struct lruvec *lruvec, enum node_stat_item idx,
->  	 * interrupt context while other caller need to have disabled interrupt.
->  	 */
->  	__memcg_stats_lock();
-> -	if (IS_ENABLED(CONFIG_DEBUG_VM) && !IS_ENABLED(CONFIG_PREEMPT_RT)) {
-> +	if (IS_ENABLED(CONFIG_DEBUG_VM)) {
->  		switch (idx) {
->  		case NR_ANON_MAPPED:
->  		case NR_FILE_MAPPED:
-> @@ -725,7 +718,7 @@ void __mod_memcg_lruvec_state(struct lruvec *lruvec, enum node_stat_item idx,
->  			WARN_ON_ONCE(!in_task());
->  			break;
->  		default:
-> -			WARN_ON_ONCE(!irqs_disabled());
-> +			VM_WARN_ON_IRQS_ENABLED();
->  		}
->  	}
->  
-> -- 
-> 2.37.2
-
+diff --git a/drivers/virt/vboxguest/vboxguest_linux.c b/drivers/virt/vboxguest/vboxguest_linux.c
+index 6fc81347ae72..c47e62dc55da 100644
+--- a/drivers/virt/vboxguest/vboxguest_linux.c
++++ b/drivers/virt/vboxguest/vboxguest_linux.c
+@@ -398,10 +398,6 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ 
+ 	pci_set_drvdata(pci, gdev);
+ 
+-	vbg_info("vboxguest: misc device minor %d, IRQ %d, I/O port %x, MMIO at %pap (size %pap)\n",
+-		 gdev->misc_device.minor, pci->irq, gdev->io_port,
+-		 &mmio, &mmio_len);
+-
+ 	return 0;
+ 
+ err_unregister_misc_device_user:
 -- 
-Michal Hocko
-SUSE Labs
+2.25.1
+
