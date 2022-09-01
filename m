@@ -2,65 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F71EECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:14:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76BD2ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:15:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232350AbiIABOc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 21:14:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47348 "EHLO
+        id S232351AbiIABPV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 21:15:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232007AbiIABO1 (ORCPT
+        with ESMTP id S232007AbiIABPS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 21:14:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D59512EC7C;
-        Wed, 31 Aug 2022 18:14:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2432B823CB;
-        Thu,  1 Sep 2022 01:14:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 604D8C433D6;
-        Thu,  1 Sep 2022 01:14:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661994863;
-        bh=x/sWxA960MFDvZQpRTbbU9NaZ+9atYHgasHRRigNO6o=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=FU8R06aMjE8ZaQ5t5dDRUJU3irbyO7tVijp19Fi9Dh0YZEpASYVgmIEv41LjE96WQ
-         NfASBJGKP9tTbHDHW8KY0tu7cMwRw6t9kocepRZxeSSHRNVGgIjfBpiWg+TVci46rx
-         VAyKcxyv14IEPKuxI5uKmdDEqHD3C6Sd2h11uww9mK6Ff5iCLiF5GyhsscS9jON8tn
-         96/fEP90ov/lISwH7L4j0gA6lFNZg6bk1GnunXTVnMmzDp6J3is3jIKy/6l37WE+Za
-         q+sQF3r8MkVlpKoM3lToF2dr3b4lAg//jTHFaHRfv9nucTRD5nmQU5ym8wF9d3qG2/
-         EmBrVKA0B5xrg==
-Content-Type: text/plain; charset="utf-8"
+        Wed, 31 Aug 2022 21:15:18 -0400
+Received: from conuserg-10.nifty.com (conuserg-10.nifty.com [210.131.2.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E231057210;
+        Wed, 31 Aug 2022 18:15:15 -0700 (PDT)
+Received: from grover.sesame (133-32-182-133.west.xps.vectant.ne.jp [133.32.182.133]) (authenticated)
+        by conuserg-10.nifty.com with ESMTP id 2811DDtu004311;
+        Thu, 1 Sep 2022 10:13:13 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-10.nifty.com 2811DDtu004311
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1661994794;
+        bh=pSLA7lAlGxKHbICT8gTY7i5Zp2giDjasDzYgClZZbNY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=qID+LEtprhEh9OzWC/QN0PYJNs5/bV9Yf3wWeIehxq6QVxx1Qrfi1dBZy4N3dHPQw
+         h3Hw5f0kjWFaP4dS5Ix7dittJ4MidYbEIBUw1PJFnoMhjbvy32oFsrvRWP+30lYLdW
+         aFhZHBX8mFEmEMOUZoTk7FTTfe1r9mGp+/gcxt7d2cLATiGhjQAQBWzVodLvalrK9V
+         Uqlyz013HHH2cxFkYyF+Z/TQVy1W1XlvVdR/fgaJjpy6ln1xvk6/Nt0giw+GYZCSFL
+         NW2AsX7J7P82MpQZ914zQFNWWqTxAAVivHrQBwGPRbVlZDJntbN+9cD7voBgRfI7bZ
+         VouolwA3KaAJA==
+X-Nifty-SrcIP: [133.32.182.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] kbuild: disable header exports for UML in a straightforward way
+Date:   Thu,  1 Sep 2022 10:12:52 +0900
+Message-Id: <20220901011252.550830-1-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220629105205.173471-3-angelogioacchino.delregno@collabora.com>
-References: <20220629105205.173471-1-angelogioacchino.delregno@collabora.com> <20220629105205.173471-3-angelogioacchino.delregno@collabora.com>
-Subject: Re: [PATCH 2/2] clk: mediatek: mt8195: Add reset idx for PCIe0 and PCIe1
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     matthias.bgg@gmail.com, p.zabel@pengutronix.de, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        angelogioacchino.delregno@collabora.com, wenst@chromium.org,
-        chun-jie.chen@mediatek.com, miles.chen@mediatek.com,
-        rex-bc.chen@mediatek.com, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, mturquette@baylibre.com
-Date:   Wed, 31 Aug 2022 18:14:21 -0700
-User-Agent: alot/0.10
-Message-Id: <20220901011423.604D8C433D6@smtp.kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting AngeloGioacchino Del Regno (2022-06-29 03:52:05)
-> Add the reset idx for PCIe P0, P1, located in infra_ao RST2 registers.
->=20
-> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@coll=
-abora.com>
-> ---
+Previously 'make ARCH=um headers' stopped because of missing
+arch/um/include/uapi/asm/Kbuild.
 
-Applied to clk-next
+The error is not shown since commit ed102bf2afed ("um: Fix W=1
+missing-include-dirs warnings") because UML got
+arch/um/include/uapi/asm/Kbuild.
+
+Hard-code the unsupported architecture, so it works like before.
+
+Fixes: ed102bf2afed ("um: Fix W=1 missing-include-dirs warnings")
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
+
+ Makefile | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 9d40255d1557..8d2047a4de9b 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1304,8 +1304,7 @@ hdr-inst := -f $(srctree)/scripts/Makefile.headersinst obj
+ 
+ PHONY += headers
+ headers: $(version_h) scripts_unifdef uapi-asm-generic archheaders archscripts
+-	$(if $(wildcard $(srctree)/arch/$(SRCARCH)/include/uapi/asm/Kbuild),, \
+-	  $(error Headers not exportable for the $(SRCARCH) architecture))
++	$(if $(filter um, $(SRCARCH)), $(error Headers not exportable for UML))
+ 	$(Q)$(MAKE) $(hdr-inst)=include/uapi
+ 	$(Q)$(MAKE) $(hdr-inst)=arch/$(SRCARCH)/include/uapi
+ 
+-- 
+2.34.1
+
