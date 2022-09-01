@@ -2,165 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D0FDECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 17:33:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4BA1ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 17:33:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234624AbiIARd1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 13:33:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44556 "EHLO
+        id S234402AbiIARdb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 13:33:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234123AbiIARdL (ORCPT
+        with ESMTP id S234069AbiIARdL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 1 Sep 2022 13:33:11 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47A0993503
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 10:33:07 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id e187-20020a6369c4000000b0041c8dfb8447so8973232pgc.23
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 10:33:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:reply-to:from:to:cc:subject:date;
-        bh=up2TM/zYvuiSr9vjf1/TjFbeoqAIIxAqdA2XP4Ysf64=;
-        b=mnzCFMgQovP4pOxeqKDuUiKfKrfoW65FbzBEQyAYN0ttmKM9Hh1tn19fDLY1zlYtWu
-         +n7/5M4T94WtHynUEM5Qxjeinqtsgq7kkWH1LAKgXSBGxeeB4/vbe1jcHe/yBUsPS47r
-         CS8IVxzzXWcq68j/3bpQUF6p/7SH4+Sgj0cIqPEZt25gWPd6VkfhYz+p2Rt1jEahgKP2
-         VMVS1gWvHEFx4IC8PCk70lmXV016g5e8CrdOg/DNbEb5xuetcpm3Yq6WuPP+NMhYDh/i
-         XiYz9dt3VoPajHrHpKBF/rxWZeUyIF4eymR1mkVJRp56WXnN1UakQer/LEUTyRLDRfZq
-         B4IA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:reply-to:x-gm-message-state:from:to:cc:subject:date;
-        bh=up2TM/zYvuiSr9vjf1/TjFbeoqAIIxAqdA2XP4Ysf64=;
-        b=MWTEC5suc6YgPu4M2ejKa4a/UYzg+O/GfkS/cjD8CweILR1rEJLdhuByIVm7go59wl
-         1XTofRYIBRcArNTLUwugOdKPv/bQNLD5aYgFJOD0qXUlEsaFO0iJDLZj2tRuSKGiJguP
-         3Rt3MsVnDW3q57M1SxqLlP1YfMTW3eHc6bir3kvLwNcrzhjjA9Xi5qKxpmyVP5usuSmh
-         0b+Irvxmh0uEP0LT7Js6I936APFRM4PYgaJRJK2Nj3C0dEu8J9FTE3yOm5Vl7vdAq+7W
-         5alaIFpDJAJ4xrcM8DLuPHvkm1XJjZVgjQhu7VnXv2sYB1kWsWVaIis+4/FdQLf0aEFi
-         2T5Q==
-X-Gm-Message-State: ACgBeo3/JdtihDLjYvSpA+F7mii9bvwLpdCDsFRp27J8xGufaR3AhK3D
-        KWV/JkAMxEMQHYEdHyZt0JOQ/QjbGSs=
-X-Google-Smtp-Source: AA6agR7YtYGNAqd7HjqTYxeCdsRMjgGly3qkWP2F386oX2uY9RK0QBieMMd91SJA6yGNmzbigLsV1w4m5nk=
-X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a17:90b:3b52:b0:1fe:2ee2:e341 with SMTP id
- ot18-20020a17090b3b5200b001fe2ee2e341mr207479pjb.231.1662053586161; Thu, 01
- Sep 2022 10:33:06 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Thu,  1 Sep 2022 17:32:56 +0000
-In-Reply-To: <20220901173258.925729-1-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220901173258.925729-1-seanjc@google.com>
-X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
-Message-ID: <20220901173258.925729-4-seanjc@google.com>
-Subject: [PATCH v4 3/5] KVM: VMX: Move vmx_get_perf_capabilities() definition
- to vmx.c
-From:   Sean Christopherson <seanjc@google.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, Like Xu <like.xu.linux@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E8C192F73;
+        Thu,  1 Sep 2022 10:33:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9639D61FEF;
+        Thu,  1 Sep 2022 17:33:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 041A8C433D7;
+        Thu,  1 Sep 2022 17:33:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662053585;
+        bh=Tq0rG+ZmykyWv/+uRuggAUDl+ZN37G+pmZ0/EKVVsaw=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=bB4jwaNZ3efSgeu7GlgNDqRc2nflVPexLMYWu2xef7ZghDNBgJpAJ5c8afhiKUP+M
+         kqMx/u7v9KpGHPZjdQbczH1/G8FID3J5pVJkp24aVyR4xNhMuO9KCZA+NePzdYdx8M
+         zoK17D7FcgYweZaUu3yz/N4cwBhTVrzs+DE8EVD1JlnGvH/O4q8SPEVpfcRuDr7Obj
+         Qd04Jp/6L7HkKlVyu6YQXdGJQFtn/31Cm3hTsFH4hUwMLD7wmwCfbAKsNbUj2lxUuG
+         hEG77bwTYgYnjwiRp6DNNVNgv586RendAzBWPZUy0auwhQ/U/bnn9K8P2rklEDUUZ2
+         2M2jzKgwz9SWg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id A96085C0691; Thu,  1 Sep 2022 10:33:04 -0700 (PDT)
+Date:   Thu, 1 Sep 2022 10:33:04 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Sascha Hauer <sha@pengutronix.de>
+Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@fb.com, rostedt@goodmis.org,
+        Matthew Wilcox <willy@infradead.org>,
+        Zhouyi Zhou <zhouzhouyi@gmail.com>, kernel@pengutronix.de
+Subject: Re: [PATCH rcu 04/32] rcu-tasks: Drive synchronous grace periods
+ from calling task
+Message-ID: <20220901173304.GA2280413@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220620225402.GA3842369@paulmck-ThinkPad-P17-Gen-1>
+ <20220620225411.3842519-4-paulmck@kernel.org>
+ <20220901103625.GA1658@pengutronix.de>
+ <20220901172725.GC6159@paulmck-ThinkPad-P17-Gen-1>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220901172725.GC6159@paulmck-ThinkPad-P17-Gen-1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move vmx_get_perf_capabilities() to vmx.c as a non-inline function so
-that it can safely reference x86_perf_get_lbr(), which is available iff
-CPU_SUP_INTEL=y, i.e. only if kvm_intel is being built.  The helper is
-non-trivial and isn't used in any paths that are performance critical,
-i.e. doesn't need to be inlined.
+On Thu, Sep 01, 2022 at 10:27:25AM -0700, Paul E. McKenney wrote:
+> On Thu, Sep 01, 2022 at 12:36:25PM +0200, Sascha Hauer wrote:
+> > Hi Paul,
+> > 
+> > On Mon, Jun 20, 2022 at 03:53:43PM -0700, Paul E. McKenney wrote:
+> > > This commit causes synchronous grace periods to be driven from the task
+> > > invoking synchronize_rcu_*(), allowing these functions to be invoked from
+> > > the mid-boot dead zone extending from when the scheduler was initialized
+> > > to to point that the various RCU tasks grace-period kthreads are spawned.
+> > > This change will allow the self-tests to run in a consistent manner.
+> > > 
+> > > Reported-by: Matthew Wilcox <willy@infradead.org>
+> > > Reported-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
+> > > Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+> > 
+> > This commit (appeared in mainline as 4a8cc433b8bf) breaks booting my
+> > ARMv7 based i.MX6ul board when CONFIG_PROVE_RCU is enabled. Reverting
+> > this patch on v6.0-rc3 makes my board boot again. See below for a boot
+> > log. The last message is "Running RCU-tasks wait API self tests", after
+> > that the board hangs. Any idea what goes wrong here?
+> 
+> New one on me!
+> 
+> Is it possible to get a stack trace of the hang, perhaps via
+> one form or another of sysrq-T?  Such a stack trace would likely
+> include synchronize_rcu_tasks(), synchronize_rcu_tasks_rude(), or
+> synchronize_rcu_tasks_trace() followed by synchronize_rcu_tasks_generic(),
+> rcu_tasks_one_gp(), and one of rcu_tasks_wait_gp(),
+> rcu_tasks_rude_wait_gp(), or rcu_tasks_wait_gp().
 
-No functional change intended.
+If there is no chance of sysrq-T, kernel debuggers, kernel crash
+dumps, or any other source of the stack trace, please decorate the
+code path with printk() or similar and let me know where it goes.
+Under normal circumstances, this code path is not sensitive to performance
+perturbations of the printk() persuasion.
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- arch/x86/kvm/vmx/capabilities.h | 24 ++----------------------
- arch/x86/kvm/vmx/vmx.c          | 22 ++++++++++++++++++++++
- 2 files changed, 24 insertions(+), 22 deletions(-)
+							Thanx, Paul
 
-diff --git a/arch/x86/kvm/vmx/capabilities.h b/arch/x86/kvm/vmx/capabilities.h
-index c5e5dfef69c7..23dca5ebae16 100644
---- a/arch/x86/kvm/vmx/capabilities.h
-+++ b/arch/x86/kvm/vmx/capabilities.h
-@@ -75,6 +75,8 @@ struct vmx_capability {
- };
- extern struct vmx_capability vmx_capability;
- 
-+u64 vmx_get_perf_capabilities(void);
-+
- static inline bool cpu_has_vmx_basic_inout(void)
- {
- 	return	(((u64)vmcs_config.basic_cap << 32) & VMX_BASIC_INOUT);
-@@ -401,28 +403,6 @@ static inline bool vmx_pebs_supported(void)
- 	return boot_cpu_has(X86_FEATURE_PEBS) && kvm_pmu_cap.pebs_ept;
- }
- 
--static inline u64 vmx_get_perf_capabilities(void)
--{
--	u64 perf_cap = PMU_CAP_FW_WRITES;
--	u64 host_perf_cap = 0;
--
--	if (!enable_pmu)
--		return 0;
--
--	if (boot_cpu_has(X86_FEATURE_PDCM))
--		rdmsrl(MSR_IA32_PERF_CAPABILITIES, host_perf_cap);
--
--	perf_cap |= host_perf_cap & PMU_CAP_LBR_FMT;
--
--	if (vmx_pebs_supported()) {
--		perf_cap |= host_perf_cap & PERF_CAP_PEBS_MASK;
--		if ((perf_cap & PERF_CAP_PEBS_FORMAT) < 4)
--			perf_cap &= ~PERF_CAP_PEBS_BASELINE;
--	}
--
--	return perf_cap;
--}
--
- static inline u64 vmx_supported_debugctl(void)
- {
- 	u64 debugctl = 0;
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index c9b49a09e6b5..657fa9908bf9 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -1826,6 +1826,28 @@ static inline bool vmx_feature_control_msr_valid(struct kvm_vcpu *vcpu,
- 	return !(val & ~valid_bits);
- }
- 
-+u64 vmx_get_perf_capabilities(void)
-+{
-+	u64 perf_cap = PMU_CAP_FW_WRITES;
-+	u64 host_perf_cap = 0;
-+
-+	if (!enable_pmu)
-+		return 0;
-+
-+	if (boot_cpu_has(X86_FEATURE_PDCM))
-+		rdmsrl(MSR_IA32_PERF_CAPABILITIES, host_perf_cap);
-+
-+	perf_cap |= host_perf_cap & PMU_CAP_LBR_FMT;
-+
-+	if (vmx_pebs_supported()) {
-+		perf_cap |= host_perf_cap & PERF_CAP_PEBS_MASK;
-+		if ((perf_cap & PERF_CAP_PEBS_FORMAT) < 4)
-+			perf_cap &= ~PERF_CAP_PEBS_BASELINE;
-+	}
-+
-+	return perf_cap;
-+}
-+
- static int vmx_get_msr_feature(struct kvm_msr_entry *msr)
- {
- 	switch (msr->index) {
--- 
-2.37.2.789.g6183377224-goog
-
+> At this point in the boot sequence, there is only one online CPU,
+> correct?
+> 
+> I have seen recent non-boot hangs within synchronize_rcu_tasks()
+> due to some other task getting stuck in do_exit() between its calls
+> to exit_tasks_rcu_start() and exit_tasks_rcu_finish().  The symptom of
+> this is that the aforementioned stack trace includes synchronize_srcu().
+> I would not expect much in the way of exiting tasks that early in the
+> boot sequence, but who knows?
+> 
+> 							Thanx, Paul
+> 
+> > Sascha
+> > 
+> > ----------------------------8<-----------------------------
+> > 
+> > [    0.000000] Booting Linux on physical CPU 0x0
+> > [    0.000000] Linux version 5.19.0-rc3-00004-g4a8cc433b8bf (sha@dude02) (arm-v7a-linux-gnueabihf-gcc (OSELAS.Toolchain-2021.07.0 11-20210703) 11.1.1 20210703, GNU ld (GNU Binutils) 2.36.1) #229 SMP Thu Sep 1 12:00:07 CEST 2022
+> > [    0.000000] CPU: ARMv7 Processor [410fc075] revision 5 (ARMv7), cr=10c5387d
+> > [    0.000000] CPU: div instructions available: patching division code
+> > [    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing instruction cache
+> > [    0.000000] OF: fdt: Machine model: IDS CU33X
+> > [    0.000000] earlycon: ec_imx6q0 at MMIO 0x02020000 (options '')
+> > [    0.000000] printk: bootconsole [ec_imx6q0] enabled
+> > [    0.000000] Memory policy: Data cache writealloc
+> > [    0.000000] cma: Reserved 64 MiB at 0x8c000000
+> > [    0.000000] Zone ranges:
+> > [    0.000000]   Normal   [mem 0x0000000080000000-0x000000008fffffff]
+> > [    0.000000]   HighMem  empty
+> > [    0.000000] Movable zone start for each node
+> > [    0.000000] Early memory node ranges
+> > [    0.000000]   node   0: [mem 0x0000000080000000-0x000000008fffffff]
+> > [    0.000000] Initmem setup node 0 [mem 0x0000000080000000-0x000000008fffffff]
+> > [    0.000000] percpu: Embedded 17 pages/cpu s38068 r8192 d23372 u69632
+> > [    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 65024
+> > [    0.000000] Kernel command line: console=ttymxc0,115200n8 earlycon ip=dhcp root=/dev/nfs nfsroot=192.168.8.12:/hom
+> > e/sha/nfsroot/cu33x,v3,tcp
+> > [    0.000000] Dentry cache hash table entries: 32768 (order: 5, 131072 bytes, linear)
+> > [    0.000000] Inode-cache hash table entries: 16384 (order: 4, 65536 bytes, linear)
+> > [    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
+> > [    0.000000] Memory: 162600K/262144K available (15360K kernel code, 2146K rwdata, 5472K rodata, 1024K init, 6681K b
+> > ss, 34008K reserved, 65536K cma-reserved, 0K highmem)
+> > [    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=1, Nodes=1
+> > [    0.000000] trace event string verifier disabled
+> > [    0.000000] Running RCU self tests
+> > [    0.000000] rcu: Hierarchical RCU implementation.
+> > [    0.000000] rcu:     RCU event tracing is enabled.
+> > [    0.000000] rcu:     RCU lockdep checking is enabled.
+> > [    0.000000] rcu:     RCU restricting CPUs from NR_CPUS=4 to nr_cpu_ids=1.
+> > [    0.000000]  Tracing variant of Tasks RCU enabled.
+> > [    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 10 jiffies.
+> > [    0.000000] rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=1
+> > [    0.000000] NR_IRQS: 16, nr_irqs: 16, preallocated irqs: 16
+> > [    0.000000] rcu: srcu_init: Setting srcu_struct sizes based on contention.
+> > [    0.000000] Switching to timer-based delay loop, resolution 41ns
+> > [    0.000003] sched_clock: 32 bits at 24MHz, resolution 41ns, wraps every 89478484971ns
+> > [    0.007810] clocksource: mxc_timer1: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 79635851949 ns
+> > [    0.021748] Console: colour dummy device 80x30
+> > [    0.023488] Lock dependency validator: Copyright (c) 2006 Red Hat, Inc., Ingo Molnar
+> > [    0.032009] ... MAX_LOCKDEP_SUBCLASSES:  8
+> > [    0.035282] ... MAX_LOCK_DEPTH:          48
+> > [    0.039445] ... MAX_LOCKDEP_KEYS:        8192
+> > [    0.043886] ... CLASSHASH_SIZE:          4096
+> > [    0.048127] ... MAX_LOCKDEP_ENTRIES:     32768
+> > [    0.052552] ... MAX_LOCKDEP_CHAINS:      65536
+> > [    0.057069] ... CHAINHASH_SIZE:          32768
+> > [    0.061405]  memory used by lock dependency info: 4061 kB
+> > [    0.066788]  memory used for stack traces: 2112 kB
+> > [    0.071645]  per task-struct memory footprint: 1536 bytes
+> > [    0.077138] Calibrating delay loop (skipped), value calculated using timer frequency.. 48.00 BogoMIPS (lpj=240000)
+> > [    0.087384] pid_max: default: 32768 minimum: 301
+> > [    0.093527] Mount-cache hash table entries: 1024 (order: 0, 4096 bytes, linear)
+> > [    0.099327] Mountpoint-cache hash table entries: 1024 (order: 0, 4096 bytes, linear)
+> > [    0.116798] CPU: Testing write buffer coherency: ok
+> > [    0.122036] CPU0: update cpu_capacity 1024
+> > [    0.123381] CPU0: thread -1, cpu 0, socket 0, mpidr 80000000
+> > [    0.137390] cblist_init_generic: Setting adjustable number of callback queues.
+> > [    0.142282] cblist_init_generic: Setting shift to 0 and lim to 1.
+> > [    0.149333] Running RCU-tasks wait API self tests
+> > 
+> > -- 
+> > Pengutronix e.K.                           |                             |
+> > Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+> > 31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+> > Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
