@@ -2,130 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F8E8ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:23:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C870BECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:24:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234496AbiIAOXP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 10:23:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50830 "EHLO
+        id S234676AbiIAOX7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 10:23:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234693AbiIAOWl (ORCPT
+        with ESMTP id S234762AbiIAOXl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 10:22:41 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3052376961
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 07:22:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662042157; x=1693578157;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ZJ1FNqyM0820GOqm315h/CJsZrVNV65e5jirFPU3+Ug=;
-  b=IIevYZZ1De0Bd4fsF8vRfIHtEL/b/QR4GpWDYGBJHQSw0EI4OTax5aK4
-   C5/SAZoaq/ke7WVCbM06S0aKucvtkdo4srcyg8SnYMN05fpDohUDpXBEx
-   gUh3YJEYxCYl1PUczvsYKnkIadQ75ZJM/OsX23j+KLOXeNLHNBXr0XlUJ
-   z4m3d4zDu8/k48DvcSIE73Ar0r1jHHaaJz+la5OYHp9d6Fqc+gauPr3My
-   Aeuqy6W6ulj8dZjx5TTv7Vs31KKC9C3CJOOEfEUrP/czEaGVyKd2KvbGC
-   UfCtX5o2os1ivHicvTPBCn2abow/zV6WoexT3MK/F6nsfAHcxouOtQDWU
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="275474521"
-X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
-   d="scan'208";a="275474521"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 07:22:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
-   d="scan'208";a="563479413"
-Received: from lkp-server02.sh.intel.com (HELO b138c9e8658c) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 01 Sep 2022 07:22:34 -0700
-Received: from kbuild by b138c9e8658c with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oTl5V-0000NX-2o;
-        Thu, 01 Sep 2022 14:22:33 +0000
-Date:   Thu, 1 Sep 2022 22:21:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Will Deacon <will@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: include/linux/compiler_types.h:338:45: error: call to
- '__compiletime_assert_302' declared with attribute error: BUILD_BUG_ON
- failed: (24-12) >= 12
-Message-ID: <202209012255.kdvo6EYi-lkp@intel.com>
+        Thu, 1 Sep 2022 10:23:41 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 269244F65B
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 07:23:14 -0700 (PDT)
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 5567C3F4B3
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 14:23:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1662042192;
+        bh=0pValQemCvGX1LEq88UuNr8omRZeEtwxwFj8CYGFUUk=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=tbxhzmPqBTixnRFsFnJM2I7Y6WYR3dBghMd+YxJPxOuuPjUkLweDKVzolAXPQvJEw
+         X0/BGPLuDBjQuoSj1IEUVH0031lXFoQ9cNrVMSKHIFfuPALRkw2sozNj11PgSuEzZq
+         wEXlCZBkn8BzhZHJjzv2FNMdWHPtnzbkyNvVg7mATDqvGQws8ZEYuyxWNaQ02Z+Yam
+         aYW/HIHUjYleFbGPUmSKHGmW2PFTm70Mcl4V/1z8ZB0GIRoDXjh1cbmz/Zxkj6iLVX
+         chlIZDxQrlZ3FJVnSY/qr0iBishbT2VFljxTyRGPbvDPkg6CECHu2Z6CydnAF5gGfV
+         yd5r7nkLsMnPw==
+Received: by mail-ed1-f72.google.com with SMTP id h6-20020aa7de06000000b004483647900fso9824487edv.21
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 07:23:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=0pValQemCvGX1LEq88UuNr8omRZeEtwxwFj8CYGFUUk=;
+        b=DNDIh3922+v72mfjBzv2HqeDyjL0pf7mfonke9fPZMW1JdBJgTBmEUdOLh/QeOjWdB
+         /4vbPuGrjFSDuDvXlgwuAVZJLSOnTyjJ00Yb5WjsJU54+T7jCCtZDBbWjaCegEWt8oSC
+         e51F3k9WJ1/MoAhPnIWJl3vT4I83LQeUcWhru8jGdgIfIAVYf2nUz3MatTRSyD/yrHft
+         OIID2ESoTytJNG4pZtzK9ZSZTriDXkhffH1TsvVcsmRH+T7eMiag5NozKr4pbtvZ30N4
+         UoCRk8Y3IhvqBTX9VQR6IZVK5avl08wQaoyphsEMbsQq/RY0WWYIcnEDxrOEYBTaVXAC
+         uaYg==
+X-Gm-Message-State: ACgBeo03G/IUfdy9wyTJJwMr94fBrlufU5CTtMtH9sw2KsV22A1CZWVR
+        n4txXQBJTMl7JKR3JfjGxtr2MhPe0krmHQSj/GOiF89NXP3LSi26yfdiH4F4TZElpPzIP4Np6Fw
+        3FVQoUwf6Tp9nO4+ak/a2llN5It5LILMvXvzx/5N4BBfdZ4h+MtbV5BgzDQ==
+X-Received: by 2002:a17:907:a40f:b0:730:c4ce:631c with SMTP id sg15-20020a170907a40f00b00730c4ce631cmr22980393ejc.362.1662042191768;
+        Thu, 01 Sep 2022 07:23:11 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6dHZiBfcopnPXJIfA5GSHw2vUA5qpfnN2mvP2jawWAAaOlWxzZ7hqBDDEokKvraMfzduYbvBcwVBBAMcsW9dQ=
+X-Received: by 2002:a17:907:a40f:b0:730:c4ce:631c with SMTP id
+ sg15-20020a170907a40f00b00730c4ce631cmr22980376ejc.362.1662042191485; Thu, 01
+ Sep 2022 07:23:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220901021628.1130985-1-koba.ko@canonical.com>
+ <a15ab3e6-249d-af48-b4d5-25840b72a933@amd.com> <CAJB-X+V-D0Es+5=KJQYdv6DKVK48jYzyU_4y6qvfY=H55y6oHQ@mail.gmail.com>
+In-Reply-To: <CAJB-X+V-D0Es+5=KJQYdv6DKVK48jYzyU_4y6qvfY=H55y6oHQ@mail.gmail.com>
+From:   Koba Ko <koba.ko@canonical.com>
+Date:   Thu, 1 Sep 2022 22:23:00 +0800
+Message-ID: <CAJB-X+V+ZTxKt_hs_jXYhPkKhbK0brqByo6H536BD=PJf4kH=A@mail.gmail.com>
+Subject: Re: [PATCH V2] crypto: ccp - Release dma channels before dmaengine unrgister
+To:     Tom Lendacky <thomas.lendacky@amd.com>
+Cc:     John Allen <john.allen@amd.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Will,
+On Thu, Sep 1, 2022 at 9:57 PM Koba Ko <koba.ko@canonical.com> wrote:
+>
+> On Thu, Sep 1, 2022 at 9:42 PM Tom Lendacky <thomas.lendacky@amd.com> wrote:
+> >
+> > On 8/31/22 21:16, Koba Ko wrote:
+> > > A warning is shown during shutdown,
+> > >
+> > > __dma_async_device_channel_unregister called while 2 clients hold a reference
+> > > WARNING: CPU: 15 PID: 1 at drivers/dma/dmaengine.c:1110 __dma_async_device_channel_unregister+0xb7/0xc0
+> > >
+> > > Call dma_release_channel for occupied channles before dma_async_device_unregister.
+> > >
+> > > Fixes: 4cbe9bc34ed0 ("crypto: ccp - ccp_dmaengine_unregister release dma channels")
+> >
+> > I can't find this Fixes: tag. I did find:
+> >
+> > 54cce8ecb925 ("crypto: ccp - ccp_dmaengine_unregister release dma channels")
+> >
+> > Not sure if Herbert can take care of that or if you'll need a v3.
+>
+> Sorry, it should be 54cce8ecb925("crypto: ccp -
+> ccp_dmaengine_unregister release dma channels")
+>
+> >
+> > With the change to the Fixes: tag
+> >
+> > Acked-by: Tom Lendacky <thomas.lendacky@amd.com>
 
-FYI, the error/warning still remains.
+Should I add acked-by in V3 by myself? thanks
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   c5e4d5e99162ba8025d58a3af7ad103f155d2df7
-commit: eb5c2d4b45e3d2d5d052ea6b8f1463976b1020d5 compiler.h: Move compiletime_assert() macros into compiler_types.h
-date:   2 years, 1 month ago
-config: arc-randconfig-r031-20220901 (https://download.01.org/0day-ci/archive/20220901/202209012255.kdvo6EYi-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=eb5c2d4b45e3d2d5d052ea6b8f1463976b1020d5
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout eb5c2d4b45e3d2d5d052ea6b8f1463976b1020d5
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from <command-line>:
-   mm/huge_memory.c: In function 'hugepage_init':
->> include/linux/compiler_types.h:338:45: error: call to '__compiletime_assert_302' declared with attribute error: BUILD_BUG_ON failed: (24-12) >= 12
-     338 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |                                             ^
-   include/linux/compiler_types.h:319:25: note: in definition of macro '__compiletime_assert'
-     319 |                         prefix ## suffix();                             \
-         |                         ^~~~~~
-   include/linux/compiler_types.h:338:9: note: in expansion of macro '_compiletime_assert'
-     338 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
-         |         ^~~~~~~~~~~~~~~~
-   include/linux/bug.h:24:25: note: in expansion of macro 'BUILD_BUG_ON'
-      24 |                         BUILD_BUG_ON(cond);             \
-         |                         ^~~~~~~~~~~~
-   mm/huge_memory.c:403:9: note: in expansion of macro 'MAYBE_BUILD_BUG_ON'
-     403 |         MAYBE_BUILD_BUG_ON(HPAGE_PMD_ORDER >= MAX_ORDER);
-         |         ^~~~~~~~~~~~~~~~~~
-
-
-vim +/__compiletime_assert_302 +338 include/linux/compiler_types.h
-
-   324	
-   325	#define _compiletime_assert(condition, msg, prefix, suffix) \
-   326		__compiletime_assert(condition, msg, prefix, suffix)
-   327	
-   328	/**
-   329	 * compiletime_assert - break build and emit msg if condition is false
-   330	 * @condition: a compile-time constant condition to check
-   331	 * @msg:       a message to emit if condition is false
-   332	 *
-   333	 * In tradition of POSIX assert, this macro will break the build if the
-   334	 * supplied condition is *false*, emitting the supplied error message if the
-   335	 * compiler has support to do so.
-   336	 */
-   337	#define compiletime_assert(condition, msg) \
- > 338		_compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-   339	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> > > Reported-by: kernel test robot <lkp@intel.com>
+> > > Signed-off-by: Koba Ko <koba.ko@canonical.com>
+> > > ---
+> > > V2: Fix the unused warning
+> > > ---
+> > >   drivers/crypto/ccp/ccp-dmaengine.c | 6 +++++-
+> > >   1 file changed, 5 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/crypto/ccp/ccp-dmaengine.c b/drivers/crypto/ccp/ccp-dmaengine.c
+> > > index 7d4b4ad1db1f3..9f753cb4f5f18 100644
+> > > --- a/drivers/crypto/ccp/ccp-dmaengine.c
+> > > +++ b/drivers/crypto/ccp/ccp-dmaengine.c
+> > > @@ -641,6 +641,10 @@ static void ccp_dma_release(struct ccp_device *ccp)
+> > >       for (i = 0; i < ccp->cmd_q_count; i++) {
+> > >               chan = ccp->ccp_dma_chan + i;
+> > >               dma_chan = &chan->dma_chan;
+> > > +
+> > > +             if (dma_chan->client_count)
+> > > +                     dma_release_channel(dma_chan);
+> > > +
+> > >               tasklet_kill(&chan->cleanup_tasklet);
+> > >               list_del_rcu(&dma_chan->device_node);
+> > >       }
+> > > @@ -766,8 +770,8 @@ void ccp_dmaengine_unregister(struct ccp_device *ccp)
+> > >       if (!dmaengine)
+> > >               return;
+> > >
+> > > -     dma_async_device_unregister(dma_dev);
+> > >       ccp_dma_release(ccp);
+> > > +     dma_async_device_unregister(dma_dev);
+> > >
+> > >       kmem_cache_destroy(ccp->dma_desc_cache);
+> > >       kmem_cache_destroy(ccp->dma_cmd_cache);
