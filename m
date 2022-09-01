@@ -2,138 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02BA1C0502C
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 10:42:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E12D5ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 10:42:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234400AbiIAKmF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 06:42:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55980 "EHLO
+        id S234110AbiIAKmQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 06:42:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234312AbiIAKld (ORCPT
+        with ESMTP id S234363AbiIAKlm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 06:41:33 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9DBAA50E2;
-        Thu,  1 Sep 2022 03:41:29 -0700 (PDT)
-Received: from [192.168.2.145] (109-252-119-13.nat.spd-mgts.ru [109.252.119.13])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dmitry.osipenko)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 0EC286601DF7;
-        Thu,  1 Sep 2022 11:41:24 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1662028888;
-        bh=4gRwEeQrpCCNInUGu4Wkln9ZnVQKU6fbLc+GiIs/ids=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=oAi2rxSwcnG0bXjo2QlMDHpLcITXazqjTc0dBalx+xOeHafTkvkjyLjXi6A6OOyur
-         z7pbNTKLqD/VkqICHbjajAS8k3mrAX9GZO4wHzC1QonWNPPsB+Yz/xNrNkGHiYNqkW
-         KkTeNffA7kOX5RP0brCKXhs5fgLYvkel3UkZEKV4IsG5BuPE8jfFljWb4zRoqwCW4G
-         seQ5HIQoKzjXqwqMOZEyy+r7MpCNGUMFwnjvSCAObVKOgjJcGMutTDAsM5pfKtEEMm
-         0OqK6C+DTZS/pjJwK1O6NhqMYskfUmdtIsJv4b93vGTms4LgyHT3lMm/bHN76TIS0u
-         g+wfJ91stbLBw==
-Message-ID: <b6d96128-7558-8111-71b0-5fe5502ddf4b@collabora.com>
-Date:   Thu, 1 Sep 2022 13:41:21 +0300
+        Thu, 1 Sep 2022 06:41:42 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D52CC12C3FA;
+        Thu,  1 Sep 2022 03:41:37 -0700 (PDT)
+Received: from fraeml735-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MJHYm0cVWz67yhg;
+        Thu,  1 Sep 2022 18:37:48 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ fraeml735-chm.china.huawei.com (10.206.15.216) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 1 Sep 2022 12:41:35 +0200
+Received: from localhost (10.202.226.42) by lhrpeml500005.china.huawei.com
+ (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 1 Sep
+ 2022 11:41:34 +0100
+Date:   Thu, 1 Sep 2022 11:41:33 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To:     Robert Richter <rrichter@amd.com>,
+        Dan Williams <dan.j.williams@intel.com>
+CC:     Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Ben Widawsky <bwidawsk@kernel.org>,
+        <linux-cxl@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>
+Subject: Re: [PATCH 09/15] cxl/acpi: Determine PCI host bridge's ACPI UID
+Message-ID: <20220901114133.0000540c@huawei.com>
+In-Reply-To: <YxBW8Kz/bgoMsAee@rric.localdomain>
+References: <20220831081603.3415-1-rrichter@amd.com>
+        <20220831081603.3415-10-rrichter@amd.com>
+        <20220831120027.000017b3@huawei.com>
+        <YxBW8Kz/bgoMsAee@rric.localdomain>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v4 09/21] drm/etnaviv: Prepare to dynamic dma-buf locking
- specification
-Content-Language: en-US
-To:     =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Dmitry Osipenko <digetx@gmail.com>,
-        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
-        amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        kernel@collabora.com, virtualization@lists.linux-foundation.org,
-        linux-rdma@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        David Airlie <airlied@linux.ie>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        Daniel Stone <daniel@fooishbar.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Rob Clark <robdclark@gmail.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        =?UTF-8?Q?Thomas_Hellstr=c3=b6m?= <thomas_os@shipmail.org>,
-        Qiang Yu <yuq825@gmail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Amol Maheshwari <amahesh@qti.qualcomm.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        Tomi Valkeinen <tomba@kernel.org>
-References: <20220831153757.97381-1-dmitry.osipenko@collabora.com>
- <20220831153757.97381-10-dmitry.osipenko@collabora.com>
- <641f372f-4a30-72bb-ec8b-4fd6ff825594@amd.com>
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-In-Reply-To: <641f372f-4a30-72bb-ec8b-4fd6ff825594@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.42]
+X-ClientProxiedBy: lhrpeml100005.china.huawei.com (7.191.160.25) To
+ lhrpeml500005.china.huawei.com (7.191.163.240)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 9/1/22 09:50, Christian König wrote:
-> Am 31.08.22 um 17:37 schrieb Dmitry Osipenko:
->> Prepare Etnaviv driver to the common dynamic dma-buf locking convention
->> by starting to use the unlocked versions of dma-buf API functions.
->>
->> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+On Thu, 1 Sep 2022 08:53:36 +0200
+Robert Richter <rrichter@amd.com> wrote:
+
+> On 31.08.22 12:00:27, Jonathan Cameron wrote:
+> > On Wed, 31 Aug 2022 10:15:57 +0200
+> > Robert Richter <rrichter@amd.com> wrote:
+> >   
+> > > The UID is needed to read the RCH's CEDT entry with the RCRB base
+> > > address. Determine the host's UID from its ACPI fw node.
+> > > 
+> > > Signed-off-by: Robert Richter <rrichter@amd.com>
+> > > ---
+> > >  drivers/cxl/acpi.c | 12 ++++++++++++
+> > >  1 file changed, 12 insertions(+)
+> > > 
+> > > diff --git a/drivers/cxl/acpi.c b/drivers/cxl/acpi.c
+> > > index f9cdf23a91a8..b3146b7ae922 100644
+> > > --- a/drivers/cxl/acpi.c
+> > > +++ b/drivers/cxl/acpi.c
+> > > @@ -368,8 +368,20 @@ struct pci_host_bridge *cxl_find_next_rch(struct pci_host_bridge *host)
+> > >  static int __init cxl_restricted_host_probe(struct platform_device *pdev)
+> > >  {
+> > >  	struct pci_host_bridge *host = NULL;
+> > > +	struct acpi_device *adev;
+> > > +	unsigned long long uid = ~0;
+> > >  
+> > >  	while ((host = cxl_find_next_rch(host)) != NULL) {
+> > > +		adev = ACPI_COMPANION(&host->dev);
+> > > +		if (!adev || !adev->pnp.unique_id ||
+> > > +			(kstrtoull(adev->pnp.unique_id, 10, &uid) < 0))  
+> > 
+> > There is an acpi_device_uid() accessor function that should probably be
+> > used here.  
 > 
-> Interesting, where is the matching vmap()?
+> That accessor actually does not help really, there is no null pointer
+> check for adev. Using it actually adds more complexity since another
+> variable is introduced plus you need to look at the function's
+> implementation anyway.
 > 
-> Anyway, this patch is Acked-by: Christian König <christian.koenig@amd.com>
+> The adev->pnp.unique_id access pattern is widely used in the kernel, I
+> don't expect changes in the data struct here.
 
-Etnaviv maps GEM only once and then unmaps it when GEM is destroyed. The
-dma-buf vmapping should happen under the reservation lock, hence only
-the release function needs to be changed to the unlocked variant.
+Ok.
 
-Lucas/Christian(Gmeiner), could you please check that I haven't missed
-anything?
-
->> ---
->>   drivers/gpu/drm/etnaviv/etnaviv_gem_prime.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/gpu/drm/etnaviv/etnaviv_gem_prime.c
->> b/drivers/gpu/drm/etnaviv/etnaviv_gem_prime.c
->> index 3fa2da149639..7031db145a77 100644
->> --- a/drivers/gpu/drm/etnaviv/etnaviv_gem_prime.c
->> +++ b/drivers/gpu/drm/etnaviv/etnaviv_gem_prime.c
->> @@ -65,7 +65,7 @@ static void etnaviv_gem_prime_release(struct
->> etnaviv_gem_object *etnaviv_obj)
->>       struct iosys_map map = IOSYS_MAP_INIT_VADDR(etnaviv_obj->vaddr);
->>         if (etnaviv_obj->vaddr)
->> -        dma_buf_vunmap(etnaviv_obj->base.import_attach->dmabuf, &map);
->> +       
->> dma_buf_vunmap_unlocked(etnaviv_obj->base.import_attach->dmabuf, &map);
->>         /* Don't drop the pages for imported dmabuf, as they are not
->>        * ours, just free the array we allocated:
 > 
+> > Also, should a fialure to convert to an integer (or one within
+> > limits) be something we paper over?  Feels like we should fail
+> > hard if that happens.  
+> 
+> This is a real corner case and close to a broken firmware
+> implementation. I think current dbg messages are good to find where
+> the detection stops.
 
+Hmm. I don't like papering over such bugs as it leads to people not
+fixing their bios as early as they otherwise would,
+	but fair enough I guess.
 
--- 
-Best regards,
-Dmitry
+> 
+> > Admittedly I can't immediately find any spec that states that
+> > the _UID should be either integer or under 32 bits...
+> > ACPI allows a string and CXL just says it's 4 bytes long.  
+> 
+> IIRC the UID can be implemented as string or 8 bytes, there is no
+> limitation then. That's why the range check below.
+Ok.
+
+All queries answered so
+
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+
+> 
+> -Robert
+> 
+> >   
+> > > +			continue;
+> > > +
+> > > +		dev_dbg(&adev->dev, "host uid: %llu\n", uid);
+> > > +
+> > > +		if (uid > U32_MAX)
+> > > +			continue;
+> > > +
+> > >  		dev_info(&host->dev, "host supports CXL\n");
+> > >  	}
+> > >    
+> >   
+
