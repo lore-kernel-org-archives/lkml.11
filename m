@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8DA4C0502C
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 12:57:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0C84ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 12:57:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230370AbiIAM5e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 08:57:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51378 "EHLO
+        id S233539AbiIAM5h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 08:57:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233500AbiIAM5X (ORCPT
+        with ESMTP id S233501AbiIAM5X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 1 Sep 2022 08:57:23 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FD8972B7C
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 05:57:20 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id i188-20020a1c3bc5000000b003a7b6ae4eb2so1308850wma.4
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 05:57:20 -0700 (PDT)
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63A82857C2
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 05:57:21 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id k17so8978589wmr.2
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 05:57:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=5oq+K0wpCSsh7jUwt6+vmm/hcvr/21v0i001Dyw+Eww=;
-        b=DdLEChHulzdasOuIWPUlvh6/dx1pv3JVup4WbLGKn8GZsDUWAeHKhRXg8s3zgqoS4D
-         zfCnpWVLLQgQDTgIhJgSaYxq+gtoHzG1yztUdHZk7U1Vb9/PzweyZfmYzy1j7qGMYnp8
-         hFCGKvNcS5LLVeuc54F3KGX0w2Fvuf2SVvVrsx43CmfrvZ2Evu8fU0KYNTCojgdBwW2W
-         hNxd2bhrWhmMpKUWXkZmaHK8C8bnBhnTyQ2tpAXZMXzIXdGgb/jPCxZvPqxoSXN2wKUA
-         UwqbbkRJlL8aUniD+sedCbytuSuM+u96t5FxdGx5lcNS93a0JsxwRVL+Bc8tVYjmaGEJ
-         G4Hg==
+        bh=e93jdwU7lOD2x9pMhJTBQN+yJo5I1w/iWBnUD+AsvRI=;
+        b=rDF1idJDvMgd1slZPtIOFydLsr/QY+6sEYiNV+jLIIOBKWN7fXF1q08wS5SK69LMbw
+         NCG69o1ZUcYBnQex7Q+2biQV7SjyIe0VoUdhyjkGoAgkVsWZ7nnU+WRE486yZW/7tZtC
+         /6Lu5QTpxEefboD577lvcRfeErfcQCD1b7TW0MIhd8c2qyczHsu+DKssPe3kxzZoM7fZ
+         yrawoI5iXeP73B8SFYxAbMTiDyJOLDM5NCYKbVMWBwl/SjNrC8VICFxoYRuO9MnzECHW
+         6TutXiS7YS3dO3XYhEG2zgjoJvn9axJd4ZiAvBGG3XoP6wIfF4MY5D3r55t0FcyV0Soo
+         +W6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=5oq+K0wpCSsh7jUwt6+vmm/hcvr/21v0i001Dyw+Eww=;
-        b=zV7c01xXEsJ/mEIrFJvQOvUvCa4cK8lnMIAon7jQ+pAjpplpt7FhA2eQwUPuXAYYLR
-         LNzsy8/HonCrLxhwQTWONQDl7aoWOAbcYMRUfjaBtBnjvk5uPt8qVue+ha0ayNSc0Wci
-         lEe3hbKPx+Ds+qzAo+Uo7I4Ho517TqZYjRZ9nleT/scUQkdzlY4ecJG0ldKjkR8i2ZWI
-         NJURPsjJSBXcPwYaTTh1b3woGJyIvFgeSKQnts9BMvssu+dgxlK1338vjF0n7aYDN75O
-         KHgKW+l/PdSOj9JoT+WYYy8IcnqlEepVTcWTLlZ2rZhLybFrDbW+PiCaxcmq6ss/EBLy
-         CbIA==
-X-Gm-Message-State: ACgBeo0FFw7yol7bodtnosf3O5RLzLEBEMsAM0onslnY0wW4RbCOfXw7
-        UTnpyeXlw2wuIDcY8Fu1WyKYJA==
-X-Google-Smtp-Source: AA6agR7sSVB8GDqHA/SNdpU3efGHrOX2Si3u7vU37Gf21cUjmMfyxBMIMocd/FwxLdJzZOAFR16rnQ==
-X-Received: by 2002:a05:600c:1e88:b0:3a6:2ca3:f7f2 with SMTP id be8-20020a05600c1e8800b003a62ca3f7f2mr5333101wmb.7.1662037038960;
-        Thu, 01 Sep 2022 05:57:18 -0700 (PDT)
+        bh=e93jdwU7lOD2x9pMhJTBQN+yJo5I1w/iWBnUD+AsvRI=;
+        b=tYVqQcF53ILacvZFIvX0jU4XgDn8umbShqcPhRF0J/0Yu+VYR7NXgZxvueNk7p+kzb
+         dIRzCuXH+9TuyIK5jdrTBPrbc8mNzqFPr2eWbqg/yUQV2DWlyvKzK5VI3C4oMla81k/i
+         A5DR16HuRa8wY2Il5v1kjU5ToA1Lt0MiMPpbKTXGH/T7/Y6LBCYFSkWLYUd0cmMwHGTj
+         iRLIcCMLllMo4yvDIEnavUMVajZUtdaBXoWUoA1XtzMRLtqjxCrwkBkX5Ky7vFPllUF6
+         jrF92h1dGQQtd5/Cam0RiSUPALsQnDvbHQWETtb9x0FarvTFWZFvA4aySIShZKKlzT4b
+         v4Bw==
+X-Gm-Message-State: ACgBeo1WDpHnD8FvRUyII2EKbu2mr++QxJewjV6Kn4iUdZb+c2RUMqva
+        L7AYI/fbLOisJjEB1z3UZV0FAg==
+X-Google-Smtp-Source: AA6agR59aMWYsCOPWc0ZKAYC9b9Kg5CQrnbJzXg5aOklf16iRgHqumCQg6tvrkmk57oEfxrlLYSO7Q==
+X-Received: by 2002:a7b:c84c:0:b0:3a5:dde3:2a9e with SMTP id c12-20020a7bc84c000000b003a5dde32a9emr5458936wml.84.1662037041027;
+        Thu, 01 Sep 2022 05:57:21 -0700 (PDT)
 Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id v5-20020a5d59c5000000b002257fd37877sm15556709wry.6.2022.09.01.05.57.18
+        by smtp.googlemail.com with ESMTPSA id v5-20020a5d59c5000000b002257fd37877sm15556709wry.6.2022.09.01.05.57.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 05:57:18 -0700 (PDT)
+        Thu, 01 Sep 2022 05:57:20 -0700 (PDT)
 From:   Corentin Labbe <clabbe@baylibre.com>
 To:     heiko@sntech.de, herbert@gondor.apana.org.au, ardb@kernel.org,
         davem@davemloft.net, krzysztof.kozlowski+dt@linaro.org,
@@ -57,9 +57,9 @@ Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
         Corentin Labbe <clabbe@baylibre.com>,
         John Keeping <john@metanate.com>
-Subject: [PATCH v9 02/33] crypto: rockchip: do not use uninitialized variable
-Date:   Thu,  1 Sep 2022 12:56:39 +0000
-Message-Id: <20220901125710.3733083-3-clabbe@baylibre.com>
+Subject: [PATCH v9 04/33] crypto: rockchip: fix privete/private typo
+Date:   Thu,  1 Sep 2022 12:56:41 +0000
+Message-Id: <20220901125710.3733083-5-clabbe@baylibre.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220901125710.3733083-1-clabbe@baylibre.com>
 References: <20220901125710.3733083-1-clabbe@baylibre.com>
@@ -69,27 +69,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-crypto_info->dev is not yet set, so use pdev->dev instead.
+This fix a simple typo on private word.
 
 Reviewed-by: John Keeping <john@metanate.com>
 Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
 ---
- drivers/crypto/rockchip/rk3288_crypto.c | 2 +-
+ drivers/crypto/rockchip/rk3288_crypto.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/crypto/rockchip/rk3288_crypto.c b/drivers/crypto/rockchip/rk3288_crypto.c
-index 45cc5f766788..21d3f1458584 100644
---- a/drivers/crypto/rockchip/rk3288_crypto.c
-+++ b/drivers/crypto/rockchip/rk3288_crypto.c
-@@ -381,7 +381,7 @@ static int rk_crypto_probe(struct platform_device *pdev)
- 			       "rk-crypto", pdev);
+diff --git a/drivers/crypto/rockchip/rk3288_crypto.h b/drivers/crypto/rockchip/rk3288_crypto.h
+index 2fa7131e4060..656d6795d400 100644
+--- a/drivers/crypto/rockchip/rk3288_crypto.h
++++ b/drivers/crypto/rockchip/rk3288_crypto.h
+@@ -235,7 +235,7 @@ struct rk_ahash_ctx {
+ 	struct crypto_ahash		*fallback_tfm;
+ };
  
- 	if (err) {
--		dev_err(crypto_info->dev, "irq request failed.\n");
-+		dev_err(&pdev->dev, "irq request failed.\n");
- 		goto err_crypto;
- 	}
- 
+-/* the privete variable of hash for fallback */
++/* the private variable of hash for fallback */
+ struct rk_ahash_rctx {
+ 	struct ahash_request		fallback_req;
+ 	u32				mode;
 -- 
 2.35.1
 
