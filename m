@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C72EFECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 22:22:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5513BECAAD2
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 22:22:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235327AbiIAWWW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 18:22:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46700 "EHLO
+        id S235332AbiIAWW1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 18:22:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235080AbiIAWVD (ORCPT
+        with ESMTP id S235033AbiIAWVL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 18:21:03 -0400
+        Thu, 1 Sep 2022 18:21:11 -0400
 Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0658A2616;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE68DA2600;
         Thu,  1 Sep 2022 15:19:20 -0700 (PDT)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 3D4C42203;
-        Fri,  2 Sep 2022 00:19:13 +0200 (CEST)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 866DC21EE;
+        Fri,  2 Sep 2022 00:19:12 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1662070753;
+        t=1662070752;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=CbvWTun9+QuBUdvSViNHq/GAkH5sJyJindexihmzO3w=;
-        b=KIif7isPnk0Dc76Qomin19zwClkFsLjLT/yPPZHVtqxUGc3dV7yFcoZwcd7mn4RisqCe28
-        hgw7jicL8B76Fp/WDnYtV7HCXGgR2VosHPsttCXTPaY5TopNLjLBRl3dBAGrYDPPaRurV+
-        /x1FCuJVktduFKHORuQWIAn+omsRW0W/tj94otZXgJqFkeOwx4gRSpc3wLQ1mh/lLesiUI
-        Q5hv2gQE/ottx83VXZTh2HdoUuwBAjN1/JNm1hb6boaDoA93NimyPF10JQti73LXGTuDCm
-        egEltn9AxpqY59kVzxf66b5qfnk3l0EObfEnvA1SOJE2iFc7elyvRZb36vIg4w==
+        bh=c5Tm5NgUjgsDKZgk1Ba857CClebez+/VRvwjllvM7EA=;
+        b=QNDnFCwPPEMrDdiAIZjnc2qr2trT/+wfriMAeCUHW8mtz+WDlqDTeANWBO5gS1DNDamyve
+        Tp5PzhSInvwBAkzYfDxM5PFGHVSl/bf/5TkQpiy6w2YZsI1qflDNntb8pCRFNw1IE6A8yE
+        sPHs7j77+ii7LMYbjX8bs2sSA/W98qdJ8o2gDqoQlglj2kdIsZnPDYICFeyXo98Yy0zR31
+        cNGc4SChoh1TGv8urKq891kNEjdcQ4ToUHFXbNkv+4O1vIVPOrSOfj3cE1uPFBO28p+f0f
+        y02dgjpM1Qc74ll54vCguJEHlx0Htq1ryuPWzebjdyjTY1hHwUZEn1bh9Eeuow==
 From:   Michael Walle <michael@walle.cc>
 To:     Miquel Raynal <miquel.raynal@bootlin.com>,
         Richard Weinberger <richard@nod.at>,
@@ -48,9 +48,9 @@ Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
         Ahmad Fatoum <a.fatoum@pengutronix.de>,
         Philipp Zabel <p.zabel@pengutronix.de>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH v2 12/20] nvmem: cell: drop global cell_post_process
-Date:   Fri,  2 Sep 2022 00:18:49 +0200
-Message-Id: <20220901221857.2600340-13-michael@walle.cc>
+Subject: [PATCH v2 10/20] nvmem: core: allow to modify a cell before adding it
+Date:   Fri,  2 Sep 2022 00:18:47 +0200
+Message-Id: <20220901221857.2600340-11-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220901221857.2600340-1-michael@walle.cc>
 References: <20220901221857.2600340-1-michael@walle.cc>
@@ -61,72 +61,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are no users anymore for the global cell_post_process callback
-anymore. New users should use proper nvmem layouts.
+Provide a way to modify a cell before it will get added. This is useful
+to attach a custom post processing hook via a layout.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
 changes since v1:
  - new patch
 
- drivers/nvmem/core.c           | 9 ---------
- include/linux/nvmem-provider.h | 2 --
- 2 files changed, 11 deletions(-)
+ drivers/nvmem/core.c           | 4 ++++
+ include/linux/nvmem-provider.h | 5 +++++
+ 2 files changed, 9 insertions(+)
 
 diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
-index 3b65512762b9..d31d3f0ab517 100644
+index 02d0a7099d9a..3b65512762b9 100644
 --- a/drivers/nvmem/core.c
 +++ b/drivers/nvmem/core.c
-@@ -38,7 +38,6 @@ struct nvmem_device {
- 	unsigned int		nkeepout;
- 	nvmem_reg_read_t	reg_read;
- 	nvmem_reg_write_t	reg_write;
--	nvmem_cell_post_process_t cell_post_process;
- 	struct gpio_desc	*wp_gpio;
- 	struct nvmem_layout	*layout;
- 	void *priv;
-@@ -874,7 +873,6 @@ struct nvmem_device *nvmem_register(const struct nvmem_config *config)
- 	nvmem->type = config->type;
- 	nvmem->reg_read = config->reg_read;
- 	nvmem->reg_write = config->reg_write;
--	nvmem->cell_post_process = config->cell_post_process;
- 	nvmem->keepout = config->keepout;
- 	nvmem->nkeepout = config->nkeepout;
- 	if (config->of_node)
-@@ -1531,13 +1529,6 @@ static int __nvmem_cell_read(struct nvmem_device *nvmem,
- 			return rc;
- 	}
+@@ -693,6 +693,7 @@ static int nvmem_validate_keepouts(struct nvmem_device *nvmem)
  
--	if (nvmem->cell_post_process) {
--		rc = nvmem->cell_post_process(nvmem->priv, id, index,
--					      cell->offset, buf, cell->bytes);
--		if (rc)
--			return rc;
--	}
--
- 	if (len)
- 		*len = cell->bytes;
+ static int nvmem_add_cells_from_of(struct nvmem_device *nvmem)
+ {
++	struct nvmem_layout *layout = nvmem->layout;
+ 	struct device *dev = &nvmem->dev;
+ 	struct nvmem_cell_entry *cell;
+ 	struct device_node *child;
+@@ -729,6 +730,9 @@ static int nvmem_add_cells_from_of(struct nvmem_device *nvmem)
  
+ 		info.np = of_node_get(child);
+ 
++		if (layout && layout->fixup_cell_info)
++			layout->fixup_cell_info(nvmem, layout, &info);
++
+ 		ret = nvmem_add_one_cell(nvmem, &info);
+ 		kfree(info.name);
+ 		if (ret) {
 diff --git a/include/linux/nvmem-provider.h b/include/linux/nvmem-provider.h
-index 9cb340764b89..9d22dc5a3fa5 100644
+index cb488b338d6f..9cb340764b89 100644
 --- a/include/linux/nvmem-provider.h
 +++ b/include/linux/nvmem-provider.h
-@@ -85,7 +85,6 @@ struct nvmem_cell_info {
-  * @no_of_node:	Device should not use the parent's of_node even if it's !NULL.
-  * @reg_read:	Callback to read data.
-  * @reg_write:	Callback to write data.
-- * @cell_post_process:	Callback for vendor specific post processing of cell data
-  * @size:	Device size.
-  * @word_size:	Minimum read/write access granularity.
-  * @stride:	Minimum read/write access stride.
-@@ -120,7 +119,6 @@ struct nvmem_config {
- 	bool			no_of_node;
- 	nvmem_reg_read_t	reg_read;
- 	nvmem_reg_write_t	reg_write;
--	nvmem_cell_post_process_t cell_post_process;
- 	int	size;
- 	int	word_size;
- 	int	stride;
+@@ -157,6 +157,8 @@ struct nvmem_cell_table {
+  * @add_cells:		Will be called if a nvmem device is found which
+  *			has this layout. The function will add layout
+  *			specific cells with nvmem_add_one_cell().
++ * @fixup_cell_info:	Will be called before a cell is added. Can be
++ *			used to modify the nvmem_cell_info.
+  * @owner:		Pointer to struct module.
+  * @node:		List node.
+  *
+@@ -170,6 +172,9 @@ struct nvmem_layout {
+ 	const struct of_device_id *of_match_table;
+ 	int (*add_cells)(struct device *dev, struct nvmem_device *nvmem,
+ 			 struct nvmem_layout *layout);
++	void (*fixup_cell_info)(struct nvmem_device *nvmem,
++				struct nvmem_layout *layout,
++				struct nvmem_cell_info *cell);
+ 
+ 	/* private */
+ 	struct module *owner;
 -- 
 2.30.2
 
