@@ -2,109 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE76DECAAD5
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:34:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7073FECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:34:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231660AbiIABeW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 21:34:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54386 "EHLO
+        id S232688AbiIABed (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 21:34:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232644AbiIABeF (ORCPT
+        with ESMTP id S230148AbiIABea (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 21:34:05 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8511A155D60
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:34:04 -0700 (PDT)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MJ3PG16hqzYd44;
-        Thu,  1 Sep 2022 09:29:38 +0800 (CST)
-Received: from kwepemm600008.china.huawei.com (7.193.23.88) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 1 Sep 2022 09:34:01 +0800
-Received: from huawei.com (10.175.100.227) by kwepemm600008.china.huawei.com
- (7.193.23.88) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 1 Sep
- 2022 09:34:00 +0800
-From:   Shang XiaoJing <shangxiaojing@huawei.com>
-To:     <mingo@redhat.com>, <peterz@infradead.org>,
-        <juri.lelli@redhat.com>, <vincent.guittot@linaro.org>,
-        <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
-        <bsegall@google.com>, <mgorman@suse.de>, <bristot@redhat.com>,
-        <vschneid@redhat.com>, <linux-kernel@vger.kernel.org>
-CC:     <shangxiaojing@huawei.com>
-Subject: [PATCH v2] sched/deadline: Add should_push_task_dl helper
-Date:   Thu, 1 Sep 2022 10:08:55 +0800
-Message-ID: <20220901020855.29951-1-shangxiaojing@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 31 Aug 2022 21:34:30 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74C33155D60
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:34:29 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id 78so1519189pgb.13
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:34:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=nVosT8kIh+uDUZAUv7ofYilIkaVmBXxsR2Ou6VT/op0=;
+        b=SAMWgYg4o0qucWWu0txW11TMrl0e2MH7SRKOq+P2rhHdggVfk0N6GYJ3iSz78waAyB
+         5R06aetSj+ZHrNObwoed7nvw+b7FXbywOflrurawVzcZTQ/L/xeFOdA+nbcX5WzZNJV0
+         t3GPHjMnqI9Nw6+EUrMChrRjHdeCKieXgp1ybz7nAw84DNHT+Xodu+IVwbKmGtnWTuIq
+         XsN3T9s+xjUBLdJSKzMhhnZ+V8P03iIrrLK2wJ8Soc3j3laaKHDUByt/wqRc6//ItzkC
+         fFq252ug+eO9ubCTS83GhujJ7xywwSjsZKGYq/uCeuMk63J/aCcOppmL363cP3toe2WS
+         BmIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=nVosT8kIh+uDUZAUv7ofYilIkaVmBXxsR2Ou6VT/op0=;
+        b=XVMoDDYPQmiYy1UCZVc9nhS8foS9pmz3ZFs9tO5DzaMfXei3cHHD8NaW6GkHJABFaW
+         rIGI9jtogHX1czgacWQ1wOMD3immqEjBbv9TnfMojAIrcgbnrdi85Nxie8SPosslt7Z7
+         NojYU+0cVkyio2tE1pZgPZ//hwXT+4FGI/7BUBp2BLineBG7kxUb8E6gYfQMifGcJl2f
+         2Dn/qUKCDlGzM1yYR6U5FIoae+vjwmWAxmQcM9Bso7aBhK0K5loERqhPrNYx737USScx
+         eg5coWU941an0ZqmMLg4TNioE9jOl6JAhshsTsbbd/IS+iyeD6uqn+XH9/acFKqKiuXF
+         1uoQ==
+X-Gm-Message-State: ACgBeo2JdN9DsA/asX1IDjBbWzH+jhcRIiArG8EODFyQbwIojj9A7TH1
+        Ocd/IK8xqGtW+XYdAj2fmOQtHeeZhleRFQ==
+X-Google-Smtp-Source: AA6agR7Vw1FdEThl9LXvfL/lflLyKvmNDfvu+TMGYJ3Wra+yzGD/c2KCL/bQd929gMhoTpXWuGkqlA==
+X-Received: by 2002:a63:6683:0:b0:42b:1d69:a0ff with SMTP id a125-20020a636683000000b0042b1d69a0ffmr24522617pgc.475.1661996069042;
+        Wed, 31 Aug 2022 18:34:29 -0700 (PDT)
+Received: from carlis-virtual-machine.localdomain ([156.236.96.164])
+        by smtp.gmail.com with ESMTPSA id it6-20020a17090afb0600b001fba4716f11sm1993897pjb.22.2022.08.31.18.34.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Aug 2022 18:34:27 -0700 (PDT)
+From:   Xuezhi Zhang <zhangxuezhi3@gmail.com>
+To:     abbotti@mev.co.uk, hsweeten@visionengravers.com,
+        gregkh@linuxfoundation.org, zhangxuezhi1@coolpad.com
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH v4] comedi: convert sysfs snprintf to sysfs_emit
+Date:   Thu,  1 Sep 2022 09:34:23 +0800
+Message-Id: <20220901013423.418464-1-zhangxuezhi3@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.100.227]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600008.china.huawei.com (7.193.23.88)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Wrap complex and repeated code in helper function should_push_task_dl,
-which will return true when task p should be pushed to other cores
-because of current task.
+From: Xuezhi Zhang <zhangxuezhi1@coolpad.com>
 
-Signed-off-by: Shang XiaoJing <shangxiaojing@huawei.com>
----
-changes in v2:
-- pick a more descriptive function name rather than
-should_push_task_away.
-- adjust name of args.
----
- kernel/sched/deadline.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+Follow the advice of the Documentation/filesystems/sysfs.rst
+and show() should only use sysfs_emit() or sysfs_emit_at()
+when formatting the value to be returned to user space.
 
-diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
-index daa9a7fb5917..d0fa30a3f1b3 100644
---- a/kernel/sched/deadline.c
-+++ b/kernel/sched/deadline.c
-@@ -1814,6 +1814,15 @@ static void yield_task_dl(struct rq *rq)
+Signed-off-by: Xuezhi Zhang <zhangxuezhi1@coolpad.com>
+---
+v2: use a proper name for the Signed-off-by line.
+v3: fix From line and Subject line.
+v4: change changlog.
+---
+ drivers/comedi/comedi_fops.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/comedi/comedi_fops.c b/drivers/comedi/comedi_fops.c
+index 55a0cae04b8d..e2114bcf815a 100644
+--- a/drivers/comedi/comedi_fops.c
++++ b/drivers/comedi/comedi_fops.c
+@@ -396,7 +396,7 @@ static ssize_t max_read_buffer_kb_show(struct device *csdev,
+ 	mutex_unlock(&dev->mutex);
  
- #ifdef CONFIG_SMP
- 
-+static inline bool should_push_task_dl(struct task_struct *curr,
-+					struct task_struct *p)
-+{
-+	return unlikely(dl_task(curr)) &&
-+	       (curr->nr_cpus_allowed < 2 ||
-+		!dl_entity_preempt(&p->dl, &curr->dl)) &&
-+	       p->nr_cpus_allowed > 1;
-+}
-+
- static int find_later_rq(struct task_struct *task);
- 
- static int
-@@ -1840,10 +1849,7 @@ select_task_rq_dl(struct task_struct *p, int cpu, int flags)
- 	 * other hand, if it has a shorter deadline, we
- 	 * try to make it stay here, it might be important.
- 	 */
--	select_rq = unlikely(dl_task(curr)) &&
--		    (curr->nr_cpus_allowed < 2 ||
--		     !dl_entity_preempt(&p->dl, &curr->dl)) &&
--		    p->nr_cpus_allowed > 1;
-+	select_rq = should_push_task_dl(curr, p);
- 
- 	/*
- 	 * Take the capacity of the CPU into account to
-@@ -2477,10 +2483,7 @@ static void task_woken_dl(struct rq *rq, struct task_struct *p)
- {
- 	if (!task_running(rq, p) &&
- 	    !test_tsk_need_resched(rq->curr) &&
--	    p->nr_cpus_allowed > 1 &&
--	    dl_task(rq->curr) &&
--	    (rq->curr->nr_cpus_allowed < 2 ||
--	     !dl_entity_preempt(&p->dl, &rq->curr->dl))) {
-+	    should_push_task_dl(rq->curr, p)) {
- 		push_dl_tasks(rq);
- 	}
+ 	comedi_dev_put(dev);
+-	return snprintf(buf, PAGE_SIZE, "%u\n", size);
++	return sysfs_emit(buf, "%u\n", size);
  }
+ 
+ static ssize_t max_read_buffer_kb_store(struct device *csdev,
+@@ -452,7 +452,7 @@ static ssize_t read_buffer_kb_show(struct device *csdev,
+ 	mutex_unlock(&dev->mutex);
+ 
+ 	comedi_dev_put(dev);
+-	return snprintf(buf, PAGE_SIZE, "%u\n", size);
++	return sysfs_emit(buf, "%u\n", size);
+ }
+ 
+ static ssize_t read_buffer_kb_store(struct device *csdev,
+@@ -509,7 +509,7 @@ static ssize_t max_write_buffer_kb_show(struct device *csdev,
+ 	mutex_unlock(&dev->mutex);
+ 
+ 	comedi_dev_put(dev);
+-	return snprintf(buf, PAGE_SIZE, "%u\n", size);
++	return sysfs_emit(buf, "%u\n", size);
+ }
+ 
+ static ssize_t max_write_buffer_kb_store(struct device *csdev,
+@@ -565,7 +565,7 @@ static ssize_t write_buffer_kb_show(struct device *csdev,
+ 	mutex_unlock(&dev->mutex);
+ 
+ 	comedi_dev_put(dev);
+-	return snprintf(buf, PAGE_SIZE, "%u\n", size);
++	return sysfs_emit(buf, "%u\n", size);
+ }
+ 
+ static ssize_t write_buffer_kb_store(struct device *csdev,
 -- 
-2.17.1
+2.25.1
 
