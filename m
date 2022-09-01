@@ -2,148 +2,346 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D954ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 11:02:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2A4CECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 11:03:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234429AbiIALCP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 07:02:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39812 "EHLO
+        id S233296AbiIALDN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 07:03:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234465AbiIALBs (ORCPT
+        with ESMTP id S229798AbiIALDK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 07:01:48 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B5A20139F58;
-        Thu,  1 Sep 2022 04:01:31 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 34134D6E;
-        Thu,  1 Sep 2022 04:01:37 -0700 (PDT)
-Received: from [10.57.18.92] (unknown [10.57.18.92])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BF7353F766;
-        Thu,  1 Sep 2022 04:01:28 -0700 (PDT)
-Message-ID: <e01e6ef2-ba45-7433-5fe4-a6806dac3af9@arm.com>
-Date:   Thu, 1 Sep 2022 12:01:23 +0100
+        Thu, 1 Sep 2022 07:03:10 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC26745077;
+        Thu,  1 Sep 2022 04:03:07 -0700 (PDT)
+X-UUID: 0aca0395703f49f68b4f39bc7a8ce050-20220901
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=zGXbG85OwSaQ9RW6b5zZ9K/RY/riE4Y898TbFDyAPXs=;
+        b=YoUGhJ8SdaP2ws2KsiR0idhrElWngUVmnVilK9LryiVP5lW2L45OcvN0zeaTC43oyyk4PdDcz2P2XNP8XgMt6GVxwsv/MB0jEd2CXKBUCsv2Q97qNCbXArIfF9/cJ0cGg5zDeny6N4GqnZL17SQzBvBPWgbe44T+XrFZAraVo3Q=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.10,REQID:fa68c62d-6813-4884-9845-3ee0925c8edb,OB:0,L
+        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_
+        Ham,ACTION:release,TS:0
+X-CID-META: VersionHash:84eae18,CLOUDID:c112d220-1c20-48a5-82a0-25f9c331906d,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 0aca0395703f49f68b4f39bc7a8ce050-20220901
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <chui-hao.chiu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1245573146; Thu, 01 Sep 2022 19:03:01 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Thu, 1 Sep 2022 19:03:00 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
+ Transport; Thu, 1 Sep 2022 19:03:00 +0800
+Message-ID: <28d62f85365b2a718e143cf5bd0c1230bee8168f.camel@mediatek.com>
+Subject: Re: [PATCH v4] arm64: dts: mt7986: add built-in Wi-Fi device nodes
+From:   Peter Chiu <chui-hao.chiu@mediatek.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+CC:     <devicetree@vger.kernel.org>, Ryder Lee <ryder.Lee@mediatek.com>,
+        "Evelyn Tsai" <evelyn.tsai@mediatek.com>,
+        Sam Shih <sam.shih@mediatek.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Date:   Thu, 1 Sep 2022 19:03:00 +0800
+In-Reply-To: <079c023c-fa2d-1a5a-41ec-6d364067eb7d@gmail.com>
+References: <20220630094909.8014-1-chui-hao.chiu@mediatek.com>
+         <b6524da2-34d6-cb7b-c8bf-19809e8932ed@gmail.com>
+         <deb84c968ba615201619e5c4ef0445f09de6fc7e.camel@mediatek.com>
+         <079c023c-fa2d-1a5a-41ec-6d364067eb7d@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH v4 1/2] iommu/s390: Fix race with release_device ops
-Content-Language: en-GB
-To:     Niklas Schnelle <schnelle@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>, iommu@lists.linux.dev
-Cc:     linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, joro@8bytes.org, will@kernel.org,
-        jgg@nvidia.com, linux-kernel@vger.kernel.org
-References: <20220831201236.77595-1-mjrosato@linux.ibm.com>
- <20220831201236.77595-2-mjrosato@linux.ibm.com>
- <9887e2f4-3f3d-137d-dad7-59dab5f98aab@linux.ibm.com>
- <52d3fe0b86bdc04fdbf3aae095b2f71f4ea12d44.camel@linux.ibm.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <52d3fe0b86bdc04fdbf3aae095b2f71f4ea12d44.camel@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-09-01 10:37, Niklas Schnelle wrote:
-> On Thu, 2022-09-01 at 09:56 +0200, Pierre Morel wrote:
->>
->> On 8/31/22 22:12, Matthew Rosato wrote:
->>> With commit fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev
->>> calls") s390-iommu is supposed to handle dynamic switching between IOMMU
->>> domains and the DMA API handling.  However, this commit does not
->>> sufficiently handle the case where the device is released via a call
->>> to the release_device op as it may occur at the same time as an opposing
->>> attach_dev or detach_dev since the group mutex is not held over
->>> release_device.  This was observed if the device is deconfigured during a
->>> small window during vfio-pci initialization and can result in WARNs and
->>> potential kernel panics.
->>>
->>> Handle this by tracking when the device is probed/released via
->>> dev_iommu_priv_set/get().  Ensure that once the device is released only
->>> release_device handles the re-init of the device DMA.
->>>
->>> Fixes: fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev calls")
->>> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
->>> ---
->>>    arch/s390/include/asm/pci.h |  1 +
->>>    arch/s390/pci/pci.c         |  1 +
->>>    drivers/iommu/s390-iommu.c  | 39 ++++++++++++++++++++++++++++++++++---
->>>    3 files changed, 38 insertions(+), 3 deletions(-)
->>>
->>>
-> ---8<---
->>>    
->>> @@ -206,10 +221,28 @@ static void s390_iommu_release_device(struct device *dev)
->>>
->>
-> ---8<---
->>> +		/* Make sure this device is removed from the domain list */
->>>    		domain = iommu_get_domain_for_dev(dev);
->>>    		if (domain)
->>>    			s390_iommu_detach_device(domain, dev);
->>> +		/* Now ensure DMA is initialized from here */
->>> +		mutex_lock(&zdev->dma_domain_lock);
->>> +		if (zdev->s390_domain) {
->>> +			zdev->s390_domain = NULL;
->>> +			zpci_unregister_ioat(zdev, 0);
->>> +			zpci_dma_init_device(zdev);
->>
->> Sorry if it is a stupid question, but two things looks strange to me:
->>
->> - having DMA initialized just after having unregistered the IOAT
->> Is that really all we need to unregister before calling dma_init_device?
->>
->> - having DMA initialized inside the release_device callback:
->> Why isn't it done in the device_probe ?
+On Thu, 2022-09-01 at 10:13 +0200, Matthias Brugger wrote:
 > 
-> As I understand it iommu_release_device() which calls this code is only
-> used when a device goes away. So, I think you're right in that it makes
-> little sense to re-initialize DMA at this point, it's going to be torn
-> down immediately after anyway. I do wonder if it would be an acceptably
-> small change to just set zdev->s390_domain = NULL here and leave DMA
-> uninitialized while making zpci_dma_exit_device() deal with that e.g.
-> by doing nothing if zdev->dma_table is NULL but I'm not sure.
+> On 01/09/2022 05:47, Peter Chiu wrote:
+> > On Tue, 2022-08-30 at 10:43 +0200, Matthias Brugger wrote:
+> > > 
+> > > On 30/06/2022 11:49, Peter Chiu wrote:
+> > > > This enables built-in 802.11ax Wi-Fi support.
+> > > > 
+> > > > Reviewed-by: Sam Shih <sam.shih@mediatek.com>
+> > > > Reviewed-by: Ryder Lee <ryder.lee@mediatek.com>
+> > > > Signed-off-by: Peter Chiu <chui-hao.chiu@mediatek.com>
+> > > > ---
+> > > > v2: add clocks and clock-names.
+> > > > v3: rename wmac to wifi and change underscores to dash in node
+> > > > names.
+> > > > v4: rebase to the latest codebase.
+> > > > ---
+> > > >    arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts | 41
+> > > > +++++++++++++++++++
+> > > >    arch/arm64/boot/dts/mediatek/mt7986a.dtsi    | 23
+> > > > +++++++++++
+> > > >    arch/arm64/boot/dts/mediatek/mt7986b-rfb.dts | 43
+> > > > ++++++++++++++++++++
+> > > >    3 files changed, 107 insertions(+)
+> > > > 
+> > > > diff --git a/arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts
+> > > > b/arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts
+> > > > index 882277a..28cd168 100644
+> > > > --- a/arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts
+> > > > +++ b/arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts
+> > > > @@ -115,6 +115,13 @@ &uart2 {
+> > > >    	status = "okay";
+> > > >    };
+> > > >    
+> > > > +&wifi {
+> > > > +	status = "okay";
+> > > > +	pinctrl-names = "default", "dbdc";
+> > > > +	pinctrl-0 = <&wf_2g_5g_pins>;
+> > > > +	pinctrl-1 = <&wf_dbdc_pins>;
+> > > > +};
+> > > > +
+> > > >    &pio {
+> > > >    	uart1_pins: uart1-pins {
+> > > >    		mux {
+> > > > @@ -129,4 +136,38 @@ mux {
+> > > >    			groups = "uart2";
+> > > >    		};
+> > > >    	};
+> > > > +
+> > > > +	wf_2g_5g_pins: wf-2g-5g-pins {
+> > > > +		mux {
+> > > > +			function = "wifi";
+> > > > +			groups = "wf_2g", "wf_5g";
+> > > 
+> > > yaml says:
+> > >            - if:
+> > >                 properties:
+> > >                   function:
+> > >                     const: wifi
+> > >               then:
+> > >                 properties:
+> > >                   groups:
+> > >                     enum: [wf_2g, wf_5g, wf_dbdc]
+> > > 
+> > > 
+> > > Did you run the binding checker against this DTS?
+> > 
+> > The binding checker showed the groups setting is too long. We will
+> > send
+> > a patch to fix yaml by setting groups as string-array.
+> > 
 > 
-> Either way I fear this mess really is just a symptom of our current
-> design oddity of driving the same IOMMU hardware through both our DMA
-> API implementation (arch/s390/pci_dma.c) and the IOMMU driver
-> (driver/iommu/s390-iommu.c) and trying to hand off between them
-> smoothly where common code instead just layers one atop the other when
-> using an IOMMU at all.
-> 
-> I think the correct medium term solution is to use the common DMA API
-> implementation (drivers/iommu/dma-iommu.c) like everyone else. But that
-> isn't the minimal fix we need now.
-> 
-> I do have a working prototype of using the common implementation but
-> the big problem that I'm still searching a solution for is its
-> performance with a virtualized IOMMU where IOTLB flushes (RPCIT on
-> s390) are used for shadowing and are expensive and serialized. The
-> optimization we used so far for unmap, only doing one global IOTLB
-> flush once we run out of IOVA space, is just too much better in that
-> scenario to just ignore. As one data point, on an NVMe I get about
-> _twice_ the IOPS when using our existing scheme compared to strict
-> mode. Which makes sense as IOTLB flushes are known as the bottleneck
-> and optimizing unmap like that reduces them by almost half. Queued
-> flushing is still much worse likely due to serialization of the
-> shadowing, though again it works great on LPAR. To make sure it's not
-> due to some bug in the IOMMU driver I even tried converting our
-> existing DMA driver to layer on top of the IOMMU driver with the same
-> result.
+> Wait, does this mean the binding was wrong in the first place, as you
+> can't set 
+> all three groups in one node?
 
-FWIW, can you approximate the same behaviour by just making IOVA_FQ_SIZE 
-and IOVA_FQ_TIMEOUT really big, and deferring your zpci_refresh_trans() 
-hook from .unmap to .flush_iotlb_all when in non-strict mode?
+Yes, we need to set two groups in a node for the board which supports
+wifi 2g and wifi 5g simultaneously. The bindings lack the following
+code which set groups to string-array.
+$ref: /schemas/types.yaml#/definitions/string-array
 
-I'm not against the idea of trying to support this mode of operation 
-better in the common code, since it seems like it could potentially be 
-useful for *any* virtualised scenario where trapping to invalidate is 
-expensive and the user is happy to trade off the additional address 
-space/memory overhead (and even greater loss of memory protection) 
-against that.
+> 
+> > > Why can't we just merge wf_2g_5g_pins with wf_dbdc_pins?
+> > 
+> > Since they use different pinmux settings on the same pin, we need
+> > to
+> > distinguish them.
+> > 
+> 
+> wf-2g-5g-pins and wf-dbdc-pins set the same drive-strength to the
+> very same 
+> group of pins. What do you mean exactly? Sorry I'm not an expert on
+> the pinctrl 
+> infrastructure.
 
-Robin.
+wf-2g-5g-pins and wf-dbdc-pins use different functions by setting
+different groups. But I set useless drive-strength in the wf-dbdc-pins
+node. I will remove them in the next version.
+
+Best Regards,
+Peter Chiu
+
+> 
+> Regards,
+> Matthias
+> 
+> 
+> > Best Regards,
+> > Peter Chiu
+> > > 
+> > > Regards,
+> > > Matthias
+> > > 
+> > > > +		};
+> > > > +		conf {
+> > > > +			pins = "WF0_HB1", "WF0_HB2", "WF0_HB3",
+> > > > "WF0_HB4",
+> > > > +			       "WF0_HB0", "WF0_HB0_B",
+> > > > "WF0_HB5",
+> > > > "WF0_HB6",
+> > > > +			       "WF0_HB7", "WF0_HB8", "WF0_HB9",
+> > > > "WF0_HB10",
+> > > > +			       "WF0_TOP_CLK", "WF0_TOP_DATA",
+> > > > "WF1_HB1",
+> > > > +			       "WF1_HB2", "WF1_HB3", "WF1_HB4",
+> > > > "WF1_HB0",
+> > > > +			       "WF1_HB5", "WF1_HB6", "WF1_HB7",
+> > > > "WF1_HB8",
+> > > > +			       "WF1_TOP_CLK", "WF1_TOP_DATA";
+> > > > +			drive-strength = <4>;
+> > > > +		};
+> > > > +	};
+> > > > +
+> > > > +	wf_dbdc_pins: wf-dbdc-pins {
+> > > > +		mux {
+> > > > +			function = "wifi";
+> > > > +			groups = "wf_dbdc";
+> > > > +		};
+> > > > +		conf {
+> > > > +			pins = "WF0_HB1", "WF0_HB2", "WF0_HB3",
+> > > > "WF0_HB4",
+> > > > +			       "WF0_HB0", "WF0_HB0_B",
+> > > > "WF0_HB5",
+> > > > "WF0_HB6",
+> > > > +			       "WF0_HB7", "WF0_HB8", "WF0_HB9",
+> > > > "WF0_HB10",
+> > > > +			       "WF0_TOP_CLK", "WF0_TOP_DATA",
+> > > > "WF1_HB1",
+> > > > +			       "WF1_HB2", "WF1_HB3", "WF1_HB4",
+> > > > "WF1_HB0",
+> > > > +			       "WF1_HB5", "WF1_HB6", "WF1_HB7",
+> > > > "WF1_HB8",
+> > > > +			       "WF1_TOP_CLK", "WF1_TOP_DATA";
+> > > > +			drive-strength = <4>;
+> > > > +		};
+> > > > +	};
+> > > >    };
+> > > > diff --git a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
+> > > > b/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
+> > > > index e3a407d..890ded0 100644
+> > > > --- a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
+> > > > +++ b/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
+> > > > @@ -7,6 +7,7 @@
+> > > >    #include <dt-bindings/interrupt-controller/irq.h>
+> > > >    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> > > >    #include <dt-bindings/clock/mt7986-clk.h>
+> > > > +#include <dt-bindings/reset/mt7986-resets.h>
+> > > >    
+> > > >    / {
+> > > >    	interrupt-parent = <&gic>;
+> > > > @@ -70,6 +71,11 @@ secmon_reserved: secmon@43000000 {
+> > > >    			reg = <0 0x43000000 0 0x30000>;
+> > > >    			no-map;
+> > > >    		};
+> > > > +
+> > > > +		wmcpu_emi: wmcpu-reserved@4fc00000 {
+> > > > +			no-map;
+> > > > +			reg = <0 0x4fc00000 0 0x00100000>;
+> > > > +		};
+> > > >    	};
+> > > >    
+> > > >    	timer {
+> > > > @@ -261,6 +267,23 @@ eth: ethernet@15100000 {
+> > > >    			#size-cells = <0>;
+> > > >    			status = "disabled";
+> > > >    		};
+> > > > +
+> > > > +		wifi: wifi@18000000 {
+> > > > +			compatible = "mediatek,mt7986-wmac";
+> > > > +			resets = <&watchdog
+> > > > MT7986_TOPRGU_CONSYS_SW_RST>;
+> > > > +			reset-names = "consys";
+> > > > +			clocks = <&topckgen
+> > > > CLK_TOP_CONN_MCUSYS_SEL>,
+> > > > +				 <&topckgen
+> > > > CLK_TOP_AP2CNN_HOST_SEL>;
+> > > > +			clock-names = "mcu", "ap2conn";
+> > > > +			reg = <0 0x18000000 0 0x1000000>,
+> > > > +			      <0 0x10003000 0 0x1000>,
+> > > > +			      <0 0x11d10000 0 0x1000>;
+> > > > +			interrupts = <GIC_SPI 213
+> > > > IRQ_TYPE_LEVEL_HIGH>,
+> > > > +				     <GIC_SPI 214
+> > > > IRQ_TYPE_LEVEL_HIGH>,
+> > > > +				     <GIC_SPI 215
+> > > > IRQ_TYPE_LEVEL_HIGH>,
+> > > > +				     <GIC_SPI 216
+> > > > IRQ_TYPE_LEVEL_HIGH>;
+> > > > +			memory-region = <&wmcpu_emi>;
+> > > > +		};
+> > > >    	};
+> > > >    
+> > > >    };
+> > > > diff --git a/arch/arm64/boot/dts/mediatek/mt7986b-rfb.dts
+> > > > b/arch/arm64/boot/dts/mediatek/mt7986b-rfb.dts
+> > > > index 0f49d57..7f21b10 100644
+> > > > --- a/arch/arm64/boot/dts/mediatek/mt7986b-rfb.dts
+> > > > +++ b/arch/arm64/boot/dts/mediatek/mt7986b-rfb.dts
+> > > > @@ -98,3 +98,46 @@ fixed-link {
+> > > >    		};
+> > > >    	};
+> > > >    };
+> > > > +
+> > > > +&wifi {
+> > > > +	status = "okay";
+> > > > +	pinctrl-names = "default", "dbdc";
+> > > > +	pinctrl-0 = <&wf_2g_5g_pins>;
+> > > > +	pinctrl-1 = <&wf_dbdc_pins>;
+> > > > +};
+> > > > +
+> > > > +&pio {
+> > > > +	wf_2g_5g_pins: wf-2g-5g-pins {
+> > > > +		mux {
+> > > > +			function = "wifi";
+> > > > +			groups = "wf_2g", "wf_5g";
+> > > > +		};
+> > > > +		conf {
+> > > > +			pins = "WF0_HB1", "WF0_HB2", "WF0_HB3",
+> > > > "WF0_HB4",
+> > > > +			       "WF0_HB0", "WF0_HB0_B",
+> > > > "WF0_HB5",
+> > > > "WF0_HB6",
+> > > > +			       "WF0_HB7", "WF0_HB8", "WF0_HB9",
+> > > > "WF0_HB10",
+> > > > +			       "WF0_TOP_CLK", "WF0_TOP_DATA",
+> > > > "WF1_HB1",
+> > > > +			       "WF1_HB2", "WF1_HB3", "WF1_HB4",
+> > > > "WF1_HB0",
+> > > > +			       "WF1_HB5", "WF1_HB6", "WF1_HB7",
+> > > > "WF1_HB8",
+> > > > +			       "WF1_TOP_CLK", "WF1_TOP_DATA";
+> > > > +			drive-strength = <4>;
+> > > > +		};
+> > > > +	};
+> > > > +
+> > > > +	wf_dbdc_pins: wf-dbdc-pins {
+> > > > +		mux {
+> > > > +			function = "wifi";
+> > > > +			groups = "wf_dbdc";
+> > > > +		};
+> > > > +		conf {
+> > > > +			pins = "WF0_HB1", "WF0_HB2", "WF0_HB3",
+> > > > "WF0_HB4",
+> > > > +			       "WF0_HB0", "WF0_HB0_B",
+> > > > "WF0_HB5",
+> > > > "WF0_HB6",
+> > > > +			       "WF0_HB7", "WF0_HB8", "WF0_HB9",
+> > > > "WF0_HB10",
+> > > > +			       "WF0_TOP_CLK", "WF0_TOP_DATA",
+> > > > "WF1_HB1",
+> > > > +			       "WF1_HB2", "WF1_HB3", "WF1_HB4",
+> > > > "WF1_HB0",
+> > > > +			       "WF1_HB5", "WF1_HB6", "WF1_HB7",
+> > > > "WF1_HB8",
+> > > > +			       "WF1_TOP_CLK", "WF1_TOP_DATA";
+> > > > +			drive-strength = <4>;
+> > > > +		};
+> > > > +	};
+> > > > +};
+
