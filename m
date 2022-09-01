@@ -2,213 +2,265 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 780F7ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 11:00:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92094ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 11:00:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234332AbiIALAP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 07:00:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35432 "EHLO
+        id S234357AbiIALAr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 07:00:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229798AbiIALAL (ORCPT
+        with ESMTP id S229798AbiIALAn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 07:00:11 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31A0FE0F3;
-        Thu,  1 Sep 2022 04:00:07 -0700 (PDT)
-Received: from fraeml740-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MJJ2p1dnFz688J4;
-        Thu,  1 Sep 2022 18:59:30 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- fraeml740-chm.china.huawei.com (10.206.15.221) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 1 Sep 2022 13:00:04 +0200
-Received: from localhost (10.202.226.42) by lhrpeml500005.china.huawei.com
- (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 1 Sep
- 2022 12:00:04 +0100
-Date:   Thu, 1 Sep 2022 12:00:03 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To:     Robert Richter <rrichter@amd.com>
-CC:     Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Ben Widawsky <bwidawsk@kernel.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        <linux-cxl@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Terry Bowman <terry.bowman@amd.com>
-Subject: Re: [PATCH 11/15] cxl/acpi: Extract the host's component register
- base address from RCRB
-Message-ID: <20220901120003.000024ce@huawei.com>
-In-Reply-To: <YxBhZdYz606i+pAN@rric.localdomain>
-References: <20220831081603.3415-1-rrichter@amd.com>
-        <20220831081603.3415-12-rrichter@amd.com>
-        <20220831125656.00007beb@huawei.com>
-        <YxBhZdYz606i+pAN@rric.localdomain>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        Thu, 1 Sep 2022 07:00:43 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA9CD10F08F;
+        Thu,  1 Sep 2022 04:00:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=MHAxYyxUgR/abIYCe2+tqPs37wMBg4sI4S4Xv4QcQS8=; b=B5OVANHSncb4o/i9LeD4iOlbBp
+        Lkm41yBotm9Rgq6eyqGORQkRoQKkM5uLMy/qVzC80T3GmvzA9RqJ1EH7YBsMkoMJWK7vet+rcu8Hj
+        1bkyB5Aih7cUb79kiDyEpXRh9NMgfuz8QoBrJ+hi9NPGTEKh7Zq+yh2NgfpxZMbPaAxW6AXD0Ed32
+        GLuyLeIfsFoAl2lnubUJLV/fEndhgDkjMHqGJO6jYNh4Ty2pMuP4BNLLPm6RQWyKKi8Irg/Jx6218
+        gq4rBpPES4CreTfsfWKhcYMFi8sUx5Y0bT6LTjMvPKI7sH8DpiIcJii0LuePKe9hQbEqjp8gP+liX
+        qpd9WFmw==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oThvz-005yDA-Hg; Thu, 01 Sep 2022 11:00:31 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 6DB0D3002C7;
+        Thu,  1 Sep 2022 13:00:29 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 522202B87B626; Thu,  1 Sep 2022 13:00:29 +0200 (CEST)
+Date:   Thu, 1 Sep 2022 13:00:29 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Eric Biggers <ebiggers@kernel.org>, x86@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Adam Langley <agl@google.com>,
+        Ard Biesheuvel <ardb@kernel.org>
+Subject: Re: Should Linux set the new constant-time mode CPU flags?
+Message-ID: <YxCQzZqLZ49gLlrH@hirez.programming.kicks-ass.net>
+References: <YwgCrqutxmX0W72r@gmail.com>
+ <Ywzr2d52ixYXUDWR@zx2c4.com>
+ <6ec9cdab-db5b-ab28-c92d-79c3812dd369@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.42]
-X-ClientProxiedBy: lhrpeml100005.china.huawei.com (7.191.160.25) To
- lhrpeml500005.china.huawei.com (7.191.163.240)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6ec9cdab-db5b-ab28-c92d-79c3812dd369@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 1 Sep 2022 09:38:13 +0200
-Robert Richter <rrichter@amd.com> wrote:
-
-> On 31.08.22 12:56:56, Jonathan Cameron wrote:
-> > On Wed, 31 Aug 2022 10:15:59 +0200
-> > Robert Richter <rrichter@amd.com> wrote:  
+On Tue, Aug 30, 2022 at 07:25:29AM -0700, Dave Hansen wrote:
+> On 8/29/22 09:39, Jason A. Donenfeld wrote:
+> > On Thu, Aug 25, 2022 at 11:15:58PM +0000, Eric Biggers wrote:
+> >> I'm wondering if people are aware of this issue, and whether anyone has any
+> >> thoughts on whether/where the kernel should be setting these new CPU flags.
+> >> There don't appear to have been any prior discussions about this.  (Thanks to
+> > Maybe it should be set unconditionally now, until we figure out how to
+> > make it more granular.
 > 
-> > A few comments inline.  Mostly requests for references for things
-> > I couldn't find in the specs.  
+> Personally, I'm in this camp as well.  Let's be safe and set it by
+> default.  There's also this tidbit in the Intel docs (and chopping out a
+> bunch of the noise):
 > 
-> Most of it comes from the pci base spec (5 or 6).
-
-Ok. Extra references appreciated - these specs are huge, so saving
-searching time always good!
-
+> 	(On) processors based on microarchitectures before Ice Lake ...
+> 	the instructions listed here operate as if DOITM is enabled.
 > 
-> > 
-> >   
-> > > +	 *
-> > > +	 * Also, RCRB accesses must use MMIO readl()/readq() to guarantee
-> > > +	 * 32/64-bit access.
-> > > +	 * CXL 8.2.2 - CXL 1.1 Upstream and Downstream Port Subsystem Component
-> > > +	 * Registers
-> > > +	 */
-> > > +	addr = ioremap(rcrb, PCI_BASE_ADDRESS_0 + SZ_8);
-> > > +	bar0 = readl(addr + PCI_BASE_ADDRESS_0);
-> > > +	bar1 = readl(addr + PCI_BASE_ADDRESS_1);  
-> > 
-> > The spec is a bit confusing on this, but I think you are reading into
-> > MEMBAR0 of the RCRB, for which there isn't a lot of description other than
-> > it being an address. It's referred to as a 64-bit BAR in places so you
-> > might be right - or it might be intended to be a bare address..
-> > 
-> > We might want a clarification on this...
-> > 
-> > Also it's a 64 bit address so we need to read it in one go. However it's
-> > referred to as a being a 64 bit address at 0x10 and 0x14 so who knows...  
+> IOW, setting DOITM=0 isn't going back to the stone age.  At worst, I'd
+> guess that you're giving up some optimization that only shows up in very
+> recent CPUs in the first place.
 > 
-> This is part of the pci base spec and clearly defined there. There are
-> also some similar implementation in the kernel already.
-
-There isn't a cross reference from CXL spec and PCI doesn't use
-the term membar.
-
-I guess it is fairly obvious though that it's an abbreviation
-of Base Address Register for Memory.  I might raise the wish to tidy that
-up for a future spec revision.
-
-
+> If folks want DOITM=1 on their snazzy new CPUs, then they came come with
+> performance data to demonstrate the gain they'll get from adding kernel
+> code to get DOITM=1.  There are a range of ways we could handle it, all
+> the way from adding a command-line parameter to per-task management.
 > 
-> > 
-> >   
-> > > +	iounmap(addr);
-> > > +
-> > > +	/* sanity check */
-> > > +	if (bar0 & (PCI_BASE_ADDRESS_MEM_TYPE_1M | PCI_BASE_ADDRESS_SPACE_IO))
-> > > +		return CXL_RESOURCE_NONE;
-> > > +
-> > > +	component_reg_phys = bar0 & PCI_BASE_ADDRESS_MEM_MASK;
-> > > +	if (bar0 & PCI_BASE_ADDRESS_MEM_TYPE_64)
-> > > +		component_reg_phys |= ((u64)bar1) << 32;
-> > > +
-> > > +	if (!component_reg_phys)
-> > > +		return CXL_RESOURCE_NONE;
-> > > +
-> > > +	/*
-> > > +	 * Must be 8k aligned (size of combined CXL 1.1 Downstream and
-> > > +	 * Upstream Port RCRBs).  
-> > 
-> > The rcrb is 8k though I'm not immediately spotting an alignment requirement,
-> > but I'm not sure the component regs have any restrictions do... Add a reference perhaps?
-> > For non RCD devices there is a 64K alignment requirement, but I can't find
-> > anything for RCDs (might just be missing it).  
-> 
-> This are the requirements of the pci base spec to membar ranges. The
-> range size is power of 2 and base must be aligned to its size.
+> Anybody disagree?
 
-Ok.  It feels convoluted to rely on the CXL glossary entry for BAR
-to cover MEMBAR0 and hence inherit the restrictions of a PCIe bar.
-
-Maybe just add a comment here so that anyone who hits this can understand
-the source of the restriction seeing as it isn't in the CXL spec and this
-isn't a PCI BAR.
-
-> 
-> >   
-> > > +	 */
-> > > +	if (component_reg_phys & (SZ_8K - 1))
-> > > +		return CXL_RESOURCE_NONE;
-> > > +
-> > > +	return component_reg_phys;
-> > > +}
-> > > +
+Since I'm not feeling too well I figured I'd do something trivial and
+whipped up the below patch.
 
 
+---
+ arch/x86/include/asm/cpufeatures.h |  3 ++
+ arch/x86/include/asm/msr-index.h   |  4 +++
+ arch/x86/kernel/cpu/common.c       | 69 ++++++++++++++++++++++++++++++--------
+ arch/x86/kernel/cpu/scattered.c    |  1 +
+ 4 files changed, 63 insertions(+), 14 deletions(-)
 
-> >   
-> > > +	if (!base) {
-> > > +		dev_err(parent, "failed to map registers\n");
-> > > +		return -ENOMEM;
-> > > +	}
-> > > +
-> > > +	cxl_probe_component_regs(parent, base, &comp_map);
-> > > +	iounmap(base);
-> > > +
-> > > +	if (!comp_map.hdm_decoder.valid) {
-> > > +		dev_err(parent, "HDM decoder registers not found\n");
-> > > +		return -ENXIO;  
-> > 
-> > Hmm. HDM decoder capability is optional for RCDs - might be using the
-> > range registers.  Seems like we'd really want to handle that for
-> > RCDs.  Future work I guess.  
-> 
-> I used the same message as for the non-RCD code path. HDM decoding is
-> just a subset of features handled with component regs. We need to
-> generalize the code for this in the future.
-
-Sure - much more likely to need that generalized code for an RCD.
-IIRC a CXL 2.0 device must implement HDM decoders, even though the
-other path can be used by software that doesn't understand CXL 2.0.
-Our RCD might be because the device is CXL 1.1...
-
-
-
-> 
-> >   
-> > > +		if (rc)
-> > > +			goto fail;  
-> >   
-> > > +
-> > >  		dev_info(&host->dev, "host supports CXL\n");
-> > >  	}
-> > >  
-> > >  	return 0;
-> > > +fail:  
-> > 
-> > Better to have a more specific error message and return directly above.
-> > Note that so far vast majority of CXL error messages are dev_dbg,
-> > so for consistency perhaps this should be as well.
-> > (I prefer dev_err() but not my subsystem ;)  
-> 
-> There is more verbosity on the errors with dbg enabled. Note there are
-> only a few dev_info/dev_err messages to not polute the logs. dev_err()
-> is only used if something unexpected happens (e.g. the device exists
-> but component regs are broken).
-> 
-Ok. I'll leave the question of balance between the two for CXL maintainers
-to comment on if they wish.
-
-Thanks,
-
-Jonathan
-
+diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
+index 333d94394516..9b92f4e5e80a 100644
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -305,6 +305,7 @@
+ #define X86_FEATURE_USE_IBPB_FW		(11*32+16) /* "" Use IBPB during runtime firmware calls */
+ #define X86_FEATURE_RSB_VMEXIT_LITE	(11*32+17) /* "" Fill RSB on VM exit when EIBRS is enabled */
+ #define X86_FEATURE_CALL_DEPTH		(11*32+18) /* "" Call depth tracking for RSB stuffing */
++#define X86_FEATURE_MCDT_NO		(11*32+19) /* Not affected by MCDT */
+ 
+ /* Intel-defined CPU features, CPUID level 0x00000007:1 (EAX), word 12 */
+ #define X86_FEATURE_AVX_VNNI		(12*32+ 4) /* AVX VNNI instructions */
+@@ -460,5 +461,7 @@
+ #define X86_BUG_MMIO_STALE_DATA		X86_BUG(25) /* CPU is affected by Processor MMIO Stale Data vulnerabilities */
+ #define X86_BUG_RETBLEED		X86_BUG(26) /* CPU is affected by RETBleed */
+ #define X86_BUG_EIBRS_PBRSB		X86_BUG(27) /* EIBRS is vulnerable to Post Barrier RSB Predictions */
++#define X86_BUG_DOIT			X86_BUG(28)
++#define X86_BUG_MCDT			X86_BUG(29)
+ 
+ #endif /* _ASM_X86_CPUFEATURES_H */
+diff --git a/arch/x86/include/asm/msr-index.h b/arch/x86/include/asm/msr-index.h
+index 6674bdb096f3..08b4e0c2f7d3 100644
+--- a/arch/x86/include/asm/msr-index.h
++++ b/arch/x86/include/asm/msr-index.h
+@@ -119,6 +119,7 @@
+ 						 * Not susceptible to
+ 						 * TSX Async Abort (TAA) vulnerabilities.
+ 						 */
++#define ARCH_CAP_DOIT			BIT(12) /* Data Operand Independent Timing */
+ #define ARCH_CAP_SBDR_SSDP_NO		BIT(13)	/*
+ 						 * Not susceptible to SBDR and SSDP
+ 						 * variants of Processor MMIO stale data
+@@ -155,6 +156,9 @@
+ 						 * Return Stack Buffer Predictions.
+ 						 */
+ 
++#define MSR_IA32_UARCH_MISC_CTL		0x00001b01
++#define UARCH_MISC_DOIT			BIT(0)	/* Enable DOIT */
++
+ #define MSR_IA32_FLUSH_CMD		0x0000010b
+ #define L1D_FLUSH			BIT(0)	/*
+ 						 * Writeback and invalidate the
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index 28eba74b93de..e9d5bc870696 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -568,6 +568,30 @@ static __init int setup_disable_pku(char *arg)
+ __setup("nopku", setup_disable_pku);
+ #endif /* CONFIG_X86_64 */
+ 
++static bool doit_disabled = false;
++
++static __init int setup_disable_doit(char *arg)
++{
++	pr_info("x86: 'nodoit' specified, not enabling Data Operand Independent Timing\n");
++	doit_disabled = true;
++	return 1;
++}
++__setup("nodoit", setup_disable_doit);
++
++static __always_inline void setup_doit(struct cpuinfo_x86 *c)
++{
++	u64 msr = 0;
++
++	if (!cpu_has(c, X86_BUG_DOIT))
++		return;
++
++	if (!doit_disabled)
++		return;
++
++	rdmsrl(MSR_IA32_UARCH_MISC_CTL, msr);
++	wrmsrl(MSR_IA32_UARCH_MISC_CTL, msr | UARCH_MISC_DOIT);
++}
++
+ #ifdef CONFIG_X86_KERNEL_IBT
+ 
+ __noendbr u64 ibt_save(void)
+@@ -1249,6 +1273,8 @@ static const __initconst struct x86_cpu_id cpu_vuln_whitelist[] = {
+ #define MMIO_SBDS	BIT(2)
+ /* CPU is affected by RETbleed, speculating where you would not expect it */
+ #define RETBLEED	BIT(3)
++/* CPU might be affected by MXCSR Configuration Dependent Timing (MCDT) */
++#define MCDT		BIT(4)
+ 
+ static const struct x86_cpu_id cpu_vuln_blacklist[] __initconst = {
+ 	VULNBL_INTEL_STEPPINGS(IVYBRIDGE,	X86_STEPPING_ANY,		SRBDS),
+@@ -1260,20 +1286,26 @@ static const struct x86_cpu_id cpu_vuln_blacklist[] __initconst = {
+ 	VULNBL_INTEL_STEPPINGS(BROADWELL_G,	X86_STEPPING_ANY,		SRBDS),
+ 	VULNBL_INTEL_STEPPINGS(BROADWELL_X,	X86_STEPPING_ANY,		MMIO),
+ 	VULNBL_INTEL_STEPPINGS(BROADWELL,	X86_STEPPING_ANY,		SRBDS),
+-	VULNBL_INTEL_STEPPINGS(SKYLAKE_L,	X86_STEPPING_ANY,		SRBDS | MMIO | RETBLEED),
+-	VULNBL_INTEL_STEPPINGS(SKYLAKE_X,	X86_STEPPING_ANY,		MMIO | RETBLEED),
+-	VULNBL_INTEL_STEPPINGS(SKYLAKE,		X86_STEPPING_ANY,		SRBDS | MMIO | RETBLEED),
+-	VULNBL_INTEL_STEPPINGS(KABYLAKE_L,	X86_STEPPING_ANY,		SRBDS | MMIO | RETBLEED),
+-	VULNBL_INTEL_STEPPINGS(KABYLAKE,	X86_STEPPING_ANY,		SRBDS | MMIO | RETBLEED),
+-	VULNBL_INTEL_STEPPINGS(CANNONLAKE_L,	X86_STEPPING_ANY,		RETBLEED),
+-	VULNBL_INTEL_STEPPINGS(ICELAKE_L,	X86_STEPPING_ANY,		MMIO | MMIO_SBDS | RETBLEED),
+-	VULNBL_INTEL_STEPPINGS(ICELAKE_D,	X86_STEPPING_ANY,		MMIO),
+-	VULNBL_INTEL_STEPPINGS(ICELAKE_X,	X86_STEPPING_ANY,		MMIO),
+-	VULNBL_INTEL_STEPPINGS(COMETLAKE,	X86_STEPPING_ANY,		MMIO | MMIO_SBDS | RETBLEED),
+-	VULNBL_INTEL_STEPPINGS(COMETLAKE_L,	X86_STEPPINGS(0x0, 0x0),	MMIO | RETBLEED),
+-	VULNBL_INTEL_STEPPINGS(COMETLAKE_L,	X86_STEPPING_ANY,		MMIO | MMIO_SBDS | RETBLEED),
+-	VULNBL_INTEL_STEPPINGS(LAKEFIELD,	X86_STEPPING_ANY,		MMIO | MMIO_SBDS | RETBLEED),
+-	VULNBL_INTEL_STEPPINGS(ROCKETLAKE,	X86_STEPPING_ANY,		MMIO | RETBLEED),
++	VULNBL_INTEL_STEPPINGS(SKYLAKE_L,	X86_STEPPING_ANY,		SRBDS | MMIO | RETBLEED | MCDT),
++	VULNBL_INTEL_STEPPINGS(SKYLAKE_X,	X86_STEPPING_ANY,		MMIO | RETBLEED | MCDT),
++	VULNBL_INTEL_STEPPINGS(SKYLAKE,		X86_STEPPING_ANY,		SRBDS | MMIO | RETBLEED | MCDT),
++	VULNBL_INTEL_STEPPINGS(KABYLAKE_L,	X86_STEPPING_ANY,		SRBDS | MMIO | RETBLEED | MCDT),
++	VULNBL_INTEL_STEPPINGS(KABYLAKE,	X86_STEPPING_ANY,		SRBDS | MMIO | RETBLEED | MCDT),
++	VULNBL_INTEL_STEPPINGS(CANNONLAKE_L,	X86_STEPPING_ANY,		RETBLEED | MCDT),
++	VULNBL_INTEL_STEPPINGS(ICELAKE_L,	X86_STEPPING_ANY,		MMIO | MMIO_SBDS | RETBLEED | MCDT),
++	VULNBL_INTEL_STEPPINGS(ICELAKE_D,	X86_STEPPING_ANY,		MMIO | MCDT),
++	VULNBL_INTEL_STEPPINGS(ICELAKE_X,	X86_STEPPING_ANY,		MMIO | MCDT),
++	VULNBL_INTEL_STEPPINGS(COMETLAKE,	X86_STEPPING_ANY,		MMIO | MMIO_SBDS | RETBLEED | MCDT),
++	VULNBL_INTEL_STEPPINGS(COMETLAKE_L,	X86_STEPPINGS(0x0, 0x0),	MMIO | RETBLEED | MCDT),
++	VULNBL_INTEL_STEPPINGS(COMETLAKE_L,	X86_STEPPING_ANY,		MMIO | MMIO_SBDS | RETBLEED | MCDT),
++	VULNBL_INTEL_STEPPINGS(LAKEFIELD,	X86_STEPPING_ANY,		MMIO | MMIO_SBDS | RETBLEED | MCDT),
++	VULNBL_INTEL_STEPPINGS(ROCKETLAKE,	X86_STEPPING_ANY,		MMIO | RETBLEED | MCDT),
++	VULNBL_INTEL_STEPPINGS(TIGERLAKE,	X86_STEPPING_ANY,		MCDT),
++	VULNBL_INTEL_STEPPINGS(TIGERLAKE_L,	X86_STEPPING_ANY,		MCDT),
++	VULNBL_INTEL_STEPPINGS(ALDERLAKE,	X86_STEPPING_ANY,		MCDT),
++	VULNBL_INTEL_STEPPINGS(ALDERLAKE_L,	X86_STEPPING_ANY,		MCDT),
++	VULNBL_INTEL_STEPPINGS(ALDERLAKE_N,	X86_STEPPING_ANY,		MCDT),
++
+ 	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT,	X86_STEPPING_ANY,		MMIO | MMIO_SBDS),
+ 	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT_D,	X86_STEPPING_ANY,		MMIO),
+ 	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT_L,	X86_STEPPING_ANY,		MMIO | MMIO_SBDS),
+@@ -1318,6 +1350,9 @@ static void __init cpu_set_bug_bits(struct cpuinfo_x86 *c)
+ 	    !(ia32_cap & ARCH_CAP_PSCHANGE_MC_NO))
+ 		setup_force_cpu_bug(X86_BUG_ITLB_MULTIHIT);
+ 
++	if (ia32_cap & ARCH_CAP_DOIT)
++		setup_force_cpu_bug(X86_BUG_DOIT);
++
+ 	if (cpu_matches(cpu_vuln_whitelist, NO_SPECULATION))
+ 		return;
+ 
+@@ -1388,6 +1423,11 @@ static void __init cpu_set_bug_bits(struct cpuinfo_x86 *c)
+ 			setup_force_cpu_bug(X86_BUG_RETBLEED);
+ 	}
+ 
++	if (!cpu_has(c, X86_FEATURE_MCDT_NO)) {
++		if (cpu_matches(cpu_vuln_blacklist, MCDT))
++			setup_force_cpu_bug(X86_BUG_MCDT);
++	}
++
+ 	if (cpu_has(c, X86_FEATURE_IBRS_ENHANCED) &&
+ 	    !cpu_matches(cpu_vuln_whitelist, NO_EIBRS_PBRSB) &&
+ 	    !(ia32_cap & ARCH_CAP_PBRSB_NO))
+@@ -1869,6 +1909,7 @@ static void identify_cpu(struct cpuinfo_x86 *c)
+ 	x86_init_rdrand(c);
+ 	setup_pku(c);
+ 	setup_cet(c);
++	setup_doit(c);
+ 
+ 	/*
+ 	 * Clear/Set all flags overridden by options, need do it
+diff --git a/arch/x86/kernel/cpu/scattered.c b/arch/x86/kernel/cpu/scattered.c
+index fd44b54c90d5..5063f8046554 100644
+--- a/arch/x86/kernel/cpu/scattered.c
++++ b/arch/x86/kernel/cpu/scattered.c
+@@ -27,6 +27,7 @@ static const struct cpuid_bit cpuid_bits[] = {
+ 	{ X86_FEATURE_APERFMPERF,       CPUID_ECX,  0, 0x00000006, 0 },
+ 	{ X86_FEATURE_EPB,		CPUID_ECX,  3, 0x00000006, 0 },
+ 	{ X86_FEATURE_INTEL_PPIN,	CPUID_EBX,  0, 0x00000007, 1 },
++	{ X86_FEATURE_MCDT_NO,		CPUID_ECX,  5, 0x00000007, 2 },
+ 	{ X86_FEATURE_RRSBA_CTRL,	CPUID_EDX,  2, 0x00000007, 2 },
+ 	{ X86_FEATURE_CQM_LLC,		CPUID_EDX,  1, 0x0000000f, 0 },
+ 	{ X86_FEATURE_CQM_OCCUP_LLC,	CPUID_EDX,  0, 0x0000000f, 1 },
