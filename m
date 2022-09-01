@@ -2,142 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4945AECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 03:18:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E7D5C0502C
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 03:20:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231308AbiIADSu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 23:18:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39122 "EHLO
+        id S231838AbiIADUZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 23:20:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbiIADSq (ORCPT
+        with ESMTP id S230056AbiIADUW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 23:18:46 -0400
-Received: from mail1.bemta37.messagelabs.com (mail1.bemta37.messagelabs.com [85.158.142.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58C9410F968;
-        Wed, 31 Aug 2022 20:18:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fujitsu.com;
-        s=170520fj; t=1662002323; i=@fujitsu.com;
-        bh=gXAleU1Y+7t4AQ3brMFh6K3hJ+fMT8YWkykGgaWNG8k=;
-        h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type:
-         Content-Transfer-Encoding;
-        b=vDmyUwJf5O88jtcOVgvbbWZVtZNSRjp+3Ei3GZz294bsovfUgrMhMwxxug1Icc8qu
-         FMohx5/FQhXuqckBVuDJ4mVqoixPxWdSDDs8ps9TL3utzdOWO9+PZeEFav8KcBoomW
-         BdHhnxmjVV0Wr0sXn1fglY/43e77x0y89rylx3B7alIX19GuTxxSZ8y8bZOlmSXJwV
-         gckX3WJkjXTuY28kgrFb5SB42nF7vg5C97gYXCAp4Ir+tzbGhSL63PDVkpQUAxAKO4
-         b/C6b2/jTQMWeKZ6qf4eZ92kisZusgePL0/snM1jhURw37ap243LnKheOqBf76voKA
-         +9UMD3wTiNMew==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrPIsWRWlGSWpSXmKPExsViZ8ORqDtJRSD
-  Z4NkZXYvXhz8xWlzeNYfNYvqd92wWU16uY3dg8di0qpPN4/MmuQCmKNbMvKT8igTWjPe9m5kL
-  NghULL2zgamBcSlfFyMXh5DAFkaJtuVnWCCcFUwSSyc3M3UxcgI5RxkldjbVgthsAhoS91puM
-  oLYIgIBEodvHQezmQXcJDa9mc0OYgsLWEv0zX8F1ssioCLRe2s9axcjBwevgKPEvDkSIGEJAQ
-  WJKQ/fM4PYvAKCEidnPmGBGKMp0br9NzuELS/RvHU2M0S9osSRzr8sEHalROuHX1C2msTVc5u
-  YJzAKzEIyahaSUbOQjFrAyLyK0TapKDM9oyQ3MTNH19DAQNfQ0BRIG+saGZrpJVbpJuqllurm
-  5ReVZOga6iWWF+ulFhfrFVfmJuek6OWllmxiBIZ7SnH6jR2Mu/b90jvEKMnBpCTKW7GYP1mIL
-  yk/pTIjsTgjvqg0J7X4EKMMB4eSBC+zkkCykGBRanpqRVpmDjD2YNISHDxKIrxPFIHSvMUFib
-  nFmekQqVOMilLivM4gfQIgiYzSPLg2WLxfYpSVEuZlZGBgEOIpSC3KzSxBlX/FKM7BqCTMywA
-  yhSczrwRu+iugxUxAi6fP5AdZXJKIkJJqYOJ/vFVILGKywr+8D+abz65Z1Trjx49Llqw6p82u
-  XpmdKvV7x9r6Rep7bx02rjkRYjildk1+ZdvthDDN6YEhO08mLy784n7kydlH+7Un30mWeV9+8
-  KyFvcHfvytuXUvc8ujmvQeHH7O9es54uVvxXJ/JtG1mFt2pOX+mS5yd9GtqY+cW3h2z9/a2Wd
-  ukPuw9YXCkX71l7bU1y7imn661jp7gtaNlx84fl3OnrFM5rLDDJJjn+87Xumb5G4t6nKvfXs3
-  +oWlbw614S2rOJG+rA1UvGY66TKzcbPc1tlHV7VLI+/wbk7RnXp7pmn7++Fkl1amdp6w8Jm3M
-  ZZj7/Wb23YLqZsnM7UzV9wpWmRyO++C0RomlOCPRUIu5qDgRAAQYtRpyAwAA
-X-Env-Sender: lizhijian@fujitsu.com
-X-Msg-Ref: server-4.tower-745.messagelabs.com!1662002322!124070!1
-X-Originating-IP: [62.60.8.97]
-X-SYMC-ESS-Client-Auth: outbound-route-from=pass
-X-StarScan-Received: 
-X-StarScan-Version: 9.87.3; banners=-,-,-
-X-VirusChecked: Checked
-Received: (qmail 9392 invoked from network); 1 Sep 2022 03:18:42 -0000
-Received: from unknown (HELO n03ukasimr01.n03.fujitsu.local) (62.60.8.97)
-  by server-4.tower-745.messagelabs.com with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP; 1 Sep 2022 03:18:42 -0000
-Received: from n03ukasimr01.n03.fujitsu.local (localhost [127.0.0.1])
-        by n03ukasimr01.n03.fujitsu.local (Postfix) with ESMTP id 232FD10018D;
-        Thu,  1 Sep 2022 04:18:42 +0100 (BST)
-Received: from R01UKEXCASM223.r01.fujitsu.local (R01UKEXCASM223 [10.182.185.121])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        Wed, 31 Aug 2022 23:20:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B333532EF7;
+        Wed, 31 Aug 2022 20:20:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by n03ukasimr01.n03.fujitsu.local (Postfix) with ESMTPS id 154A5100043;
-        Thu,  1 Sep 2022 04:18:42 +0100 (BST)
-Received: from 127ce6f590cf.g08.fujitsu.local (10.167.226.45) by
- R01UKEXCASM223.r01.fujitsu.local (10.182.185.121) with Microsoft SMTP Server
- (TLS) id 15.0.1497.32; Thu, 1 Sep 2022 04:18:39 +0100
-From:   Li Zhijian <lizhijian@fujitsu.com>
-To:     <brauner@kernel.org>, <shuah@kernel.org>,
-        <linux-kselftest@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, Li Zhijian <lizhijian@fujitsu.com>
-Subject: [PATCH v2] selftests: pidfd: Fix compling warnings
-Date:   Thu, 1 Sep 2022 03:17:34 +0000
-Message-ID: <1662002254-7-1-git-send-email-lizhijian@fujitsu.com>
-X-Mailer: git-send-email 1.8.3.1
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BF9661DEE;
+        Thu,  1 Sep 2022 03:20:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BB72C433C1;
+        Thu,  1 Sep 2022 03:20:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662002418;
+        bh=WxVhZYZDGjwG/Bood+luhm4SIxf9hQ3eu2NdLeQ6ikc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TtpuyB+bUa12LIRhXChFZqU/AxOT8TDqWz/Gam3ZxA4R/10uOie28ccBlI3c+dvZJ
+         LpjHryUYs1ScsIwkw+LzhXtBdsHzEHwDnEgCKXtejnji5ok8SpN6o9lmJtTl4WO9fU
+         JYF00y+QoT2INQpnw0SpmRb9mobuoFXJWA2AYeuhPkfaNMbXoT14U62wrNpydMMZx8
+         S2aAnrGD3AGebXt/IeOG9VEb9pd5MLa6SGqg4cTbFE8+jLWlxudJ1K0NyBWg77eoaB
+         3JfFhQY+381d0AnSlCfK33/tVZki5wemsdjLQBJ4dXfZfOK18/Ttomc5eOfKiAfH5r
+         Ew/Dkg+W8nyrA==
+Date:   Wed, 31 Aug 2022 20:20:17 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, Yajun Deng <yajun.deng@linux.dev>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH 2/2] netlink: Bounds-check struct nlmsgerr creation
+Message-ID: <20220831202017.69838448@kernel.org>
+In-Reply-To: <20220901030610.1121299-3-keescook@chromium.org>
+References: <20220901030610.1121299-1-keescook@chromium.org>
+        <20220901030610.1121299-3-keescook@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.167.226.45]
-X-ClientProxiedBy: G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.80) To
- R01UKEXCASM223.r01.fujitsu.local (10.182.185.121)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix warnings and enable Wall.
+On Wed, 31 Aug 2022 20:06:10 -0700 Kees Cook wrote:
+> For 32-bit systems, it might be possible to wrap lnmsgerr content
+> lengths beyond SIZE_MAX. Explicitly test for all overflows, and mark the
+> memcpy() as being unable to internally diagnose overflows.
+> 
+> This also excludes netlink from the coming runtime bounds check on
+> memcpy(), since it's an unusual case of open-coded sizing and
+> allocation.
 
-pidfd_wait.c: In function ‘wait_nonblock’:
-pidfd_wait.c:150:13: warning: unused variable ‘status’ [-Wunused-variable]
-  150 |  int pidfd, status = 0;
-      |             ^~~~~~
-...
-pidfd_test.c: In function ‘child_poll_exec_test’:
-pidfd_test.c:438:1: warning: no return statement in function returning non-void [-Wreturn-type]
-  438 | }
-      | ^
-
-Signed-off-by: Li Zhijian <lizhijian@fujitsu.com>
-v2: fix mistake assignment to pidfd
----
- tools/testing/selftests/pidfd/Makefile     | 2 +-
- tools/testing/selftests/pidfd/pidfd_test.c | 2 ++
- tools/testing/selftests/pidfd/pidfd_wait.c | 2 +-
- 3 files changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/tools/testing/selftests/pidfd/Makefile b/tools/testing/selftests/pidfd/Makefile
-index f4a2f28f926b..778b6cdc8aed 100644
---- a/tools/testing/selftests/pidfd/Makefile
-+++ b/tools/testing/selftests/pidfd/Makefile
-@@ -1,5 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0-only
--CFLAGS += -g -I../../../../usr/include/ -pthread
-+CFLAGS += -g -I../../../../usr/include/ -pthread -Wall
- 
- TEST_GEN_PROGS := pidfd_test pidfd_fdinfo_test pidfd_open_test \
- 	pidfd_poll_test pidfd_wait pidfd_getfd_test pidfd_setns_test
-diff --git a/tools/testing/selftests/pidfd/pidfd_test.c b/tools/testing/selftests/pidfd/pidfd_test.c
-index 9a2d64901d59..d36654265b7a 100644
---- a/tools/testing/selftests/pidfd/pidfd_test.c
-+++ b/tools/testing/selftests/pidfd/pidfd_test.c
-@@ -435,6 +435,8 @@ static int child_poll_exec_test(void *args)
- 	 */
- 	while (1)
- 		sleep(1);
-+
-+	return 0;
- }
- 
- static void test_pidfd_poll_exec(int use_waitpid)
-diff --git a/tools/testing/selftests/pidfd/pidfd_wait.c b/tools/testing/selftests/pidfd/pidfd_wait.c
-index c3e2a3041f55..0dcb8365ddc3 100644
---- a/tools/testing/selftests/pidfd/pidfd_wait.c
-+++ b/tools/testing/selftests/pidfd/pidfd_wait.c
-@@ -148,7 +148,7 @@ static int sys_waitid(int which, pid_t pid, siginfo_t *info, int options,
- 
- TEST(wait_nonblock)
- {
--	int pidfd, status = 0;
-+	int pidfd;
- 	unsigned int flags = 0;
- 	pid_t parent_tid = -1;
- 	struct clone_args args = {
--- 
-1.8.3.1
-
+This one you gotta rebase we just rewrote the af_netlink 
+part last week :)
