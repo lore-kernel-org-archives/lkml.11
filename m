@@ -2,78 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B7EAECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 10:16:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C52E8ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 10:17:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232715AbiIAKQQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 06:16:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34644 "EHLO
+        id S233150AbiIAKRL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 06:17:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230064AbiIAKQO (ORCPT
+        with ESMTP id S233317AbiIAKRH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 06:16:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30E83132516;
-        Thu,  1 Sep 2022 03:16:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C156E61BBD;
-        Thu,  1 Sep 2022 10:16:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4799C433D6;
-        Thu,  1 Sep 2022 10:16:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662027372;
-        bh=uZ+oI9tPYlP6rcFKR0qKBUggEYKn53MeVCyIMmkvT4g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=yoaisLSa3hD7MKb/tM8glDvfl0ElMn3nP23bJB2Ox4MHLgQEki88IOPqBxswlZODu
-         QLsCtL0DD5FU956du0Oc3sN/tj9qiQDjV+O2QDLyDHh5SED5LstzGcPq4T7p9SgnTJ
-         4pv53jcZNcDIgQUF2mPzmRi/pxWPVv3mC2XeG7kA=
-Date:   Thu, 1 Sep 2022 12:16:09 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Cc:     stable@vger.kernel.org, andrew.cooper3@citrix.com, bp@suse.de,
-        tony.luck@intel.com, antonio.gomez.iglesias@linux.intel.com,
-        Daniel Sneddon <daniel.sneddon@linux.intel.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4.14 1/2] x86/cpu: Add Tiger Lake to Intel family
-Message-ID: <YxCGaVZ8QRW65sIc@kroah.com>
-References: <ec31e22b4f3b079d0da6b60f5899ffcd79d9bea0.1661899117.git.pawan.kumar.gupta@linux.intel.com>
- <20220830230008.uvkdp2r54uexpwbz@desk>
+        Thu, 1 Sep 2022 06:17:07 -0400
+Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39FB241992;
+        Thu,  1 Sep 2022 03:16:55 -0700 (PDT)
+Received: by mail-qv1-f44.google.com with SMTP id d1so13089052qvs.0;
+        Thu, 01 Sep 2022 03:16:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=iFMVcT4IdQ5sgAT4Vpsh6IRTvv9s1H3TO8+JQ00SHhQ=;
+        b=cWmK99T34xpyBKRawfAdzNrc/njM/AgeSqii2aKxZ5iuN9dJ4CtdwP3fdumGicUaNN
+         uvZNI1retDQG3wdNMmkBSvg6oqhHq5+gvjeKR08iz3lVVx2h6CCBwpIogv0S+mMvZnQg
+         mlZQzbDEzA+Dk42RS0cKZhwyVWBbwTaVyWX0wfrfIDVB+lkaQxpcIJxKXd5XEvSvnmvy
+         e/4Oh5CsBsrmiN8KRQ+Mr5t5LCWVpBYa1tS3DX9HkoosA3LN6IZGY4ffOz9s3+W2R+yV
+         tIgNdqqA/AXtU6nd3b1R6bFz9wfBcQ3GJc8Etw9XwnstKfBe95toBFw7nbMGafU9X+Qz
+         EwlQ==
+X-Gm-Message-State: ACgBeo3BMpsCd33qbPvi4duZgpijUdQMuRAQgN+y+RTlvaHGHJXzc2iD
+        1C9P8TbkBFNvGbsv9Orb8LG32ymkH49keQ==
+X-Google-Smtp-Source: AA6agR7dXGdz7GVkhKPsjQWKRefzsInrURt53lCEwtR8koGum3ezBOHqIG0mVzJvHKkjnqQGqYEyFA==
+X-Received: by 2002:a05:6214:500f:b0:497:9de3:3327 with SMTP id jo15-20020a056214500f00b004979de33327mr24077987qvb.23.1662027413169;
+        Thu, 01 Sep 2022 03:16:53 -0700 (PDT)
+Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
+        by smtp.gmail.com with ESMTPSA id h12-20020a05620a284c00b006b9bf03d9c6sm12079995qkp.104.2022.09.01.03.16.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Sep 2022 03:16:52 -0700 (PDT)
+Received: by mail-yb1-f174.google.com with SMTP id 123so7920448ybv.7;
+        Thu, 01 Sep 2022 03:16:52 -0700 (PDT)
+X-Received: by 2002:a05:6902:4c7:b0:69a:9e36:debe with SMTP id
+ v7-20020a05690204c700b0069a9e36debemr15547199ybs.543.1662027412541; Thu, 01
+ Sep 2022 03:16:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220830230008.uvkdp2r54uexpwbz@desk>
+References: <20220726174525.620-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20220726174525.620-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 1 Sep 2022 12:16:41 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUKQZcKTJ0v4Rim2gbRMBOeUqN6w6GohXYJyi9mLicGXw@mail.gmail.com>
+Message-ID: <CAMuHMdUKQZcKTJ0v4Rim2gbRMBOeUqN6w6GohXYJyi9mLicGXw@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: clock: renesas,rzg2l: Document RZ/Five SoC
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 04:00:08PM -0700, Pawan Gupta wrote:
-> On Tue, Aug 30, 2022 at 03:43:25PM -0700, Pawan Gupta wrote:
-> > From: Gayatri Kammela <gayatri.kammela@intel.com>
-> > 
-> > [ Upstream commit 6e1c32c5dbb4b90eea8f964c2869d0bde050dbe0 ]
-> > 
-> > Add the model numbers/CPUIDs of Tiger Lake mobile and desktop to the
-> > Intel family.
-> > 
-> > Suggested-by: Tony Luck <tony.luck@intel.com>
-> > Signed-off-by: Gayatri Kammela <gayatri.kammela@intel.com>
-> > Signed-off-by: Tony Luck <tony.luck@intel.com>
-> > Reviewed-by: Tony Luck <tony.luck@intel.com>
-> > Cc: Linus Torvalds <torvalds@linux-foundation.org>
-> > Cc: Peter Zijlstra <peterz@infradead.org>
-> > Cc: Rahul Tanwar <rahul.tanwar@linux.intel.com>
-> > Cc: Thomas Gleixner <tglx@linutronix.de>
-> > Link: https://lkml.kernel.org/r/20190905193020.14707-2-tony.luck@intel.com
-> > Signed-off-by: Ingo Molnar <mingo@kernel.org>
-> > Signed-off-by: Sasha Levin <sashal@kernel.org>
-> 
-> Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-> 
-> I just realized that my sign-off was missing. I can resend the patch if
-> required.
+On Tue, Jul 26, 2022 at 7:45 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> The CPG block on the RZ/Five SoC is almost identical to one found on the
+> RZ/G2UL SoC. "renesas,r9a07g043-cpg" compatible string will be used on
+> the RZ/Five SoC so to make this clear, update the comment to include
+> RZ/Five SoC.
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-No need, I took it from here, thanks.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+i.e. will queue in renesas-clk-for-v6.1.
 
-greg k-h
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
