@@ -2,67 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 195AEECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:29:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31A0BC0502C
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:29:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234765AbiIAO3f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 10:29:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37750 "EHLO
+        id S234803AbiIAO3p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 10:29:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234821AbiIAO3Z (ORCPT
+        with ESMTP id S234802AbiIAO3a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 10:29:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89FC76C138
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 07:29:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B27D61D13
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 14:29:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 488FFC433C1;
-        Thu,  1 Sep 2022 14:29:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662042559;
-        bh=jFE2xM5WLXWebAiP4GZXPcQbfdEnIL2CMtGp9xZiGUU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OO2lNa3jeF4nJVKeq4IPO0QlDFMlwDcFT9hM5Puy2CWXpAPCfx8cJ/HUISxb37uww
-         WGplzQe3lGb/tDVST8jVWCgDnND5rqSLAK7g96oON5MEM5Cw+xKEczRyscFvPyv+qg
-         wb41AmTzwsU5CjrVoJnpe0RJfa/18dDkAvcMFb/w=
-Date:   Thu, 1 Sep 2022 16:29:16 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Petr Vorel <pvorel@suse.cz>
-Cc:     linux-kernel@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        David Sterba <dsterba@suse.com>
-Subject: Re: [PATCH v2 1/1] drivers/base/cpu: Print kernel arch
-Message-ID: <YxDBvD5XrbLApWMy@kroah.com>
-References: <20220729125141.12786-1-pvorel@suse.cz>
+        Thu, 1 Sep 2022 10:29:30 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B15BE79A69;
+        Thu,  1 Sep 2022 07:29:24 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 281ETHsA012268;
+        Thu, 1 Sep 2022 09:29:17 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1662042557;
+        bh=nY4W5DMvDC5bOk3WA7m41ygqEMSuVB2ik70zWtLyNHI=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=Kxev+X6SWO9Hdo+0KjdEQttJZB71G2It3FP6kcGGfhmZNrBdWnHVn0zfRD2nrhCgP
+         AJXUbOb73W0POEE4EdtpGnO9tnu3+qNo7PFAjr3Xu/y0rG2LLQWKvmPNfOUPR/R69Z
+         wBbvUCIeCkwF07unrPJYwcSzBorBRJ2FgZ7TCwTM=
+Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 281ETHwF056905
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 1 Sep 2022 09:29:17 -0500
+Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE102.ent.ti.com
+ (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Thu, 1 Sep
+ 2022 09:29:17 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE106.ent.ti.com
+ (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Thu, 1 Sep 2022 09:29:17 -0500
+Received: from uda0132425.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 281ETE3c006949;
+        Thu, 1 Sep 2022 09:29:15 -0500
+From:   Vignesh Raghavendra <vigneshr@ti.com>
+To:     Nishanth Menon <nm@ti.com>, Tero Kristo <kristo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+CC:     Vignesh Raghavendra <vigneshr@ti.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: (subset) [PATCH 1/2] arm64: dts: ti: k3-j721e-main: fix RNG node clock id
+Date:   Thu, 1 Sep 2022 19:59:11 +0530
+Message-ID: <166204247268.902445.9484364755515737098.b4-ty@ti.com>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <f29e2c65dc7310a926af8a676651592afac04b03.1659981162.git.danielrparks@ti.com>
+References: <f29e2c65dc7310a926af8a676651592afac04b03.1659981162.git.danielrparks@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220729125141.12786-1-pvorel@suse.cz>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 02:51:41PM +0200, Petr Vorel wrote:
-> Print the machine hardware name (UTS_MACHINE) in /proc/sys/kernel/arch.
+Hi Daniel Parks,
+
+On Mon, 8 Aug 2022 13:32:00 -0500, Daniel Parks wrote:
+> The RNG node for this platform claims pka_in_clk. Change it to claim the
+> correct clock x1_clk. [1]
 > 
-> This helps people who debug kernel with initramfs with minimal
-> environment (i.e. without coreutils or even busybox) or allow to open
-> sysfs file instead of run 'uname -m' in high level languages.
+> [1]: https://downloads.ti.com/tisci/esd/latest/5_soc_doc/j721e/clocks.html#clocks-for-sa2-ul0-device
 > 
-> Signed-off-by: Petr Vorel <pvorel@suse.cz>
-> ---
->  Documentation/admin-guide/sysctl/kernel.rst | 5 +++++
->  kernel/utsname_sysctl.c                     | 7 +++++++
->  2 files changed, 12 insertions(+)
+> 
 
-Wait, why does the subject line say "drivers/base/cpu"?  That's not a
-file being touched in this commit at all, so this isn't for me to take
-:(
+I have applied the following to branch ti-k3-dts-next on [1].
+Thank you!
 
-thanks,
+[1/2] arm64: dts: ti: k3-j721e-main: fix RNG node clock id
+      commit: f42f6f9e77ee6b1b86c006d0436ba303901529a9
 
-greg k-h
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent up the chain during
+the next merge window (or sooner if it is a relevant bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/ti/linux.git
+--
+Vignesh
+
