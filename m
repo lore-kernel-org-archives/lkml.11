@@ -2,103 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CFDBECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:14:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A7C2ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:14:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234191AbiIANOI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 09:14:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55286 "EHLO
+        id S234311AbiIANOe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 09:14:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232997AbiIANNA (ORCPT
+        with ESMTP id S234300AbiIANN5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 09:13:00 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 413DF30E
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 06:12:25 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id se27so26846822ejb.8
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 06:12:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=G9R0QAAm6mXZOdYiAbbisy0joj2Ln2Tb7boXjxnlO/g=;
-        b=XZmKOPIt8Qub9dr7WZ0y95VXwgms4z2JKISqKno0HjZqjygLhx86t/8lg8cQA1V259
-         aIFSzv2ggf7B/nBSpbOnOz4EYycxS3OctxzAFjx2jK9377GZqOays6bmAHc8mqKvmBWl
-         rYGSv/RTvkHvwuY2T94ju1Qj1Wp7r8VfYRIcXKv1mxCrLdiEV5r/4Ob4ixWDxeKAW8Fl
-         qTcsz/JkBpXt3ObqhruCwrv8+t5aSk+Q0USqUQ2qqk4FZmqnG5WEWojPSIc0ONSvbKi1
-         g2LoyoFZzSYLqORYz1RUwx5C2vqSRtOm/uqJFdfnDCSZCUDUN7U/Z5KCja3e35VT974k
-         Uh/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=G9R0QAAm6mXZOdYiAbbisy0joj2Ln2Tb7boXjxnlO/g=;
-        b=Yqso8cNtVZJgShxGXZkyqvoHm8Nd2mgeTz09X7lZ5/6tmcYWowPBlA5lOLcZfr78I7
-         EdLbAm9vi1ZotGNBpbfH1G1QM8AVcgn6zjlqHd9gT0aFb2CGIH0fGIDR1zzLjvfDlbk+
-         kJmq3fQo7LIS3NwW0S7WwcSoMKG49hUTS2sHefUqyhKv8MLLfNjZJd/7r3zlMd3FzKpx
-         o0zpRMYQvw7it+CGvYtVJzqr0bqD2tge4B+AAoVa1cNh8y09eE31VQttyx1MIWCkUdwN
-         t/Wsx5E1OInAYWiZGIH9PgmoOoVR2KyKFHIZgz4sjaG6rZY+UYaWm6Ueg2zHc7oEML4D
-         qL2Q==
-X-Gm-Message-State: ACgBeo2MnOKLt6VmLn0Lv+EVDYrBOHBjcSXozGgXsYo4N6rINl1fbTTU
-        xvc9Vk5xblpL/22jhm2RaWMoSMVmRJQXR5OqKJDFAg==
-X-Google-Smtp-Source: AA6agR5UF8wTUdNJMqiJ1bGz7CO4QmbS2WAvDOmDCubR574vrDPFyL+Pq6Ir79zWEUfqZAPm5lH0f0EctbBbcfvO3dA=
-X-Received: by 2002:a17:907:2707:b0:741:7c18:4e76 with SMTP id
- w7-20020a170907270700b007417c184e76mr13260189ejk.690.1662037943636; Thu, 01
- Sep 2022 06:12:23 -0700 (PDT)
+        Thu, 1 Sep 2022 09:13:57 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 353645FF6A
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 06:12:37 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MJLvG331kzYd3Q;
+        Thu,  1 Sep 2022 21:08:10 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 1 Sep 2022 21:12:35 +0800
+Received: from [10.174.177.243] (10.174.177.243) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 1 Sep 2022 21:12:34 +0800
+Message-ID: <0f1cc967-6088-29b8-055e-8bb78e64bce1@huawei.com>
+Date:   Thu, 1 Sep 2022 21:12:34 +0800
 MIME-Version: 1.0
-References: <20220827213009.44316-1-alexander.sverdlin@nokia.com>
- <CACRpkdYgZK1oaceme6-EEuV3F=m1L5B3Y8t6z7Yxrx842dgrFw@mail.gmail.com> <ccde957b-20b1-2fd6-5c90-ad9ee4b8924c@nokia.com>
-In-Reply-To: <ccde957b-20b1-2fd6-5c90-ad9ee4b8924c@nokia.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 1 Sep 2022 15:12:12 +0200
-Message-ID: <CACRpkdarYrhtrv2W8+MQm6QNFkrqE-EUVz4cm7kGvsbWgBdk+Q@mail.gmail.com>
-Subject: Re: [PATCH] ARM: kasan: Only map modules if CONFIG_KASAN_VMALLOC=n
-To:     Alexander Sverdlin <alexander.sverdlin@nokia.com>
-Cc:     kasan-dev@googlegroups.com,
-        Lecopzer Chen <lecopzer.chen@mediatek.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2] arm64: defconfig: Enable memory hotplug and hotremove
+ config
+Content-Language: en-US
+To:     Catalin Marinas <catalin.marinas@arm.com>
+CC:     <will@kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>
+References: <20220629093524.34801-1-wangkefeng.wang@huawei.com>
+ <8852788c-3a10-ff28-2ff5-f35f5a736d64@huawei.com> <Yr2Aj8nr6izMsmmX@arm.com>
+ <16d83454-341c-8839-25b6-2094e7a35478@huawei.com> <YxCLw5P8u1YnyIbV@arm.com>
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+In-Reply-To: <YxCLw5P8u1YnyIbV@arm.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.243]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 1, 2022 at 10:42 AM Alexander Sverdlin
-<alexander.sverdlin@nokia.com> wrote:
 
-> >> -       create_mapping((void *)MODULES_VADDR, (void *)(PKMAP_BASE + PMD_SIZE));
-> >> +       if (!IS_ENABLED(CONFIG_KASAN_VMALLOC) && IS_ENABLED(CONFIG_MODULES))
-> >> +               create_mapping((void *)MODULES_VADDR, (void *)(MODULES_END));
-> > So the way I understand it is that modules are first and foremost loaded into
-> > the area MODULES_VADDR .. MODULES_END, and then after that is out,
-> > they get loaded into VMALLOC. See arch/arm/kernel/module.c, module_alloc().
->
-> yes, but both areas are managed by __vmalloc_node_range().
+On 2022/9/1 18:38, Catalin Marinas wrote:
+> On Thu, Aug 25, 2022 at 09:09:17PM +0800, Kefeng Wang wrote:
+>> On 2022/6/30 18:53, Catalin Marinas wrote:
+>>> On Thu, Jun 30, 2022 at 09:26:17AM +0800, Kefeng Wang wrote:
+>>>> On 2022/6/29 17:35, Kefeng Wang wrote:
+>>>>> Let's enable ACPI_HMAT, ACPI_HOTPLUG_MEMORY, MEMORY_HOTPLUG
+>>>>> and MEMORY_HOTREMOVE for more test coverage, also there are
+>>>>> useful for heterogeneous memory scene.
+>>>> Hi Catalin and Will，is the defconfig patch picked up from you directly，
+>>>> the changelog shows most of them merged by SoC maintainers, but this
+>>>> one is some general feature, I don't know who will take it, thanks.
+>>> In general we leave the defconfig patches to the SoC team to avoid
+>>> conflicts as they have a lot more changes. Cc'ing Arnd if he wants to
+>>> pick it up, otherwise it can go through the arm64 tree.
+>>>
+>>> Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+>> Hi  maintainers,  look this patch is missed, could anyone pick it up,
+> I added it to my list of patches for 6.1. I'll queue it around rc6
+> unless Arnd takes it before (and of course, if it won't conflict to the
+> other SoC changes to defconfig).
+Thanks for letting me know that. if conflict, I could rebase and repost.
 
-Owww!
-
-> > If you do this, how are the addresses between MODULES_VADDR..MODULES_END
-> > shadowed when using CONFIG_KASAN_VMALLOC?
->
-> That's the thing, __vmalloc_node_range() doesn't differentiate between address
-> ranges and tries first to recreate [already existing] shadow mapping, and then
-> vfree() unconditionally frees the mapping and the page.
->
-> vmalloc() KASAN handling is generic, module_alloc() implemented via vmalloc()
-> is however ARM-specific. Even though we could teach vmalloc() about MODULES_VADDR
-> and MODULES_END (and don't call kasan_ instrumentation on these), but, this is
-> ARM-specifics that it's used for this range.
-
-OK I get it. Maybe this warrants a comment in the code explaining the
-above behaviour (also in commitlog) so nobody gets confused.
-
-With that:
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-
-Yours.
-Linus Walleij
