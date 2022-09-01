@@ -2,57 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92EE6ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 17:36:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CA21ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 17:36:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234687AbiIARgW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 13:36:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44540 "EHLO
+        id S234827AbiIARg1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 13:36:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234570AbiIARfh (ORCPT
+        with ESMTP id S233284AbiIARfi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 13:35:37 -0400
+        Thu, 1 Sep 2022 13:35:38 -0400
 Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 697F940576
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 10:35:25 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-33dbfb6d2a3so234898617b3.11
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 10:35:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 462E033E2C
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 10:35:30 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-33f8988daecso226839287b3.12
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 10:35:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date;
-        bh=SI5DHC7dpiRJVHhhWYV+lwBh2iwV9A0Ou3FEYYZKTIo=;
-        b=ouDtFH7Jsoj5d0amZ6w++vn1JIcEBsAg0+Jc3jSu1CI/YwtCjIjWCXa3h1daFKHXKc
-         cShsEzXCG6pl7Qo8JUwfzrGY3LljVOQU7WP+kQRk9jvRvgn5CYGLdVxDx9mvrs6u6z8K
-         /gtKC5pqelI7Ja6YPAH2266yNgoWGngIuBTy9e4Ky4U5csa2GQgfjUrkug/tPpsGFles
-         yx5i2EqiywQtBnfaWAJzlm/RHBLABr6GNuXXMOHeNq811kfvPtT71YKWoN7/bLzrrmPy
-         z0tKwDEKWW16qZuqOrYHGA9KvA/VUBzIFMBe0AdL5oZh7HL1RXGViqdJIuZcrmP9S3mv
-         xPFw==
+        bh=LVrV0vnZTvQ/veouCVIJ2VKTA1Jw28r4MCl6DiRcaDY=;
+        b=l1V4yVONtNOUfesG20Bnq72dRtkCeRcz+SXGtADVXwnLsewU/bV2Wj+5K0ek8rbJL5
+         /VnIb4yjvzQAA64ppyeiv2tN7SgqNypFCNDrFPFTIYKrt4K6WTB+yC3yHFvMB+ausBHt
+         SSGrmorbtqBk+v9sXJa+cknHYK7SdsAdZfIlHKdNs08dvIfwUr5y5G+bCOuk9GDx3jZe
+         o3Fb422GusB/mLwU2fWqp5J3gMNLaE1B/UaEPdikTdaz6ywBZryiSPL/0bdT3F8UE3iA
+         1RBsfylmTB6McidRxeHwpl546i9VITPOIoqZ/5tnno4M6ww922Mvm4adk4fXxTHJ359z
+         mtIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date;
-        bh=SI5DHC7dpiRJVHhhWYV+lwBh2iwV9A0Ou3FEYYZKTIo=;
-        b=izz93TC7dDxWGJ3CMaq8kNnoOXFPeiNiSBD0PHo1RJesZlZTJMBxRlRVE2AT+fjCgZ
-         aSyBlNDEc9KWiVnEhV5AqxM6Pxfpelk07nBHdO15FT+E7HjVcyovc0tVIJuBxY81+WVj
-         v9Kx86BgQP3rML2DtfLD3QuK20Mxez0Y0TgB3dNVpfTJHBJ9LO7qFjydeKuVDK5vd3J2
-         erGQhPezLQN4UWy3h2v6PxOIegZ+k/5+W6TLyWRv8H2lzw5h/98QJGaTOwmn2xUExXgo
-         yub93trrSM6TW/+rbGxjctEB1btAi1fcgzQkWrl5ppli13tK0wuYIlOwCjWtxjdPoR2m
-         4CcQ==
-X-Gm-Message-State: ACgBeo0vO2r7CRD/LDSCqnq79BCiDh6PekVAuux7CBPs1DVkabbK+Ejj
-        2DdIyNwWoB62loU26flSOODIUBHd3h8=
-X-Google-Smtp-Source: AA6agR4TWv71WCFs9L88lUEt8sy6dDZVYBPPgP4/10a2Bx/Ool+t8WQWT1a/Z5ySDpeCnHjOLWwcwNW6snI=
+        bh=LVrV0vnZTvQ/veouCVIJ2VKTA1Jw28r4MCl6DiRcaDY=;
+        b=yc1mqCDoCZW4zVJFLkxn37oFUIZNzisU/nI3evCXlTu94R9J5pojlLfMarNCZ4sjl2
+         Jw8XSj+jru+/SkVJ8zUwCIMdzWzlU214CSGnArdo+KvUMkVYlXWB/eCVD4ktjEX0fzou
+         P8N1IEEPlWhmuyfOVWQ5l2zN5GfaR/ll+XzOnFSKPJcrlUxBF1cWoQIQ0IAE5fmTwl5s
+         v59QEQYSUlLb0TbECNwbPeUvYJdKJtn6f6/BHl3J7J3GOC8rbt6xIcja5zUWvkjY/vli
+         XkV+lD/wxSFvoUgncUZO8Dd6r5j0M4x7WXiCTv0bXv4ggvD5Rja65X5OfS+DiuwzLdKD
+         eD5g==
+X-Gm-Message-State: ACgBeo23Q/aOfrNS4fljq8MKh078q+FyI9oyCuw7tnU4EkBSQnmZEFBs
+        fV3Pu3VkCFF+LPbjXuUqQtUNbuRYPkE=
+X-Google-Smtp-Source: AA6agR5xL9cSC69c+1y/uWKTqLFokWxQZenGw3Ln10dS2nyve2acvx9iJCiS8dOE4h1muByL940MlpUFLCY=
 X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:200:1bfc:e7ee:6530:4449])
- (user=surenb job=sendgmr) by 2002:a25:8e8f:0:b0:691:9579:d3c5 with SMTP id
- q15-20020a258e8f000000b006919579d3c5mr19748036ybl.249.1662053723940; Thu, 01
- Sep 2022 10:35:23 -0700 (PDT)
-Date:   Thu,  1 Sep 2022 10:34:49 -0700
+ (user=surenb job=sendgmr) by 2002:a25:25cf:0:b0:6a2:fe22:657 with SMTP id
+ l198-20020a2525cf000000b006a2fe220657mr784117ybl.481.1662053729233; Thu, 01
+ Sep 2022 10:35:29 -0700 (PDT)
+Date:   Thu,  1 Sep 2022 10:34:51 -0700
 In-Reply-To: <20220901173516.702122-1-surenb@google.com>
 Mime-Version: 1.0
 References: <20220901173516.702122-1-surenb@google.com>
 X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
-Message-ID: <20220901173516.702122-2-surenb@google.com>
-Subject: [RFC PATCH RESEND 01/28] mm: introduce CONFIG_PER_VMA_LOCK
+Message-ID: <20220901173516.702122-4-surenb@google.com>
+Subject: [RFC PATCH RESEND 03/28] mm: introduce __find_vma to be used without
+ mmap_lock protection
 From:   Suren Baghdasaryan <surenb@google.com>
 To:     akpm@linux-foundation.org
 Cc:     michel@lespinasse.org, jglisse@google.com, mhocko@suse.com,
@@ -73,45 +74,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This configuration variable will be used to build the support for VMA
-locking during page fault handling.
-
-This is enabled by default on supported architectures with SMP and MMU
-set.
-
-The architecture support is needed since the page fault handler is called
-from the architecture's page faulting code which needs modifications to
-handle faults under VMA lock.
+Add __find_vma function to be used for VMA lookup under rcu protection.
 
 Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 ---
- mm/Kconfig | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/gpu/drm/i915/i915_gpu_error.c | 4 ++--
+ include/linux/mm.h                    | 9 ++++++++-
+ mm/mmap.c                             | 6 ++----
+ 3 files changed, 12 insertions(+), 7 deletions(-)
 
-diff --git a/mm/Kconfig b/mm/Kconfig
-index 0331f1461f81..58c20fad9cf9 100644
---- a/mm/Kconfig
-+++ b/mm/Kconfig
-@@ -1124,6 +1124,19 @@ config PTE_MARKER_UFFD_WP
- 	  purposes.  It is required to enable userfaultfd write protection on
- 	  file-backed memory types like shmem and hugetlbfs.
+diff --git a/drivers/gpu/drm/i915/i915_gpu_error.c b/drivers/gpu/drm/i915/i915_gpu_error.c
+index 32e92651ef7c..fc94985c95c8 100644
+--- a/drivers/gpu/drm/i915/i915_gpu_error.c
++++ b/drivers/gpu/drm/i915/i915_gpu_error.c
+@@ -507,7 +507,7 @@ static void error_print_context(struct drm_i915_error_state_buf *m,
+ }
  
-+config ARCH_SUPPORTS_PER_VMA_LOCK
-+       def_bool n
-+
-+config PER_VMA_LOCK
-+	bool "Per-vma locking support"
-+	default y
-+	depends on ARCH_SUPPORTS_PER_VMA_LOCK && MMU && SMP
-+	help
-+	  Allow per-vma locking during page fault handling.
-+
-+	  This feature allows locking each virtual memory area separately when
-+	  handling page faults instead of taking mmap_lock.
-+
- source "mm/damon/Kconfig"
+ static struct i915_vma_coredump *
+-__find_vma(struct i915_vma_coredump *vma, const char *name)
++__i915_find_vma(struct i915_vma_coredump *vma, const char *name)
+ {
+ 	while (vma) {
+ 		if (strcmp(vma->name, name) == 0)
+@@ -521,7 +521,7 @@ __find_vma(struct i915_vma_coredump *vma, const char *name)
+ struct i915_vma_coredump *
+ intel_gpu_error_find_batch(const struct intel_engine_coredump *ee)
+ {
+-	return __find_vma(ee->vma, "batch");
++	return __i915_find_vma(ee->vma, "batch");
+ }
  
- endmenu
+ static void error_print_engine(struct drm_i915_error_state_buf *m,
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 21f8b27bd9fd..7d322a979455 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2712,7 +2712,14 @@ extern int expand_upwards(struct vm_area_struct *vma, unsigned long address);
+ #endif
+ 
+ /* Look up the first VMA which satisfies  addr < vm_end,  NULL if none. */
+-extern struct vm_area_struct * find_vma(struct mm_struct * mm, unsigned long addr);
++extern struct vm_area_struct *__find_vma(struct mm_struct *mm, unsigned long addr);
++static inline
++struct vm_area_struct *find_vma(struct mm_struct *mm, unsigned long addr)
++{
++	mmap_assert_locked(mm);
++	return __find_vma(mm, addr);
++}
++
+ extern struct vm_area_struct * find_vma_prev(struct mm_struct * mm, unsigned long addr,
+ 					     struct vm_area_struct **pprev);
+ 
+diff --git a/mm/mmap.c b/mm/mmap.c
+index 9d780f415be3..693e6776be39 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -2250,12 +2250,11 @@ get_unmapped_area(struct file *file, unsigned long addr, unsigned long len,
+ EXPORT_SYMBOL(get_unmapped_area);
+ 
+ /* Look up the first VMA which satisfies  addr < vm_end,  NULL if none. */
+-struct vm_area_struct *find_vma(struct mm_struct *mm, unsigned long addr)
++struct vm_area_struct *__find_vma(struct mm_struct *mm, unsigned long addr)
+ {
+ 	struct rb_node *rb_node;
+ 	struct vm_area_struct *vma;
+ 
+-	mmap_assert_locked(mm);
+ 	/* Check the cache first. */
+ 	vma = vmacache_find(mm, addr);
+ 	if (likely(vma))
+@@ -2281,8 +2280,7 @@ struct vm_area_struct *find_vma(struct mm_struct *mm, unsigned long addr)
+ 		vmacache_update(addr, vma);
+ 	return vma;
+ }
+-
+-EXPORT_SYMBOL(find_vma);
++EXPORT_SYMBOL(__find_vma);
+ 
+ /*
+  * Same as find_vma, but also return a pointer to the previous VMA in *pprev.
 -- 
 2.37.2.789.g6183377224-goog
 
