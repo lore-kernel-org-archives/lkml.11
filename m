@@ -2,688 +2,281 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BADF7ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:33:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D96AECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:34:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231138AbiIABdM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 21:33:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53494 "EHLO
+        id S232648AbiIABeF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 21:34:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231754AbiIABc5 (ORCPT
+        with ESMTP id S232685AbiIABdu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 21:32:57 -0400
-Received: from soltyk.jannau.net (soltyk.jannau.net [144.76.91.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EDEF155A5D
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:32:53 -0700 (PDT)
-Received: from coburn.home.jannau.net (p54acc2ba.dip0.t-ipconnect.de [84.172.194.186])
-        by soltyk.jannau.net (Postfix) with ESMTPSA id 7DE7B26EF4A;
-        Thu,  1 Sep 2022 03:25:21 +0200 (CEST)
-From:   Janne Grunau <j@jannau.net>
-To:     iommu@lists.linux.dev
-Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        asahi@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Hector Martin <marcan@marcan.st>,
-        Joerg Roedel <joro@8bytes.org>,
-        Sven Peter <sven@svenpeter.dev>, Will Deacon <will@kernel.org>,
-        iommu@lists.linux-foundation.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 2/5] iommu/io-pgtable: Move Apple DART support to its own file
-Date:   Thu,  1 Sep 2022 03:25:16 +0200
-Message-Id: <20220901012519.7167-3-j@jannau.net>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220901012519.7167-1-j@jannau.net>
-References: <20220901012519.7167-1-j@jannau.net>
+        Wed, 31 Aug 2022 21:33:50 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2087.outbound.protection.outlook.com [40.107.92.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D50155D7E;
+        Wed, 31 Aug 2022 18:33:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=b5VyuSwFR+wOQBx+cOz5TqUNRlPu0dHU0tyq+PA/pOQwX7hlY85tsDLVNI+Nzyefi7T6D6rv93TmzKbnzKUUBdGTedhvCdT2S8vpCXUaYOJz8xd8kmQjVrcvu8+oFQehpGeXEeqMFnw0jfn3pM9lXyPwQLoDwrtRQF3Kcm5QTZk99sv7/lt9wcEo83MuwfJL31hk0LttUVUU19vw7IRt+26wSILC1r2s/+OnT8Y3B8KJdxZOBloCtfhv+3rX4xYwGCETlGuL2/13TuYVYkrwn7ydh4KwsDrajfgivr4T/+T02fxwCT9+PwLwVYxG9w+Is4gqpSCfq1UXVHtfPI/QGg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Z6qOEojSYDmibJdsNFsejax4jww5xD+CQiyq5aAKg7U=;
+ b=YLRD8yqrfaq/pmEbW/sZjrfLucHV5Iq3xRNwqbTHpSzjOmt+MzHqZ4iJiieLE1h47MOW3pZ0OOUZ0Tz7LXtkmTMVUXe3YYWmQ3HTt5fx856xyiLjcgTpLEdNItUNFtz0ou9hE7GKMhkOeH7wHGC2s6kmAe7thcbll7o93IJZ4ZBP5EN5b3avdkItqr0dUYFyW64O0FNtbamW2h52dWr8vYdZcRvzlX0u43+xTyDOUx+mT8lBAIqnUFUw1zE1j8l9tpB0jLHwt5vWGV7jmipE6Dmb2quwjmrpO1fkA8DlBo4K6LAIXBmBfwsyWSM13DX9p0a7KBcNbr2s8d3GTIH0FQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Z6qOEojSYDmibJdsNFsejax4jww5xD+CQiyq5aAKg7U=;
+ b=aX0atnJ7fWz4VSZJeQMZeyCr/ctZCZ1y8r5rBT2CeX+9V6Cdd2sCggnMdPDPI8pZJ0PAZDl4FAtYeKdxZNYIAR1oeCGGFdIPNCtmWQFRLlHQS+iVNfg1dA3B/8FIcgkA/By/1NyLuLN9toqsm7J6df5jpukNNWP+8vMDXWDD3pBhLeI4QUJrFy+ud+otxN1bHYcxUIN1gML79xY8hvRrFp7fNCYQeFGFcpt2epacBUf+vqdM/7mnKq56q7bij76xUxS3XlPxr9KsD/L+TWuVkZuGZLx3Iw7J8AQnPumWCgoQqyXtaLNhCDU59sAMqonD6to9JijbWWBNAoxcqIrgfQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BY5PR12MB4130.namprd12.prod.outlook.com (2603:10b6:a03:20b::16)
+ by DM4PR12MB6182.namprd12.prod.outlook.com (2603:10b6:8:a8::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.21; Thu, 1 Sep
+ 2022 01:33:33 +0000
+Received: from BY5PR12MB4130.namprd12.prod.outlook.com
+ ([fe80::508d:221c:9c9e:e1a5]) by BY5PR12MB4130.namprd12.prod.outlook.com
+ ([fe80::508d:221c:9c9e:e1a5%9]) with mapi id 15.20.5588.010; Thu, 1 Sep 2022
+ 01:33:33 +0000
+Message-ID: <06d2caf4-eff1-f537-aa33-c4f0220a9f80@nvidia.com>
+Date:   Wed, 31 Aug 2022 18:33:30 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH v2 7/7] fuse: convert direct IO paths to use FOLL_PIN
+Content-Language: en-US
+To:     Miklos Szeredi <miklos@szeredi.hu>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Darrick J . Wong" <djwong@kernel.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna@kernel.org>, Jan Kara <jack@suse.cz>,
+        David Hildenbrand <david@redhat.com>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-xfs@vger.kernel.org, linux-nfs@vger.kernel.org,
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
+References: <20220831041843.973026-1-jhubbard@nvidia.com>
+ <20220831041843.973026-8-jhubbard@nvidia.com>
+ <CAJfpegvdTqdk9rs-yaEp1aqav4=t9qSpQri7gW8zzb+t7+_88A@mail.gmail.com>
+From:   John Hubbard <jhubbard@nvidia.com>
+In-Reply-To: <CAJfpegvdTqdk9rs-yaEp1aqav4=t9qSpQri7gW8zzb+t7+_88A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BYAPR07CA0088.namprd07.prod.outlook.com
+ (2603:10b6:a03:12b::29) To BY5PR12MB4130.namprd12.prod.outlook.com
+ (2603:10b6:a03:20b::16)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: cd08146e-3409-4a53-8bdc-08da8bb9fbaa
+X-MS-TrafficTypeDiagnostic: DM4PR12MB6182:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: dHYM1SCfGd+ySSVfJnBg6KYIufj99Dm1pUSd/L9++cB5GXXT8KcMi3IoPIp4UETHgm7RhL5Wrn8nSuva67JELxoB8TOk9pU94bU0QQwjzhfqa+IfxaWFrnTGi6NCKJNbsWs5iNbkjLJzt3IwBs3WmhOgtyPI7dtdFMK1gbiTosungR+zwfHLs4+faD//69NVtTf18Axh2F6zYbOZq2KOZbltW77atqxWy7rfsyjBBl1ccIMOtUkKKMigNzkJ7BwQjHz4xwNZJsH6PGUnYwRLcDISbKqAsNzO43bm9XLPysgcfsY+IicsLIyyPe409WYkHx+4uiqV9NJAuVF5CDvR6bFHZSE0+G5sIxkBmMO/9iD7yOhJlv/YrUxHwhxSMsC9mMTFMj8zw8ByBlxeu4edFcxWBALGhSl6TPmY8TPUUj/y00vPhcl/Bd+BKbb+fM1ybiJSjZ3m13M0REa8hJnMPSH58Z8JxEhB1zd25x5R4ChA09mX4fn7pixTjLqlq1xxLqDpaHNfW1VINLnH53N+DeZRFcOHi3BnW1mqgWFPSDgnHm3+jXYm+TIg4GsNr7qSn/wYAJhQJY8aSBZlc5wVJtyp1hiWHrKD6rHq6gCbydNfAVeKxn3CGDzS7VwP4nHA9FsikylesBGMyFfcyPbqtAqRSJx1sNzlaK01ag+riC3kZxA0IrqgHQgy9ql/peYh13NcuBAN8OAwPk9qkCKULZDrWG3B+VQldwl2QBMQ6h6O7Km5E7K76tUlziWiRwHOwRu3bBViVO2Xpz9nmfK1Db6gv0hqMcwM6mohzDmWIhN6n9t/ACX6y86G0LbnBGpxnisx7QBTHB1Vvb4GTMkE2Le9vuMk0MwjO4o4x8sUrZ5KdOgqY5ODRcwoRn3q4V/K
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4130.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(376002)(366004)(396003)(346002)(136003)(6512007)(53546011)(478600001)(2616005)(966005)(26005)(6506007)(41300700001)(186003)(6486002)(83380400001)(5660300002)(8936002)(7416002)(54906003)(6916009)(316002)(2906002)(66946007)(66556008)(8676002)(4326008)(66476007)(38100700002)(31696002)(86362001)(31686004)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RlZLczJnaHBUaHVDc0xyb2tuVWhrcVJUWDNvZWx5RW1UL1poZjR0UW5HcDM0?=
+ =?utf-8?B?R0M0Ukk5ZHpieWhhVU84cVd6OGRNeFdSKzRKUWl3OWZ3NVZJT01TUzBnL2Z6?=
+ =?utf-8?B?M0FUWmN5dHpvNDBoUDRMSWlBbENaMVRSUW1BcHFnUDBrRFo5dTd5dmJRa2U3?=
+ =?utf-8?B?aDgrbklOWTdBVUxJQ3psYzNYdkhwTGVHYXkxQ2dKcXlPWmZpVFBpR0E1VEdE?=
+ =?utf-8?B?K1JKdWowOFI3UlljOXJCNWt2KysvL2pETko4RFRHWk85WTVaMVNnZWxTanRs?=
+ =?utf-8?B?eTU4b256anM1T3ZJWjVpU1cvcVZuK3pJZXNkWk5lTjRFY0F6US9kMFNaaDZw?=
+ =?utf-8?B?aGZDU1ZhaVl6S2FXeERJd3dDTzBrYVg3TWo1R0JQaDdLUXRBMi90dy9LbUE5?=
+ =?utf-8?B?ZDBVb2RITjZlMjAwUXh3eVdNYW1oQXlvTXF5djFvOS80UDVZQ0hxbWV6YndH?=
+ =?utf-8?B?Z2RqVlNSUUMrZUZ6WWRONlgxSDZIN0RLbGo0UkVuendoYkFnRS8rL2syUm1W?=
+ =?utf-8?B?ODZIeEFzZ0xKbkFDV1J4TitZQVp6Ni8zVzBwQUVCbThxS1Frd3RYVUZJcVpC?=
+ =?utf-8?B?NytBbXE1aWVEL2JrVjN5cFYyRGNEbmlCV3BPVkhCcm1lT3hjSTFST3kzYzho?=
+ =?utf-8?B?K0haWW1rZmFOU2djbmV1cERSaE9vM3pjVWJZMVltZXVwRFBUTVNZa3NWc1JB?=
+ =?utf-8?B?NVBoc2Jkc2YvZ0szUWJGYXBsa1dxNk56am01RjEyMzdRYUE1REZzK0ZLNlZn?=
+ =?utf-8?B?bGh3Q2lURVhkeVlReGMxeW5Mc05OQ3BKTGhaQ09RMHVuSkhzWVoxazJ2VEgv?=
+ =?utf-8?B?OUtlZ1dvL0JrODZoZTc4anA1T3BjVW9weGQxd1Z4MWNEbG93OHIzSHFNZ2E5?=
+ =?utf-8?B?QWJRYi9tOEE1eFpnM3RSc0ZqN1p1QWtUS3NDYnhOQWZsSFlKdDhxMk9ndWFL?=
+ =?utf-8?B?Qjh3L29PYnMwYnEvNlhBZlpacG1uNFlSYmxYeVI4clFoSWxvQ3JDUjZVSHhT?=
+ =?utf-8?B?ZEh2a2FVVkVpbCtVUjZpdlorQ3h1UlZpcHhWZkxsU3MvemJDM1BRZHQ4d1ZO?=
+ =?utf-8?B?MVduRUxXSW4xWDlRWDQvV20vS2l0eEdacG9UbDNGeWx4ODMrc0ZWOURKZ2NO?=
+ =?utf-8?B?dlpMMGVwWVhUS2ljY1BBeXh6S3J5aFVBVFJwSUlMbUMvR1N1c0toK1JmZS84?=
+ =?utf-8?B?OGZiSnBjUGZ3SnpnREtTUzFPZDdsRmNrWjhEWWRTbEl5ZnJoMzM0dGN4Mzll?=
+ =?utf-8?B?aHlaNzVpRDJxQ2Y3cFV5SFZXWVZrQTBSb3hyNG80MXFsYXhOd1BkejB5WWw0?=
+ =?utf-8?B?emx2NUZEMDJwa1lpU0VFcUtnYkRYbWlCTkN3bHN2U3ZBQmhwVDlBTkhMTThC?=
+ =?utf-8?B?QlVtdEcyR3JOeUpTRW9SdXV5dGJUZlFGV0lxM0x0VE5ZTjJ1S1NqVFJYOUVO?=
+ =?utf-8?B?dVIwb2cwS3RrenNaaGZ5QWpTK2IxTEcrY2NjTHJOWHZwMlJtYUN2UElYejNs?=
+ =?utf-8?B?ME1hdGNmS2czL2V6VXdDOFNnRGdaWWF5MCtWVTNJd2NwMTRXVHpTVExFMHNi?=
+ =?utf-8?B?cXZQYm5BeVk3dEF2QXEvbitrNGdHUGs3cnB2UGJwMDF4Wnd1Z1Z4akk5a1RU?=
+ =?utf-8?B?cWcxZVorWWliZmx6Rzh4UnROTWFXWDlmOFBFU2traWgyb1ZrUUJheW9zZnJD?=
+ =?utf-8?B?alNNakYzV09sWkpsMkRNZlVlQlEvOU9YeSs4V1Y3U3hCUXczcDFsaUZIVm5K?=
+ =?utf-8?B?TzF6N25kTlF2Z2RQamNSd09Ob0RiWkxseWU2cDZOdW1tcExESTM0NVZVQnBR?=
+ =?utf-8?B?ZmFXUUU1YjJxNXRCaU1URlA5R3p6clNvK0l3WmFwMHE5L2JSUkJhWHY1b0Mw?=
+ =?utf-8?B?SlRjK2pERFZpbHZwVXp6bzFkcFV3N0FwTjRjQnlPYnZQZjA0dmF1MVZtNzl6?=
+ =?utf-8?B?RXVOUGxKZ1BLdllPZlFJQTdMRzFFRXZMaDZDNTRKcUpIbVFGNjRaNGVuZmZr?=
+ =?utf-8?B?R3FJU0JBcnlQWnZIc2duTzJ3UHZqbjRwd2ZCaFd3OWp3SDF2YkhJckdiRSsw?=
+ =?utf-8?B?OVN1NDcyS1REQXJqcjhaRmN0VVhVOWViQi9XRllNWlRTMlBBUnNjaDhZWEV5?=
+ =?utf-8?Q?1kZ2fDTH2pYsDFvoUFFrNQoLK?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cd08146e-3409-4a53-8bdc-08da8bb9fbaa
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4130.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2022 01:33:33.6002
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 40ziBdwV/tMJbALFAfGMORSQGmCCEjKv5oW5D/Nre+5zW/xS50yY+atgOHSxV8/JzVuZboRLK3OenWYEdSCvtA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6182
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pte format used by the DARTs found in the Apple M1 (t8103) is not
-fully compatible with io-pgtable-arm. The 24 MSB are used for subpage
-protection (mapping only parts of page) and conflict with the address
-mask. In addition bit 1 is not available for tagging entries but disables
-subpage protection. Subpage protection could be useful to support a CPU
-granule of 4k with the fixed IOMMU page size of 16k.
+On 8/31/22 03:37, Miklos Szeredi wrote:
 
-The DARTs found on Apple M1 Pro/Max/Ultra use another different pte
-format which is even less compatible. To support an output address size
-of 42 bit the address is shifted down by 4. Subpage protection is
-mandatory and bit 1 signifies uncached mappings used by the display
-controller.
+Hi Miklos,
 
-It would be advantageous to share code for all known Apple DART
-variants to support common features. The page table allocator for DARTs
-is less complex since it uses a two levels of translation table without
-support for huge pages.
+Thanks for looking at this, I'll accept all of these suggestions.
 
-Signed-off-by: Janne Grunau <j@jannau.net>
-Acked-by: Robin Murphy <robin.murphy@arm.com>
+> On Wed, 31 Aug 2022 at 06:19, John Hubbard <jhubbard@nvidia.com> wrote:
+>>
+>> Convert the fuse filesystem to use pin_user_pages_fast() and
+>> unpin_user_page(), instead of get_user_pages_fast() and put_page().
+>>
+>> The user of pin_user_pages_fast() depends upon:
+>>
+>> 1) CONFIG_BLK_USE_PIN_USER_PAGES_FOR_DIO, and
+>>
+>> 2) User-space-backed pages or ITER_BVEC pages.
+>>
+>> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+>> ---
+>>  fs/fuse/dev.c    | 11 +++++++++--
+>>  fs/fuse/file.c   | 32 +++++++++++++++++++++-----------
+>>  fs/fuse/fuse_i.h |  1 +
+>>  3 files changed, 31 insertions(+), 13 deletions(-)
+>>
+>> diff --git a/fs/fuse/dev.c b/fs/fuse/dev.c
+>> index 51897427a534..5de98a7a45b1 100644
+>> --- a/fs/fuse/dev.c
+>> +++ b/fs/fuse/dev.c
+>> @@ -675,7 +675,12 @@ static void fuse_copy_finish(struct fuse_copy_state *cs)
+>>                         flush_dcache_page(cs->pg);
+>>                         set_page_dirty_lock(cs->pg);
+>>                 }
+>> -               put_page(cs->pg);
+>> +               if (!cs->pipebufs &&
+>> +                   (user_backed_iter(cs->iter) || iov_iter_is_bvec(cs->iter)))
+>> +                       dio_w_unpin_user_page(cs->pg);
+>> +
+>> +               else
+>> +                       put_page(cs->pg);
+> 
+> Why not move the logic into a helper and pass a "bool pinned" argument?
 
----
+OK, will do. 
 
-Changes in v4:
-- split dart and io-pgtable-dart build to allow building dart as module
-- add missing "SELECT IOMMU_IO_PGTABLE"
-- made map/unmap_pages/iova_to_phys inon-recursive
-- replace pgd concatenation with multiple table handling
-- simplified config and page size checks
-- collected Robin's Ack
+It's not yet clear from the discussion in the other thread with Jan and Al [1],
+if I'll end up keeping this check:
 
-Changes in v3:
-- move APPLE_DART to its own io-pgtable implementation, copied from
-  io-pgtable-arm and simplified
+    user_backed_iter(cs->iter) || iov_iter_is_bvec(cs->iter)
 
-Changes in v2:
-- add APPLE_DART2 io-pgtable format
+...but if it stays, then the helper is a good idea.
 
- MAINTAINERS                     |   1 +
- drivers/iommu/Kconfig           |  13 +-
- drivers/iommu/Makefile          |   1 +
- drivers/iommu/io-pgtable-arm.c  |  63 -----
- drivers/iommu/io-pgtable-dart.c | 428 ++++++++++++++++++++++++++++++++
- drivers/iommu/io-pgtable.c      |   2 +
- 6 files changed, 444 insertions(+), 64 deletions(-)
- create mode 100644 drivers/iommu/io-pgtable-dart.c
+> 
+>>         }
+>>         cs->pg = NULL;
+>>  }
+>> @@ -730,7 +735,9 @@ static int fuse_copy_fill(struct fuse_copy_state *cs)
+>>                 }
+>>         } else {
+>>                 size_t off;
+>> -               err = iov_iter_get_pages2(cs->iter, &page, PAGE_SIZE, 1, &off);
+>> +
+>> +               err = dio_w_iov_iter_pin_pages(cs->iter, &page, PAGE_SIZE, 1,
+>> +                                              &off);
+>>                 if (err < 0)
+>>                         return err;
+>>                 BUG_ON(!err);
+>> diff --git a/fs/fuse/file.c b/fs/fuse/file.c
+>> index 1a3afd469e3a..01da38928d0b 100644
+>> --- a/fs/fuse/file.c
+>> +++ b/fs/fuse/file.c
+>> @@ -625,14 +625,19 @@ void fuse_read_args_fill(struct fuse_io_args *ia, struct file *file, loff_t pos,
+>>  }
+>>
+>>  static void fuse_release_user_pages(struct fuse_args_pages *ap,
+>> -                                   bool should_dirty)
+>> +                                   bool should_dirty, bool is_user_or_bvec)
+>>  {
+>>         unsigned int i;
+>>
+>> -       for (i = 0; i < ap->num_pages; i++) {
+>> -               if (should_dirty)
+>> -                       set_page_dirty_lock(ap->pages[i]);
+>> -               put_page(ap->pages[i]);
+>> +       if (is_user_or_bvec) {
+>> +               dio_w_unpin_user_pages_dirty_lock(ap->pages, ap->num_pages,
+>> +                                                 should_dirty);
+>> +       } else {
+>> +               for (i = 0; i < ap->num_pages; i++) {
+>> +                       if (should_dirty)
+>> +                               set_page_dirty_lock(ap->pages[i]);
+>> +                       put_page(ap->pages[i]);
+>> +               }
+> 
+> Same here.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 1fc9ead83d2a..028b7e31e589 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1848,6 +1848,7 @@ F:	drivers/clk/clk-apple-nco.c
- F:	drivers/i2c/busses/i2c-pasemi-core.c
- F:	drivers/i2c/busses/i2c-pasemi-platform.c
- F:	drivers/iommu/apple-dart.c
-+F:	drivers/iommu/io-pgtable-dart.c
- F:	drivers/irqchip/irq-apple-aic.c
- F:	drivers/mailbox/apple-mailbox.c
- F:	drivers/nvme/host/apple.c
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index c79a0df090c0..026921c1df53 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -67,6 +67,17 @@ config IOMMU_IO_PGTABLE_ARMV7S_SELFTEST
- 
- 	  If unsure, say N here.
- 
-+config IOMMU_IO_PGTABLE_DART
-+	bool "Apple DART Formats"
-+	select IOMMU_IO_PGTABLE
-+	depends on ARM64 || (COMPILE_TEST && !GENERIC_ATOMIC64)
-+	help
-+	  Enable support for the Apple DART pagetable formats. These include
-+	  the t8020 and t6000/t8110 DART formats used in Apple M1/M2 family
-+	  SoCs.
-+
-+	  If unsure, say N here.
-+
- endmenu
- 
- config IOMMU_DEBUGFS
-@@ -294,7 +305,7 @@ config APPLE_DART
- 	tristate "Apple DART IOMMU Support"
- 	depends on ARCH_APPLE || (COMPILE_TEST && !GENERIC_ATOMIC64)
- 	select IOMMU_API
--	select IOMMU_IO_PGTABLE_LPAE
-+	select IOMMU_IO_PGTABLE_DART
- 	default ARCH_APPLE
- 	help
- 	  Support for Apple DART (Device Address Resolution Table) IOMMUs
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 44475a9b3eea..cc9f381013c3 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -8,6 +8,7 @@ obj-$(CONFIG_IOMMU_DMA) += dma-iommu.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
-+obj-$(CONFIG_IOMMU_IO_PGTABLE_DART) += io-pgtable-dart.o
- obj-$(CONFIG_IOASID) += ioasid.o
- obj-$(CONFIG_IOMMU_IOVA) += iova.o
- obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 94ff319ae8ac..d7f5e23da643 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -130,9 +130,6 @@
- #define ARM_MALI_LPAE_MEMATTR_IMP_DEF	0x88ULL
- #define ARM_MALI_LPAE_MEMATTR_WRITE_ALLOC 0x8DULL
- 
--#define APPLE_DART_PTE_PROT_NO_WRITE (1<<7)
--#define APPLE_DART_PTE_PROT_NO_READ (1<<8)
--
- /* IOPTE accessors */
- #define iopte_deref(pte,d) __va(iopte_to_paddr(pte, d))
- 
-@@ -406,15 +403,6 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
- {
- 	arm_lpae_iopte pte;
- 
--	if (data->iop.fmt == APPLE_DART) {
--		pte = 0;
--		if (!(prot & IOMMU_WRITE))
--			pte |= APPLE_DART_PTE_PROT_NO_WRITE;
--		if (!(prot & IOMMU_READ))
--			pte |= APPLE_DART_PTE_PROT_NO_READ;
--		return pte;
--	}
--
- 	if (data->iop.fmt == ARM_64_LPAE_S1 ||
- 	    data->iop.fmt == ARM_32_LPAE_S1) {
- 		pte = ARM_LPAE_PTE_nG;
-@@ -1107,52 +1095,6 @@ arm_mali_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
- 	return NULL;
- }
- 
--static struct io_pgtable *
--apple_dart_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
--{
--	struct arm_lpae_io_pgtable *data;
--	int i;
--
--	if (cfg->oas > 36)
--		return NULL;
--
--	data = arm_lpae_alloc_pgtable(cfg);
--	if (!data)
--		return NULL;
--
--	/*
--	 * The table format itself always uses two levels, but the total VA
--	 * space is mapped by four separate tables, making the MMIO registers
--	 * an effective "level 1". For simplicity, though, we treat this
--	 * equivalently to LPAE stage 2 concatenation at level 2, with the
--	 * additional TTBRs each just pointing at consecutive pages.
--	 */
--	if (data->start_level < 1)
--		goto out_free_data;
--	if (data->start_level == 1 && data->pgd_bits > 2)
--		goto out_free_data;
--	if (data->start_level > 1)
--		data->pgd_bits = 0;
--	data->start_level = 2;
--	cfg->apple_dart_cfg.n_ttbrs = 1 << data->pgd_bits;
--	data->pgd_bits += data->bits_per_level;
--
--	data->pgd = __arm_lpae_alloc_pages(ARM_LPAE_PGD_SIZE(data), GFP_KERNEL,
--					   cfg);
--	if (!data->pgd)
--		goto out_free_data;
--
--	for (i = 0; i < cfg->apple_dart_cfg.n_ttbrs; ++i)
--		cfg->apple_dart_cfg.ttbr[i] =
--			virt_to_phys(data->pgd + i * ARM_LPAE_GRANULE(data));
--
--	return &data->iop;
--
--out_free_data:
--	kfree(data);
--	return NULL;
--}
--
- struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s1_init_fns = {
- 	.alloc	= arm_64_lpae_alloc_pgtable_s1,
- 	.free	= arm_lpae_free_pgtable,
-@@ -1178,11 +1120,6 @@ struct io_pgtable_init_fns io_pgtable_arm_mali_lpae_init_fns = {
- 	.free	= arm_lpae_free_pgtable,
- };
- 
--struct io_pgtable_init_fns io_pgtable_apple_dart_init_fns = {
--	.alloc	= apple_dart_alloc_pgtable,
--	.free	= arm_lpae_free_pgtable,
--};
--
- #ifdef CONFIG_IOMMU_IO_PGTABLE_LPAE_SELFTEST
- 
- static struct io_pgtable_cfg *cfg_cookie __initdata;
-diff --git a/drivers/iommu/io-pgtable-dart.c b/drivers/iommu/io-pgtable-dart.c
-new file mode 100644
-index 000000000000..43ef375812e6
---- /dev/null
-+++ b/drivers/iommu/io-pgtable-dart.c
-@@ -0,0 +1,428 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Apple DART page table allocator.
-+ *
-+ * Copyright (C) 2022 The Asahi Linux Contributors
-+ *
-+ * Based on io-pgtable-arm.
-+ *
-+ * Copyright (C) 2014 ARM Limited
-+ *
-+ * Author: Will Deacon <will.deacon@arm.com>
-+ */
-+
-+#define pr_fmt(fmt)	"dart io-pgtable: " fmt
-+
-+#include <linux/atomic.h>
-+#include <linux/bitops.h>
-+#include <linux/io-pgtable.h>
-+#include <linux/kernel.h>
-+#include <linux/sizes.h>
-+#include <linux/slab.h>
-+#include <linux/types.h>
-+
-+#include <asm/barrier.h>
-+
-+#define DART1_MAX_ADDR_BITS	36
-+
-+#define DART_MAX_TABLES		4
-+#define DART_LEVELS		2
-+
-+/* Struct accessors */
-+#define io_pgtable_to_data(x)						\
-+	container_of((x), struct dart_io_pgtable, iop)
-+
-+#define io_pgtable_ops_to_data(x)					\
-+	io_pgtable_to_data(io_pgtable_ops_to_pgtable(x))
-+
-+#define DART_GRANULE(d)						\
-+	(sizeof(dart_iopte) << (d)->bits_per_level)
-+#define DART_PTES_PER_TABLE(d)					\
-+	(DART_GRANULE(d) >> ilog2(sizeof(dart_iopte)))
-+
-+#define APPLE_DART1_PADDR_MASK	GENMASK_ULL(35, 12)
-+
-+/* Apple DART1 protection bits */
-+#define APPLE_DART1_PTE_PROT_NO_READ	BIT(8)
-+#define APPLE_DART1_PTE_PROT_NO_WRITE	BIT(7)
-+#define APPLE_DART1_PTE_PROT_SP_DIS	BIT(1)
-+
-+/* marks PTE as valid */
-+#define APPLE_DART_PTE_VALID		BIT(0)
-+
-+/* IOPTE accessors */
-+#define iopte_deref(pte, d) __va(iopte_to_paddr(pte, d))
-+
-+struct dart_io_pgtable {
-+	struct io_pgtable	iop;
-+
-+	int			tbl_bits;
-+	int			bits_per_level;
-+
-+	void			*pgd[DART_MAX_TABLES];
-+};
-+
-+typedef u64 dart_iopte;
-+
-+
-+static dart_iopte paddr_to_iopte(phys_addr_t paddr,
-+				     struct dart_io_pgtable *data)
-+{
-+	return paddr & APPLE_DART1_PADDR_MASK;
-+}
-+
-+static phys_addr_t iopte_to_paddr(dart_iopte pte,
-+				  struct dart_io_pgtable *data)
-+{
-+	return pte & APPLE_DART1_PADDR_MASK;
-+}
-+
-+static void *__dart_alloc_pages(size_t size, gfp_t gfp,
-+				    struct io_pgtable_cfg *cfg)
-+{
-+	struct device *dev = cfg->iommu_dev;
-+	int order = get_order(size);
-+	struct page *p;
-+
-+	VM_BUG_ON((gfp & __GFP_HIGHMEM));
-+	p = alloc_pages_node(dev ? dev_to_node(dev) : NUMA_NO_NODE,
-+			     gfp | __GFP_ZERO, order);
-+	if (!p)
-+		return NULL;
-+
-+	return page_address(p);
-+}
-+
-+static int dart_init_pte(struct dart_io_pgtable *data,
-+			     unsigned long iova, phys_addr_t paddr,
-+			     dart_iopte prot, int num_entries,
-+			     dart_iopte *ptep)
-+{
-+	int i;
-+	dart_iopte pte = prot;
-+	size_t sz = data->iop.cfg.pgsize_bitmap;
-+
-+	for (i = 0; i < num_entries; i++)
-+		if (ptep[i] & APPLE_DART_PTE_VALID) {
-+			/* We require an unmap first */
-+			WARN_ON(ptep[i] & APPLE_DART_PTE_VALID);
-+			return -EEXIST;
-+		}
-+
-+	pte |= APPLE_DART1_PTE_PROT_SP_DIS;
-+	pte |= APPLE_DART_PTE_VALID;
-+
-+	for (i = 0; i < num_entries; i++)
-+		ptep[i] = pte | paddr_to_iopte(paddr + i * sz, data);
-+
-+	return 0;
-+}
-+
-+static dart_iopte dart_install_table(dart_iopte *table,
-+					     dart_iopte *ptep,
-+					     dart_iopte curr,
-+					     struct dart_io_pgtable *data)
-+{
-+	dart_iopte old, new;
-+
-+	new = paddr_to_iopte(__pa(table), data) | APPLE_DART_PTE_VALID;
-+
-+	/*
-+	 * Ensure the table itself is visible before its PTE can be.
-+	 * Whilst we could get away with cmpxchg64_release below, this
-+	 * doesn't have any ordering semantics when !CONFIG_SMP.
-+	 */
-+	dma_wmb();
-+
-+	old = cmpxchg64_relaxed(ptep, curr, new);
-+
-+	return old;
-+}
-+
-+static int dart_get_table(struct dart_io_pgtable *data, unsigned long iova)
-+{
-+	return (iova >> (3 * data->bits_per_level + ilog2(sizeof(dart_iopte)))) &
-+		((1 << data->tbl_bits) - 1);
-+}
-+
-+static int dart_get_l1_index(struct dart_io_pgtable *data, unsigned long iova)
-+{
-+
-+	return (iova >> (2 * data->bits_per_level + ilog2(sizeof(dart_iopte)))) &
-+		 ((1 << data->bits_per_level) - 1);
-+}
-+
-+static int dart_get_l2_index(struct dart_io_pgtable *data, unsigned long iova)
-+{
-+
-+	return (iova >> (data->bits_per_level + ilog2(sizeof(dart_iopte)))) &
-+		 ((1 << data->bits_per_level) - 1);
-+}
-+
-+static  dart_iopte *dart_get_l2(struct dart_io_pgtable *data, unsigned long iova)
-+{
-+	dart_iopte pte, *ptep;
-+	int tbl = dart_get_table(data, iova);
-+
-+	ptep = data->pgd[tbl];
-+	if (!ptep)
-+		return NULL;
-+
-+	ptep += dart_get_l1_index(data, iova);
-+	pte = READ_ONCE(*ptep);
-+
-+	/* Valid entry? */
-+	if (!pte)
-+		return 0;
-+
-+	/* Deref to get level 2 table */
-+	return iopte_deref(pte, data);
-+}
-+
-+static dart_iopte dart_prot_to_pte(struct dart_io_pgtable *data,
-+					   int prot)
-+{
-+	dart_iopte pte = 0;
-+
-+	if (!(prot & IOMMU_WRITE))
-+		pte |= APPLE_DART1_PTE_PROT_NO_WRITE;
-+	if (!(prot & IOMMU_READ))
-+		pte |= APPLE_DART1_PTE_PROT_NO_READ;
-+
-+	return pte;
-+}
-+
-+static int dart_map_pages(struct io_pgtable_ops *ops, unsigned long iova,
-+			      phys_addr_t paddr, size_t pgsize, size_t pgcount,
-+			      int iommu_prot, gfp_t gfp, size_t *mapped)
-+{
-+	struct dart_io_pgtable *data = io_pgtable_ops_to_data(ops);
-+	struct io_pgtable_cfg *cfg = &data->iop.cfg;
-+	size_t tblsz = DART_GRANULE(data);
-+	int ret = 0, tbl, num_entries, max_entries, map_idx_start;
-+	dart_iopte pte, *cptep, *ptep;
-+	dart_iopte prot;
-+
-+	if (WARN_ON(pgsize != cfg->pgsize_bitmap))
-+		return -EINVAL;
-+
-+	if (WARN_ON(paddr >> cfg->oas))
-+		return -ERANGE;
-+
-+	/* If no access, then nothing to do */
-+	if (!(iommu_prot & (IOMMU_READ | IOMMU_WRITE)))
-+		return 0;
-+
-+	tbl = dart_get_table(data, iova);
-+
-+	ptep = data->pgd[tbl];
-+	ptep += dart_get_l1_index(data, iova);
-+	pte = READ_ONCE(*ptep);
-+
-+	/* no L2 table present */
-+	if (!pte) {
-+		cptep = __dart_alloc_pages(tblsz, gfp, cfg);
-+		if (!cptep)
-+			return -ENOMEM;
-+
-+		pte = dart_install_table(cptep, ptep, 0, data);
-+		if (pte)
-+			free_pages((unsigned long)cptep, get_order(tblsz));
-+
-+		/* L2 table is present (now) */
-+		pte = READ_ONCE(*ptep);
-+	}
-+
-+	ptep = iopte_deref(pte, data);
-+
-+	/* install a leaf entries into L2 table */
-+	prot = dart_prot_to_pte(data, iommu_prot);
-+	map_idx_start = dart_get_l2_index(data, iova);
-+	max_entries = DART_PTES_PER_TABLE(data) - map_idx_start;
-+	num_entries = min_t(int, pgcount, max_entries);
-+	ptep += map_idx_start;
-+	ret = dart_init_pte(data, iova, paddr, prot, num_entries, ptep);
-+	if (!ret && mapped)
-+		*mapped += num_entries * pgsize;
-+
-+	/*
-+	 * Synchronise all PTE updates for the new mapping before there's
-+	 * a chance for anything to kick off a table walk for the new iova.
-+	 */
-+	wmb();
-+
-+	return ret;
-+}
-+
-+static size_t dart_unmap_pages(struct io_pgtable_ops *ops, unsigned long iova,
-+				   size_t pgsize, size_t pgcount,
-+				   struct iommu_iotlb_gather *gather)
-+{
-+	struct dart_io_pgtable *data = io_pgtable_ops_to_data(ops);
-+	struct io_pgtable_cfg *cfg = &data->iop.cfg;
-+	int i = 0, num_entries, max_entries, unmap_idx_start;
-+	dart_iopte pte, *ptep;
-+
-+	if (WARN_ON(pgsize != cfg->pgsize_bitmap || !pgcount))
-+		return 0;
-+
-+	ptep = dart_get_l2(data, iova);
-+
-+	/* Valid L2 IOPTE pointer? */
-+	if (WARN_ON(!ptep))
-+		return 0;
-+
-+	unmap_idx_start = dart_get_l2_index(data, iova);
-+	ptep += unmap_idx_start;
-+
-+	max_entries = DART_PTES_PER_TABLE(data) - unmap_idx_start;
-+	num_entries = min_t(int, pgcount, max_entries);
-+
-+	while (i < num_entries) {
-+		pte = READ_ONCE(*ptep);
-+		if (WARN_ON(!pte))
-+			break;
-+
-+		/* clear pte */
-+		*ptep = 0;
-+
-+		if (!iommu_iotlb_gather_queued(gather))
-+			io_pgtable_tlb_add_page(&data->iop, gather,
-+						iova + i * pgsize, pgsize);
-+
-+		ptep++;
-+		i++;
-+	}
-+
-+	return i * pgsize;
-+}
-+
-+static phys_addr_t dart_iova_to_phys(struct io_pgtable_ops *ops,
-+					 unsigned long iova)
-+{
-+	struct dart_io_pgtable *data = io_pgtable_ops_to_data(ops);
-+	dart_iopte pte, *ptep;
-+
-+	ptep = dart_get_l2(data, iova);
-+
-+	/* Valid L2 IOPTE pointer? */
-+	if (!ptep)
-+		return 0;
-+
-+	ptep += dart_get_l2_index(data, iova);
-+
-+	pte = READ_ONCE(*ptep);
-+	/* Found translation */
-+	if (pte) {
-+		iova &= (data->iop.cfg.pgsize_bitmap - 1);
-+		return iopte_to_paddr(pte, data) | iova;
-+	}
-+
-+	/* Ran out of page tables to walk */
-+	return 0;
-+}
-+
-+static struct dart_io_pgtable *
-+dart_alloc_pgtable(struct io_pgtable_cfg *cfg)
-+{
-+	struct dart_io_pgtable *data;
-+	int tbl_bits, bits_per_level, va_bits, pg_shift;
-+
-+	pg_shift = __ffs(cfg->pgsize_bitmap);
-+	bits_per_level = pg_shift - ilog2(sizeof(dart_iopte));
-+
-+	va_bits = cfg->ias - pg_shift;
-+
-+	tbl_bits = max_t(int, 0, va_bits - (bits_per_level * DART_LEVELS));
-+	if ((1 << tbl_bits) > DART_MAX_TABLES)
-+		return NULL;
-+
-+	data = kzalloc(sizeof(*data), GFP_KERNEL);
-+	if (!data)
-+		return NULL;
-+
-+	data->tbl_bits = tbl_bits;
-+	data->bits_per_level = bits_per_level;
-+
-+	data->iop.ops = (struct io_pgtable_ops) {
-+		.map_pages	= dart_map_pages,
-+		.unmap_pages	= dart_unmap_pages,
-+		.iova_to_phys	= dart_iova_to_phys,
-+	};
-+
-+	return data;
-+}
-+
-+static struct io_pgtable *
-+apple_dart_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
-+{
-+	struct dart_io_pgtable *data;
-+	int i;
-+
-+	if (!cfg->coherent_walk)
-+		return NULL;
-+
-+	if (cfg->oas > DART1_MAX_ADDR_BITS)
-+		return NULL;
-+
-+	if (cfg->ias > cfg->oas)
-+		return NULL;
-+
-+	if (!(cfg->pgsize_bitmap == SZ_4K || cfg->pgsize_bitmap == SZ_16K))
-+		return NULL;
-+
-+	data = dart_alloc_pgtable(cfg);
-+	if (!data)
-+		return NULL;
-+
-+	cfg->apple_dart_cfg.n_ttbrs = 1 << data->tbl_bits;
-+
-+	for (i = 0; i < cfg->apple_dart_cfg.n_ttbrs; ++i) {
-+		data->pgd[i] = __dart_alloc_pages(DART_GRANULE(data), GFP_KERNEL,
-+					   cfg);
-+		if (!data->pgd[i])
-+			goto out_free_data;
-+		cfg->apple_dart_cfg.ttbr[i] = virt_to_phys(data->pgd[i]);
-+	}
-+
-+	return &data->iop;
-+
-+out_free_data:
-+	while (--i >= 0)
-+		free_pages((unsigned long)data->pgd[i],
-+			   get_order(DART_GRANULE(data)));
-+	kfree(data);
-+	return NULL;
-+}
-+
-+static void apple_dart_free_pgtable(struct io_pgtable *iop)
-+{
-+	struct dart_io_pgtable *data = io_pgtable_to_data(iop);
-+	dart_iopte *ptep, *end;
-+	int i;
-+
-+	for (i = 0; i < (1 << data->tbl_bits) && data->pgd[i]; ++i) {
-+		ptep = data->pgd[i];
-+		end = (void *)ptep + DART_GRANULE(data);
-+
-+		while (ptep != end) {
-+			dart_iopte pte = *ptep++;
-+
-+			if (pte) {
-+				unsigned long page =
-+					(unsigned long)iopte_deref(pte, data);
-+
-+				free_pages(page, get_order(DART_GRANULE(data)));
-+			}
-+		}
-+		free_pages((unsigned long)data->pgd[i],
-+			   get_order(DART_GRANULE(data)));
-+	}
-+
-+	kfree(data);
-+}
-+
-+struct io_pgtable_init_fns io_pgtable_apple_dart_init_fns = {
-+	.alloc	= apple_dart_alloc_pgtable,
-+	.free	= apple_dart_free_pgtable,
-+};
-diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
-index f4bfcef98297..16205ea9272c 100644
---- a/drivers/iommu/io-pgtable.c
-+++ b/drivers/iommu/io-pgtable.c
-@@ -20,6 +20,8 @@ io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] = {
- 	[ARM_64_LPAE_S1] = &io_pgtable_arm_64_lpae_s1_init_fns,
- 	[ARM_64_LPAE_S2] = &io_pgtable_arm_64_lpae_s2_init_fns,
- 	[ARM_MALI_LPAE] = &io_pgtable_arm_mali_lpae_init_fns,
-+#endif
-+#ifdef CONFIG_IOMMU_IO_PGTABLE_DART
- 	[APPLE_DART] = &io_pgtable_apple_dart_init_fns,
- #endif
- #ifdef CONFIG_IOMMU_IO_PGTABLE_ARMV7S
+Yes. Definitely belongs in a helper function. I was thinking, "don't
+go that far, because the code will eventually get deleted anyway", but
+you are right. :)
+
+> 
+>>         }
+>>  }
+>>
+>> @@ -733,7 +738,7 @@ static void fuse_aio_complete_req(struct fuse_mount *fm, struct fuse_args *args,
+>>         struct fuse_io_priv *io = ia->io;
+>>         ssize_t pos = -1;
+>>
+>> -       fuse_release_user_pages(&ia->ap, io->should_dirty);
+>> +       fuse_release_user_pages(&ia->ap, io->should_dirty, io->is_user_or_bvec);
+>>
+>>         if (err) {
+>>                 /* Nothing */
+>> @@ -1414,10 +1419,10 @@ static int fuse_get_user_pages(struct fuse_args_pages *ap, struct iov_iter *ii,
+>>         while (nbytes < *nbytesp && ap->num_pages < max_pages) {
+>>                 unsigned npages;
+>>                 size_t start;
+>> -               ret = iov_iter_get_pages2(ii, &ap->pages[ap->num_pages],
+>> -                                       *nbytesp - nbytes,
+>> -                                       max_pages - ap->num_pages,
+>> -                                       &start);
+>> +               ret = dio_w_iov_iter_pin_pages(ii, &ap->pages[ap->num_pages],
+>> +                                              *nbytesp - nbytes,
+>> +                                              max_pages - ap->num_pages,
+>> +                                              &start);
+>>                 if (ret < 0)
+>>                         break;
+>>
+>> @@ -1483,6 +1488,10 @@ ssize_t fuse_direct_io(struct fuse_io_priv *io, struct iov_iter *iter,
+>>                 fl_owner_t owner = current->files;
+>>                 size_t nbytes = min(count, nmax);
+>>
+>> +               /* For use in fuse_release_user_pages(): */
+>> +               io->is_user_or_bvec = user_backed_iter(iter) ||
+>> +                                     iov_iter_is_bvec(iter);
+>> +
+> 
+> How about io->is_pinned?  And a iov_iter_is_pinned() helper?
+
+Agreed, is_pinned is a better name, and the helper (if we end up needing
+that logic) also sounds good.
+
+
+[1] https://lore.kernel.org/r/20220831094349.boln4jjajkdtykx3@quack3
+
+thanks,
+
 -- 
-2.35.1
-
+John Hubbard
+NVIDIA
