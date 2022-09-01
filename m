@@ -2,108 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C63C4ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 18:01:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AA6EECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 18:06:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233557AbiIASBp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 14:01:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45390 "EHLO
+        id S234363AbiIASGI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 14:06:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231447AbiIASBm (ORCPT
+        with ESMTP id S234712AbiIASFo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 14:01:42 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67EC66B8DD;
-        Thu,  1 Sep 2022 11:01:41 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id x80so13508933pgx.0;
-        Thu, 01 Sep 2022 11:01:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=MQnEtly0rT5VEW/OKtfv9DWInMChBOiwnjogwLslQfo=;
-        b=SID8hHy2UJJEu1tLqX0wqWDisxK+FNS4UewHCbU69hfscwDpGerJ5vh5Quv4/0Gu4f
-         snqkB20uSeyW0Qulg2AH0cjdxQiDONw/DS3jbILXr6ffBOM+1D2d2xa+ansXJk/lXAtb
-         Q/8rQ4J1ySSSoc+6Ed+ukMs47k9pF4UQaYTgNi3PqDaaT2Gnj98U2LPYFw2tm7q53+H8
-         PJdV0y7uAkIl0+Rs+ylbEJrtIzk1r9BDHQNvV+YFo1w31mjoActtwcimcvgxpvtt+MY9
-         Z52uRPhJhD8CPzVWCN5GyYEIFR5CuIkEkY3IT9jsCVL2nV/vfI1d1JMsi/iHr32UCieO
-         kQPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=MQnEtly0rT5VEW/OKtfv9DWInMChBOiwnjogwLslQfo=;
-        b=dKOMxRpokWC1yC7ScOU0l1MLeXA24BHxn4IKr3trFQN2biuRS4V+3NfGVO6XCkvjI4
-         mkHbgUtEvFG3qgXYlQY56aO5COQEaXxWG0purqHrmIryiOgtFQOW7h2sPI62cyCLiFTi
-         S/5q8pW7e1ftQizJpe+GvAVrvfilglqvaC5NkPF9MxnbLER8GvkhBxRaVXIZ5C5K9lvD
-         wJCXZzWDOxWwoWy6YjljTgQLbaPsUGO5mGWRHboIj4viJ8waW16wHUrD5fm1d0FUv5DM
-         4eseYNya3M2s0Azs+/4QoiEooCMbZQCTLeeOa3Vkyn4yPiS67J6BfPBLUd3yXk/9Ru7o
-         4EMw==
-X-Gm-Message-State: ACgBeo184uJn4lSr4riBE0Xzs0QZo4U4+x5lmNQckAAoZdyNyfZlDhHX
-        dTblwGOqELxZkm+GtpNGVSo=
-X-Google-Smtp-Source: AA6agR4pI77Z8xR/ZQwidTCnDkAeLZVo9Vna0UXdOf9J0ty6rz59XjPLV25jnRxNCgGKdBZ4y3NrpA==
-X-Received: by 2002:a05:6a00:850:b0:52e:d1c1:df48 with SMTP id q16-20020a056a00085000b0052ed1c1df48mr32013994pfk.75.1662055300606;
-        Thu, 01 Sep 2022 11:01:40 -0700 (PDT)
-Received: from localhost ([192.55.55.51])
-        by smtp.gmail.com with ESMTPSA id x10-20020aa7956a000000b005387bf85ea0sm6480993pfq.128.2022.09.01.11.01.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 11:01:39 -0700 (PDT)
-Date:   Thu, 1 Sep 2022 11:01:37 -0700
-From:   Isaku Yamahata <isaku.yamahata@gmail.com>
-To:     "Huang, Kai" <kai.huang@intel.com>
-Cc:     "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Yamahata, Isaku" <isaku.yamahata@intel.com>,
-        "Gao, Chao" <chao.gao@intel.com>,
-        "Christopherson,, Sean" <seanjc@google.com>,
-        "suzuki.poulose@arm.com" <suzuki.poulose@arm.com>,
-        "isaku.yamahata@gmail.com" <isaku.yamahata@gmail.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "anup@brainfault.org" <anup@brainfault.org>,
-        "pbonzini@redhat.com" <pbonzini@redhat.com>,
-        "imbrenda@linux.ibm.com" <imbrenda@linux.ibm.com>
-Subject: Re: [PATCH v2 04/19] Partially revert "KVM: Pass kvm_init()'s opaque
- param to additional arch funcs"
-Message-ID: <20220901180137.GI2711697@ls.amr.corp.intel.com>
-References: <cover.1661860550.git.isaku.yamahata@intel.com>
- <7f4a3ef13cc4b22aa77e8c5022e1710fd4189eff.1661860550.git.isaku.yamahata@intel.com>
- <7f3003465bc8e7a75d7e27a0928271210c5e2323.camel@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <7f3003465bc8e7a75d7e27a0928271210c5e2323.camel@intel.com>
+        Thu, 1 Sep 2022 14:05:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 959AC40E10;
+        Thu,  1 Sep 2022 11:05:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B012D60F5A;
+        Thu,  1 Sep 2022 18:05:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1EBA1C433B5;
+        Thu,  1 Sep 2022 18:05:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662055518;
+        bh=LXQtTE0NZzpZOQgdX6qkAwIt/jShkXEuYK1Q3F/U454=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=ZiguOAhsmYmLcRXvB1Ww3gITF4LR2ljww+iVDmTesaBjW9Ve22QrGHe0MVh77WCCD
+         Wbx8rspYuuatS1AFBYGGcA8kXL/2a4EKxXcLKkxnqsS/E7dWBy0Cv1of4MeZg0yjWd
+         9Wc9c4L40B3RkZz9McNe53DJBCMboHYQCnL6h6r7TziOe2jvVCA6mlbYtLKOmPhUQn
+         uzQeD7YwPEH6xGYTAF8EUW7hFjw0/jy15VeHiJ4WVHP7FoBDVB1gLEaqS+6+JHXZOd
+         rQ0PgE230INkgUX2m3BtfRt76CvO8hw3Fn+CEiPPCl/2qMseVAB2wr7KnC/KT94vF5
+         D1KV+Gwle3IGw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 09486C4166E;
+        Thu,  1 Sep 2022 18:05:18 +0000 (UTC)
+Subject: Re: [GIT PULL] Networking for 6.0-rc4
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220901095047.19518-1-pabeni@redhat.com>
+References: <20220901095047.19518-1-pabeni@redhat.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220901095047.19518-1-pabeni@redhat.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.0-rc4
+X-PR-Tracked-Commit-Id: a8424a9b4522a3ab9f32175ad6d848739079071f
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 42e66b1cc3a070671001f8a1e933a80818a192bf
+Message-Id: <166205551803.13559.2668583976121461826.pr-tracker-bot@kernel.org>
+Date:   Thu, 01 Sep 2022 18:05:18 +0000
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 10:39:48PM +0000,
-"Huang, Kai" <kai.huang@intel.com> wrote:
+The pull request you sent on Thu,  1 Sep 2022 11:50:47 +0200:
 
-> On Tue, 2022-08-30 at 05:01 -0700, isaku.yamahata@intel.com wrote:
-> > From: Chao Gao <chao.gao@intel.com>
-> > 
-> > This partially reverts commit b99040853738 ("KVM: Pass kvm_init()'s opaque
-> > param to additional arch funcs") remove opaque from
-> > kvm_arch_check_processor_compat because no one uses this opaque now.
-> > Address conflicts for ARM (due to file movement) and manually handle RISC-V
-> > which comes after the commit.  The change about kvm_arch_hardware_setup()
-> > in original commit are still needed so they are not reverted.
-> > 
-> > The current implementation enables hardware (e.g. enable VMX on all CPUs),
-> > arch-specific initialization for the first VM creation, and disables
-> > hardware (in x86, disable VMX on all CPUs) for last VM destruction.
-> > 
-> > To support TDX, hardware_enable_all() will be done during module loading
-> > time.  As a result, CPU compatibility check will be opportunistically moved
-> > to hardware_enable_nolock(), which doesn't take any argument.  Instead of
-> > passing 'opaque' around to hardware_enable_nolock() and
-> > hardware_enable_all(), just remove the unused 'opaque' argument from
-> > kvm_arch_check_processor_compat().
-> 
-> This patch now is not part of TDX's series, so it doesn't make a lot sense to
-> put the last two paragraphs here (because the purpose is different).  I think
-> you can just use Chao's original patch.
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.0-rc4
 
-Ok.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/42e66b1cc3a070671001f8a1e933a80818a192bf
+
+Thank you!
+
 -- 
-Isaku Yamahata <isaku.yamahata@gmail.com>
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
