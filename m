@@ -2,85 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29E9EECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 08:08:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9889C64991
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 08:08:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233716AbiIAIID (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 04:08:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33510 "EHLO
+        id S233769AbiIAIIU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 04:08:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233501AbiIAIH4 (ORCPT
+        with ESMTP id S233755AbiIAIIO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 04:07:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9079E42DA
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 01:07:53 -0700 (PDT)
+        Thu, 1 Sep 2022 04:08:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B745132508
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 01:08:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662019673;
+        s=mimecast20190719; t=1662019685;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=+R3oRbS1dr4Hw0Byg+WK1FYsd3bdoErBD0TzikrgHgY=;
-        b=DaGK5tXViC3/73VAxAkqTYZemj2jbbGZsbQc1unhGJtpDjHDFVkNwmpXzWTuAaX5jfoppC
-        mOANDSKp7nqoi7lV1Hv1vnbbcYV3Ectz2cWzHhjctF49ItgXCjGSSYtjj6OvqwP3VzEVp9
-        9lGzsAdunON6IdFlkewTJjAvpkUkup4=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=u/VisaIuDwQPL/j6BsI0dXcRMhVm18M62DV4g+QfZJE=;
+        b=CLviSsGNsjbVeEqQDGTJlO8zYtfw0b+Dc6a7U1y9jB4MDotLWDYjG20BxLWhFTyo3NBI8U
+        h0o3pML/oYHwLs/tM+xZ5fSAIXb/rjDgJy8FUPJY+JfY1hQrSOH1QjjNWlkcA90RdcbjBV
+        k9Q6sZ/BAcX6HybXEhwd0iiS2uwhOTk=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-636-d_5Uf6JbMxeomBd_tWQEQg-1; Thu, 01 Sep 2022 04:07:51 -0400
-X-MC-Unique: d_5Uf6JbMxeomBd_tWQEQg-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+ us-mta-617-5jdIn-CiNKCP1Xk3IVylmw-1; Thu, 01 Sep 2022 04:08:04 -0400
+X-MC-Unique: 5jdIn-CiNKCP1Xk3IVylmw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 958A83C10231;
-        Thu,  1 Sep 2022 08:07:51 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7206C96408C;
+        Thu,  1 Sep 2022 08:08:04 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.72])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1822A401473;
-        Thu,  1 Sep 2022 08:07:50 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D0C5740C141D;
+        Thu,  1 Sep 2022 08:08:03 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net 4/6] rxrpc: Fix calc of resend age
+Subject: [PATCH net 6/6] rxrpc: Remove rxrpc_get_reply_time() which is no
+ longer used
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Date:   Thu, 01 Sep 2022 09:07:50 +0100
-Message-ID: <166201967050.3817988.4307733641865890404.stgit@warthog.procyon.org.uk>
+Date:   Thu, 01 Sep 2022 09:08:03 +0100
+Message-ID: <166201968325.3817988.15791788974507422429.stgit@warthog.procyon.org.uk>
 In-Reply-To: <166201964443.3817988.12088441548413332725.stgit@warthog.procyon.org.uk>
 References: <166201964443.3817988.12088441548413332725.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/1.5
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the calculation of the resend age to add a microsecond value as
-microseconds, not nanoseconds.
+Remove rxrpc_get_reply_time() as that is no longer used now that the call
+issue time is used instead of the reply time.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
 ---
 
- net/rxrpc/call_event.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/networking/rxrpc.rst |   11 ---------
+ include/net/af_rxrpc.h             |    2 --
+ net/rxrpc/recvmsg.c                |   43 ------------------------------------
+ 3 files changed, 56 deletions(-)
 
-diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
-index f8ecad2b730e..2a93e7b5fbd0 100644
---- a/net/rxrpc/call_event.c
-+++ b/net/rxrpc/call_event.c
-@@ -166,7 +166,7 @@ static void rxrpc_resend(struct rxrpc_call *call, unsigned long now_j)
- 	_enter("{%d,%d}", call->tx_hard_ack, call->tx_top);
+diff --git a/Documentation/networking/rxrpc.rst b/Documentation/networking/rxrpc.rst
+index 39c2249c7aa7..39494a6ea739 100644
+--- a/Documentation/networking/rxrpc.rst
++++ b/Documentation/networking/rxrpc.rst
+@@ -1055,17 +1055,6 @@ The kernel interface functions are as follows:
+      first function to change.  Note that this must be called in TASK_RUNNING
+      state.
  
- 	now = ktime_get_real();
--	max_age = ktime_sub(now, jiffies_to_usecs(call->peer->rto_j));
-+	max_age = ktime_sub_us(now, jiffies_to_usecs(call->peer->rto_j));
+- (#) Get reply timestamp::
+-
+-	bool rxrpc_kernel_get_reply_time(struct socket *sock,
+-					 struct rxrpc_call *call,
+-					 ktime_t *_ts)
+-
+-     This allows the timestamp on the first DATA packet of the reply of a
+-     client call to be queried, provided that it is still in the Rx ring.  If
+-     successful, the timestamp will be stored into ``*_ts`` and true will be
+-     returned; false will be returned otherwise.
+-
+  (#) Get remote client epoch::
  
- 	spin_lock_bh(&call->lock);
- 
+ 	u32 rxrpc_kernel_get_epoch(struct socket *sock,
+diff --git a/include/net/af_rxrpc.h b/include/net/af_rxrpc.h
+index cee5f83c0f11..b69ca695935c 100644
+--- a/include/net/af_rxrpc.h
++++ b/include/net/af_rxrpc.h
+@@ -66,8 +66,6 @@ int rxrpc_kernel_charge_accept(struct socket *, rxrpc_notify_rx_t,
+ void rxrpc_kernel_set_tx_length(struct socket *, struct rxrpc_call *, s64);
+ bool rxrpc_kernel_check_life(const struct socket *, const struct rxrpc_call *);
+ u32 rxrpc_kernel_get_epoch(struct socket *, struct rxrpc_call *);
+-bool rxrpc_kernel_get_reply_time(struct socket *, struct rxrpc_call *,
+-				 ktime_t *);
+ bool rxrpc_kernel_call_is_complete(struct rxrpc_call *);
+ void rxrpc_kernel_set_max_life(struct socket *, struct rxrpc_call *,
+ 			       unsigned long);
+diff --git a/net/rxrpc/recvmsg.c b/net/rxrpc/recvmsg.c
+index 250f23bc1c07..7e39c262fd79 100644
+--- a/net/rxrpc/recvmsg.c
++++ b/net/rxrpc/recvmsg.c
+@@ -771,46 +771,3 @@ int rxrpc_kernel_recv_data(struct socket *sock, struct rxrpc_call *call,
+ 	goto out;
+ }
+ EXPORT_SYMBOL(rxrpc_kernel_recv_data);
+-
+-/**
+- * rxrpc_kernel_get_reply_time - Get timestamp on first reply packet
+- * @sock: The socket that the call exists on
+- * @call: The call to query
+- * @_ts: Where to put the timestamp
+- *
+- * Retrieve the timestamp from the first DATA packet of the reply if it is
+- * in the ring.  Returns true if successful, false if not.
+- */
+-bool rxrpc_kernel_get_reply_time(struct socket *sock, struct rxrpc_call *call,
+-				 ktime_t *_ts)
+-{
+-	struct sk_buff *skb;
+-	rxrpc_seq_t hard_ack, top, seq;
+-	bool success = false;
+-
+-	mutex_lock(&call->user_mutex);
+-
+-	if (READ_ONCE(call->state) != RXRPC_CALL_CLIENT_RECV_REPLY)
+-		goto out;
+-
+-	hard_ack = call->rx_hard_ack;
+-	if (hard_ack != 0)
+-		goto out;
+-
+-	seq = hard_ack + 1;
+-	top = smp_load_acquire(&call->rx_top);
+-	if (after(seq, top))
+-		goto out;
+-
+-	skb = call->rxtx_buffer[seq & RXRPC_RXTX_BUFF_MASK];
+-	if (!skb)
+-		goto out;
+-
+-	*_ts = skb_get_ktime(skb);
+-	success = true;
+-
+-out:
+-	mutex_unlock(&call->user_mutex);
+-	return success;
+-}
+-EXPORT_SYMBOL(rxrpc_kernel_get_reply_time);
 
 
