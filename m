@@ -2,74 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A99BAECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 08:59:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77169ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 08:59:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234245AbiIAI7E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 04:59:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38184 "EHLO
+        id S232552AbiIAI70 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 04:59:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234366AbiIAI63 (ORCPT
+        with ESMTP id S233219AbiIAI6x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 04:58:29 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE52212FDE1
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 01:57:44 -0700 (PDT)
-Received: from kwepemi500008.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MJFHQ2hD6znTxJ;
-        Thu,  1 Sep 2022 16:55:14 +0800 (CST)
-Received: from huawei.com (10.67.175.83) by kwepemi500008.china.huawei.com
- (7.221.188.139) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 1 Sep
- 2022 16:57:41 +0800
-From:   ruanjinjie <ruanjinjie@huawei.com>
-To:     <mpe@ellerman.id.au>, <npiggin@gmail.com>,
-        <christophe.leroy@csgroup.eu>, <joel@jms.id.au>,
-        <Julia.Lawall@inria.fr>, <linuxppc-dev@lists.ozlabs.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <ruanjinjie@huawei.com>
-Subject: [PATCH -next] powerpc/mpic_msgr: fix cast removes address space of expression warnings
-Date:   Thu, 1 Sep 2022 16:54:16 +0800
-Message-ID: <20220901085416.204378-1-ruanjinjie@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 1 Sep 2022 04:58:53 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 07B1B130A14
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 01:58:23 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BFC80D6E;
+        Thu,  1 Sep 2022 01:58:29 -0700 (PDT)
+Received: from bogus (unknown [10.57.46.12])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 89F223F766;
+        Thu,  1 Sep 2022 01:58:21 -0700 (PDT)
+Date:   Thu, 1 Sep 2022 09:57:56 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Jens Wiklander <jens.wiklander@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org,
+        Marc Bonnici <marc.bonnici@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Achin Gupta <achin.gupta@arm.com>,
+        Valentin Laurent <valentin.laurent@trustonic.com>,
+        Lukas Hanel <lukas.hanel@trustonic.com>,
+        Coboy Chen <coboy.chen@mediatek.com>
+Subject: Re: [PATCH 7/9] firmware: arm_ffa: Add v1.1 get_partition_info
+ support
+Message-ID: <20220901085756.ymk3rd7zjqvjpaj6@bogus>
+References: <20220830100700.344594-1-sudeep.holla@arm.com>
+ <20220830100700.344594-8-sudeep.holla@arm.com>
+ <CAHUa44Fmr=vDLbST5qwTDOtSZJq4RYqO+Y4Pij64VeBU-0BgrQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.175.83]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemi500008.china.huawei.com (7.221.188.139)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHUa44Fmr=vDLbST5qwTDOtSZJq4RYqO+Y4Pij64VeBU-0BgrQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When build Linux kernel, encounter the following warnings:
+On Thu, Sep 01, 2022 at 10:43:58AM +0200, Jens Wiklander wrote:
+> On Tue, Aug 30, 2022 at 12:07 PM Sudeep Holla <sudeep.holla@arm.com> wrote:
+> >
+> > FF-A v1.1 adds support to discovery the UUIDs of the partitions that was
+> > missing in v1.0 and which the driver workarounds by using UUIDs supplied
+> > by the ffa_drivers.
+> >
+> > Add the v1.1 get_partition_info support and disable the workaround if
+> > the detected FF-A version is greater than v1.0.
+> >
+> > Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+> > ---
+> >  drivers/firmware/arm_ffa/driver.c | 39 ++++++++++++++++++++++++-------
+> >  include/linux/arm_ffa.h           |  1 +
+> >  2 files changed, 32 insertions(+), 8 deletions(-)
+> >
+> > diff --git a/drivers/firmware/arm_ffa/driver.c b/drivers/firmware/arm_ffa/driver.c
+> > index 5c8484b05c50..6822241168d6 100644
+> > --- a/drivers/firmware/arm_ffa/driver.c
+> > +++ b/drivers/firmware/arm_ffa/driver.c
+> > @@ -264,18 +264,24 @@ static int ffa_rxtx_unmap(u16 vm_id)
+> >         return 0;
+> >  }
+> >
+> > +#define PARTITION_INFO_GET_RETURN_COUNT_ONLY   BIT(0)
+> > +
+> >  /* buffer must be sizeof(struct ffa_partition_info) * num_partitions */
+> >  static int
+> >  __ffa_partition_info_get(u32 uuid0, u32 uuid1, u32 uuid2, u32 uuid3,
+> >                          struct ffa_partition_info *buffer, int num_partitions)
+> >  {
+> > -       int count;
+> > +       int idx, count, flags = 0, size;
+> >         ffa_value_t partition_info;
+> >
+> > +       if (!buffer || !num_partitions) /* Just get the count for now */
+> > +               flags = PARTITION_INFO_GET_RETURN_COUNT_ONLY;
+> > +
+> >         mutex_lock(&drv_info->rx_lock);
+> >         invoke_ffa_fn((ffa_value_t){
+> >                       .a0 = FFA_PARTITION_INFO_GET,
+> >                       .a1 = uuid0, .a2 = uuid1, .a3 = uuid2, .a4 = uuid3,
+> > +                     .a5 = flags,
+> >                       }, &partition_info);
+> >
+> >         if (partition_info.a0 == FFA_ERROR) {
+> > @@ -285,8 +291,15 @@ __ffa_partition_info_get(u32 uuid0, u32 uuid1, u32 uuid2, u32 uuid3,
+> >
+> >         count = partition_info.a2;
+> >
+> > +       if (drv_info->version > FFA_VERSION_1_0)
+> > +               size = partition_info.a3;
+> 
+> What happens if this value is larger than sizeof(struct ffa_partition_info)?
+> 
 
-./arch/powerpc/sysdev/mpic_msgr.c:230:38: warning: cast removes address space '__iomem' of expression
-./arch/powerpc/sysdev/mpic_msgr.c:230:27: warning: incorrect type in assignment (different address spaces)
+Right, I had the check for both 0 size and size > struct size. I removed
+both at once instead of just dropping 0 size. I assume 0 size is non
+compliant or do you prefer to keep that check as well.
 
-The data type of msgr->mer and msgr->base are 'u32 __iomem *', but
-converted to 'u32 *' and 'u8 *' directly and cause above warnings, now
-recover their data types to fix these warnings.
+Thanks a lot for the reviews.
 
-Signed-off-by: ruanjinjie <ruanjinjie@huawei.com>
----
- arch/powerpc/sysdev/mpic_msgr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/powerpc/sysdev/mpic_msgr.c b/arch/powerpc/sysdev/mpic_msgr.c
-index 698fefaaa6dd..cbb0d24f15ba 100644
---- a/arch/powerpc/sysdev/mpic_msgr.c
-+++ b/arch/powerpc/sysdev/mpic_msgr.c
-@@ -227,7 +227,7 @@ static int mpic_msgr_probe(struct platform_device *dev)
- 
- 		reg_number = block_number * MPIC_MSGR_REGISTERS_PER_BLOCK + i;
- 		msgr->base = msgr_block_addr + i * MPIC_MSGR_STRIDE;
--		msgr->mer = (u32 *)((u8 *)msgr->base + MPIC_MSGR_MER_OFFSET);
-+		msgr->mer = (u32 __iomem *)((u8 __iomem *)msgr->base + MPIC_MSGR_MER_OFFSET);
- 		msgr->in_use = MSGR_FREE;
- 		msgr->num = i;
- 		raw_spin_lock_init(&msgr->lock);
 -- 
-2.25.1
-
+Regards,
+Sudeep
