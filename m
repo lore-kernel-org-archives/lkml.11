@@ -2,105 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F844ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 10:49:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 114AAECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 10:50:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233881AbiIAKtV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 06:49:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41726 "EHLO
+        id S234043AbiIAKt5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 06:49:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233226AbiIAKtN (ORCPT
+        with ESMTP id S234088AbiIAKtm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 06:49:13 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B8D11EB7F
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 03:49:12 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MJHjn4GCFzYcys;
-        Thu,  1 Sep 2022 18:44:45 +0800 (CST)
-Received: from dggpemm500016.china.huawei.com (7.185.36.25) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 1 Sep 2022 18:49:10 +0800
-Received: from huawei.com (10.67.175.41) by dggpemm500016.china.huawei.com
- (7.185.36.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 1 Sep
- 2022 18:49:10 +0800
-From:   Yipeng Zou <zouyipeng@huawei.com>
-To:     <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <rostedt@goodmis.org>, <mingo@redhat.com>,
-        <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
-        <aou@eecs.berkeley.edu>
-CC:     <liaochang1@huawei.com>, <chris.zjh@huawei.com>,
-        <zouyipeng@huawei.com>
-Subject: [PATCH 2/2] riscv: tracing: Improve hardirq tracing message
-Date:   Thu, 1 Sep 2022 18:45:15 +0800
-Message-ID: <20220901104515.135162-3-zouyipeng@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220901104515.135162-1-zouyipeng@huawei.com>
-References: <20220901104515.135162-1-zouyipeng@huawei.com>
+        Thu, 1 Sep 2022 06:49:42 -0400
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 809831314CD
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 03:49:36 -0700 (PDT)
+Received: by mail-wr1-f44.google.com with SMTP id c7so15134666wrp.11
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 03:49:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=WjC5MMmeXT3QbFNucFQXnhs+/PC/vM67wXqw/sIvdOk=;
+        b=Fjb9MFmyIEwe6BedeBlXuvpiWm3+dZtgijrHSCz03QwuRuJep/UzhiubG0yjH6wTmr
+         SWbnoIWOgZ9FOTLi+VhBH9/4zfT4Pvwvbn8lT+H9ByIFvSVcLEvUmYsWTMLVQd0+ZuEd
+         DSIoXB94IcM9/pecc9XoD3a51cM0Yr/m7keedVX0kIYw4EZV7SP8hhvK5cxdzfeapV9B
+         N6ji7Ctz8o9g3QnzUMsgQLyt6V28BZehShiwdj2s4sgkqaoSJblZ4KHZe1EKdWtztBdA
+         sX797DvG3a6pob5BhWjctDWURHpgV2w8q1MMkB6/4qT+XuKkeqaYvVcXFvORON2FkwXW
+         uZXQ==
+X-Gm-Message-State: ACgBeo1xg+9HuYAG9G6AJo0+NXQ46y4KJj2ngOcKZPQgtzNDqJoior+2
+        G/bcu+apORITOzRQwg86+8rID0YRHDs=
+X-Google-Smtp-Source: AA6agR6XN6fPghRY6m4UvfSO/a5VgaXvSdaPKgEJQvnTeiC3Bbq5mbrSMkaXumOd0Qm7oJF4IfpbCQ==
+X-Received: by 2002:adf:f911:0:b0:21e:c0f6:fd26 with SMTP id b17-20020adff911000000b0021ec0f6fd26mr14153824wrr.361.1662029375141;
+        Thu, 01 Sep 2022 03:49:35 -0700 (PDT)
+Received: from [192.168.64.104] (bzq-219-42-90.isdn.bezeqint.net. [62.219.42.90])
+        by smtp.gmail.com with ESMTPSA id q28-20020a056000137c00b002205cbc1c74sm14250469wrz.101.2022.09.01.03.49.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Sep 2022 03:49:33 -0700 (PDT)
+Message-ID: <62e78a2f-998a-b340-9dcd-7d5c12c96fe9@grimberg.me>
+Date:   Thu, 1 Sep 2022 13:49:32 +0300
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.175.41]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500016.china.huawei.com (7.185.36.25)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2] drivers/nvme/host: Fix namespace duplication check
+ rule
+Content-Language: en-US
+To:     sungup.moon@samsung.com, "kbusch@kernel.org" <kbusch@kernel.org>,
+        "axboe@fb.com" <axboe@fb.com>, "hch@lst.de" <hch@lst.de>
+Cc:     "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <CGME20220901002815epcms2p6ae137d9de49bef5764f19c0fa7f3536e@epcms2p4>
+ <20220901004941epcms2p4e5e1c53484889619f050a02d8e671eca@epcms2p4>
+From:   Sagi Grimberg <sagi@grimberg.me>
+In-Reply-To: <20220901004941epcms2p4e5e1c53484889619f050a02d8e671eca@epcms2p4>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use trace_hardirqs_on_caller to improve irq_tracing message.
 
-lockdep log in riscv showing the last {enabled,disabled} at
-__trace_hardirqs_{on,off} all the time(if called by).
-But that's not what we want to see, the caller is what we want.
 
-Before this commit:
-[   57.853175] hardirqs last  enabled at (2519): __trace_hardirqs_on+0xc/0x14
-[   57.853848] hardirqs last disabled at (2520): __trace_hardirqs_off+0xc/0x14
+On 9/1/22 03:49, Sungup Moon wrote:
+> Some NVMe device, use EUI64 and NGUID, has fixed value EUI64 on a
+> sub-system because of the bit size of ID. Current kernel check the
+> all IDs should have unique value in a sub-system and globally.
+> However, if an namespace has duplicate IDs (not all) in a sub-system,
+> current kernel raise "duplicate IDs in subsystem for nsid" error. But
+> NVMe Specification defines the namespace unique identifier like this:
+> 
+> When creating a namespace, the controller shall indicate a globally
+> unique value in one or more of the following:
+> a) the EUI64 field;
+> b) the NGUID field; or
+> c) a Namespace Identification Descriptor with the Namespace Identifier
+> Type field set to 3h
+> (reference: 7.11 Unique Identifier; NVM Express 1.4c spec)
+> 
+> So, I suggest the modified nvme_subsys_check_duplicate_ids function
+> checking uniqueness from all IDS to one more IDs.
+> 
+> I missed the initializing of "duplicated" variable, so I reissue the
+> version2 patch.
+> 
+> Signed-off-by: Sungup Moon <sungup.moon@samsung.com>
+> ---
+>   drivers/nvme/host/core.c | 25 ++++++++++++++++++-------
+>   1 file changed, 18 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+> index af367b22871b..8c2faa2881a4 100644
+> --- a/drivers/nvme/host/core.c
+> +++ b/drivers/nvme/host/core.c
+> @@ -3902,24 +3902,35 @@ static struct nvme_ns_head *nvme_find_ns_head(struct nvme_ctrl *ctrl,
+>          return NULL;
+>   }
+> 
+> +#define IDS_EQUAL(A, B) (memcmp(&(A), &(B), sizeof(A)) == 0)
 
-After this commit
-[   53.781428] hardirqs last  enabled at (2595): restore_all+0xe/0x66
-[   53.782185] hardirqs last disabled at (2596): ret_from_exception+0xa/0x10
+No need for this macro IMO.
 
-Signed-off-by: Yipeng Zou <zouyipeng@huawei.com>
----
- arch/riscv/kernel/trace_irq.c | 4 ++--
- include/linux/irqflags.h      | 2 ++
- 2 files changed, 4 insertions(+), 2 deletions(-)
+> +
+>   static int nvme_subsys_check_duplicate_ids(struct nvme_subsystem *subsys,
+>                  struct nvme_ns_ids *ids)
+>   {
+>          bool has_uuid = !uuid_is_null(&ids->uuid);
+>          bool has_nguid = memchr_inv(ids->nguid, 0, sizeof(ids->nguid));
+>          bool has_eui64 = memchr_inv(ids->eui64, 0, sizeof(ids->eui64));
+> +       bool duplicated;
+>          struct nvme_ns_head *h;
+> 
+>          lockdep_assert_held(&subsys->lock);
+> 
+>          list_for_each_entry(h, &subsys->nsheads, entry) {
+> -               if (has_uuid && uuid_equal(&ids->uuid, &h->ids.uuid))
+> -                       return -EINVAL;
+> -               if (has_nguid &&
+> -                   memcmp(&ids->nguid, &h->ids.nguid, sizeof(ids->nguid)) == 0)
+> -                       return -EINVAL;
+> -               if (has_eui64 &&
+> -                   memcmp(&ids->eui64, &h->ids.eui64, sizeof(ids->eui64)) == 0)
+> +               duplicated = has_uuid || has_nguid || has_eui64;
+> +
+> +               if (has_uuid)
+> +                       duplicated = duplicated &&
+> +                               uuid_equal(&ids->uuid, &h->ids.uuid);
+> +
+> +               if (has_nguid)
+> +                       duplicated = duplicated &&
+> +                               IDS_EQUAL(ids->nguid, h->ids.nguid);
+> +
+> +               if (has_eui64)
+> +                       duplicated = duplicated &&
+> +                               IDS_EQUAL(ids->eui64, h->ids.eui64);
+> +
+> +               if (duplicated)
+>                          return -EINVAL;
 
-diff --git a/arch/riscv/kernel/trace_irq.c b/arch/riscv/kernel/trace_irq.c
-index 095ac976d7da..7ca24b26e19f 100644
---- a/arch/riscv/kernel/trace_irq.c
-+++ b/arch/riscv/kernel/trace_irq.c
-@@ -16,12 +16,12 @@
- 
- void __trace_hardirqs_on(void)
- {
--	trace_hardirqs_on();
-+	trace_hardirqs_on_caller(CALLER_ADDR0);
- }
- NOKPROBE_SYMBOL(__trace_hardirqs_on);
- 
- void __trace_hardirqs_off(void)
- {
--	trace_hardirqs_off();
-+	trace_hardirqs_off_caller(CALLER_ADDR0);
- }
- NOKPROBE_SYMBOL(__trace_hardirqs_off);
-diff --git a/include/linux/irqflags.h b/include/linux/irqflags.h
-index 5ec0fa71399e..46774fa85cde 100644
---- a/include/linux/irqflags.h
-+++ b/include/linux/irqflags.h
-@@ -53,6 +53,8 @@ extern void trace_hardirqs_on_prepare(void);
- extern void trace_hardirqs_off_finish(void);
- extern void trace_hardirqs_on(void);
- extern void trace_hardirqs_off(void);
-+extern void trace_hardirqs_on_caller(unsigned long caller_addr);
-+extern void trace_hardirqs_off_caller(unsigned long caller_addr);
- 
- # define lockdep_hardirq_context()	(raw_cpu_read(hardirq_context))
- # define lockdep_softirq_context(p)	((p)->softirq_context)
--- 
-2.17.1
+That is very confusing.
 
+So a ns can have an identifier that does not have to be unique? or that
+every identifier that exist should be unique but at least one identifier
+should exist?
+
+The former seems weird...
