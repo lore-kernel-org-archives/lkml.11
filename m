@@ -2,133 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEB54ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 09:55:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7A44ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 09:55:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233269AbiIAJzC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 05:55:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54194 "EHLO
+        id S232557AbiIAJzr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 05:55:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233997AbiIAJy5 (ORCPT
+        with ESMTP id S231802AbiIAJzp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 05:54:57 -0400
-Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 607DF133;
-        Thu,  1 Sep 2022 02:54:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1662026094; x=1693562094;
-  h=message-id:date:mime-version:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:subject;
-  bh=NX3N/paYyQqUhforgxYacBUvwbAZreQsVJx7Uym+9Mc=;
-  b=AlEW7beam5cKi6q9nIgO9MzwfSNljBYHImX3bgbC5BVDwmDs03s2ujpK
-   zdYHdgGZCIysDlKjhOGcrNS/auEAfvBwxB/Zy4Kid0Ee4Gpuj1R7ilson
-   vHXu0vZN+de77RUNPV7zPxYB09z6fffek82wxpRZzSaSZL4iEpmVquE98
-   4=;
-X-IronPort-AV: E=Sophos;i="5.93,280,1654560000"; 
-   d="scan'208";a="255127260"
-Subject: Re: [PATCH v3 17/19] hwmon: (mr75203) parse temperature coefficients from
- device-tree
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-51ba86d8.us-west-2.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 09:54:35 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2c-51ba86d8.us-west-2.amazon.com (Postfix) with ESMTPS id 00471121491;
-        Thu,  1 Sep 2022 09:54:34 +0000 (UTC)
-Received: from EX19D013UWA001.ant.amazon.com (10.13.138.253) by
- EX13MTAUWA001.ant.amazon.com (10.43.160.58) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Thu, 1 Sep 2022 09:54:33 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (10.43.161.207) by
- EX19D013UWA001.ant.amazon.com (10.13.138.253) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Thu, 1 Sep 2022 09:54:32 +0000
-Received: from [192.168.93.228] (10.85.143.172) by mail-relay.amazon.com
- (10.43.161.249) with Microsoft SMTP Server id 15.0.1497.38 via Frontend
- Transport; Thu, 1 Sep 2022 09:54:27 +0000
-Message-ID: <edb52cfe-27c6-547f-962d-cde3a2ef4294@amazon.com>
-Date:   Thu, 1 Sep 2022 12:54:26 +0300
+        Thu, 1 Sep 2022 05:55:45 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8F2C74B9B;
+        Thu,  1 Sep 2022 02:55:43 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1oTgvG-0004mr-A3; Thu, 01 Sep 2022 11:55:42 +0200
+Message-ID: <f39757a6-f636-39d6-81f6-3d327fcd7155@leemhuis.info>
+Date:   Thu, 1 Sep 2022 11:55:41 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-To:     Andy Shevchenko <andriy.shevchenko@intel.com>
-CC:     <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
-        <p.zabel@pengutronix.de>, <rtanwar@maxlinear.com>,
-        <linux-hwmon@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <talel@amazon.com>,
-        <hhhawa@amazon.com>, <jonnyc@amazon.com>, <hanochu@amazon.com>,
-        <ronenk@amazon.com>, <itamark@amazon.com>, <shellykz@amazon.com>,
-        <shorer@amazon.com>, <amitlavi@amazon.com>, <almogbs@amazon.com>,
-        <dkl@amazon.com>, "Farber, Eliav" <farbere@amazon.com>
-References: <20220830192212.28570-1-farbere@amazon.com>
- <20220830192212.28570-18-farbere@amazon.com>
- <Yw9QAxIn10AKaV74@smile.fi.intel.com>
-Content-Language: en-US
-From:   "Farber, Eliav" <farbere@amazon.com>
-In-Reply-To: <Yw9QAxIn10AKaV74@smile.fi.intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: Bug 216382 - [bisected][regression] mediatek bluetooth 13d3:3563
+ (mt7921e) doesn't work with audio devices.
+Content-Language: en-US, de-DE
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+References: <167d11c6-68a4-c10a-9703-fceaddac3e42@leemhuis.info>
+Cc:     "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        LKML <linux-kernel@vger.kernel.org>
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+In-Reply-To: <167d11c6-68a4-c10a-9703-fceaddac3e42@leemhuis.info>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1662026143;eab69712;
+X-HE-SMSGID: 1oTgvG-0004mr-A3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/31/2022 3:11 PM, Andy Shevchenko wrote:
-> On Tue, Aug 30, 2022 at 07:22:10PM +0000, Eliav Farber wrote:
->> Use thermal coefficients from the device tree if they exist.
->> Otherwise, use default values according to the series (5 or 6).
->> All coefficients can be used or only part of them.
->>
->> The coefficients shall be used for fine tuning the default values since
->> coefficients can vary between product and product.
->
-> ...
->
->> +     ret = of_property_read_u32(np, "moortec,ts-coeff-h", &coeff_h);
->
-> of_ ?! Ditto for the rest.
+On 24.08.22 12:19, Thorsten Leemhuis wrote:
+> Hi, this is your Linux kernel regression tracker speaking.
+> 
+> I noticed a regression reported in bugzilla.kernel.org that seems to be
+> handled there already, nevertheless I'd like to add to the tracking to
+> ensure it's doesn't fall through the cracks in the end:
+> 
+> #regzbot introduced: 26afbd826ee326e63a334c37fd45e82e50a61
+> https://bugzilla.kernel.org/show_bug.cgi?id=216382
+> #regzbot ignore-activity
 
+Luiz, what's up with the regression?
+https://bugzilla.kernel.org/show_bug.cgi?id=216382
 
-Fixed for v4.
-I replaced it with device_property_read_u32().
+You replied and asked for details the reporter seems to have provided
+nearly two weeks ago, but it looks like nothing happened since then. Do
+you still have it on your radar? Or was there any progress I just missed?
 
->> +     if (!ret)
->> +             ts_coeff->h = coeff_h;
->
-> ...
->
->> +     ret = of_property_read_s32(np, "moortec,ts-coeff-j", &coeff_j);
->> +     if (!ret)
->> +             ts_coeff->j = coeff_j;
->
-> You may avoid conditional:
->
->        _property_read_s32(..., "moortec,ts-coeff-j", &ts_coeff->j);
+BTW, is this somehow related, as it seems to be caused by the same commit:
+https://lore.kernel.org/all/5a667caf-642f-11d5-f4a4-6a73ed5742fa@eknoes.de/
 
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
 
-Fixed for v4.
-I removed the condition.
+P.S.: As the Linux kernel's regression tracker I deal with a lot of
+reports and sometimes miss something important when writing mails like
+this. If that's the case here, don't hesitate to tell me in a public
+reply, it's in everyone's interest to set the public record straight.
 
-> ...
->
->> +     ret = of_property_read_u32(np, "moortec,ts-coeff-cal5", 
->> &coeff_cal5);
->> +     if (!ret) {
->
->> +             if (coeff_cal5 == 0) {
->> +                     dev_err(dev, "moortec,ts-coeff-cal5 can't be 
->> 0\n");
->> +                     return -EINVAL;
->> +             }
->
-> Code shouldn't be a YAML validator. Drop this and make sure you have 
-> correct
-> DT schema.
+#regzbot poke
 
-
-Fixed for v4.
-I dropped the validation check.
-The YAML already mentions that it can't be 0.
-
->> +             ts_coeff->cal5 = coeff_cal5;
->> +     }
-
---
-Thanks, Eliav
