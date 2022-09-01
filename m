@@ -2,114 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB78DECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 22:37:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9FD0ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 22:40:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235128AbiIAWhg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 18:37:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37762 "EHLO
+        id S231668AbiIAWkC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 18:40:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233598AbiIAWha (ORCPT
+        with ESMTP id S233250AbiIAWj7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 18:37:30 -0400
-Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D205C642C4;
-        Thu,  1 Sep 2022 15:37:29 -0700 (PDT)
-Date:   Thu, 1 Sep 2022 18:37:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1662071848;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=V/P7j4Y+xJUBAt6fEYfNoKfACstBZQ8E1OFd7bHElGY=;
-        b=RyUvH2zz81kL6tcYdp2BW6QKmetndFvVS3i7VcCPOcaijLcz0TfOGgBaq909SL/Y1jdlP0
-        /Retvz17eFHQUiP5AcXQOlPHDOkvuT6UrIyhDdDGO5y36J1883WvsJluGTqXU9etuyqcdH
-        dSwrFVK7mCUuYhH+U9EIxQUe3RmbsW8=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Kent Overstreet <kent.overstreet@linux.dev>
-To:     Roman Gushchin <roman.gushchin@linux.dev>
-Cc:     Yosry Ahmed <yosryahmed@google.com>,
-        Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@suse.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Johannes Weiner <hannes@cmpxchg.org>, dave@stgolabs.net,
-        Matthew Wilcox <willy@infradead.org>, liam.howlett@oracle.com,
-        void@manifault.com, juri.lelli@redhat.com, ldufour@linux.ibm.com,
-        Peter Xu <peterx@redhat.com>,
-        David Hildenbrand <david@redhat.com>, axboe@kernel.dk,
-        mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org,
-        changbin.du@intel.com, ytcoode@gmail.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        Steven Rostedt <rostedt@goodmis.org>, bsegall@google.com,
-        bristot@redhat.com, vschneid@redhat.com,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>, 42.hyeyoo@gmail.com,
-        glider@google.com, elver@google.com, dvyukov@google.com,
-        Shakeel Butt <shakeelb@google.com>,
-        Muchun Song <songmuchun@bytedance.com>, arnd@arndb.de,
-        jbaron@akamai.com, David Rientjes <rientjes@google.com>,
-        minchan@google.com, kaleshsingh@google.com,
-        kernel-team@android.com, Linux-MM <linux-mm@kvack.org>,
-        iommu@lists.linux.dev, kasan-dev@googlegroups.com,
-        io-uring@vger.kernel.org, linux-arch@vger.kernel.org,
-        xen-devel@lists.xenproject.org, linux-bcache@vger.kernel.org,
-        linux-modules@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
-Message-ID: <20220901223720.e4gudprscjtwltif@moria.home.lan>
-References: <20220830214919.53220-1-surenb@google.com>
- <Yw8P8xZ4zqu121xL@hirez.programming.kicks-ass.net>
- <20220831084230.3ti3vitrzhzsu3fs@moria.home.lan>
- <20220831101948.f3etturccmp5ovkl@suse.de>
- <Yw88RFuBgc7yFYxA@dhcp22.suse.cz>
- <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
- <CAJD7tkaev9B=UDYj2RL6pz-1454J8tv4gEr9y-2dnCksoLK0bw@mail.gmail.com>
- <YxExz+c1k3nbQMh4@P9FQF9L96D.corp.robot.car>
+        Thu, 1 Sep 2022 18:39:59 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 347C5D6A
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 15:39:49 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id 213E85FD07;
+        Fri,  2 Sep 2022 01:22:42 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1662070962;
+        bh=HO7xBMUIZhzpAMOLw60e4MHt1FwNBaKO3t5nHAguTV8=;
+        h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
+        b=PtDTCYLj+LVS507SPWmSj1JK63LIEqUspqyKLGTY8NV5X8ZlLvoLvzwPL08hCPuwX
+         rAAJ3c2X6CjIsT9gkju9OcxKmmpXY5C0Vlkv0Z13fl7UouuaRiDsYAm97G8SSTBJEd
+         0V1dwudwDldmqGHNdnzXwG3Ea36DCbtULerzhlDbOEdb2D/A14WJKxh5zsSh7pXUrB
+         qvlfGhkWZkCZxoFcrpyjA6DFMZQIuIw3PKSOGlug+xwBWmq1xc45YHjKQmoBk3kSWN
+         kxM+3LAtQyHrI/H+jel4j7iF85Wh0C4b7LpRXrV9eO9CDOhQ34o+wYtxV9esfcRdhB
+         7zilq5RjMmyRQ==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Fri,  2 Sep 2022 01:22:42 +0300 (MSK)
+Date:   Fri, 2 Sep 2022 01:22:41 +0300
+From:   Dmitry Rokosov <ddrokosov@sberdevices.ru>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+CC:     <linux-kernel@vger.kernel.org>, Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: Re: [PATCH v1 3/3] regmap: trace: Remove unneeded blank lines
+Message-ID: <20220901222241.6dh6duaviipsx7bw@Rockosov-MBP>
+References: <20220901132336.33234-1-andriy.shevchenko@linux.intel.com>
+ <20220901132336.33234-3-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <YxExz+c1k3nbQMh4@P9FQF9L96D.corp.robot.car>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+In-Reply-To: <20220901132336.33234-3-andriy.shevchenko@linux.intel.com>
+User-Agent: NeoMutt/20220429
+X-Originating-IP: [172.16.1.6]
+X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
+ S-MS-EXCH01.sberdevices.ru (172.16.1.4)
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/09/01 19:49:00 #20211246
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 01, 2022 at 03:27:27PM -0700, Roman Gushchin wrote:
-> On Wed, Aug 31, 2022 at 01:56:08PM -0700, Yosry Ahmed wrote:
-> > This is very interesting work! Do you have any data about the overhead
-> > this introduces, especially in a production environment? I am
-> > especially interested in memory allocations tracking and detecting
-> > leaks.
+On Thu, Sep 01, 2022 at 04:23:36PM +0300, Andy Shevchenko wrote:
+> There is a few unneeded blank lines in some of event definitions,
+> remove them in order to make those definitions consistent with
+> the rest.
 > 
-> +1
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  drivers/base/regmap/trace.h | 8 --------
+>  1 file changed, 8 deletions(-)
 > 
-> I think the question whether it indeed can be always turned on in the production
-> or not is the main one. If not, the advantage over ftrace/bpf/... is not that
-> obvious. Otherwise it will be indeed a VERY useful thing.
+> diff --git a/drivers/base/regmap/trace.h b/drivers/base/regmap/trace.h
+> index a0f83e44a9d1..704e106e5dbd 100644
+> --- a/drivers/base/regmap/trace.h
+> +++ b/drivers/base/regmap/trace.h
+> @@ -41,7 +41,6 @@ DEFINE_EVENT(regmap_reg, regmap_reg_write,
+>  		 unsigned int val),
+>  
+>  	TP_ARGS(map, reg, val)
+> -
+>  );
+>  
+>  DEFINE_EVENT(regmap_reg, regmap_reg_read,
+> @@ -50,7 +49,6 @@ DEFINE_EVENT(regmap_reg, regmap_reg_read,
+>  		 unsigned int val),
+>  
+>  	TP_ARGS(map, reg, val)
+> -
+>  );
+>  
+>  DEFINE_EVENT(regmap_reg, regmap_reg_read_cache,
+> @@ -59,7 +57,6 @@ DEFINE_EVENT(regmap_reg, regmap_reg_read_cache,
+>  		 unsigned int val),
+>  
+>  	TP_ARGS(map, reg, val)
+> -
+>  );
+>  
+>  DECLARE_EVENT_CLASS(regmap_bulk,
+> @@ -199,7 +196,6 @@ DEFINE_EVENT(regmap_bool, regmap_cache_only,
+>  	TP_PROTO(struct regmap *map, bool flag),
+>  
+>  	TP_ARGS(map, flag)
+> -
+>  );
+>  
+>  DEFINE_EVENT(regmap_bool, regmap_cache_bypass,
+> @@ -207,7 +203,6 @@ DEFINE_EVENT(regmap_bool, regmap_cache_bypass,
+>  	TP_PROTO(struct regmap *map, bool flag),
+>  
+>  	TP_ARGS(map, flag)
+> -
+>  );
+>  
+>  DECLARE_EVENT_CLASS(regmap_async,
+> @@ -239,7 +234,6 @@ DEFINE_EVENT(regmap_async, regmap_async_io_complete,
+>  	TP_PROTO(struct regmap *map),
+>  
+>  	TP_ARGS(map)
+> -
+>  );
+>  
+>  DEFINE_EVENT(regmap_async, regmap_async_complete_start,
+> @@ -247,7 +241,6 @@ DEFINE_EVENT(regmap_async, regmap_async_complete_start,
+>  	TP_PROTO(struct regmap *map),
+>  
+>  	TP_ARGS(map)
+> -
+>  );
+>  
+>  DEFINE_EVENT(regmap_async, regmap_async_complete_done,
+> @@ -255,7 +248,6 @@ DEFINE_EVENT(regmap_async, regmap_async_complete_done,
+>  	TP_PROTO(struct regmap *map),
+>  
+>  	TP_ARGS(map)
+> -
+>  );
+>  
+>  TRACE_EVENT(regcache_drop_region,
+> -- 
+> 2.35.1
+> 
 
-Low enough overhead to run in production was my primary design goal.
+Reviewed-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
 
-Stats are kept in a struct that's defined at the callsite. So this adds _no_
-pointer chasing to the allocation path, unless we've switch to percpu counters
-at that callsite (see the lazy percpu counters patch), where we need to deref
-one percpu pointer to save an atomic.
-
-Then we need to stash a pointer to the alloc_tag, so that kfree() can find it.
-For slab allocations this uses the same storage area as memcg, so for
-allocations that are using that we won't be touching any additional cachelines.
-(I wanted the pointer to the alloc_tag to be stored inline with the allocation,
-but that would've caused alignment difficulties).
-
-Then there's a pointer deref introduced to the kfree() path, to get back to the
-original alloc_tag and subtract the allocation from that callsite. That one
-won't be free, and with percpu counters we've got another dependent load too -
-hmm, it might be worth benchmarking with just atomics, skipping the percpu
-counters.
-
-So the overhead won't be zero, I expect it'll show up in some synthetic
-benchmarks, but yes I do definitely expect this to be worth enabling in
-production in many scenarios.
+-- 
+Thank you,
+Dmitry
