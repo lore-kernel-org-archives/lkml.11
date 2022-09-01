@@ -2,90 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 919ACECAAD2
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 20:05:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF755ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 20:07:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234650AbiIAUFm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 16:05:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34012 "EHLO
+        id S234728AbiIAUH5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 16:07:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234306AbiIAUFd (ORCPT
+        with ESMTP id S231484AbiIAUHw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 16:05:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B02475F981;
-        Thu,  1 Sep 2022 13:05:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5686361EAE;
-        Thu,  1 Sep 2022 20:05:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BD45C433D6;
-        Thu,  1 Sep 2022 20:05:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662062730;
-        bh=5r4jBptDpX0GOnn49bfo1sovLH5zW/naowLeGSe9hpU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=QoK2Cfzy+S+TwZ2LS+FvCahk5/6IjMGWbTxYPS6Ltf+cp4fA6qo5mN1KRIxi+Ib7F
-         4oINgkKhEcgqGPNoCl8Xmee0PoyNKt21k3XrgbYQPXuyIYUWUEr+gWxvVtupSxgZ0v
-         bUOWm6kBRg6seqOxrNklanVGiKgedkBVAiNvC9sMzePOaO7cQH9N35ys2PhGdNXjKF
-         Lm2uOQUqOQcKljdBUTmWiW0jsjG/UuF+lGT0hPCS/1e6+5YkZOv0rdiM3ZTKdvzo+r
-         LJSHdv+AJu9hmaklVpNUSUv7nZpoOJvMPPXtwUyeBCs2gNWswe/ETC8Ows5tPPeR/X
-         DOHdOwoyYWuCw==
-Date:   Thu, 1 Sep 2022 13:05:29 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Matthieu Baerts <matthieu.baerts@tessares.net>
-Cc:     Axel Rasmussen <axelrasmussen@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        Thu, 1 Sep 2022 16:07:52 -0400
+Received: from sender-of-o50.zoho.in (sender-of-o50.zoho.in [103.117.158.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC4A496764
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 13:07:49 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1662062827; cv=none; 
+        d=zohomail.in; s=zohoarc; 
+        b=Rf1j8K/KdrjOCktJBWQ9w4/pPA2paAXghYAT+PuhwVT/ZnJ5VIXn2Rrne/IGYrK3zdNekHIQh1iwaJdpTgBO3vk++LpTckOci5EQOZ3E+OWbwEu0uevWEVh0CVoQphidoNV1a1DfVso8pJClXk0NxKPpBfNepsR2R5Tjdr0bbPM=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
+        t=1662062827; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=I7Q4D57L0Fon5Y8OnWeD+j+i4yBdJ+wVG0hPi+xhFQ8=; 
+        b=eudYhq4D5FR2DVAJOb+fULyYGnOopgc3xvFeV5GOCf9zT2HCoyuHwLygIrbblafmhE+ruxfw2shjBwQH+yJwwhlyjaYGYf/bKe2LaiJc7t0bgJXh0ehvoVPx48kR20hmSdOYLtaQV+SsOKi4jmUmH5Y5NEQuZLBqdAxCi+TUegA=
+ARC-Authentication-Results: i=1; mx.zohomail.in;
+        dkim=pass  header.i=siddh.me;
+        spf=pass  smtp.mailfrom=code@siddh.me;
+        dmarc=pass header.from=<code@siddh.me>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1662062827;
+        s=zmail; d=siddh.me; i=code@siddh.me;
+        h=From:From:To:To:Cc:Cc:Message-ID:Subject:Subject:Date:Date:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
+        bh=I7Q4D57L0Fon5Y8OnWeD+j+i4yBdJ+wVG0hPi+xhFQ8=;
+        b=kjaGyJiNGdsp7tCnBdynKy0CKxm9tr+Kt6XiF0/s2ngbOS9FKzcwdYZS6qxCW952
+        ZnPCzwjL4TzSE3CIRCYMT4EFLgxBzHsOc9A2E1HnF5keqqXAvX+ieFpMNaWttlS95uW
+        p/OJYF+SKStRmENyy3E16fYcTWt5EMdGYW42p7lI=
+Received: from localhost.localdomain (103.249.233.18 [103.249.233.18]) by mx.zoho.in
+        with SMTPS id 1662062825546686.9552803263169; Fri, 2 Sep 2022 01:37:05 +0530 (IST)
+From:   Siddh Raman Pant <code@siddh.me>
+To:     Jonathan Corbet <corbet@lwn.net>,
+        David Howells <dhowells@redhat.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] selftests: net: sort .gitignore file
-Message-ID: <20220901130529.2f364617@kernel.org>
-In-Reply-To: <fe9280ff-50b3-805a-07ef-0227cbec13e8@tessares.net>
-References: <20220829184748.1535580-1-axelrasmussen@google.com>
-        <fe9280ff-50b3-805a-07ef-0227cbec13e8@tessares.net>
+        Eric Biggers <ebiggers@kernel.org>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-kernel-mentees 
+        <linux-kernel-mentees@lists.linuxfoundation.org>
+Message-ID: <d25b2a4772bf8d2a37bbf1bd2c6ad82b13081762.1659771577.git.code@siddh.me>
+Subject: [RESEND PATCH v2 1/2] include/linux/watch_queue: Improve documentation
+Date:   Fri,  2 Sep 2022 01:36:55 +0530
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1659771577.git.code@siddh.me>
+References: <cover.1659771577.git.code@siddh.me>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-ZohoMailClient: External
+Content-Type: text/plain; charset=utf8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
+Message-ID: <20220901200655.w9LPY8q6YZ-KfnSJB8ilXmvyQLbPeXOVMmgF5srEhdc@z>
 
-On Thu, 1 Sep 2022 12:15:02 +0200 Matthieu Baerts wrote:
-> Hello,
-> 
-> On 29/08/2022 20:47, Axel Rasmussen wrote:
-> > This is the result of `sort tools/testing/selftests/net/.gitignore`, but
-> > preserving the comment at the top.  
-> 
-> FYI, we got a small conflict (as expected by Jakub) when merging -net in
-> net-next in the MPTCP tree due to this patch applied in -net:
-> 
->   5a3a59981027 ("selftests: net: sort .gitignore file")
-> 
-> and these ones from net-next:
-> 
->   c35ecb95c448 ("selftests/net: Add test for timing a bind request to a
-> port with a populated bhash entry")
->   1be9ac87a75a ("selftests/net: Add sk_bind_sendto_listen and
-> sk_connect_zero_addr")
-> 
-> The conflict has been resolved on our side[1] and the resolution we
-> suggest is attached to this email: new entries have been added in the
-> list respecting the alphabetical order.
+Introduce kerneldoc-style comments, and document a couple of things
+explicitly.
 
-Yup, that was my plan as well. Apologies for the trouble, I thought
-since the conflict will only exist for a day I'd be the only one
-suffering.
+Signed-off-by: Siddh Raman Pant <code@siddh.me>
+---
+ include/linux/watch_queue.h | 102 ++++++++++++++++++++++++++----------
+ 1 file changed, 75 insertions(+), 27 deletions(-)
 
-I think we should also sort the Makefile FWIW.
-Perhaps it's better done during the merge window.
+diff --git a/include/linux/watch_queue.h b/include/linux/watch_queue.h
+index fc6bba20273b..7f8b1f15634b 100644
+--- a/include/linux/watch_queue.h
++++ b/include/linux/watch_queue.h
+@@ -18,57 +18,103 @@
+=20
+ struct cred;
+=20
++/**
++ * struct watch_type_filter - Filter on watch type
++ *
++ * @type: Type of watch_notification
++ * @subtype_filter: Bitmask of subtypes to filter on
++ * @info_filter: Filter on watch_notification::info
++ * @info_mask: Mask of relevant bits in info_filter
++ */
+ struct watch_type_filter {
+ =09enum watch_notification_type type;
+-=09__u32=09=09subtype_filter[1];=09/* Bitmask of subtypes to filter on */
+-=09__u32=09=09info_filter;=09=09/* Filter on watch_notification::info */
+-=09__u32=09=09info_mask;=09=09/* Mask of relevant bits in info_filter */
++=09__u32=09=09subtype_filter[1];
++=09__u32=09=09info_filter;
++=09__u32=09=09info_mask;
+ };
+=20
++/**
++ * struct watch_filter - Filter on watch
++ *
++ * @rcu: RCU head (in union with type_filter)
++ * @type_filter: Bitmask of accepted types (in union with rcu)
++ * @nr_filters: Number of filters
++ * @filters: Array of watch_type_filter
++ */
+ struct watch_filter {
+ =09union {
+ =09=09struct rcu_head=09rcu;
+-=09=09/* Bitmask of accepted types */
+ =09=09DECLARE_BITMAP(type_filter, WATCH_TYPE__NR);
+ =09};
+-=09u32=09=09=09nr_filters;=09/* Number of filters */
++=09u32=09=09=09 nr_filters;
+ =09struct watch_type_filter filters[];
+ };
+=20
++/**
++ * struct watch_queue - General notification queue
++ *
++ * @rcu: RCU head
++ * @filter: Filter to use on watches
++ * @pipe: The pipe we're using as a buffer
++ * @watches: Contributory watches
++ * @notes: Preallocated notifications
++ * @notes_bitmap: Allocation bitmap for notes
++ * @usage: Object usage count
++ * @lock: To serialize accesses and removes
++ * @nr_notes: Number of notes
++ * @nr_pages: Number of pages in notes[]
++ * @defunct: True when queues closed
++ */
+ struct watch_queue {
+ =09struct rcu_head=09=09rcu;
+ =09struct watch_filter __rcu *filter;
+-=09struct pipe_inode_info=09*pipe;=09=09/* The pipe we're using as a buffe=
+r */
+-=09struct hlist_head=09watches;=09/* Contributory watches */
+-=09struct page=09=09**notes;=09/* Preallocated notifications */
+-=09unsigned long=09=09*notes_bitmap;=09/* Allocation bitmap for notes */
+-=09struct kref=09=09usage;=09=09/* Object usage count */
++=09struct pipe_inode_info=09*pipe;
++=09struct hlist_head=09watches;
++=09struct page=09=09**notes;
++=09unsigned long=09=09*notes_bitmap;
++=09struct kref=09=09usage;
+ =09spinlock_t=09=09lock;
+-=09unsigned int=09=09nr_notes;=09/* Number of notes */
+-=09unsigned int=09=09nr_pages;=09/* Number of pages in notes[] */
+-=09bool=09=09=09defunct;=09/* T when queues closed */
++=09unsigned int=09=09nr_notes;
++=09unsigned int=09=09nr_pages;
++=09bool=09=09=09defunct;
+ };
+=20
+-/*
+- * Representation of a watch on an object.
++/**
++ * struct watch - Representation of a watch on an object
++ *
++ * @rcu: RCU head (in union with info_id)
++ * @info_id: ID to be OR'd in to info field (in union with rcu)
++ * @queue: Queue to post events to
++ * @queue_node: Link in queue->watches
++ * @watch_list: Link in watch_list->watchers
++ * @list_node: The list node
++ * @cred: Creds of the owner of the watch
++ * @private: Private data for the watched object
++ * @id: Internal identifier
++ * @usage: Object usage count
+  */
+ struct watch {
+ =09union {
+ =09=09struct rcu_head=09rcu;
+-=09=09u32=09=09info_id;=09/* ID to be OR'd in to info field */
++=09=09u32=09=09info_id;
+ =09};
+-=09struct watch_queue __rcu *queue;=09/* Queue to post events to */
+-=09struct hlist_node=09queue_node;=09/* Link in queue->watches */
++=09struct watch_queue __rcu *queue;
++=09struct hlist_node=09queue_node;
+ =09struct watch_list __rcu=09*watch_list;
+-=09struct hlist_node=09list_node;=09/* Link in watch_list->watchers */
+-=09const struct cred=09*cred;=09=09/* Creds of the owner of the watch */
+-=09void=09=09=09*private;=09/* Private data for the watched object */
+-=09u64=09=09=09id;=09=09/* Internal identifier */
+-=09struct kref=09=09usage;=09=09/* Object usage count */
++=09struct hlist_node=09list_node;
++=09const struct cred=09*cred;
++=09void=09=09=09*private;
++=09u64=09=09=09id;
++=09struct kref=09=09usage;
+ };
+=20
+-/*
+- * List of watches on an object.
++/**
++ * struct watch_list - List of watches on an object
++ *
++ * @rcu: RCU head
++ * @watchers: List head
++ * @release_watch: Function to release watch
++ * @lock: To protect addition and removal of watches
+  */
+ struct watch_list {
+ =09struct rcu_head=09=09rcu;
+@@ -118,8 +164,10 @@ static inline void remove_watch_list(struct watch_list=
+ *wlist, u64 id)
+ }
+=20
+ /**
+- * watch_sizeof - Calculate the information part of the size of a watch re=
+cord,
+- * given the structure size.
++ * watch_sizeof() - Calculate the information part of the size of a watch
++ *=09=09    record, given the structure size.
++ *
++ * @STRUCT: The structure whose size is to be given
+  */
+ #define watch_sizeof(STRUCT) (sizeof(STRUCT) << WATCH_INFO_LENGTH__SHIFT)
+=20
+--=20
+2.35.1
 
-> I'm sharing this thinking it can help others but if it only creates
-> noise, please tell me! :-)
 
-> [1] https://github.com/multipath-tcp/mptcp_net-next/commit/4151695b70b6
-
-It is useful, thanks!
