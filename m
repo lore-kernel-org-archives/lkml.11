@@ -2,155 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC16FECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 16:06:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22769ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 16:07:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234826AbiIAQG3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 12:06:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59738 "EHLO
+        id S234833AbiIAQHO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 12:07:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234746AbiIAQGY (ORCPT
+        with ESMTP id S232539AbiIAQHL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 12:06:24 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75ECB5926B
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 09:06:22 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id by6so18381352ljb.11
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 09:06:22 -0700 (PDT)
+        Thu, 1 Sep 2022 12:07:11 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81CC769F7F;
+        Thu,  1 Sep 2022 09:07:10 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id h5so24144286ejb.3;
+        Thu, 01 Sep 2022 09:07:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=y/D8ZrdtNbYgp7NAJGSD17iXrnK1XO6f+XSKqvV15P0=;
-        b=YEcVo+TqZLikeY2bfLfMQXYWnLT2ecpN6LfbIPNRii2qKAmq+fF2KxzHqdt28bg+oy
-         4CCfYurczxtS5bQPBdw8UtNlv+74RMUrvu++B8oNBwyjopZi3BqV5PEXjM3w9XSTkEn0
-         Ff8cyqoGS/6LyGVYP+2VtHRK3wiqLX+MZK4PmVxYx+HgLM+iwJ+tUhq7/yLIq5j/Ghco
-         yD4BXy6JrwxBh9uuCjVst19bBqeH2r+t8S4aTQGGWTMKZ1M4bj52Mb0mZpfJNCabiW6a
-         7Mul5rHJJ0iI1zWWi0SHtYFW8uhL+wpCiOkBewVwnsf9BhG4x7r0YrMOzH1lz83IKYH7
-         bsnw==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=4VJruaNQlZmfFLkd95beZGUr5mHEF8CKOi+WYXEPPvs=;
+        b=Fc9a+A93csieHGq1JI6Kclyd+05dfVZT4wh3OXLyclKdraGurGth6aDwWkP66LLuE4
+         EFuc1WXKF5EJhOLZQak6b9BhwOOvG9yvNyNweg5Q6VZbSp896tkIID91uhfVDaoMjdJk
+         QNgnMnIBaal28BcAGBRnk/q0tETYaJSYaVSRVWDEeyx+9lGijs7NgZIWJ21iYW8BValE
+         uJJa7U0dcEiKGUIvYKd1QIEMxMK401gcKlMX+/WZxIRQ95osG5Gi0J8sI0pMfpFYFPUl
+         Z/qU29AAutEwvEVmSISGJAsb1FNuBHWYYhxTc4NvHyGoUiWLABJvcby7RTP7PlUjLfMD
+         zvzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=y/D8ZrdtNbYgp7NAJGSD17iXrnK1XO6f+XSKqvV15P0=;
-        b=GeIlwsk9B9Laq1Ki3cCd80wIzVgoJZPEkbPm+ytVN+tBw0YjChNNTdag6RDXKLbXLi
-         3Ga15JqZRTemSxJP7gI1prePI1Qa5hep03u5RrlHxVtPxXcmbJzN4XHA12feA09+NnQq
-         dRXJkToFFuVOjLh2IeR6/anpq+D3NrgDeDoZX2H3jnsuxy3fd27rvhvtHnb7GTe47/Ed
-         HiVZ4f2hTz5M61tLP9WxYi6kDcWUYU9/H7vlaxoPAtjBYBF/jY/xIx782AQWgl6ZtY31
-         mYGtt5ZcdbRDU2FnWuAU+eFZlDaqo3+W/oi4u6aY2yeWcNk0CeCfZ9kn+58ms7+D7LtL
-         Wv/w==
-X-Gm-Message-State: ACgBeo3TcGjGsvWqfgFcQ8IiS5gnZUzNwSihJ3WSBTK28Ed+T1PbUjjX
-        PJeFd877EhX0rkuMkxk/YwB9Qw==
-X-Google-Smtp-Source: AA6agR77koAUoyzW9yFSqfwU4B4LHzjLtbuIU2dg4F4NcXikmz9tVrpUc5AcS7QyqPdaJcEtGp+MFw==
-X-Received: by 2002:a2e:a785:0:b0:268:a64e:4b49 with SMTP id c5-20020a2ea785000000b00268a64e4b49mr1772705ljf.270.1662048380793;
-        Thu, 01 Sep 2022 09:06:20 -0700 (PDT)
-Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id v20-20020a2e2f14000000b0025e60089f34sm2528657ljv.52.2022.09.01.09.06.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Sep 2022 09:06:20 -0700 (PDT)
-Message-ID: <8b1f1576-62c1-5a17-561a-619b88587a4a@linaro.org>
-Date:   Thu, 1 Sep 2022 19:06:19 +0300
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=4VJruaNQlZmfFLkd95beZGUr5mHEF8CKOi+WYXEPPvs=;
+        b=eOkEWga2iqQUlF5ZycwDTT6Uo7ijQNpUGT4vY+cguYsoDIXRi0W7A9TrG7NpAka2Q1
+         YBxqwsyBp73e2Cn3i7DuE+00mZUPNmourCuUrJm+cVT8XhLbil3E59XoM0bv6rrkfhDA
+         FYedEXUc9OCTCWE3vUlyZtCI47yVmj+H7vzGvYkLyATry2GpvJuWIJxDjrp3yuKQch+3
+         3gQNFfc/YZX1yDOUjGspMWyFDutTrTEAECJihmruZfI95cIfZCBK6ZhcmllJLpkadvJG
+         mLqday6vTJez0hzzNkrAb1sGn/qXSmocitmCJCH4xQVvzWlQqWMizZNxPzBRmgctdEB9
+         06aw==
+X-Gm-Message-State: ACgBeo0rW95SFYOq750CuVcy/V8daehSkYGQsWINFOyfwINs0z7XTHvt
+        FfrNDCnkU60iX6/2/mpB5t4=
+X-Google-Smtp-Source: AA6agR5uwHLhnuKmevtAHZVuEceRTbDEBvGkVKoPnf9uEBY1ROs9QTnNRuwVR20o1fhszYsOdw1D0Q==
+X-Received: by 2002:a17:907:2bc7:b0:73d:d239:110b with SMTP id gv7-20020a1709072bc700b0073dd239110bmr23998582ejc.752.1662048428975;
+        Thu, 01 Sep 2022 09:07:08 -0700 (PDT)
+Received: from localhost.localdomain (host-87-1-103-238.retail.telecomitalia.it. [87.1.103.238])
+        by smtp.gmail.com with ESMTPSA id q27-20020a50c35b000000b0043cf2e0ce1csm1613771edb.48.2022.09.01.09.07.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Sep 2022 09:07:07 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Tyler Hicks <code@tyhicks.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Seth Forshee <sforshee@digitalocean.com>,
+        Amir Goldstein <amir73il@gmail.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        Muchun Song <songmuchun@bytedance.com>,
+        ecryptfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        "Venkataramanan, Anirudh" <anirudh.venkataramanan@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>
+Subject: [RESEND PATCH] ecryptfs: Replace kmap() with kmap_local_page()
+Date:   Thu,  1 Sep 2022 18:07:04 +0200
+Message-Id: <20220901160704.25701-1-fmdefrancesco@gmail.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH 06/14] arm64: dts: qcom: sm6115: Add usb and related phy
- nodes
-Content-Language: en-US
-To:     Iskren Chernev <iskren.chernev@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-kernel@vger.kernel.org
-References: <20220901072414.1923075-1-iskren.chernev@gmail.com>
- <20220901072414.1923075-7-iskren.chernev@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220901072414.1923075-7-iskren.chernev@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/09/2022 10:24, Iskren Chernev wrote:
-> Add support for the USB controller and its HS PHY to SM6115.
-> 
-> Signed-off-by: Iskren Chernev <iskren.chernev@gmail.com>
-> ---
->  arch/arm64/boot/dts/qcom/sm6115.dtsi | 62 ++++++++++++++++++++++++++++
->  1 file changed, 62 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sm6115.dtsi b/arch/arm64/boot/dts/qcom/sm6115.dtsi
-> index a6be8b93a44d..00fd185c87aa 100644
-> --- a/arch/arm64/boot/dts/qcom/sm6115.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sm6115.dtsi
-> @@ -412,6 +412,21 @@ gcc: clock-controller@1400000 {
->  			#power-domain-cells = <1>;
->  		};
->  
-> +		hsusb_phy: phy@1613000 {
-> +			compatible = "qcom,sm6115-qusb2-phy";
-> +			reg = <0x1613000 0x180>;
-> +			#phy-cells = <0>;
-> +
-> +			clocks = <&rpmcc RPM_SMD_XO_CLK_SRC>,
-> +				 <&gcc GCC_AHB2PHY_USB_CLK>;
-> +			clock-names = "ref", "cfg_ahb";
-> +
-> +			resets = <&gcc GCC_QUSB2PHY_PRIM_BCR>;
-> +			nvmem-cells = <&qusb2_hstx_trim>;
-> +
-> +			status = "disabled";
-> +		};
-> +
->  		qfprom@1b40000 {
->  			compatible = "qcom,qfprom";
->  			reg = <0x1b40000 0x7000>;
-> @@ -434,6 +449,53 @@ rpm_msg_ram: memory@45f0000 {
->  			reg = <0x45f0000 0x7000>;
->  		};
->  
-> +		usb3: usb@4ef8800 {
-> +			compatible = "qcom,sm6115-dwc3", "qcom,dwc3";
-> +			reg = <0x04ef8800 0x400>;
-> +			#address-cells = <1>;
-> +			#size-cells = <1>;
-> +			ranges;
-> +
-> +			clocks = <&gcc GCC_CFG_NOC_USB3_PRIM_AXI_CLK>,
-> +				 <&gcc GCC_USB30_PRIM_MASTER_CLK>,
-> +				 <&gcc GCC_SYS_NOC_USB3_PRIM_AXI_CLK>,
-> +				 <&gcc GCC_USB30_PRIM_MOCK_UTMI_CLK>,
-> +				 <&gcc GCC_USB30_PRIM_SLEEP_CLK>,
-> +				 <&gcc GCC_USB3_PRIM_CLKREF_CLK>;
-> +			clock-names = "cfg_noc", "core", "iface", "mock_utmi",
-> +				      "sleep", "xo";
-> +
-> +			assigned-clocks = <&gcc GCC_USB30_PRIM_MOCK_UTMI_CLK>,
-> +					  <&gcc GCC_USB30_PRIM_MASTER_CLK>;
-> +			assigned-clock-rates = <19200000>, <66666667>;
-> +
-> +			interrupts = <GIC_SPI 260 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 422 IRQ_TYPE_LEVEL_HIGH>;
-> +			interrupt-names = "hs_phy_irq", "ss_phy_irq";
-> +
-> +			resets = <&gcc GCC_USB30_PRIM_BCR>;
-> +			power-domains = <&gcc GCC_USB30_PRIM_GDSC>;
-> +			qcom,select-utmi-as-pipe-clk;
-> +			status = "disabled";
-> +
-> +			usb3_dwc3: dwc3@4e00000 {
+The use of kmap() is being deprecated in favor of kmap_local_page().
 
-Node name: usb
+There are two main problems with kmap(): (1) It comes with an overhead as
+the mapping space is restricted and protected by a global lock for
+synchronization and (2) it also requires global TLB invalidation when the
+kmap’s pool wraps and it might block when the mapping space is fully
+utilized until a slot becomes available.
 
-Does not look like you tested the DTS against bindings. Please run `make
-dtbs_check` (see Documentation/devicetree/bindings/writing-schema.rst
-for instructions).
+With kmap_local_page() the mappings are per thread, CPU local, can take
+page faults, and can be called from any context (including interrupts).
+It is faster than kmap() in kernels with HIGHMEM enabled. Furthermore,
+the tasks can be preempted and, when they are scheduled to run again, the
+kernel virtual addresses are restored and still valid.
 
-Best regards,
-Krzysztof
+Since its use in fs/ecryptfs is safe everywhere, it should be preferred.
+
+Therefore, replace kmap() with kmap_local_page() in fs/ecryptfs.
+
+Cc: "Venkataramanan, Anirudh" <anirudh.venkataramanan@intel.com>
+Suggested-by: Ira Weiny <ira.weiny@intel.com>
+Reviewed-by: Ira Weiny <ira.weiny@intel.com>
+Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+---
+
+I'm resending this patch because some recipients were missing in the
+previous submission. In the meantime I'm also adding some more information
+in the commit message. There are no changes in the code.
+
+ fs/ecryptfs/crypto.c     | 8 ++++----
+ fs/ecryptfs/read_write.c | 8 ++++----
+ 2 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/fs/ecryptfs/crypto.c b/fs/ecryptfs/crypto.c
+index e3f5d7f3c8a0..03263ebcccc6 100644
+--- a/fs/ecryptfs/crypto.c
++++ b/fs/ecryptfs/crypto.c
+@@ -465,10 +465,10 @@ int ecryptfs_encrypt_page(struct page *page)
+ 	}
+ 
+ 	lower_offset = lower_offset_for_page(crypt_stat, page);
+-	enc_extent_virt = kmap(enc_extent_page);
++	enc_extent_virt = kmap_local_page(enc_extent_page);
+ 	rc = ecryptfs_write_lower(ecryptfs_inode, enc_extent_virt, lower_offset,
+ 				  PAGE_SIZE);
+-	kunmap(enc_extent_page);
++	kunmap_local(enc_extent_virt);
+ 	if (rc < 0) {
+ 		ecryptfs_printk(KERN_ERR,
+ 			"Error attempting to write lower page; rc = [%d]\n",
+@@ -514,10 +514,10 @@ int ecryptfs_decrypt_page(struct page *page)
+ 	BUG_ON(!(crypt_stat->flags & ECRYPTFS_ENCRYPTED));
+ 
+ 	lower_offset = lower_offset_for_page(crypt_stat, page);
+-	page_virt = kmap(page);
++	page_virt = kmap_local_page(page);
+ 	rc = ecryptfs_read_lower(page_virt, lower_offset, PAGE_SIZE,
+ 				 ecryptfs_inode);
+-	kunmap(page);
++	kunmap_local(page_virt);
+ 	if (rc < 0) {
+ 		ecryptfs_printk(KERN_ERR,
+ 			"Error attempting to read lower page; rc = [%d]\n",
+diff --git a/fs/ecryptfs/read_write.c b/fs/ecryptfs/read_write.c
+index 60bdcaddcbe5..5edf027c8359 100644
+--- a/fs/ecryptfs/read_write.c
++++ b/fs/ecryptfs/read_write.c
+@@ -64,11 +64,11 @@ int ecryptfs_write_lower_page_segment(struct inode *ecryptfs_inode,
+ 
+ 	offset = ((((loff_t)page_for_lower->index) << PAGE_SHIFT)
+ 		  + offset_in_page);
+-	virt = kmap(page_for_lower);
++	virt = kmap_local_page(page_for_lower);
+ 	rc = ecryptfs_write_lower(ecryptfs_inode, virt, offset, size);
+ 	if (rc > 0)
+ 		rc = 0;
+-	kunmap(page_for_lower);
++	kunmap_local(virt);
+ 	return rc;
+ }
+ 
+@@ -253,11 +253,11 @@ int ecryptfs_read_lower_page_segment(struct page *page_for_ecryptfs,
+ 	int rc;
+ 
+ 	offset = ((((loff_t)page_index) << PAGE_SHIFT) + offset_in_page);
+-	virt = kmap(page_for_ecryptfs);
++	virt = kmap_local_page(page_for_ecryptfs);
+ 	rc = ecryptfs_read_lower(virt, offset, size, ecryptfs_inode);
+ 	if (rc > 0)
+ 		rc = 0;
+-	kunmap(page_for_ecryptfs);
++	kunmap_local(virt);
+ 	flush_dcache_page(page_for_ecryptfs);
+ 	return rc;
+ }
+-- 
+2.37.2
+
