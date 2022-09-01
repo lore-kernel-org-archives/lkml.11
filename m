@@ -2,110 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D94CEC0502C
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 03:54:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1932CECAAD2
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 04:03:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232369AbiIADyB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 23:54:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53030 "EHLO
+        id S230080AbiIAEDW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 00:03:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231447AbiIADx7 (ORCPT
+        with ESMTP id S229473AbiIAEDU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 23:53:59 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EB1D110887;
-        Wed, 31 Aug 2022 20:53:58 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4MJ6bm4QHPz4xFv;
-        Thu,  1 Sep 2022 13:53:56 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1662004436;
-        bh=ZIFUnm/QOVgs4khUf+2xFOsp57QlqBfQutIPzPII32Y=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=IpCATWbm1lkj72SyfOeWdRXfACjSZgkAouDM/JnI2Hl3LN2n6VjCbvFNL8g7qGIEL
-         M14U3clPm6so4DXJuekT/1U59h7Vva8hwMbJgzEG77iy0thgeC0ciPakp1b5r5DGk+
-         qnnhE/mj1Hk/FuW18IWmnCOBk/CLNpNMqtrSCo5wN8cFZIKRA3nsoN9Q28WZut5eos
-         A2BWQa1QYxS13fhV1DAcxo6fHIMQOhXnmDPLzRpTh+UAovxjXsCqQtaSEUH/xznvO/
-         yjoNkWbUUoKgZiqLJ52Jnu69QuthgAkP5MBUhfkqIgNQx4oAdeIM+73tIjvhzazDA1
-         s2ZVKHL/E9oow==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Pali =?utf-8?Q?Roh=C3=A1r?= <pali@kernel.org>
-Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] powerpc/pci: Enable PCI domains in /proc when PCI bus
- numbers are not unique
-In-Reply-To: <20220825083713.4glfivegmodluiun@pali>
-References: <20220820115113.30581-1-pali@kernel.org>
- <878rnclq47.fsf@mpe.ellerman.id.au> <20220825083713.4glfivegmodluiun@pali>
-Date:   Thu, 01 Sep 2022 13:53:56 +1000
-Message-ID: <87wnanu4vf.fsf@mpe.ellerman.id.au>
+        Thu, 1 Sep 2022 00:03:20 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D093F15C358;
+        Wed, 31 Aug 2022 21:03:19 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id v4so15230389pgi.10;
+        Wed, 31 Aug 2022 21:03:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=F9QtJAGWPoUgH7EvqJ23+lTBvakIaZr8r8lhECGqmaE=;
+        b=d64/i3z1FUn8zNdfN8J8FhbvakCDJCdMPkNHvz0Bt1yYZv1GM8BkfI4dgZ3d7Pllik
+         35KUqmi061lX1aX65uVNCgs4vVXWH0eM4Ib4NecIz3pFyL1dI00eW2nc/mGSnt/xpF7J
+         9YIJepXyJ9TGSzDlzkh9oWxsb8Q9epItsfX1vXOLddLfbo+bEWJunkYOs8ma0N8nvySK
+         NvmBpiA/9ZDr1qEXosJdw+fxb+TZCd0IQnQZJ8MKPQZC+KdOvK377587RyLzwvV+rMnk
+         TJP/W6cao+iw26Xn8QrppTV7r5UmpwE0s17shi08OhsLFUpJ7DPTww3jfncA49IDEVm3
+         q+3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=F9QtJAGWPoUgH7EvqJ23+lTBvakIaZr8r8lhECGqmaE=;
+        b=2X0RlmTacqRCVoOyPWGj8diadfad4xCj69p+7F5iwr4JE9HikRjb/CEJ/f5zoGrbrU
+         YRIa/61w4MTbqdbTT1ZBYDZY093xmjQpP/aj4iW95aNo93okghRX0A9lxrKrhZksHOeg
+         hDoFBuPkX2rw/MG2YIACjU2oKX3+3bIJPD3UkHBSPVRC1PctdFqP/RDvDhLOAmqAq6V0
+         WxSvnHuSvqirjpg5Rmt0hBy1z4hRHc1m7q7qjSS/5euEb3Hp4EtbEMPK1GYA+0aR7U/7
+         fdnm8tWqG4hANs2Pg8JZnx069UFhdu/Mb4G3ZzxWd4PAe4tkZCmHnQuNcje+qVcfiUOt
+         MjxQ==
+X-Gm-Message-State: ACgBeo3UOCiSLHvZxAX+8YdD/9adzjKb1wkga1oFO76dk7J+GC4Ogo0Q
+        GtTxuoxCWeQnh3/mLcaDqg/QsV7ZA9GaWw==
+X-Google-Smtp-Source: AA6agR58KSuDpzMdMOpcxDCt3iSfeiaVaetz4buEsvO5bR9uEvOxLcA9OpDX0lWd7olfI0grktg1Lw==
+X-Received: by 2002:a05:6a00:228a:b0:538:47a7:706 with SMTP id f10-20020a056a00228a00b0053847a70706mr16938794pfe.62.1662004999307;
+        Wed, 31 Aug 2022 21:03:19 -0700 (PDT)
+Received: from fedora.. ([103.159.189.150])
+        by smtp.gmail.com with ESMTPSA id f9-20020aa79689000000b00528a097aeffsm12110215pfk.118.2022.08.31.21.03.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Aug 2022 21:03:18 -0700 (PDT)
+From:   Khalid Masum <khalid.masum.92@gmail.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        syzbot+5ec9bb042ddfe9644773@syzkaller.appspotmail.com,
+        Khalid Masum <khalid.masum.92@gmail.com>
+Subject: [PATCH v3] xfrm: Update ipcomp_scratches with NULL if not allocated
+Date:   Thu,  1 Sep 2022 10:03:07 +0600
+Message-Id: <20220901040307.4674-1-khalid.masum.92@gmail.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <00000000000092839d0581fd74ad@google.com>
+References: <00000000000092839d0581fd74ad@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Pali Roh=C3=A1r <pali@kernel.org> writes:
-> On Thursday 25 August 2022 17:49:28 Michael Ellerman wrote:
->> Pali Roh=C3=A1r <pali@kernel.org> writes:
->> > On 32-bit powerpc systems with more PCIe controllers and more PCI doma=
-ins,
->> > where on more PCI domains are same PCI numbers, when kernel is compiled
->> > with CONFIG_PROC_FS=3Dy and CONFIG_PPC_PCI_BUS_NUM_DOMAIN_DEPENDENT=3Dy
->> > options, kernel prints "proc_dir_entry 'pci/01' already registered" er=
-ror
->> > message.
->>=20
->> Thanks, I'll pick this up.
->>=20
->> > This regression started appearing after commit 566356813082 ("powerpc/=
-pci:
->> > Add config option for using all 256 PCI buses") in case in each mPCIe =
-slot
->> > is connected PCIe card and therefore PCI bus 1 is populated in for eve=
-ry
->> > PCIe controller / PCI domain.
->> >
->> > The reason is that PCI procfs code expects that when PCI bus numbers a=
-re
->> > not unique across all PCI domains, function pci_proc_domain() returns =
-true
->> > for domain dependent buses.
->> >
->> > Fix this issue by setting PCI_ENABLE_PROC_DOMAINS and PCI_COMPAT_DOMAI=
-N_0
->> > flags for 32-bit powerpc code when CONFIG_PPC_PCI_BUS_NUM_DOMAIN_DEPEN=
-DENT
->> > is enabled. Same approach is already implemented for 64-bit powerpc co=
-de
->> > (where PCI bus numbers are always domain dependent).
->>=20
->> We also have the same in ppc4xx_pci_find_bridges().
->>=20
->> And if we can eventually make CONFIG_PPC_PCI_BUS_NUM_DOMAIN_DEPENDENT
->> the standard behaviour on 32-bit then everything would behave the same
->> and we could simplify pci_proc_domain() to match what other arches do.
->
-> I sent two patches which do another steps to achieve it:
-> https://lore.kernel.org/linuxppc-dev/20220817163927.24453-1-pali@kernel.o=
-rg/t/#u
->
-> Main blocker is pci-OF-bus-map which is in direct conflict with
-> CONFIG_PPC_PCI_BUS_NUM_DOMAIN_DEPENDENT and which used on chrp and pmac.
-> And I have no idea if pci-OF-bus-map is still needed or not.
+Currently if ipcomp_alloc_scratches() fails to allocate memory
+ipcomp_scratches holds obsolete address. So when we try to free the
+percpu scratches using ipcomp_free_scratches() it tries to vfree non
+existent vm area. Described below:
 
-Yeah thanks, I saw those patches.
+static void * __percpu *ipcomp_alloc_scratches(void)
+{
+        ...
+        scratches = alloc_percpu(void *);
+        if (!scratches)
+                return NULL;
+ipcomp_scratches does not know about this allocation failure.
+Therefore holding the old obsolete address.
+        ...
+}
 
-I can't find any code that refers to pci-OF-bus-map, so I'm inclined to
-remove it entirely.
+So when we free,
 
-But I'll do some more searching to see if I can find any references to
-it in old code.
+static void ipcomp_free_scratches(void)
+{
+        ...
+        scratches = ipcomp_scratches;
+Assigning obsolete addresses from ipcomp_scratches
 
-cheers
+        if (!scratches)
+                return;
+
+        for_each_possible_cpu(i)
+               vfree(*per_cpu_ptr(scratches, i));
+Trying to free non existent page, causing warning: trying to vfree
+existent vm area.
+        ...
+}
+
+
+Fix this breakage by: 
+(1) Update ipcomp_scratches with NULL if the above mentioned 
+allocation fails.
+(2) Update ipcomp_scrtches with NULL when scratches is freed
+
+Reported-by: syzbot+5ec9bb042ddfe9644773@syzkaller.appspotmail.com
+Tested-by: syzbot+5ec9bb042ddfe9644773@syzkaller.appspotmail.com
+Signed-off-by: Khalid Masum <khalid.masum.92@gmail.com>
+---
+Changes since v2:
+- Set ipcomp_scratches to NULL when scratches is freed.
+- Update commit message.
+- v2 Link: https://lore.kernel.org/lkml/20220831142938.5882-1-khalid.masum.92@gmail.com/
+
+Changes since v1:
+- Instead of altering usercount, update ipcomp_scratches to NULL
+- Update commit message.
+- v1 Link: https://lore.kernel.org/lkml/20220831014126.6708-1-khalid.masum.92@gmail.com/
+
+diff --git a/net/xfrm/xfrm_ipcomp.c b/net/xfrm/xfrm_ipcomp.c
+index cb40ff0ff28d..3774d07c5819 100644
+--- a/net/xfrm/xfrm_ipcomp.c
++++ b/net/xfrm/xfrm_ipcomp.c
+@@ -203,6 +203,7 @@ static void ipcomp_free_scratches(void)
+ 		vfree(*per_cpu_ptr(scratches, i));
+ 
+ 	free_percpu(scratches);
++	ipcomp_scratches = NULL;
+ }
+ 
+ static void * __percpu *ipcomp_alloc_scratches(void)
+@@ -215,7 +216,7 @@ static void * __percpu *ipcomp_alloc_scratches(void)
+ 
+ 	scratches = alloc_percpu(void *);
+ 	if (!scratches)
+-		return NULL;
++		return ipcomp_scratches = NULL;
+ 
+ 	ipcomp_scratches = scratches;
+ 
