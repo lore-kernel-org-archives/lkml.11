@@ -2,58 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC301ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 17:39:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4640DECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 17:39:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234325AbiIARjF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 13:39:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51880 "EHLO
+        id S234495AbiIARjI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 13:39:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235109AbiIARhy (ORCPT
+        with ESMTP id S235137AbiIARh4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 13:37:54 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55E939C2E8
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 10:36:30 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id w63-20020a25c742000000b006960ac89fedso4938117ybe.18
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 10:36:30 -0700 (PDT)
+        Thu, 1 Sep 2022 13:37:56 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 614A19CCC3
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 10:36:36 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id s4-20020a17090aa10400b001fe1cfc50f7so1728249pjp.9
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 10:36:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date;
-        bh=GxTYNSy2f61J0vFNTG2PuheznwcSGYj4QW8UtE2cKCs=;
-        b=kyDYAAajD8Ict5/thoW7CTIWmHJF9O2tLJRCa3mFAvG6icZFINT6cR9wp1PVCpk34d
-         ZW6ubLRV3shjslvaFAJXlbBGTzPKjvgVDQeukMqdqtwYsjBpj2zHvD901sTZUMPhJtXT
-         2ltqU4ShN/OuGiFl+1aMyLRwy+OC1Eq/JzpPgbsdEFfqg/fH8TS912PoVzzOgyXwQY4c
-         Neb0lZJutieMXKVcpmbRLxmWRs14AnetVBjrLGSATrWD8Sx1+eyAMSMAZjNqX2Pwkr4/
-         vSA7Eawe2WnSKfYYTXdrBr34gwdU8C4wAuI9C4koFQPreF/LzpOWpEs87ZTSq2ciWD6Q
-         PcMQ==
+        bh=UrxjF4stvOlBFlzO5LCraBZUw6+ypd0ZdM4ea92X40o=;
+        b=bRQh8Am0cRUFMzevPI1RLDrAVB56xe5Pyl618ML1xG5UbYShnlVJ+JUC6EbLQY52Qs
+         CIQg2N84xHgD40zt1+Fs+lh7e1EeSPRAe2LH3ariXyDtYJfOUFwmaa2nyKSPAMv4C2LL
+         ixfdMT3qEKwsQzU0zWx46k2Kgwbo6qL2ZMjk9kwAzxSkMtv3E+2VRRPySs58VX6WIHgc
+         UmMCPxZ+/fBN36M7ZZRa1nwJWHDtOFVZGjkXHsv+iTsKxj9Rn4GNhqh8P+D/9RlG7Da5
+         L4TwcjQTaJ8DlcHg4rJEt6EYpCMy8N2APz0jZiSGuITg1YyaGh6hU+QCGH5FDg92dBPv
+         Wubw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date;
-        bh=GxTYNSy2f61J0vFNTG2PuheznwcSGYj4QW8UtE2cKCs=;
-        b=f1AooCiLreBMkEj4kLvyJe1V6IsMPk2kh7GltQP4miNM+ZYvnLQDSeRdkFAfD0BRei
-         OUC/Tx+VLU+5rppFxa/dO73yhgsSU28eWyOYHYz4a/w4KNOXZGySg+3GXfwkOYYiyFJD
-         4k3l9FIjUyue7/mEte2EIhZfZSpKXgvihBPtXvZpzJPYPQAw7LVR7lDEVlt4j6TVvFuF
-         uzx504S2T13fr6WjWO2/4s6srmfXNI/7k41YNKAZOLVZ6vx1QKVrOFjs48XC2+C9RnH4
-         9/uOoyZz0ffF6oSDDKbmvWy9h1pCudyHABIsgJqkJLnmkVB5M7WiQ7xyRfVh/Xb6fiM2
-         gbGg==
-X-Gm-Message-State: ACgBeo04B1hvlbPNJQBX5D2cgFylJE0nPF9nN9ZPU1iKtW7EK9jyWhSK
-        WBfX+a/iIgYDBv4/Dw0P/Y+h3ho1wZA=
-X-Google-Smtp-Source: AA6agR7h/HXbYJenfJy6WhKZaSvOltpWgwSfG3A/YQRl84q3AZw84By7flMTVszUCEhzYjvcGJ4xQ/dizwg=
+        bh=UrxjF4stvOlBFlzO5LCraBZUw6+ypd0ZdM4ea92X40o=;
+        b=F4V4AtTGvIyTmEcCFsziFNEFzwdXZ087u38L2VAHUngKq9ChavPOlYNSuDT2FUXU2f
+         UcRAF4b6JXL9bJZfMq2O88+AqmoIyXcL07MnPu+NYl76hiImftkE4VNlFJ7YDZYVMj02
+         S++GWh36GJBn/87Ht1XwG7QqAhfK9Mux9YB/icWFDNn2TesauE+efm7awfXGB1faUVQc
+         6apnRwRebIJJ0Xvcpws/iz1SFypAysmBHZe64c+yrKqeqPKT5rhzrHnmiLEamhwaHUf+
+         B1qa43DPDkdzYnwq7SIWrBZu+F4BulUGsnumrsRkY2L3JbEjNRYyYIDIq18w73ZL/pH0
+         IC8A==
+X-Gm-Message-State: ACgBeo1EvTvQG/nchCG01gb8He99YfPL3Fq8NesazkphOR0S+RxQ/TGC
+        xm8rlYAVrqQjeIBxDHgv7uXMmj0Zluw=
+X-Google-Smtp-Source: AA6agR7mDmCeuzlvD1IqXjWBDc5GDtYGg6tZms9fC4JNMJ+6ZNkDA7fZXZfEW+TFSrB8Qt+rbpDI3NajKAM=
 X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:200:1bfc:e7ee:6530:4449])
- (user=surenb job=sendgmr) by 2002:a81:650a:0:b0:33c:f030:7e9f with SMTP id
- z10-20020a81650a000000b0033cf0307e9fmr23813234ywb.16.1662053789340; Thu, 01
- Sep 2022 10:36:29 -0700 (PDT)
-Date:   Thu,  1 Sep 2022 10:35:14 -0700
+ (user=surenb job=sendgmr) by 2002:aa7:804c:0:b0:536:80bb:8270 with SMTP id
+ y12-20020aa7804c000000b0053680bb8270mr31869167pfm.13.1662053794990; Thu, 01
+ Sep 2022 10:36:34 -0700 (PDT)
+Date:   Thu,  1 Sep 2022 10:35:16 -0700
 In-Reply-To: <20220901173516.702122-1-surenb@google.com>
 Mime-Version: 1.0
 References: <20220901173516.702122-1-surenb@google.com>
 X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
-Message-ID: <20220901173516.702122-27-surenb@google.com>
-Subject: [RFC PATCH RESEND 26/28] powerc/mm: try VMA lock-based page fault
- handling first
+Message-ID: <20220901173516.702122-29-surenb@google.com>
+Subject: [RFC PATCH RESEND 28/28] kernel/fork: throttle call_rcu() calls in vm_area_free
 From:   Suren Baghdasaryan <surenb@google.com>
 To:     akpm@linux-foundation.org
 Cc:     michel@lespinasse.org, jglisse@google.com, mhocko@suse.com,
@@ -74,76 +73,184 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Laurent Dufour <ldufour@linux.ibm.com>
+call_rcu() can take a long time when callback offloading is enabled.
+Its use in the vm_area_free can cause regressions in the exit path when
+multiple VMAs are being freed. To minimize that impact, place VMAs into
+a list and free them in groups using one call_rcu() call per group.
 
-Attempt VMA lock-based page fault handling first, and fall back to the
-existing mmap_lock-based handling if that fails.
-Copied from "x86/mm: try VMA lock-based page fault handling first"
-
-Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
 Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 ---
- arch/powerpc/mm/fault.c | 41 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 41 insertions(+)
+ include/linux/mm.h       |  1 +
+ include/linux/mm_types.h | 11 ++++++-
+ kernel/fork.c            | 68 +++++++++++++++++++++++++++++++++++-----
+ mm/init-mm.c             |  3 ++
+ mm/mmap.c                |  1 +
+ 5 files changed, 75 insertions(+), 9 deletions(-)
 
-diff --git a/arch/powerpc/mm/fault.c b/arch/powerpc/mm/fault.c
-index 014005428687..c92bdfcd1796 100644
---- a/arch/powerpc/mm/fault.c
-+++ b/arch/powerpc/mm/fault.c
-@@ -450,6 +450,44 @@ static int ___do_page_fault(struct pt_regs *regs, unsigned long address,
- 	if (is_exec)
- 		flags |= FAULT_FLAG_INSTRUCTION;
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index a3cbaa7b9119..81dff694ac14 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -249,6 +249,7 @@ void setup_initial_init_mm(void *start_code, void *end_code,
+ struct vm_area_struct *vm_area_alloc(struct mm_struct *);
+ struct vm_area_struct *vm_area_dup(struct vm_area_struct *);
+ void vm_area_free(struct vm_area_struct *);
++void drain_free_vmas(struct mm_struct *mm);
  
-+#ifdef CONFIG_PER_VMA_LOCK
-+	if (!(flags & FAULT_FLAG_USER) || atomic_read(&mm->mm_users) == 1)
-+		goto lock_mmap;
+ #ifndef CONFIG_MMU
+ extern struct rb_root nommu_region_tree;
+diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+index 36562e702baf..6f3effc493b1 100644
+--- a/include/linux/mm_types.h
++++ b/include/linux/mm_types.h
+@@ -412,7 +412,11 @@ struct vm_area_struct {
+ 			struct vm_area_struct *vm_next, *vm_prev;
+ 		};
+ #ifdef CONFIG_PER_VMA_LOCK
+-		struct rcu_head vm_rcu;	/* Used for deferred freeing. */
++		struct {
++			struct list_head vm_free_list;
++			/* Used for deferred freeing. */
++			struct rcu_head vm_rcu;
++		};
+ #endif
+ 	};
+ 
+@@ -573,6 +577,11 @@ struct mm_struct {
+ 					  */
+ #ifdef CONFIG_PER_VMA_LOCK
+ 		int mm_lock_seq;
++		struct {
++			struct list_head head;
++			spinlock_t lock;
++			int size;
++		} vma_free_list;
+ #endif
+ 
+ 
+diff --git a/kernel/fork.c b/kernel/fork.c
+index b443ba3a247a..7c88710aed72 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -483,26 +483,75 @@ struct vm_area_struct *vm_area_dup(struct vm_area_struct *orig)
+ }
+ 
+ #ifdef CONFIG_PER_VMA_LOCK
+-static void __vm_area_free(struct rcu_head *head)
++static inline void __vm_area_free(struct vm_area_struct *vma)
+ {
+-	struct vm_area_struct *vma = container_of(head, struct vm_area_struct,
+-						  vm_rcu);
+ 	/* The vma should either have no lock holders or be write-locked. */
+ 	vma_assert_no_reader(vma);
+ 	kmem_cache_free(vm_area_cachep, vma);
+ }
+-#endif
 +
-+	vma = find_and_lock_anon_vma(mm, address);
-+	if (!vma)
-+		goto lock_mmap;
++static void vma_free_rcu_callback(struct rcu_head *head)
++{
++	struct vm_area_struct *first_vma;
++	struct vm_area_struct *vma, *vma2;
 +
-+	if (unlikely(access_pkey_error(is_write, is_exec,
-+				       (error_code & DSISR_KEYFAULT), vma))) {
-+		int rc = bad_access_pkey(regs, address, vma);
++	first_vma = container_of(head, struct vm_area_struct, vm_rcu);
++	list_for_each_entry_safe(vma, vma2, &first_vma->vm_free_list, vm_free_list)
++		__vm_area_free(vma);
++	__vm_area_free(first_vma);
++}
 +
-+		vma_read_unlock(vma);
-+		return rc;
-+	}
++void drain_free_vmas(struct mm_struct *mm)
++{
++	struct vm_area_struct *first_vma;
++	LIST_HEAD(to_destroy);
 +
-+	if (unlikely(access_error(is_write, is_exec, vma))) {
-+		int rc = bad_access(regs, address);
++	spin_lock(&mm->vma_free_list.lock);
++	list_splice_init(&mm->vma_free_list.head, &to_destroy);
++	mm->vma_free_list.size = 0;
++	spin_unlock(&mm->vma_free_list.lock);
 +
-+		vma_read_unlock(vma);
-+		return rc;
-+	}
++	if (list_empty(&to_destroy))
++		return;
 +
-+	fault = handle_mm_fault(vma, address, flags | FAULT_FLAG_VMA_LOCK, regs);
-+	vma_read_unlock(vma);
++	first_vma = list_first_entry(&to_destroy, struct vm_area_struct, vm_free_list);
++	/* Remove the head which is allocated on the stack */
++	list_del(&to_destroy);
 +
-+	if (!(fault & VM_FAULT_RETRY)) {
-+		count_vm_vma_lock_event(VMA_LOCK_SUCCESS);
-+		goto done;
-+	}
-+	count_vm_vma_lock_event(VMA_LOCK_RETRY);
++	call_rcu(&first_vma->vm_rcu, vma_free_rcu_callback);
++}
 +
-+	if (fault_signal_pending(fault, regs))
-+		return user_mode(regs) ? 0 : SIGBUS;
++#define VM_AREA_FREE_LIST_MAX	32
 +
-+lock_mmap:
++void vm_area_free(struct vm_area_struct *vma)
++{
++	struct mm_struct *mm = vma->vm_mm;
++	bool drain;
++
++	free_anon_vma_name(vma);
++
++	spin_lock(&mm->vma_free_list.lock);
++	list_add(&vma->vm_free_list, &mm->vma_free_list.head);
++	mm->vma_free_list.size++;
++	drain = mm->vma_free_list.size > VM_AREA_FREE_LIST_MAX;
++	spin_unlock(&mm->vma_free_list.lock);
++
++	if (drain)
++		drain_free_vmas(mm);
++}
++
++#else /* CONFIG_PER_VMA_LOCK */
++
++void drain_free_vmas(struct mm_struct *mm) {}
+ 
+ void vm_area_free(struct vm_area_struct *vma)
+ {
+ 	free_anon_vma_name(vma);
+-#ifdef CONFIG_PER_VMA_LOCK
+-	call_rcu(&vma->vm_rcu, __vm_area_free);
+-#else
+ 	kmem_cache_free(vm_area_cachep, vma);
+-#endif
+ }
+ 
 +#endif /* CONFIG_PER_VMA_LOCK */
 +
- 	/* When running in the kernel we expect faults to occur only to
- 	 * addresses in user space.  All other faults represent errors in the
- 	 * kernel and should generate an OOPS.  Unfortunately, in the case of an
-@@ -526,6 +564,9 @@ static int ___do_page_fault(struct pt_regs *regs, unsigned long address,
- 
- 	mmap_read_unlock(current->mm);
- 
-+#ifdef CONFIG_PER_VMA_LOCK
-+done:
-+#endif
- 	if (unlikely(fault & VM_FAULT_ERROR))
- 		return mm_fault_error(regs, address, fault);
+ static void account_kernel_stack(struct task_struct *tsk, int account)
+ {
+ 	if (IS_ENABLED(CONFIG_VMAP_STACK)) {
+@@ -1137,6 +1186,9 @@ static struct mm_struct *mm_init(struct mm_struct *mm, struct task_struct *p,
+ 	INIT_LIST_HEAD(&mm->mmlist);
+ #ifdef CONFIG_PER_VMA_LOCK
+ 	WRITE_ONCE(mm->mm_lock_seq, 0);
++	INIT_LIST_HEAD(&mm->vma_free_list.head);
++	spin_lock_init(&mm->vma_free_list.lock);
++	mm->vma_free_list.size = 0;
+ #endif
+ 	mm_pgtables_bytes_init(mm);
+ 	mm->map_count = 0;
+diff --git a/mm/init-mm.c b/mm/init-mm.c
+index 8399f90d631c..7b6d2460545f 100644
+--- a/mm/init-mm.c
++++ b/mm/init-mm.c
+@@ -39,6 +39,9 @@ struct mm_struct init_mm = {
+ 	.mmlist		= LIST_HEAD_INIT(init_mm.mmlist),
+ #ifdef CONFIG_PER_VMA_LOCK
+ 	.mm_lock_seq	= 0,
++	.vma_free_list.head = LIST_HEAD_INIT(init_mm.vma_free_list.head),
++	.vma_free_list.lock =  __SPIN_LOCK_UNLOCKED(init_mm.vma_free_list.lock),
++	.vma_free_list.size = 0,
+ #endif
+ 	.user_ns	= &init_user_ns,
+ 	.cpu_bitmap	= CPU_BITS_NONE,
+diff --git a/mm/mmap.c b/mm/mmap.c
+index 1edfcd384f5e..d61b7ef84ba6 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -3149,6 +3149,7 @@ void exit_mmap(struct mm_struct *mm)
+ 	}
+ 	mm->mmap = NULL;
+ 	mmap_write_unlock(mm);
++	drain_free_vmas(mm);
+ 	vm_unacct_memory(nr_accounted);
+ }
  
 -- 
 2.37.2.789.g6183377224-goog
