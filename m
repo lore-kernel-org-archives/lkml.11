@@ -2,103 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 463F7ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:42:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37930C54EE9
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:43:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233617AbiIAOms (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 10:42:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42630 "EHLO
+        id S233196AbiIAOnZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 10:43:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233652AbiIAOmp (ORCPT
+        with ESMTP id S233597AbiIAOnV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 10:42:45 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC80776976
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 07:42:41 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id s206so16588653pgs.3
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 07:42:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=fbvLaxBSrUU1twip21pfwSPLgyOYXUmDr/PBKjQl9Hk=;
-        b=iBNu0BAJj/GpEUqQRjnaHH1UAVKM0yqNr+vLtcPE94fECJjuF6vBMeoGPa5BqbF31d
-         aCdf1DE9mIPgnNBkJCcVS5e9oT+mAhFu6N85WXBEU4D42jTaTdR/FTe9a9R/l5c16W96
-         x8Ps2dkMZ/jFStSqosO9ss1JRD7GN2Nvz6GjU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=fbvLaxBSrUU1twip21pfwSPLgyOYXUmDr/PBKjQl9Hk=;
-        b=5GlVfrP5ppBdWJtSB7QrjYsiDX/nSjTrznKSrptwalwJiHOHUCHVhWoZVKDhPQIu2Q
-         +Pz7mVx7erdXmv0w6PsMfz/6Ey0d7v9QqeMgtjn5xdEqfxQ0diQuM441qSY7gMMo5eUx
-         ZgthUEewH46xV9On9sKZqamasq3oyfT6HtCKeoj1N74pMaV0xQbcJ8OmAABkbRnpjv3V
-         Or9FO0JnYzEaoG/NCFzm3kyChify5sWhOBIUPRHBpkBJuyKuEhCGbfLIE+3Ms1xp2mGH
-         sW/9w5Wm4BUuRf/plgPCPQpJDRUcY3v8ZRaoo2JBBbzf2m4d0kqei4phxdw0M1rv+dsf
-         TtVQ==
-X-Gm-Message-State: ACgBeo2Bz+uKEwNXkHS4vp4eEzXnTQSKGP5LpGKbdIpMrQuG/geW+ZUI
-        jwDWXrsTwsrB3+/c0gnpauJVUQnFSZHQghY+
-X-Google-Smtp-Source: AA6agR6BfX/F1wz6XflLFLFd19euXTh7VtM19NzJrOeQTVd832Lr0ExH5kSESTiAQwpUNn2ABOJ4Wg==
-X-Received: by 2002:a63:1a46:0:b0:42c:414a:95ee with SMTP id a6-20020a631a46000000b0042c414a95eemr14901158pgm.386.1662043361169;
-        Thu, 01 Sep 2022 07:42:41 -0700 (PDT)
-Received: from pteerapong.c.googlers.com.com (148.175.199.104.bc.googleusercontent.com. [104.199.175.148])
-        by smtp.gmail.com with ESMTPSA id z18-20020a170903019200b001709b9d292esm4238112plg.268.2022.09.01.07.42.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 07:42:40 -0700 (PDT)
-From:   Pattara Teerapong <pteerapong@chromium.org>
-To:     alsa-devel@alsa-project.org
-Cc:     Pattara Teerapong <pteerapong@chromium.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH] ALSA: aloop: Fix random zeros in capture data when using jiffies timer
-Date:   Thu,  1 Sep 2022 14:40:36 +0000
-Message-Id: <20220901144036.4049060-1-pteerapong@chromium.org>
-X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
+        Thu, 1 Sep 2022 10:43:21 -0400
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0AED76976;
+        Thu,  1 Sep 2022 07:43:19 -0700 (PDT)
+Date:   Thu, 1 Sep 2022 10:43:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1662043398;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=nOHSW3FDpFxopIM9LbojW3h32sP5UuFpnfFE44cGJM8=;
+        b=DYXiWVC0vy4teLKZQztFxvW1KXEKgsv/W8GLVht+MMEppphvXl1beWtjobZtBs7ufDfyf1
+        /Az+HrU+UnzwRWndfnxlx9U/cWoea5qHWVDTW/7rGq5kcj9ODLnVIRzkPJn+RdzRKpoYMZ
+        5Z1XsUa8iU3hq/D237KbAKpwZVrQllY=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Kent Overstreet <kent.overstreet@linux.dev>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org,
+        mhocko@suse.com, vbabka@suse.cz, hannes@cmpxchg.org,
+        roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net,
+        willy@infradead.org, liam.howlett@oracle.com, void@manifault.com,
+        juri.lelli@redhat.com, ldufour@linux.ibm.com, peterx@redhat.com,
+        david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org,
+        masahiroy@kernel.org, nathan@kernel.org, changbin.du@intel.com,
+        ytcoode@gmail.com, vincent.guittot@linaro.org,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+        bristot@redhat.com, vschneid@redhat.com, cl@linux.com,
+        penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com,
+        glider@google.com, elver@google.com, dvyukov@google.com,
+        shakeelb@google.com, songmuchun@bytedance.com, arnd@arndb.de,
+        jbaron@akamai.com, rientjes@google.com, minchan@google.com,
+        kaleshsingh@google.com, kernel-team@android.com,
+        linux-mm@kvack.org, iommu@lists.linux.dev,
+        kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
+        linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
+        linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 27/30] Code tagging based latency tracking
+Message-ID: <20220901144311.ywhhdaigweyy7eo6@moria.home.lan>
+References: <20220830214919.53220-1-surenb@google.com>
+ <20220830214919.53220-28-surenb@google.com>
+ <YxBbFUirdlbXDaZA@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YxBbFUirdlbXDaZA@hirez.programming.kicks-ass.net>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In loopback_jiffies_timer_pos_update(), we are getting jiffies twice.
-First time for playback, second time for capture. Jiffies can be updated
-between these two calls and if the capture jiffies is larger, extra zeros
-will be filled in the capture buffer.
+On Thu, Sep 01, 2022 at 09:11:17AM +0200, Peter Zijlstra wrote:
+> On Tue, Aug 30, 2022 at 02:49:16PM -0700, Suren Baghdasaryan wrote:
+> > From: Kent Overstreet <kent.overstreet@linux.dev>
+> > 
+> > This adds the ability to easily instrument code for measuring latency.
+> > To use, add the following to calls to your code, at the start and end of
+> > the event you wish to measure:
+> > 
+> >   code_tag_time_stats_start(start_time);
+> >   code_tag_time_stats_finish(start_time);
+> > 
+> > Stastistics will then show up in debugfs under
+> > /sys/kernel/debug/time_stats, listed by file and line number.
+> > 
+> > Stastics measured include weighted averages of frequency, duration, max
+> > duration, as well as quantiles.
+> > 
+> > This patch also instruments all calls to init_wait and finish_wait,
+> > which includes all calls to wait_event. Example debugfs output:
+> 
+> How can't you do this with a simple eBPF script on top of
+> trace_sched_stat_* and friends?
 
-Change to get jiffies once and use it for both playback and capture.
+I know about those tracepoints, and I've never found them to be usable. I've
+never succesfully used them for debugging latency issues, or known anyone who
+has.
 
-Signed-off-by: Pattara Teerapong <pteerapong@chromium.org>
----
-
- sound/drivers/aloop.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/sound/drivers/aloop.c b/sound/drivers/aloop.c
-index 9b4a7cdb103a..12f12a294df5 100644
---- a/sound/drivers/aloop.c
-+++ b/sound/drivers/aloop.c
-@@ -605,17 +605,18 @@ static unsigned int loopback_jiffies_timer_pos_update
- 			cable->streams[SNDRV_PCM_STREAM_PLAYBACK];
- 	struct loopback_pcm *dpcm_capt =
- 			cable->streams[SNDRV_PCM_STREAM_CAPTURE];
--	unsigned long delta_play = 0, delta_capt = 0;
-+	unsigned long delta_play = 0, delta_capt = 0, cur_jiffies;
- 	unsigned int running, count1, count2;
- 
-+	cur_jiffies = jiffies;
- 	running = cable->running ^ cable->pause;
- 	if (running & (1 << SNDRV_PCM_STREAM_PLAYBACK)) {
--		delta_play = jiffies - dpcm_play->last_jiffies;
-+		delta_play = cur_jiffies - dpcm_play->last_jiffies;
- 		dpcm_play->last_jiffies += delta_play;
- 	}
- 
- 	if (running & (1 << SNDRV_PCM_STREAM_CAPTURE)) {
--		delta_capt = jiffies - dpcm_capt->last_jiffies;
-+		delta_capt = cur_jiffies - dpcm_capt->last_jiffies;
- 		dpcm_capt->last_jiffies += delta_capt;
- 	}
- 
--- 
-2.37.2.789.g6183377224-goog
-
+And an eBPF script to do everything this does wouldn't be simple at all.
+Honesly, the time stats stuff looks _far_ simpler to me than anything involving
+tracing - and with tracing you have to correlate the start and end events after
+the fact.
