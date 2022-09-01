@@ -2,87 +2,266 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91FC9ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 12:08:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA4E0ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 12:10:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232963AbiIAMI4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 08:08:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38586 "EHLO
+        id S233320AbiIAMKx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 08:10:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232065AbiIAMIw (ORCPT
+        with ESMTP id S233296AbiIAMKt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 08:08:52 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E40E4EA338;
-        Thu,  1 Sep 2022 05:08:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=LaFtjcKE2V/P1S6QroWS+3k5zrDKN1D6ktj5C2pZ8Ek=; b=U6GQYqOERXA3BfsLz0EQzJErri
-        lMNRyeaGK8SIJHmNPrIyRs+84fwcuZNoDn5kha7nFPApyY4FU1OcVBnb/CHF6vOBkKyqXQQjyB9ZS
-        HpUPy2KGpcnKvC+bejy0wSRfHMqDxCs8cRhSa26mOJWKxkRBpnzyYijxnIyvvgWW4DK0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oTizf-00FIgL-Q0; Thu, 01 Sep 2022 14:08:23 +0200
-Date:   Thu, 1 Sep 2022 14:08:23 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Anand Moon <anand@edgeble.ai>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Sugar Zhang <sugar.zhang@rock-chips.com>,
-        David Wu <david.wu@rock-chips.com>,
-        Jagan Teki <jagan@edgeble.ai>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] net: ethernet: stmicro: stmmac: dwmac-rk: Add rv1126
- support
-Message-ID: <YxCgtyqZ6+D5MBY5@lunn.ch>
-References: <20220829065044.1736-1-anand@edgeble.ai>
- <20220829065044.1736-2-anand@edgeble.ai>
- <Ywy6o2d9j4Z7+WYX@lunn.ch>
- <CACF1qnfmzcq55GvsD=GQ+ciLRstZ-7ef1EDaBzKMqBzU0O+WRw@mail.gmail.com>
+        Thu, 1 Sep 2022 08:10:49 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 491ECDF658
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 05:10:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1662034246; x=1693570246;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=RIo2pBaslBQzwR75AbcPm8a1ycfCen3KShSxpD0kInc=;
+  b=wHhC3LmTHXbwUW5XuRrYFijd2YusLgLFvr/tzay3AY8jcAICYMoG/TqQ
+   iNPWYdxC6uwHal+sSk3Jv9SLyAdPiC2RQsgHVLxS/aKRIU2Y1sFZLpw0b
+   2NBybzvX5FqzI7ExhVqOeCf5FaqGIbzFPhXcJ5IBrHfl1ftJ66HDd1bHI
+   pkbKtjpTAk7ThBdO/wMLsex/gPhZV/hdLjixKwTIQjoopSxv8E3K5jo6V
+   Bn+DlHwnRjMC983p3i00ylM39BwVFWAh3RXb54at4XYrEG2V6jKtPqVIy
+   gHRuy0I/Hcy+Y/lU/Bmv+xw8D9T8ie+8TFijKhQoJbqaZ4ssBELePD1OY
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="188977520"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Sep 2022 05:10:43 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Thu, 1 Sep 2022 05:10:41 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Thu, 1 Sep 2022 05:10:40 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <linux-phy@lists.infradead.org>, <linux-kernel@vger.kernel.org>
+CC:     <kishon@ti.com>, <vkoul@kernel.org>, <rmk+kernel@armlinux.org.uk>,
+        <UNGLinuxDriver@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH] phy: Add RGMII support on lan966x
+Date:   Thu, 1 Sep 2022 14:14:55 +0200
+Message-ID: <20220901121455.245103-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACF1qnfmzcq55GvsD=GQ+ciLRstZ-7ef1EDaBzKMqBzU0O+WRw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > On Mon, Aug 29, 2022 at 06:50:42AM +0000, Anand Moon wrote:
-> > > Rockchip RV1126 has GMAC 10/100/1000M ethernet controller
-> > > via RGMII and RMII interfaces are configured via M0 and M1 pinmux.
-> > >
-> > > This patch adds rv1126 support by adding delay lines of M0 and M1
-> > > simultaneously.
-> >
-> > What does 'delay lines' mean with respect to RGMII?
-> >
-> > The RGMII signals need a 2ns delay between the clock and the data
-> > lines. There are three places this can happen:
-> >
-> > 1) In the PHY
-> > 2) Extra long lines on the PCB
-> > 3) In the MAC
-> >
-> > Generally, 1) is used, and controlled via phy-mode. A value of
-> > PHY_INTERFACE_MODE_RGMII_ID passed to the PHY driver means it will add
-> > these delays.
-> >
-> > You don't want both the MAC and the PHY adding delays.
-> >
-> These are set to enable MAC transmit clock delay set for Tx and Rx for
-> iomux group.
+The serdes driver contains also a mux to decide which interface type to
+use. Currently the driver supports GMII/SGMII/QSGMII and partially RGMII.
+As it doesn't support all the other RGMII interfaces like
+RGMII_TXID/RXID/ID and it could run only at 1G.
+Therefore extend this for all the other speeds(10/100) and also allow
+the other interfaces.
 
-Which does not answer my question. Is this the same as, or different
-to, the 2ns delay required by RGMII?
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+ drivers/phy/microchip/lan966x_serdes.c      | 99 ++++++++++++++++++---
+ drivers/phy/microchip/lan966x_serdes_regs.h | 42 +++++++++
+ 2 files changed, 129 insertions(+), 12 deletions(-)
 
-    Andrew
+diff --git a/drivers/phy/microchip/lan966x_serdes.c b/drivers/phy/microchip/lan966x_serdes.c
+index e86a879b92b5..fbc725ffa4ab 100644
+--- a/drivers/phy/microchip/lan966x_serdes.c
++++ b/drivers/phy/microchip/lan966x_serdes.c
+@@ -42,7 +42,10 @@
+ #define SERDES_MUX_QSGMII(i, p, m, c) \
+ 	SERDES_MUX(i, p, PHY_MODE_ETHERNET, PHY_INTERFACE_MODE_QSGMII, m, c)
+ #define SERDES_MUX_RGMII(i, p, m, c) \
+-	SERDES_MUX(i, p, PHY_MODE_ETHERNET, PHY_INTERFACE_MODE_RGMII, m, c)
++	SERDES_MUX(i, p, PHY_MODE_ETHERNET, PHY_INTERFACE_MODE_RGMII, m, c), \
++	SERDES_MUX(i, p, PHY_MODE_ETHERNET, PHY_INTERFACE_MODE_RGMII_TXID, m, c), \
++	SERDES_MUX(i, p, PHY_MODE_ETHERNET, PHY_INTERFACE_MODE_RGMII_RXID, m, c), \
++	SERDES_MUX(i, p, PHY_MODE_ETHERNET, PHY_INTERFACE_MODE_RGMII_ID, m, c)
+ 
+ static void lan_rmw_(u32 val, u32 mask, void __iomem *mem, u32 offset)
+ {
+@@ -94,21 +97,29 @@ static const struct serdes_mux lan966x_serdes_muxes[] = {
+ 			 HSIO_HW_CFG_SD6G_1_CFG_SET(1)),
+ 
+ 	SERDES_MUX_RGMII(RGMII(0), 2, HSIO_HW_CFG_RGMII_0_CFG |
+-			 HSIO_HW_CFG_RGMII_ENA,
+-			 HSIO_HW_CFG_RGMII_0_CFG_SET(BIT(0)) |
+-			 HSIO_HW_CFG_RGMII_ENA_SET(BIT(0))),
++			 HSIO_HW_CFG_RGMII_ENA |
++			 HSIO_HW_CFG_GMII_ENA,
++			 HSIO_HW_CFG_RGMII_0_CFG_SET(0) |
++			 HSIO_HW_CFG_RGMII_ENA_SET(BIT(0)) |
++			 HSIO_HW_CFG_GMII_ENA_SET(BIT(2))),
+ 	SERDES_MUX_RGMII(RGMII(1), 3, HSIO_HW_CFG_RGMII_1_CFG |
+-			 HSIO_HW_CFG_RGMII_ENA,
+-			 HSIO_HW_CFG_RGMII_1_CFG_SET(BIT(0)) |
+-			 HSIO_HW_CFG_RGMII_ENA_SET(BIT(1))),
++			 HSIO_HW_CFG_RGMII_ENA |
++			 HSIO_HW_CFG_GMII_ENA,
++			 HSIO_HW_CFG_RGMII_1_CFG_SET(0) |
++			 HSIO_HW_CFG_RGMII_ENA_SET(BIT(1)) |
++			 HSIO_HW_CFG_GMII_ENA_SET(BIT(3))),
+ 	SERDES_MUX_RGMII(RGMII(0), 5, HSIO_HW_CFG_RGMII_0_CFG |
+-			 HSIO_HW_CFG_RGMII_ENA,
++			 HSIO_HW_CFG_RGMII_ENA |
++			 HSIO_HW_CFG_GMII_ENA,
+ 			 HSIO_HW_CFG_RGMII_0_CFG_SET(BIT(0)) |
+-			 HSIO_HW_CFG_RGMII_ENA_SET(BIT(0))),
++			 HSIO_HW_CFG_RGMII_ENA_SET(BIT(0)) |
++			 HSIO_HW_CFG_GMII_ENA_SET(BIT(5))),
+ 	SERDES_MUX_RGMII(RGMII(1), 6, HSIO_HW_CFG_RGMII_1_CFG |
+-			 HSIO_HW_CFG_RGMII_ENA,
++			 HSIO_HW_CFG_RGMII_ENA |
++			 HSIO_HW_CFG_GMII_ENA,
+ 			 HSIO_HW_CFG_RGMII_1_CFG_SET(BIT(0)) |
+-			 HSIO_HW_CFG_RGMII_ENA_SET(BIT(1))),
++			 HSIO_HW_CFG_RGMII_ENA_SET(BIT(1)) |
++			 HSIO_HW_CFG_GMII_ENA_SET(BIT(6))),
+ };
+ 
+ struct serdes_ctrl {
+@@ -382,6 +393,67 @@ static int lan966x_sd6g40_setup(struct serdes_macro *macro, u32 idx, int mode)
+ 	return lan966x_sd6g40_setup_lane(macro, conf, idx);
+ }
+ 
++static int lan966x_rgmii_setup(struct serdes_macro *macro, u32 idx, int mode)
++{
++	bool tx_delay = false;
++	bool rx_delay = false;
++
++	/* Configure RGMII */
++	lan_rmw(HSIO_RGMII_CFG_RGMII_RX_RST_SET(0) |
++		HSIO_RGMII_CFG_RGMII_TX_RST_SET(0) |
++		HSIO_RGMII_CFG_TX_CLK_CFG_SET(macro->speed == SPEED_1000 ? 1 :
++					      macro->speed == SPEED_100 ? 2 :
++					      macro->speed == SPEED_10 ? 3 : 0),
++		HSIO_RGMII_CFG_RGMII_RX_RST |
++		HSIO_RGMII_CFG_RGMII_TX_RST |
++		HSIO_RGMII_CFG_TX_CLK_CFG,
++		macro->ctrl->regs, HSIO_RGMII_CFG(idx));
++
++	if (mode == PHY_INTERFACE_MODE_RGMII ||
++	    mode == PHY_INTERFACE_MODE_RGMII_TXID)
++		rx_delay = true;
++
++	if (mode == PHY_INTERFACE_MODE_RGMII ||
++	    mode == PHY_INTERFACE_MODE_RGMII_RXID)
++		tx_delay = true;
++
++	/* Setup DLL configuration */
++	lan_rmw(HSIO_DLL_CFG_DLL_RST_SET(0) |
++		HSIO_DLL_CFG_DLL_ENA_SET(rx_delay),
++		HSIO_DLL_CFG_DLL_RST |
++		HSIO_DLL_CFG_DLL_ENA,
++		macro->ctrl->regs, HSIO_DLL_CFG(idx == 0 ? 0x0 : 0x2));
++
++	lan_rmw(HSIO_DLL_CFG_DELAY_ENA_SET(rx_delay),
++		HSIO_DLL_CFG_DELAY_ENA,
++		macro->ctrl->regs, HSIO_DLL_CFG(idx == 0 ? 0x0 : 0x2));
++
++	lan_rmw(HSIO_DLL_CFG_DLL_RST_SET(0) |
++		HSIO_DLL_CFG_DLL_ENA_SET(tx_delay),
++		HSIO_DLL_CFG_DLL_RST |
++		HSIO_DLL_CFG_DLL_ENA,
++		macro->ctrl->regs, HSIO_DLL_CFG(idx == 0 ? 0x1 : 0x3));
++
++	lan_rmw(HSIO_DLL_CFG_DELAY_ENA_SET(tx_delay),
++		HSIO_DLL_CFG_DELAY_ENA,
++		macro->ctrl->regs, HSIO_DLL_CFG(idx == 0 ? 0x1 : 0x3));
++
++	return 0;
++}
++
++static int serdes_set_speed(struct phy *phy, int speed)
++{
++	struct serdes_macro *macro = phy_get_drvdata(phy);
++
++	if (!phy_interface_mode_is_rgmii(macro->mode))
++		return 0;
++
++	macro->speed = speed;
++	lan966x_rgmii_setup(macro, macro->idx - (SERDES6G_MAX + 1), macro->mode);
++
++	return 0;
++}
++
+ static int serdes_set_mode(struct phy *phy, enum phy_mode mode, int submode)
+ {
+ 	struct serdes_macro *macro = phy_get_drvdata(phy);
+@@ -424,7 +496,9 @@ static int serdes_set_mode(struct phy *phy, enum phy_mode mode, int submode)
+ 						    macro->mode);
+ 
+ 		if (macro->idx < RGMII_MAX)
+-			return 0;
++			return lan966x_rgmii_setup(macro,
++						   macro->idx - (SERDES6G_MAX + 1),
++						   macro->mode);
+ 
+ 		return -EOPNOTSUPP;
+ 	}
+@@ -434,6 +508,7 @@ static int serdes_set_mode(struct phy *phy, enum phy_mode mode, int submode)
+ 
+ static const struct phy_ops serdes_ops = {
+ 	.set_mode	= serdes_set_mode,
++	.set_speed	= serdes_set_speed,
+ 	.owner		= THIS_MODULE,
+ };
+ 
+diff --git a/drivers/phy/microchip/lan966x_serdes_regs.h b/drivers/phy/microchip/lan966x_serdes_regs.h
+index ea30f64ffd5c..ac54cd01fea6 100644
+--- a/drivers/phy/microchip/lan966x_serdes_regs.h
++++ b/drivers/phy/microchip/lan966x_serdes_regs.h
+@@ -206,4 +206,46 @@ enum lan966x_target {
+ #define HSIO_HW_CFG_QSGMII_ENA_GET(x)\
+ 	FIELD_GET(HSIO_HW_CFG_QSGMII_ENA, x)
+ 
++/*      HSIO:HW_CFGSTAT:RGMII_CFG */
++#define HSIO_RGMII_CFG(r)         __REG(TARGET_HSIO, 0, 1, 104, 0, 1, 52, 20, r, 2, 4)
++
++#define HSIO_RGMII_CFG_TX_CLK_CFG                GENMASK(4, 2)
++#define HSIO_RGMII_CFG_TX_CLK_CFG_SET(x)\
++	FIELD_PREP(HSIO_RGMII_CFG_TX_CLK_CFG, x)
++#define HSIO_RGMII_CFG_TX_CLK_CFG_GET(x)\
++	FIELD_GET(HSIO_RGMII_CFG_TX_CLK_CFG, x)
++
++#define HSIO_RGMII_CFG_RGMII_TX_RST              BIT(1)
++#define HSIO_RGMII_CFG_RGMII_TX_RST_SET(x)\
++	FIELD_PREP(HSIO_RGMII_CFG_RGMII_TX_RST, x)
++#define HSIO_RGMII_CFG_RGMII_TX_RST_GET(x)\
++	FIELD_GET(HSIO_RGMII_CFG_RGMII_TX_RST, x)
++
++#define HSIO_RGMII_CFG_RGMII_RX_RST              BIT(0)
++#define HSIO_RGMII_CFG_RGMII_RX_RST_SET(x)\
++	FIELD_PREP(HSIO_RGMII_CFG_RGMII_RX_RST, x)
++#define HSIO_RGMII_CFG_RGMII_RX_RST_GET(x)\
++	FIELD_GET(HSIO_RGMII_CFG_RGMII_RX_RST, x)
++
++/*      HSIO:HW_CFGSTAT:DLL_CFG */
++#define HSIO_DLL_CFG(r)           __REG(TARGET_HSIO, 0, 1, 104, 0, 1, 52, 36, r, 4, 4)
++
++#define HSIO_DLL_CFG_DELAY_ENA                   BIT(2)
++#define HSIO_DLL_CFG_DELAY_ENA_SET(x)\
++	FIELD_PREP(HSIO_DLL_CFG_DELAY_ENA, x)
++#define HSIO_DLL_CFG_DELAY_ENA_GET(x)\
++	FIELD_GET(HSIO_DLL_CFG_DELAY_ENA, x)
++
++#define HSIO_DLL_CFG_DLL_ENA                     BIT(1)
++#define HSIO_DLL_CFG_DLL_ENA_SET(x)\
++	FIELD_PREP(HSIO_DLL_CFG_DLL_ENA, x)
++#define HSIO_DLL_CFG_DLL_ENA_GET(x)\
++	FIELD_GET(HSIO_DLL_CFG_DLL_ENA, x)
++
++#define HSIO_DLL_CFG_DLL_RST                     BIT(0)
++#define HSIO_DLL_CFG_DLL_RST_SET(x)\
++	FIELD_PREP(HSIO_DLL_CFG_DLL_RST, x)
++#define HSIO_DLL_CFG_DLL_RST_GET(x)\
++	FIELD_GET(HSIO_DLL_CFG_DLL_RST, x)
++
+ #endif /* _LAN966X_HSIO_REGS_H_ */
+-- 
+2.33.0
+
