@@ -2,109 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D64E7ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 15:01:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A43ECAAD8
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 15:02:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234361AbiIAPBH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 11:01:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49392 "EHLO
+        id S233151AbiIAPCe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 11:02:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234107AbiIAPBE (ORCPT
+        with ESMTP id S229781AbiIAPC3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 11:01:04 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1199342AC6;
-        Thu,  1 Sep 2022 08:01:00 -0700 (PDT)
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1oTlgg-00071t-Tm; Thu, 01 Sep 2022 17:00:58 +0200
-Received: from [85.1.206.226] (helo=linux-4.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1oTlgg-000QVV-Nf; Thu, 01 Sep 2022 17:00:58 +0200
-Subject: Re: [RFC bpf-next 1/2] bpf: tnums: warn against the usage of
- tnum_in(tnum_range(), ...)
-To:     Shung-Hsi Yu <shung-hsi.yu@suse.com>, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-References: <20220831031907.16133-1-shung-hsi.yu@suse.com>
- <20220831031907.16133-2-shung-hsi.yu@suse.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <0f6d7f97-8cd9-d513-368b-39706dd6b06a@iogearbox.net>
-Date:   Thu, 1 Sep 2022 17:00:58 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        Thu, 1 Sep 2022 11:02:29 -0400
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4141D52807;
+        Thu,  1 Sep 2022 08:02:25 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id D76035C01D4;
+        Thu,  1 Sep 2022 11:02:22 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Thu, 01 Sep 2022 11:02:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1662044542; x=1662130942; bh=OnCzvjXHRH
+        y3N01m9+/V/6PmzsRMFO+pjDdDzmDLqh8=; b=bAWw0w7lmxKpxZhg0KSndm5IGa
+        CjvSz8L9c46N144paZAd/ACxx4RaBaGy69H56TmCDTThTY+q17DurbG6LH1WBi57
+        LvkOeWBf/QCQRgOUz9/cs6xYu6irXXAAaG/YrqB7zup71MCijLAXRfF7zpyfYxen
+        verVO4QKyY4ydq+zoWe0hlzunBuGUK03oYQzTkGYtMhhJfKQP8sWV1DqDfatv3d1
+        eTzGr+VA98WfhEYaa/CFpjW3riVnAFJNfhoDZlZSL6zOy7h460Kp8krb87wYEals
+        /eI5AEU5q2y7i/KnTJuvRPp2gv0QGz0n7xjMAVaafbFqRxbbmzS8NjDbVkDw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1662044542; x=1662130942; bh=OnCzvjXHRHy3N01m9+/V/6PmzsRM
+        FO+pjDdDzmDLqh8=; b=jxvUFZvhqZPLAJFitpqPXFK02DNY6gEoVnbdqlzONrTx
+        ZXlWjBv67U9rAioUyCZpqf8OBuYEeUrWrUBVGjtn5S2sYXlAGGwWOwY5IoKGi2ld
+        rzIZ7TV/dCkMlNPBg1hToMEOaEp050WElhfHU4Stpk3fIACol/cjsfAHgXskminz
+        E2eKBMyrTpqgupR7kVDXYnZwdBLfYDedW4vfZEWjSurlzx37DQ3XsLJcYDhOOvO5
+        3bioGzxfv7fTnLz9Gp7TRSZLoi+ZoUf/cBIlTS9XLfw2+K04pzcV0llfK74K/e1c
+        4+r/Bkaa7G1TYNOEx1ZVDwRky93ijtOQ6SirNK3qLg==
+X-ME-Sender: <xms:fMkQYxbw-rm4rljKQSL-WISJRfFF6Ns2VNfijNJgy4V-IBgIHodBmg>
+    <xme:fMkQY4YZylOnCpIXYs8_FWZU_rddoJUB6Z0K9JoVEBdbx6B4GlYwwTGEd04zCKDrs
+    WpgulftJbcDd2EgcII>
+X-ME-Received: <xmr:fMkQYz-a4_LJX6K1yRLU0fnrcqr8CwtfNGRgxbjyLso3pCzaOfUZw8Naig>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdekkedgkeegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesghdtreertddtjeenucfhrhhomhepofgrgihi
+    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
+    htthgvrhhnpeejgeeiveevvdfgffeftdevuefhheduveejieefgeejveeuhfetkeelgfev
+    teefffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hmrgigihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:fckQY_qydAAJ8qPV0HJCOf1acyfGkqS4eTRPHMY5DXtGi11fMcZ1AQ>
+    <xmx:fckQY8qUOBEp165phkWFRoy5Obgf6JyxdsnVup_Pq4MaKMczhCAkYQ>
+    <xmx:fckQY1Ry4wEXfEqZSIIunm04iVHBn8_4x0wDocsIUnVg-i79oFaCqQ>
+    <xmx:fskQYygebStlrWoaUmohAB_yOXEftWdrJk3TmHk8TxUSPTkYlhnwfA>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 1 Sep 2022 11:02:20 -0400 (EDT)
+Date:   Thu, 1 Sep 2022 17:02:16 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     =?utf-8?Q?Micha=C5=82?= Winiarski <michal.winiarski@intel.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Gow <davidgow@google.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Jonathan Corbet <corbet@lwn.net>, Helge Deller <deller@gmx.de>,
+        =?utf-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>
+Subject: Re: [PATCH] drm: Simplify testing on UML with kunit.py
+Message-ID: <20220901150216.gt4ozth6oz6cwgjt@houat>
+References: <20220901133621.353270-1-michal.winiarski@intel.com>
+ <20220901140253.6ebvykv35kyc3v3w@houat>
+ <20220901144909.6rihfj4mgklk3ddf@nostramo.hardline.pl>
 MIME-Version: 1.0
-In-Reply-To: <20220831031907.16133-2-shung-hsi.yu@suse.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26645/Thu Sep  1 09:52:28 2022)
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="v37zbd2gmhxbbh3v"
+Content-Disposition: inline
+In-Reply-To: <20220901144909.6rihfj4mgklk3ddf@nostramo.hardline.pl>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/31/22 5:19 AM, Shung-Hsi Yu wrote:
-> Commit a657182a5c51 ("bpf: Don't use tnum_range on array range checking
-> for poke descriptors") has shown that using tnum_range() as argument to
-> tnum_in() can lead to misleading code that looks like tight bound check
-> when in fact the actual allowed range is much wider.
-> 
-> Document such behavior to warn against its usage in general, and suggest
-> some scenario where result can be trusted.
-> 
-> Link: https://lore.kernel.org/bpf/984b37f9fdf7ac36831d2137415a4a915744c1b6.1661462653.git.daniel@iogearbox.net/
-> Link: https://www.openwall.com/lists/oss-security/2022/08/26/1
-> Signed-off-by: Shung-Hsi Yu <shung-hsi.yu@suse.com>
 
-Any objections from your side if I merge this? Thanks for adding doc. :)
+--v37zbd2gmhxbbh3v
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> ---
->   include/linux/tnum.h | 20 ++++++++++++++++++--
->   1 file changed, 18 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/linux/tnum.h b/include/linux/tnum.h
-> index 498dbcedb451..0ec4cda9e174 100644
-> --- a/include/linux/tnum.h
-> +++ b/include/linux/tnum.h
-> @@ -21,7 +21,12 @@ struct tnum {
->   struct tnum tnum_const(u64 value);
->   /* A completely unknown value */
->   extern const struct tnum tnum_unknown;
-> -/* A value that's unknown except that @min <= value <= @max */
-> +/* An unknown value that is a superset of @min <= value <= @max.
-> + *
-> + * Could including values outside the range of [@min, @max].
-> + * For example tnum_range(0, 2) is represented by {0, 1, 2, *3*}, rather than
-> + * the intended set of {0, 1, 2}.
-> + */
->   struct tnum tnum_range(u64 min, u64 max);
->   
->   /* Arithmetic and logical ops */
-> @@ -73,7 +78,18 @@ static inline bool tnum_is_unknown(struct tnum a)
->    */
->   bool tnum_is_aligned(struct tnum a, u64 size);
->   
-> -/* Returns true if @b represents a subset of @a. */
-> +/* Returns true if @b represents a subset of @a.
-> + *
-> + * Note that using tnum_range() as @a requires extra cautions as tnum_in() may
-> + * return true unexpectedly due to tnum limited ability to represent tight
-> + * range, e.g.
-> + *
-> + *   tnum_in(tnum_range(0, 2), tnum_const(3)) == true
-> + *
-> + * As a rule of thumb, if @a is explicitly coded rather than coming from
-> + * reg->var_off, it should be in form of tnum_const(), tnum_range(0, 2**n - 1),
-> + * or tnum_range(2**n, 2**(n+1) - 1).
-> + */
->   bool tnum_in(struct tnum a, struct tnum b);
->   
->   /* Formatting functions.  These have snprintf-like semantics: they will write
-> 
+On Thu, Sep 01, 2022 at 04:49:09PM +0200, Micha=C5=82 Winiarski wrote:
+> On Thu, Sep 01, 2022 at 04:02:53PM +0200, Maxime Ripard wrote:
+> > Hi,
+> >=20
+> > On Thu, Sep 01, 2022 at 03:36:21PM +0200, Micha=C5=82 Winiarski wrote:
+> > > DRM depends on IOMEM and DMA, introduce an additional Kconfig to pull=
+ in
+> > > IOMEM and DMA emulation on UML.
+> > > Since --kconfig_add usage is no longer needed, remove it from
+> > > documentation.
+> > >=20
+> > > Signed-off-by: Micha=C5=82 Winiarski <michal.winiarski@intel.com>
+> > > ---
+> > >  Documentation/gpu/drm-internals.rst | 7 +------
+> > >  drivers/video/Kconfig               | 4 ++++
+> > >  2 files changed, 5 insertions(+), 6 deletions(-)
+> > >=20
+> > > diff --git a/Documentation/gpu/drm-internals.rst b/Documentation/gpu/=
+drm-internals.rst
+> > > index 5fd20a306718..c264a9587d21 100644
+> > > --- a/Documentation/gpu/drm-internals.rst
+> > > +++ b/Documentation/gpu/drm-internals.rst
+> > > @@ -228,16 +228,11 @@ follows:
+> > > =20
+> > >  .. code-block:: bash
+> > > =20
+> > > -	$ ./tools/testing/kunit/kunit.py run --kunitconfig=3Ddrivers/gpu/dr=
+m/tests \
+> > > -		--kconfig_add CONFIG_VIRTIO_UML=3Dy \
+> > > -		--kconfig_add CONFIG_UML_PCI_OVER_VIRTIO=3Dy
+> > > +	$ ./tools/testing/kunit/kunit.py run --kunitconfig=3Ddrivers/gpu/dr=
+m/tests
+> > > =20
+> > >  .. note::
+> > >  	The configuration included in ``.kunitconfig`` should be as generic=
+ as
+> > >  	possible.
+> > > -	``CONFIG_VIRTIO_UML`` and ``CONFIG_UML_PCI_OVER_VIRTIO`` are not
+> > > -	included in it because they are only required for User Mode Linux.
+> > > -
+> >=20
+> > I'm all for removing that part of the documentation, but because
+> > 6fc3a8636a7b, in 6.0 should address this entirely? Why would we need
+> > that other symbol?
+>=20
+> We don't. I wasn't aware that 6fc3a8636a7b exists and had this one in my =
+tree
+> prior to 6.0.
+> (well... technically we do need those other symbols and don't need VIRTIO=
+, but
+> since CONFIG_UML_PCI_OVER_VIRTIO pull in those two, it also works).
+> Since docs were not updated, I didn't see any conflicts when rebasing.
+>=20
+> Sorry for the noise, please ignore this patch.
 
+I mean, the doc still isn't up to date, so please send that part of the
+patch :)
+
+Maxime
+
+--v37zbd2gmhxbbh3v
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYxDJeAAKCRDj7w1vZxhR
+xfn6AP9az1d/tvykqX2O94leJJ+WaUANxEmlxQ4simD8YMJHDwEA3+Lorxpg5ULV
+d3Xg5NRITlDK7yxBCYTbbOdSjfgtggg=
+=jMVD
+-----END PGP SIGNATURE-----
+
+--v37zbd2gmhxbbh3v--
