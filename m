@@ -2,111 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20B73ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 12:48:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25A74ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 12:48:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232552AbiIAMsX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 08:48:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59444 "EHLO
+        id S233446AbiIAMso (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 08:48:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233523AbiIAMsH (ORCPT
+        with ESMTP id S233301AbiIAMsl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 08:48:07 -0400
-Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D60234C630;
-        Thu,  1 Sep 2022 05:48:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1662036486; x=1693572486;
-  h=message-id:date:mime-version:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:subject;
-  bh=ehNnTGB/3yBLxo2SXEg809giGBqrupHuGcsiJDh+Mns=;
-  b=PQQLP0CKbRKO4bkKttWQPVdLtVEGro3Dvp0Pz9SQ9wIVIhVTDkszozUG
-   lQQ5S/R3QdyX3SerLxt65XP810hEvRdDlYOAKsK24yEofSndEyzICSn3B
-   kdnct/HWV0cpNGQbtc6E/7RD2ngmgIe4llR6q14OYO2FZ8gY8OchNUOxi
-   A=;
-Subject: Re: [PATCH v3 12/19] hwmon: (mr75203) fix voltage equation for negative
- source input
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2a-2dbf0206.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 12:47:53 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2a-2dbf0206.us-west-2.amazon.com (Postfix) with ESMTPS id D3918A28E5;
-        Thu,  1 Sep 2022 12:47:51 +0000 (UTC)
-Received: from EX19D013UWA004.ant.amazon.com (10.13.138.207) by
- EX13MTAUWA001.ant.amazon.com (10.43.160.58) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Thu, 1 Sep 2022 12:47:51 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (10.43.161.207) by
- EX19D013UWA004.ant.amazon.com (10.13.138.207) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Thu, 1 Sep 2022 12:47:50 +0000
-Received: from [192.168.93.228] (10.85.143.172) by mail-relay.amazon.com
- (10.43.161.249) with Microsoft SMTP Server id 15.0.1497.38 via Frontend
- Transport; Thu, 1 Sep 2022 12:47:41 +0000
-Message-ID: <a05adc0e-35f8-9e77-9e3e-83de851b651b@amazon.com>
-Date:   Thu, 1 Sep 2022 15:47:39 +0300
+        Thu, 1 Sep 2022 08:48:41 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 709265F121;
+        Thu,  1 Sep 2022 05:48:37 -0700 (PDT)
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2819xs8G014440;
+        Thu, 1 Sep 2022 12:48:31 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=qcppdkim1;
+ bh=nxV6iAZ2I8a9AIpEpUT8XDfbJrhFBMWEyWw67dSAMTc=;
+ b=ASeuwYtle6y4roOaB1j/4s5ojVguMPhP0qWvceLI84Tw/qYEhj4G+lwY5Fjs0Mz0r2/d
+ kOe/x9GNnPrF2Lgu7EU6eIMooJvFsZZSRKwcg82T2AkrYU+F40ItazuSN4d/ZMcNHrh7
+ M8NfZCCZk5bj+d4tZ7Xm0LpOKIvkdHhVIlklspeTe8UJ4VmCC00qkxpei6O09WvxTANp
+ H4eFasWY/Ve8HfhYDYOQJSJ6YKEVnHVBA8n8iEpca8cmzofBRkmb33Rc7AdBHHwpfMnG
+ de2fR5QnGmxf9P/kwcke9Cnv6bGl6mdvRpxseXzD2YfI5kqS4vbt/ggEM+QOdPQgXcMH hw== 
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3jaeb4tfd7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 01 Sep 2022 12:48:31 +0000
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+        by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 281CmUX3025499
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 1 Sep 2022 12:48:30 GMT
+Received: from blr-ubuntu-173.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.29; Thu, 1 Sep 2022 05:48:27 -0700
+From:   Rajendra Nayak <quic_rjendra@quicinc.com>
+To:     <krzysztof.kozlowski@linaro.org>, <agross@kernel.org>,
+        <andersson@kernel.org>, <konrad.dybcio@somainline.org>,
+        <robh+dt@kernel.org>
+CC:     <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        Rajendra Nayak <quic_rjendra@quicinc.com>
+Subject: [PATCH 0/4] soc: qcom: icc-bwmon: Add support for llcc and cpu bwmon on sc7280
+Date:   Thu, 1 Sep 2022 18:17:26 +0530
+Message-ID: <20220901124730.19460-1-quic_rjendra@quicinc.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@intel.com>
-CC:     <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
-        <p.zabel@pengutronix.de>, <rtanwar@maxlinear.com>,
-        <linux-hwmon@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <talel@amazon.com>,
-        <hhhawa@amazon.com>, <jonnyc@amazon.com>, <hanochu@amazon.com>,
-        <ronenk@amazon.com>, <itamark@amazon.com>, <shellykz@amazon.com>,
-        <shorer@amazon.com>, <amitlavi@amazon.com>, <almogbs@amazon.com>,
-        <dkl@amazon.com>, "Farber, Eliav" <farbere@amazon.com>
-References: <20220830192212.28570-1-farbere@amazon.com>
- <20220830192212.28570-13-farbere@amazon.com>
- <Yw9OSJogapyla1Jr@smile.fi.intel.com>
-From:   "Farber, Eliav" <farbere@amazon.com>
-In-Reply-To: <Yw9OSJogapyla1Jr@smile.fi.intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: -A0CECDwVdhw0Mn2i3081ny43gGWiLws
+X-Proofpoint-ORIG-GUID: -A0CECDwVdhw0Mn2i3081ny43gGWiLws
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-09-01_08,2022-08-31_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxlogscore=789
+ impostorscore=0 suspectscore=0 priorityscore=1501 mlxscore=0 bulkscore=0
+ malwarescore=0 clxscore=1011 phishscore=0 lowpriorityscore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
+ definitions=main-2209010058
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/31/2022 3:04 PM, Andy Shevchenko wrote:
-> On Tue, Aug 30, 2022 at 07:22:05PM +0000, Eliav Farber wrote:
->> According to Moortec Embedded Voltage Monitor (MEVM) series 3 data 
->> sheet,
->> the minimum input signal is -100mv and maximum input signal is +1000mv.
->> When n was small enough, such that PVT_N_CONST * n < PVT_R_CONST it
->> resulted in n overflowing to a very large number (since n is u32 type).
->>
->> This change fixes the problem by casting n to long and replacing shift
->> right with div operation.
->
-> Fixes tag?
+This patchset adds support for cpu bwmon (bwmon4) and llcc bwmon (bwmon5) found
+on sc7280 SoC.
 
-For v4 I modified the commit message to (hopefully) be more
-understandable:
+Patchset is based on top of series [1] that adds support for llcc bwmon on sdm845
 
-"
-According to Moortec Embedded Voltage Monitor (MEVM) series 3 data
-sheet, the minimum input signal is -100mv and maximum input signal
-is +1000mv.
+[1]
+https://patchwork.kernel.org/project/linux-arm-msm/list/?series=663695&state=*
 
-On 64 bit machines sizeof(u32) = 4 and sizeof(long) = 8.
-So when measuring a negative input and n is small enough, such that
-PVT_N_CONST * n < PVT_R_CONST, it results in n overflowing to a very
-large number which is not negative (because 4 MSB bytes of val are 0).
+Rajendra Nayak (4):
+  dt-bindings: interconnect: qcom,msm8998-bwmon: Add support for sc7280
+    BWMONs
+  soc: qcom: icc-bwmon: add support for sc7280 LLCC BWMON
+  soc: qcom: icc-bwmon: force clear counter/irq registers
+  arm64: dts: qcom: sc7280: Add cpu and llcc BWMON
 
-This change fixes the sign problem and supports negative values by
-casting n to long and replacing shift right with div operation.
-"
+ .../interconnect/qcom,msm8998-bwmon.yaml      |  2 +
+ arch/arm64/boot/dts/qcom/sc7280.dtsi          | 76 +++++++++++++++++++
+ drivers/soc/qcom/icc-bwmon.c                  | 21 +++++
+ 3 files changed, 99 insertions(+)
 
+-- 
+2.17.1
 
-> ...
->
->>               n &= SAMPLE_DATA_MSK;
->> +
->
-> Unrelated change.
-
-Removed.
-
---
-Thanks, Eliav
