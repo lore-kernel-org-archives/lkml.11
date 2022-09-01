@@ -2,140 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ECFAECAAD2
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:01:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FC28ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:01:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233520AbiIAHBQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 03:01:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48476 "EHLO
+        id S233504AbiIAHBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 03:01:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232561AbiIAHAr (ORCPT
+        with ESMTP id S233430AbiIAHAx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 03:00:47 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B38DA237FB;
-        Thu,  1 Sep 2022 00:00:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662015621; x=1693551621;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=CY1iO3BM8UNn7xnUwBW3HOrJ71N81smEewSeDB8vwsg=;
-  b=j4A3DYMzba/1Vz7x0n/ESOUo5oUyF0k/sHOJDZ3qwPhCm84W/bhCiYG0
-   S1ZCR8z9Vu8H48LRHE0X95e02kM5HBaWL145gLRS2skmrzQkYva3Gs2+f
-   53csgkkzsBgAm1xUNObataL1+tERN1S6rt90F8PEjTk3KyUjTEKLzwIbf
-   VWUS6/T3DzzsKAJgwZmKbekTNPcGaBGMiXKe4zqrKFwh9t8keCFxJMhzg
-   Sj3zztqt2CE6nBIgIQmszWcInuKUSXlXI968Djn+RsRceSGFtOeZlFkns
-   CixO1DXXAuVWyDtNqY6utddOg2i9zsKfHEj6hGuNCyZ8QmdBG1bPCLZfV
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="278651604"
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="278651604"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 23:59:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="680728921"
-Received: from lkp-server02.sh.intel.com (HELO 811e2ceaf0e5) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 31 Aug 2022 23:59:54 -0700
-Received: from kbuild by 811e2ceaf0e5 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oTeB7-0001Gs-19;
-        Thu, 01 Sep 2022 06:59:53 +0000
-Date:   Thu, 1 Sep 2022 14:59:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     shravan kumar <shravan.chippa@microchip.com>,
-        paul.j.murphy@intel.com, daniele.alessandrelli@intel.com,
-        mchehab@kernel.org
-Cc:     kbuild-all@lists.01.org, linux-media@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Shravan Chippa <shravan.chippa@microchip.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Prakash Battu <Prakash.Battu@microchip.com>
-Subject: Re: [PATCH v2] media: i2c: imx334: support lower bandwidth mode
-Message-ID: <202209011420.aFw0x1Jm-lkp@intel.com>
-References: <20220830060613.11335-1-shravan.chippa@microchip.com>
+        Thu, 1 Sep 2022 03:00:53 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0714B56DB
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 00:00:31 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id 72so16651426pfx.9
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 00:00:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=XcLxmoK8X1rF3FVFD0JBqtFjjFipU55iwKHDlizFoCg=;
+        b=ELWrLnRa+jJMj9l69Mv3iL3lMyvZ5BmSP0cgO1D9xRZ6jvTsvYtpxQJsPNxPna9r+/
+         sipKO9ZnYcpqQ3+wkD9z+lxmFIrTcPalX8cC5zcyVEgVQ9cnObBprDvuaGPJ1C9ZMBtk
+         aDm193aRttofrbI8KWUVS3yxeDvKZhupR5FCC6cZ2dag6q3oCvaWebHj0yr63tUSqrSc
+         J61vJMomwIMzImOJxvR7yz6znfAuez1YyabI1w8DEOWJ48agv285VjBz/yk785/rSDWk
+         FysEoblcKPbkP5lA53XuRYncOCM6SAI16EWdeeEAP/1FeTwO0K3cUR/leywK/5xzFLbr
+         /AgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=XcLxmoK8X1rF3FVFD0JBqtFjjFipU55iwKHDlizFoCg=;
+        b=XYEGMMDaJ2CatqWjqvtPGGWPodsnveTFVwiNxGi2DpK4SQb/8yTRFxspZOSkHU6RJw
+         c5P4jRNnh8gGlwq958T1S2cJ0ilJjNFbhrkVir8upLMceJeQVoC0oY39r2K1hwxzUDCA
+         eU1xt7RaUO1OpebPoSTVrFKUaDeaTWKsmeXeyC3HcmHfU7HtiKaalwDdJeZHDUb9Da+s
+         Bblg5vQuqxyp9WyLNoJ1G8YH4JfRUg7hEIUcN25qvknHJ0IFHgskHqsO9QCXQWz+YuEk
+         XnhfO4Lmuh2oQpDaeP5BJ7I/allWoCeypMx1/uI8c2n6Lv9iZO3nY0ntX9vSBLjUKERZ
+         7GVw==
+X-Gm-Message-State: ACgBeo2M7FRPCG/qK8+QGmf6q0AvomdbgpnMj66i9LB8T7yRLshS8Y7a
+        oas5BNMDALXtqN6GnutvpimGhA==
+X-Google-Smtp-Source: AA6agR6uOq/9FNUO/JkGYj+fPAoBwunDhHXuoa8RiEVETo4ejMSHHIQD4X5ylxMWepEgJ6YgSPPJUQ==
+X-Received: by 2002:a63:1e11:0:b0:41c:d233:31f8 with SMTP id e17-20020a631e11000000b0041cd23331f8mr25233343pge.228.1662015631026;
+        Thu, 01 Sep 2022 00:00:31 -0700 (PDT)
+Received: from localhost ([122.171.18.80])
+        by smtp.gmail.com with ESMTPSA id i3-20020a17090ac40300b001fd77933fb3sm2559403pjt.17.2022.09.01.00.00.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Sep 2022 00:00:30 -0700 (PDT)
+Date:   Thu, 1 Sep 2022 12:30:28 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     "Yuan, Perry" <Perry.Yuan@amd.com>
+Cc:     "rafael.j.wysocki@intel.com" <rafael.j.wysocki@intel.com>,
+        "Huang, Ray" <Ray.Huang@amd.com>,
+        "Sharma, Deepak" <Deepak.Sharma@amd.com>,
+        "Limonciello, Mario" <Mario.Limonciello@amd.com>,
+        "Fontenot, Nathan" <Nathan.Fontenot@amd.com>,
+        "Deucher, Alexander" <Alexander.Deucher@amd.com>,
+        "Su, Jinzhou (Joe)" <Jinzhou.Su@amd.com>,
+        "Huang, Shimmer" <Shimmer.Huang@amd.com>,
+        "Du, Xiaojian" <Xiaojian.Du@amd.com>,
+        "Meng, Li (Jassmine)" <Li.Meng@amd.com>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v6] cpufreq: amd-pstate: cleanup the unused and
+ duplicated headers declaration
+Message-ID: <20220901070028.gdm7uiszm35iom3e@vireshk-i7>
+References: <20220901062339.2357552-1-Perry.Yuan@amd.com>
+ <20220901063153.zutwnnfykaz47sah@vireshk-i7>
+ <DM4PR12MB5278D01EA2D78367F182C7C69C7B9@DM4PR12MB5278.namprd12.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220830060613.11335-1-shravan.chippa@microchip.com>
+In-Reply-To: <DM4PR12MB5278D01EA2D78367F182C7C69C7B9@DM4PR12MB5278.namprd12.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi shravan,
+On 01-09-22, 06:56, Yuan, Perry wrote:
+> > On 01-09-22, 14:23, Perry Yuan wrote:
+> > > Cleanup the headers declaration which are not used actually and
+> > 
+> > This is okay.
+> 
+> Thank you help to confirm this . 
+> 
+> > 
+> > > some duplicated declaration which is declarated in some other headers
+> > > already, it will help to simplify the header part.
+> > 
+> > This isn't.
+> > 
+> > Every file should directly include headers they use definitions from, instead of
+> > relying on indirect inclusions.
+> > 
+> > --
+> > Viresh
+> 
+> Do I need to update the commit with another V7 version ?
 
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on v6.0-rc3]
-[also build test WARNING on linus/master next-20220831]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/shravan-kumar/media-i2c-imx334-support-lower-bandwidth-mode/20220830-140816
-base:    b90cb1053190353cc30f0fef0ef1f378ccc063c5
-config: openrisc-randconfig-m031-20220830 (https://download.01.org/0day-ci/archive/20220901/202209011420.aFw0x1Jm-lkp@intel.com/config)
-compiler: or1k-linux-gcc (GCC) 12.1.0
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-smatch warnings:
-drivers/media/i2c/imx334.c:832 imx334_set_pad_format() warn: unsigned 'code' is never less than zero.
-
-vim +/code +832 drivers/media/i2c/imx334.c
-
-   811	
-   812	/**
-   813	 * imx334_set_pad_format() - Set subdevice pad format
-   814	 * @sd: pointer to imx334 V4L2 sub-device structure
-   815	 * @sd_state: V4L2 sub-device state
-   816	 * @fmt: V4L2 sub-device format need to be set
-   817	 *
-   818	 * Return: 0 if successful, error code otherwise.
-   819	 */
-   820	static int imx334_set_pad_format(struct v4l2_subdev *sd,
-   821					 struct v4l2_subdev_state *sd_state,
-   822					 struct v4l2_subdev_format *fmt)
-   823	{
-   824		struct imx334 *imx334 = to_imx334(sd);
-   825		const struct imx334_mode *mode;
-   826		int ret = 0;
-   827		u32 code;
-   828	
-   829		mutex_lock(&imx334->mutex);
-   830	
-   831		code = imx219_get_format_code(imx334, fmt);
- > 832		if (code < 0)
-   833			return -EINVAL;
-   834	
-   835		imx334->cur_code = code;
-   836	
-   837		mode = v4l2_find_nearest_size(supported_modes,
-   838					      ARRAY_SIZE(supported_modes),
-   839					      width, height,
-   840					      fmt->format.width, fmt->format.height);
-   841	
-   842		imx334_fill_pad_format(imx334, mode, fmt);
-   843	
-   844		if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
-   845			struct v4l2_mbus_framefmt *framefmt;
-   846	
-   847			framefmt = v4l2_subdev_get_try_format(sd, sd_state, fmt->pad);
-   848			*framefmt = fmt->format;
-   849		} else if (imx334->cur_mode != mode) {
-   850			ret = imx334_update_controls(imx334, mode);
-   851			if (!ret)
-   852				imx334->cur_mode = mode;
-   853		}
-   854	
-   855		mutex_unlock(&imx334->mutex);
-   856	
-   857		return ret;
-   858	}
-   859	
+I am not sure which headers you removed are still required, working
+for now since included indirectly. If there are any, then better to
+get a new version out.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+viresh
