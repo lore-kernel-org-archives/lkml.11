@@ -2,99 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 922A5ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 00:01:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F53AECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 00:06:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230168AbiIAABE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 20:01:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42580 "EHLO
+        id S229602AbiIAAGv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 20:06:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230421AbiIAAA6 (ORCPT
+        with ESMTP id S230148AbiIAAGr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 20:00:58 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88C0E7B282;
-        Wed, 31 Aug 2022 17:00:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Cc:Content-ID:Content-Description;
-        bh=Vy9viZo5c1Cs22twzs93d/4uL2Kw42CK2c0Hxu3ubro=; b=1soSmH97o8W8jbuZ1w3OF5EvDF
-        T8O7g8vlBZakvoElaYA/OrfyamBoMy2Mv1r7ia6r/8+CP+muZpWdmTNCGzZLUgisQhnKpFe+tJPYg
-        qcCNA3ohp0mPbstAVcXLiAEJEKC5BGEDqs7YWLtdLhfmOTIruBYHIu0Pu/aNU4FAB7SOqGzdjo75m
-        8DHGmXVSpNQ5Ww5yPQduf5BHn0+e5WSDHKB/4elNXe25sLrIxAhH30CUdez1YmoAnpiPzEqzeX6YP
-        mJiEMvBCmVcMzFZsz1EfG86mDMxjgGxf83JeeudoJ6Xy7t7Cz0ipkagy6eRFT6+YxrooWZm2rZbX1
-        wLR0VYeA==;
-Received: from [2601:1c0:6280:3f0::a6b3]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oTXde-008l8i-Ay; Thu, 01 Sep 2022 00:00:54 +0000
-Message-ID: <f62874b9-4588-52d8-b321-49d2d57fb6c3@infradead.org>
-Date:   Wed, 31 Aug 2022 17:00:53 -0700
+        Wed, 31 Aug 2022 20:06:47 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAAD5E116D;
+        Wed, 31 Aug 2022 17:06:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661990806; x=1693526806;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=wBCLAwrJD3CoNKwwccz6dz0/r9Pa/erMe9NtEN4fRG4=;
+  b=DETrs/VudlaCcoJhaaPwIPvGtTGH75QUPGJnb9GqhJm1rSVT7ytTg0vJ
+   ObiR9jxie1LXn6w0ByqA4jGP0kBeUjFtBhxkZqNkG0r4ZrBHC+gv93U3s
+   Z28sJQHu2doiTbzP4N9WPwGDMvQ+e89bkO6jJM7kgcSXprertLM2YXsJD
+   +4G4UYDMSr933nR+2nY/uGQ7szQKRNkYKaQMbIKadVQT4AYpFrAd7hdCJ
+   uHIMBw+a7chDfsrDp6h2zMto2GWiZZ3R8EXU+iqdxUv9cbrDUbIRZfay3
+   /1V1AFR7tniqiUoK5XH111XeDaZh2DLPAxwOL2XSqCl/8EzcjDFUAXu7e
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="359539345"
+X-IronPort-AV: E=Sophos;i="5.93,279,1654585200"; 
+   d="scan'208";a="359539345"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 17:06:46 -0700
+X-IronPort-AV: E=Sophos;i="5.93,279,1654585200"; 
+   d="scan'208";a="612283388"
+Received: from jholm-mobl2.amr.corp.intel.com (HELO vcostago-mobl3) ([10.209.119.42])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 17:06:45 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Zhengchao Shao <shaozhengchao@huawei.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us
+Cc:     weiyongjun1@huawei.com, yuehaibing@huawei.com,
+        shaozhengchao@huawei.com
+Subject: Re: [PATCH net-next] net: sched: etf: remove true check in
+ etf_enable_offload()
+In-Reply-To: <20220831092919.146149-1-shaozhengchao@huawei.com>
+References: <20220831092919.146149-1-shaozhengchao@huawei.com>
+Date:   Wed, 31 Aug 2022 17:06:45 -0700
+Message-ID: <87wnaohsa2.fsf@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: configuration x86/Kconfig bug? or AMD feature request
-Content-Language: en-US
-To:     Steven J Abner <pheonix.sja@att.net>, linux-kernel@vger.kernel.org,
-        Hans de Goede <hdegoede@redhat.com>,
-        "open list:X86 PLATFORM DRIVERS" 
-        <platform-driver-x86@vger.kernel.org>
-References: <VQ7IHR.9PMZBSNKURXU1.ref@att.net> <VQ7IHR.9PMZBSNKURXU1@att.net>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <VQ7IHR.9PMZBSNKURXU1@att.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi--
+Zhengchao Shao <shaozhengchao@huawei.com> writes:
 
-On 8/31/22 16:54, Steven J Abner wrote:
-> Hi
-> I am tailoring a kernel for AMD 2400g on ASRock B450 using 5.18.12 as base.
-> I found a feature I don't believe I need, and the system seems to work just
-> fine without it. A quick glance at the code seems like I'll be just fine, too.
-> In /drivers/platform/x86/Kconfig:1159  I altered the text to:
-> 
-> config PMC_ATOM
->      bool "Intel Atom SOC Power Management Controller Driver"
->      default y
->      depends on PCI
->      select COMMON_CLK
+> etf_enable_offload() is only called when q->offload is false in
+> etf_init(). So remove true check in etf_enable_offload().
+>
+> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> ---
 
-I can't tell what you changed it to.
+Acked-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 
-> Please have a look and decide if x86 must include this code to function properly.
-> Nothing but being x86 selects this. 'default y' was chosen only because forced y before.
-> Steve
-> 
-> I wish to be personally CC'ed the answers/comments posted to the list
-> in response to my posting, please. I not part of the list.
-
-
-That kconfig option has been deleted:
-commit 3cd8cc98d634
-Author: Hans de Goede <hdegoede@redhat.com>
-Date:   Tue May 3 16:02:07 2022 +0200
-
-    platform/x86: Drop the PMC_ATOM Kconfig option
-    
-    The def_bool y PMC_ATOM Kconfig option provides a couple of symbols used
-    by the code enabled by the X86_INTEL_LPSS option and it registers some
-    clocks. These clocks are only registered on Bay Trail, Cherry Trail and
-    Brasswell Intel SoCs and kernels targeting these SoCs must always have
-    the X86_INTEL_LPSS option enabled otherwise many things will not work.
-    
-    Building the PMC_ATOM code on kernels which are not targeting the
-    mentioned SoCs and which do not have the X86_INTEL_LPSS enabled is
-    not useful.
-    
-    This means that we can simplify things by replacing the PMC_ATOM Kconfig
-    option in Makefiles with X86_INTEL_LPSS and then drop the option.
-
-
-Maybe that commit should be backported?
 
 -- 
-~Randy
+Vinicius
