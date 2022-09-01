@@ -2,209 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBA16ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 08:18:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 343FBC54EE9
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 08:19:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233456AbiIAIS3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 04:18:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56162 "EHLO
+        id S234148AbiIAITZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 04:19:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234039AbiIAISU (ORCPT
+        with ESMTP id S233979AbiIAITX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 04:18:20 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6293FC9E8D;
-        Thu,  1 Sep 2022 01:18:17 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2818I04b073751;
-        Thu, 1 Sep 2022 03:18:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1662020280;
-        bh=ysI+qXYgNHaOypjIaJodnjkluCm25cP/mCBis/PHovY=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=sXMHnAxiHdZBgt8cgmeK+TGOfap0brgt3d1JmG4clAT0DTZLTxRDxDfVABCWnkgqe
-         zpic49rt9S3hUJekr8xOt2R/pPLgbSWNkNo+8U9wEnI2k/9mE9kNCIrgXP26lLgIMw
-         qyonyrtUAtESI5MgS5KmOAxsI9u5YrLzgGTIh9cQ=
-Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2818I0jn015773
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 1 Sep 2022 03:18:00 -0500
-Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Thu, 1 Sep
- 2022 03:17:59 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE107.ent.ti.com
- (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
- Frontend Transport; Thu, 1 Sep 2022 03:18:00 -0500
-Received: from [172.24.145.182] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2818Huuk003776;
-        Thu, 1 Sep 2022 03:17:57 -0500
-Message-ID: <de7f9166-dea2-fed9-889f-1c171510d42f@ti.com>
-Date:   Thu, 1 Sep 2022 13:47:56 +0530
+        Thu, 1 Sep 2022 04:19:23 -0400
+Received: from dggsgout11.his.huawei.com (unknown [45.249.212.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C418BD2917;
+        Thu,  1 Sep 2022 01:19:21 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.143])
+        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4MJDS11vrczKHQ5;
+        Thu,  1 Sep 2022 16:17:37 +0800 (CST)
+Received: from [10.174.176.73] (unknown [10.174.176.73])
+        by APP2 (Coremail) with SMTP id Syh0CgA3inMEaxBjFgPfAA--.12124S3;
+        Thu, 01 Sep 2022 16:19:18 +0800 (CST)
+Subject: Re: stalling IO regression since linux 5.12, through 5.18
+To:     Jan Kara <jack@suse.cz>, Yu Kuai <yukuai1@huaweicloud.com>
+Cc:     Ming Lei <ming.lei@redhat.com>,
+        Chris Murphy <lists@colorremedies.com>,
+        Nikolay Borisov <nborisov@suse.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Paolo Valente <paolo.valente@linaro.org>,
+        Btrfs BTRFS <linux-btrfs@vger.kernel.org>,
+        Linux-RAID <linux-raid@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Josef Bacik <josef@toxicpanda.com>,
+        "yukuai (C)" <yukuai3@huawei.com>
+References: <Yv2P0zyoVvz35w/m@T590>
+ <568465de-5c3b-4d94-a74b-5b83ce2f942f@www.fastmail.com>
+ <Yv2w+Tuhw1RAoXI5@T590>
+ <9f2f608a-cd5f-4736-9e6d-07ccc2eca12c@www.fastmail.com>
+ <a817431f-276f-4aab-9ff8-c3e397494339@www.fastmail.com>
+ <5426d0f9-6539-477d-8feb-2b49136b960f@www.fastmail.com>
+ <Yv3NIQlDL0T3lstU@T590>
+ <0f731b0a-fbd5-4e7b-a3df-0ed63360c1e0@www.fastmail.com>
+ <YwCGlyDMhWubqKoL@T590>
+ <297cbb87-87aa-2e1d-1fc3-8e96c241f28f@huaweicloud.com>
+ <20220901080336.glpv4i3hyae2zkpk@quack3>
+From:   Yu Kuai <yukuai1@huaweicloud.com>
+Message-ID: <ee48bdc1-1020-78ca-a90e-ef958171a05f@huaweicloud.com>
+Date:   Thu, 1 Sep 2022 16:19:16 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v2 2/2] arm64: dts: ti: add k3-j721e-beagleboneai64
-Content-Language: en-US
-To:     Robert Nelson <robertcnelson@gmail.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-CC:     Nishanth Menon <nm@ti.com>, Tero Kristo <kristo@kernel.org>,
-        Jason Kridner <jkridner@beagleboard.org>,
-        Drew Fustini <drew@beagleboard.org>
-References: <20220822230304.2284952-1-robertcnelson@gmail.com>
- <20220822230304.2284952-2-robertcnelson@gmail.com>
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-In-Reply-To: <20220822230304.2284952-2-robertcnelson@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+In-Reply-To: <20220901080336.glpv4i3hyae2zkpk@quack3>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: Syh0CgA3inMEaxBjFgPfAA--.12124S3
+X-Coremail-Antispam: 1UD129KBjvJXoWxWr4UtFyrCFykuFWrGFWruFg_yoWrJFyUpF
+        Wrta1Yyan8tr10y34Iy3Wjqr15twn0kr98WF1rtw43JrnFgr98Kr4IqrWY9Fn5Zrs5Cr47
+        tryjyFyxWr15Z37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUU9F14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvEwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2Y2ka
+        0xkIwI1lc7I2V7IY0VAS07AlzVAYIcxG8wCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7x
+        kEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E
+        67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCw
+        CI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E
+        3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcS
+        sGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
+X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Robert,
-
-On 23/08/22 04:33, Robert Nelson wrote:
-> BeagleBoard.org BeagleBone AI-64 is an open source hardware single
-> board computer based on the Texas Instruments TDA4VM SoC featuring
-> dual-core 2.0GHz Arm Cortex-A72 processor, C7x+MMA and 2 C66x
-> floating-point VLIW DSPs, 3x dual Arm Cortex-R5 co-processors,
-> 2x 6-core Programmable Real-Time Unit and Industrial Communication
-> SubSystem, PowerVR Rogue 8XE GE8430 3D GPU. The board features 4GB
-> DDR4, USB3.0 Type-C, USB HS Type-A, miniDisplayPort, 2x 4-lane CSI,
-> DSI, 16GB eMMC flash, 1G Ethernet, M.2 E-key for WiFi/BT, and
-> BeagleBone expansion headers.
-
-Thanks for the patch, few comments
-
+在 2022/09/01 16:03, Jan Kara 写道:
+> On Thu 01-09-22 15:02:03, Yu Kuai wrote:
+>> Hi, Chris
+>>
+>> 在 2022/08/20 15:00, Ming Lei 写道:
+>>> On Fri, Aug 19, 2022 at 03:20:25PM -0400, Chris Murphy wrote:
+>>>>
+>>>>
+>>>> On Thu, Aug 18, 2022, at 1:24 AM, Ming Lei wrote:
+>>>>> On Thu, Aug 18, 2022 at 12:27:04AM -0400, Chris Murphy wrote:
+>>>>>>
+>>>>>>
+>>>>>> On Thu, Aug 18, 2022, at 12:18 AM, Chris Murphy wrote:
+>>>>>>> On Thu, Aug 18, 2022, at 12:12 AM, Chris Murphy wrote:
+>>>>>>>> On Wed, Aug 17, 2022, at 11:41 PM, Ming Lei wrote:
+>>>>>>>>
+>>>>>>>>> OK, can you post the blk-mq debugfs log after you trigger it on v5.17?
+>>>>>>
+>>>>>> Same boot, 3rd log. But the load is above 300 so I kinda need to sysrq+b soon.
+>>>>>>
+>>>>>> https://drive.google.com/file/d/1375H558kqPTdng439rvG6LuXXWPXLToo/view?usp=sharing
+>>>>>>
+>>>>>
+>>>>> Also please test the following one too:
+>>>>>
+>>>>>
+>>>>> diff --git a/block/blk-mq.c b/block/blk-mq.c
+>>>>> index 5ee62b95f3e5..d01c64be08e2 100644
+>>>>> --- a/block/blk-mq.c
+>>>>> +++ b/block/blk-mq.c
+>>>>> @@ -1991,7 +1991,8 @@ bool blk_mq_dispatch_rq_list(struct blk_mq_hw_ctx
+>>>>> *hctx, struct list_head *list,
+>>>>>    		if (!needs_restart ||
+>>>>>    		    (no_tag && list_empty_careful(&hctx->dispatch_wait.entry)))
+>>>>>    			blk_mq_run_hw_queue(hctx, true);
+>>>>> -		else if (needs_restart && needs_resource)
+>>>>> +		else if (needs_restart && (needs_resource ||
+>>>>> +					blk_mq_is_shared_tags(hctx->flags)))
+>>>>>    			blk_mq_delay_run_hw_queue(hctx, BLK_MQ_RESOURCE_DELAY);
+>>>>>
+>>>>>    		blk_mq_update_dispatch_busy(hctx, true);
+>>>>>
+>>>>
+>>>>
+>>>> With just this patch on top of 5.17.0, it still hangs. I've captured block debugfs log:
+>>>> https://drive.google.com/file/d/1ic4YHxoL9RrCdy_5FNdGfh_q_J3d_Ft0/view?usp=sharing
+>>>
+>>> The log is similar with before, and the only difference is RESTART not
+>>> set.
+>>>
+>>> Also follows another patch merged to v5.18 and it fixes io stall too, feel free to test it:
+>>>
+>>> 8f5fea65b06d blk-mq: avoid extending delays of active hctx from blk_mq_delay_run_hw_queues
+>>
+>> Have you tried this patch?
+>>
+>> We meet a similar problem in our test, and I'm pretty sure about the
+>> situation at the scene,
+>>
+>> Our test environment：nvme with bfq ioscheduler,
+>>
+>> How io is stalled:
+>>
+>> 1. hctx1 dispatch rq from bfq in service queue, bfqq becomes empty,
+>> dispatch somehow fails and rq is inserted to hctx1->dispatch, new run
+>> work is queued.
+>>
+>> 2. other hctx tries to dispatch rq, however, in service bfqq is
+>> empty, bfq_dispatch_request return NULL, thus
+>> blk_mq_delay_run_hw_queues is called.
+>>
+>> 3. for the problem described in above patch，run work from "hctx1"
+>> can be stalled.
+>>
+>> Above patch should fix this io stall, however, it seems to me bfq do
+>> have some problems that in service bfqq doesn't expire under following
+>> situation:
+>>
+>> 1. dispatched rqs don't complete
+>> 2. no new rq is issued to bfq
 > 
-> This board family can be indentified by the BBONEAI-64-B0 in the at24 eeprom:
+> And I guess:
+> 3. there are requests queued in other bfqqs
+> ?
 
-s/indentified/identified
+Yes, of course, other bfqqs still have requests, but current
+implementation have flaws that even if other bfqqs doesn't have
+requests, bfq_asymmetric_scenario() can still return true because
+num_groups_with_pending_reqs > 0. We tried to fix this, however, there
+seems to be some misunderstanding with Paolo, and it's not applied to
+mainline yet...
 
+Thanks,
+Kuai
 > 
-> [aa 55 33 ee 01 37 00 10  2e 00 42 42 4f 4e 45 41 |.U3..7....BBONEA|]
-> [49 2d 36 34 2d 42 30 2d  00 00 42 30 30 30 37 38 |I-64-B0-..B00078|]
+> Otherwise I don't see a point in expiring current bfqq because there's
+> nothing bfq could do anyway. But under normal circumstances the request
+> completion should not take so long so I don't think it would be really
+> worth it to implement some special mechanism for this in bfq.
 > 
-> https://beagleboard.org/ai-64
-> https://git.beagleboard.org/beagleboard/beaglebone-ai-64
+> 								Honza
 > 
-> Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
-> CC: Nishanth Menon <nm@ti.com>
-> CC: Vignesh Raghavendra <vigneshr@ti.com>
-> CC: Tero Kristo <kristo@kernel.org>
-> CC: Jason Kridner <jkridner@beagleboard.org>
-> CC: Drew Fustini <drew@beagleboard.org>
-> ---
 
-[...]
-
-> +	chosen {
-> +		stdout-path = "serial2:115200n8";
-> +		bootargs = "console=ttyS2,115200n8 earlycon=ns16550a,mmio32,0x02800000";
-
-bootargs are no longer to be part of DT file and to be supplied by
-bootloader as needed [1]
-
-[1]
-https://lore.kernel.org/all/81134eb9-2b7d-05bc-3035-a47f020861a8@linaro.org/
-
-[...]
-
-> +	evm_12v0: fixedregulator-evm12v0 {
-
-please use generic node name:
-		regulator-X  X=1,2,3...
-
-
-> +		/* main supply */
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "evm_12v0";
-> +		regulator-min-microvolt = <12000000>;
-> +		regulator-max-microvolt = <12000000>;
-> +		regulator-always-on;
-> +		regulator-boot-on;
-> +	};
-> +
-> +	vsys_3v3: fixedregulator-vsys3v3 {
-> +		/* Output of LMS140 */
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "vsys_3v3";
-> +		regulator-min-microvolt = <3300000>;
-> +		regulator-max-microvolt = <3300000>;
-> +		vin-supply = <&evm_12v0>;
-> +		regulator-always-on;
-> +		regulator-boot-on;
-> +	};
-> +
-> +	vsys_5v0: fixedregulator-vsys5v0 {
-> +		/* Output of LM5140 */
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "vsys_5v0";
-> +		regulator-min-microvolt = <5000000>;
-> +		regulator-max-microvolt = <5000000>;
-> +		vin-supply = <&evm_12v0>;
-> +		regulator-always-on;
-> +		regulator-boot-on;
-> +	};
-> +
-> +	vdd_mmc1: fixedregulator-sd {
-> +		compatible = "regulator-fixed";
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&sd_pwr_en_pins_default>;
-> +		regulator-name = "vdd_mmc1";
-> +		regulator-min-microvolt = <3300000>;
-> +		regulator-max-microvolt = <3300000>;
-> +		regulator-boot-on;
-> +		enable-active-high;
-> +		vin-supply = <&vsys_3v3>;
-> +		gpios = <&main_gpio0 82 GPIO_ACTIVE_HIGH>;
-> +	};
-> +
-> +	vdd_sd_dv_alt: gpio-regulator-TLV71033 {
-> +		compatible = "regulator-gpio";
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&vdd_sd_dv_alt_pins_default>;
-> +		regulator-name = "tlv71033";
-> +		regulator-min-microvolt = <1800000>;
-> +		regulator-max-microvolt = <3300000>;
-> +		regulator-boot-on;
-> +		vin-supply = <&vsys_5v0>;
-> +		gpios = <&main_gpio0 117 GPIO_ACTIVE_HIGH>;
-> +		states = <1800000 0x0>,
-> +			 <3300000 0x1>;
-> +	};
-> +
-> +	dp_pwr_3v3: fixedregulator-dp-prw {
-> +		compatible = "regulator-fixed";
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&dp0_3v3_en_pins_default>;
-> +		regulator-name = "dp-pwr";
-> +		regulator-min-microvolt = <3300000>;
-> +		regulator-max-microvolt = <3300000>;
-> +		gpios = <&main_gpio0 49 GPIO_ACTIVE_HIGH>; /* DP0_PWR_SW_EN */
-> +		enable-active-high;
-> +	};
-> +
-> +	dp0: connector {
-> +		compatible = "dp-connector";
-> +		label = "DP0";
-> +		type = "full-size";
-> +		dp-pwr-supply = <&dp_pwr_3v3>;
-> +
-> +		port {
-> +			dp_connector_in: endpoint {
-> +				remote-endpoint = <&dp0_out>;
-> +			};
-> +		};
-> +	};
-> +};
-> +
-
-[...]
-
--- 
-Regards
-Vignesh
