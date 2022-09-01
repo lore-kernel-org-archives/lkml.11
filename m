@@ -2,218 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BAEBECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:44:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8EB4ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:45:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232631AbiIANoH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 09:44:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43626 "EHLO
+        id S232973AbiIANpo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 09:45:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234447AbiIANnh (ORCPT
+        with ESMTP id S231668AbiIANpk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 09:43:37 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B2F14D2C;
-        Thu,  1 Sep 2022 06:43:01 -0700 (PDT)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 281DGQka025055;
-        Thu, 1 Sep 2022 13:42:46 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=gVpiOePkLZTzGqoCPz+ZTHefRlQfHbbvaa/fjGR0P+M=;
- b=mBvYM4K3Bzcoy/kCNWNMeuTJmoo2yETmumAK2WHV2nOX/Ax2bVAVTqokCeGF0JXLamvZ
- my1aAKJeQCN1Wz1iHl+iAQw89vl6WfD5bOYOufMMX+c1R7zSajpsrIkcwgcAbO3ov3hK
- mkmpsQRarDnvtQbQtgg8FCKdqJSKMDPUNkkgfcJ4MzBjK7LeQpwq28M5eVJCQfCX16Pu
- EsdAamQYhLoh1IAD9rUZyhVBKnwlXgOWzZNwS41UuGci8Xk+ymRiLLP3eNDFbHzvzEqM
- V9xwNc2PZIprzlkIYXYP8JR2dLNlDEU7Xi2oDWSvFLSmNoKLj4PFFc/3mrRYV7Liq9MU Jg== 
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jawfj991a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 13:42:46 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 281DboTR018203;
-        Thu, 1 Sep 2022 13:42:44 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma06ams.nl.ibm.com with ESMTP id 3j7ahj6vgs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 13:42:44 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 281DdNgN41681364
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 1 Sep 2022 13:39:23 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3D8D14C046;
-        Thu,  1 Sep 2022 13:42:41 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BB6964C040;
-        Thu,  1 Sep 2022 13:42:40 +0000 (GMT)
-Received: from oc-nschnelle.boeblingen.de.ibm.com (unknown [9.155.199.46])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu,  1 Sep 2022 13:42:40 +0000 (GMT)
-Message-ID: <8b561ad3023fc146ba0779cbd8fff14d6409c6aa.camel@linux.ibm.com>
-Subject: Re: [PATCH v4 1/2] iommu/s390: Fix race with release_device ops
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     Robin Murphy <robin.murphy@arm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>, iommu@lists.linux.dev
-Cc:     linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, joro@8bytes.org, will@kernel.org,
-        jgg@nvidia.com, linux-kernel@vger.kernel.org
-Date:   Thu, 01 Sep 2022 15:42:40 +0200
-In-Reply-To: <e01e6ef2-ba45-7433-5fe4-a6806dac3af9@arm.com>
-References: <20220831201236.77595-1-mjrosato@linux.ibm.com>
-         <20220831201236.77595-2-mjrosato@linux.ibm.com>
-         <9887e2f4-3f3d-137d-dad7-59dab5f98aab@linux.ibm.com>
-         <52d3fe0b86bdc04fdbf3aae095b2f71f4ea12d44.camel@linux.ibm.com>
-         <e01e6ef2-ba45-7433-5fe4-a6806dac3af9@arm.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
+        Thu, 1 Sep 2022 09:45:40 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65C16D78;
+        Thu,  1 Sep 2022 06:45:33 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MJMgW4MFdznTs2;
+        Thu,  1 Sep 2022 21:43:03 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 1 Sep 2022 21:45:31 +0800
+Received: from [10.174.178.55] (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 1 Sep 2022 21:45:30 +0800
+Subject: Re: [PATCH] livepatch: Move error print out of lock protection in
+ klp_enable_patch()
+To:     Joe Lawrence <joe.lawrence@redhat.com>
+CC:     Josh Poimboeuf <jpoimboe@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>, <linux-kernel@vger.kernel.org>,
+        <live-patching@vger.kernel.org>
+References: <20220901022706.813-1-thunder.leizhen@huawei.com>
+ <65fe1978-60da-5bd4-9559-fddec13f03bf@redhat.com>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <19e0d24c-366a-a269-8c4d-bf32831e2079@huawei.com>
+Date:   Thu, 1 Sep 2022 21:45:30 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
+MIME-Version: 1.0
+In-Reply-To: <65fe1978-60da-5bd4-9559-fddec13f03bf@redhat.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: RX3Vywhle6ZxvOLNq3rOHo3lPMzMo9rH
-X-Proofpoint-ORIG-GUID: RX3Vywhle6ZxvOLNq3rOHo3lPMzMo9rH
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-09-01_10,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 adultscore=0
- spamscore=0 lowpriorityscore=0 suspectscore=0 priorityscore=1501
- malwarescore=0 impostorscore=0 mlxlogscore=999 bulkscore=0 mlxscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2209010061
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-09-01 at 12:01 +0100, Robin Murphy wrote:
-> On 2022-09-01 10:37, Niklas Schnelle wrote:
-> > On Thu, 2022-09-01 at 09:56 +0200, Pierre Morel wrote:
-> > > On 8/31/22 22:12, Matthew Rosato wrote:
-> > > > With commit fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev
-> > > > calls") s390-iommu is supposed to handle dynamic switching between IOMMU
-> > > > domains and the DMA API handling.  However, this commit does not
-> > > > sufficiently handle the case where the device is released via a call
-> > > > to the release_device op as it may occur at the same time as an opposing
-> > > > attach_dev or detach_dev since the group mutex is not held over
-> > > > release_device.  This was observed if the device is deconfigured during a
-> > > > small window during vfio-pci initialization and can result in WARNs and
-> > > > potential kernel panics.
-> > > > 
-> > > > Handle this by tracking when the device is probed/released via
-> > > > dev_iommu_priv_set/get().  Ensure that once the device is released only
-> > > > release_device handles the re-init of the device DMA.
-> > > > 
-> > > > Fixes: fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev calls")
-> > > > Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
-> > > > ---
-> > > >    arch/s390/include/asm/pci.h |  1 +
-> > > >    arch/s390/pci/pci.c         |  1 +
-> > > >    drivers/iommu/s390-iommu.c  | 39 ++++++++++++++++++++++++++++++++++---
-> > > >    3 files changed, 38 insertions(+), 3 deletions(-)
-> > > > 
-> > > > 
-> > ---8<---
-> > > >    
-> > > > @@ -206,10 +221,28 @@ static void s390_iommu_release_device(struct device *dev)
-> > > > 
-> > ---8<---
-> > > > +		/* Make sure this device is removed from the domain list */
-> > > >    		domain = iommu_get_domain_for_dev(dev);
-> > > >    		if (domain)
-> > > >    			s390_iommu_detach_device(domain, dev);
-> > > > +		/* Now ensure DMA is initialized from here */
-> > > > +		mutex_lock(&zdev->dma_domain_lock);
-> > > > +		if (zdev->s390_domain) {
-> > > > +			zdev->s390_domain = NULL;
-> > > > +			zpci_unregister_ioat(zdev, 0);
-> > > > +			zpci_dma_init_device(zdev);
-> > > 
-> > > Sorry if it is a stupid question, but two things looks strange to me:
-> > > 
-> > > - having DMA initialized just after having unregistered the IOAT
-> > > Is that really all we need to unregister before calling dma_init_device?
-> > > 
-> > > - having DMA initialized inside the release_device callback:
-> > > Why isn't it done in the device_probe ?
-> > 
-> > As I understand it iommu_release_device() which calls this code is only
-> > used when a device goes away. So, I think you're right in that it makes
-> > little sense to re-initialize DMA at this point, it's going to be torn
-> > down immediately after anyway. I do wonder if it would be an acceptably
-> > small change to just set zdev->s390_domain = NULL here and leave DMA
-> > uninitialized while making zpci_dma_exit_device() deal with that e.g.
-> > by doing nothing if zdev->dma_table is NULL but I'm not sure.
-> > 
-> > Either way I fear this mess really is just a symptom of our current
-> > design oddity of driving the same IOMMU hardware through both our DMA
-> > API implementation (arch/s390/pci_dma.c) and the IOMMU driver
-> > (driver/iommu/s390-iommu.c) and trying to hand off between them
-> > smoothly where common code instead just layers one atop the other when
-> > using an IOMMU at all.
-> > 
-> > I think the correct medium term solution is to use the common DMA API
-> > implementation (drivers/iommu/dma-iommu.c) like everyone else. But that
-> > isn't the minimal fix we need now.
-> > 
-> > I do have a working prototype of using the common implementation but
-> > the big problem that I'm still searching a solution for is its
-> > performance with a virtualized IOMMU where IOTLB flushes (RPCIT on
-> > s390) are used for shadowing and are expensive and serialized. The
-> > optimization we used so far for unmap, only doing one global IOTLB
-> > flush once we run out of IOVA space, is just too much better in that
-> > scenario to just ignore. As one data point, on an NVMe I get about
-> > _twice_ the IOPS when using our existing scheme compared to strict
-> > mode. Which makes sense as IOTLB flushes are known as the bottleneck
-> > and optimizing unmap like that reduces them by almost half. Queued
-> > flushing is still much worse likely due to serialization of the
-> > shadowing, though again it works great on LPAR. To make sure it's not
-> > due to some bug in the IOMMU driver I even tried converting our
-> > existing DMA driver to layer on top of the IOMMU driver with the same
-> > result.
+
+
+On 2022/9/1 21:24, Joe Lawrence wrote:
+> On 8/31/22 10:27 PM, Zhen Lei wrote:
+>> The patch->mod is not a protected object of mutex_lock(&klp_mutex). Since
+>> it's in the error handling branch, it might not be helpful to reduce lock
+>> conflicts, but it can reduce some code size.
+>>
+>> Before:
+>>    text    data     bss     dec     hex filename
+>>   10330     464       8   10802    2a32 kernel/livepatch/core.o
+>>
+>> After:
+>>    text    data     bss     dec     hex filename
+>>   10307     464       8   10779    2a1b kernel/livepatch/core.o
+>>
 > 
-> FWIW, can you approximate the same behaviour by just making IOVA_FQ_SIZE 
-> and IOVA_FQ_TIMEOUT really big, and deferring your zpci_refresh_trans() 
-> hook from .unmap to .flush_iotlb_all when in non-strict mode?
+> Is a size change expected, or is it just compiler fall out from
+> shuffling the code around a little bit?
+
+I thought it was because mutex_lock()/mutex_unlock() was close enough to
+reduce a "&klp_mutex" operation. Now, I was wrong.
+
 > 
-> I'm not against the idea of trying to support this mode of operation 
-> better in the common code, since it seems like it could potentially be 
-> useful for *any* virtualised scenario where trapping to invalidate is 
-> expensive and the user is happy to trade off the additional address 
-> space/memory overhead (and even greater loss of memory protection) 
-> against that.
+> I see some arches do a little better, some a little worse with gcc-9.3.0
+> cross compilers:
+
+Sorry. This is what I should have done. I built it on x86_64 with gcc-8.4.0
+
 > 
-> Robin.
+> Before
+> ------
+>    text    data     bss     dec     hex filename
+>    8490     600       8    9098    238a arm64/kernel/livepatch/core.o
+>    9424     680       8   10112    2780 s390/kernel/livepatch/core.o
+>    9802     228       4   10034    2732 ppc32/kernel/livepatch/core.o
+>   13746     456       8   14210    3782 ppc64le/kernel/livepatch/core.o
+>   10443     464       8   10915    2aa3 x86_64/kernel/livepatch/core.o
+> 
+> 
+> After
+> -----
+>    text    data     bss     dec     hex filename
+>    8514     600       8    9122    23a2 arm64/kernel/livepatch/core.o
+>    9424     680       8   10112    2780 s390/kernel/livepatch/core.o
+>    9818     228       4   10050    2742 ppc32/kernel/livepatch/core.o
+>   13762     456       8   14226    3792 ppc64le/kernel/livepatch/core.o
+>   10446     464       8   10918    2aa6 x86_64/kernel/livepatch/core.o
+> 
+> In which case, I'd just omit the size savings from the commit msg.
 
+OK. Should I send v2 to update commit message?
 
-Ah thanks for reminding me. I had tried that earlier but quickly ran
-into the size limit of per-CPU allocations. This time I turned the
-"struct iova_fq_entry entries" member into a pointer and allocted that
-with vmalloc(). Also thankfully the ops->flush_iotlb_all(), iommu_iotlb_sync(), and iommu_iotlb_sync_map() already perfectly match
-our needs.
+> 
+>> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+>> ---
+>>  kernel/livepatch/core.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+>> index 42f7e716d56bf72..cb7abc821a50584 100644
+>> --- a/kernel/livepatch/core.c
+>> +++ b/kernel/livepatch/core.c
+>> @@ -1041,9 +1041,9 @@ int klp_enable_patch(struct klp_patch *patch)
+>>  	mutex_lock(&klp_mutex);
+>>  
+>>  	if (!klp_is_patch_compatible(patch)) {
+>> +		mutex_unlock(&klp_mutex);
+>>  		pr_err("Livepatch patch (%s) is not compatible with the already installed livepatches.\n",
+>>  			patch->mod->name);
+>> -		mutex_unlock(&klp_mutex);
+>>  		return -EINVAL;
+>>  	}
+>>  
+>>
+> 
+> That said, I don't see anything obviously wrong about the change (we
+> don't need to sync our error msgs, right?) so:
 
-Okay, this is _very_ interesting. With the above cranking IOVA_FQ_SIZE
-all the way to 32768 and IOVA_FQ_TIMEOUT to 4000 ms, I can get to about
-91% of the performance of our scheme (layered on the IOMMU API). That
-also seems to be the limit. I guess there is also more overhead than
-with our bitset IOVA allocation that doesn't need any bookkeeping
-besides a "lazily unmapped" bit per page. With a more sane IOVA_FQ_SIZE
-of 8192 and 100 ms timeout I still get about 76% of the performance.
+Yes
 
-Interestingly with the above changes but default values for
-IOVA_FQ_SIZE/IOVA_FQ_TIMEOUT things are much worse than even strict
-mode (~50%) and I get less than 8% the IOPS with this NVMe.
+> 
+> Acked-by: Joe Lawrence <joe.lawrence@redhat.com>
 
-So yeah it seems you're right and one can largely emulate our scheme
-with this. I do wonder if we could go further and do a "flush on
-running out of IOVAs" domain type with acceptable changes. My rough
-idea would be to collect lazily freed IOVAs in the same data structure
-as the free IOVAs, then on running out of those one can simply do a
-global IOTLB flush and the lazily freed IOVAs become the new free
-IOVAs. With that the global reset would be even cheaper than with our
-bitmaps. For a generic case one would of course also need to track the
-gather->freelist that we don't use in s390 but e.g. virtio-iommu
-doesn't seem to use that either. What do you think?
+Thanks
 
+> 
+
+-- 
+Regards,
+  Zhen Lei
