@@ -2,324 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF12BECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:29:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FCE9C0502C
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:31:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232987AbiIAN31 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 09:29:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60732 "EHLO
+        id S234314AbiIANb1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 09:31:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233908AbiIAN2h (ORCPT
+        with ESMTP id S233944AbiIANa7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 09:28:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 201AC255B5;
-        Thu,  1 Sep 2022 06:25:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D1D3B61F31;
-        Thu,  1 Sep 2022 13:25:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF8C3C433D6;
-        Thu,  1 Sep 2022 13:25:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662038715;
-        bh=o+gESKCyp6BOzssE5SHXNurnulPGnj+RGy7w7QkJKFE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZrF2e3bx8FDObSD6wo56HL5lR4sq3nnC2cehNuPyxupCAsCuM0fOxENu5hInLes+L
-         bQ2oYym/0noccCZQSVhzX2uWw/wGolUeooVWmG5WsD32wS1JF7sbFshjzOhmMBbTLR
-         eaRVAQHIofaCFGXclMk9YGqqfmif4ptylC9TDNOudnDKMCThGKWppnhnd0LXFEq4x0
-         PFWe4VasZhP/jaQea/MTqQkXMbKrNzM6JkZ6sWPeUWuaFtIzy9GlMxE8oq0LIs6vQH
-         0vCzsSTcCc3Sx7Ysmx0U3JrWDhvgqdyyl+b9xzhS3QLGldj0xCYaX6Ku/ZVcQvA6LN
-         QISBm/x9MQIcg==
-Date:   Thu, 1 Sep 2022 14:25:12 +0100
-From:   Filipe Manana <fdmanana@kernel.org>
-To:     Dominique MARTINET <dominique.martinet@atmark-techno.com>
-Cc:     Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
-        Josef Bacik <josef@toxicpanda.com>, Chris Mason <clm@fb.com>,
-        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>,
-        Chen Liang-Chun <featherclc@gmail.com>,
-        Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
-        kernel@openvz.org, Yu Kuai <yukuai3@huawei.com>,
-        Theodore Ts'o <tytso@mit.edu>
-Subject: Re: fiemap is slow on btrfs on files with multiple extents
-Message-ID: <20220901132512.GA3946576@falcondesktop>
-References: <YuwUw2JLKtIa9X+S@localhost.localdomain>
- <21dd32c6-f1f9-f44a-466a-e18fdc6788a7@virtuozzo.com>
- <YuzI7Tqi3n+d+V+P@atmark-techno.com>
- <20220805095407.GA1876904@falcondesktop>
+        Thu, 1 Sep 2022 09:30:59 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4A5C4F692
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 06:27:08 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id k22so17872713ljg.2
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 06:27:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=EcDrZFdluBLqgSl5y1ge/xoHolSS2B2PXo4EVlgY9h8=;
+        b=j6IU/3o+B9aEmh+ikjTzDwhSeMNO1INjgkzCxiPuyNnqIi3323Gd0aOQh06w1RJhme
+         5SOCFmnBfbgt2RzJClw06E4PZmEDSjfLwsu/73EngsMnRKi3bsQWqAhNY9a37Dv8sXCs
+         q5MsU4p6YsaZaf+iMl0cpibYG6qHz9aFgLW448Y1l//uAm0SNXZhQivcB9QOg91KdOgZ
+         Xc4Atvk5wuVfydlEhYbtt+xcfjGKLHnZNzxij+spb8O+C8LCwreg3fBXAl6xIaYB9SX0
+         AZWi5JFPzIhw5PKq+kjqkHeKQ3enl+V5ogJtPLW0rVpK+4h8lw08Yw2iETEIG3T7/vZu
+         yUZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=EcDrZFdluBLqgSl5y1ge/xoHolSS2B2PXo4EVlgY9h8=;
+        b=TnMz6N2wRk7Iqp0UpBc0hw7PpoBYmZ7AMGAC2FXis+wJeTDFVoYPEyPd04CCuOzf0E
+         NeOxWSB9xTGizjEj10H8MxwarM+q+S1/k5BYR1G/rAJn9vLnBfGVFGv+lDR39NHDRH8/
+         T+zlES1TUWp8wprs1bqlRj+QjVMsAHeBW/KzDhALRHQ4woYqiiRsuHy4xd96ySzpJzv3
+         key11OXI8dg5/BxJeulahofDUQTTP9efeE4YiycAbnQhYJHSdi3xmSyFFHjfuKjbWGtQ
+         CnEPS8htpqw/303zHGlmmn2vQvtHsrjeX3NTe9VCiwXquIYQMmjHwJrEOdc1uk8uKfLd
+         PBsA==
+X-Gm-Message-State: ACgBeo2Aa8Hpaz3i7PV8a9IoVpvH7WtLHrdYsgKLYJp9V/hNzWiBuDDN
+        fg0JnOl7MWWYTKd35a2XXh0rAw==
+X-Google-Smtp-Source: AA6agR66LdtSQj0ErovOdBSUE2/wMNblh1NMSJXQ+hi1C75YSFN3XvuzmmLIIMrUbY62tKyIE7rVcQ==
+X-Received: by 2002:a2e:b052:0:b0:268:87be:ebc0 with SMTP id d18-20020a2eb052000000b0026887beebc0mr2434520ljl.203.1662038826500;
+        Thu, 01 Sep 2022 06:27:06 -0700 (PDT)
+Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
+        by smtp.gmail.com with ESMTPSA id q14-20020ac25fce000000b00492f1b2ac0bsm2346542lfg.101.2022.09.01.06.27.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Sep 2022 06:27:06 -0700 (PDT)
+Message-ID: <05eb3c6a-404d-1bfd-1361-cff952b68400@linaro.org>
+Date:   Thu, 1 Sep 2022 16:27:05 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220805095407.GA1876904@falcondesktop>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v2 1/5] dt-bindings: iio: adc: Add docs for LTC2499
+Content-Language: en-US
+To:     Ciprian Regus <ciprian.regus@analog.com>, jic23@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220901121700.1325733-1-ciprian.regus@analog.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220901121700.1325733-1-ciprian.regus@analog.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 05, 2022 at 10:54:07AM +0100, Filipe Manana wrote:
-> On Fri, Aug 05, 2022 at 04:38:21PM +0900, Dominique MARTINET wrote:
-> > Pavel Tikhomirov wrote on Thu, Aug 04, 2022 at 07:30:52PM +0300:
-> > > I see a similar problem here
-> > > https://lore.kernel.org/linux-btrfs/Yr4nEoNLkXPKcOBi@atmark-techno.com/#r ,
-> > > but in my case I have "5.18.6-200.fc36.x86_64" fedora kernel which does not
-> > > have 5ccc944dce3d ("filemap: Correct the conditions for marking a folio as
-> > > accessed") commit, so it should be something else.
-> > 
-> > The root cause might be different but I guess they're related enough: if
-> > fiemap gets faster enough even when the whole file is in cache I guess
-> > that works for me :)
-> > 
-> > Josef Bacik wrote on Thu, Aug 04, 2022 at 02:49:39PM -0400:
-> > > On Thu, Aug 04, 2022 at 07:30:52PM +0300, Pavel Tikhomirov wrote:
-> > > > I ran the below test on Fedora 36 (the test basically creates "very" sparse
-> > > > file, with 4k data followed by 4k hole again and again for the specified
-> > > > length and uses fiemap to count extents in this file) and face the problem
-> > > > that fiemap hangs for too long (for instance comparing to ext4 version).
-> > > > Fiemap with 32768 extents takes ~37264 us and with 65536 extents it takes
-> > > > ~34123954 us, which is x1000 times more when file only increased twice the
-> > > > size:
-> > > >
-> > > 
-> > > Ah that was helpful, thank you.  I think I've spotted the problem, please give
-> > > this a whirl to make sure we're seeing the same thing.  Thanks,
-> > 
-> > FWIW this patch does help a tiny bit, but I'm still seeing a huge
-> > slowdown: with patch cp goes from ~600MB/s (55s) to 136MB/s (3m55s) on
-> > the second run; and without the patch I'm getting 47s and 5m35
-> > respectively so this has gotten a bit better but these must still be
-> > cases running through the whole list (e.g. when not hitting a hole?)
-> > 
-> > 
-> > My reproducer is just running 'cp file /dev/null' twice on a file with
-> > 194955 extents (same file with mixed compressed & non-compressed extents
-> > as last time), so should be close enough to what Pavel was describing in
-> > just much worse.
+On 01/09/2022 15:16, Ciprian Regus wrote:
+> Update the bindings documentation for ltc2497 to include the ltc2499.
 > 
-> I remember your original report Dominique, it came along with the short
-> reads issue when using using io_uring with qemu.
-> 
-> I had a quick look before going on vacations. In your post at:
-> 
-> https://lore.kernel.org/linux-btrfs/Ysace25wh5BbLd5f@atmark-techno.com/
-> 
-> you mentioned a lot of time spent on count_range_bits(), and I quickly
-> came with a testing patch for that specific area:
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/fdmanana/linux.git/commit/?h=fiemap_speedup&id=6bdc02edbb52786df2d8c2405d790390d9a9443c
-> 
-> Basically whenever we call that, we start searching from the root of the
-> extent states rbtree - if the rbtree is large, that takes a lot of time.
-> The idea is to start the search from the last record instead.
-> 
-> I haven't actually made any performance tests, as vacations came in and
-> I noticed that such change will very likely make little or no difference
-> because algorithmically btrfs' fiemap implementation is very ineficient
-> for several reasons. It basically works like this:
-> 
-> 1) We start the search for the first extent. First we go search the inode's
->    extent map rbtree - if we can't find it, then we will search in the
->    fs b+tree - after this we create an extent map based on the file extent
->    item we found in the b+tree and add it to the extent map rbtree.
-> 
->    We then pass to fiemap extent information based on the extent map
->    (there's a few extra minor details, like merging, etc);
-> 
-> 2) Then we search for the next extent, with a start offset based on the
->    end offset of the previous one +1.
-> 
->    Again, if we can't find it in the extent map rbtree, we go search the
->    fs b+tree, then create an extent map based on the file extent item we
->    found there and add it to extent map rbtree.
-> 
->    This is silly. On each iteration the extent maps rbtree gets bigger and
->    bigger, and we always search from the root node. We are spending time
->    searching there and then allocating memory for the extent map and adding
->    it to the rbtree, which is yet more cpu time spent.
-> 
->    We should only create extent maps when we are doing IO against, for a
->    data write or read operation, we are just spending a lot of time on
->    this and consuming memory too.
-> 
->    Then it's silly again because we will search the fs b+tree again, starting
->    from the root. So we end up visting the same leaves over and over;
-> 
-> 3) Whenever we find a hole, or a prealloc/unwritten extent, we have to check
->    if there's pending dealloc for that region. That's where count_range_bits()
->    is used - everytime it's called it starts from the root node of the extent
->    states rbtree.
-> 
-> My idea to address this is to basically rewrite fiemap so that it works like
-> this:
-> 
-> 1) Go over each leaf in the fs b+tree and for each file extent item emit the
->    extent information for fiemap - like this we don't do many repeated b+tree
->    searches to end up in the same leaf;
-> 
-> 2) Never create extent maps, so that we don't grow the extent maps rbtree
->    unnecessarily, saving cpu time and avoiding memory allocations;
-> 
-> 3) Whenever we find a hole or prealloc/unwritten extent, then check if there's
->    pending delalloc in the range by using count_range_bits() like we currently
->    do (and maybe add that patch to avoid always starting the search from the
->    root).
-> 
->    If there's delalloc, then lookup for the correspond extent maps and use
->    their info to emit extent information for fiemap. And keep using rb_next()
->    while an extent map ends before the hole/unwritten range;
-> 
-> 4) Because emitting all the extent information for fiemap and doing other things
->    like checking if an extent is shared, calling count_range_bits(), etc can
->    take some time, to avoid holding a read lock for too long on the fs b+tree
->    leaf and block other tasks, clone the leaf, release the lock on the leaf and
->    use the private clone. This is fine since we start fiemap we lock the file
->    range, so no one else can go and create or drop extents in the range before
->    fiemap finishes.
-> 
-> That's the high level idea.
-> 
-> There's another factor that can slowdown fiemap a lot, which is figuring out if
-> an extent is shared or not (reflinks, snapshots), but in your case you don't
-> have shared extents IIRC. I would have to look at that separetely, we probably
-> have some room for improvement there as well.
-> 
-> I haven't had the time to work on that, as I've been working on other stuff
-> unrelated to fiemap, but maybe in a week or two I may start it.
+> Signed-off-by: Ciprian Regus <ciprian.regus@analog.com>
+> ---
 
-It took me a bit more than I expected, but here is the patchset to make fiemap
-(and lseek) much more efficient on btrfs:
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-https://lore.kernel.org/linux-btrfs/cover.1662022922.git.fdmanana@suse.com/
 
-And also available in this git branch:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/fdmanana/linux.git/log/?h=lseek_fiemap_scalability
-
-Running Pavel's test before applying the patchset:
-
-    *********** 256M ***********
-
-    size: 268435456
-    actual size: 134217728
-    fiemap: fm_mapped_extents = 32768
-    time = 4003133 us
-
-    size: 268435456
-    actual size: 134217728
-    fiemap: fm_mapped_extents = 32768
-    time = 4895330 us
-
-    *********** 512M ***********
-
-    size: 536870912
-    actual size: 268435456
-    fiemap: fm_mapped_extents = 65536
-    time = 30123675 us
-
-    size: 536870912
-    actual size: 268435456
-    fiemap: fm_mapped_extents = 65536
-    time = 33450934 us
-
-    *********** 1G ***********
-
-    size: 1073741824
-    actual size: 536870912
-    fiemap: fm_mapped_extents = 131072
-    time = 224924074 us
-
-    size: 1073741824
-    actual size: 536870912
-    fiemap: fm_mapped_extents = 131072
-    time = 217239242 us
-
-And running it after applying the patchset:
-
-    *********** 256M ***********
-
-    size: 268435456
-    actual size: 134217728
-    fiemap: fm_mapped_extents = 32768
-    time = 29475 us
-
-    size: 268435456
-    actual size: 134217728
-    fiemap: fm_mapped_extents = 32768
-    time = 29307 us
-
-    *********** 512M ***********
-
-    size: 536870912
-    actual size: 268435456
-    fiemap: fm_mapped_extents = 65536
-    time = 58996 us
-
-    size: 536870912
-    actual size: 268435456
-    fiemap: fm_mapped_extents = 65536
-    time = 59115 us
-
-    *********** 1G ***********
-
-    size: 1073741824
-    actual size: 536870912
-    fiemap: fm_mapped_extents = 116251
-    time = 124141 us
-
-    size: 1073741824
-    actual size: 536870912
-    fiemap: fm_mapped_extents = 131072
-    time = 119387 us
-
-There's a huge difference, so after it fiemap is a lot more usable on
-btrfs.
-
-It's still not as fast as ext4, but it's getting close to. On ext4 I
-get:
-
-    *********** 256M ***********
-
-    size: 268435456
-    actual size: 134217728
-    fiemap: fm_mapped_extents = 32768
-    time = 16877 us
-
-    size: 268435456
-    actual size: 134217728
-    fiemap: fm_mapped_extents = 32768
-    time = 17014 us
-
-    *********** 512M ***********
-
-    size: 536870912
-    actual size: 268435456
-    fiemap: fm_mapped_extents = 65536
-    time = 33764 us
-
-    size: 536870912
-    actual size: 268435456
-    fiemap: fm_mapped_extents = 65536
-    time = 33849 us
-
-    *********** 1G ***********
-
-    size: 1073741824
-    actual size: 536870912
-    fiemap: fm_mapped_extents = 131072
-    time = 69085 us
-
-    size: 1073741824
-    actual size: 536870912
-    fiemap: fm_mapped_extents = 131072
-    time = 68101 us
-
-However we do have extra work to do on btrfs because we have reflinks
-and snapshots, so it needs to check if extents are shared, while ext4
-does not have those features, thus less work to do for fiemap.
-
-Thanks for the report.
-
-> 
-> > 
-> > -- 
-> > Dominique
+Best regards,
+Krzysztof
