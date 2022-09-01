@@ -2,112 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E4A1ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 06:16:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DE9CECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 06:16:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233313AbiIAGP7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 02:15:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33150 "EHLO
+        id S233309AbiIAGQc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 02:16:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232956AbiIAGPu (ORCPT
+        with ESMTP id S232744AbiIAGQZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 02:15:50 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA0E8FE059;
-        Wed, 31 Aug 2022 23:15:44 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MJ9g55hYqz1N7bs;
-        Thu,  1 Sep 2022 14:12:01 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
- (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 1 Sep
- 2022 14:15:41 +0800
-From:   Ye Bin <yebin10@huawei.com>
-To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
-        <linux-ext4@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
-        Ye Bin <yebin10@huawei.com>
-Subject: [PATCH -next] ext4: ensure data forced to disk when rename
-Date:   Thu, 1 Sep 2022 14:26:57 +0800
-Message-ID: <20220901062657.1192732-1-yebin10@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Thu, 1 Sep 2022 02:16:25 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1068110B97E
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 23:16:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662012983; x=1693548983;
+  h=from:to:cc:subject:references:date:in-reply-to:
+   message-id:mime-version;
+  bh=yImlM/1OG2vrSOuvDpVrqiRnkRtOiJmPik+XMrb8h5M=;
+  b=PsW2+BFcz6KDCUgH/g2q6uEctKM9kr06BI8lif0sqY1KkSFCeIVTYTqT
+   4FJ4M3Gscj2JxqNhl8tSKxmnHz8knjqEW1RNTYcJnbXjS5KTwaPR+VXrh
+   RZZ42BmpmKV9c7dNWw5vo4TtLl2m7xZf0TnNNvs2c7CAhgjfSq0Kfw34Z
+   PUEqowXjF6AzJQUIk6xdcPmbf2lMO09pZVUocN/AfAYqgow/3EtbuYUA/
+   vL7Du2jLCOtKGeNwKJ2G8HQRtBEj5r5bDk9OAbRz7oRiPBXjuFOQbpqzx
+   16mSATlQylTtFCUKQ9l9R0gfuiW+5fwY+QPlyP32SIhlLolR03p5+ZL4u
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="359587720"
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="359587720"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 23:16:22 -0700
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="608431820"
+Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.238.208.55])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 23:16:18 -0700
+From:   "Huang, Ying" <ying.huang@intel.com>
+To:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
+        Wei Xu <weixugc@google.com>, Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com,
+        Bharata B Rao <bharata@amd.com>
+Subject: Re: [PATCH mm-unstable] mm/demotion: Assign correct memory type for
+ multiple dax devices with the same node affinity
+References: <20220826100224.542312-1-aneesh.kumar@linux.ibm.com>
+Date:   Thu, 01 Sep 2022 14:15:31 +0800
+In-Reply-To: <20220826100224.542312-1-aneesh.kumar@linux.ibm.com> (Aneesh
+        Kumar K. V.'s message of "Fri, 26 Aug 2022 15:32:24 +0530")
+Message-ID: <87a67j1uyk.fsf@yhuang6-desk2.ccr.corp.intel.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=ascii
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is issue that data lost when rename new file. Reason is dioread_nolock is
-enabled default now, which map blocks will mark extent unwritten. But inode
-size is changed after submit io. Then read file will return zero if extent is
-unwritten.
-To solve above isuue, wait all data force to disk before rename when enable
-dioread_nolock and enable delay allocate.
+"Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
 
-Signed-off-by: Ye Bin <yebin10@huawei.com>
----
- fs/ext4/ext4.h  |  1 +
- fs/ext4/inode.c | 16 ++++++++++++++++
- fs/ext4/namei.c |  2 +-
- 3 files changed, 18 insertions(+), 1 deletion(-)
+> With multiple dax devices having the same node affinity, the kernel wrongly assigned
+> default_dram memory type to some devices after the memory hotplug operation. Fix this by
+> not clearing node_memory_types on the dax device remove.
 
-diff --git a/fs/ext4/ext4.h b/fs/ext4/ext4.h
-index 9bca5565547b..111296259b89 100644
---- a/fs/ext4/ext4.h
-+++ b/fs/ext4/ext4.h
-@@ -2998,6 +2998,7 @@ extern int ext4_break_layouts(struct inode *);
- extern int ext4_punch_hole(struct file *file, loff_t offset, loff_t length);
- extern void ext4_set_inode_flags(struct inode *, bool init);
- extern int ext4_alloc_da_blocks(struct inode *inode);
-+extern void ext4_flush_data(struct inode *inode);
- extern void ext4_set_aops(struct inode *inode);
- extern int ext4_writepage_trans_blocks(struct inode *);
- extern int ext4_chunk_trans_blocks(struct inode *, int nrblocks);
-diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
-index 601214453c3a..4df7ffd3f1b0 100644
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -3133,6 +3133,22 @@ int ext4_alloc_da_blocks(struct inode *inode)
- 	return filemap_flush(inode->i_mapping);
- }
- 
-+void ext4_flush_data(struct inode *inode)
-+{
-+	if (!EXT4_I(inode)->i_reserved_data_blocks)
-+		return;
-+
-+	if (filemap_flush(inode->i_mapping))
-+		return;
-+
-+	if (test_opt(inode->i_sb, DELALLOC) &&
-+	    ext4_should_dioread_nolock(inode) &&
-+	    atomic_read(&EXT4_I(inode)->i_unwritten))
-+		filemap_fdatawait(inode->i_mapping);
-+
-+	return;
-+}
-+
- /*
-  * bmap() is special.  It gets used by applications such as lilo and by
-  * the swapper to find the on-disk block of a specific piece of data.
-diff --git a/fs/ext4/namei.c b/fs/ext4/namei.c
-index 3a31b662f661..030402fe3b9f 100644
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -3820,7 +3820,7 @@ static int ext4_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
- 		}
- 	}
- 	if (new.inode && !test_opt(new.dir->i_sb, NO_AUTO_DA_ALLOC))
--		ext4_alloc_da_blocks(old.inode);
-+		ext4_flush_data(old.inode);
- 
- 	credits = (2 * EXT4_DATA_TRANS_BLOCKS(old.dir->i_sb) +
- 		   EXT4_INDEX_EXTRA_TRANS_BLOCKS + 2);
--- 
-2.31.1
+Sorry for late reply.
 
+Just for confirmation.  There are multiple dax devices in one NUMA node?
+
+If you can show the bug reproducing steps, that will make it even easier
+to understand.
+
+Best Regards,
+Huang, Ying
+
+> The current kernel cleared node_memory_type on successful removal of a dax device.
+> But then we can have multiple dax devices with the same node affinity. Clearing the
+> node_memory_type results in assigning other dax devices to the default dram type when
+> we bring them online.
+>
+> Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+> ---
+>  mm/memory-tiers.c | 37 +++++++++++++++++++++++++++++--------
+>  1 file changed, 29 insertions(+), 8 deletions(-)
+>
+> diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
+> index ba844fe9cc8c..c4bd6d052a33 100644
+> --- a/mm/memory-tiers.c
+> +++ b/mm/memory-tiers.c
+> @@ -27,9 +27,14 @@ struct demotion_nodes {
+>  	nodemask_t preferred;
+>  };
+>  
+> +struct node_memory_type_map {
+> +	struct memory_dev_type *memtype;
+> +	int map_count;
+> +};
+> +
+>  static DEFINE_MUTEX(memory_tier_lock);
+>  static LIST_HEAD(memory_tiers);
+> -static struct memory_dev_type *node_memory_types[MAX_NUMNODES];
+> +static struct node_memory_type_map node_memory_types[MAX_NUMNODES];
+>  static struct memory_dev_type *default_dram_type;
+>  #ifdef CONFIG_MIGRATION
+>  static int top_tier_adistance;
+> @@ -386,9 +391,19 @@ static inline void establish_demotion_targets(void) {}
+>  
+>  static inline void __init_node_memory_type(int node, struct memory_dev_type *memtype)
+>  {
+> -	if (!node_memory_types[node]) {
+> -		node_memory_types[node] = memtype;
+> -		kref_get(&memtype->kref);
+> +	if (!node_memory_types[node].memtype)
+> +		node_memory_types[node].memtype = memtype;
+> +	/*
+> +	 * for each device getting added in the same NUMA node
+> +	 * with this specific memtype, bump the map count. We
+> +	 * Only take memtype device reference once, so that
+> +	 * changing a node memtype can be done by droping the
+> +	 * only reference count taken here.
+> +	 */
+> +
+> +	if (node_memory_types[node].memtype == memtype) {
+> +		if (!node_memory_types[node].map_count++)
+> +			kref_get(&memtype->kref);
+>  	}
+>  }
+>  
+> @@ -406,7 +421,7 @@ static struct memory_tier *set_node_memory_tier(int node)
+>  
+>  	__init_node_memory_type(node, default_dram_type);
+>  
+> -	memtype = node_memory_types[node];
+> +	memtype = node_memory_types[node].memtype;
+>  	node_set(node, memtype->nodes);
+>  	memtier = find_create_memory_tier(memtype);
+>  	if (!IS_ERR(memtier))
+> @@ -448,7 +463,7 @@ static bool clear_node_memory_tier(int node)
+>  
+>  		rcu_assign_pointer(pgdat->memtier, NULL);
+>  		synchronize_rcu();
+> -		memtype = node_memory_types[node];
+> +		memtype = node_memory_types[node].memtype;
+>  		node_clear(node, memtype->nodes);
+>  		if (nodes_empty(memtype->nodes)) {
+>  			list_del_init(&memtype->tier_sibiling);
+> @@ -502,8 +517,14 @@ EXPORT_SYMBOL_GPL(init_node_memory_type);
+>  void clear_node_memory_type(int node, struct memory_dev_type *memtype)
+>  {
+>  	mutex_lock(&memory_tier_lock);
+> -	if (node_memory_types[node] == memtype) {
+> -		node_memory_types[node] = NULL;
+> +	if (node_memory_types[node].memtype == memtype)
+> +		node_memory_types[node].map_count--;
+> +	/*
+> +	 * If we umapped all the attached devices to this node,
+> +	 * clear the node memory type.
+> +	 */
+> +	if (!node_memory_types[node].map_count) {
+> +		node_memory_types[node].memtype = NULL;
+>  		kref_put(&memtype->kref, release_memtype);
+>  	}
+>  	mutex_unlock(&memory_tier_lock);
