@@ -2,232 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46C88ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 15:11:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82B3EECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 15:13:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234026AbiIAPLK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 11:11:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40838 "EHLO
+        id S233151AbiIAPN5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 11:13:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229813AbiIAPLG (ORCPT
+        with ESMTP id S229514AbiIAPNz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 11:11:06 -0400
-Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [217.70.178.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E28E52457;
-        Thu,  1 Sep 2022 08:11:05 -0700 (PDT)
-Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 75DDA200010;
-        Thu,  1 Sep 2022 15:11:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1662045064;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=hPAZFTv0OR8dOw9wKgqi4Kvh5eCGaJ3DTwQLR0c7o2o=;
-        b=c5981UEzRxWDuafkKOPkAwjINHBGfzuF9vrUkJxwdwrtDvfGJbXFtJoir/1EsYtNGHmC+o
-        ohg2NlW6Q668Z+BNI8lCHe4B+NqcByWvofNwtwBJ9xd3vh4PsEAzZ06+of+HyuNZks4yZz
-        WDK5UhQUMHmJdadf0j+9dfcPntXTRG/MS1fTKigh8bga93OQh4mAj0WBiEzy/HQwm3sV3w
-        ag1LGnVqu1VMRqvDje+Y8c+tWL+EL8UZKll1UpOakhga5Vpu8PHSZurQpkOPNvRBzSyxJI
-        wI6oaruZD3wYTNKLKfRuuDUpd9OKNsMk3ey/8L4vRcML2JQYPnNPmOOgJlOp3g==
-Date:   Thu, 1 Sep 2022 17:11:00 +0200
-From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v6 5/6] media: sun6i-csi: Detect the availability of the
- ISP
-Message-ID: <YxDLhPMibhXO1oU/@aptenodytes>
-References: <20220826184144.605605-1-paul.kocialkowski@bootlin.com>
- <20220826184144.605605-6-paul.kocialkowski@bootlin.com>
- <YwlLsKaEOoXdqRK0@pendragon.ideasonboard.com>
+        Thu, 1 Sep 2022 11:13:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8965885FEA;
+        Thu,  1 Sep 2022 08:13:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 031A061E48;
+        Thu,  1 Sep 2022 15:13:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1066BC433D6;
+        Thu,  1 Sep 2022 15:13:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662045233;
+        bh=0t8/KQ98NzBwSJ4fHc5D6nxTVXNraYwC1s9/iFWtwkQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=uTIEH2lj86kQHwiT276ARAOQ1PjOkr49jT8a+knYDEzzoD8okdpydEc1JNKxDtuBb
+         ITp0R8qShGI/4TkMP4BQBpYRGF/J7sJkn8E/oEvMx7+P3fq2agkFAkhBTpVRXZeYTD
+         mquRxl+61NpIZqXJTBBSu2mMjnY5jcKEcKPjvjY85YPJtkyjcds5DklbPHjzkZ2qgi
+         EiW0SRGve/h3IKyxEF31Ometku4gSOpycbneyp9WuQFIOta60xTO0gpi+RJlkB2lL/
+         U+DLOdk/nZnDOeyV2EJGQnf9UkACmErvec8H7OHZ2x2W71BdNaQAr11J4nBUiNLvOm
+         nv4acXRMO+M0w==
+Date:   Thu, 1 Sep 2022 17:13:50 +0200
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     Uladzislau Rezki <urezki@gmail.com>
+Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Rushikesh S Kadam <rushikesh.s.kadam@intel.com>,
+        Neeraj upadhyay <neeraj.iitr10@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        rcu <rcu@vger.kernel.org>,
+        Vineeth Pillai <vineeth@bitbyteword.org>
+Subject: Re: [PATCH v4 00/14] Implement call_rcu_lazy() and miscellaneous
+ fixes
+Message-ID: <20220901151350.GC105556@lothringen>
+References: <20220829194622.GA58291@lothringen>
+ <CAEXW_YS593n8Gget+REaD-c8vT8Ht_AzOY0kXA_uc674LOyvVw@mail.gmail.com>
+ <20220829204202.GQ6159@paulmck-ThinkPad-P17-Gen-1>
+ <20220830105324.GA71266@lothringen>
+ <20220830114343.GS6159@paulmck-ThinkPad-P17-Gen-1>
+ <20220830160316.GC71266@lothringen>
+ <20220830162244.GA73392@lothringen>
+ <Yw4+g/0yEf7fpHrh@pc636>
+ <20220901112947.GA105556@lothringen>
+ <YxCejoKH8dGIeW22@pc636>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="wChqMM/2eeW8sfq3"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YwlLsKaEOoXdqRK0@pendragon.ideasonboard.com>
+In-Reply-To: <YxCejoKH8dGIeW22@pc636>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Sep 01, 2022 at 01:59:10PM +0200, Uladzislau Rezki wrote:
+> On Thu, Sep 01, 2022 at 01:29:47PM +0200, Frederic Weisbecker wrote:
+> > On Tue, Aug 30, 2022 at 06:44:51PM +0200, Uladzislau Rezki wrote:
+> > > Hello, Frederic.
+> > > 
+> > > > 
+> > > > Although who knows, may be some periodic file operation while idle are specific
+> > > > to Android. I'll try to trace lazy callbacks while idle and the number of grace
+> > > > periods associated.
+> > > > 
+> > > > 
+> > > Everything related to lazy call-backs is about not waking "nocb"
+> > > kthreads in order to offload one or i should say few callbacks
+> > > because it is more or less useless. Currently if incoming callback
+> > > is the only one, it will kick a GP whereas a GP will kick nocb_kthread
+> > > to offload.
+> > 
+> > Not sure this is only about not waking "nocb" kthreads. The grace period
+> > kthread is also awaken in !NOCB and has quite some work to do. And there,
+> > having a server expands the issue because you may have a lot of CPUs's extended
+> > quiescent states to check.
+> > 
+> I mean here the following combination: NOCB + call_rcu_lazy() tandem.
+> The !NOCB is not about power save, IMHO. Because it implies callbacks
+> to be processed on CPUs they are landed.
 
---wChqMM/2eeW8sfq3
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I'm sorry but I still feel confused reading that !NOCB is not about power
+save. To me everything is about power save. NOCB just appears to help optimizing
+it without significant tradeoff on some given workloads.
 
-Hi Laurent,
+> In this scenario you can not let the EAS scheduler to find a more
+> efficient CPU for further handling.
 
-On Sat 27 Aug 22, 01:39, Laurent Pinchart wrote:
-> Hi Paul,
->=20
-> Thank you for the patch.
+Sure but that doesn't mean there wouldn't be a power saving gain anyway.
 
-Thanks for the review!
-
-> On Fri, Aug 26, 2022 at 08:41:43PM +0200, Paul Kocialkowski wrote:
-> > Add a helper to detect whether the ISP is available and connected
-> > and store the indication in a driver-wide variable.
->=20
-> This sounds like it would be a global variable, while it's stored in the
-> driver-specific device structure.
-
-Okay I can clarify the commit message here.
-
-> >=20
-> > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> > ---
-> >  .../platform/sunxi/sun6i-csi/sun6i_csi.c      | 33 +++++++++++++++++++
-> >  .../platform/sunxi/sun6i-csi/sun6i_csi.h      |  3 ++
-> >  2 files changed, 36 insertions(+)
-> >=20
-> > diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c b/drive=
-rs/media/platform/sunxi/sun6i-csi/sun6i_csi.c
-> > index 00521f966cee..b16166cba2ef 100644
-> > --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
-> > +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
-> > @@ -24,6 +24,35 @@
-> >  #include "sun6i_csi_capture.h"
-> >  #include "sun6i_csi_reg.h"
-> > =20
-> > +/* ISP */
-> > +
-> > +static bool sun6i_csi_isp_detect(struct sun6i_csi_device *csi_dev)
-> > +{
-> > +	struct device *dev =3D csi_dev->dev;
-> > +	struct fwnode_handle *handle =3D NULL;
->=20
-> No need to initialize this to NULL.
-
-Indeed.
-
-> > +
-> > +	/* ISP is not available if disabled in kernel config. */
-> > +	if (!IS_ENABLED(CONFIG_VIDEO_SUN6I_ISP))
-> > +		return 0;
->=20
-> Hmmm... The ISP driver may be disabled when compiling the sun6i-csi
-> driver, but later enabled and deployed. Disabling ISP support silently
-> like this could be confusing. Could it be better to move this check
-> after the graph check, and print a warning message in this case ?
-
-Yeah I'm not too surprised corner cases like this can exist.
-Agreed that printing a warning message would be good, but I don't follow the
-point of moving the check later on. Do you have something in mind there?
-
-> > +
-> > +	/*
-> > +	 * ISP is not available if not connected via fwnode graph.
-> > +	 * This weill also check that the remote parent node is available.
->=20
-> s/weill/will/
-
-Good catch, thanks!
-
-> 	 * ISP is not available if not connected via fwnode graph. This will
-> 	 * also check that the remote parent node is available.
->=20
-> > +	 */
-> > +	handle =3D fwnode_graph_get_endpoint_by_id(dev_fwnode(dev),
-> > +						 SUN6I_CSI_PORT_ISP, 0,
-> > +						 FWNODE_GRAPH_ENDPOINT_NEXT);
-> > +	if (!handle)
-> > +		return 0;
-> > +
-> > +	fwnode_handle_put(handle);
-> > +
-> > +	dev_info(dev, "ISP link is available\n");
->=20
-> You could make that a debug message, it's not crucial information that
-> needs to be printed when the driver is loaded. If you prefer keeping an
-> info message, then I'd move it to the probe function and print that the
-> CSI has been probed, and indicate in that message if the ISP is
-> available.
-
-You're right, let's make this debug. It's more the opposite case that is wo=
-rth
-a warning message.
-
-Thanks,
-
-Paul
-
-> > +	csi_dev->isp_available =3D true;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> >  /* Media */
-> > =20
-> >  static const struct media_device_ops sun6i_csi_media_ops =3D {
-> > @@ -290,6 +319,10 @@ static int sun6i_csi_probe(struct platform_device =
-*platform_dev)
-> >  	if (ret)
-> >  		return ret;
-> > =20
-> > +	ret =3D sun6i_csi_isp_detect(csi_dev);
-> > +	if (ret)
-> > +		goto error_resources;
-> > +
-> >  	ret =3D sun6i_csi_v4l2_setup(csi_dev);
-> >  	if (ret)
-> >  		goto error_resources;
-> > diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h b/drive=
-rs/media/platform/sunxi/sun6i-csi/sun6i_csi.h
-> > index e611bdd6e9b2..8e232cd91ebe 100644
-> > --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
-> > +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
-> > @@ -21,6 +21,7 @@
-> >  enum sun6i_csi_port {
-> >  	SUN6I_CSI_PORT_PARALLEL		=3D 0,
-> >  	SUN6I_CSI_PORT_MIPI_CSI2	=3D 1,
-> > +	SUN6I_CSI_PORT_ISP		=3D 2,
-> >  };
-> > =20
-> >  struct sun6i_csi_buffer {
-> > @@ -44,6 +45,8 @@ struct sun6i_csi_device {
-> >  	struct clk			*clock_mod;
-> >  	struct clk			*clock_ram;
-> >  	struct reset_control		*reset;
-> > +
-> > +	bool				isp_available;
-> >  };
-> > =20
-> >  struct sun6i_csi_variant {
->=20
-> --=20
-> Regards,
->=20
-> Laurent Pinchart
-
---=20
-Paul Kocialkowski, Bootlin
-Embedded Linux and kernel engineering
-https://bootlin.com
-
---wChqMM/2eeW8sfq3
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmMQy4QACgkQ3cLmz3+f
-v9GtJQf/XNoL23Tf/tABOubjKLDGCcpO8JAwFSVCLTLp0SrTV//p7vHq/QKayRXP
-5mBJNOaAe797XnyFs9k6oaYGhbFP8/K3pOPs43RqZbta/w0/aOjaJP+e6aHWIZGA
-gH2lN2nOfZRfw/3S58z8lDuqhtTDvdIfSIcqtQkW8+/l+Oi9tZIXwqEcY768YjzA
-f6nhiDZQoY+5V75ebH5DmXftNUSv5el9ip1SssvhKljVlK7NLSnVAkE6ouMhI0gi
-TVClcmFbaT1qNqEG5m9RZJsLCk59olG/otZIcu14laypVPHVyOI3fH55ZqA1i5tE
-XfF4NGbHS8bQJkoB2RciCHuBglQrmg==
-=tFCj
------END PGP SIGNATURE-----
-
---wChqMM/2eeW8sfq3--
+Thanks.
