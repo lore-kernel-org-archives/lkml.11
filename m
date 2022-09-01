@@ -2,217 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 131FAECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 04:19:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5828DECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 04:22:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232636AbiIAETh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 00:19:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53650 "EHLO
+        id S232430AbiIAEWF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 00:22:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232736AbiIAETB (ORCPT
+        with ESMTP id S231717AbiIAEWC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 00:19:01 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6111F161DDD;
-        Wed, 31 Aug 2022 21:18:16 -0700 (PDT)
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2812p16T018795;
-        Thu, 1 Sep 2022 04:18:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=qcppdkim1;
- bh=l5sh6dCCCaxLLDrYIUfTAqSUWYh7jzgEf6hxbmIfF50=;
- b=eHkB3SGDNE0YPkbahuTOmeO7WyPtLsfWEmvQS7vwPR+pWLjqY749jUTkEpmSuXEsPJ7k
- X4ksdCQZeH+mzIb9E4q3pQ+STPFCOu/W4Na/onbglzTUSS8onQfuZC3gtxj4kwQuQ6jW
- IOGxnOdo4+0Mc9Ywh4f/rv8Ag/G3xObT6ByQOjrsV3CzWZowHifdxwGV5pw4yVI5ZTuC
- CLYUbt65qbYAGNlwZEzkNGSqfXvIGrHGfnlUl6EhLMKd17IvJL3PlIjuvfPZkY79oAQ9
- QKD6DVdEz2YntxZzJoPtioQELG9CTtcGDNFPNmPUeW/8q50slc/kj1LyaASFWYAh5bNe Xg== 
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3jadtcs705-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 04:18:06 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 2814I5WV032122
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 1 Sep 2022 04:18:05 GMT
-Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Wed, 31 Aug 2022 21:18:02 -0700
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Rob Herring <robh@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     Douglas Anderson <dianders@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Andy Gross <agross@kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_tdas@quicinc.com>, <quic_c_skakit@quicinc.com>,
-        <linux-clk@vger.kernel.org>
-Subject: [PATCH V9 5/5] clk: qcom: lpass: Add support for resets & external mclk for SC7280
-Date:   Thu, 1 Sep 2022 09:47:26 +0530
-Message-ID: <1662005846-4838-6-git-send-email-quic_c_skakit@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1662005846-4838-1-git-send-email-quic_c_skakit@quicinc.com>
-References: <1662005846-4838-1-git-send-email-quic_c_skakit@quicinc.com>
+        Thu, 1 Sep 2022 00:22:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC751114FF
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 21:22:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662006119;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=neGhyK7pkD6eqSZHik1Qe4PD8FiO+8vxC39rTdxsXS8=;
+        b=f56lijXBkJ33/Iib0MZrVBtJGc6TBqDJy6LjQEYdsypMcjo041yMhfQxJz+YCtqTVUSQJy
+        jPOItQOyb4Y1Ok23jln977gwNCeEiQv+0LKl7btKXqaKQVGQE8WvVYBm4IyFvK5t2IWDRu
+        7T2o2hkAUTziZdSgXxQq2Ik7T099xPY=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-532-MhF9hAKjN_GtuqERlDsDEg-1; Thu, 01 Sep 2022 00:21:56 -0400
+X-MC-Unique: MhF9hAKjN_GtuqERlDsDEg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5173E85A58A;
+        Thu,  1 Sep 2022 04:21:56 +0000 (UTC)
+Received: from oldenburg.str.redhat.com (unknown [10.39.192.37])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 16BDE2166B26;
+        Thu,  1 Sep 2022 04:21:53 +0000 (UTC)
+From:   Florian Weimer <fweimer@redhat.com>
+To:     Andrei Vagin <avagin@gmail.com>
+Cc:     Christian Brauner <brauner@kernel.org>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Eric Biederman <ebiederm@xmission.com>,
+        Kees Cook <keescook@chromium.org>,
+        Alexey Izbyshev <izbyshev@ispras.ru>
+Subject: Re: Potentially undesirable interactions between vfork() and time
+ namespaces
+References: <YxAq2jYvGG8QOypu@gmail.com>
+Date:   Thu, 01 Sep 2022 06:21:51 +0200
+In-Reply-To: <YxAq2jYvGG8QOypu@gmail.com> (Andrei Vagin's message of "Wed, 31
+        Aug 2022 20:45:30 -0700")
+Message-ID: <87tu5ru3kw.fsf@oldenburg.str.redhat.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: 9tQatwmq3a67TPjvYkJRMn8RemNqBdL8
-X-Proofpoint-GUID: 9tQatwmq3a67TPjvYkJRMn8RemNqBdL8
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-09-01_02,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- impostorscore=0 suspectscore=0 mlxscore=0 spamscore=0 lowpriorityscore=0
- bulkscore=0 mlxlogscore=974 malwarescore=0 clxscore=1015 adultscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2209010019
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Taniya Das <quic_tdas@quicinc.com>
+* Andrei Vagin:
 
-The clock gating control for TX/RX/WSA core bus clocks would be required
-to be reset(moved from hardware control) from audio core driver. Thus
-add the support for the reset clocks.
+> On Tue, Aug 30, 2022 at 6:18 PM Andrei Vagin <avagin@gmail.com> wrote:
+>>On Tue, Aug 30, 2022 at 10:49:43PM +0300, Alexey Izbyshev wrote:
+> <snip>
+>>> @@ -1030,6 +1033,10 @@ static int exec_mmap(struct mm_struct *mm)
+>>>         tsk->mm->vmacache_seqnum = 0;
+>>>         vmacache_flush(tsk);
+>>>         task_unlock(tsk);
+>>> +
+>>> +       if (vfork)
+>>> +               timens_on_fork(tsk->nsproxy, tsk);
+>>> +
+>>> 
+>>> Similarly, even after a normal vfork(), time namespace switch could be
+>>> silently skipped if the parent dies before "tsk->vfork_done" is read. Again,
+>>> I don't know whether anybody cares, but this behavior seems non-obvious and
+>>> probably unintended to me.
+>> This is the more interesting case. I will try to find out how we can
+>> handle it properly.
+>
+> It might not be a good idea to use vfork_done in this case. Let's
+> think about what we have and what we want to change. We don't want to
+> allow switching timens if a process mm is used by someone else. But we
+> forgot to handle execve that creates a new mm, and we can't change this
+> behavior right now because it can affect current users. Right?
+>
+> So maybe the best choice, in this case, is to change behavior by adding
+> a new control that enables it. The first interface that comes to my mind
+> is to introduce a new ioctl for a namespace file descriptor. Here is a
+> draft patch below that should help to understand what I mean.
 
-Update the lpass_aon_cc_main_rcg_clk_src ops to park the RCG at XO after
-disable as this clock signal is used by hardware to turn ON memories in
-LPASS. Also add the external mclk to interface external MI2S.
+Doesn't this bring back the old posix_spawn (vfork) failure?
 
-Fixes: a9dd26639d05 ("clk: qcom: lpass: Add support for LPASS clock controller for SC7280")
-Signed-off-by: Taniya Das <quic_tdas@quicinc.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
----
- drivers/clk/qcom/lpassaudiocc-sc7280.c | 24 ++++++++++++++++++++++--
- drivers/clk/qcom/lpasscorecc-sc7280.c  | 33 +++++++++++++++++++++++++++++++++
- 2 files changed, 55 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/clk/qcom/lpassaudiocc-sc7280.c b/drivers/clk/qcom/lpassaudiocc-sc7280.c
-index 6067328..5d4bc56 100644
---- a/drivers/clk/qcom/lpassaudiocc-sc7280.c
-+++ b/drivers/clk/qcom/lpassaudiocc-sc7280.c
-@@ -23,6 +23,7 @@
- #include "clk-regmap-mux.h"
- #include "common.h"
- #include "gdsc.h"
-+#include "reset.h"
- 
- enum {
- 	P_BI_TCXO,
-@@ -248,7 +249,7 @@ static struct clk_rcg2 lpass_aon_cc_main_rcg_clk_src = {
- 		.parent_data = lpass_aon_cc_parent_data_0,
- 		.num_parents = ARRAY_SIZE(lpass_aon_cc_parent_data_0),
- 		.flags = CLK_OPS_PARENT_ENABLE,
--		.ops = &clk_rcg2_ops,
-+		.ops = &clk_rcg2_shared_ops,
- 	},
- };
- 
-@@ -703,6 +704,18 @@ static const struct qcom_cc_desc lpass_audio_cc_sc7280_desc = {
- 	.num_clks = ARRAY_SIZE(lpass_audio_cc_sc7280_clocks),
- };
- 
-+static const struct qcom_reset_map lpass_audio_cc_sc7280_resets[] = {
-+	[LPASS_AUDIO_SWR_RX_CGCR] =  { 0xa0, 1 },
-+	[LPASS_AUDIO_SWR_TX_CGCR] =  { 0xa8, 1 },
-+	[LPASS_AUDIO_SWR_WSA_CGCR] = { 0xb0, 1 },
-+};
-+
-+static const struct qcom_cc_desc lpass_audio_cc_reset_sc7280_desc = {
-+	.config = &lpass_audio_cc_sc7280_regmap_config,
-+	.resets = lpass_audio_cc_sc7280_resets,
-+	.num_resets = ARRAY_SIZE(lpass_audio_cc_sc7280_resets),
-+};
-+
- static const struct of_device_id lpass_audio_cc_sc7280_match_table[] = {
- 	{ .compatible = "qcom,sc7280-lpassaudiocc" },
- 	{ }
-@@ -772,13 +785,20 @@ static int lpass_audio_cc_sc7280_probe(struct platform_device *pdev)
- 	regmap_write(regmap, 0x4, 0x3b);
- 	regmap_write(regmap, 0x8, 0xff05);
- 
--	ret = qcom_cc_really_probe(pdev, &lpass_audio_cc_sc7280_desc, regmap);
-+	ret = qcom_cc_probe_by_index(pdev, 0, &lpass_audio_cc_sc7280_desc);
- 	if (ret) {
- 		dev_err(&pdev->dev, "Failed to register LPASS AUDIO CC clocks\n");
- 		pm_runtime_disable(&pdev->dev);
- 		return ret;
- 	}
- 
-+	ret = qcom_cc_probe_by_index(pdev, 1, &lpass_audio_cc_reset_sc7280_desc);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Failed to register LPASS AUDIO CC Resets\n");
-+		pm_runtime_disable(&pdev->dev);
-+		return ret;
-+	}
-+
- 	pm_runtime_mark_last_busy(&pdev->dev);
- 	pm_runtime_put_autosuspend(&pdev->dev);
- 	pm_runtime_put_sync(&pdev->dev);
-diff --git a/drivers/clk/qcom/lpasscorecc-sc7280.c b/drivers/clk/qcom/lpasscorecc-sc7280.c
-index 1f1f1bd..6ad19b0 100644
---- a/drivers/clk/qcom/lpasscorecc-sc7280.c
-+++ b/drivers/clk/qcom/lpasscorecc-sc7280.c
-@@ -190,6 +190,19 @@ static struct clk_rcg2 lpass_core_cc_ext_if1_clk_src = {
- 	},
- };
- 
-+static struct clk_rcg2 lpass_core_cc_ext_mclk0_clk_src = {
-+	.cmd_rcgr = 0x20000,
-+	.mnd_width = 8,
-+	.hid_width = 5,
-+	.parent_map = lpass_core_cc_parent_map_0,
-+	.freq_tbl = ftbl_lpass_core_cc_ext_if0_clk_src,
-+	.clkr.hw.init = &(const struct clk_init_data){
-+		.name = "lpass_core_cc_ext_mclk0_clk_src",
-+		.parent_data = lpass_core_cc_parent_data_0,
-+		.num_parents = ARRAY_SIZE(lpass_core_cc_parent_data_0),
-+		.ops = &clk_rcg2_ops,
-+	},
-+};
- 
- static struct clk_branch lpass_core_cc_core_clk = {
- 	.halt_reg = 0x1f000,
-@@ -283,6 +296,24 @@ static struct clk_branch lpass_core_cc_lpm_mem0_core_clk = {
- 	},
- };
- 
-+static struct clk_branch lpass_core_cc_ext_mclk0_clk = {
-+	.halt_reg = 0x20014,
-+	.halt_check = BRANCH_HALT,
-+	.clkr = {
-+		.enable_reg = 0x20014,
-+		.enable_mask = BIT(0),
-+		.hw.init = &(const struct clk_init_data){
-+			.name = "lpass_core_cc_ext_mclk0_clk",
-+			.parent_hws = (const struct clk_hw*[]){
-+				&lpass_core_cc_ext_mclk0_clk_src.clkr.hw,
-+			},
-+			.num_parents = 1,
-+			.flags = CLK_SET_RATE_PARENT,
-+			.ops = &clk_branch2_ops,
-+		},
-+	},
-+};
-+
- static struct clk_branch lpass_core_cc_sysnoc_mport_core_clk = {
- 	.halt_reg = 0x23000,
- 	.halt_check = BRANCH_HALT_VOTED,
-@@ -326,6 +357,8 @@ static struct clk_regmap *lpass_core_cc_sc7280_clocks[] = {
- 	[LPASS_CORE_CC_LPM_CORE_CLK] = &lpass_core_cc_lpm_core_clk.clkr,
- 	[LPASS_CORE_CC_LPM_MEM0_CORE_CLK] = &lpass_core_cc_lpm_mem0_core_clk.clkr,
- 	[LPASS_CORE_CC_SYSNOC_MPORT_CORE_CLK] = &lpass_core_cc_sysnoc_mport_core_clk.clkr,
-+	[LPASS_CORE_CC_EXT_MCLK0_CLK] = &lpass_core_cc_ext_mclk0_clk.clkr,
-+	[LPASS_CORE_CC_EXT_MCLK0_CLK_SRC] = &lpass_core_cc_ext_mclk0_clk_src.clkr,
- };
- 
- static struct regmap_config lpass_core_cc_sc7280_regmap_config = {
--- 
-2.7.4
+Thanks,
+Florian
 
