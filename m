@@ -2,110 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CC26ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:26:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B7C3ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:27:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233983AbiIAH0y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 03:26:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46964 "EHLO
+        id S233586AbiIAH1I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 03:27:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233974AbiIAHZs (ORCPT
+        with ESMTP id S233599AbiIAHZ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 03:25:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 528821144B;
-        Thu,  1 Sep 2022 00:24:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91BA361D0B;
-        Thu,  1 Sep 2022 07:24:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC12FC433D6;
-        Thu,  1 Sep 2022 07:24:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662017093;
-        bh=stL9+yzK0zgdLie5xf0hjyraAlajedBKEBb65rMMvRw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Deo+YD+Qtg4Ei+JHnT2yXSe+uKnWw8TmyJIetCBkvgsk1Q7LlzsyoYoLTsOfoIi9H
-         OwhDTSuHW6wmK1UEXZdoB3V1y6jPaa6Gnl+RYAHD8O9Y3LVX5IfL7CRFiOeksw36Wm
-         EYmdTybxXyum1jTy27Dch3Ul5cE/l8TcGSQ6IV0XZkNiYbEcW7Nus1P8ePSG+R584J
-         ytYy7VQ/lm2hstwOzR4PGDiapbPxiRVClotXRc2TZgKCgbQB6oL7YeI8VElF+RKMDD
-         D5IhD/lqXpNx9SApSSGxj9pQdWDifYzzwY17Ei+NamHJpcHkmogcZb4K3wswvbiX13
-         GO2I5M6b6Bowg==
-Received: by pali.im (Postfix)
-        id E3E127B8; Thu,  1 Sep 2022 09:24:49 +0200 (CEST)
-Date:   Thu, 1 Sep 2022 09:24:49 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org,
+        Thu, 1 Sep 2022 03:25:57 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57C12BCB8;
+        Thu,  1 Sep 2022 00:24:53 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id bd26-20020a05600c1f1a00b003a5e82a6474so866823wmb.4;
+        Thu, 01 Sep 2022 00:24:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=Po8E7/OIBjbSJpNPSFcYw7gzbRFnsYc7RcCzMnBQZCE=;
+        b=d+ZAEadifEtEK0I36qrNTGwR7qCxMEj/G5oudE0uUNdcMRZV1nVWyBCNE42U/e55ct
+         JKDq5ldbWlHu2wi98fEKGTr+x3ciyq8FW2PNel3/7hbcUtYdVWeRVjSSUaTHQn/vwgyc
+         RvQlgCUOe6WYi1K6Z7FGFQJWQ8sx4/177P9Q5c5MCRMdWRhPSUPjRjOCk+xVIhLM3eIu
+         EdBM2b70gynfcr0lDaDOA2v7ASVG5jwbB7M+RBlYfKcjcvZmifEMfT+okI1e3Np6f9CU
+         9zeAZXyvvLfh8cb4hxHqPdHl0YQGfsoQNSkEJvUBRe+GuCRywu+yvR/sXPwKriYMzEW8
+         /VjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=Po8E7/OIBjbSJpNPSFcYw7gzbRFnsYc7RcCzMnBQZCE=;
+        b=ppN7dyPG/OnD4ivAWkHClR5pA4bb2M1D8v9TwYZSZF+RxP6zQQpmERitIsrlSmO7p6
+         YTSX/omyimqamT+7ZfbV8y4zM6FkXoQW/2m46E/ayQKdkXqEHSCLyxCVHyk05zKYuGPQ
+         dvG6MMBYJOzgAtTcZCMXPqNc5US0/yTg6Hkj0BBReiuWrBVeGMmaFV0PCR6U0U+EuyYl
+         bdxG1LKf3DAChSK5ZmP5wd3ElxTHHvIpdo8UgybZbl+wmI8zHCq5/h4Tx5UQ+aCCpMpB
+         yOdSsIwLMvMn8uQ6Hw/kNcBXUS3+rK0kw265oxjDJH0U1rnQUO1IEX8FysMfKeVW4vTu
+         LXHQ==
+X-Gm-Message-State: ACgBeo2AvP9Hd6x73Ek2Ec4rSdft1CTMaC+9JpKZDsnQljoM7p+p3Q1M
+        4F2UYNjEtGj4964CIDx75Ps=
+X-Google-Smtp-Source: AA6agR4X3Xg49JGgo5+uiWIgYlxOk2IfYPYs3HN+jSnL2bjj3B9lNMNRvLsokdg2o7KqvVvcJ8PMAA==
+X-Received: by 2002:a05:600c:22ca:b0:3a5:c30d:ca9f with SMTP id 10-20020a05600c22ca00b003a5c30dca9fmr4172325wmg.25.1662017091310;
+        Thu, 01 Sep 2022 00:24:51 -0700 (PDT)
+Received: from localhost (87-126-55-15.ip.btc-net.bg. [87.126.55.15])
+        by smtp.gmail.com with ESMTPSA id f14-20020a05600c4e8e00b003a5dbdea6a8sm5515967wmq.27.2022.09.01.00.24.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Sep 2022 00:24:50 -0700 (PDT)
+From:   Iskren Chernev <iskren.chernev@gmail.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        Iskren Chernev <iskren.chernev@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] powerpc/pci: Enable PCI domains in /proc when PCI bus
- numbers are not unique
-Message-ID: <20220901072449.hswlq5fpnqrhgvcf@pali>
-References: <20220820115113.30581-1-pali@kernel.org>
- <878rnclq47.fsf@mpe.ellerman.id.au>
- <20220825083713.4glfivegmodluiun@pali>
- <87wnanu4vf.fsf@mpe.ellerman.id.au>
+Subject: [PATCH 10/14] arm64: dts: qcom: sm6115: Add SPMI bus node
+Date:   Thu,  1 Sep 2022 10:24:09 +0300
+Message-Id: <20220901072414.1923075-11-iskren.chernev@gmail.com>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220901072414.1923075-1-iskren.chernev@gmail.com>
+References: <20220901072414.1923075-1-iskren.chernev@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <87wnanu4vf.fsf@mpe.ellerman.id.au>
-User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thursday 01 September 2022 13:53:56 Michael Ellerman wrote:
-> Pali Rohár <pali@kernel.org> writes:
-> > On Thursday 25 August 2022 17:49:28 Michael Ellerman wrote:
-> >> Pali Rohár <pali@kernel.org> writes:
-> >> > On 32-bit powerpc systems with more PCIe controllers and more PCI domains,
-> >> > where on more PCI domains are same PCI numbers, when kernel is compiled
-> >> > with CONFIG_PROC_FS=y and CONFIG_PPC_PCI_BUS_NUM_DOMAIN_DEPENDENT=y
-> >> > options, kernel prints "proc_dir_entry 'pci/01' already registered" error
-> >> > message.
-> >> 
-> >> Thanks, I'll pick this up.
-> >> 
-> >> > This regression started appearing after commit 566356813082 ("powerpc/pci:
-> >> > Add config option for using all 256 PCI buses") in case in each mPCIe slot
-> >> > is connected PCIe card and therefore PCI bus 1 is populated in for every
-> >> > PCIe controller / PCI domain.
-> >> >
-> >> > The reason is that PCI procfs code expects that when PCI bus numbers are
-> >> > not unique across all PCI domains, function pci_proc_domain() returns true
-> >> > for domain dependent buses.
-> >> >
-> >> > Fix this issue by setting PCI_ENABLE_PROC_DOMAINS and PCI_COMPAT_DOMAIN_0
-> >> > flags for 32-bit powerpc code when CONFIG_PPC_PCI_BUS_NUM_DOMAIN_DEPENDENT
-> >> > is enabled. Same approach is already implemented for 64-bit powerpc code
-> >> > (where PCI bus numbers are always domain dependent).
-> >> 
-> >> We also have the same in ppc4xx_pci_find_bridges().
-> >> 
-> >> And if we can eventually make CONFIG_PPC_PCI_BUS_NUM_DOMAIN_DEPENDENT
-> >> the standard behaviour on 32-bit then everything would behave the same
-> >> and we could simplify pci_proc_domain() to match what other arches do.
-> >
-> > I sent two patches which do another steps to achieve it:
-> > https://lore.kernel.org/linuxppc-dev/20220817163927.24453-1-pali@kernel.org/t/#u
-> >
-> > Main blocker is pci-OF-bus-map which is in direct conflict with
-> > CONFIG_PPC_PCI_BUS_NUM_DOMAIN_DEPENDENT and which used on chrp and pmac.
-> > And I have no idea if pci-OF-bus-map is still needed or not.
-> 
-> Yeah thanks, I saw those patches.
-> 
-> I can't find any code that refers to pci-OF-bus-map, so I'm inclined to
-> remove it entirely.
-> 
-> But I'll do some more searching to see if I can find any references to
-> it in old code.
-> 
-> cheers
+Add support for the SPMI bus on the SM6115.
 
-From the code itself I have feeling that some external programs or maybe
-some firmware can access or use this property. But I have really no idea.
+Signed-off-by: Iskren Chernev <iskren.chernev@gmail.com>
+---
+ arch/arm64/boot/dts/qcom/sm6115.dtsi | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/sm6115.dtsi b/arch/arm64/boot/dts/qcom/sm6115.dtsi
+index 491fffff8aa1..d578f8425e36 100644
+--- a/arch/arm64/boot/dts/qcom/sm6115.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm6115.dtsi
+@@ -543,6 +543,25 @@ qusb2_hstx_trim: hstx_trim@25b {
+ 			};
+ 		};
+ 
++		spmi_bus: qcom,spmi@1c40000 {
++			compatible = "qcom,spmi-pmic-arb";
++			reg = <0x1c40000 0x1100>,
++			      <0x1e00000 0x2000000>,
++			      <0x3e00000 0x100000>,
++			      <0x3f00000 0xa0000>,
++			      <0x1c0a000 0x26000>;
++			reg-names = "core", "chnls", "obsrvr", "intr", "cnfg";
++			interrupt-names = "periph_irq";
++			interrupts = <GIC_SPI 183 IRQ_TYPE_LEVEL_HIGH>;
++			qcom,ee = <0>;
++			qcom,channel = <0>;
++			#address-cells = <2>;
++			#size-cells = <0>;
++			interrupt-controller;
++			#interrupt-cells = <4>;
++			cell-index = <0>;
++		};
++
+ 		tcsr_mutex_regs: syscon@1f40000 {
+ 			compatible = "syscon";
+ 			reg = <0x340000 0x20000>;
+-- 
+2.37.2
+
