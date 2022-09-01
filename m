@@ -2,106 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FC28ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:01:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE54FC67868
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:02:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233504AbiIAHBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 03:01:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49410 "EHLO
+        id S233477AbiIAHCE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 03:02:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233430AbiIAHAx (ORCPT
+        with ESMTP id S232891AbiIAHBA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 03:00:53 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0714B56DB
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 00:00:31 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id 72so16651426pfx.9
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 00:00:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=XcLxmoK8X1rF3FVFD0JBqtFjjFipU55iwKHDlizFoCg=;
-        b=ELWrLnRa+jJMj9l69Mv3iL3lMyvZ5BmSP0cgO1D9xRZ6jvTsvYtpxQJsPNxPna9r+/
-         sipKO9ZnYcpqQ3+wkD9z+lxmFIrTcPalX8cC5zcyVEgVQ9cnObBprDvuaGPJ1C9ZMBtk
-         aDm193aRttofrbI8KWUVS3yxeDvKZhupR5FCC6cZ2dag6q3oCvaWebHj0yr63tUSqrSc
-         J61vJMomwIMzImOJxvR7yz6znfAuez1YyabI1w8DEOWJ48agv285VjBz/yk785/rSDWk
-         FysEoblcKPbkP5lA53XuRYncOCM6SAI16EWdeeEAP/1FeTwO0K3cUR/leywK/5xzFLbr
-         /AgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=XcLxmoK8X1rF3FVFD0JBqtFjjFipU55iwKHDlizFoCg=;
-        b=XYEGMMDaJ2CatqWjqvtPGGWPodsnveTFVwiNxGi2DpK4SQb/8yTRFxspZOSkHU6RJw
-         c5P4jRNnh8gGlwq958T1S2cJ0ilJjNFbhrkVir8upLMceJeQVoC0oY39r2K1hwxzUDCA
-         eU1xt7RaUO1OpebPoSTVrFKUaDeaTWKsmeXeyC3HcmHfU7HtiKaalwDdJeZHDUb9Da+s
-         Bblg5vQuqxyp9WyLNoJ1G8YH4JfRUg7hEIUcN25qvknHJ0IFHgskHqsO9QCXQWz+YuEk
-         XnhfO4Lmuh2oQpDaeP5BJ7I/allWoCeypMx1/uI8c2n6Lv9iZO3nY0ntX9vSBLjUKERZ
-         7GVw==
-X-Gm-Message-State: ACgBeo2M7FRPCG/qK8+QGmf6q0AvomdbgpnMj66i9LB8T7yRLshS8Y7a
-        oas5BNMDALXtqN6GnutvpimGhA==
-X-Google-Smtp-Source: AA6agR6uOq/9FNUO/JkGYj+fPAoBwunDhHXuoa8RiEVETo4ejMSHHIQD4X5ylxMWepEgJ6YgSPPJUQ==
-X-Received: by 2002:a63:1e11:0:b0:41c:d233:31f8 with SMTP id e17-20020a631e11000000b0041cd23331f8mr25233343pge.228.1662015631026;
-        Thu, 01 Sep 2022 00:00:31 -0700 (PDT)
-Received: from localhost ([122.171.18.80])
-        by smtp.gmail.com with ESMTPSA id i3-20020a17090ac40300b001fd77933fb3sm2559403pjt.17.2022.09.01.00.00.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 00:00:30 -0700 (PDT)
-Date:   Thu, 1 Sep 2022 12:30:28 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     "Yuan, Perry" <Perry.Yuan@amd.com>
-Cc:     "rafael.j.wysocki@intel.com" <rafael.j.wysocki@intel.com>,
-        "Huang, Ray" <Ray.Huang@amd.com>,
-        "Sharma, Deepak" <Deepak.Sharma@amd.com>,
-        "Limonciello, Mario" <Mario.Limonciello@amd.com>,
-        "Fontenot, Nathan" <Nathan.Fontenot@amd.com>,
-        "Deucher, Alexander" <Alexander.Deucher@amd.com>,
-        "Su, Jinzhou (Joe)" <Jinzhou.Su@amd.com>,
-        "Huang, Shimmer" <Shimmer.Huang@amd.com>,
-        "Du, Xiaojian" <Xiaojian.Du@amd.com>,
-        "Meng, Li (Jassmine)" <Li.Meng@amd.com>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v6] cpufreq: amd-pstate: cleanup the unused and
- duplicated headers declaration
-Message-ID: <20220901070028.gdm7uiszm35iom3e@vireshk-i7>
-References: <20220901062339.2357552-1-Perry.Yuan@amd.com>
- <20220901063153.zutwnnfykaz47sah@vireshk-i7>
- <DM4PR12MB5278D01EA2D78367F182C7C69C7B9@DM4PR12MB5278.namprd12.prod.outlook.com>
+        Thu, 1 Sep 2022 03:01:00 -0400
+Received: from frasgout11.his.huawei.com (frasgout11.his.huawei.com [14.137.139.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 237221928D;
+        Thu,  1 Sep 2022 00:00:45 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.18.147.227])
+        by frasgout11.his.huawei.com (SkyGuard) with ESMTP id 4MJBcz4dNGz9v7HB;
+        Thu,  1 Sep 2022 14:55:15 +0800 (CST)
+Received: from roberto-ThinkStation-P620 (unknown [10.204.63.22])
+        by APP1 (Coremail) with SMTP id LxC2BwD3n5N0WBBjL7ITAA--.38593S2;
+        Thu, 01 Sep 2022 08:00:16 +0100 (CET)
+Message-ID: <af509503e534dfbb5b4943d97fbdb27f3e8914fc.camel@huaweicloud.com>
+Subject: Re: [PATCH v15 05/12] KEYS: Move KEY_LOOKUP_ to include/linux/key.h
+ and define KEY_LOOKUP_ALL
+From:   Roberto Sassu <roberto.sassu@huaweicloud.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org, mykolal@fb.com,
+        dhowells@redhat.com, jarkko@kernel.org, rostedt@goodmis.org,
+        mingo@redhat.com, paul@paul-moore.com, jmorris@namei.org,
+        serge@hallyn.com, shuah@kernel.org
+Cc:     bpf@vger.kernel.org, keyrings@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        deso@posteo.net, memxor@gmail.com,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Date:   Thu, 01 Sep 2022 09:00:00 +0200
+In-Reply-To: <20220831165445.1071641-6-roberto.sassu@huaweicloud.com>
+References: <20220831165445.1071641-1-roberto.sassu@huaweicloud.com>
+         <20220831165445.1071641-6-roberto.sassu@huaweicloud.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DM4PR12MB5278D01EA2D78367F182C7C69C7B9@DM4PR12MB5278.namprd12.prod.outlook.com>
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID: LxC2BwD3n5N0WBBjL7ITAA--.38593S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7uF1DurW8Zr4DXrW5KrWkCrg_yoW8KryrpF
+        WDC3WFkryjyry293s7GanFya1Fk398Gr12kF9Fgwn0vFsag34xtr1xKF4ruF1FyrW7ur12
+        grsF9ayUuw4DA3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUk0b4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
+        6cxKx2IYs7xG6r1S6rWUM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
+        vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7Cj
+        xVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_Jr0_Gr1l84ACjcxK6I8E87Iv6xkF7I
+        0E14v26r4j6r4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG
+        6I80ewAv7VC0I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFV
+        Cjc4AY6r1j6r4UM4x0Y48IcVAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7MxAIw28IcxkI
+        7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxV
+        Cjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVW8ZVWrXwCIc40Y0x0EwIxGrwCI42IY
+        6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWxJVW8Jr1lIxAIcV
+        CF04k26cxKx2IYs7xG6Fyj6rWUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv
+        6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjxUOlksDUUUU
+X-CM-SenderInfo: purev21wro2thvvxqx5xdzvxpfor3voofrz/1tbiAQACBF1jj4J80AAAsY
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01-09-22, 06:56, Yuan, Perry wrote:
-> > On 01-09-22, 14:23, Perry Yuan wrote:
-> > > Cleanup the headers declaration which are not used actually and
-> > 
-> > This is okay.
+On Wed, 2022-08-31 at 18:54 +0200, Roberto Sassu wrote:
+> From: Roberto Sassu <roberto.sassu@huawei.com>
 > 
-> Thank you help to confirm this . 
+> In preparation for the patch that introduces the
+> bpf_lookup_user_key() eBPF
+> kfunc, move KEY_LOOKUP_ definitions to include/linux/key.h, to be
+> able to
+> validate the kfunc parameters. Add them to enum key_lookup_flag, so
+> that
+> all the current ones and the ones defined in the future are
+> automatically
+> exported through BTF and available to eBPF programs.
 > 
-> > 
-> > > some duplicated declaration which is declarated in some other headers
-> > > already, it will help to simplify the header part.
-> > 
-> > This isn't.
-> > 
-> > Every file should directly include headers they use definitions from, instead of
-> > relying on indirect inclusions.
-> > 
-> > --
-> > Viresh
+> Also, add KEY_LOOKUP_ALL to the enum, to facilitate checking whether
+> a
+> variable contains only defined flags.
 > 
-> Do I need to update the commit with another V7 version ?
+> Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+> Reviewed-by: KP Singh <kpsingh@kernel.org>
+> Acked-by: Jarkko Sakkinen <jarkko@kernel.org>
 
-I am not sure which headers you removed are still required, working
-for now since included indirectly. If there are any, then better to
-get a new version out.
+Jarkko, I kept your ack although the code slightly changed to use the
+enum instead of #define.
 
--- 
-viresh
+If you have more comments/suggestions, please let me know.
+
+Thanks
+
+Roberto
+
+> ---
+>  include/linux/key.h      | 6 ++++++
+>  security/keys/internal.h | 2 --
+>  2 files changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/linux/key.h b/include/linux/key.h
+> index 7febc4881363..d84171f90cbd 100644
+> --- a/include/linux/key.h
+> +++ b/include/linux/key.h
+> @@ -88,6 +88,12 @@ enum key_need_perm {
+>  	KEY_DEFER_PERM_CHECK,	/* Special: permission check is
+> deferred */
+>  };
+>  
+> +enum key_lookup_flag {
+> +	KEY_LOOKUP_CREATE = 0x01,	/* Create special keyrings if they
+> don't exist */
+> +	KEY_LOOKUP_PARTIAL = 0x02,	/* Permit partially
+> constructed keys to be found */
+> +	KEY_LOOKUP_ALL = (KEY_LOOKUP_CREATE | KEY_LOOKUP_PARTIAL), /*
+> OR of previous flags */
+> +};
+> +
+>  struct seq_file;
+>  struct user_struct;
+>  struct signal_struct;
+> diff --git a/security/keys/internal.h b/security/keys/internal.h
+> index 9b9cf3b6fcbb..3c1e7122076b 100644
+> --- a/security/keys/internal.h
+> +++ b/security/keys/internal.h
+> @@ -165,8 +165,6 @@ extern struct key *request_key_and_link(struct
+> key_type *type,
+>  
+>  extern bool lookup_user_key_possessed(const struct key *key,
+>  				      const struct key_match_data
+> *match_data);
+> -#define KEY_LOOKUP_CREATE	0x01
+> -#define KEY_LOOKUP_PARTIAL	0x02
+>  
+>  extern long join_session_keyring(const char *name);
+>  extern void key_change_session_keyring(struct callback_head *twork);
+
