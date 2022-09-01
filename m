@@ -2,187 +2,311 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29746ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:22:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CDEDECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:22:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233779AbiIAHV6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 03:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33236 "EHLO
+        id S231764AbiIAHWM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 03:22:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233867AbiIAHVd (ORCPT
+        with ESMTP id S233820AbiIAHVj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 03:21:33 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 576E3BB6A6
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 00:20:20 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id bq23so23145549lfb.7
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 00:20:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=iAjJ7YXrX4dY+khgJ0CvZFUwoSGJiVC2yG+JBLcRLOs=;
-        b=fLWwUhHvPyto5H3nuIWvqJPMNvmWOB004/EKKa2V47PhZjWX58wky1TPW9KCu0SFig
-         8d0o67kBt3PyANHrQ6WwuTiJtIMHIHbH7rwT9RJjsFcsUvCiDfo3mwdriq1zL4a6OS36
-         VtWY9yGEEO5z5kdRf0j3O953oqkpWYjltrRHw4np1NPtTrOIVF4b954l3eZ1Qz8VUeIl
-         vAN6ue2tgabtHJ5PX4nMvGJlRbeUMg5H6dOnuHgWq2g4aJZ1xDmndzzvb82dNGgGsUzx
-         12zAEYUmOBl+HrL1VeMRv/QfRwFEpyOph8nx7WSD+8TtBgoz+NhfhcYDj4B1xWsjo+zA
-         NBEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=iAjJ7YXrX4dY+khgJ0CvZFUwoSGJiVC2yG+JBLcRLOs=;
-        b=l4gukejrw4O2LeZyrTQkrRM7Ke8qfy8EUdG2G2cdgKPdqKv/M4ePFymnP2hwP9VyTU
-         An82qaxzJMPR/dgcfAAUal5PN3vh/jpQYZTTKcyfOea1Pr3YbuM8ScFSyeZ35ENohR4M
-         4HOX9YNmdzmgNolJ27lrthVHIUA+cS2LRXaeOJBAcd8GeBv5rpWBw1aFNnh7m0tUoHMR
-         eFAGmSkFrl4L0dUBnxF7TqJNy6AmlHqxnKDZDRT4mKD0upcrqEMsvH5D9nYymI7CEy2k
-         zIfT34r/IE4YZkNiYedPzchVN+c8bEtGEAoDiVVlhUky7BERujkxkrkK2hZs0e6DSV/X
-         EW4Q==
-X-Gm-Message-State: ACgBeo2QU68Jvt5qUYiZDQq2EHTfiVH0Ls0phIFer4ZdtduQYx8rgngJ
-        pn8WFYQ4Dcg1s9mvt1YTqvhOrw==
-X-Google-Smtp-Source: AA6agR7p9hZ4KeN5ZMThv3ZJ9FdSHYAb/sKypVOmRnbR+PSR6S3byZbXwveJtyu3K7crCSdR8rrTdA==
-X-Received: by 2002:a05:6512:230c:b0:494:8ddb:606 with SMTP id o12-20020a056512230c00b004948ddb0606mr1844510lfu.44.1662016814560;
-        Thu, 01 Sep 2022 00:20:14 -0700 (PDT)
-Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id r26-20020a2e80da000000b0025e49aaae10sm1575867ljg.12.2022.09.01.00.20.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Sep 2022 00:20:14 -0700 (PDT)
-Message-ID: <936c5623-07b9-c49d-e113-fc056a4eb9bc@linaro.org>
-Date:   Thu, 1 Sep 2022 10:20:12 +0300
+        Thu, 1 Sep 2022 03:21:39 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93FC3E3C03;
+        Thu,  1 Sep 2022 00:20:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662016831; x=1693552831;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=QqWka4HaQibf5c1Z2BcUu7NHrunHaX6aNNmX/Lahlgs=;
+  b=BfZG3jWp5+T+dYwkmR9Yr8dj6tu/qZxNaTRgcbYveftu5mOs1Jeo6hqM
+   Z6qGke/fyf8qCdNxKQKcg91QzdzTfADjmZyc9M3M0/PWia579cRCp8c/v
+   hUKsZS9HuXrD/Ry7IGrkg29QeQu9y5FrmNFamu4rjCplMJ25mJRZZVM+6
+   ELDuZ6fz0kok1Ln7FrUrR5VwQH8LmunQnQh9Zh7Bu2J1p1Uz6NMXEk1yr
+   RBijocDZRAqtwENw9+dET21RXbgC0MC4U9PftvWzxEt3qHlvJqGt1anfO
+   mpcz+O6S6gH0HOrMjdv6VXGRyUS7hfygSdOXmX8Wc7cbcogZogos/K9mn
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="321783512"
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="321783512"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 00:19:24 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="673720695"
+Received: from sqa-gate.sh.intel.com (HELO michael.clx.dev.tsp.org) ([10.239.48.212])
+  by fmsmga008.fm.intel.com with ESMTP; 01 Sep 2022 00:19:16 -0700
+From:   Kevin Tian <kevin.tian@intel.com>
+To:     Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Zhi Wang <zhi.a.wang@intel.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Eric Farman <farman@linux.ibm.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Tony Krowiak <akrowiak@linux.ibm.com>,
+        Jason Herne <jjherne@linux.ibm.com>,
+        Harald Freudenberger <freude@linux.ibm.com>,
+        Diana Craciun <diana.craciun@oss.nxp.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Longfang Liu <liulongfang@huawei.com>,
+        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Kirti Wankhede <kwankhede@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Abhishek Sahu <abhsahu@nvidia.com>,
+        intel-gvt-dev@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org
+Cc:     Yi Liu <yi.l.liu@intel.com>
+Subject: [PATCH v2 12/15] vfio/amba: Use the new device life cycle helpers
+Date:   Thu,  1 Sep 2022 22:37:44 +0800
+Message-Id: <20220901143747.32858-13-kevin.tian@intel.com>
+X-Mailer: git-send-email 2.21.3
+In-Reply-To: <20220901143747.32858-1-kevin.tian@intel.com>
+References: <20220901143747.32858-1-kevin.tian@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v6 06/17] dt-bindings: mfd: amd,pensando-elbasr: Add AMD
- Pensando Elba System Resource chip
-Content-Language: en-US
-To:     "Larson, Bradley" <Bradley.Larson@amd.com>,
-        Rob Herring <robh@kernel.org>, Brad Larson <brad@pensando.io>
-Cc:     "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        "adrian.hunter@intel.com" <adrian.hunter@intel.com>,
-        "alcooperx@gmail.com" <alcooperx@gmail.com>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "brijeshkumar.singh@amd.com" <brijeshkumar.singh@amd.com>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "gsomlo@gmail.com" <gsomlo@gmail.com>,
-        "gerg@linux-m68k.org" <gerg@linux-m68k.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "lee.jones@linaro.org" <lee.jones@linaro.org>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        "yamada.masahiro@socionext.com" <yamada.masahiro@socionext.com>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "piotrs@cadence.com" <piotrs@cadence.com>,
-        "p.yadav@ti.com" <p.yadav@ti.com>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "samuel@sholland.org" <samuel@sholland.org>,
-        "fancer.lancer@gmail.com" <fancer.lancer@gmail.com>,
-        "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>,
-        "Lendacky, Thomas" <Thomas.Lendacky@amd.com>,
-        "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
-        "will@kernel.org" <will@kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-References: <20220820195750.70861-1-brad@pensando.io>
- <20220820195750.70861-7-brad@pensando.io>
- <20220822142544.GA3770388-robh@kernel.org>
- <554f33b4-d235-5516-e8ff-5bf80d63a9b9@amd.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <554f33b4-d235-5516-e8ff-5bf80d63a9b9@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/09/2022 02:01, Larson, Bradley wrote:
-> 
->>> +  is implemented by a sub-device reset-controller which accesses
->>> +  a CS0 control register.
->>> +
->>> +maintainers:
->>> +  - Brad Larson <blarson@amd.com>
->>> +
->>> +properties:
->>> +  compatible:
->>> +    items:
->>> +      - enum:
->>> +          - amd,pensando-elbasr
->>> +
->>> +  spi-max-frequency:
->>> +    description: Maximum SPI frequency of the device in Hz.
->> No need for generic descriptions of common properties.
-> 
-> Changed to "spi-max-frequency: true" and moved to end of properties.
+Implement amba's own vfio_device_ops.
 
-Then you should rather reference spi-peripheral-props just like other
-SPI devices.
+Remove vfio_platform_probe/remove_common() given no user now.
 
-> 
->>> +
->>> +  reg:
->>> +    maxItems: 1
->>> +
->>> +  '#address-cells':
->>> +    const: 1
->>> +
->>> +  '#size-cells':
->>> +    const: 0
->>> +
->>> +  interrupts:
->>> +    maxItems: 1
->>> +
->>> +required:
->>> +  - compatible
->>> +  - reg
->>> +  - spi-max-frequency
->>> +
->>> +patternProperties:
->>> +  '^reset-controller@[a-f0-9]+$':
->>> +    $ref: /schemas/reset/amd,pensando-elbasr-reset.yaml
->>> +
->>> +additionalProperties: false
->>> +
->>> +examples:
->>> +  - |
->>> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
->>> +
->>> +    spi {
->>> +        #address-cells = <1>;
->>> +        #size-cells = <0>;
->>> +        num-cs = <4>;
->>> +
->>> +        sysc: system-controller@0 {
->>> +            compatible = "amd,pensando-elbasr";
->>> +            reg = <0>;
->>> +            #address-cells = <1>;
->>> +            #size-cells = <0>;
->>> +            spi-max-frequency = <12000000>;
->>> +
->>> +            rstc: reset-controller@0 {
->>> +                compatible = "amd,pensando-elbasr-reset";
->>> +                reg = <0>;
->> What does 0 represent here? A register address within 'elbasr' device?
-> 
-> Removed, I recall a check threw a warning or error without reg.
-> 
->> Why do you need a child node for this? Are there other sub-devices and
->> your binding is incomplete? Just put '#reset-cells' in the parent.
-> 
-> Without a reset-controller node and booting the function 
-> __of_reset_control_get(...) fails to find a match in the list here
+Signed-off-by: Kevin Tian <kevin.tian@intel.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/vfio/platform/vfio_amba.c             | 72 ++++++++++++++-----
+ drivers/vfio/platform/vfio_platform_common.c  | 60 ----------------
+ drivers/vfio/platform/vfio_platform_private.h |  3 -
+ 3 files changed, 55 insertions(+), 80 deletions(-)
 
-That's not actually the answer to the question. There was no concerns
-whether you need or not reset controller. The question was why do you
-need a child device instead of elbasr being the reset controller.
+diff --git a/drivers/vfio/platform/vfio_amba.c b/drivers/vfio/platform/vfio_amba.c
+index 1aaa4f721bd2..6cdcc8905198 100644
+--- a/drivers/vfio/platform/vfio_amba.c
++++ b/drivers/vfio/platform/vfio_amba.c
+@@ -7,6 +7,7 @@
+ #include <linux/module.h>
+ #include <linux/slab.h>
+ #include <linux/vfio.h>
++#include <linux/pm_runtime.h>
+ #include <linux/amba/bus.h>
+ 
+ #include "vfio_platform_private.h"
+@@ -40,20 +41,16 @@ static int get_amba_irq(struct vfio_platform_device *vdev, int i)
+ 	return ret ? ret : -ENXIO;
+ }
+ 
+-static int vfio_amba_probe(struct amba_device *adev, const struct amba_id *id)
++static int vfio_amba_init_dev(struct vfio_device *core_vdev)
+ {
+-	struct vfio_platform_device *vdev;
++	struct vfio_platform_device *vdev =
++		container_of(core_vdev, struct vfio_platform_device, vdev);
++	struct amba_device *adev = to_amba_device(core_vdev->dev);
+ 	int ret;
+ 
+-	vdev = kzalloc(sizeof(*vdev), GFP_KERNEL);
+-	if (!vdev)
+-		return -ENOMEM;
+-
+ 	vdev->name = kasprintf(GFP_KERNEL, "vfio-amba-%08x", adev->periphid);
+-	if (!vdev->name) {
+-		kfree(vdev);
++	if (!vdev->name)
+ 		return -ENOMEM;
+-	}
+ 
+ 	vdev->opaque = (void *) adev;
+ 	vdev->flags = VFIO_DEVICE_FLAGS_AMBA;
+@@ -61,26 +58,67 @@ static int vfio_amba_probe(struct amba_device *adev, const struct amba_id *id)
+ 	vdev->get_irq = get_amba_irq;
+ 	vdev->reset_required = false;
+ 
+-	ret = vfio_platform_probe_common(vdev, &adev->dev);
+-	if (ret) {
++	ret = vfio_platform_init_common(vdev);
++	if (ret)
+ 		kfree(vdev->name);
+-		kfree(vdev);
+-		return ret;
+-	}
++	return ret;
++}
++
++static const struct vfio_device_ops vfio_amba_ops;
++static int vfio_amba_probe(struct amba_device *adev, const struct amba_id *id)
++{
++	struct vfio_platform_device *vdev;
++	int ret;
++
++	vdev = vfio_alloc_device(vfio_platform_device, vdev, &adev->dev,
++				 &vfio_amba_ops);
++	if (IS_ERR(vdev))
++		return PTR_ERR(vdev);
+ 
++	ret = vfio_register_group_dev(&vdev->vdev);
++	if (ret)
++		goto out_put_vdev;
++
++	pm_runtime_enable(&adev->dev);
+ 	dev_set_drvdata(&adev->dev, vdev);
+ 	return 0;
++
++out_put_vdev:
++	vfio_put_device(&vdev->vdev);
++	return ret;
++}
++
++static void vfio_amba_release_dev(struct vfio_device *core_vdev)
++{
++	struct vfio_platform_device *vdev =
++		container_of(core_vdev, struct vfio_platform_device, vdev);
++
++	vfio_platform_release_common(vdev);
++	kfree(vdev->name);
++	vfio_free_device(core_vdev);
+ }
+ 
+ static void vfio_amba_remove(struct amba_device *adev)
+ {
+ 	struct vfio_platform_device *vdev = dev_get_drvdata(&adev->dev);
+ 
+-	vfio_platform_remove_common(vdev);
+-	kfree(vdev->name);
+-	kfree(vdev);
++	vfio_unregister_group_dev(&vdev->vdev);
++	pm_runtime_disable(vdev->device);
++	vfio_put_device(&vdev->vdev);
+ }
+ 
++static const struct vfio_device_ops vfio_amba_ops= {
++	.name		= "vfio-amba",
++	.init		= vfio_amba_init_dev,
++	.release	= vfio_amba_release_dev,
++	.open_device	= vfio_platform_open_device,
++	.close_device	= vfio_platform_close_device,
++	.ioctl		= vfio_platform_ioctl,
++	.read		= vfio_platform_read,
++	.write		= vfio_platform_write,
++	.mmap		= vfio_platform_mmap,
++};
++
+ static const struct amba_id pl330_ids[] = {
+ 	{ 0, 0 },
+ };
+diff --git a/drivers/vfio/platform/vfio_platform_common.c b/drivers/vfio/platform/vfio_platform_common.c
+index 4c01bf0adebb..55dc4f43c31e 100644
+--- a/drivers/vfio/platform/vfio_platform_common.c
++++ b/drivers/vfio/platform/vfio_platform_common.c
+@@ -605,16 +605,6 @@ int vfio_platform_mmap(struct vfio_device *core_vdev, struct vm_area_struct *vma
+ }
+ EXPORT_SYMBOL_GPL(vfio_platform_mmap);
+ 
+-static const struct vfio_device_ops vfio_platform_ops = {
+-	.name		= "vfio-platform",
+-	.open_device	= vfio_platform_open_device,
+-	.close_device	= vfio_platform_close_device,
+-	.ioctl		= vfio_platform_ioctl,
+-	.read		= vfio_platform_read,
+-	.write		= vfio_platform_write,
+-	.mmap		= vfio_platform_mmap,
+-};
+-
+ static int vfio_platform_of_probe(struct vfio_platform_device *vdev,
+ 			   struct device *dev)
+ {
+@@ -674,56 +664,6 @@ void vfio_platform_release_common(struct vfio_platform_device *vdev)
+ }
+ EXPORT_SYMBOL_GPL(vfio_platform_release_common);
+ 
+-int vfio_platform_probe_common(struct vfio_platform_device *vdev,
+-			       struct device *dev)
+-{
+-	int ret;
+-
+-	vfio_init_group_dev(&vdev->vdev, dev, &vfio_platform_ops);
+-
+-	ret = vfio_platform_acpi_probe(vdev, dev);
+-	if (ret)
+-		ret = vfio_platform_of_probe(vdev, dev);
+-
+-	if (ret)
+-		goto out_uninit;
+-
+-	vdev->device = dev;
+-
+-	ret = vfio_platform_get_reset(vdev);
+-	if (ret && vdev->reset_required) {
+-		dev_err(dev, "No reset function found for device %s\n",
+-			vdev->name);
+-		goto out_uninit;
+-	}
+-
+-	ret = vfio_register_group_dev(&vdev->vdev);
+-	if (ret)
+-		goto put_reset;
+-
+-	mutex_init(&vdev->igate);
+-
+-	pm_runtime_enable(dev);
+-	return 0;
+-
+-put_reset:
+-	vfio_platform_put_reset(vdev);
+-out_uninit:
+-	vfio_uninit_group_dev(&vdev->vdev);
+-	return ret;
+-}
+-EXPORT_SYMBOL_GPL(vfio_platform_probe_common);
+-
+-void vfio_platform_remove_common(struct vfio_platform_device *vdev)
+-{
+-	vfio_unregister_group_dev(&vdev->vdev);
+-
+-	pm_runtime_disable(vdev->device);
+-	vfio_platform_put_reset(vdev);
+-	vfio_uninit_group_dev(&vdev->vdev);
+-}
+-EXPORT_SYMBOL_GPL(vfio_platform_remove_common);
+-
+ void __vfio_platform_register_reset(struct vfio_platform_reset_node *node)
+ {
+ 	mutex_lock(&driver_lock);
+diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
+index a769d649fb97..8d8fab516849 100644
+--- a/drivers/vfio/platform/vfio_platform_private.h
++++ b/drivers/vfio/platform/vfio_platform_private.h
+@@ -78,9 +78,6 @@ struct vfio_platform_reset_node {
+ 	vfio_platform_reset_fn_t of_reset;
+ };
+ 
+-int vfio_platform_probe_common(struct vfio_platform_device *vdev,
+-			       struct device *dev);
+-void vfio_platform_remove_common(struct vfio_platform_device *vdev);
+ int vfio_platform_init_common(struct vfio_platform_device *vdev);
+ void vfio_platform_release_common(struct vfio_platform_device *vdev);
+ 
+-- 
+2.21.3
 
-Your answer does not cover this at all, so again - why do you need a
-child for this?
-
-Best regards,
-Krzysztof
