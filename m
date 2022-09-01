@@ -2,233 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08BB4ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:19:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FE70ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:19:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233811AbiIAHTi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 03:19:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32890 "EHLO
+        id S232203AbiIAHTo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 03:19:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233874AbiIAHSo (ORCPT
+        with ESMTP id S233906AbiIAHSv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 03:18:44 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A35D1223B5;
-        Thu,  1 Sep 2022 00:18:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662016721; x=1693552721;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=fTTvGXDm3y5vxlunNw3lM7XvdJmmRuB7BkP4htaMFu0=;
-  b=S5rxeceD3xEh8I9mhDGiwK3WwI6xxuHFIVPqXZXDK1ff0GiJkVrEVq3I
-   YrdSy9Qff7d/nQrut942/s9DFsFpHOzxGbI/ntDZp4WBU6qWpjdCvpAFZ
-   aDKumhbSfkeVlD+8TVJtFGYaCaXW6b+ajd6BIp32+ljr4/Czzeyor7jNL
-   Gg7jvxwySpe+dvGDnzIa2K/VYoiFOma7DIV0VDt/L9hJbfQd+V8N64+vB
-   Zy0GjB1RLLe1HWqcUgxxay7AHfJYQ4qRYKS9+pyLgqSRacPhg0yebBOYh
-   en7FSUumSxK3wa64TWW4Q/WwXs+DRD1dg/5X18hpw4Z367IAChVz0XteG
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="275386155"
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="275386155"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 00:18:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="673720218"
-Received: from sqa-gate.sh.intel.com (HELO michael.clx.dev.tsp.org) ([10.239.48.212])
-  by fmsmga008.fm.intel.com with ESMTP; 01 Sep 2022 00:18:32 -0700
-From:   Kevin Tian <kevin.tian@intel.com>
-To:     Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Zhi Wang <zhi.a.wang@intel.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Eric Farman <farman@linux.ibm.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Tony Krowiak <akrowiak@linux.ibm.com>,
-        Jason Herne <jjherne@linux.ibm.com>,
-        Harald Freudenberger <freude@linux.ibm.com>,
-        Diana Craciun <diana.craciun@oss.nxp.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Longfang Liu <liulongfang@huawei.com>,
-        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Kirti Wankhede <kwankhede@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Abhishek Sahu <abhsahu@nvidia.com>,
-        intel-gvt-dev@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org
-Cc:     Yi Liu <yi.l.liu@intel.com>
-Subject: [PATCH v2 07/15] vfio/mbochs: Use the new device life cycle helpers
-Date:   Thu,  1 Sep 2022 22:37:39 +0800
-Message-Id: <20220901143747.32858-8-kevin.tian@intel.com>
-X-Mailer: git-send-email 2.21.3
-In-Reply-To: <20220901143747.32858-1-kevin.tian@intel.com>
-References: <20220901143747.32858-1-kevin.tian@intel.com>
+        Thu, 1 Sep 2022 03:18:51 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7B58125347;
+        Thu,  1 Sep 2022 00:18:49 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 4AAED22276;
+        Thu,  1 Sep 2022 07:18:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1662016728; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=syKqR2otOp+SJa2emYsY57+bVX7vmPgl46yq0SOCcY4=;
+        b=XxPpqvq/CprurzzyArGBkJW5SqAQWQkVT69xczpmMcnZD1oRn53SBe3Vor5qXAepnNw6HZ
+        eJdNzUUUyBCLltPNTrvvxdfpcBBHT8aPch+MIclCvWmw3ouoq0E0fd3IBYzv+2TVw5SAGP
+        eKsPIajcu9OwC55K4pFTrVjv2HlxcBc=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 098CC13A89;
+        Thu,  1 Sep 2022 07:18:48 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id HuA6ANhcEGMwCAAAMHmgww
+        (envelope-from <mhocko@suse.com>); Thu, 01 Sep 2022 07:18:47 +0000
+Date:   Thu, 1 Sep 2022 09:18:47 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Kent Overstreet <kent.overstreet@linux.dev>
+Cc:     Mel Gorman <mgorman@suse.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        akpm@linux-foundation.org, vbabka@suse.cz, hannes@cmpxchg.org,
+        roman.gushchin@linux.dev, dave@stgolabs.net, willy@infradead.org,
+        liam.howlett@oracle.com, void@manifault.com, juri.lelli@redhat.com,
+        ldufour@linux.ibm.com, peterx@redhat.com, david@redhat.com,
+        axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
+        nathan@kernel.org, changbin.du@intel.com, ytcoode@gmail.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
+        vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+        iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+        elver@google.com, dvyukov@google.com, shakeelb@google.com,
+        songmuchun@bytedance.com, arnd@arndb.de, jbaron@akamai.com,
+        rientjes@google.com, minchan@google.com, kaleshsingh@google.com,
+        kernel-team@android.com, linux-mm@kvack.org, iommu@lists.linux.dev,
+        kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
+        linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
+        linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
+Message-ID: <YxBc1xuGbB36f8zC@dhcp22.suse.cz>
+References: <20220830214919.53220-1-surenb@google.com>
+ <Yw8P8xZ4zqu121xL@hirez.programming.kicks-ass.net>
+ <20220831084230.3ti3vitrzhzsu3fs@moria.home.lan>
+ <20220831101948.f3etturccmp5ovkl@suse.de>
+ <Yw88RFuBgc7yFYxA@dhcp22.suse.cz>
+ <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yi Liu <yi.l.liu@intel.com>
+On Wed 31-08-22 15:01:54, Kent Overstreet wrote:
+> On Wed, Aug 31, 2022 at 12:47:32PM +0200, Michal Hocko wrote:
+> > On Wed 31-08-22 11:19:48, Mel Gorman wrote:
+> > > Whatever asking for an explanation as to why equivalent functionality
+> > > cannot not be created from ftrace/kprobe/eBPF/whatever is reasonable.
+> > 
+> > Fully agreed and this is especially true for a change this size
+> > 77 files changed, 3406 insertions(+), 703 deletions(-)
+> 
+> In the case of memory allocation accounting, you flat cannot do this with ftrace
+> - you could maybe do a janky version that isn't fully accurate, much slower,
+> more complicated for the developer to understand and debug and more complicated
+> for the end user.
+> 
+> But please, I invite anyone who's actually been doing this with ftrace to
+> demonstrate otherwise.
+> 
+> Ftrace just isn't the right tool for the job here - we're talking about adding
+> per callsite accounting to some of the fastest fast paths in the kernel.
+> 
+> And the size of the changes for memory allocation accounting are much more
+> reasonable:
+>  33 files changed, 623 insertions(+), 99 deletions(-)
+> 
+> The code tagging library should exist anyways, it's been open coded half a dozen
+> times in the kernel already.
+> 
+> And once we've got that, the time stats code is _also_ far simpler than doing it
+> with ftrace would be. If anyone here has successfully debugged latency issues
+> with ftrace, I'd really like to hear it. Again, for debugging latency issues you
+> want something that can always be on, and that's not cheap with ftrace - and
+> never mind the hassle of correlating start and end wait trace events, builting
+> up histograms, etc. - that's all handled here.
+> 
+> Cheap, simple, easy to use. What more could you want?
 
-and manage avail_mbytes inside @init/@release.
+A big ad on a banner. But more seriously.
 
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
-Signed-off-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
----
- samples/vfio-mdev/mbochs.c | 73 ++++++++++++++++++++++++--------------
- 1 file changed, 46 insertions(+), 27 deletions(-)
+This patchset is _huge_ and touching a lot of different areas. It will
+be not only hard to review but even harder to maintain longterm. So
+it is completely reasonable to ask for potential alternatives with a
+smaller code footprint. I am pretty sure you are aware of that workflow.
 
-diff --git a/samples/vfio-mdev/mbochs.c b/samples/vfio-mdev/mbochs.c
-index 344c2901a82b..df95f25fbc0e 100644
---- a/samples/vfio-mdev/mbochs.c
-+++ b/samples/vfio-mdev/mbochs.c
-@@ -505,13 +505,14 @@ static int mbochs_reset(struct mdev_state *mdev_state)
- 	return 0;
- }
- 
--static int mbochs_probe(struct mdev_device *mdev)
-+static int mbochs_init_dev(struct vfio_device *vdev)
- {
--	int avail_mbytes = atomic_read(&mbochs_avail_mbytes);
-+	struct mdev_state *mdev_state =
-+		container_of(vdev, struct mdev_state, vdev);
-+	struct mdev_device *mdev = to_mdev_device(vdev->dev);
- 	const struct mbochs_type *type =
- 		&mbochs_types[mdev_get_type_group_id(mdev)];
--	struct device *dev = mdev_dev(mdev);
--	struct mdev_state *mdev_state;
-+	int avail_mbytes = atomic_read(&mbochs_avail_mbytes);
- 	int ret = -ENOMEM;
- 
- 	do {
-@@ -520,14 +521,9 @@ static int mbochs_probe(struct mdev_device *mdev)
- 	} while (!atomic_try_cmpxchg(&mbochs_avail_mbytes, &avail_mbytes,
- 				     avail_mbytes - type->mbytes));
- 
--	mdev_state = kzalloc(sizeof(struct mdev_state), GFP_KERNEL);
--	if (mdev_state == NULL)
--		goto err_avail;
--	vfio_init_group_dev(&mdev_state->vdev, &mdev->dev, &mbochs_dev_ops);
--
- 	mdev_state->vconfig = kzalloc(MBOCHS_CONFIG_SPACE_SIZE, GFP_KERNEL);
--	if (mdev_state->vconfig == NULL)
--		goto err_mem;
-+	if (!mdev_state->vconfig)
-+		goto err_avail;
- 
- 	mdev_state->memsize = type->mbytes * 1024 * 1024;
- 	mdev_state->pagecount = mdev_state->memsize >> PAGE_SHIFT;
-@@ -535,10 +531,7 @@ static int mbochs_probe(struct mdev_device *mdev)
- 				    sizeof(struct page *),
- 				    GFP_KERNEL);
- 	if (!mdev_state->pages)
--		goto err_mem;
--
--	dev_info(dev, "%s: %s, %d MB, %ld pages\n", __func__,
--		 type->name, type->mbytes, mdev_state->pagecount);
-+		goto err_vconfig;
- 
- 	mutex_init(&mdev_state->ops_lock);
- 	mdev_state->mdev = mdev;
-@@ -553,19 +546,47 @@ static int mbochs_probe(struct mdev_device *mdev)
- 	mbochs_create_config_space(mdev_state);
- 	mbochs_reset(mdev_state);
- 
-+	dev_info(vdev->dev, "%s: %s, %d MB, %ld pages\n", __func__,
-+		 type->name, type->mbytes, mdev_state->pagecount);
-+	return 0;
-+
-+err_vconfig:
-+	kfree(mdev_state->vconfig);
-+err_avail:
-+	atomic_add(type->mbytes, &mbochs_avail_mbytes);
-+	return ret;
-+}
-+
-+static int mbochs_probe(struct mdev_device *mdev)
-+{
-+	struct mdev_state *mdev_state;
-+	int ret = -ENOMEM;
-+
-+	mdev_state = vfio_alloc_device(mdev_state, vdev, &mdev->dev,
-+				       &mbochs_dev_ops);
-+	if (IS_ERR(mdev_state))
-+		return PTR_ERR(mdev_state);
-+
- 	ret = vfio_register_emulated_iommu_dev(&mdev_state->vdev);
- 	if (ret)
--		goto err_mem;
-+		goto err_put_vdev;
- 	dev_set_drvdata(&mdev->dev, mdev_state);
- 	return 0;
--err_mem:
--	vfio_uninit_group_dev(&mdev_state->vdev);
-+
-+err_put_vdev:
-+	vfio_put_device(&mdev_state->vdev);
-+	return ret;
-+}
-+
-+static void mbochs_release_dev(struct vfio_device *vdev)
-+{
-+	struct mdev_state *mdev_state =
-+		container_of(vdev, struct mdev_state, vdev);
-+
- 	kfree(mdev_state->pages);
- 	kfree(mdev_state->vconfig);
--	kfree(mdev_state);
--err_avail:
--	atomic_add(type->mbytes, &mbochs_avail_mbytes);
--	return ret;
-+	vfio_free_device(vdev);
-+	atomic_add(mdev_state->type->mbytes, &mbochs_avail_mbytes);
- }
- 
- static void mbochs_remove(struct mdev_device *mdev)
-@@ -573,11 +594,7 @@ static void mbochs_remove(struct mdev_device *mdev)
- 	struct mdev_state *mdev_state = dev_get_drvdata(&mdev->dev);
- 
- 	vfio_unregister_group_dev(&mdev_state->vdev);
--	vfio_uninit_group_dev(&mdev_state->vdev);
--	atomic_add(mdev_state->type->mbytes, &mbochs_avail_mbytes);
--	kfree(mdev_state->pages);
--	kfree(mdev_state->vconfig);
--	kfree(mdev_state);
-+	vfio_put_device(&mdev_state->vdev);
- }
- 
- static ssize_t mbochs_read(struct vfio_device *vdev, char __user *buf,
-@@ -1397,6 +1414,8 @@ static struct attribute_group *mdev_type_groups[] = {
- 
- static const struct vfio_device_ops mbochs_dev_ops = {
- 	.close_device = mbochs_close_device,
-+	.init = mbochs_init_dev,
-+	.release = mbochs_release_dev,
- 	.read = mbochs_read,
- 	.write = mbochs_write,
- 	.ioctl = mbochs_ioctl,
+So I find Peter's question completely appropriate while your response to
+that not so much! Maybe ftrace is not the right tool for the intented
+job. Maybe there are other ways and it would be really great to show
+that those have been evaluated and they are not suitable for a), b) and
+c) reasons.
+
+E.g. Oscar has been working on extending page_ext to track number of
+allocations for specific calltrace[1]. Is this 1:1 replacement? No! But
+it can help in environments where page_ext can be enabled and it is
+completely non-intrusive to the MM code.
+
+If the page_ext overhead is not desirable/acceptable then I am sure
+there are other options. E.g. kprobes/LivePatching framework can hook
+into functions and alter their behavior. So why not use that for data
+collection? Has this been evaluated at all?
+
+And please note that I am not claiming the presented work is approaching
+the problem from a wrong direction. It might very well solve multiple
+problems in a single go _but_ the long term code maintenance burden
+really has to to be carefully evaluated and if we can achieve a
+reasonable subset of the functionality with an existing infrastructure
+then I would be inclined to sacrifice some portions with a considerably
+smaller code footprint.
+
+[1] http://lkml.kernel.org/r/20220901044249.4624-1-osalvador@suse.de
+
 -- 
-2.21.3
-
+Michal Hocko
+SUSE Labs
