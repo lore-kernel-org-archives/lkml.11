@@ -2,96 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C938ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:32:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5F01ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:33:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233973AbiIANcc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 09:32:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54738 "EHLO
+        id S234360AbiIANdC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 09:33:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233875AbiIANbt (ORCPT
+        with ESMTP id S233815AbiIANce (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 09:31:49 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1304D1054A;
-        Thu,  1 Sep 2022 06:27:37 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DBAE7D6E;
-        Thu,  1 Sep 2022 06:27:32 -0700 (PDT)
-Received: from e121896.arm.com (unknown [10.57.16.42])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 11CB83F7B4;
-        Thu,  1 Sep 2022 06:27:52 -0700 (PDT)
-From:   James Clark <james.clark@arm.com>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        broonie@kernel.org, acme@kernel.org, leo.yan@linaro.org,
-        john.garry@huawei.com, catalin.marinas@arm.com, will@kernel.org,
-        James Clark <james.clark@arm.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mark Rutland <mark.rutland@arm.com>, linux-doc@vger.kernel.org
-Subject: [PATCH v3 0/2] perf: arm64: Kernel support for Dwarf unwinding through SVE functions
-Date:   Thu,  1 Sep 2022 14:26:56 +0100
-Message-Id: <20220901132658.1024635-1-james.clark@arm.com>
-X-Mailer: git-send-email 2.28.0
+        Thu, 1 Sep 2022 09:32:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7EEC2717E
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 06:28:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662038926;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KHTa+FWm7oeImzoRnoqlC6BBTOOK+4vjj/5kjcEi/vc=;
+        b=P8z3x0iL7wGlTs0iT3SBPQNx9HRsEWZS35LCAGnwqgqHDT3OxGqsbOBRmpoQtbvJNxKyeN
+        pQqkXXU+VT299oD/KWkw2P+jfsAL/9I49U0e9IQ6hCt4q1/7vsEo/Hp6VTh65CFgdraADl
+        1iNSSR72QhOEiYUqXralHou5glv9E4o=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-620-aPjrdoRaNT-CCW4tqM_37w-1; Thu, 01 Sep 2022 09:28:45 -0400
+X-MC-Unique: aPjrdoRaNT-CCW4tqM_37w-1
+Received: by mail-qt1-f199.google.com with SMTP id bq11-20020a05622a1c0b00b003434f125b77so13763030qtb.20
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 06:28:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=KHTa+FWm7oeImzoRnoqlC6BBTOOK+4vjj/5kjcEi/vc=;
+        b=HCNDeH7c9TjDluz5ihvfCNzN6Al6GmNSHJPbUDoFowvCJMS2HSAMYKXiZ1OB9tOB+l
+         +KHHh3M0iMAS1ysx3GLx+xWzKv/fjiwQ2yZmyH3qBn9mDmDOj5EYFyLbS1djAmH7tRyr
+         EzKBJKtWbk1sTCXUoDuQuhEQpinlmUj0ED5dnE+xOErfzM93xlaLAfowAG3WO7xEgACL
+         vbuNaTF6KyM81/yWt2vd03gEHZKIAi7WaH492TkJb+V4qpc/kKe0Q1Ls3zzsbGHVGret
+         l3SQslGs2pHWkSkilkFiC9Z6Hh4o96M5tHfjX+Q+YmDdlzEbbkYVm/dRM9zlViRdFeaX
+         cIcg==
+X-Gm-Message-State: ACgBeo3nDmPTT+7kSyHY/9a83ZjuK5XvG5nEqdATjPOTe1BhIqOP8TZI
+        WvZlxXDrMeEaMlJp/5NLYMSk+asukIUH1tZ12mlbYIi8u98y+a+G50mbxs0BPGMll6rlly+T3n2
+        lEEYHmzPHseoKtO53rPaze2rV
+X-Received: by 2002:ad4:5bc1:0:b0:499:b05:734d with SMTP id t1-20020ad45bc1000000b004990b05734dmr14543342qvt.37.1662038924383;
+        Thu, 01 Sep 2022 06:28:44 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4sa9iHl0nVSYhctkGtjgto7IhCUw1KueymhwCuwA43bg4yzH3mbmtccFPxjgoDpFEB0VoAag==
+X-Received: by 2002:ad4:5bc1:0:b0:499:b05:734d with SMTP id t1-20020ad45bc1000000b004990b05734dmr14543328qvt.37.1662038924132;
+        Thu, 01 Sep 2022 06:28:44 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-112-72.dyn.eolo.it. [146.241.112.72])
+        by smtp.gmail.com with ESMTPSA id u6-20020a05620a430600b006b893d135basm11897700qko.86.2022.09.01.06.28.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Sep 2022 06:28:43 -0700 (PDT)
+Message-ID: <306bd3cb986764e60f7ac21809ab68094b2e3325.camel@redhat.com>
+Subject: Re: [PATCH next-next 0/2] net: vlan: two small refactors to make
+ code more concise
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Ziyang Xuan <william.xuanziyang@huawei.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, morbo@google.com,
+        netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org
+Date:   Thu, 01 Sep 2022 15:28:40 +0200
+In-Reply-To: <cover.1661916732.git.william.xuanziyang@huawei.com>
+References: <cover.1661916732.git.william.xuanziyang@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Hello,
 
-I'm resubmitting this with a few of the changes suggested by Will on V2.
+On Wed, 2022-08-31 at 12:09 +0800, Ziyang Xuan wrote:
+> Give two small refactors to make code more concise.
+> 
+> Ziyang Xuan (2):
+>   net: vlan: remove unnecessary err variable in vlan_init_net()
+>   net: vlan: reduce indentation level in __vlan_find_dev_deep_rcu()
+> 
+>  net/8021q/vlan.c      |  5 +----
+>  net/8021q/vlan_core.c | 22 +++++++++-------------
+>  2 files changed, 10 insertions(+), 17 deletions(-)
 
-I haven't made any changes regarding the open questions about the
-discoverability or saving the new reg and passing to output_sample()
-because I think it's best to be consistent with the implementations on
-other platforms first. I have explained in more detail on v2 [1].
+The patches look correct to me, but I think is better to defer this
+kind of nun-functional refactors to some work actually doing new stuff,
+to avoid unneeded noise.
 
-[1]: https://lore.kernel.org/lkml/5fcf1a6f-c8fb-c296-992e-18aae8874095@arm.com/
+Note that I merged a few other clean-up recently, but e.g. they at
+least formally removed some unneeded branch.
 
-=======
+Sorry, I'm not going to apply this series.
 
-Changes since v2:
+Cheers,
 
-  * Add definition for PERF_REG_EXTENDED_MASK which is needed for
-    PERF_PMU_CAP_EXTENDED_REGS to work properly
-
-  * Simplify changes to enum perf_event_arm_regs
-
-Changes since v1:
-
-  * Add Mark's review tag
-  * Clarify in docs that it's the SVE register length
-  * Split patchset into kernel side and Perf tool changes
-
-=======
-
-When SVE registers are pushed onto the stack the VG register is required to
-unwind because the stack offsets would vary by the SVE register width at the
-time when the sample was taken.
-
-These first two patches add support for sampling the VG register to the kernel
-and the docs. There is another patchset to add support to userspace perf.
-
-A small change is also required to libunwind or libdw depending on which
-unwinder is used, and these will be published later. Without these changes Perf
-continues to work with both libraries, although the VG register is still not
-used for unwinding. 
-
-Thanks
-James
-
-James Clark (2):
-  perf: arm64: Add SVE vector granule register to user regs
-  arm64/sve: Add Perf extensions documentation
-
- Documentation/arm64/sve.rst             | 20 +++++++++++++++++
- arch/arm64/include/uapi/asm/perf_regs.h |  7 ++++++
- arch/arm64/kernel/perf_regs.c           | 30 +++++++++++++++++++++++--
- drivers/perf/arm_pmu.c                  |  2 +-
- 4 files changed, 56 insertions(+), 3 deletions(-)
-
--- 
-2.28.0
+Paolo
 
