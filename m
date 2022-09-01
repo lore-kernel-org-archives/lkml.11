@@ -2,112 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8445FECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 15:26:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C81C4C67868
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 15:27:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233865AbiIAP0g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 11:26:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34884 "EHLO
+        id S234406AbiIAP1C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 11:27:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234246AbiIAP0P (ORCPT
+        with ESMTP id S233144AbiIAP0m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 11:26:15 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8C216BCF2
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 08:26:03 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <heiko@sntech.de>)
-        id 1oTm4t-0005iB-OI; Thu, 01 Sep 2022 17:25:59 +0200
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Anup Patel <apatel@ventanamicro.com>
-Cc:     Atish Patra <atishp@atishpatra.org>,
-        Anup Patel <anup@brainfault.org>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Anup Patel <apatel@ventanamicro.com>,
-        Mayuresh Chitale <mchitale@ventanamicro.com>
-Subject: Re: [PATCH v2 1/4] RISC-V: Fix ioremap_cache() and ioremap_wc() for systems with Svpbmt
-Date:   Thu, 01 Sep 2022 17:25:57 +0200
-Message-ID: <2954417.ZfL8zNpBrT@diego>
-In-Reply-To: <20220830044642.566769-2-apatel@ventanamicro.com>
-References: <20220830044642.566769-1-apatel@ventanamicro.com> <20220830044642.566769-2-apatel@ventanamicro.com>
+        Thu, 1 Sep 2022 11:26:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 195E174E38
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 08:26:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662045996;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=kGC9RvLszX/F52Fly+GHqDOOZPC038OUoGyy20N2fe8=;
+        b=F/GvseEq137pZJHZQ7hgUdLt9b3DLURYAa2xAVuvTr+40eODQKQW/W561A+1rPp+5BRpS6
+        oFcAV/81cdxm8ENb6Bum0HtIK2QplkeiUsFZUfDPXPwMFLHadw17U2ymGLtPsoCDXCxpbi
+        mvxfcFLd3bSosAhZF+HhbH/XXYAI/e0=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-296-k_Sq3I8kObmnvgWCdrH6Ww-1; Thu, 01 Sep 2022 11:26:35 -0400
+X-MC-Unique: k_Sq3I8kObmnvgWCdrH6Ww-1
+Received: by mail-ej1-f69.google.com with SMTP id jg40-20020a170907972800b0074148cdc7baso6068786ejc.12
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 08:26:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=kGC9RvLszX/F52Fly+GHqDOOZPC038OUoGyy20N2fe8=;
+        b=JuGUHMeP8FTVnyamCettzyBLiQmQq94nHKj1b+tv6FPwnPQSDFLvxrms6VTpxUhpWW
+         wtZ0ncaVus2vwkyzZPqtkxEKsXMUIqz3tXd98Qaoez0F/sbq27ln9tlshWEz7p4r7uCB
+         HPLQqEZBF5JKroPuZzGNFUNkaAquGJFcfwXcTIdI0VYZ/eRgY2pRKU8oKwCmxU4grOX5
+         iG4ZSOZPZVVStBHa9AfwaBCSXPauhWZDuWfutg2J5NTCZaj1Zj88ehjlg5xKUqzGcP53
+         afCwdKtQhag51Ar/OhUwc53bdSqlvCbHbwoTLOV1EOO0ZRYYhLPYcgBJOzKn0y9CVUmo
+         ke9g==
+X-Gm-Message-State: ACgBeo28zGcyzv8J5FyZfIlFjYQYU5tOG/hmwOKUnJydxqv3TTp//y0k
+        XE32ntO6oW7UFxgcrCWBVXmt+1yUFoRHHHi14C3xGUOu6nY+g3l94A8V6ASBtJ/feW5tM5hHWxe
+        HiaaDTArlH/yIBaXXckWdndHo
+X-Received: by 2002:a17:907:2716:b0:73d:cdf9:b08a with SMTP id w22-20020a170907271600b0073dcdf9b08amr23273243ejk.463.1662045994399;
+        Thu, 01 Sep 2022 08:26:34 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4QRSL2W4ltgrQ+2jhvMhXxgK8EO5Y0yo9Y0cYkz7dkRoZMMOmRYstqqGCjd+xE8U5lttpmRQ==
+X-Received: by 2002:a17:907:2716:b0:73d:cdf9:b08a with SMTP id w22-20020a170907271600b0073dcdf9b08amr23273233ejk.463.1662045994222;
+        Thu, 01 Sep 2022 08:26:34 -0700 (PDT)
+Received: from localhost.localdomain (nat-pool-brq-t.redhat.com. [213.175.37.10])
+        by smtp.gmail.com with ESMTPSA id o23-20020a170906775700b00730bfe6adc4sm8646031ejn.37.2022.09.01.08.26.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Sep 2022 08:26:33 -0700 (PDT)
+From:   Ondrej Mosnacek <omosnace@redhat.com>
+To:     Alexander Viro <viro@zeniv.linux.org.uk>
+Cc:     linux-fsdevel@vger.kernel.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+        rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Martin Pitt <mpitt@redhat.com>
+Subject: [PATCH 0/2] fs: fix capable() call in simple_xattr_list()
+Date:   Thu,  1 Sep 2022 17:26:30 +0200
+Message-Id: <20220901152632.970018-1-omosnace@redhat.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Dienstag, 30. August 2022, 06:46:39 CEST schrieb Anup Patel:
-> Currently, all flavors of ioremap_xyz() function maps to the generic
-> ioremap() which means any ioremap_xyz() call will always map the
-> target memory as IO using _PAGE_IOREMAP page attributes. This breaks
-> ioremap_cache() and ioremap_wc() on systems with Svpbmt because memory
-> remapped using ioremap_cache() and ioremap_wc() will use _PAGE_IOREMAP
-> page attributes.
-> 
-> To address above (just like other architectures), we implement RISC-V
-> specific ioremap_cache() and ioremap_wc() which maps memory using page
-> attributes as defined by the Svpbmt specification.
-> 
-> Fixes: ff689fd21cb1 ("riscv: add RISC-V Svpbmt extension support")
-> Co-developed-by: Mayuresh Chitale <mchitale@ventanamicro.com>
-> Signed-off-by: Mayuresh Chitale <mchitale@ventanamicro.com>
-> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+The goal of these patches is to avoid calling capable() unconditionally
+in simple_xattr_list(), which causes issues under SELinux (see
+explanation in the second patch).
 
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+The first patch tries to make this change safer by converting
+simple_xattrs to use the RCU mechanism, so that capable() is not called
+while the xattrs->lock is held. I didn't find evidence that this is an
+issue in the current code, but it can't hurt to make that change
+either way (and it was quite straightforward).
 
-And at least on a qemu
-Tested-by: Heiko Stuebner <heiko@sntech.de>
+Ondrej Mosnacek (2):
+  fs: convert simple_xattrs to RCU list
+  fs: don't call capable() prematurely in simple_xattr_list()
 
-But it was running there before as well of course.
+ fs/xattr.c            | 39 +++++++++++++++++++++++----------------
+ include/linux/xattr.h |  1 +
+ 2 files changed, 24 insertions(+), 16 deletions(-)
 
-Heiko
-
-> ---
->  arch/riscv/include/asm/io.h      | 10 ++++++++++
->  arch/riscv/include/asm/pgtable.h |  2 ++
->  2 files changed, 12 insertions(+)
-> 
-> diff --git a/arch/riscv/include/asm/io.h b/arch/riscv/include/asm/io.h
-> index 69605a474270..07ac63999575 100644
-> --- a/arch/riscv/include/asm/io.h
-> +++ b/arch/riscv/include/asm/io.h
-> @@ -133,6 +133,16 @@ __io_writes_outs(outs, u64, q, __io_pbr(), __io_paw())
->  #define outsq(addr, buffer, count) __outsq((void __iomem *)addr, buffer, count)
->  #endif
->  
-> +#ifdef CONFIG_MMU
-> +#define ioremap_wc(addr, size)		\
-> +	ioremap_prot((addr), (size), _PAGE_IOREMAP_WC)
-> +#endif
-> +
->  #include <asm-generic/io.h>
->  
-> +#ifdef CONFIG_MMU
-> +#define ioremap_cache(addr, size)	\
-> +	ioremap_prot((addr), (size), _PAGE_KERNEL)
-> +#endif
-> +
->  #endif /* _ASM_RISCV_IO_H */
-> diff --git a/arch/riscv/include/asm/pgtable.h b/arch/riscv/include/asm/pgtable.h
-> index 7ec936910a96..346b7c1a3eeb 100644
-> --- a/arch/riscv/include/asm/pgtable.h
-> +++ b/arch/riscv/include/asm/pgtable.h
-> @@ -182,6 +182,8 @@ extern struct pt_alloc_ops pt_ops __initdata;
->  #define PAGE_TABLE		__pgprot(_PAGE_TABLE)
->  
->  #define _PAGE_IOREMAP	((_PAGE_KERNEL & ~_PAGE_MTMASK) | _PAGE_IO)
-> +#define _PAGE_IOREMAP_WC	((_PAGE_KERNEL & ~_PAGE_MTMASK) | \
-> +				 _PAGE_NOCACHE)
->  #define PAGE_KERNEL_IO		__pgprot(_PAGE_IOREMAP)
->  
->  extern pgd_t swapper_pg_dir[];
-> 
-
-
-
+-- 
+2.37.2
 
