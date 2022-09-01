@@ -2,104 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12449ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:15:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC569ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:19:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234259AbiIANPH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 09:15:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38058 "EHLO
+        id S232987AbiIANTG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 09:19:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233915AbiIANOk (ORCPT
+        with ESMTP id S234270AbiIANSn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 09:14:40 -0400
-Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B6516BCF1;
-        Thu,  1 Sep 2022 06:13:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1662037982; x=1693573982;
-  h=message-id:date:mime-version:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:subject;
-  bh=K4Ki6DT09Ff4lH/DOomelev8LgCFLE5AfE5kHY7YHSs=;
-  b=szngYYs9DgKIoZ5PF+sbjdxFt9wtqPiEIdd0167mUar8Yzs8FPJXOLCz
-   5MHjPmSsKocE0xAARQlF0Z+flsqniPJ+1Hoyj0Dv78AxBbyTZcamA3UtW
-   kaZyuJ+Vu/m1Z8DL+nYAtwqNF4bvCqB0aJCyuANI5s/KJzpSWTiv99wEj
-   I=;
-X-IronPort-AV: E=Sophos;i="5.93,280,1654560000"; 
-   d="scan'208";a="125767607"
-Subject: Re: [PATCH v3 06/19] hwmon: (mr75203) fix multi-channel voltage reading
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-1box-2b-3386f33d.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 13:12:43 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-1box-2b-3386f33d.us-west-2.amazon.com (Postfix) with ESMTPS id 26F10A279D;
-        Thu,  1 Sep 2022 13:12:41 +0000 (UTC)
-Received: from EX19D013UWA001.ant.amazon.com (10.13.138.253) by
- EX13MTAUWA001.ant.amazon.com (10.43.160.58) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Thu, 1 Sep 2022 13:12:40 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (10.43.161.207) by
- EX19D013UWA001.ant.amazon.com (10.13.138.253) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Thu, 1 Sep 2022 13:12:40 +0000
-Received: from [192.168.93.228] (10.85.143.172) by mail-relay.amazon.com
- (10.43.161.249) with Microsoft SMTP Server id 15.0.1497.38 via Frontend
- Transport; Thu, 1 Sep 2022 13:12:34 +0000
-Message-ID: <319ee468-dcdc-51c1-38a3-b67d5048000e@amazon.com>
-Date:   Thu, 1 Sep 2022 16:12:34 +0300
+        Thu, 1 Sep 2022 09:18:43 -0400
+Received: from cstnet.cn (smtp23.cstnet.cn [159.226.251.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D78A079EF8
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 06:15:52 -0700 (PDT)
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-03 (Coremail) with SMTP id rQCowADHvFFbsBBjmkMbAA--.34673S2;
+        Thu, 01 Sep 2022 21:15:08 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     gregkh@linuxfoundation.org
+Cc:     hdegoede@redhat.com, arnd@arndb.de, linux-kernel@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH v3 1/2] virt: vbox: Add check for device_create_file
+Date:   Thu,  1 Sep 2022 21:15:06 +0800
+Message-Id: <20220901131506.3550180-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@intel.com>
-CC:     <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
-        <p.zabel@pengutronix.de>, <rtanwar@maxlinear.com>,
-        <linux-hwmon@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <talel@amazon.com>,
-        <hhhawa@amazon.com>, <jonnyc@amazon.com>, <hanochu@amazon.com>,
-        <ronenk@amazon.com>, <itamark@amazon.com>, <shellykz@amazon.com>,
-        <shorer@amazon.com>, <amitlavi@amazon.com>, <almogbs@amazon.com>,
-        <dkl@amazon.com>, "Farber, Eliav" <farbere@amazon.com>
-References: <20220830192212.28570-1-farbere@amazon.com>
- <20220830192212.28570-7-farbere@amazon.com>
- <Yw8t8v9rdeR4wAIK@smile.fi.intel.com>
-From:   "Farber, Eliav" <farbere@amazon.com>
-In-Reply-To: <Yw8t8v9rdeR4wAIK@smile.fi.intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: rQCowADHvFFbsBBjmkMbAA--.34673S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7CFWxGw13uryUAr4UXFyUAwb_yoW8tw4Upa
+        93Ja4SvF4fGa1UWw42ya4jva45uw1rG3yxZrZ3Gw4Fgr9xA39FvFWDCFWjyr95GFZ5WF4F
+        qr1UtryrCFWUuF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUyl14x267AKxVWUJVW8JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26r1j6r1xM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
+        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
+        jxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr
+        1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxAIw28IcxkI7VAKI48J
+        MxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwV
+        AFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6xIIjxv2
+        0xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4
+        v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E
+        14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfU5WlkUUUUU
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/31/2022 12:46 PM, Andy Shevchenko wrote:
-> On Tue, Aug 30, 2022 at 07:21:59PM +0000, Eliav Farber wrote:
->> Fix voltage allocation and reading to support all channels in all VMs.
->> Prior to this change allocation and reading were done only for the first
->> channel in each VM.
->> This change counts the total number of channels for allocation, and 
->> takes
->> into account the channel offset when reading the sample data register.
->
-> ...
->
->>       struct pvt_device *pvt = dev_get_drvdata(dev);
->>       struct regmap *v_map = pvt->v_map;
->>       u32 n, stat;
->> -     u8 vm_idx;
->> +     u8 vm_idx, ch_idx;
->
-> Can you keep it sorted by line length?
+As device_create_file() can return error number,
+it should be better to check the return value and
+deal with the exception.
+Moreover, this driver should be using an attribute group.
 
-Fixed.
+Fixes: 0ba002bc4393 ("virt: Add vboxguest driver for Virtual Box Guest integration")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+Change log:
 
->>       int ret;
->
-> ...
->
->>       const struct hwmon_channel_info **pvt_info;
->> -     u32 ts_num, vm_num, pd_num, val, index, i;
->> +     u32 ts_num, vm_num, pd_num, ch_num, val, index, i;
->
-> Ditto. 
-Fixed.
+v2-> v3:
 
---
-Thanks, Eliav
+1. Switch to use an attribute group.
+
+v1 -> v2:
+
+1. Use gdev->dev instead of dev.
+2. Remove file when creation failed.
+---
+ drivers/virt/vboxguest/vboxguest_linux.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/virt/vboxguest/vboxguest_linux.c b/drivers/virt/vboxguest/vboxguest_linux.c
+index 4ccfd30c2a30..6fc81347ae72 100644
+--- a/drivers/virt/vboxguest/vboxguest_linux.c
++++ b/drivers/virt/vboxguest/vboxguest_linux.c
+@@ -270,6 +270,13 @@ static ssize_t host_features_show(struct device *dev,
+ static DEVICE_ATTR_RO(host_version);
+ static DEVICE_ATTR_RO(host_features);
+ 
++static struct attribute *vbg_pci_attrs[] = {
++	&dev_attr_host_version.attr,
++	&dev_attr_host_features.attr,
++	NULL,
++};
++ATTRIBUTE_GROUPS(vbg_pci);
++
+ /**
+  * Does the PCI detection and init of the device.
+  *
+@@ -390,8 +397,6 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ 	}
+ 
+ 	pci_set_drvdata(pci, gdev);
+-	device_create_file(dev, &dev_attr_host_version);
+-	device_create_file(dev, &dev_attr_host_features);
+ 
+ 	vbg_info("vboxguest: misc device minor %d, IRQ %d, I/O port %x, MMIO at %pap (size %pap)\n",
+ 		 gdev->misc_device.minor, pci->irq, gdev->io_port,
+@@ -422,8 +427,6 @@ static void vbg_pci_remove(struct pci_dev *pci)
+ 	mutex_unlock(&vbg_gdev_mutex);
+ 
+ 	free_irq(pci->irq, gdev);
+-	device_remove_file(gdev->dev, &dev_attr_host_features);
+-	device_remove_file(gdev->dev, &dev_attr_host_version);
+ 	misc_deregister(&gdev->misc_device_user);
+ 	misc_deregister(&gdev->misc_device);
+ 	vbg_core_exit(gdev);
+@@ -488,6 +491,7 @@ MODULE_DEVICE_TABLE(pci,  vbg_pci_ids);
+ 
+ static struct pci_driver vbg_pci_driver = {
+ 	.name		= DEVICE_NAME,
++	.dev_groups	= vbg_pci_groups,
+ 	.id_table	= vbg_pci_ids,
+ 	.probe		= vbg_pci_probe,
+ 	.remove		= vbg_pci_remove,
+-- 
+2.25.1
+
