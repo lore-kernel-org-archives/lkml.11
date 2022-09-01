@@ -2,182 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A21C7ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 05:52:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 326AAECAAD2
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 05:54:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232635AbiIAFwv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 01:52:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48294 "EHLO
+        id S232967AbiIAFyk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 01:54:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229682AbiIAFwt (ORCPT
+        with ESMTP id S229813AbiIAFyi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 01:52:49 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 742BD1178F2
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 22:52:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662011568; x=1693547568;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=uRo9p3jFlj0FmuG121IKZKYM2BdiNLm74eHX8SYd4d8=;
-  b=I0yjYPMGr7G1gdi0OCr70zoKk1+6wbwPj9NAHJkrpYG/ZyIQAFGiFm8Z
-   GjTlkHilREz65GIH1Wrldb2fLn8HHyP/qCx9jyHXrpTq/OJK9pu5Mdj5Y
-   dPwtU+trThSoS6KKmJzDeUPO/7hCOjiyaTFbCjH+Aw3SYD46xCts16yyu
-   6EWOsoLQdJJH4HY8MC1lK7aWWbOv21fvA99DdjbZO4MweUo9xDNA2ztEO
-   W0R4zmM7ZMy1CJBGRQpF4KmzTRZqLV4mpBmTt4hqPrpZ8e8fkdjq0LV0o
-   xtvU0McFoyyZkAHjhvcMzECnG9YOiQKNzcsT2st3unM1uAMc4RSHQmMWn
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="296407715"
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="296407715"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 22:52:48 -0700
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="673691146"
-Received: from rongch2-mobl.ccr.corp.intel.com (HELO [10.254.213.173]) ([10.254.213.173])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 22:52:45 -0700
-Subject: Re: [kbuild-all] Re: powerpc-linux-objdump: Warning: Unrecognized
- form: 0x23
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Nathan Chancellor <nathan@kernel.org>
-Cc:     kernel test robot <lkp@intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        "llvm@lists.linux.dev" <llvm@lists.linux.dev>,
-        "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>
-References: <202208311414.4OPuYS9K-lkp@intel.com>
- <Yw+A+0BY26l0AC5j@dev-arch.thelio-3990X>
- <b0b8fecd-4041-d04e-9a11-2c7947e5d5a0@intel.com>
- <YxAS9NBjBI/vi0XK@dev-arch.thelio-3990X>
- <8d2c3aef-aa4f-1f4d-dc89-622554ffda31@intel.com>
- <9d77cb93-2eff-d87d-6554-1636d5e7d5ec@csgroup.eu>
-From:   "Chen, Rong A" <rong.a.chen@intel.com>
-Message-ID: <0acfb209-a792-a47b-0261-9fb29824e4b9@intel.com>
-Date:   Thu, 1 Sep 2022 13:52:42 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.12.0
+        Thu, 1 Sep 2022 01:54:38 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D5741178F5
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 22:54:37 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id az27so20871833wrb.6
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 22:54:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=E0h+4ukqcPWiSs+SEBzM01Cdvd6fCSITsOpksTq6c80=;
+        b=j8oQgX/SV1VH2ZiSDr9xoYd4HnKn8nQe5TB5bBlof5EoRbNayt/lmCCcpjU+M63tY6
+         uo9bRisVjIFAxzUot14T2Ao69wlVobS0YF9cQLb9YJEPgk8PPh+GnDdrGLcUFbumdNev
+         cyDwMPedz/wJZZ6jq5mbVFkk/WfvBzIaZdES5DUjfvKkx1KWqXTdpreOZb9bIELWt0lm
+         C9fk+AxkvXAC+teZVVoQ6uUlmamnJx9daji7sE+qo35L6gVxCua2LFP86702tDXHNCN6
+         KWBqRWW24YIqi56xFEiM4GfRTllvEAbGzW2KITSHNC3pYbuXgGAIR/kML51SFfBn+iu/
+         NmZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=E0h+4ukqcPWiSs+SEBzM01Cdvd6fCSITsOpksTq6c80=;
+        b=BS+GJrCTPvbjI+GCls+dDX3/o8gE6kfH0ZM5aXbR7pO28DweY83h+a7y8JvIRdMoLF
+         VbtBh2ACGubUu7lWdi5TaaP6RaK/hjHmY5vE6FrFdlq1o3c0Al5uZsw8v2O7ornYJyit
+         MfYIC95CQO8qQKvdRK2VMC2Ay5THShuGlCNXS6zWxQfLIMBea6uoppySxiwPfcc5/DhL
+         fraEZm90GL46a4I4xbcM+6ndWe5gESrTmVmpin7JqoysfNn/CuZzz/SfBeXZlVNnfV4W
+         oWsXw/S58OpGx+16xAJhOirpU9JK3+8EAjihhtzdrdifo+oa3ArrS3WKmx28s7rDNQAH
+         gH/g==
+X-Gm-Message-State: ACgBeo24Ef1n3YBwOP7hCsTAKnZ4lZudirN6vhFqKevSvWvhBQj/XcEc
+        ycIMgPqXd9//38F0UB0BedLkKg==
+X-Google-Smtp-Source: AA6agR4CMzSXrSknaRIMfiiTvnVtkoXMUBvNkZm/KX79WL9nNplggkPvyDfgOauhxEryLDwTlpmClQ==
+X-Received: by 2002:a05:6000:168d:b0:226:da6a:6d78 with SMTP id y13-20020a056000168d00b00226da6a6d78mr9869307wrd.180.1662011676066;
+        Wed, 31 Aug 2022 22:54:36 -0700 (PDT)
+Received: from [192.168.10.46] (146725694.box.freepro.com. [130.180.211.218])
+        by smtp.googlemail.com with ESMTPSA id z7-20020a05600c0a0700b003a5c1e916c8sm11910858wmp.1.2022.08.31.22.54.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 31 Aug 2022 22:54:35 -0700 (PDT)
+Message-ID: <9a174828-33b2-268d-747f-c6dcea726e01@linaro.org>
+Date:   Thu, 1 Sep 2022 07:54:34 +0200
 MIME-Version: 1.0
-In-Reply-To: <9d77cb93-2eff-d87d-6554-1636d5e7d5ec@csgroup.eu>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [GIT PULL] early thermal changes for v6.1-rc1
 Content-Language: en-US
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Linux PM mailing list <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+References: <0fc7062d-696a-0794-8730-48ef08bcb8bd@linaro.org>
+ <CAJZ5v0h0r2dW7xW+GW3=KDEZZEkyYOXVCOmD3fad=a2enNhddA@mail.gmail.com>
+ <CAJZ5v0hNCezncvW-g1UVPoF-ZmeVWd192FCaZVWrV-+Ucsycpg@mail.gmail.com>
+ <CAJZ5v0ipq3swfX28o4YTCgsX6oyAJfqe385tdYzZXF=2ysfuvQ@mail.gmail.com>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <CAJZ5v0ipq3swfX28o4YTCgsX6oyAJfqe385tdYzZXF=2ysfuvQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+Hi Rafael,
 
-On 9/1/2022 1:45 PM, Christophe Leroy wrote:
-> 
-> 
-> Le 01/09/2022 à 06:59, Chen, Rong A a écrit :
->>
->>
->> On 9/1/2022 10:03 AM, Nathan Chancellor wrote:
->>> Hi Rong,
->>>
->>> On Thu, Sep 01, 2022 at 09:15:58AM +0800, Chen, Rong A wrote:
->>>>
->>>>
->>>> On 8/31/2022 11:40 PM, Nathan Chancellor wrote:
->>>>> On Wed, Aug 31, 2022 at 02:52:36PM +0800, kernel test robot wrote:
->>>>>> tree:
->>>>>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->>>>>> master
->>>>>> head:   dcf8e5633e2e69ad60b730ab5905608b756a032f
->>>>>> commit: f9b3cd24578401e7a392974b3353277286e49cee Kconfig.debug:
->>>>>> make DEBUG_INFO selectable from a choice
->>>>>> date:   5 months ago
->>>>>> config: powerpc-buildonly-randconfig-r003-20220830
->>>>>> (https://download.01.org/0day-ci/archive/20220831/202208311414.4OPuYS9K-lkp@intel.com/config)
->>>>>> compiler: clang version 16.0.0
->>>>>> (https://github.com/llvm/llvm-project
->>>>>> c7df82e4693c19e3fd2e25c83eb04d9deb7b7b59)
->>>>>> reproduce (this is a W=1 build):
->>>>>>            wget
->>>>>> https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->>>>>>            chmod +x ~/bin/make.cross
->>>>>>            # install powerpc cross compiling tool for clang build
->>>>>>            # apt-get install binutils-powerpc-linux-gnu
->>>>>>            #
->>>>>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f9b3cd24578401e7a392974b3353277286e49cee
->>>>>>            git remote add linus
->>>>>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->>>>>>            git fetch --no-tags linus master
->>>>>>            git checkout f9b3cd24578401e7a392974b3353277286e49cee
->>>>>>            # save the config file
->>>>>>            mkdir build_dir && cp config build_dir/.config
->>>>>>            COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang
->>>>>> make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash
->>>>>>
->>>>>> If you fix the issue, kindly add following tag where applicable
->>>>>> Reported-by: kernel test robot <lkp@intel.com>
->>>>>>
->>>>>> All warnings (new ones prefixed by >>):
->>>>>>
->>>>>>>> powerpc-linux-objdump: Warning: Unrecognized form: 0x23
->>>>>
->>>>> Given this is clang 16.0.0 with
->>>>> CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y, which uses DWARF5 by
->>>>> default instead of DWARF4, it looks like older binutils not
->>>>> understanding DWARF5. What version of binutils is being used by the
->>>>> bot?
->>>>
->>>> Hi Nathan,
->>>>
->>>> We're using binutils v2.38.90.20220713-2
->>>>
->>>> ||/ Name           Version            Architecture Description
->>>> +++-==============-==================-============-==========================================
->>>> ii  binutils       2.38.90.20220713-2 amd64        GNU assembler,
->>>> linker and binary utilities
->>>
->>> Thanks for chiming in! This looks like the output of 'dpkg -l', right? I
->>
->> Hi Nathan,
->>
->> oh, yes, I misunderstood, it's not related to this package.
->>
->>> noticed on second glance that the tuple for the objdump warning above is
->>> 'powerpc-linux-', which leads me to believe that a kernel.org toolchain
->>> (or a self compiled one) is being used. I would expect the tuple to be
->>> 'powerpc-linux-gnu-' if Debian's package was being used. Is that
->>> possible?
->>
->> you are right, we used a self-compiled toolchain, we'll try the binutils
->> from debian package.
-> 
-> Can you first tell us the version you are using ?
-> 
-> 	powerpc-linux-objdump -v
-> 
-> That will tell you the version.
+On 30/08/2022 20:18, Rafael J. Wysocki wrote:
+> On Tue, Aug 30, 2022 at 6:50 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
 
-Hi Christophe,
+[ ... ]
 
-the version is v2.38:
-
-$ ./powerpc-linux-objdump -v
-GNU objdump (GNU Binutils) 2.38
-Copyright (C) 2022 Free Software Foundation, Inc.
-This program is free software; you may redistribute it under the terms of
-the GNU General Public License version 3 or (at your option) any later 
-version.
-This program has absolutely no warranty.
-
-Best Regards,
-Rong Chen
-
+>> commit 670a5e356cb6dfc61b87b599eba483af6a3a99ad
+>> Author: Daniel Lezcano <daniel.lezcano@linaro.org>
+>> Date:   Fri Aug 5 17:38:33 2022 +0200
+>>
+>>     thermal/core: Move the thermal zone lock out of the governors
+>>
+>> as the first bad commit, but I'm not sure what can be wrong with it yet.
 > 
-> Thanks
-> Christophe
-> _______________________________________________
-> kbuild-all mailing list -- kbuild-all@lists.01.org
-> To unsubscribe send an email to kbuild-all-leave@lists.01.org
+> See: https://patchwork.kernel.org/project/linux-pm/patch/12067136.O9o76ZdvQC@kreacher/
 > 
+> I'm adding this one to linux-next right away.
+
+
+Sorry I was unreachable until now. Thanks for taking care of fixing the 
+issue!
+
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
