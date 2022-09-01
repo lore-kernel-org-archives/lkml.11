@@ -2,81 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42A4AECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 11:19:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 605B9C64991
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 11:21:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234206AbiIALT1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 07:19:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38236 "EHLO
+        id S234268AbiIALVO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 07:21:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233114AbiIALTY (ORCPT
+        with ESMTP id S234019AbiIALVI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 07:19:24 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08BBE1275DF;
-        Thu,  1 Sep 2022 04:19:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662031164; x=1693567164;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=UjpVOtpMNTn8a2g9tUjix6AHloEUqxCpowEEZFoDF+g=;
-  b=llpeSeZo0LZnxmwgRt0iSdEpj3IAxrfd2AcxwhMvQaXObyN9M3afbeyV
-   oVSW5J+KuzlA1PpPRmt6Qa5E7lSl0e332oQMdz2Y/hhHcyPz7d+yziiNM
-   6OisqgcREb/YxUISDDMwh5vzCOopE4runesJQNXu1YYiPxBDCgJC9FBT7
-   oQchpIENDYfHaLzj8rhFQf4RC0Yskb7I5zTQC/hkhS4ZD80PXotNrST+s
-   TbEinPu324NRCQ7JZqDAdSec/ae3ULCNaMmZXn2kOFAsue2xO3cvNOW4q
-   2xya6CBfH+LVxuwAoE0/J2gfGE22cX6M+5P7k5zGfTmjzJkBm01xgOscV
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="293266248"
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="293266248"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 04:19:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="754785221"
-Received: from kuha.fi.intel.com ([10.237.72.185])
-  by fmsmga001.fm.intel.com with SMTP; 01 Sep 2022 04:19:21 -0700
-Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Thu, 01 Sep 2022 14:19:20 +0300
-Date:   Thu, 1 Sep 2022 14:19:20 +0300
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     =?utf-8?B?6LW15pmT?= <zhaoxiao@uniontech.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        linux-usb <linux-usb@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] usb:mux:intel_pmc_mux: Use the helper
- acpi_dev_get_memory_resources()
-Message-ID: <YxCVOHuaOQGKNf7X@kuha.fi.intel.com>
-References: <20220831061126.25172-1-zhaoxiao@uniontech.com>
- <Yw8aJ8QC1BtBNBfx@kuha.fi.intel.com>
- <Yw8c0Qdelk8XecV5@kroah.com>
- <tencent_4E7B2E1523A5D8801223AAB6@qq.com>
+        Thu, 1 Sep 2022 07:21:08 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A691107C48
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 04:21:03 -0700 (PDT)
+Received: from fraeml713-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MJJVy0QByz67dHc;
+        Thu,  1 Sep 2022 19:20:26 +0800 (CST)
+Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
+ fraeml713-chm.china.huawei.com (10.206.15.32) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 1 Sep 2022 13:21:00 +0200
+Received: from localhost.localdomain (10.69.192.58) by
+ lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 1 Sep 2022 12:20:58 +0100
+From:   John Garry <john.garry@huawei.com>
+To:     <xuwei5@hisilicon.com>
+CC:     <andriy.shevchenko@linux.intel.com>, <linuxarm@huawei.com>,
+        <rafael.j.wysocki@intel.com>, <linux-kernel@vger.kernel.org>,
+        <soc@kernel.org>, <yangyingliang@huawei.com>,
+        John Garry <john.garry@huawei.com>
+Subject: [PATCH 0/5] Misc hisi_lpc changes
+Date:   Thu, 1 Sep 2022 19:14:26 +0800
+Message-ID: <1662030871-182688-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <tencent_4E7B2E1523A5D8801223AAB6@qq.com>
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ lhrpeml500003.china.huawei.com (7.191.162.67)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 01, 2022 at 11:39:17AM +0800, 赵晓 wrote:
-> No generated by yet another bot, The patch refer to the below:&nbsp;
-> https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git/commit/?h=linux-next&amp;id=6505e452371d44be00fe321996f1de248a7606a2
+Hi Xu Wei,
 
-I don't know what are you trying to point at with that, but I'm
-guessing you are trying to refer to this patch series [1] that Rafael
-indeed picked to his PM tree - mostly. The first patch was taken by
-Greg, though now that I look at his linux-usb tree, it's not there?
+This is a series of small improvements to the driver from Andy
+and myself.
 
-In any case, your patch will create a conflict with that first patch
-in that series. There is a proper solution in that very same series,
-but it can only be applied after the first patch becomes available.
+Andy sent his patches originally in the following:
+https://lore.kernel.org/lkml/20220708210859.6774-1-andriy.shevchenko@linux.intel.com/
 
-[1] https://lore.kernel.org/linux-usb/20220816101629.69054-1-heikki.krogerus@linux.intel.com/
+Please consider sending through the arm-soc tree for v6.1 .
 
-thanks,
+Based on v6.0-rc3.
+
+Thanks,
+John
+
+Andy Shevchenko (4):
+  bus: hisi_lpc: Don't dereference fwnode handle
+  bus: hisi_lpc: Use devm_platform_ioremap_resource
+  bus: hisi_lpc: Correct error code for timeout
+  bus: hisi_lpc: Don't guard ACPI IDs with ACPI_PTR()
+
+John Garry (1):
+  bus: hisi_lpc: Use platform_device_register_full()
+
+ drivers/bus/hisi_lpc.c | 98 +++++++++++++++++++++---------------------
+ 1 file changed, 48 insertions(+), 50 deletions(-)
 
 -- 
-heikki
+2.35.3
+
