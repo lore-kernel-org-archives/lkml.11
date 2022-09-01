@@ -2,163 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6876ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 06:46:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B8F4ECAAD8
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 06:48:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233264AbiIAGp6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 02:45:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52180 "EHLO
+        id S233330AbiIAGs3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 02:48:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233131AbiIAGpz (ORCPT
+        with ESMTP id S232572AbiIAGs1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 02:45:55 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1484B07E5
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 23:45:53 -0700 (PDT)
+        Thu, 1 Sep 2022 02:48:27 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 319C612140F;
+        Wed, 31 Aug 2022 23:48:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662014753; x=1693550753;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=hsMNK9xOjMb0hqIOQK4CsGKdCYUrUueFT0rtmIk9Wu8=;
-  b=mnuKmpukwbFCGEce8JrYpdmqAHkn3YXBpKszueLCk2e7mH2KXRq9wDhA
-   gn1gOZuUnZeZU8w4+nQ1Qk4NvsBCNH+KD3svqFloNpShS6qAIhAH00dMl
-   EYDorwmfSps65CoFiuRfWKIbJkFN0McOINDqmSaT5hFuq+TN7gBt+gmjx
-   PdCAVeS4j2gm2lLAcnHzoL8k+zfmxN7QX17BGYGvA2BClnlfgRscF2Xiy
-   nZBs2seoJq2unB83Q8jZBPp9vxTB477dhpVb29nOSbWbPODiiqKAELZS8
-   f8Z77kqZMO7sOrSztZB6dpNYwkj5m/UVCaDjLDmUCx9z4TZaHz8p5EuHd
+  t=1662014907; x=1693550907;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=peHiaVdSwJ7TxmlSyI5wXME33FtW6AAZToRTJ8ib9Zk=;
+  b=T9ez8zbgUsjCA/kVYPdGUz4sKarrprqAzC7E4NRnudlMDKseisafZF0D
+   2uLSfqXbTWefLoOxlxfSD2p8c5BzCL7Z0mwYqv1h5Cgc3diz29zZBMNfS
+   CHwByY1RtSraD3o1tdTq/kldAAckpvONMfuZXsJqRrrsJst11pAOfL9To
+   dbLcH4m2aIn4iTz3a6ixrY9jAzQT16MO2/q3162ZUY6Z1iS7beAaVFlTb
+   ELPutnXIMSNfLVfQIHe4SyDiwxiP0iVwCtrU8mHCZltfQs7S8rjfzr3lz
+   Zdj6b9HzoftC5/NxNWzZ94K8GKxWralcywwqWFKFBZFQLBL4H94eZvErv
    A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="295636767"
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="296416412"
 X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="295636767"
+   d="scan'208";a="296416412"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 23:45:53 -0700
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 23:48:26 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="857720236"
-Received: from lkp-server02.sh.intel.com (HELO 811e2ceaf0e5) ([10.239.97.151])
-  by fmsmga006.fm.intel.com with ESMTP; 31 Aug 2022 23:45:52 -0700
-Received: from kbuild by 811e2ceaf0e5 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oTdxX-0001Ee-2e;
-        Thu, 01 Sep 2022 06:45:51 +0000
-Date:   Thu, 01 Sep 2022 14:45:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:x86/cache] BUILD SUCCESS
- 499c8bb4693d1c8d8f3d6dd38e5bdde3ff5bd906
-Message-ID: <631054f0.Eomc2+KRxYcLIKpK%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+   d="scan'208";a="857720767"
+Received: from yy-desk-7060.sh.intel.com (HELO localhost) ([10.239.159.76])
+  by fmsmga006.fm.intel.com with ESMTP; 31 Aug 2022 23:48:24 -0700
+Date:   Thu, 1 Sep 2022 14:48:24 +0800
+From:   Yuan Yao <yuan.yao@linux.intel.com>
+To:     isaku.yamahata@intel.com
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>,
+        erdemaktas@google.com, Sean Christopherson <seanjc@google.com>,
+        Sagi Shahar <sagis@google.com>
+Subject: Re: [PATCH v8 038/103] KVM: x86/tdp_mmu: refactor kvm_tdp_mmu_map()
+Message-ID: <20220901064824.mpjd3xpgal3d3ynu@yy-desk-7060>
+References: <cover.1659854790.git.isaku.yamahata@intel.com>
+ <021cf72b904933f23743d74b2a67341298ae5328.1659854790.git.isaku.yamahata@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <021cf72b904933f23743d74b2a67341298ae5328.1659854790.git.isaku.yamahata@intel.com>
+User-Agent: NeoMutt/20171215
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/cache
-branch HEAD: 499c8bb4693d1c8d8f3d6dd38e5bdde3ff5bd906  x86/resctrl: Fix to restore to original value when re-enabling hardware prefetch register
+On Sun, Aug 07, 2022 at 03:01:23PM -0700, isaku.yamahata@intel.com wrote:
+> From: Isaku Yamahata <isaku.yamahata@intel.com>
+>
+> Factor out non-leaf SPTE population logic from kvm_tdp_mmu_map().  MapGPA
+> hypercall needs to populate non-leaf SPTE to record which GPA, private or
+> shared, is allowed in the leaf EPT entry.
+>
+> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+> ---
+>  arch/x86/kvm/mmu/tdp_mmu.c | 26 +++++++++++++++++++-------
+>  1 file changed, 19 insertions(+), 7 deletions(-)
+>
+> diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+> index 8bc3a8d1803e..90b468a3a1a2 100644
+> --- a/arch/x86/kvm/mmu/tdp_mmu.c
+> +++ b/arch/x86/kvm/mmu/tdp_mmu.c
+> @@ -1145,6 +1145,24 @@ static int tdp_mmu_link_sp(struct kvm *kvm, struct tdp_iter *iter,
+>  	return 0;
+>  }
+>
+> +static int tdp_mmu_populate_nonleaf(
+> +	struct kvm_vcpu *vcpu, struct tdp_iter *iter, bool account_nx)
+> +{
+> +	struct kvm_mmu_page *sp;
+> +	int ret;
+> +
+> +	WARN_ON(is_shadow_present_pte(iter->old_spte));
+> +	WARN_ON(is_removed_spte(iter->old_spte));
 
-elapsed time: 720m
+Why these 2 WARN_ON are necessary here ?
 
-configs tested: 87
-configs skipped: 87
+In TPD MMU the changes of PTE with shared lock is not surprised and
+should be handle properly (e.g. the page is freed below for this
+case), or this function will be called without checking the present
+and removed state of the pte ?
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                           allyesconfig
-i386                                defconfig
-x86_64                        randconfig-a013
-x86_64                        randconfig-a011
-x86_64                        randconfig-a015
-i386                             allyesconfig
-x86_64                        randconfig-a002
-x86_64                          rhel-8.3-func
-x86_64                         rhel-8.3-kunit
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                           rhel-8.3-kvm
-x86_64                        randconfig-a004
-x86_64                    rhel-8.3-kselftests
-x86_64                           rhel-8.3-syz
-x86_64                        randconfig-a006
-powerpc                           allnoconfig
-mips                             allyesconfig
-powerpc                          allmodconfig
-sh                               allmodconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-arc                              allyesconfig
-alpha                            allyesconfig
-csky                              allnoconfig
-arc                               allnoconfig
-riscv                             allnoconfig
-arm64                            allyesconfig
-arm                                 defconfig
-arm                              allyesconfig
-arc                        nsim_700_defconfig
-parisc                generic-32bit_defconfig
-riscv             nommu_k210_sdcard_defconfig
-sh                          lboxre2_defconfig
-xtensa                         virt_defconfig
-powerpc                        warp_defconfig
-arm                        multi_v7_defconfig
-arm64                            alldefconfig
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-i386                          randconfig-c001
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-s390                 randconfig-r044-20220831
-arc                  randconfig-r043-20220831
-riscv                randconfig-r042-20220831
-sh                   sh7724_generic_defconfig
-sparc                       sparc32_defconfig
-sh                          rsk7203_defconfig
-sh                               alldefconfig
-arc                           tb10x_defconfig
-arm                       multi_v4t_defconfig
-parisc64                            defconfig
-powerpc                      cm5200_defconfig
-powerpc                      pcm030_defconfig
-sh                   rts7751r2dplus_defconfig
-powerpc                     rainier_defconfig
-arm                      jornada720_defconfig
-alpha                             allnoconfig
-mips                         cobalt_defconfig
-mips                           xway_defconfig
-i386                          debian-10.3-kvm
-i386                        debian-10.3-kunit
-i386                         debian-10.3-func
-
-clang tested configs:
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-x86_64                        randconfig-a001
-x86_64                        randconfig-a003
-x86_64                        randconfig-a005
-powerpc                          allyesconfig
-hexagon              randconfig-r045-20220831
-hexagon              randconfig-r041-20220831
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-powerpc                     tqm8560_defconfig
-powerpc                 xes_mpc85xx_defconfig
-arm                         socfpga_defconfig
-arm                        vexpress_defconfig
-x86_64                        randconfig-k001
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> +
+> +	sp = tdp_mmu_alloc_sp(vcpu);
+> +	tdp_mmu_init_child_sp(sp, iter);
+> +
+> +	ret = tdp_mmu_link_sp(vcpu->kvm, iter, sp, account_nx, true);
+> +	if (ret)
+> +		tdp_mmu_free_sp(sp);
+> +	return ret;
+> +}
+> +
+>  /*
+>   * Handle a TDP page fault (NPT/EPT violation/misconfiguration) by installing
+>   * page tables and SPTEs to translate the faulting guest physical address.
+> @@ -1153,7 +1171,6 @@ int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
+>  {
+>  	struct kvm_mmu *mmu = vcpu->arch.mmu;
+>  	struct tdp_iter iter;
+> -	struct kvm_mmu_page *sp;
+>  	int ret;
+>
+>  	kvm_mmu_hugepage_adjust(vcpu, fault);
+> @@ -1199,13 +1216,8 @@ int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
+>  			if (is_removed_spte(iter.old_spte))
+>  				break;
+>
+> -			sp = tdp_mmu_alloc_sp(vcpu);
+> -			tdp_mmu_init_child_sp(sp, &iter);
+> -
+> -			if (tdp_mmu_link_sp(vcpu->kvm, &iter, sp, account_nx, true)) {
+> -				tdp_mmu_free_sp(sp);
+> +			if (tdp_mmu_populate_nonleaf(vcpu, &iter, account_nx))
+>  				break;
+> -			}
+>  		}
+>  	}
+>
+> --
+> 2.25.1
+>
