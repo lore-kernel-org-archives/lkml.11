@@ -2,90 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5E4AECAAD8
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 06:59:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A92CAECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:00:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233420AbiIAG7w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 02:59:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47104 "EHLO
+        id S232209AbiIAHAO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 03:00:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233407AbiIAG7i (ORCPT
+        with ESMTP id S233427AbiIAG77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 02:59:38 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF16212204F
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 23:59:21 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id v5so10038453plo.9
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 23:59:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=SVF6PLCQYqQfDJ1mbN1yYxWEY7a8snySanblxKa0G2g=;
-        b=EQ/HtONlIP3lRAqKj+jLTa8iFP06eGdSTaZLe5lHLgIDfq9K7upKcsMHo7HNyzsSkF
-         0ZLJjdRLAFIchTJ6/V08SQ7BFOgs+yr6wqZgVTTZbPc60qYf6bUBktAdTV0xCmLO8+rb
-         TYtDclkULIsMF+oVCmKnFv6cIQg8YhK8pUZys=
+        Thu, 1 Sep 2022 02:59:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D712915801
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 23:59:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662015591;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KutrrOGNshk1JY+KNnymRzeyn0LVovbCCf72jYJxCGQ=;
+        b=PVLNrSImv4Mt3SrX+ucleQ69oJ3t3u/9w4ZZGID/rHSyUpRAEqNSbn4q6I42JzypAA4n3g
+        I602mi490WOyXkN0AZj3zkJqEnr4axHmsH9JvC8V7740WMgIrlmFBHsnV4BZyKkHIVXiJL
+        taGUMYO4RzG2zFYC5jsZR75gvzK7je0=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-636-ZjBqChfHP5qmk7T-uzcB6Q-1; Thu, 01 Sep 2022 02:59:50 -0400
+X-MC-Unique: ZjBqChfHP5qmk7T-uzcB6Q-1
+Received: by mail-wr1-f69.google.com with SMTP id k20-20020adfb354000000b0022556a0b8cbso2795356wrd.5
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 23:59:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=SVF6PLCQYqQfDJ1mbN1yYxWEY7a8snySanblxKa0G2g=;
-        b=Nb+vvtTtJNmj7lWzv4cc6mqE5XbKyA6iIwUWrRPxJKmG/TYrbz3/fPQGCK1pX2amKg
-         9wgxuhgkWskhmyDE0Oqad1n6HN4tTLOMSYt7p2hd4496R/QJphFdKmXjDL9yF1q63MXx
-         n8HR2FzZD7hpJHISTXQRikYfW5aaFvmRO2q/ZqXDGkR9y9XXJju8UnpoOXSYLhetIhKC
-         7/oKkDUy2cGY0+6t77WaTuNBTKomcdIOVNnpAuG+zS9M837qXhCokzqzxDLN/INW2ARO
-         Ir40eDHt9q4DyBvrLGgchZevM6W0CHIVG6XYPi6iZsEqitxsDuHdH8j6seOd7wzb65CS
-         S8iQ==
-X-Gm-Message-State: ACgBeo1BJ7Wet4QKo+R/SnNkB2fIjqLZHgMj96AqKAG3K+G4pI07NNZE
-        5hvXZkHtVV3sGeV0xb1L0saWrw==
-X-Google-Smtp-Source: AA6agR5ZHgeSnW5XK+mgnShl1BdOSPwjqbKb94qG4dgHKo3KiQskBMRdrJtDtsttOZ30SOZ9HrF0LA==
-X-Received: by 2002:a17:90b:1b0d:b0:1fe:3993:2a82 with SMTP id nu13-20020a17090b1b0d00b001fe39932a82mr5096208pjb.155.1662015559648;
-        Wed, 31 Aug 2022 23:59:19 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id d65-20020a623644000000b0052d40c4c06esm12497770pfa.39.2022.08.31.23.59.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Aug 2022 23:59:17 -0700 (PDT)
-From:   Kees Cook <keescook@chromium.org>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Kees Cook <keescook@chromium.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-hardening@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: [PATCH 0/2] fortify: Add run-time WARN for cross-field memcpy()
-Date:   Wed, 31 Aug 2022 23:59:12 -0700
-Message-Id: <20220901065914.1417829-1-keescook@chromium.org>
-X-Mailer: git-send-email 2.34.1
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc;
+        bh=KutrrOGNshk1JY+KNnymRzeyn0LVovbCCf72jYJxCGQ=;
+        b=CZ8FTFdT3hm7GQOmYK0IgGdMQeeTCg8m/Izh7ePI7Bj9xa9R6+AR7PS4ymx3ZzZELj
+         XpE8G/FLf8oG1jBaSbTF0kYlPG9OswrHp0F0pFjgvh7bR67NmnDuEXkxEjVhZSDt2mjE
+         m1rQrTKZP2SAXvvsQf7Xd/nVPRBE34NsEmW2pP3YGUb+YKwZrp2Bp+qOtUWPOFAtTJUF
+         pX6kM3N19cSFYfDQLCHz5Ea7P28mafcBxyIQS3qlNbdJ6hFCH77DtPURR6uilauWrzK7
+         CAradJMw5/EbFg/E/qheCUlE5Chdxua3Lz+LQmBsObUkefB6uX59FGUXSJS2R9GEUIoK
+         wqTg==
+X-Gm-Message-State: ACgBeo1JOn6HDtVup5MVNqiPVZRfU28JZ7Ao9gE4ToqZF0NJlks4J59R
+        Ho+ZQl4Paa9yva37cQ0EAqvxSNHnfB2/QE8cs/5jRTwFE+nV1ozODiuVKBKDYfHxOuUrc5ynnu8
+        2YBke8MBvZYa7AgUc7ymHt9z0
+X-Received: by 2002:a5d:5963:0:b0:226:dff7:adbe with SMTP id e35-20020a5d5963000000b00226dff7adbemr7898419wri.568.1662015589135;
+        Wed, 31 Aug 2022 23:59:49 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5m7cRVGCRrdQO37krM0xY2Mf0J7OCDD2pnsNFgIDdRbjKsEjIYNlKU/VsHPl1xPTx1IzQE+g==
+X-Received: by 2002:a5d:5963:0:b0:226:dff7:adbe with SMTP id e35-20020a5d5963000000b00226dff7adbemr7898405wri.568.1662015588841;
+        Wed, 31 Aug 2022 23:59:48 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c707:9e00:fec0:7e96:15cb:742? (p200300cbc7079e00fec07e9615cb0742.dip0.t-ipconnect.de. [2003:cb:c707:9e00:fec0:7e96:15cb:742])
+        by smtp.gmail.com with ESMTPSA id f9-20020a05600c154900b003a60ff7c082sm4693019wmg.15.2022.08.31.23.59.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 31 Aug 2022 23:59:48 -0700 (PDT)
+Message-ID: <02209dba-532d-a033-2dba-077ed26c8c6a@redhat.com>
+Date:   Thu, 1 Sep 2022 08:59:47 +0200
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=713; h=from:subject; bh=LeTil4IEruxaVe7mWfrPpEi0Vfjy7lWn1LjQi8mvjkw=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBjEFhCZb05sz6D+GQp3RqFe9s96Vb19uXf8nu3+B/3 K+EZyvaJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYxBYQgAKCRCJcvTf3G3AJi02D/ 9A5CVWpB/R+rtBo9Hz69xc6KVgu9rGAbBRmVMjtYWVn4jtOxiPSLL8QvW0t+F8vkIgPS+RUnSfjZ/0 hAU1oLluzNcqNPSj+L+o3ZE3lT5Xiyqcr8goXd36TwOHZWUaEmUTsNqpOyacfC2URgDVGGv3f81HXC m5U4bxfDPCb5BT8oEEhXs+EnMqs5M71OKC4aVhtwv9NPX9Ah4fm2tSgVrp56GMEu+7maQGY0qwBxhB dW7MjQ4glVMJHiL+cIr1k4cv8G6rbH5Gim5R1TBsLDoalZws0NMeanliOh2uEJVju/0SPCvE/48Opw t/00snJqhXKOz5vO1+BvO58eGBDmkPVMKt9wNfagz81UM8FIZ00SJJdt4bHPvKyFFBJF4MbBUOLZTI cjc9glqVRIUaXO3FKCtPshmj8y8mIyieEWgi6QjZfK71EmSGyLVJK98BR5QnRZL08xI+iVEy0oqVSV HwoOnj8kFFns7arwq/q0lqlZhNBcVyS0WEI/gJ89LxMimKXuzoPesmuYtiHxx2HhJH+k2TRQpQpLE3 LbkkMEsGVvNwFnbEAFH/vrV+nAv7gFgoI/ncQT3bBwBjeZRSG12fXhXZrpT+j66OTFoxqr5kh09A1F 4ckTG6O2Wm6QL3oG/QSk+zkNQMRReyyLNpOsiB4/UEAF9Bmss0e2PtJ6+GBQ==
-X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] hugetlb: simplify hugetlb handling in follow_page_mask
+Content-Language: en-US
+To:     Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        inuxppc-dev@lists.ozlabs.org, linux-ia64@vger.kernel.org,
+        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>,
+        Naoya Horiguchi <naoya.horiguchi@linux.dev>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+References: <20220829234053.159158-1-mike.kravetz@oracle.com>
+ <57c8f032-e48a-bacb-7922-3e2cc10dc0d2@linux.alibaba.com>
+ <Yw4+YvdS9kJUnx1s@monkey> <Yw5ZTEqxZCAgEbK9@monkey>
+ <0a8025eb-cf15-453a-7d7d-7c72d008889a@linux.alibaba.com>
+ <Yw/2CDbFDX5cnB2o@monkey>
+ <aee00134-794a-1589-e4a7-a1480d7a559f@linux.alibaba.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <aee00134-794a-1589-e4a7-a1480d7a559f@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On 01.09.22 03:24, Baolin Wang wrote:
+> 
+> 
+> On 9/1/2022 8:00 AM, Mike Kravetz wrote:
+>> On 08/31/22 09:07, Baolin Wang wrote:
+>>>
+>>>
+>>> On 8/31/2022 2:39 AM, Mike Kravetz wrote:
+>>>> On 08/30/22 09:44, Mike Kravetz wrote:
+>>>>> On 08/30/22 09:06, Baolin Wang wrote:
+>>>>>> Hi Mike,
+>>>>>>
+>>>>>> On 8/30/2022 7:40 AM, Mike Kravetz wrote:
+>>>>>>> During discussions of this series [1], it was suggested that hugetlb
+>>>>>>> handling code in follow_page_mask could be simplified.  At the beginning
+>>>>>>> of follow_page_mask, there currently is a call to follow_huge_addr which
+>>>>>>> 'may' handle hugetlb pages.  ia64 is the only architecture which provides
+>>>>>>> a follow_huge_addr routine that does not return error.  Instead, at each
+>>>>>>> level of the page table a check is made for a hugetlb entry.  If a hugetlb
+>>>>>>> entry is found, a call to a routine associated with that entry is made.
+>>>>>>>
+>>>>>>> Currently, there are two checks for hugetlb entries at each page table
+>>>>>>> level.  The first check is of the form:
+>>>>>>> 	if (p?d_huge())
+>>>>>>> 		page = follow_huge_p?d();
+>>>>>>> the second check is of the form:
+>>>>>>> 	if (is_hugepd())
+>>>>>>> 		page = follow_huge_pd().
+>>>>>>>
+>>>>>>> We can replace these checks, as well as the special handling routines
+>>>>>>> such as follow_huge_p?d() and follow_huge_pd() with a single routine to
+>>>>>>> handle hugetlb vmas.
+>>>>>>>
+>>>>>>> A new routine hugetlb_follow_page_mask is called for hugetlb vmas at the
+>>>>>>> beginning of follow_page_mask.  hugetlb_follow_page_mask will use the
+>>>>>>> existing routine huge_pte_offset to walk page tables looking for hugetlb
+>>>>>>> entries.  huge_pte_offset can be overwritten by architectures, and already
+>>>>>>> handles special cases such as hugepd entries.
+>>>>>>
+>>>>>> Could you also mention that this patch will fix the lock issue for
+>>>>>> CONT-PTE/PMD hugetlb by changing to use huge_pte_lock()? which will help
+>>>>>> people to understand the issue.
+>>>>>
+>>>>> Will update message in v2.  Thanks for taking a look!
+>>>>>
+>>>>
+>>>> One additional thought, we 'may' need a separate patch to fix the locking
+>>>> issues that can be easily backported.  Not sure this 'simplification' is
+>>>> a good backport candidate.
+>>>
+>>> Yes, that was my thought before, but David did not like adding more
+>>> make-legacy-cruft-happy code.
+>>>
+>>> So how about creating a series that contains 3 patches: picking up patch 1
+>>> and patch 3 of my previous series [1], and your current patch? That means
+>>> patch 1 and patch 2 in this series can fix the lock issue explicitly and be
+>>> suitable to backport, meanwhile patch 3 (which is your current patch) will
+>>> cleanup the legacy code.
+>>>
+>>
+>> When I looked at patch 3, I was thinking the update follow_huge_pmd routine
+>> would work for the PTE level with a few more modifications.  Perhaps, this is
+>> too ugly but it is a smaller set of changes for backport.
+>>
+>> Of course, this would be followed up with the simplification patch which
+>> removes all this code.
+> 
+> Yes, looks more simple. I can send you a formal patch with your 
+> suggestion, which can be added into your cleanup series. Thanks.
 
-I'm hoping to at least get this into -next to see how noisy it ends up
-being. I've tracked down several false positives that are getting fixed,
-but I'd like to see this get wider testing. For details, see patch 1,
-but this is the run-time half of the recent FORTIFY_SOURCE memcpy()
-bounds checking work.
-
--Kees
-
-Kees Cook (2):
-  fortify: Add run-time WARN for cross-field memcpy()
-  lkdtm: Update tests for memcpy() run-time warnings
-
- drivers/misc/lkdtm/fortify.c            | 96 +++++++++++++++++++++----
- include/linux/fortify-string.h          | 70 +++++++++++++++++-
- tools/testing/selftests/lkdtm/tests.txt |  8 ++-
- 3 files changed, 155 insertions(+), 19 deletions(-)
+As an alternative, we can have a stable-only version that does that.
 
 -- 
-2.34.1
+Thanks,
+
+David / dhildenb
 
