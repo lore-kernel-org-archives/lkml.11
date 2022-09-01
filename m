@@ -2,299 +2,281 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04BEDECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 12:19:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6A08ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 12:19:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233421AbiIAMTn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 08:19:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55360 "EHLO
+        id S233087AbiIAMTr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 08:19:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233329AbiIAMT3 (ORCPT
+        with ESMTP id S233350AbiIAMTc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 08:19:29 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BF0E1195F4;
-        Thu,  1 Sep 2022 05:19:26 -0700 (PDT)
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2818wsF5016725;
-        Thu, 1 Sep 2022 08:19:24 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3japt6247d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 08:19:24 -0400
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 281CJNIn031428
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 1 Sep 2022 08:19:23 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Thu, 1 Sep 2022 08:19:22 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Thu, 1 Sep 2022 08:19:21 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Thu, 1 Sep 2022 08:19:21 -0400
-Received: from debian.ad.analog.com ([10.48.65.119])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 281CJ1FR010547;
-        Thu, 1 Sep 2022 08:19:12 -0400
-From:   Ciprian Regus <ciprian.regus@analog.com>
-To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Ciprian Regus <ciprian.regus@analog.com>
-Subject: [PATCH v2 4/5] drivers: iio: adc: LTC2499 support
-Date:   Thu, 1 Sep 2022 15:16:59 +0300
-Message-ID: <20220901121700.1325733-4-ciprian.regus@analog.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220901121700.1325733-1-ciprian.regus@analog.com>
-References: <20220901121700.1325733-1-ciprian.regus@analog.com>
+        Thu, 1 Sep 2022 08:19:32 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C9C1195F4
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 05:19:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662034770; x=1693570770;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=+NXV3xbzor+SWZoPDSbw3NS0yopPe9tTU0sfkL7B1iY=;
+  b=jOR6CoSJklLo274SSjSY2CW7AsORF8pt1JFD2ZLUeuEAYJ6IX5HBmqiJ
+   5+qnHrpNvuAJK65kUDC+YBvd9YqFD6rZBAblGlcxFW8mZJkdQeKWUtiA7
+   BFjx/Zb6JXuGoS2S+eZNU7O0yopnSTlzGZrNByyQYgLGDYDGHyH50ytDt
+   ko2CvgsIiiMbNMAZBh5ZKxh+oGk8lXdDu0Lja/QGwpypBHFMxNuOSJ41L
+   gXhsRcdBRn228bwxh9kLE4wEFhes2z1KY9+o4P5tbXFnvcb5KRfqsDxjO
+   FahHKdZ3S19dXQ74MzgH4moL7yWFXVcrawKO0iU1C7ld2Q0fZ2FKhd+AK
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="381995123"
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="381995123"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 05:19:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="680833017"
+Received: from lkp-server02.sh.intel.com (HELO b138c9e8658c) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 01 Sep 2022 05:19:28 -0700
+Received: from kbuild by b138c9e8658c with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oTjAN-0000HC-17;
+        Thu, 01 Sep 2022 12:19:27 +0000
+Date:   Thu, 1 Sep 2022 20:18:27 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: drivers/memstick/host/r592.c:83:22: sparse: sparse: incorrect type
+ in argument 1 (different base types)
+Message-ID: <202209012019.HHr1fSMX-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: B_blqKJevBA6-qQQVFvD_6lA2A6v6eZ1
-X-Proofpoint-ORIG-GUID: B_blqKJevBA6-qQQVFvD_6lA2A6v6eZ1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-09-01_08,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 suspectscore=0
- mlxlogscore=999 malwarescore=0 priorityscore=1501 adultscore=0 spamscore=0
- lowpriorityscore=0 mlxscore=0 phishscore=0 impostorscore=0 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2209010056
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The LTC2499 is a 16-channel (eight differential), 24-bit,
-ADC with Easy Drive technology and a 2-wire, I2C interface.
+Hi Christophe,
 
-Implement support for the LTC2499 ADC by extending the LTC2497
-driver. A new chip_info struct is added to differentiate between
-chip types and resolutions when reading data from the device.
+First bad commit (maybe != root cause):
 
-Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/2499fe.pdf
-Signed-off-by: Ciprian Regus <ciprian.regus@analog.com>
----
-changes in v2:
- - removed the bitfield.h and bitops.h includes, since they were not needed.
- - removed a blank line.
- - replaced the data buffer for the ltc2497_driverdata with a union.
- - depending on frame size, i2c transfers use either 3 or 4 byte buffers, instead
-   of always using a __be32.
- - added a comment which explains the output data format and how does sign extension.
-   happen.
- - added the const modifier for the chip_info structs.
- - renamed the chip_info struct to ltc2497_chip_info.
- - renamed the chip_type enum to ltc2497_chip_type
- - added probe fallback to using i2c_device_id in case OF fails.
- - used BITS_TO_BYTES() instead of dividing by 8.
- - used a tab instead of a space in a struct field declaration, which in v1 appeared as
-   if the line was deleted and added back.
- - added back a trailing comma.
- - rearranged variable declaration lines so that longer ones would be first.
- - used pointers to a chip info struct in the i2c_device_id table, instead of enums. 
- drivers/iio/adc/ltc2496.c      |  8 ++++-
- drivers/iio/adc/ltc2497-core.c |  2 +-
- drivers/iio/adc/ltc2497.c      | 56 +++++++++++++++++++++++++++++++---
- drivers/iio/adc/ltc2497.h      | 11 +++++++
- 4 files changed, 70 insertions(+), 7 deletions(-)
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   c5e4d5e99162ba8025d58a3af7ad103f155d2df7
+commit: 2255411d1d0f0661d1e5acd5f6edf4e6652a345a powerpc/44x: Fix build failure with GCC 12 (unrecognized opcode: `wrteei')
+date:   5 weeks ago
+config: powerpc-randconfig-s053-20220901 (https://download.01.org/0day-ci/archive/20220901/202209012019.HHr1fSMX-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 12.1.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=2255411d1d0f0661d1e5acd5f6edf4e6652a345a
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 2255411d1d0f0661d1e5acd5f6edf4e6652a345a
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/dma/ppc4xx/ drivers/memstick/host/
 
-diff --git a/drivers/iio/adc/ltc2496.c b/drivers/iio/adc/ltc2496.c
-index dfb3bb5997e5..bf89d5ae19af 100644
---- a/drivers/iio/adc/ltc2496.c
-+++ b/drivers/iio/adc/ltc2496.c
-@@ -15,6 +15,7 @@
- #include <linux/iio/driver.h>
- #include <linux/module.h>
- #include <linux/mod_devicetable.h>
-+#include <linux/property.h>
- 
- #include "ltc2497.h"
- 
-@@ -74,6 +75,7 @@ static int ltc2496_probe(struct spi_device *spi)
- 	spi_set_drvdata(spi, indio_dev);
- 	st->spi = spi;
- 	st->common_ddata.result_and_measure = ltc2496_result_and_measure;
-+	st->common_ddata.chip_info = device_get_match_data(dev);
- 
- 	return ltc2497core_probe(dev, indio_dev);
- }
-@@ -85,8 +87,12 @@ static void ltc2496_remove(struct spi_device *spi)
- 	ltc2497core_remove(indio_dev);
- }
- 
-+static const struct ltc2497_chip_info ltc2496_info = {
-+	.resolution = 16,
-+};
-+
- static const struct of_device_id ltc2496_of_match[] = {
--	{ .compatible = "lltc,ltc2496", },
-+	{ .compatible = "lltc,ltc2496", .data = &ltc2496_info, },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, ltc2496_of_match);
-diff --git a/drivers/iio/adc/ltc2497-core.c b/drivers/iio/adc/ltc2497-core.c
-index 2a485c8a1940..b2752399402c 100644
---- a/drivers/iio/adc/ltc2497-core.c
-+++ b/drivers/iio/adc/ltc2497-core.c
-@@ -95,7 +95,7 @@ static int ltc2497core_read_raw(struct iio_dev *indio_dev,
- 			return ret;
- 
- 		*val = ret / 1000;
--		*val2 = 17;
-+		*val2 = ddata->chip_info->resolution + 1;
- 
- 		return IIO_VAL_FRACTIONAL_LOG2;
- 
-diff --git a/drivers/iio/adc/ltc2497.c b/drivers/iio/adc/ltc2497.c
-index f7c786f37ceb..2f660015f34b 100644
---- a/drivers/iio/adc/ltc2497.c
-+++ b/drivers/iio/adc/ltc2497.c
-@@ -12,6 +12,7 @@
- #include <linux/iio/driver.h>
- #include <linux/module.h>
- #include <linux/mod_devicetable.h>
-+#include <linux/property.h>
- 
- #include "ltc2497.h"
- 
-@@ -19,11 +20,16 @@ struct ltc2497_driverdata {
- 	/* this must be the first member */
- 	struct ltc2497core_driverdata common_ddata;
- 	struct i2c_client *client;
-+	u32 recv_size;
-+	u32 sub_lsb;
- 	/*
- 	 * DMA (thus cache coherency maintenance) may require the
- 	 * transfer buffers to live in their own cache lines.
- 	 */
--	__be32 buf __aligned(IIO_DMA_MINALIGN);
-+	union {
-+		__be32 d32;
-+		u8 d8[3];
-+	} data __aligned(IIO_DMA_MINALIGN);
- };
- 
- static int ltc2497_result_and_measure(struct ltc2497core_driverdata *ddata,
-@@ -34,13 +40,29 @@ static int ltc2497_result_and_measure(struct ltc2497core_driverdata *ddata,
- 	int ret;
- 
- 	if (val) {
--		ret = i2c_master_recv(st->client, (char *)&st->buf, 3);
-+		if (st->recv_size == 3)
-+			ret = i2c_master_recv(st->client, (char *)&st->data.d8, st->recv_size);
-+		else
-+			ret = i2c_master_recv(st->client, (char *)&st->data.d32, st->recv_size);
-+
- 		if (ret < 0) {
- 			dev_err(&st->client->dev, "i2c_master_recv failed\n");
- 			return ret;
- 		}
- 
--		*val = (be32_to_cpu(st->buf) >> 14) - (1 << 17);
-+		/*
-+		 * The data format is 16/24 bit 2s complement, but with an upper sign bit on the
-+		 * resolution + 1 position, which is set for positive values only. Given this
-+		 * bit's value, subtracting BIT(resolution + 1) from the ADC's result is
-+		 * equivalent to a sign extension.
-+		 */
-+		if (st->recv_size == 3) {
-+			*val = (get_unaligned_be24(st->data.d8) >> st->sub_lsb)
-+				- BIT(ddata->chip_info->resolution + 1);
-+		} else {
-+			*val = (be32_to_cpu(st->data.d32) >> st->sub_lsb)
-+				- BIT(ddata->chip_info->resolution + 1);
-+		}
- 	}
- 
- 	ret = i2c_smbus_write_byte(st->client,
-@@ -54,9 +76,11 @@ static int ltc2497_result_and_measure(struct ltc2497core_driverdata *ddata,
- static int ltc2497_probe(struct i2c_client *client,
- 			 const struct i2c_device_id *id)
- {
-+	const struct ltc2497_chip_info *chip_info;
- 	struct iio_dev *indio_dev;
- 	struct ltc2497_driverdata *st;
- 	struct device *dev = &client->dev;
-+	u32 resolution;
- 
- 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C |
- 				     I2C_FUNC_SMBUS_WRITE_BYTE))
-@@ -71,6 +95,15 @@ static int ltc2497_probe(struct i2c_client *client,
- 	st->client = client;
- 	st->common_ddata.result_and_measure = ltc2497_result_and_measure;
- 
-+	chip_info = device_get_match_data(dev);
-+	if (!chip_info)
-+		chip_info = (const struct ltc2497_chip_info *)id->driver_data;
-+	st->common_ddata.chip_info = chip_info;
-+
-+	resolution = chip_info->resolution;
-+	st->sub_lsb = 31 - (resolution + 1);
-+	st->recv_size = BITS_TO_BYTES(resolution) + 1;
-+
- 	return ltc2497core_probe(dev, indio_dev);
- }
- 
-@@ -83,14 +116,27 @@ static int ltc2497_remove(struct i2c_client *client)
- 	return 0;
- }
- 
-+static const struct ltc2497_chip_info ltc2497_info[] = {
-+	[TYPE_LTC2497] = {
-+		.resolution = 16,
-+		.name = NULL,
-+	},
-+	[TYPE_LTC2499] = {
-+		.resolution = 24,
-+		.name = "ltc2499",
-+	},
-+};
-+
- static const struct i2c_device_id ltc2497_id[] = {
--	{ "ltc2497", 0 },
-+	{ "ltc2497", (kernel_ulong_t)&ltc2497_info[TYPE_LTC2497] },
-+	{ "ltc2499", (kernel_ulong_t)&ltc2497_info[TYPE_LTC2497] },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, ltc2497_id);
- 
- static const struct of_device_id ltc2497_of_match[] = {
--	{ .compatible = "lltc,ltc2497", },
-+	{ .compatible = "lltc,ltc2497", .data = &ltc2497_info[TYPE_LTC2497] },
-+	{ .compatible = "lltc,ltc2499", .data = &ltc2497_info[TYPE_LTC2499] },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, ltc2497_of_match);
-diff --git a/drivers/iio/adc/ltc2497.h b/drivers/iio/adc/ltc2497.h
-index d0b42dd6b8ad..95f6a5f4d4a6 100644
---- a/drivers/iio/adc/ltc2497.h
-+++ b/drivers/iio/adc/ltc2497.h
-@@ -4,9 +4,20 @@
- #define LTC2497_CONFIG_DEFAULT		LTC2497_ENABLE
- #define LTC2497_CONVERSION_TIME_MS	150ULL
- 
-+enum ltc2497_chip_type {
-+	TYPE_LTC2496,
-+	TYPE_LTC2497,
-+	TYPE_LTC2499,
-+};
-+
-+struct ltc2497_chip_info {
-+	u32 resolution;
-+};
-+
- struct ltc2497core_driverdata {
- 	struct regulator *ref;
- 	ktime_t	time_prev;
-+	const struct ltc2497_chip_info	*chip_info;
- 	u8 addr_prev;
- 	int (*result_and_measure)(struct ltc2497core_driverdata *ddata,
- 				  u8 address, int *val);
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+sparse warnings: (new ones prefixed by >>)
+>> drivers/memstick/host/r592.c:83:22: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned int v @@     got restricted __be32 [usertype] @@
+   drivers/memstick/host/r592.c:83:22: sparse:     expected unsigned int v
+   drivers/memstick/host/r592.c:83:22: sparse:     got restricted __be32 [usertype]
+>> drivers/memstick/host/r592.c:83:22: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned int v @@     got restricted __be32 [usertype] @@
+   drivers/memstick/host/r592.c:83:22: sparse:     expected unsigned int v
+   drivers/memstick/host/r592.c:83:22: sparse:     got restricted __be32 [usertype]
+>> drivers/memstick/host/r592.c:83:22: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned int v @@     got restricted __be32 [usertype] @@
+   drivers/memstick/host/r592.c:83:22: sparse:     expected unsigned int v
+   drivers/memstick/host/r592.c:83:22: sparse:     got restricted __be32 [usertype]
+   drivers/memstick/host/r592.c:75:16: sparse: sparse: cast to restricted __be32
+   drivers/memstick/host/r592.c:75:16: sparse: sparse: cast to restricted __be32
+--
+>> drivers/dma/ppc4xx/adma.c:140:17: sparse: sparse: cast to restricted __le32
+>> drivers/dma/ppc4xx/adma.c:140:17: sparse: sparse: cast to restricted __le32
+>> drivers/dma/ppc4xx/adma.c:140:17: sparse: sparse: cast to restricted __le32
+>> drivers/dma/ppc4xx/adma.c:140:17: sparse: sparse: cast to restricted __le32
+>> drivers/dma/ppc4xx/adma.c:140:17: sparse: sparse: cast to restricted __le32
+>> drivers/dma/ppc4xx/adma.c:140:17: sparse: sparse: cast to restricted __le32
+>> drivers/dma/ppc4xx/adma.c:140:17: sparse: sparse: cast to restricted __le32
+>> drivers/dma/ppc4xx/adma.c:543:35: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int [usertype] sg1l @@     got restricted __le32 [usertype] @@
+   drivers/dma/ppc4xx/adma.c:543:35: sparse:     expected unsigned int [usertype] sg1l
+   drivers/dma/ppc4xx/adma.c:543:35: sparse:     got restricted __le32 [usertype]
+>> drivers/dma/ppc4xx/adma.c:544:35: sparse: sparse: invalid assignment: |=
+>> drivers/dma/ppc4xx/adma.c:544:35: sparse:    left side has type unsigned int
+>> drivers/dma/ppc4xx/adma.c:544:35: sparse:    right side has type restricted __le32
+   drivers/dma/ppc4xx/adma.c:589:23: sparse: sparse: invalid assignment: |=
+   drivers/dma/ppc4xx/adma.c:589:23: sparse:    left side has type unsigned int
+   drivers/dma/ppc4xx/adma.c:589:23: sparse:    right side has type restricted __le32
+>> drivers/dma/ppc4xx/adma.c:627:23: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int [usertype] @@     got restricted __le32 [usertype] @@
+   drivers/dma/ppc4xx/adma.c:627:23: sparse:     expected unsigned int [usertype]
+   drivers/dma/ppc4xx/adma.c:627:23: sparse:     got restricted __le32 [usertype]
+   drivers/dma/ppc4xx/adma.c:628:23: sparse: sparse: invalid assignment: |=
+   drivers/dma/ppc4xx/adma.c:628:23: sparse:    left side has type unsigned int
+   drivers/dma/ppc4xx/adma.c:628:23: sparse:    right side has type restricted __le32
+>> drivers/dma/ppc4xx/adma.c:653:34: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int [usertype] cnt @@     got restricted __le32 [usertype] @@
+   drivers/dma/ppc4xx/adma.c:653:34: sparse:     expected unsigned int [usertype] cnt
+   drivers/dma/ppc4xx/adma.c:653:34: sparse:     got restricted __le32 [usertype]
+>> drivers/dma/ppc4xx/adma.c:686:38: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void volatile [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:686:38: sparse:     expected void volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:686:38: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:687:38: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void volatile [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:687:38: sparse:     expected void volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:687:38: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:688:38: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void volatile [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:688:38: sparse:     expected void volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:688:38: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:689:39: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void volatile [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:689:39: sparse:     expected void volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:689:39: sparse:     got unsigned int *
+>> drivers/dma/ppc4xx/adma.c:734:17: sparse: sparse: Using plain integer as NULL pointer
+>> drivers/dma/ppc4xx/adma.c:1185:25: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct dma_regs *dma_reg @@     got struct dma_regs [noderef] __iomem *dma_reg @@
+   drivers/dma/ppc4xx/adma.c:1185:25: sparse:     expected struct dma_regs *dma_reg
+   drivers/dma/ppc4xx/adma.c:1185:25: sparse:     got struct dma_regs [noderef] __iomem *dma_reg
+>> drivers/dma/ppc4xx/adma.c:1186:34: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1186:34: sparse:     expected void const volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1186:34: sparse:     got unsigned int *
+>> drivers/dma/ppc4xx/adma.c:1188:25: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct xor_regs *xor_reg @@     got struct xor_regs [noderef] __iomem *xor_reg @@
+   drivers/dma/ppc4xx/adma.c:1188:25: sparse:     expected struct xor_regs *xor_reg
+   drivers/dma/ppc4xx/adma.c:1188:25: sparse:     got struct xor_regs [noderef] __iomem *xor_reg
+>> drivers/dma/ppc4xx/adma.c:1189:36: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1189:36: sparse:     expected void const [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1189:36: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:1136:25: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct xor_regs *xor_reg @@     got struct xor_regs [noderef] __iomem *xor_reg @@
+   drivers/dma/ppc4xx/adma.c:1136:25: sparse:     expected struct xor_regs *xor_reg
+   drivers/dma/ppc4xx/adma.c:1136:25: sparse:     got struct xor_regs [noderef] __iomem *xor_reg
+   drivers/dma/ppc4xx/adma.c:1145:35: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1145:35: sparse:     expected void const [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1145:35: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:1155:49: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1155:49: sparse:     expected void const [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1155:49: sparse:     got unsigned int *
+>> drivers/dma/ppc4xx/adma.c:1157:38: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1157:38: sparse:     expected void [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1157:38: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:909:25: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct dma_regs *dma_reg @@     got struct dma_regs [noderef] __iomem *dma_reg @@
+   drivers/dma/ppc4xx/adma.c:909:25: sparse:     expected struct dma_regs *dma_reg
+   drivers/dma/ppc4xx/adma.c:909:25: sparse:     got struct dma_regs [noderef] __iomem *dma_reg
+   drivers/dma/ppc4xx/adma.c:910:40: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:910:40: sparse:     expected void const volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:910:40: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:927:37: sparse: sparse: cast to restricted __le32
+   drivers/dma/ppc4xx/adma.c:972:32: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:972:32: sparse:     expected void const volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:972:32: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:977:40: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void volatile [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:977:40: sparse:     expected void volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:977:40: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:982:25: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct xor_regs *xor_reg @@     got struct xor_regs [noderef] __iomem *xor_reg @@
+   drivers/dma/ppc4xx/adma.c:982:25: sparse:     expected struct xor_regs *xor_reg
+   drivers/dma/ppc4xx/adma.c:982:25: sparse:     got struct xor_regs [noderef] __iomem *xor_reg
+   drivers/dma/ppc4xx/adma.c:983:34: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:983:34: sparse:     expected void const [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:983:34: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:984:34: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:984:34: sparse:     expected void [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:984:34: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:991:55: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:991:55: sparse:     expected void const [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:991:55: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:993:51: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:993:51: sparse:     expected void [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:993:51: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:995:51: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:995:51: sparse:     expected void const [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:995:51: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:997:46: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:997:46: sparse:     expected void [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:997:46: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:1006:35: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1006:35: sparse:     expected void const [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1006:35: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:1025:25: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct dma_regs *dma_reg @@     got struct dma_regs [noderef] __iomem *dma_reg @@
+   drivers/dma/ppc4xx/adma.c:1025:25: sparse:     expected struct dma_regs *dma_reg
+   drivers/dma/ppc4xx/adma.c:1025:25: sparse:     got struct dma_regs [noderef] __iomem *dma_reg
+>> drivers/dma/ppc4xx/adma.c:1029:31: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got unsigned short * @@
+   drivers/dma/ppc4xx/adma.c:1029:31: sparse:     expected void const volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1029:31: sparse:     got unsigned short *
+   drivers/dma/ppc4xx/adma.c:1029:60: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got unsigned short * @@
+   drivers/dma/ppc4xx/adma.c:1029:60: sparse:     expected void const volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1029:60: sparse:     got unsigned short *
+   drivers/dma/ppc4xx/adma.c:1030:31: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got unsigned short * @@
+   drivers/dma/ppc4xx/adma.c:1030:31: sparse:     expected void const volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1030:31: sparse:     got unsigned short *
+   drivers/dma/ppc4xx/adma.c:1030:60: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got unsigned short * @@
+   drivers/dma/ppc4xx/adma.c:1030:60: sparse:     expected void const volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1030:60: sparse:     got unsigned short *
+   drivers/dma/ppc4xx/adma.c:1036:25: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct xor_regs *xor_reg @@     got struct xor_regs [noderef] __iomem *xor_reg @@
+   drivers/dma/ppc4xx/adma.c:1036:25: sparse:     expected struct xor_regs *xor_reg
+   drivers/dma/ppc4xx/adma.c:1036:25: sparse:     got struct xor_regs [noderef] __iomem *xor_reg
+   drivers/dma/ppc4xx/adma.c:1037:37: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1037:37: sparse:     expected void const [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1037:37: sparse:     got unsigned int *
+>> drivers/dma/ppc4xx/adma.c:1051:48: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected struct xor_regs *xor_reg @@     got struct xor_regs [noderef] __iomem *xor_reg @@
+   drivers/dma/ppc4xx/adma.c:1051:48: sparse:     expected struct xor_regs *xor_reg
+   drivers/dma/ppc4xx/adma.c:1051:48: sparse:     got struct xor_regs [noderef] __iomem *xor_reg
+   drivers/dma/ppc4xx/adma.c:1053:25: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1053:25: sparse:     expected void const [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1053:25: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:1060:41: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1060:41: sparse:     expected void [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1060:41: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:1062:39: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1062:39: sparse:     expected void [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1062:39: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:1063:25: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1063:25: sparse:     expected void [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1063:25: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:1064:33: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1064:33: sparse:     expected void const [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1064:33: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:1065:22: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1065:22: sparse:     expected void [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1065:22: sparse:     got unsigned int *
+>> drivers/dma/ppc4xx/adma.c:1078:48: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected struct dma_regs *dma_reg @@     got struct dma_regs [noderef] __iomem *dma_reg @@
+   drivers/dma/ppc4xx/adma.c:1078:48: sparse:     expected struct dma_regs *dma_reg
+   drivers/dma/ppc4xx/adma.c:1078:48: sparse:     got struct dma_regs [noderef] __iomem *dma_reg
+   drivers/dma/ppc4xx/adma.c:1088:26: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void volatile [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1088:26: sparse:     expected void volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1088:26: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:1208:25: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct xor_regs *xor_reg @@     got struct xor_regs [noderef] __iomem *xor_reg @@
+   drivers/dma/ppc4xx/adma.c:1208:25: sparse:     expected struct xor_regs *xor_reg
+   drivers/dma/ppc4xx/adma.c:1208:25: sparse:     got struct xor_regs [noderef] __iomem *xor_reg
+   drivers/dma/ppc4xx/adma.c:1212:30: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1212:30: sparse:     expected void [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1212:30: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:2775:62: sparse: sparse: Using plain integer as NULL pointer
+>> drivers/dma/ppc4xx/adma.c:4091:14: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void *regs @@     got void [noderef] __iomem * @@
+   drivers/dma/ppc4xx/adma.c:4091:14: sparse:     expected void *regs
+   drivers/dma/ppc4xx/adma.c:4091:14: sparse:     got void [noderef] __iomem *
+>> drivers/dma/ppc4xx/adma.c:4099:31: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct xor_regs [noderef] __iomem *xor_reg @@     got void *regs @@
+   drivers/dma/ppc4xx/adma.c:4099:31: sparse:     expected struct xor_regs [noderef] __iomem *xor_reg
+   drivers/dma/ppc4xx/adma.c:4099:31: sparse:     got void *regs
+>> drivers/dma/ppc4xx/adma.c:4106:31: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct dma_regs [noderef] __iomem *dma_reg @@     got void *regs @@
+   drivers/dma/ppc4xx/adma.c:4106:31: sparse:     expected struct dma_regs [noderef] __iomem *dma_reg
+   drivers/dma/ppc4xx/adma.c:4106:31: sparse:     got void *regs
+
+vim +83 drivers/memstick/host/r592.c
+
+9263412501022f Maxim Levitsky 2011-03-25  77  
+9263412501022f Maxim Levitsky 2011-03-25  78  /* Writes a big endian DWORD register */
+9263412501022f Maxim Levitsky 2011-03-25  79  static inline void r592_write_reg_raw_be(struct r592_device *dev,
+9263412501022f Maxim Levitsky 2011-03-25  80  							int address, u32 value)
+9263412501022f Maxim Levitsky 2011-03-25  81  {
+9263412501022f Maxim Levitsky 2011-03-25  82  	dbg_reg("reg #%02d <- 0x%08x", address, value);
+9263412501022f Maxim Levitsky 2011-03-25 @83  	__raw_writel(cpu_to_be32(value), dev->mmio + address);
+9263412501022f Maxim Levitsky 2011-03-25  84  }
+9263412501022f Maxim Levitsky 2011-03-25  85  
+
+:::::: The code at line 83 was first introduced by commit
+:::::: 9263412501022fecef844907129ee2513b5a89de memstick: add driver for Ricoh R5C592 card reader
+
+:::::: TO: Maxim Levitsky <maximlevitsky@gmail.com>
+:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
+
 -- 
-2.30.2
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
