@@ -2,196 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8B89ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:30:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90AF7ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:30:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234758AbiIAOag (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 10:30:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41790 "EHLO
+        id S234773AbiIAOay (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 10:30:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234451AbiIAOac (ORCPT
+        with ESMTP id S234451AbiIAOas (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 10:30:32 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 74CF427DDA;
-        Thu,  1 Sep 2022 07:30:29 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D47DBD6E;
-        Thu,  1 Sep 2022 07:30:35 -0700 (PDT)
-Received: from [10.57.18.92] (unknown [10.57.18.92])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D2C763F7B4;
-        Thu,  1 Sep 2022 07:29:51 -0700 (PDT)
-Message-ID: <3e402947-61f9-b7e8-1414-fde006257b6f@arm.com>
-Date:   Thu, 1 Sep 2022 15:29:16 +0100
+        Thu, 1 Sep 2022 10:30:48 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEBF95D0C8;
+        Thu,  1 Sep 2022 07:30:45 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 281EUcQf018430;
+        Thu, 1 Sep 2022 09:30:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1662042638;
+        bh=KYdHbEnyxMM66nrg4RaqhIx0Xvm/moQdRY3+IxpilL4=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=k/j9DvkhowjIl8KLU3muWV+eJyrReSa+Q+ewIK51HupXVD2uSeKdI8ea9Oa9Xcv6M
+         e8HsvB+Q2K4kNnqRVu0SWpYeAS2VarlWKl+LnFpyUqkYlhWedVt1IMLaMJytW7ymDs
+         0QfF5JpRWx9IlaLty7dDhHAQktPL6maXQuulb36o=
+Received: from DLEE102.ent.ti.com (dlee102.ent.ti.com [157.170.170.32])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 281EUcfq031708
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 1 Sep 2022 09:30:38 -0500
+Received: from DLEE111.ent.ti.com (157.170.170.22) by DLEE102.ent.ti.com
+ (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Thu, 1 Sep
+ 2022 09:30:38 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE111.ent.ti.com
+ (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Thu, 1 Sep 2022 09:30:38 -0500
+Received: from [172.24.145.182] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 281EUZVe119406;
+        Thu, 1 Sep 2022 09:30:36 -0500
+Message-ID: <08364d72-891f-4e21-25ac-2e77f1873374@ti.com>
+Date:   Thu, 1 Sep 2022 20:00:35 +0530
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH v4 1/2] iommu/s390: Fix race with release_device ops
-Content-Language: en-GB
-To:     Niklas Schnelle <schnelle@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>, iommu@lists.linux.dev
-Cc:     linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, joro@8bytes.org, will@kernel.org,
-        jgg@nvidia.com, linux-kernel@vger.kernel.org
-References: <20220831201236.77595-1-mjrosato@linux.ibm.com>
- <20220831201236.77595-2-mjrosato@linux.ibm.com>
- <9887e2f4-3f3d-137d-dad7-59dab5f98aab@linux.ibm.com>
- <52d3fe0b86bdc04fdbf3aae095b2f71f4ea12d44.camel@linux.ibm.com>
- <e01e6ef2-ba45-7433-5fe4-a6806dac3af9@arm.com>
- <8b561ad3023fc146ba0779cbd8fff14d6409c6aa.camel@linux.ibm.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <8b561ad3023fc146ba0779cbd8fff14d6409c6aa.camel@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH 2/2] arm64: dts: ti: k3-am64-main: fix RNG node clock id
+Content-Language: en-US
+To:     Nishanth Menon <nm@ti.com>, Tero Kristo <kristo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <f29e2c65dc7310a926af8a676651592afac04b03.1659981162.git.danielrparks@ti.com>
+ <7961aebd737de637fa98bc6a8478380be8449b46.1659981162.git.danielrparks@ti.com>
+From:   Vignesh Raghavendra <vigneshr@ti.com>
+In-Reply-To: <7961aebd737de637fa98bc6a8478380be8449b46.1659981162.git.danielrparks@ti.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-09-01 14:42, Niklas Schnelle wrote:
-> On Thu, 2022-09-01 at 12:01 +0100, Robin Murphy wrote:
->> On 2022-09-01 10:37, Niklas Schnelle wrote:
->>> On Thu, 2022-09-01 at 09:56 +0200, Pierre Morel wrote:
->>>> On 8/31/22 22:12, Matthew Rosato wrote:
->>>>> With commit fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev
->>>>> calls") s390-iommu is supposed to handle dynamic switching between IOMMU
->>>>> domains and the DMA API handling.  However, this commit does not
->>>>> sufficiently handle the case where the device is released via a call
->>>>> to the release_device op as it may occur at the same time as an opposing
->>>>> attach_dev or detach_dev since the group mutex is not held over
->>>>> release_device.  This was observed if the device is deconfigured during a
->>>>> small window during vfio-pci initialization and can result in WARNs and
->>>>> potential kernel panics.
->>>>>
->>>>> Handle this by tracking when the device is probed/released via
->>>>> dev_iommu_priv_set/get().  Ensure that once the device is released only
->>>>> release_device handles the re-init of the device DMA.
->>>>>
->>>>> Fixes: fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev calls")
->>>>> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
->>>>> ---
->>>>>     arch/s390/include/asm/pci.h |  1 +
->>>>>     arch/s390/pci/pci.c         |  1 +
->>>>>     drivers/iommu/s390-iommu.c  | 39 ++++++++++++++++++++++++++++++++++---
->>>>>     3 files changed, 38 insertions(+), 3 deletions(-)
->>>>>
->>>>>
->>> ---8<---
->>>>>     
->>>>> @@ -206,10 +221,28 @@ static void s390_iommu_release_device(struct device *dev)
->>>>>
->>> ---8<---
->>>>> +		/* Make sure this device is removed from the domain list */
->>>>>     		domain = iommu_get_domain_for_dev(dev);
->>>>>     		if (domain)
->>>>>     			s390_iommu_detach_device(domain, dev);
->>>>> +		/* Now ensure DMA is initialized from here */
->>>>> +		mutex_lock(&zdev->dma_domain_lock);
->>>>> +		if (zdev->s390_domain) {
->>>>> +			zdev->s390_domain = NULL;
->>>>> +			zpci_unregister_ioat(zdev, 0);
->>>>> +			zpci_dma_init_device(zdev);
->>>>
->>>> Sorry if it is a stupid question, but two things looks strange to me:
->>>>
->>>> - having DMA initialized just after having unregistered the IOAT
->>>> Is that really all we need to unregister before calling dma_init_device?
->>>>
->>>> - having DMA initialized inside the release_device callback:
->>>> Why isn't it done in the device_probe ?
->>>
->>> As I understand it iommu_release_device() which calls this code is only
->>> used when a device goes away. So, I think you're right in that it makes
->>> little sense to re-initialize DMA at this point, it's going to be torn
->>> down immediately after anyway. I do wonder if it would be an acceptably
->>> small change to just set zdev->s390_domain = NULL here and leave DMA
->>> uninitialized while making zpci_dma_exit_device() deal with that e.g.
->>> by doing nothing if zdev->dma_table is NULL but I'm not sure.
->>>
->>> Either way I fear this mess really is just a symptom of our current
->>> design oddity of driving the same IOMMU hardware through both our DMA
->>> API implementation (arch/s390/pci_dma.c) and the IOMMU driver
->>> (driver/iommu/s390-iommu.c) and trying to hand off between them
->>> smoothly where common code instead just layers one atop the other when
->>> using an IOMMU at all.
->>>
->>> I think the correct medium term solution is to use the common DMA API
->>> implementation (drivers/iommu/dma-iommu.c) like everyone else. But that
->>> isn't the minimal fix we need now.
->>>
->>> I do have a working prototype of using the common implementation but
->>> the big problem that I'm still searching a solution for is its
->>> performance with a virtualized IOMMU where IOTLB flushes (RPCIT on
->>> s390) are used for shadowing and are expensive and serialized. The
->>> optimization we used so far for unmap, only doing one global IOTLB
->>> flush once we run out of IOVA space, is just too much better in that
->>> scenario to just ignore. As one data point, on an NVMe I get about
->>> _twice_ the IOPS when using our existing scheme compared to strict
->>> mode. Which makes sense as IOTLB flushes are known as the bottleneck
->>> and optimizing unmap like that reduces them by almost half. Queued
->>> flushing is still much worse likely due to serialization of the
->>> shadowing, though again it works great on LPAR. To make sure it's not
->>> due to some bug in the IOMMU driver I even tried converting our
->>> existing DMA driver to layer on top of the IOMMU driver with the same
->>> result.
->>
->> FWIW, can you approximate the same behaviour by just making IOVA_FQ_SIZE
->> and IOVA_FQ_TIMEOUT really big, and deferring your zpci_refresh_trans()
->> hook from .unmap to .flush_iotlb_all when in non-strict mode?
->>
->> I'm not against the idea of trying to support this mode of operation
->> better in the common code, since it seems like it could potentially be
->> useful for *any* virtualised scenario where trapping to invalidate is
->> expensive and the user is happy to trade off the additional address
->> space/memory overhead (and even greater loss of memory protection)
->> against that.
->>
->> Robin.
-> 
-> 
-> Ah thanks for reminding me. I had tried that earlier but quickly ran
-> into the size limit of per-CPU allocations. This time I turned the
-> "struct iova_fq_entry entries" member into a pointer and allocted that
-> with vmalloc(). Also thankfully the ops->flush_iotlb_all(), iommu_iotlb_sync(), and iommu_iotlb_sync_map() already perfectly match
-> our needs.
-> 
-> Okay, this is _very_ interesting. With the above cranking IOVA_FQ_SIZE
-> all the way to 32768 and IOVA_FQ_TIMEOUT to 4000 ms, I can get to about
-> 91% of the performance of our scheme (layered on the IOMMU API). That
-> also seems to be the limit. I guess there is also more overhead than
-> with our bitset IOVA allocation that doesn't need any bookkeeping
-> besides a "lazily unmapped" bit per page. With a more sane IOVA_FQ_SIZE
-> of 8192 and 100 ms timeout I still get about 76% of the performance.
 
-Promising indeed... come to think of it, if you weren't already using it 
-then "iommu.forcedac=1" should save a bit more time in the IOVA 
-allocator especially if we're deliberately letting the address space 
-fill up. Clearly your current allocator doesn't have to work around 
-broken x86 PCs, so you're at liberty to convince the common one not to 
-either.
 
-> Interestingly with the above changes but default values for
-> IOVA_FQ_SIZE/IOVA_FQ_TIMEOUT things are much worse than even strict
-> mode (~50%) and I get less than 8% the IOPS with this NVMe.
+On 09/08/22 00:02, Daniel Parks wrote:
+> The RNG node for this platform claims pka_in_clk. Change it to claim the
+> correct clock x1_clk. [1]
 > 
-> So yeah it seems you're right and one can largely emulate our scheme
-> with this. I do wonder if we could go further and do a "flush on
-> running out of IOVAs" domain type with acceptable changes. My rough
-> idea would be to collect lazily freed IOVAs in the same data structure
-> as the free IOVAs, then on running out of those one can simply do a
-> global IOTLB flush and the lazily freed IOVAs become the new free
-> IOVAs. With that the global reset would be even cheaper than with our
-> bitmaps. For a generic case one would of course also need to track the
-> gather->freelist that we don't use in s390 but e.g. virtio-iommu
-> doesn't seem to use that either. What do you think?
+> This patch depends on "[PATCH v2 0/2] Enable SA2UL support on AM64X" [2]
+> 
+> [1]: https://downloads.ti.com/tisci/esd/latest/5_soc_doc/am64x/clocks.html#clocks-for-sa2-ul0-device
+> [2]: https://lore.kernel.org/linux-arm-kernel/20220711085743.10128-1-j-choudhary@ti.com/
 
-Right, the next step would be to bridge that gap to iommu-dma to dump 
-the flush queue when IOVA allocation failure implies we've reached the 
-"rollover" point, and perhaps not use the timer at all. By that point a 
-dedicated domain type, or at least some definite internal flag, for this 
-alternate behaviour seems like the logical way to go.
+I folded below patch into [2] when applying.
 
-Cheers,
-Robin.
+> 
+> Signed-off-by: Daniel Parks <danielrparks@ti.com>
+> ---
+>  arch/arm64/boot/dts/ti/k3-am64-main.dtsi | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm64/boot/dts/ti/k3-am64-main.dtsi b/arch/arm64/boot/dts/ti/k3-am64-main.dtsi
+> index 293b6b8e8fb2..aa3b43c515d2 100644
+> --- a/arch/arm64/boot/dts/ti/k3-am64-main.dtsi
+> +++ b/arch/arm64/boot/dts/ti/k3-am64-main.dtsi
+> @@ -1324,7 +1324,7 @@
+>  			compatible = "inside-secure,safexcel-eip76";
+>  			reg = <0x00 0x40910000 0x00 0x7d>;
+>  			interrupts = <GIC_SPI 168 IRQ_TYPE_LEVEL_HIGH>;
+> -			clocks = <&k3_clks 133 0>;
+> +			clocks = <&k3_clks 133 1>;
+>  			status = "disabled"; /* Used by OP-TEE */
+>  		};
+>  	};
+
+-- 
+Regards
+Vignesh
