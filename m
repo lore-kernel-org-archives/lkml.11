@@ -2,138 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F1D1ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 09:12:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F4F7ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 09:13:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233507AbiIAJM0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 05:12:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39822 "EHLO
+        id S233739AbiIAJNy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 05:13:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233053AbiIAJMW (ORCPT
+        with ESMTP id S234213AbiIAJNs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 05:12:22 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC06110D8A
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 02:12:22 -0700 (PDT)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1662023540;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kaRumsH3KDmkPnek0I9ClyHltDQl827/GSI2YJ5tGmk=;
-        b=UMaLYHKJYk7R0Y8kbntlx28LDmUpMYh6Im3Bftl4gjEQBTpMoLzrwLCy0mgE41F72kvM8W
-        0JcaF+RNRxkygEQvcQCOb+a5lzUum4ZR3SwyCx+nJzoAxF2pE8iCecKLsb5ScCMyxc49H8
-        Updrr2/BSgHUGoQx6jcZq+sqWpvohuvarXhWstR9Xl0F0042eHdL/61XaG/dU525vNqyXU
-        zXe5C2rXMllqWtMxszk4DI5GvoZUXXPNU3ShV9+bgA/zBQZb5KauvxdNSvGVvW5lXDHADU
-        z7V/2LFOFiN8MtpIMgB2PkA3mW7oNVR0uwvwlkN/WJpWKmk8/uOlUzTB3FqNcg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1662023540;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kaRumsH3KDmkPnek0I9ClyHltDQl827/GSI2YJ5tGmk=;
-        b=z0qgClFFWJ0+UUaCJLAVasOOCjJjZx02ljJShf+ooWSzp3OoVUqiVtiK8Xc40jCR63GvSW
-        Qz1CF+qoidhmrTAA==
-To:     "Paul E. McKenney" <paulmck@kernel.org>,
-        linux-kernel@vger.kernel.org
-Cc:     gwml@vger.gnuweeb.org, kernel-team@fb.com, w@lwt.eu,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [PATCH rcu 1/2] torture: Optionally flush printk() buffers
- before powering off
-In-Reply-To: <20220831182148.2698489-2-paulmck@kernel.org>
-References: <20220831182113.GA2697286@paulmck-ThinkPad-P17-Gen-1>
- <20220831182148.2698489-2-paulmck@kernel.org>
-Date:   Thu, 01 Sep 2022 11:18:20 +0206
-Message-ID: <87tu5rfogb.fsf@jogness.linutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain
+        Thu, 1 Sep 2022 05:13:48 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C931110DBB;
+        Thu,  1 Sep 2022 02:13:47 -0700 (PDT)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2819DJQN021032;
+        Thu, 1 Sep 2022 09:13:42 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : reply-to : to : cc : date : in-reply-to : references : content-type
+ : mime-version : content-transfer-encoding; s=pp1;
+ bh=c0O72IriMhGNyoc4XXzXY45UKftdfkl2lH0WpbycS1s=;
+ b=RN2sIWE3kaHuANfmWKtqf8YhNKmGa9i3ZK0LndsqJB9Kr4UhEAfOQZNOjt8c3x1yCb+u
+ 3QtX5wrPr0NRMuxvfbMfiC8A28VOHv7hBVVAyXwCMPrhZlO70+pFsoZRdqQYmB6kiDFa
+ K4Ky5QY7cO4Fv1M3kCLSByRafuvI0GTRIxW9Ts6VGgWa+JphQpo6L2WnVx07wPXlpPAX
+ 9MFSt5RrbaiFRJnYOScqBBoPhrbdqLlcPa5gKUezAxVg2egkZOLSJDIF5Nl+iNEC69qt
+ y3k6PV9rVO9nfDmsqyTZBlnl2XyrpiHhfX8Gra1GRzhgqAUJlqMmuhUkv8FI6Wm86R/L RA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3jaswjg08t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 01 Sep 2022 09:13:41 +0000
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2819DSIk021258;
+        Thu, 1 Sep 2022 09:13:41 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3jaswjg08b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 01 Sep 2022 09:13:41 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 28195n3i022602;
+        Thu, 1 Sep 2022 09:13:39 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma04fra.de.ibm.com with ESMTP id 3j7aw9cs27-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 01 Sep 2022 09:13:39 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2819AJY236045234
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 1 Sep 2022 09:10:19 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E69B1A4053;
+        Thu,  1 Sep 2022 09:13:36 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 57940A404D;
+        Thu,  1 Sep 2022 09:13:33 +0000 (GMT)
+Received: from tarunpc (unknown [9.43.6.31])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu,  1 Sep 2022 09:13:33 +0000 (GMT)
+Message-ID: <7fec6d15f69751422de1e20cf13b5a3f839da2d1.camel@linux.ibm.com>
+Subject: Re: [PATCH] selftest: vm: remove orphaned references to
+ local_config.{h,mk}
+From:   Tarun Sahu <tsahu@linux.ibm.com>
+Reply-To: tsahu@linux.ibm.com
+To:     Axel Rasmussen <axelrasmussen@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>
+Cc:     "Zach O'Keefe" <zokeefe@google.com>, linux-mm@kvack.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        aneesh.kumar@linux.ibm.com
+Date:   Thu, 01 Sep 2022 14:43:31 +0530
+In-Reply-To: <20220831211526.2743216-1-axelrasmussen@google.com>
+References: <20220831211526.2743216-1-axelrasmussen@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: xckYG2GaperRmTQSv92VmzrzhFwfrrCM
+X-Proofpoint-ORIG-GUID: LiICgCKO7R9bbFuHYXHIKfMWcNQPitE5
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-09-01_06,2022-08-31_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 impostorscore=0
+ bulkscore=0 lowpriorityscore=0 spamscore=0 priorityscore=1501 mlxscore=0
+ suspectscore=0 adultscore=0 mlxlogscore=999 clxscore=1011 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
+ definitions=main-2209010040
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Added CC the rest of the printk folks since this would be the first use
-of pr_flush() outside of the printk subsystem. And it is a controversial
-usage, since it is used to work around potential (future) bugs in
-printk.
-
-On 2022-08-31, "Paul E. McKenney" <paulmck@kernel.org> wrote:
-> The rcutorture test suite produces quite a bit of console output at
-> the end of a test.  This means that the new-in-2022 printk() kthreads
-> are likely to be in the process of flushing output at the time of the
-> torture_shutdown() function's call to kernel_power_off().  Normally,
-> rcutorture relies on printk() to flush any pending output upon shutdown,
-> the better to detect bugs in this area, for example, the one introduced
-> by 8e274732115f ("printk: extend console_lock for per-console locking").
-> However, once such a bug is detected and reported, it is necessary to
-> test the rest of the system, without noise from the already-reported bug.
-
-Since the printk kthread implementation has been reverted, this is no
-longer an issue. When a kthread implementation is re-introduced, this
-issue will need to have been considered and handled.
-
-IMHO this patch is premature at this time and hopefully will never
-become necessary (in the form of a bug workaround).
-
-> This commit therefore adds a torture.printk_shutdown_bug_workaround
-> kernel parameter, which causes torture_shutdown() to invoke pr_flush(),
-> and print an informative message on the console, immediately before
-> invoking kernel_power_off().  When this kernel parameter is not specified,
-> it is up to printk() to flush its own buffers.
->
-> Suggested-by: John Ogness <john.ogness@linutronix.de>
-> Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+On Wed, 2022-08-31 at 14:15 -0700, Axel Rasmussen wrote:
+> Note: this commit is intended to apply to mm-unstable, the commit
+> being
+> fixed only exists in that branch for now.
+> 
+> Commit b4efb234e53cc60ccdc855190be9f35918687412 ("Kselftests: remove
+> support of libhugetlbfs from kselftests") removed the rule describing
+> how to build local_config.{h,mk}, but it left two references to these
+> files lingering around. The result is, none of the selftests could be
+> built due to dependencies with no rule for how to build them.
+> 
+> Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
 > ---
->  Documentation/admin-guide/kernel-parameters.txt | 6 ++++++
->  kernel/torture.c                                | 7 +++++++
->  2 files changed, 13 insertions(+)
->
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index d7f30902fda02..ba1b8776aab83 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -6143,6 +6143,12 @@
->  			are running concurrently, especially on systems
->  			with rotating-rust storage.
+>  tools/testing/selftests/vm/Makefile | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/vm/Makefile
+> b/tools/testing/selftests/vm/Makefile
+> index b52f2cc51482..4ae879f70f4c 100644
+> --- a/tools/testing/selftests/vm/Makefile
+> +++ b/tools/testing/selftests/vm/Makefile
+> @@ -1,9 +1,7 @@
+>  # SPDX-License-Identifier: GPL-2.0
+>  # Makefile for vm selftests
 >  
-> +	torture.printk_shutdown_bug_workaround= [KNL]
-> +			Execute pr_flush(1000, true) just before invoking
-> +			kernel_power_off() to work around any bugs that
-> +			might prevent printk() from flushing its buffers
-> +			at shutdown time.
-> +
->  	torture.verbose_sleep_frequency= [KNL]
->  			Specifies how many verbose printk()s should be
->  			emitted between each sleep.  The default of zero
-> diff --git a/kernel/torture.c b/kernel/torture.c
-> index 789aeb0e1159c..7cd2016b02076 100644
-> --- a/kernel/torture.c
-> +++ b/kernel/torture.c
-> @@ -48,6 +48,9 @@ module_param(disable_onoff_at_boot, bool, 0444);
->  static bool ftrace_dump_at_shutdown;
->  module_param(ftrace_dump_at_shutdown, bool, 0444);
+> -LOCAL_HDRS += $(selfdir)/vm/local_config.h
+> $(top_srcdir)/mm/gup_test.h
+> -
+> -include local_config.mk
+> +LOCAL_HDRS += $(top_srcdir)/mm/gup_test.h
 >  
-> +static bool printk_shutdown_bug_workaround;
-> +module_param(printk_shutdown_bug_workaround, bool, 0444);
-> +
->  static int verbose_sleep_frequency;
->  module_param(verbose_sleep_frequency, int, 0444);
->  
-> @@ -651,6 +654,10 @@ static int torture_shutdown(void *arg)
->  		VERBOSE_TOROUT_STRING("No torture_shutdown_hook(), skipping.");
->  	if (ftrace_dump_at_shutdown)
->  		rcu_ftrace_dump(DUMP_ALL);
-> +	if (printk_shutdown_bug_workaround) {
-> +		pr_info("%s: Flushing printk() buffers at power-down time.\n", __func__);
-> +		pr_flush(1000, true);
-> +	}
->  	kernel_power_off();	/* Shut down the system. */
->  	return 0;
->  }
-> -- 
-> 2.31.1.189.g2e36527f23
+>  uname_M := $(shell uname -m 2>/dev/null || echo not)
+>  MACHINE ?= $(shell echo $(uname_M) | sed -e 's/aarch64.*/arm64/' -e
+> 's/ppc64.*/ppc64/')
 
-John Ogness
+Thanks, Alex. When I looked why it built in my case, The local_config
+was part of .gitignore which "git clean" ignored and they resided there
+and source was built without any problem. 
+I have submitted a new patch for updated .gitignore.
+
+
+
