@@ -2,180 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 208FDECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 08:04:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3158BECAAD8
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 08:05:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233729AbiIAIEE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 04:04:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52062 "EHLO
+        id S233390AbiIAIFG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 04:05:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233689AbiIAIDk (ORCPT
+        with ESMTP id S231308AbiIAIFC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 04:03:40 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B80C121424;
-        Thu,  1 Sep 2022 01:03:39 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Thu, 1 Sep 2022 04:05:02 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74B7FB852;
+        Thu,  1 Sep 2022 01:04:53 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 21DFB1FABC;
-        Thu,  1 Sep 2022 08:03:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1662019418; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Z6ag4bKWdZSgH1KJS0M8aqtbFgZvMF+Dd3fE1Fhurzc=;
-        b=GrlE3kXJK5XaNztXjiol8xhRWnO/q2oNokQBJ5Dki9U07tlkHKvk6FKpCUQ+rm57Yh1mcO
-        rPfrYHLsQj60xRPJjvy1SZiTjcLR5nPYxrM9PiRyAJdjnewfd4iPoHJzqsFJtSLV4ohhaF
-        E/bS2ph8ASkTszpxnmOECp3QcDjWhP8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1662019418;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Z6ag4bKWdZSgH1KJS0M8aqtbFgZvMF+Dd3fE1Fhurzc=;
-        b=ITWjpwicbodxcb7+REkcNfh/SvExwUF38cvSBjNhhFZaUL8HxU9rqcO9HIwRhlclMsEebo
-        pfb1borYwHbg7rCQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0C4EE13A89;
-        Thu,  1 Sep 2022 08:03:38 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 8PP4AlpnEGPJHwAAMHmgww
-        (envelope-from <jack@suse.cz>); Thu, 01 Sep 2022 08:03:38 +0000
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id D6D7CA067C; Thu,  1 Sep 2022 10:03:36 +0200 (CEST)
-Date:   Thu, 1 Sep 2022 10:03:36 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Yu Kuai <yukuai1@huaweicloud.com>
-Cc:     Ming Lei <ming.lei@redhat.com>,
-        Chris Murphy <lists@colorremedies.com>,
-        Jan Kara <jack@suse.cz>, Nikolay Borisov <nborisov@suse.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Paolo Valente <paolo.valente@linaro.org>,
-        Btrfs BTRFS <linux-btrfs@vger.kernel.org>,
-        Linux-RAID <linux-raid@vger.kernel.org>,
-        linux-block <linux-block@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Josef Bacik <josef@toxicpanda.com>,
-        "yukuai (C)" <yukuai3@huawei.com>
-Subject: Re: stalling IO regression since linux 5.12, through 5.18
-Message-ID: <20220901080336.glpv4i3hyae2zkpk@quack3>
-References: <Yv2P0zyoVvz35w/m@T590>
- <568465de-5c3b-4d94-a74b-5b83ce2f942f@www.fastmail.com>
- <Yv2w+Tuhw1RAoXI5@T590>
- <9f2f608a-cd5f-4736-9e6d-07ccc2eca12c@www.fastmail.com>
- <a817431f-276f-4aab-9ff8-c3e397494339@www.fastmail.com>
- <5426d0f9-6539-477d-8feb-2b49136b960f@www.fastmail.com>
- <Yv3NIQlDL0T3lstU@T590>
- <0f731b0a-fbd5-4e7b-a3df-0ed63360c1e0@www.fastmail.com>
- <YwCGlyDMhWubqKoL@T590>
- <297cbb87-87aa-2e1d-1fc3-8e96c241f28f@huaweicloud.com>
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 59EFB6601DF7;
+        Thu,  1 Sep 2022 09:04:50 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1662019491;
+        bh=2zJfFSBZ2omTgok8iG1bcVSOE2x9FAqOQ/YPVZcVIH0=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=HU2ppayYG8zOTDbLiqQ2PUZbo4jkTO6B6P1DpNa6HGopM021oZ2sO5jbA/CC9a6bM
+         dEeFx5R42p0JbphAuvPNOBoOwTUo+RZxFyW38fLWzPMZ/0BMSlqIh9CwIF8XoVUZl7
+         aYVOQLxbKej7vzDqqJ2h5cG7JnFaWdz5ny5YZSiOm2bFVDqX7VFtzpLfV//ht+EByf
+         I7oCcJGJa7Zh/AFYCHzlPP3naJCW5SpBCFJTp3hh2OJNaPg+oQEfymh0VWcck/rq8u
+         5dHlSZzNBkVOUFnzQZqa9pR2mTxoU1Ku0PfVBSMkbSndbpXWhvnQNazaht8t2e10DA
+         JLjeRBsGdFghA==
+Message-ID: <1fae0c47-fff9-89e9-c849-536d167d741d@collabora.com>
+Date:   Thu, 1 Sep 2022 10:04:48 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <297cbb87-87aa-2e1d-1fc3-8e96c241f28f@huaweicloud.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH 2/4] dt-bindings: arm: mediatek: Add new bindings of
+ MediaTek frequency hopping
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Johnson Wang <johnson.wang@mediatek.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, sboyd@kernel.org
+Cc:     linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        Edward-JW Yang <edward-jw.yang@mediatek.com>
+References: <20220831124850.7748-1-johnson.wang@mediatek.com>
+ <20220831124850.7748-3-johnson.wang@mediatek.com>
+ <b1296c37-5283-81f7-1939-7ea20e1f4d0d@linaro.org>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <b1296c37-5283-81f7-1939-7ea20e1f4d0d@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 01-09-22 15:02:03, Yu Kuai wrote:
-> Hi, Chris
+Il 31/08/22 15:19, Krzysztof Kozlowski ha scritto:
+> On 31/08/2022 15:48, Johnson Wang wrote:
+>> Add the new binding documentation for MediaTek frequency hopping
+>> and spread spectrum clocking control.
+>>
+>> Co-developed-by: Edward-JW Yang <edward-jw.yang@mediatek.com>
+>> Signed-off-by: Edward-JW Yang <edward-jw.yang@mediatek.com>
+>> Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
+>> ---
+>>   .../bindings/arm/mediatek/mediatek,fhctl.yaml | 49 +++++++++++++++++++
+>>   1 file changed, 49 insertions(+)
+>>   create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,fhctl.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,fhctl.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,fhctl.yaml
+>> new file mode 100644
+>> index 000000000000..c5d76410538b
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,fhctl.yaml
+>> @@ -0,0 +1,49 @@
+>> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/arm/mediatek/mediatek,fhctl.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: MediaTek frequency hopping and spread spectrum clocking control
+>> +
+>> +maintainers:
+>> +  - Edward-JW Yang <edward-jw.yang@mediatek.com>
+>> +
+>> +description: |
+>> +  Frequency hopping control (FHCTL) is a piece of hardware that control
+>> +  some PLLs to adopt "hopping" mechanism to adjust their frequency.
+>> +  Spread spectrum clocking (SSC) is another function provided by this hardware.
+>> +
+>> +properties:
+>> +  compatible:
+>> +    const: mediatek,fhctl
 > 
-> 在 2022/08/20 15:00, Ming Lei 写道:
-> > On Fri, Aug 19, 2022 at 03:20:25PM -0400, Chris Murphy wrote:
-> > > 
-> > > 
-> > > On Thu, Aug 18, 2022, at 1:24 AM, Ming Lei wrote:
-> > > > On Thu, Aug 18, 2022 at 12:27:04AM -0400, Chris Murphy wrote:
-> > > > > 
-> > > > > 
-> > > > > On Thu, Aug 18, 2022, at 12:18 AM, Chris Murphy wrote:
-> > > > > > On Thu, Aug 18, 2022, at 12:12 AM, Chris Murphy wrote:
-> > > > > > > On Wed, Aug 17, 2022, at 11:41 PM, Ming Lei wrote:
-> > > > > > > 
-> > > > > > > > OK, can you post the blk-mq debugfs log after you trigger it on v5.17?
-> > > > > 
-> > > > > Same boot, 3rd log. But the load is above 300 so I kinda need to sysrq+b soon.
-> > > > > 
-> > > > > https://drive.google.com/file/d/1375H558kqPTdng439rvG6LuXXWPXLToo/view?usp=sharing
-> > > > > 
-> > > > 
-> > > > Also please test the following one too:
-> > > > 
-> > > > 
-> > > > diff --git a/block/blk-mq.c b/block/blk-mq.c
-> > > > index 5ee62b95f3e5..d01c64be08e2 100644
-> > > > --- a/block/blk-mq.c
-> > > > +++ b/block/blk-mq.c
-> > > > @@ -1991,7 +1991,8 @@ bool blk_mq_dispatch_rq_list(struct blk_mq_hw_ctx
-> > > > *hctx, struct list_head *list,
-> > > >   		if (!needs_restart ||
-> > > >   		    (no_tag && list_empty_careful(&hctx->dispatch_wait.entry)))
-> > > >   			blk_mq_run_hw_queue(hctx, true);
-> > > > -		else if (needs_restart && needs_resource)
-> > > > +		else if (needs_restart && (needs_resource ||
-> > > > +					blk_mq_is_shared_tags(hctx->flags)))
-> > > >   			blk_mq_delay_run_hw_queue(hctx, BLK_MQ_RESOURCE_DELAY);
-> > > > 
-> > > >   		blk_mq_update_dispatch_busy(hctx, true);
-> > > > 
-> > > 
-> > > 
-> > > With just this patch on top of 5.17.0, it still hangs. I've captured block debugfs log:
-> > > https://drive.google.com/file/d/1ic4YHxoL9RrCdy_5FNdGfh_q_J3d_Ft0/view?usp=sharing
-> > 
-> > The log is similar with before, and the only difference is RESTART not
-> > set.
-> > 
-> > Also follows another patch merged to v5.18 and it fixes io stall too, feel free to test it:
-> > 
-> > 8f5fea65b06d blk-mq: avoid extending delays of active hctx from blk_mq_delay_run_hw_queues
+> You need SoC/device specific compatibles. Preferably only SoC specific,
+> without generic fallback, unless you can guarantee (while representing
+> MediaTek), that generic fallback will cover all of their SoCs?
 > 
-> Have you tried this patch?
+>> +
+>> +  reg:
+>> +    maxItems: 1
+>> +
+>> +  mediatek,hopping-ssc-percents:
+>> +    description: |
+>> +      Determine the enablement of frequency hopping feature and the percentage
+>> +      of spread spectrum clocking for PLLs.
+>> +    $ref: /schemas/types.yaml#/definitions/uint32-matrix
+>> +    items:
+>> +      items:
+>> +        - description: PLL id that is expected to enable frequency hopping.
 > 
-> We meet a similar problem in our test, and I'm pretty sure about the
-> situation at the scene,
+> So the clocks are indices from some specific, yet unnamed
+> clock-controller? This feels hacky. You should rather take here clock
+> phandles (1) or integrate it into specific clock controller (2). The
+> reason is that either your device does something on top of existing
+> clocks (option 1, thus it takes clock as inputs) or it modifies existing
+> clocks (option 2, thus it is integral part of clock-controller).
 > 
-> Our test environment：nvme with bfq ioscheduler,
-> 
-> How io is stalled:
-> 
-> 1. hctx1 dispatch rq from bfq in service queue, bfqq becomes empty,
-> dispatch somehow fails and rq is inserted to hctx1->dispatch, new run
-> work is queued.
-> 
-> 2. other hctx tries to dispatch rq, however, in service bfqq is
-> empty, bfq_dispatch_request return NULL, thus
-> blk_mq_delay_run_hw_queues is called.
-> 
-> 3. for the problem described in above patch，run work from "hctx1"
-> can be stalled.
-> 
-> Above patch should fix this io stall, however, it seems to me bfq do
-> have some problems that in service bfqq doesn't expire under following
-> situation:
-> 
-> 1. dispatched rqs don't complete
-> 2. no new rq is issued to bfq
 
-And I guess:
-3. there are requests queued in other bfqqs
-?
+FHCTL is a MCU that handles (some, or all, depending on what's supported on the
+SoC and what's needed by the board) PLL frequency setting, doing it in steps and
+avoiding overshooting and other issues.
 
-Otherwise I don't see a point in expiring current bfqq because there's
-nothing bfq could do anyway. But under normal circumstances the request
-completion should not take so long so I don't think it would be really
-worth it to implement some special mechanism for this in bfq.
+We had a pretty big conversation about this a while ago and the indices instead
+of phandles is actually my fault, that happened because I initially proposed your
+option 2 but then for a number of reasons we went with this kind of solution.
 
-								Honza
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+I know it's going to be a long read, but the entire conversation is on the list [1]
+
+Cheers,
+Angelo
+
+[1]: 
+https://patchwork.kernel.org/project/linux-mediatek/patch/20220612135414.3003-3-johnson.wang@mediatek.com/
+
+> 
+> Best regards,
+> Krzysztof
+
+
