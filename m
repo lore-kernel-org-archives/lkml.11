@@ -2,139 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82DE9ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 11:50:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B060ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 11:53:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232987AbiIALuE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 07:50:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59138 "EHLO
+        id S232710AbiIALxk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 07:53:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232884AbiIALtY (ORCPT
+        with ESMTP id S232635AbiIALxf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 07:49:24 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 268C513A7CE
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 04:49:24 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4MJK7z2XFgz9spJ;
-        Thu,  1 Sep 2022 13:49:03 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id dI9fUUuuIjIG; Thu,  1 Sep 2022 13:49:03 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4MJK7t3Fhkz9spM;
-        Thu,  1 Sep 2022 13:48:58 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 530978B78C;
-        Thu,  1 Sep 2022 13:48:58 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id WGUP9WX4_YwN; Thu,  1 Sep 2022 13:48:58 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.232.131])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id B69D68B787;
-        Thu,  1 Sep 2022 13:48:57 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 281Bmrcu1768897
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Thu, 1 Sep 2022 13:48:54 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 281BmrFF1768896;
-        Thu, 1 Sep 2022 13:48:53 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>, sv@linux.ibm.com,
-        bgray@linux.ibm.com, agust@denx.de, jpoimboe@kernel.org,
-        peterz@infradead.org, jbaron@akamai.com, rostedt@goodmis.org,
-        ardb@kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        x86@kernel.org, chenzhongjin@huawei.com
-Subject: [PATCH v3 5/6] powerpc: Prepare arch_static_call_transform() for supporting inline static calls
-Date:   Thu,  1 Sep 2022 13:48:24 +0200
-Message-Id: <634f62e54c30a66f59534f9203d8efd396570b2b.1662032631.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <cover.1662032631.git.christophe.leroy@csgroup.eu>
-References: <cover.1662032631.git.christophe.leroy@csgroup.eu>
+        Thu, 1 Sep 2022 07:53:35 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E3F14B499
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 04:53:35 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oTil8-0001z1-W1; Thu, 01 Sep 2022 13:53:22 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oTil6-0004PT-J1; Thu, 01 Sep 2022 13:53:20 +0200
+Date:   Thu, 1 Sep 2022 13:53:20 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc:     devicetree@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>, kernel@pengutronix.de,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v3 2/3] iio: adc: tsc2046: add vref support
+Message-ID: <20220901115320.GD2479@pengutronix.de>
+References: <20220901041146.3652287-1-o.rempel@pengutronix.de>
+ <20220901041146.3652287-2-o.rempel@pengutronix.de>
+ <20220901124549.00002287@huawei.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1662032901; l=2315; s=20211009; h=from:subject:message-id; bh=v818iNsphGuqENkFhVx9ll1kxCYkbm5RmUNxbFzbxBc=; b=vg0iK+sEatw1urtjXmd/2J1SpaP7lUKcIK9iUR/QioDNb6vvtzcZFmytEur6l9GbhyREsBRGqjiZ 13K4uT6qBTevscGPx09ZCjVVXtrAaKN1Daj3cb6UJKJ+apIRAiNa
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220901124549.00002287@huawei.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reorganise arch_static_call_transform() in order to ease the support
-of inline static calls in following patch:
-- remove 'target' to nhide whether it is a 'return 0' or not.
-- Don't bail out if 'tramp' is NULL, just do nothing until next patch.
+On Thu, Sep 01, 2022 at 12:45:49PM +0100, Jonathan Cameron wrote:
+> On Thu, 1 Sep 2022 06:11:45 +0200
+> Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+> 
+> > If VREF pin is attached, we should use external VREF source instead of
+> > the internal. Otherwise we will get wrong measurements on some of channel
+> > types.
+> > 
+> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> Hi Oleksij,
+> 
+> I'm not sure why I didn't review this patch in v1...
+> 
+> Anyhow, some comments below.
+> 
+> Jonathan
+> 
+> > ---
+> >  drivers/iio/adc/ti-tsc2046.c | 64 +++++++++++++++++++++++++++++++-----
+> >  1 file changed, 55 insertions(+), 9 deletions(-)
+> > 
+> > diff --git a/drivers/iio/adc/ti-tsc2046.c b/drivers/iio/adc/ti-tsc2046.c
+> > index 0d9436a69cbfb..bbc8b4137b0b1 100644
+> > --- a/drivers/iio/adc/ti-tsc2046.c
+> > +++ b/drivers/iio/adc/ti-tsc2046.c
+> > @@ -8,6 +8,7 @@
+> >  #include <linux/bitfield.h>
+> >  #include <linux/delay.h>
+> >  #include <linux/module.h>
+> > +#include <linux/regulator/consumer.h>
+> >  #include <linux/spi/spi.h>
+> >  
+> >  #include <asm/unaligned.h>
+> > @@ -175,6 +176,9 @@ struct tsc2046_adc_priv {
+> >  	u32 time_per_bit_ns;
+> >  
+> >  	struct tsc2046_adc_ch_cfg ch_cfg[TI_TSC2046_MAX_CHAN];
+> > +	bool use_internal_vref;
+> > +	unsigned int vref_mv;
+> > +	struct regulator *vref_reg;
+> >  };
+> >  
+> >  #define TI_TSC2046_V_CHAN(index, bits, name)			\
+> > @@ -252,7 +256,9 @@ static u8 tsc2046_adc_get_cmd(struct tsc2046_adc_priv *priv, int ch_idx,
+> >  	case TI_TSC2046_ADDR_AUX:
+> >  	case TI_TSC2046_ADDR_VBAT:
+> >  	case TI_TSC2046_ADDR_TEMP0:
+> > -		pd |= TI_TSC2046_SER | TI_TSC2046_PD1_VREF_ON;
+> > +		pd |= TI_TSC2046_SER;
+> > +		if (priv->use_internal_vref)
+> > +			pd |= TI_TSC2046_PD1_VREF_ON;
+> >  	}
+> >  
+> >  	return TI_TSC2046_START | FIELD_PREP(TI_TSC2046_ADDR, ch_idx) | pd;
+> > @@ -468,7 +474,7 @@ static int tsc2046_adc_read_raw(struct iio_dev *indio_dev,
+> >  		 * So, it is better to use external voltage-divider driver
+> >  		 * instead, which is calculating complete chain.
+> >  		 */
+> > -		*val = TI_TSC2046_INT_VREF;
+> > +		*val = priv->vref_mv;
+> >  		*val2 = chan->scan_type.realbits;
+> >  		return IIO_VAL_FRACTIONAL_LOG2;
+> >  	}
+> > @@ -781,22 +787,42 @@ static int tsc2046_adc_probe(struct spi_device *spi)
+> >  	indio_dev->num_channels = dcfg->num_channels;
+> >  	indio_dev->info = &tsc2046_adc_info;
+> >  
+> > +	priv->vref_reg = devm_regulator_get_optional(&spi->dev, "vref");
+> > +	if (!IS_ERR(priv->vref_reg)) {
+> > +		ret = regulator_enable(priv->vref_reg);
+> > +		if (ret)
+> > +			return ret;
+> > +
+> > +		ret = regulator_get_voltage(priv->vref_reg);
+> > +		if (ret < 0)
+> > +			goto err_regulator_disable;
+> 
+> Whilst regulators voltages of references rarely change at runtime
+> they are allowed to, so it is logically better to query the
+> voltage at the point of use. Requests for scale should be
+> rare (unless there is a consumer that keeps querying this?)
+> so the slightly overhead there
+> shouldn't matter.
 
-Note that 'target' was 'tramp + PPC_SCT_RET0', is_short was perforce
-true. So in the 'if (func && !is_short)' leg, target was perforce
-equal to 'func'.
+The voltage scale is related to actual adc measurements. If it variates,
+we will have different scale of challenges.
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
-v3: New. Split out of following patch.
----
- arch/powerpc/kernel/static_call.c | 36 ++++++++++++++++++-------------
- 1 file changed, 21 insertions(+), 15 deletions(-)
+> > +
+> > +		priv->vref_mv = ret / 1000;
+> > +		priv->use_internal_vref = false;
+> > +	} else {
+> > +		/* Use internal reference */
+> > +		priv->vref_mv = TI_TSC2046_INT_VREF;
+> > +		priv->use_internal_vref = true;
+> > +	}
+> > +
+> >  	tsc2046_adc_parse_fwnode(priv);
+> >  
+> >  	ret = tsc2046_adc_setup_spi_msg(priv);
+> >  	if (ret)
+> > -		return ret;
+> > +		goto err_regulator_disable;
+> >  
+> >  	mutex_init(&priv->slock);
+> >  
+> >  	ret = devm_request_irq(dev, spi->irq, &tsc2046_adc_irq,
+> >  			       IRQF_NO_AUTOEN, indio_dev->name, indio_dev);
+> >  	if (ret)
+> > -		return ret;
+> > +		goto err_regulator_disable;
+> >  
+> >  	trig = devm_iio_trigger_alloc(dev, "touchscreen-%s", indio_dev->name);
+> > -	if (!trig)
+> > -		return -ENOMEM;
+> > +	if (!trig) {
+> > +		ret = -ENOMEM;
+> > +		goto err_regulator_disable;
+> > +	}
+> >  
+> >  	priv->trig = trig;
+> >  	iio_trigger_set_drvdata(trig, indio_dev);
+> > @@ -811,20 +837,39 @@ static int tsc2046_adc_probe(struct spi_device *spi)
+> >  	ret = devm_iio_trigger_register(dev, trig);
+> >  	if (ret) {
+> >  		dev_err(dev, "failed to register trigger\n");
+> > -		return ret;
+> > +		goto err_regulator_disable;
+> 
+> Please don't mix devm and non devm calls. It makes it much harder to reason about
+> the correctness of ordering.
+> Use devm_add_action_or_reset() to register a callback to disable the
+> vref regulator.
+> 
+> Alternative is back out the devm_ based registration of everything after
+> the regulator enable.
 
-diff --git a/arch/powerpc/kernel/static_call.c b/arch/powerpc/kernel/static_call.c
-index 863a7aa24650..97765b9e1c5b 100644
---- a/arch/powerpc/kernel/static_call.c
-+++ b/arch/powerpc/kernel/static_call.c
-@@ -8,26 +8,32 @@ void arch_static_call_transform(void *site, void *tramp, void *func, bool tail)
- {
- 	int err;
- 	bool is_ret0 = (func == __static_call_return0);
--	unsigned long target = (unsigned long)(is_ret0 ? tramp + PPC_SCT_RET0 : func);
--	bool is_short = is_offset_in_branch_range((long)target - (long)tramp);
--
--	if (!tramp)
--		return;
-+	unsigned long _tramp = (unsigned long)tramp;
-+	unsigned long _func = (unsigned long)func;
-+	unsigned long _ret0 = _tramp + PPC_SCT_RET0;
-+	bool is_short = is_offset_in_branch_range((long)func - (long)(site ? : tramp));
- 
- 	mutex_lock(&text_mutex);
- 
--	if (func && !is_short) {
--		err = patch_instruction(tramp + PPC_SCT_DATA, ppc_inst(target));
--		if (err)
--			goto out;
-+	if (tramp) {
-+		if (func && !is_short) {
-+			err = patch_instruction(tramp + PPC_SCT_DATA, ppc_inst(_func));
-+			if (err)
-+				goto out;
-+		}
-+
-+		if (!func)
-+			err = patch_instruction(tramp, ppc_inst(PPC_RAW_BLR()));
-+		else if (is_ret0)
-+			err = patch_branch(tramp, _ret0, 0);
-+		else if (is_short)
-+			err = patch_branch(tramp, _func, 0);
-+		else
-+			err = patch_instruction(tramp, ppc_inst(PPC_RAW_NOP()));
-+	} else {
-+		err = 0;
- 	}
- 
--	if (!func)
--		err = patch_instruction(tramp, ppc_inst(PPC_RAW_BLR()));
--	else if (is_short)
--		err = patch_branch(tramp, target, 0);
--	else
--		err = patch_instruction(tramp, ppc_inst(PPC_RAW_NOP()));
- out:
- 	mutex_unlock(&text_mutex);
- 
+ok.
+
+Regards,
+Oleksij
 -- 
-2.37.1
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
