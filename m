@@ -2,348 +2,244 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53ED5ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 17:04:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18327ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 17:04:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235125AbiIAREI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 13:04:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55016 "EHLO
+        id S235131AbiIARE2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 13:04:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235118AbiIARED (ORCPT
+        with ESMTP id S235032AbiIARE0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 13:04:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C428999272;
-        Thu,  1 Sep 2022 10:04:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4506C61FD1;
-        Thu,  1 Sep 2022 17:04:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 985FDC43140;
-        Thu,  1 Sep 2022 17:04:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662051841;
-        bh=XZ3UT/ai1g/A0Mxg5uxB2BOBvBvT/K62KbOaoZI3Og4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=DIQ/LoTbM8FGDCqsP/m43kPs4b5lZaAJf+8xPhGcMOfI5ao6GFqKpmF1Qi2AjAAWJ
-         FoD/zwknzzDjcK2drHDWeD9Peiwk1OgmAPgwtWYmL5p1CRbD1vs+vhDyOeKUUY5Gio
-         SJ11C/Bp0apqmg76s4maHYYmWQY9QJl5uEVPq0AZU/5QhUeXUZaZaxAtPIsfzEJamf
-         dwHAk17j6v4vqHFjqcjxDVPoHQHPrEFpezb6AcBgeOq9u19JfqgjrR204cgXhedh2i
-         VWhdk8MPF6f11UZJcnXR5HV1m3y/HyswH1Ah8PMDrRT62Dy2aEf8I+kTjjoxuNlRA6
-         C6Hac64Gjq4XQ==
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-33da3a391d8so343579157b3.2;
-        Thu, 01 Sep 2022 10:04:01 -0700 (PDT)
-X-Gm-Message-State: ACgBeo04c3rNdEQfcAHg8ScNg6QG8QGHjnL0mfONZsyaTPQiiNTOqeua
-        C55ysqliiorf+aaA/XZpNZClcGYwZlra8MbG3QU=
-X-Google-Smtp-Source: AA6agR7E5i5VB7ZqrkYTS4hz3CF9tWyZnlcocXJinjqNeR3ZHMhGnghVCs2C07OCz7vrabGuPdPzLP2gN0rkza2Z+HU=
-X-Received: by 2002:a81:6143:0:b0:335:3076:168e with SMTP id
- v64-20020a816143000000b003353076168emr23230516ywb.460.1662051840515; Thu, 01
- Sep 2022 10:04:00 -0700 (PDT)
+        Thu, 1 Sep 2022 13:04:26 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C29CD8E0D8
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 10:04:24 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id v16so20470697wrm.8
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 10:04:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=oGngrFzLbPHH3qcpX426xQbz2Zq5fLl9uof+AvmzULw=;
+        b=RzHAodZ0KfK4XEA7ycAzg2OlZ3uB8sINMqOxRB20LZG514UOiQRaz3XhPHkloCZJ2z
+         VbgwYvBI5LZQZ72G3Xd5SmlR8Tp/HhsvFo8YcjtdM9+vn4DjpCnX2YQl4OG2ahWVoSq1
+         CVoih7eM9S2sxjep1TFBqRN3wn/D551fyzgQwD/6qMNKDoEbBrhna67QTbk8EPAvoH0P
+         ANIlsbH8gXCsShVyGBX/UHrHR/9iGoZ+N0nFxCuKdG0WQBEFIPr9GE4HCI+C+nIC6ZAN
+         zOq42AB5kE3L0R0kheqyajp4ceCoK30E6TRAH5kuCmX3acAAoj064kAU4SuSbnyA4Tp+
+         7Fug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=oGngrFzLbPHH3qcpX426xQbz2Zq5fLl9uof+AvmzULw=;
+        b=PZU/qcivs/JJkdAA/UHci0VupRWvLxsVcS+8kYSUREOIPsFisAkg8fpNAFd7Poy84D
+         f2cwBpD/S9bZvCstQcEYAYJwB08d4M4qLE8U+zvTNYUGmLCbg6VuxZPgF8e2qQFqQN9W
+         oygOLAWNMmnKlQezpBzz3+y+YLo5/bCCasiGB9pzwRyqOzhDMiRroOje18YIaRDeUq3z
+         /Pt/OyZ5y8qJXZpwF3nJQnAklfzqfKbrqEpfSCna7CcSkOEZS2+LVH7BKe2WCTsom+S1
+         JMpMFyZ2nQoLvbcUp7FqpGcJmmVxBP3KBxDtno/NRbZsIlSkJSazcnP15NKiEIBWQ1o7
+         djsw==
+X-Gm-Message-State: ACgBeo2+r6sxLWugPfvvFbxgmclr4JQEw48C3pgxaAOJZmwjsrz7cRRT
+        4CrG5xCk4RLX6GoVZBOubVJ4Z/AM0w4Yve6YmKfATA==
+X-Google-Smtp-Source: AA6agR44zTUIx7vtCBXWJafnXR82UyaMIibutwdIHqvt3nKhdEy7qCanQvYTvTEZHDTCLcQEM98z3W0g3d/Prcy9j6k=
+X-Received: by 2002:a5d:4d83:0:b0:226:d08d:35c8 with SMTP id
+ b3-20020a5d4d83000000b00226d08d35c8mr15492867wru.4.1662051863098; Thu, 01 Sep
+ 2022 10:04:23 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220830185313.76402-1-song@kernel.org> <Yw+4xxiONngOTqin@redhat.com>
- <875yi8uju3.fsf@mpe.ellerman.id.au> <CAPhsuW7aZwXyuZAv23xDXsxCJc0mJNms+HegqkZqukVqT0cfZA@mail.gmail.com>
- <YxATT0lpgVndnc0z@redhat.com>
-In-Reply-To: <YxATT0lpgVndnc0z@redhat.com>
-From:   Song Liu <song@kernel.org>
-Date:   Thu, 1 Sep 2022 10:03:49 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW74ATv=WMy9DBp3HMibjpbQ4XKzRw_gFeBLY1bPyC8huA@mail.gmail.com>
-Message-ID: <CAPhsuW74ATv=WMy9DBp3HMibjpbQ4XKzRw_gFeBLY1bPyC8huA@mail.gmail.com>
-Subject: Re: [PATCH v5] livepatch: Clear relocation targets on a module removal
-To:     Joe Lawrence <joe.lawrence@redhat.com>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        live-patching@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>, X86 ML <x86@kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>
+References: <202208311414.4OPuYS9K-lkp@intel.com> <Yw+A+0BY26l0AC5j@dev-arch.thelio-3990X>
+ <b0b8fecd-4041-d04e-9a11-2c7947e5d5a0@intel.com> <YxAS9NBjBI/vi0XK@dev-arch.thelio-3990X>
+ <8d2c3aef-aa4f-1f4d-dc89-622554ffda31@intel.com> <9d77cb93-2eff-d87d-6554-1636d5e7d5ec@csgroup.eu>
+ <0acfb209-a792-a47b-0261-9fb29824e4b9@intel.com> <YxDj6v5p+wHop0Wm@dev-arch.thelio-3990X>
+In-Reply-To: <YxDj6v5p+wHop0Wm@dev-arch.thelio-3990X>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Thu, 1 Sep 2022 10:04:11 -0700
+Message-ID: <CAKwvOdmzuupyAMhy-jT3O=-PT36T01N4SXkCPz6Cv0CPsxkK3Q@mail.gmail.com>
+Subject: Re: [kbuild-all] Re: powerpc-linux-objdump: Warning: Unrecognized
+ form: 0x23
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     "Chen, Rong A" <rong.a.chen@intel.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        kernel test robot <lkp@intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        "llvm@lists.linux.dev" <llvm@lists.linux.dev>,
+        "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 7:05 PM Joe Lawrence <joe.lawrence@redhat.com> wrot=
-e:
+On Thu, Sep 1, 2022 at 9:55 AM Nathan Chancellor <nathan@kernel.org> wrote:
 >
-> On Wed, Aug 31, 2022 at 03:48:26PM -0700, Song Liu wrote:
-> > On Wed, Aug 31, 2022 at 3:30 PM Michael Ellerman <mpe@ellerman.id.au> w=
+> On Thu, Sep 01, 2022 at 01:52:42PM +0800, Chen, Rong A wrote:
+> >
+> >
+> > On 9/1/2022 1:45 PM, Christophe Leroy wrote:
+> > >
+> > >
+> > > Le 01/09/2022 =C3=A0 06:59, Chen, Rong A a =C3=A9crit :
+> > > >
+> > > >
+> > > > On 9/1/2022 10:03 AM, Nathan Chancellor wrote:
+> > > > > Hi Rong,
+> > > > >
+> > > > > On Thu, Sep 01, 2022 at 09:15:58AM +0800, Chen, Rong A wrote:
+> > > > > >
+> > > > > >
+> > > > > > On 8/31/2022 11:40 PM, Nathan Chancellor wrote:
+> > > > > > > On Wed, Aug 31, 2022 at 02:52:36PM +0800, kernel test robot w=
 rote:
+> > > > > > > > tree:
+> > > > > > > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/li=
+nux.git
+> > > > > > > > master
+> > > > > > > > head:   dcf8e5633e2e69ad60b730ab5905608b756a032f
+> > > > > > > > commit: f9b3cd24578401e7a392974b3353277286e49cee Kconfig.de=
+bug:
+> > > > > > > > make DEBUG_INFO selectable from a choice
+> > > > > > > > date:   5 months ago
+> > > > > > > > config: powerpc-buildonly-randconfig-r003-20220830
+> > > > > > > > (https://download.01.org/0day-ci/archive/20220831/202208311=
+414.4OPuYS9K-lkp@intel.com/config)
+> > > > > > > > compiler: clang version 16.0.0
+> > > > > > > > (https://github.com/llvm/llvm-project
+> > > > > > > > c7df82e4693c19e3fd2e25c83eb04d9deb7b7b59)
+> > > > > > > > reproduce (this is a W=3D1 build):
+> > > > > > > >            wget
+> > > > > > > > https://raw.githubusercontent.com/intel/lkp-tests/master/sb=
+in/make.cross -O ~/bin/make.cross
+> > > > > > > >            chmod +x ~/bin/make.cross
+> > > > > > > >            # install powerpc cross compiling tool for clang=
+ build
+> > > > > > > >            # apt-get install binutils-powerpc-linux-gnu
+> > > > > > > >            #
+> > > > > > > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/li=
+nux.git/commit/?id=3Df9b3cd24578401e7a392974b3353277286e49cee
+> > > > > > > >            git remote add linus
+> > > > > > > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/li=
+nux.git
+> > > > > > > >            git fetch --no-tags linus master
+> > > > > > > >            git checkout f9b3cd24578401e7a392974b3353277286e=
+49cee
+> > > > > > > >            # save the config file
+> > > > > > > >            mkdir build_dir && cp config build_dir/.config
+> > > > > > > >            COMPILER_INSTALL_PATH=3D$HOME/0day COMPILER=3Dcl=
+ang
+> > > > > > > > make.cross W=3D1 O=3Dbuild_dir ARCH=3Dpowerpc SHELL=3D/bin/=
+bash
+> > > > > > > >
+> > > > > > > > If you fix the issue, kindly add following tag where applic=
+able
+> > > > > > > > Reported-by: kernel test robot <lkp@intel.com>
+> > > > > > > >
+> > > > > > > > All warnings (new ones prefixed by >>):
+> > > > > > > >
+> > > > > > > > > > powerpc-linux-objdump: Warning: Unrecognized form: 0x23
+> > > > > > >
+> > > > > > > Given this is clang 16.0.0 with
+> > > > > > > CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=3Dy, which uses DWA=
+RF5 by
+> > > > > > > default instead of DWARF4, it looks like older binutils not
+> > > > > > > understanding DWARF5. What version of binutils is being used =
+by the
+> > > > > > > bot?
+> > > > > >
+> > > > > > Hi Nathan,
+> > > > > >
+> > > > > > We're using binutils v2.38.90.20220713-2
+> > > > > >
+> > > > > > ||/ Name           Version            Architecture Description
+> > > > > > +++-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D-=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > > > > > ii  binutils       2.38.90.20220713-2 amd64        GNU assemble=
+r,
+> > > > > > linker and binary utilities
+> > > > >
+> > > > > Thanks for chiming in! This looks like the output of 'dpkg -l', r=
+ight? I
+> > > >
+> > > > Hi Nathan,
+> > > >
+> > > > oh, yes, I misunderstood, it's not related to this package.
+> > > >
+> > > > > noticed on second glance that the tuple for the objdump warning a=
+bove is
+> > > > > 'powerpc-linux-', which leads me to believe that a kernel.org too=
+lchain
+> > > > > (or a self compiled one) is being used. I would expect the tuple =
+to be
+> > > > > 'powerpc-linux-gnu-' if Debian's package was being used. Is that
+> > > > > possible?
+> > > >
+> > > > you are right, we used a self-compiled toolchain, we'll try the bin=
+utils
+> > > > from debian package.
 > > >
-> > > Joe Lawrence <joe.lawrence@redhat.com> writes:
-> > > > On Tue, Aug 30, 2022 at 11:53:13AM -0700, Song Liu wrote:
-> > > >> From: Miroslav Benes <mbenes@suse.cz>
-> > > >>
-> > > >> Josh reported a bug:
-> > > >>
-> > > >>   When the object to be patched is a module, and that module is
-> > > >>   rmmod'ed and reloaded, it fails to load with:
-> > > >>
-> > > >>   module: x86/modules: Skipping invalid relocation target, existin=
-g value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
-> > > >>   livepatch: failed to initialize patch 'livepatch_nfsd' for modul=
-e 'nfsd' (-8)
-> > > >>   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refu=
-sing to load module 'nfsd'
-> > > >>
-> > > >>   The livepatch module has a relocation which references a symbol
-> > > >>   in the _previous_ loading of nfsd. When apply_relocate_add()
-> > > >>   tries to replace the old relocation with a new one, it sees that
-> > > >>   the previous one is nonzero and it errors out.
-> > > >>
-> > > >>   On ppc64le, we have a similar issue:
-> > > >>
-> > > >>   module_64: livepatch_nfsd: Expected nop after call, got e8410018=
- at e_show+0x60/0x548 [livepatch_nfsd]
-> > > >>   livepatch: failed to initialize patch 'livepatch_nfsd' for modul=
-e 'nfsd' (-8)
-> > > >>   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refu=
-sing to load module 'nfsd'
-> > > ...
-> > > >>
-> > > >
-> > > > Hi Song,
-> > > >
-> > > > Applying your patch on top of my latest klp-convert-tree branch [1]=
-, I
-> > > > modified a few of its late module patching tests
-> > > > (tools/testing/selftests/livepatch/test-song.sh) such that:
-> > > >
-> > > >  1 - A livepatch module is loaded
-> > > >    - this module contains klp-relocations to objects in (2)
-> > > >  2 - A target test module is loaded
-> > > >  3 - Unload the test target module
-> > > >    - Clear klp-relocations in (1)
-> > > >  4 - Repeat target module load (2) / unload (3) a few times
-> > > >  5 - Unload livepatch module
+> > > Can you first tell us the version you are using ?
 > > >
-> > > If you push that test code somewhere I could test it on ppc64le.
+> > >     powerpc-linux-objdump -v
 > > >
-> > > > The results:
-> > > >
-> > > >  x86_64  : pass
-> > > >  s390x   : pass
-> > > >  ppc64le : crash
-> > > >
-> > > > I suspect Power 32-bit would suffer the same fate, but I don't have
-> > > > hardware to verify.  See the kernel log from the crash below...
-> > > >
-> > > >
-> > > > =3D=3D=3D=3D=3D TEST: klp-convert symbols (late module patching) =
-=3D=3D=3D=3D=3D
-> > > > % modprobe test_klp_convert1
-> > > > test_klp_convert1: tainting kernel with TAINT_LIVEPATCH
-> > > > livepatch: enabling patch 'test_klp_convert1'
-> > > > livepatch: 'test_klp_convert1': starting patching transition
-> > > > livepatch: 'test_klp_convert1': patching complete
-> > > > % modprobe test_klp_convert_mod
-> > > > livepatch: applying patch 'test_klp_convert1' to loading module 'te=
-st_klp_convert_mod'
-> > > > test_klp_convert1: saved_command_line, 0: BOOT_IMAGE=3D(ieee1275//v=
-device/v-scsi@30000003/disk@8100000000000000,msdos2)/vmlinuz-5.19.0+ root=
-=3D/dev/mapper/rhel_ibm--p9z--18--lp7-root ro crashkernel=3D2G-4G:384M,4G-1=
-6G:512M,16G-64G:1G,64G-128G:2G,128G-:4G rd.lvm.lv=3Drhel_ibm-p9z-18-lp7/roo=
-t rd.lvm.lv=3Drhel_ibm-p9z-18-lp7/swap
-> > > > test_klp_convert1: driver_name, 0: test_klp_convert_mod
-> > > > test_klp_convert1: test_klp_get_driver_name(), 0: test_klp_convert_=
-mod
-> > > > test_klp_convert1: homonym_string, 1: homonym string A
-> > > > test_klp_convert1: get_homonym_string(), 1: homonym string A
-> > > > test_klp_convert1: klp_string.12345 =3D lib/livepatch/test_klp_conv=
-ert_mod_a.c static string
-> > > > test_klp_convert1: klp_string.67890 =3D lib/livepatch/test_klp_conv=
-ert_mod_b.c static string
-> > > > % rmmod test_klp_convert_mod
-> > > > livepatch: reverting patch 'test_klp_convert1' on unloading module =
-'test_klp_convert_mod'
-> > > > module_64: Clearing ADD relocate section 48 to 6
-> > > > BUG: Unable to handle kernel data access on write at 0xc00800000214=
-0150
-> > > > Faulting instruction address: 0xc00000000005659c
-> > > > Oops: Kernel access of bad area, sig: 11 [#1]
-> > > > LE PAGE_SIZE=3D64K MMU=3DHash SMP NR_CPUS=3D2048 NUMA pSeries
-> > > > Modules linked in: test_klp_convert_mod(-) test_klp_convert1(K) bon=
-ding tls rfkill pseries_rng drm fuse drm_panel_orientation_quirks xfs libcr=
-c32c sd_mod t10_pi sg ibmvscsi ibmveth scsi_transport_srp vmx_crypto dm_mir=
-ror dm_region_hash dm_log dm_mod
-> > > > CPU: 6 PID: 4766 Comm: rmmod Kdump: loaded Tainted: G              =
-K   5.19.0+ #1
-> > > > NIP:  c00000000005659c LR: c000000000056590 CTR: 0000000000000024
-> > > > REGS: c000000007223840 TRAP: 0300   Tainted: G              K    (5=
-.19.0+)
-> > > > MSR:  8000000000009033 <SF,EE,ME,IR,DR,RI,LE>  CR: 48008282  XER: 0=
-000000a
-> > > > CFAR: c0000000000a87e0 DAR: c008000002140150 DSISR: 0a000000 IRQMAS=
-K: 0
-> > >
-> > > This is saying you don't have permissions to write at that address.
-> > >
-> > > > GPR00: c000000000056568 c000000007223ae0 c000000002a68a00 000000000=
-0000001
-> > > > GPR04: c0080000021706f0 000000000000002d 0000000000000000 000000000=
-0000000
-> > > > GPR08: 0000000000000066 0000001200000010 0000000000000000 000000000=
-0008000
-> > > > GPR12: 0000000000000000 c00000000ffca080 0000000000000000 000000000=
-0000000
-> > > > GPR16: 0000010005bf1810 000000010c0f7370 c0000000011b7e50 c00000000=
-11b7e68
-> > > > GPR20: c0080000021501c8 c008000002150228 0000000000000030 000000006=
-0000000
-> > > > GPR24: c008000002160380 c000000056b43000 000000000000ff20 c00000005=
-6b43c00
-> > > > GPR28: aaaaaaaaaaaaaaab c000000056b43b40 0000000000000000 c00800000=
-214014c
-> > > > NIP [c00000000005659c] clear_relocate_add+0x11c/0x1c0
-> > > > LR [c000000000056590] clear_relocate_add+0x110/0x1c0
-> > > > Call Trace:
-> > > > [c000000007223ae0] [ffffffffffffffff] 0xffffffffffffffff (unreliabl=
-e)
-> > > > [c000000007223ba0] [c00000000021e3a8] klp_cleanup_module_patches_li=
-mited+0x448/0x480
-> > > > [c000000007223cb0] [c000000000220278] klp_module_going+0x68/0x94
-> > > > [c000000007223ce0] [c00000000022f480] __do_sys_delete_module.constp=
-rop.0+0x1d0/0x390
-> > > > [c000000007223db0] [c00000000002f004] system_call_exception+0x164/0=
-x340
-> > > > [c000000007223e10] [c00000000000be68] system_call_vectored_common+0=
-xe8/0x278
-> > > > --- interrupt: 3000 at 0x7fffa178fb6c
-> > > > NIP:  00007fffa178fb6c LR: 0000000000000000 CTR: 0000000000000000
-> > > > REGS: c000000007223e80 TRAP: 3000   Tainted: G              K    (5=
-.19.0+)
-> > > > MSR:  800000000280f033 <SF,VEC,VSX,EE,PR,FP,ME,IR,DR,RI,LE>  CR: 48=
-002482  XER: 00000000
-> > > > IRQMASK: 0
-> > > > GPR00: 0000000000000081 00007ffff2d1b720 00007fffa1887200 000001000=
-5bf1878
-> > > > GPR04: 0000000000000800 000000000000000a 0000000000000000 000000000=
-00000da
-> > > > GPR08: 0000000000000000 0000000000000000 0000000000000000 000000000=
-0000000
-> > > > GPR12: 0000000000000000 00007fffa201c540 0000000000000000 000000000=
-0000000
-> > > > GPR16: 0000010005bf1810 000000010c0f7370 000000010c0f8090 000000010=
-c0f8078
-> > > > GPR20: 000000010c0f8050 000000010c0f80a8 000000010c0f7518 000000010=
-c0f80d0
-> > > > GPR24: 00007ffff2d1b830 00007ffff2d1efbb 0000000000000000 000001000=
-5bf02a0
-> > > > GPR28: 00007ffff2d1be50 0000000000000000 0000010005bf1810 000000000=
-0100000
-> > > > NIP [00007fffa178fb6c] 0x7fffa178fb6c
-> > > > LR [0000000000000000] 0x0
-> > > > --- interrupt: 3000
-> > > > Instruction dump:
-> > > > 40820044 813b002c 7ff5f82a 79293664 7d394a14 e9290010 7c69f82e 7fe9=
-fa14
-> > > > 48052235 60000000 2c030000 41820008 <92ff0004> eadb0020 60000000 60=
-000000
-> > > > ---[ end trace 0000000000000000 ]---
-> > > >
-> > > > $ addr2line 0xc00000000005659c -e vmlinux
-> > > > /root/klp-convert-tree/arch/powerpc/kernel/module_64.c:785
-> > > >
-> > > > 743 void clear_relocate_add(Elf64_Shdr *sechdrs,
-> > > > 744                        const char *strtab,
-> > > > 745                        unsigned int symindex,
-> > > > 746                        unsigned int relsec,
-> > > > 747                        struct module *me)
-> > > > 748 {
-> > > > ...
-> > > > 759         for (i =3D 0; i < sechdrs[relsec].sh_size / sizeof(*rel=
-a); i++) {
-> > > > ...
-> > > > 785                 *instruction =3D PPC_RAW_NOP();
-> > > > 786         }
-> > >
-> > > Has the module text been marked RW prior to this? I suspect not?
-> > >
-> > > In which case you need to use patch_instruction() here.
-> > >
-> > > cheers
+> > > That will tell you the version.
 > >
-> > Thanks folks!
+> > Hi Christophe,
 > >
-> > I guess something like this would fix compile for ppc32 and fix crash f=
-or ppc64.
+> > the version is v2.38:
 > >
-> > I also pushed it to
-> >
-> > https://git.kernel.org/pub/scm/linux/kernel/git/song/linux.git/log/?h=
-=3Dklp-module-reload
-> >
-> > This includes Joe's klp-convert patches and this patch.
-> >
-> > Thanks!
-> > Song
-> >
-> >
-> >
-> > diff --git a/arch/powerpc/kernel/module_32.c b/arch/powerpc/kernel/modu=
-le_32.c
-> > index ea6536171778..e3c312770453 100644
-> > --- a/arch/powerpc/kernel/module_32.c
-> > +++ b/arch/powerpc/kernel/module_32.c
-> > @@ -285,6 +285,16 @@ int apply_relocate_add(Elf32_Shdr *sechdrs,
-> >         return 0;
-> >  }
-> >
-> > +#ifdef CONFIG_LIVEPATCH
-> > +void clear_relocate_add(Elf32_Shdr *sechdrs,
-> > +                  const char *strtab,
-> > +                  unsigned int symindex,
-> > +                  unsigned int relsec,
-> > +                  struct module *me)
-> > +{
-> > +}
-> > +#endif
-> > +
-> >  #ifdef CONFIG_DYNAMIC_FTRACE
-> >  notrace int module_trampoline_target(struct module *mod, unsigned long=
- addr,
-> >                                      unsigned long *target)
-> > diff --git a/arch/powerpc/kernel/module_64.c b/arch/powerpc/kernel/modu=
-le_64.c
-> > index 6aaf5720070d..4d55f0e52704 100644
-> > --- a/arch/powerpc/kernel/module_64.c
-> > +++ b/arch/powerpc/kernel/module_64.c
-> > @@ -782,7 +782,7 @@ void clear_relocate_add(Elf64_Shdr *sechdrs,
-> >                         continue;
-> >
-> >                 instruction +=3D 1;
-> > -               *instruction =3D PPC_RAW_NOP();
-> > +               patch_instruction(instruction, PPC_RAW_NOP());
+> > $ ./powerpc-linux-objdump -v
+> > GNU objdump (GNU Binutils) 2.38
+> > Copyright (C) 2022 Free Software Foundation, Inc.
+> > This program is free software; you may redistribute it under the terms =
+of
+> > the GNU General Public License version 3 or (at your option) any later
+> > version.
+> > This program has absolutely no warranty.
 >
-> Close.  I believe PPC_RAW_NOP() needs to be passed to ppc_inst() like:
+> Thanks! I did some research and it seems like this warning is expected
+> with binutils older than 2.39. The warning appears to come from
+> read_and_display_attr_value() in binutils/dwarf.c. 0x22 and 0x23 are
+> DW_FORM_loclistx and DW_FORM_rnglistx, which were only recently
+> supported in that function.
 >
-> diff --git a/arch/powerpc/kernel/module_64.c b/arch/powerpc/kernel/module=
-_64.c
-> index 4d55f0e52..514951f97 100644
-> --- a/arch/powerpc/kernel/module_64.c
-> +++ b/arch/powerpc/kernel/module_64.c
-> @@ -782,7 +782,7 @@ void clear_relocate_add(Elf64_Shdr *sechdrs,
->                         continue;
+> https://sourceware.org/bugzilla/show_bug.cgi?id=3D28981
+> https://sourceware.org/git/gitweb.cgi?p=3Dbinutils-gdb.git;h=3D19c26da69d=
+68d5d863f37c06ad73ab6292d02ffa
 >
->                 instruction +=3D 1;
-> -               patch_instruction(instruction, PPC_RAW_NOP());
-> +               patch_instruction(instruction, ppc_inst(PPC_RAW_NOP()));
->         }
->
->  }
->
-> And with that tweak, new result:
->
->  ppc64le : pass
->
-> Tested-by: Joe Lawrence <joe.lawrence@redhat.com> # x86_64, s390x, ppc64l=
-e
+> That change shipped in binutils 2.39. I am not really sure how we should
+> work around this in the kernel, other than maybe requiring binutils
+> 2.39+ for CONFIG_DEBUG_INFO_DWARF5. Unfortunately, that will not fix
+> CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT when DWARF5 is the default
+> version...
 
-Thanks!
+I've been working on a series that will encode the default implicit
+dwarf version based on compiler version check. Maybe that can be
+extended/reused here once that lands?
+https://lore.kernel.org/llvm/20220831184408.2778264-1-ndesaulniers@google.c=
+om/
+Series needs revision, but it's on the right track.
 
-I will fold this in and send v6.
+> Alternatively, switching to llvm-objdump for clang builds
+> would help :) I am not aware of any issues that would affect that switch
+> for PowerPC:
+>
+> https://github.com/ClangBuiltLinux/linux/labels/%5BTOOL%5D%20llvm-objdump
 
-Song
+Oh, is 0day doing `make CC=3Dclang` rather than `make LLVM=3D1`?  Rong,
+any chance we get 0day folks to test LLVM=3D1 for more architectures?
+Ideally we'd test both, preferably LLVM=3D1 if we had to choose.
+
+>
+> Cheers,
+> Nathan
+
+
+
+--=20
+Thanks,
+~Nick Desaulniers
