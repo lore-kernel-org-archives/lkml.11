@@ -2,145 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C65F7ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 00:13:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91CA0ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 00:22:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231570AbiIAANk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 20:13:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55176 "EHLO
+        id S231522AbiIAAWj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 20:22:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229607AbiIAANi (ORCPT
+        with ESMTP id S229510AbiIAAWh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 20:13:38 -0400
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5D70E3418
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 17:13:36 -0700 (PDT)
-Received: by mail-io1-f72.google.com with SMTP id y1-20020a056602200100b006893cd97da9so9654108iod.1
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 17:13:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=DFKirfGyg1GeaTnh3qJeoJ4p0uyttCeWuhCQWljHZAQ=;
-        b=HJCaZmbiP7kaZmW1bBmG+V0bJOrlkbjX47WloHDwo3Lhbr8QJ0WMjaBdyz++B5ynco
-         iGgAXwTf721YSCPn1l7UGF7U+p+oeA28XZwzEKgMbN4chXOnE7myGAJtkQ+7kzPvN1Md
-         Tv2UDGxk51iJDVWX84guVzEDZOoh6PbNvNnKyoGoDgUYZ2eE0Tlgh8kKhIB8L1L+DOek
-         Ze6C5OX3ey32tcKCDSZ8K0E4xRGqOfaGHAWEBAyInv+SyaS2v9FmGCoOVMc7De5G0wPe
-         HQbn404P4nyydmbiQgNsMHfnlS/eqvliAT6k23yP3JkIWyJXz/GIZL1ppQHD+Fc5G9f1
-         L9Ug==
-X-Gm-Message-State: ACgBeo2CplELX1S7rMT5JmkkOOkcxoAkfJcvPUD/kDhTwIAHUJRb9znu
-        TOl6IJ/KRTMaC/fXKKqzdbEALbLebSeI+luXBdIjE/4BQ7ek
-X-Google-Smtp-Source: AA6agR7IXneH6lsY3YmuHXX1LsrAkJUazC3BvEqO0UIpCr7V1jcHCAyGygPQaz+eUX+OiytziBT5UXL6VyCeEPu4hOqSSw3cwN1p
+        Wed, 31 Aug 2022 20:22:37 -0400
+X-Greylist: delayed 452 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 31 Aug 2022 17:22:35 PDT
+Received: from soltyk.jannau.net (soltyk.jannau.net [144.76.91.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B71A1DDAAF
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 17:22:35 -0700 (PDT)
+Received: by soltyk.jannau.net (Postfix, from userid 1000)
+        id 22D3326EF4A; Thu,  1 Sep 2022 02:22:34 +0200 (CEST)
+Date:   Thu, 1 Sep 2022 02:22:34 +0200
+From:   Janne Grunau <j@jannau.net>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     iommu@lists.linux-foundation.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        asahi@lists.linux.dev, Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Georgi Djakov <quic_c_gdjako@quicinc.com>,
+        Hector Martin <marcan@marcan.st>,
+        "Isaac J. Manjarres" <isaacm@codeaurora.org>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 4/5] iommu/io-pgtable-dart: Add DART PTE support for
+ t6000
+Message-ID: <20220901002234.GD10102@jannau.net>
+References: <20220621071848.14834-1-j@jannau.net>
+ <20220621071848.14834-5-j@jannau.net>
+ <2df8c1d1-fb83-5b92-d32a-6b8ba988844c@arm.com>
 MIME-Version: 1.0
-X-Received: by 2002:a02:84ab:0:b0:34c:d88d:f5b5 with SMTP id
- f40-20020a0284ab000000b0034cd88df5b5mr293048jai.200.1661991216313; Wed, 31
- Aug 2022 17:13:36 -0700 (PDT)
-Date:   Wed, 31 Aug 2022 17:13:36 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000117c7505e7927cb4@google.com>
-Subject: [syzbot] UBSAN: array-index-out-of-bounds in truncate_inode_pages_range
-From:   syzbot <syzbot+5867885efe39089b339b@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        syzkaller-bugs@googlegroups.com, willy@infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2df8c1d1-fb83-5b92-d32a-6b8ba988844c@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On 2022-06-27 16:13:20 +0100, Robin Murphy wrote:
+> On 2022-06-21 08:18, Janne Grunau wrote:
+> > From: Sven Peter <sven@svenpeter.dev>
+> > 
+> > The DARTs present in the M1 Pro/Max/Ultra SoC use a diffent PTE format.
+> > They support a 42bit physical address space by shifting the paddr and
+> > extending its mask inside the PTE.
+> > They also come with mandatory sub-page protection now which we just
+> > configure to always allow access to the entire page. This feature is
+> > already present but optional on the previous DARTs which allows to
+> > unconditionally configure it.
+> > 
+> > Signed-off-by: Sven Peter <sven@svenpeter.dev>
+> > Co-developed-by: Janne Grunau <j@jannau.net>
+> > Signed-off-by: Janne Grunau <j@jannau.net>
+> > 
+> > ---
+> > 
+> > Changes in v3:
+> > - apply change to io-pgtable-dart.c
+> > - handle pte <> paddr conversion based on the pte format instead of
+> >    the output address size
+> > 
+> > Changes in v2:
+> > - add APPLE_DART2 PTE format
+> > 
+> >   drivers/iommu/io-pgtable-dart.c | 51 +++++++++++++++++++++++++++------
+> >   drivers/iommu/io-pgtable.c      |  1 +
+> >   include/linux/io-pgtable.h      |  1 +
+> >   3 files changed, 45 insertions(+), 8 deletions(-)
+> > 
+> [...]
+> > @@ -536,7 +571,7 @@ apple_dart_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
+> >   	if (!cfg->coherent_walk)
+> >   		return NULL;
+> > -	if (cfg->oas > 36)
+> > +	if (cfg->oas != 36 && cfg->oas != 42)
+> >   		return NULL;
+> 
+> Wouldn't it make sense to tie this to the format? Maybe 36-bit OAS is still
+> valid with v2, but presumably 42-bit with v1 definitely isn't.
 
-syzbot found the following issue on:
+The format is not know inside the alloc call unless I add per format 
+alloc wrapper. I think we can trust the caller for now.
 
-HEAD commit:    89b749d8552d Merge tag 'fbdev-for-6.0-rc3' of git://git.ke..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=14b9661b080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=911efaff115942bb
-dashboard link: https://syzkaller.appspot.com/bug?extid=5867885efe39089b339b
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-userspace arch: i386
+Janne
 
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+5867885efe39089b339b@syzkaller.appspotmail.com
-
-ntfs3: loop0: Different NTFS' sector size (1024) and media sector size (512)
-ntfs3: loop0: RAW NTFS volume: Filesystem size 0.00 Gb > volume size 0.00 Gb. Mount in read-only
-================================================================================
-UBSAN: array-index-out-of-bounds in mm/truncate.c:366:18
-index 254 is out of range for type 'long unsigned int [15]'
-CPU: 2 PID: 19915 Comm: syz-executor.0 Not tainted 6.0.0-rc2-syzkaller-00260-g89b749d8552d #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- ubsan_epilogue+0xb/0x50 lib/ubsan.c:151
- __ubsan_handle_out_of_bounds.cold+0x62/0x6c lib/ubsan.c:283
- truncate_inode_pages_range+0x12f4/0x1510 mm/truncate.c:366
- ntfs_evict_inode+0x16/0xa0 fs/ntfs3/inode.c:1741
- evict+0x2ed/0x6b0 fs/inode.c:665
- iput_final fs/inode.c:1748 [inline]
- iput.part.0+0x55d/0x810 fs/inode.c:1774
- iput+0x58/0x70 fs/inode.c:1764
- ntfs_fill_super+0x2e89/0x37f0 fs/ntfs3/super.c:1190
- get_tree_bdev+0x440/0x760 fs/super.c:1323
- vfs_get_tree+0x89/0x2f0 fs/super.c:1530
- do_new_mount fs/namespace.c:3040 [inline]
- path_mount+0x1326/0x1e20 fs/namespace.c:3370
- do_mount fs/namespace.c:3383 [inline]
- __do_sys_mount fs/namespace.c:3591 [inline]
- __se_sys_mount fs/namespace.c:3568 [inline]
- __ia32_sys_mount+0x27e/0x300 fs/namespace.c:3568
- do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
- __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
- do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
- entry_SYSENTER_compat_after_hwframe+0x70/0x82
-RIP: 0023:0xf7ff6549
-Code: 03 74 c0 01 10 05 03 74 b8 01 10 06 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 8d b4 26 00 00 00 00 8d b4 26 00 00 00 00
-RSP: 002b:00000000f7ff1410 EFLAGS: 00000296 ORIG_RAX: 0000000000000015
-RAX: ffffffffffffffda RBX: 00000000f7ff1480 RCX: 0000000020000100
-RDX: 0000000020000000 RSI: 0000000000000000 RDI: 00000000f7ff14c0
-RBP: 00000000f7ff14c0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000292 R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-================================================================================
-----------------
-Code disassembly (best guess):
-   0:	03 74 c0 01          	add    0x1(%rax,%rax,8),%esi
-   4:	10 05 03 74 b8 01    	adc    %al,0x1b87403(%rip)        # 0x1b8740d
-   a:	10 06                	adc    %al,(%rsi)
-   c:	03 74 b4 01          	add    0x1(%rsp,%rsi,4),%esi
-  10:	10 07                	adc    %al,(%rdi)
-  12:	03 74 b0 01          	add    0x1(%rax,%rsi,4),%esi
-  16:	10 08                	adc    %cl,(%rax)
-  18:	03 74 d8 01          	add    0x1(%rax,%rbx,8),%esi
-  1c:	00 00                	add    %al,(%rax)
-  1e:	00 00                	add    %al,(%rax)
-  20:	00 51 52             	add    %dl,0x52(%rcx)
-  23:	55                   	push   %rbp
-  24:	89 e5                	mov    %esp,%ebp
-  26:	0f 34                	sysenter
-  28:	cd 80                	int    $0x80
-* 2a:	5d                   	pop    %rbp <-- trapping instruction
-  2b:	5a                   	pop    %rdx
-  2c:	59                   	pop    %rcx
-  2d:	c3                   	retq
-  2e:	90                   	nop
-  2f:	90                   	nop
-  30:	90                   	nop
-  31:	90                   	nop
-  32:	8d b4 26 00 00 00 00 	lea    0x0(%rsi,%riz,1),%esi
-  39:	8d b4 26 00 00 00 00 	lea    0x0(%rsi,%riz,1),%esi
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
