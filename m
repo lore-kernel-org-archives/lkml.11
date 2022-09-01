@@ -2,138 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9E39ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 06:25:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E7D7ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 06:27:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233343AbiIAGZY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 02:25:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48246 "EHLO
+        id S233362AbiIAG1R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 02:27:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232114AbiIAGZT (ORCPT
+        with ESMTP id S232114AbiIAG1N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 02:25:19 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4430B32EF8
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 23:25:17 -0700 (PDT)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28166KZL006068;
-        Thu, 1 Sep 2022 06:24:54 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=QQhCb+FskmjfqMLGykfJhvDY+A7IPLRr+13M5HvxOgs=;
- b=Htb8quhdnDGbqIWUfHELpGZxxgu1sEaqYfr46FAtY8xeNZE6K43RHZFct69e37NK5xW0
- gUv4+L7GpPVphcJJ/OBUjzFGuHlz68FEIHJkVFPW3yd6KO3IIajqg42vZjCcIaiTxo0e
- MWhfOQxz9REJerFJJE/osBrGkzldTsBHkjB7KwrH+UM84BpuLKz8G9UC1fUsfEb7+4F4
- vCXM9wVgiYqLRHabJ7vT+3K+9s88a/94nNLd7he3ZQWdvsxDDYyBv54STZAzlBNg1TUN
- 1Nvy/1NWHctDmfW/39lLhCA9YOc/aigsyIIlM1oChymt4qmo02fdHegfMTYaE4VsNYDh ZA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3jaq660k56-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 06:24:53 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 28166x7O009721;
-        Thu, 1 Sep 2022 06:24:53 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3jaq660k4f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 06:24:53 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2816LpR9010778;
-        Thu, 1 Sep 2022 06:24:51 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma03ams.nl.ibm.com with ESMTP id 3j7aw968um-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 06:24:51 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2816OmQs40108362
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 1 Sep 2022 06:24:49 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DF4AE4C040;
-        Thu,  1 Sep 2022 06:24:48 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 18E214C046;
-        Thu,  1 Sep 2022 06:24:44 +0000 (GMT)
-Received: from [9.43.54.15] (unknown [9.43.54.15])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu,  1 Sep 2022 06:24:43 +0000 (GMT)
-Message-ID: <c484fb58-6bc2-1103-a95d-1587232f56ba@linux.ibm.com>
-Date:   Thu, 1 Sep 2022 11:54:42 +0530
+        Thu, 1 Sep 2022 02:27:13 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99EDA10B962
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 23:27:11 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id 76so16601905pfy.3
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 23:27:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=LUpbwDphPvtED1QTi1ZPW1+S2RNACcn+wb6hlFtY8XY=;
+        b=WWTU4lWTW/7wYi2qJpDzYN8K/NLpv7PlWS5uBAJkKppb81ks8aUuyIiL+aXKUp7YnF
+         YocMSdrWOvhufrkb5kbh/9BZJjVdEzZnGqmd7AB9AVSuhB8lMWZtfoVTtl6TvHeZJ81O
+         bcvx1UIUBnuqv3cP2vYFz0K6ohytRF3RkufYE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=LUpbwDphPvtED1QTi1ZPW1+S2RNACcn+wb6hlFtY8XY=;
+        b=IrSNm53WvOHT+/ZW+Jf61W2RLpEel37V60zbsmrZyZSdpnpymA+X/FOiKRNdPbzPYv
+         6edf1h/j+WugcJgw2EG+6bCpzktMCugqQWJw6DarrOGNlzz/zTfOJu1mPM0kH3qU9ELn
+         ExUZGbnkdYMhElDJUb/zmLSeoEUGDEmmBHYaoFNxERHytld2Xi9vE59r8cGhVLPWNJUf
+         RLwEAa1Nxo71PJUTcOZOBxAvdvDpa8x6eByA+HTvPrxkYPNd16ECt2pf+4Q91S1Z+Tbx
+         j7Wj7jCwVe2ZUK6cnY7YbDfukE8IppdKKidLjmxUDoglZ0p5OGWSfWzeYEfIDjOEYGnP
+         uGwQ==
+X-Gm-Message-State: ACgBeo3qsPV8RQ5mO8oTBblaz5Rp0l6/ttw++lboIllpKb1++HHIqzcP
+        +RyPGhIob8TWnF/Tk6wFbELINvOF2YRVcA==
+X-Google-Smtp-Source: AA6agR5Ky2h+fMYEWE96VBtRDKYJx75ceGIbNnAxgjJV3/KyA3d0lDG2E0gucajihCuxLu510+QrZA==
+X-Received: by 2002:a05:6a00:a82:b0:530:2f3c:ec99 with SMTP id b2-20020a056a000a8200b005302f3cec99mr29438360pfl.53.1662013631087;
+        Wed, 31 Aug 2022 23:27:11 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id q12-20020a170902a3cc00b0016d8d277c02sm12816467plb.25.2022.08.31.23.27.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Aug 2022 23:27:09 -0700 (PDT)
+Date:   Wed, 31 Aug 2022 23:27:08 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        syzbot <syzkaller@googlegroups.com>,
+        Yajun Deng <yajun.deng@linux.dev>, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH 1/2] netlink: Bounds-check nlmsg_len()
+Message-ID: <202208312324.F2F8B28CA@keescook>
+References: <20220901030610.1121299-1-keescook@chromium.org>
+ <20220901030610.1121299-2-keescook@chromium.org>
+ <20220831201825.378d748d@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH mm-unstable] mm/demotion: Assign correct memory type for
- multiple dax devices with the same node affinity
-Content-Language: en-US
-To:     "Huang, Ying" <ying.huang@intel.com>
-Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
-        Wei Xu <weixugc@google.com>, Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com,
-        Bharata B Rao <bharata@amd.com>
-References: <20220826100224.542312-1-aneesh.kumar@linux.ibm.com>
- <87a67j1uyk.fsf@yhuang6-desk2.ccr.corp.intel.com>
-From:   Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
-In-Reply-To: <87a67j1uyk.fsf@yhuang6-desk2.ccr.corp.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: FRb_FSmd90YHyCtg5qXfIeO1w_Rb5Vto
-X-Proofpoint-ORIG-GUID: ry5pEToQ3QWddUNlKrXvMEnPQHl_4ERG
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-09-01_03,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
- suspectscore=0 impostorscore=0 spamscore=0 adultscore=0 bulkscore=0
- clxscore=1015 priorityscore=1501 phishscore=0 mlxlogscore=999
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2209010025
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220831201825.378d748d@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 9/1/22 11:45 AM, Huang, Ying wrote:
-> "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
+On Wed, Aug 31, 2022 at 08:18:25PM -0700, Jakub Kicinski wrote:
+> On Wed, 31 Aug 2022 20:06:09 -0700 Kees Cook wrote:
+> >  static inline int nlmsg_len(const struct nlmsghdr *nlh)
+> >  {
+> > -	return nlh->nlmsg_len - NLMSG_HDRLEN;
+> > +	u32 nlmsg_contents_len;
+> > +
+> > +	if (WARN_ON_ONCE(check_sub_overflow(nlh->nlmsg_len,
+> > +					    (u32)NLMSG_HDRLEN,
+> > +					    &nlmsg_contents_len)))
+> > +		return 0;
+> > +	if (WARN_ON_ONCE(nlmsg_contents_len > INT_MAX))
+> > +		return INT_MAX;
+> > +	return nlmsg_contents_len;
 > 
->> With multiple dax devices having the same node affinity, the kernel wrongly assigned
->> default_dram memory type to some devices after the memory hotplug operation. Fix this by
->> not clearing node_memory_types on the dax device remove.
+> We check the messages on input, making sure the length is valid wrt
+> skb->len, and sane, ie > NLMSG_HDRLEN. See netlink_rcv_skb().
 > 
-> Sorry for late reply.
-> 
-> Just for confirmation.  There are multiple dax devices in one NUMA node?
-> 
-> If you can show the bug reproducing steps, that will make it even easier
-> to understand.
-> 
+> Can we not, pretty please? :(
 
-NUMA nodes are assigned per region and you can have multiple devdax namespace with same NUMA node affinity. 
+This would catch corrupted values...
 
-dax0.1 and dax0.2 are examples. To recreate you can follow the below steps
+Is the concern the growth in image size? The check_sub_overflow() isn't
+large at all -- it's just adding a single overflow bit test. The WARNs
+are heavier, but they're all out-of-line.
 
-
-root@ubuntu-guest:/sys/devices/system/node/node3# ls
-compact  cpumap    meminfo   memory34  memory36  memory38  memory41  memory43  memory45  memory47  memory50  memory52  memory54  numastat   uevent
-cpulist  distance  memory33  memory35  memory37  memory39  memory42  memory44  memory46  memory49  memory51  memory53  memory55  subsystem  vmstat
-root@ubuntu-guest:/sys/devices/system/node/node3#
-root@ubuntu-guest:/sys/devices/system/node/node3# for mem in memory*; do echo 0 > $mem/online; done
-root@ubuntu-guest:/sys/devices/system/node/node3# cd /sys/bus/dax/drivers
-root@ubuntu-guest:/sys/bus/dax/drivers# echo dax0.0  > kmem/unbind
-root@ubuntu-guest:/sys/bus/dax/drivers# cd /sys/devices/system/node/node3/
-root@ubuntu-guest:/sys/devices/system/node/node3# ls
-compact  cpumap    meminfo   memory42  memory44  memory46  memory49  memory51  memory53  memory55  subsystem  vmstat
-cpulist  distance  memory41  memory43  memory45  memory47  memory50  memory52  memory54  numastat  uevent
-root@ubuntu-guest:/sys/devices/system/node/node3# for mem in memory*; do echo 1 > $mem/online; done
-
-
--aneesh
-
+-- 
+Kees Cook
