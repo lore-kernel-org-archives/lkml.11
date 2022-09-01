@@ -2,92 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EFE8ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 15:04:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 351CDECAAD8
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 15:04:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234519AbiIAPD7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 11:03:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52872 "EHLO
+        id S233944AbiIAPEX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 11:04:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234227AbiIAPDz (ORCPT
+        with ESMTP id S234254AbiIAPEQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 11:03:55 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF9083BE5;
-        Thu,  1 Sep 2022 08:03:53 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id s11so22930722edd.13;
-        Thu, 01 Sep 2022 08:03:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=vcK8Y9RIhCFnLAHNF1ma+eBloNnCb12iQrkaA2RWwss=;
-        b=CLVGkKkq/LgD+cnFQOBUzqNyMDKzqCmneML9igIGH21aL1qaB01IR1MGTfUeaE+mkC
-         P0Bqs5Hm2jJX4LghL1s25mvHgPqhSusaATiSomUqcmb5pyZ+Ut59gpyDQvfGacFJokdx
-         zL46/UrTEHe1u6MiaxkzdjZZFP8bN24zSYxvcOVV+sEpteyIik5m4Ot6jLpL4O1xS1Ci
-         3LHN0Xuchj4i1ranV/AIN7UQR9JYaovQJ903/yHm3bEVhAwtc73gMdwiTWTITKWITJBZ
-         clsHHPSng+BYK9GNC4JOrZb96p4jjl8m0+6QRH/+Pl4m16Qde9xKgZOqn9abEW6UOcYq
-         Hk7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=vcK8Y9RIhCFnLAHNF1ma+eBloNnCb12iQrkaA2RWwss=;
-        b=Q5tM1knmNpefvTpECdUpQZ14L7p4R/sGEjFsLo56ojjAmCmCJKhg+WBMiPCHoDuO2I
-         a6zFGKyq9wr+c7Af+pP7uDgf8LzHH8UJ5JwLzMgUspWfowm20Lzc4JCh3Go7Dcwouh/H
-         Yr0WFl+WjZrcfYECBgQQhmGkURG4yQlV/WECuoTNjSWgNrTnMalMC1AIMrBnsWSaTxyn
-         jwDi77CbD0ayvqKHQfOpD7J9ozAxiUNQGl/0F4Mr3caHyvWpzA4c198n/rl36efi1kNS
-         phfqxUPxPlqgvrUKsdJ7Mxy2XZTUpkC+98iBBYBYdsRtTGsNDtXSFdNtVSXl75Uqw/nP
-         FxZQ==
-X-Gm-Message-State: ACgBeo2vQDtRkoBqvrow7sT/7VQHJY1orR8MU3hUg4zMBSZ14W7KtXm+
-        /AVBJxtCAsMG+V29hLv4ePE=
-X-Google-Smtp-Source: AA6agR6ecAmWtCB5BI8iMnmqsmfam7Lue/g0foYnFCgWMZksqtn0CBXZVzGuccTxeDYuPlKSHE2oAg==
-X-Received: by 2002:a05:6402:268b:b0:446:381d:7b45 with SMTP id w11-20020a056402268b00b00446381d7b45mr29179355edd.372.1662044632304;
-        Thu, 01 Sep 2022 08:03:52 -0700 (PDT)
-Received: from debian ([89.238.191.199])
-        by smtp.gmail.com with ESMTPSA id o18-20020a170906601200b007314a01766asm8545273ejj.211.2022.09.01.08.02.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 08:03:51 -0700 (PDT)
-Date:   Thu, 1 Sep 2022 17:01:18 +0200
-From:   Richard Gobert <richardbgobert@gmail.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Martin KaFai Lau <kafai@fb.com>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linux-wpan@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
-Subject: Re: [PATCH 3/4] net-next: frags: add inetpeer frag_mem tracking
-Message-ID: <20220901150115.GB31767@debian>
-References: <20220829114648.GA2409@debian>
- <CANn89iLkfMUK8n5w00naST9J+KrLaAqqg2r0X9Sd-L0XzpLzSQ@mail.gmail.com>
+        Thu, 1 Sep 2022 11:04:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F611844EF;
+        Thu,  1 Sep 2022 08:04:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AAB8CB8271D;
+        Thu,  1 Sep 2022 15:04:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E58EDC433C1;
+        Thu,  1 Sep 2022 15:04:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662044651;
+        bh=KWWsPapkRXiPnTwoqKOl27QydoFX5epmwcUwRm9zUjM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZyTxZCDhT8e6IIohENTUGo2SEcn8lkF+qTPWamUO1PmP3G8xxs710qF8z+R21I+mh
+         bsOiV7U+8LTWgt6tdWwj1q8JWo5VYFJn4sa2377Fbxh9VsH7jmraWK9TLboTdqcrzm
+         dOFhpBtyFHgL5ORkTtdgf306ilHEymLt5i94kDW0=
+Date:   Thu, 1 Sep 2022 17:04:08 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Kai Ye <yekai13@huawei.com>
+Cc:     herbert@gondor.apana.org.au, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org, wangzhou1@hisilicon.com,
+        liulongfang@huawei.com
+Subject: Re: [PATCH v7 2/3] Documentation: add a isolation strategy sysfs
+ node for uacce
+Message-ID: <YxDJ6PEWd/3c1jPd@kroah.com>
+References: <20220806022943.47292-1-yekai13@huawei.com>
+ <20220806022943.47292-3-yekai13@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CANn89iLkfMUK8n5w00naST9J+KrLaAqqg2r0X9Sd-L0XzpLzSQ@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220806022943.47292-3-yekai13@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 03:15:47PM -0700, Eric Dumazet wrote:
-> We tried to get rid of any dependence over inetpeer, which is not
-> resistant against DDOS attacks.
+On Sat, Aug 06, 2022 at 10:29:42AM +0800, Kai Ye wrote:
+> Update documentation describing sysfs node that could help to
+> configure isolation strategy for users in the user space. And
+> describing sysfs node that could read the device isolated state.
 > 
-> So I would not add a new dependency.
+> Signed-off-by: Kai Ye <yekai13@huawei.com>
+> ---
+>  Documentation/ABI/testing/sysfs-driver-uacce | 26 ++++++++++++++++++++
+>  1 file changed, 26 insertions(+)
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-driver-uacce b/Documentation/ABI/testing/sysfs-driver-uacce
+> index 08f2591138af..e09fd160d3fa 100644
+> --- a/Documentation/ABI/testing/sysfs-driver-uacce
+> +++ b/Documentation/ABI/testing/sysfs-driver-uacce
+> @@ -19,6 +19,32 @@ Contact:        linux-accelerators@lists.ozlabs.org
+>  Description:    Available instances left of the device
+>                  Return -ENODEV if uacce_ops get_available_instances is not provided
+>  
+> +What:           /sys/class/uacce/<dev_name>/isolate_strategy
+> +Date:           Jul 2022
 
-I see your point. What do you suggest doing differently?
+July was a while ago, you sent this patch in August :(
 
-The inetpeer mechanism is used for IPv4 frags. If it isn't resistant
-against DDoS attacks, can it perhaps be improved?
