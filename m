@@ -2,146 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A273BECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 10:55:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47940ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 10:57:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234201AbiIAKz3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 06:55:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51174 "EHLO
+        id S232494AbiIAK5G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 06:57:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234336AbiIAKzD (ORCPT
+        with ESMTP id S234279AbiIAK4d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 06:55:03 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1217BA1B6
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 03:54:47 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id q9so16025232pgq.6
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 03:54:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=9Rgza/BFhiKgz5qbn9tPTsIEssmmxYhCqKqdcg+i9QY=;
-        b=gSPF6cYdqAKPZBIfnj0ykq8qkjlihGmDcLYbY1JGovRpm98ByZ/r58JoGphkqYmn/W
-         saR5sAJ8dhx80eN8CLs3yhUzH9aDWx+57vnNlj/pkgxDik3jNmDPd7cGoIQr0qgHJ27L
-         z2KajvrNb9oAMZRVwKPWmlX732/E8MZVcdG4AknCEWmPfw9jvlQcXErOvqlFg3YBjrb0
-         T7pj/36wWglz35CHTiYG+M3Q+85w31cf9KKJUKNatDPlGuwuWz0Jzrs717RzwYtl0Jlz
-         Robmj4WKGtZJqBchIgsSeXXc7CQ2tbc85Yk0QdH157dsOMDbKlIqtPcTbiMi6Ta/gtNv
-         R0rw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=9Rgza/BFhiKgz5qbn9tPTsIEssmmxYhCqKqdcg+i9QY=;
-        b=wHp6I1+InslLGV96GoqYpEfALvrbs10tr6lIePYx+xxpDpvA7TsjswYQ4af+GZjGR8
-         aeND8TGWPQ+ePkkRozD5G6BOR11JLVieFZMOeD98lhOndL2a1QDMe1lP3+6aiKXyjuTP
-         IuVjlGAQamBLQyIxd8s87tqoaH+EwDypwBzAw5cvme8lHUTGIu0wSZEDGVXaXhwfhC7S
-         +fxl7m8ScKbj8QIy8Gj0N+X3sWCRdoPNx+V93VKz5y6jLhghmopgAv1igV3zP+SFmNyq
-         36rDx5a41CADeisPKTDV7QhVrKMjND0Uhs3TBWEpTMhVLx3P1nNCuQMtabbJsQY252zt
-         Bg/g==
-X-Gm-Message-State: ACgBeo0Wl/tIrBjZXdcdohlKfFoFs9hNRPAO1BxOCBSLayKvVXkX/QlK
-        LmUca7Bkusx/pvxCBKRLNDqcXQ==
-X-Google-Smtp-Source: AA6agR5tOEba8IL4Jg1YiwEsoVUeCfd8Ux+DLPb4woSbhcyyLTvyIkvIYPlLjgqQvWYomSPtBhYbFg==
-X-Received: by 2002:a63:4503:0:b0:430:48ac:6046 with SMTP id s3-20020a634503000000b0043048ac6046mr4910890pga.74.1662029685943;
-        Thu, 01 Sep 2022 03:54:45 -0700 (PDT)
-Received: from localhost.localdomain ([2401:4900:1c60:5362:8069:f46:34af:eb19])
-        by smtp.gmail.com with ESMTPSA id ij13-20020a170902ab4d00b0016c57657977sm13508910plb.41.2022.09.01.03.54.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 03:54:45 -0700 (PDT)
-From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
-To:     linux-pm@vger.kernel.org
-Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
-        linux-kernel@vger.kernel.org, andersson@kernel.org,
-        konrad.dybcio@somainline.org, linux-arm-msm@vger.kernel.org,
-        daniel.lezcano@linaro.org, robh+dt@kernel.org, rafael@kernel.org,
-        Amit Kucheria <amitk@kernel.org>,
-        Thara Gopinath <thara.gopinath@gmail.com>
-Subject: [PATCH v4 4/4] thermal: qcom: tsens: Add reinit quirk support for tsens v2 controllers
-Date:   Thu,  1 Sep 2022 16:24:14 +0530
-Message-Id: <20220901105414.1171813-5-bhupesh.sharma@linaro.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220901105414.1171813-1-bhupesh.sharma@linaro.org>
-References: <20220901105414.1171813-1-bhupesh.sharma@linaro.org>
+        Thu, 1 Sep 2022 06:56:33 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1031A7AB4
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 03:56:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662029782; x=1693565782;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=hh0ffIFHrLlRK7AiUQRXNzhh91yRv5pISOTFI2E3mDM=;
+  b=AmZuWamqk4IguQmC/dMW69W+D5usF3ztXieFQgqfiF8nm8KX+iDEc/E2
+   v360u+wMC2gioHPPnX0a4pe+ZSn1wk5OtX/ElYfWLJTYOF/gb9fSk3oNm
+   YkBUdAZxThUgdxkY7FC9hdW85eMggMoNwSgurrmQCtaqkuOFh2PJfDpX/
+   AEnFyCf3lL2moYF9VKJnvnkYlclp34/aAYjMti1u3o2e1PH/gZkI+GdaT
+   v4/69GmEpe2knYGKq3fBJLIh69HFCIjM9KI8fD/64sIUwe/XwSgXMW0hb
+   /8hiINcATRbV5mUFAvtwzucyr2XfsfNiyufXEr0fqjgYgbXLG6W+wkq6b
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="321830773"
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="321830773"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 03:56:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="788199946"
+Received: from lkp-server02.sh.intel.com (HELO b138c9e8658c) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 01 Sep 2022 03:56:21 -0700
+Received: from kbuild by b138c9e8658c with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oThrw-0000Bh-23;
+        Thu, 01 Sep 2022 10:56:20 +0000
+Date:   Thu, 01 Sep 2022 18:56:02 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:x86/urgent] BUILD SUCCESS
+ 5515d21c6817bc27b0b13c61edf22b09b58bc647
+Message-ID: <63108fc2./qWNiUSWHmCzl6bs%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some Qualcomm tsens v2 controllers like those present on
-sm8150 SoC might require re-initialization via trustzone
-[via scm call(s)] when it enters a 'bad state' causing
-sensor temperatures/interrupts status to be in an
-'invalid' state.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/urgent
+branch HEAD: 5515d21c6817bc27b0b13c61edf22b09b58bc647  x86/cpu: Add CPU model numbers for Meteor Lake
 
-Add hooks for the same in the qcom tsens driver.
+elapsed time: 790m
 
-Devices requiring the same can pass the relevant
-compatible string in dt and the driver hook can
-be used accordingly.
+configs tested: 65
+configs skipped: 82
 
-Cc: Amit Kucheria <amitk@kernel.org>
-Cc: Thara Gopinath <thara.gopinath@gmail.com>
-Cc: linux-pm@vger.kernel.org
-Cc: linux-arm-msm@vger.kernel.org
-Reviewed-by: Bjorn Andersson <andersson@kernel.org>
-Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
----
- drivers/thermal/qcom/tsens-v2.c | 12 ++++++++++++
- drivers/thermal/qcom/tsens.c    |  3 +++
- drivers/thermal/qcom/tsens.h    |  2 +-
- 3 files changed, 16 insertions(+), 1 deletion(-)
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-diff --git a/drivers/thermal/qcom/tsens-v2.c b/drivers/thermal/qcom/tsens-v2.c
-index f521e4479cc5..431f17f99d34 100644
---- a/drivers/thermal/qcom/tsens-v2.c
-+++ b/drivers/thermal/qcom/tsens-v2.c
-@@ -104,6 +104,18 @@ struct tsens_plat_data data_tsens_v2 = {
- 	.fields	= tsens_v2_regfields,
- };
- 
-+/*
-+ * For some tsens v2 controllers, its suggested to monitor the
-+ * controller health periodically and in case an issue is detected
-+ * to reinit tsens controller via trustzone.
-+ */
-+struct tsens_plat_data data_tsens_v2_reinit = {
-+	.ops		= &ops_generic_v2,
-+	.feat		= &tsens_v2_feat,
-+	.needs_reinit_wa = true,
-+	.fields	= tsens_v2_regfields,
-+};
-+
- /* Kept around for backward compatibility with old msm8996.dtsi */
- struct tsens_plat_data data_8996 = {
- 	.num_sensors	= 13,
-diff --git a/drivers/thermal/qcom/tsens.c b/drivers/thermal/qcom/tsens.c
-index ecf544683e73..ab8561ddedb2 100644
---- a/drivers/thermal/qcom/tsens.c
-+++ b/drivers/thermal/qcom/tsens.c
-@@ -1138,6 +1138,9 @@ static const struct of_device_id tsens_table[] = {
- 	}, {
- 		.compatible = "qcom,msm8996-tsens",
- 		.data = &data_8996,
-+	}, {
-+		.compatible = "qcom,sm8150-tsens",
-+		.data = &data_tsens_v2_reinit,
- 	}, {
- 		.compatible = "qcom,tsens-v1",
- 		.data = &data_tsens_v1,
-diff --git a/drivers/thermal/qcom/tsens.h b/drivers/thermal/qcom/tsens.h
-index 900d2a74d25e..03cc3a790972 100644
---- a/drivers/thermal/qcom/tsens.h
-+++ b/drivers/thermal/qcom/tsens.h
-@@ -607,6 +607,6 @@ extern struct tsens_plat_data data_8916, data_8939, data_8974, data_9607;
- extern struct tsens_plat_data data_tsens_v1, data_8976;
- 
- /* TSENS v2 targets */
--extern struct tsens_plat_data data_8996, data_tsens_v2;
-+extern struct tsens_plat_data data_8996, data_tsens_v2_reinit, data_tsens_v2;
- 
- #endif /* __QCOM_TSENS_H__ */
+gcc tested configs:
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                           allyesconfig
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+i386                          randconfig-a001
+i386                          randconfig-a003
+i386                          randconfig-a005
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+x86_64                        randconfig-a006
+i386                                defconfig
+x86_64                        randconfig-a013
+um                           x86_64_defconfig
+um                             i386_defconfig
+i386                             allyesconfig
+x86_64                        randconfig-a011
+x86_64                           rhel-8.3-kvm
+x86_64                    rhel-8.3-kselftests
+x86_64                          rhel-8.3-func
+x86_64                         rhel-8.3-kunit
+x86_64                           rhel-8.3-syz
+x86_64                        randconfig-a015
+csky                              allnoconfig
+alpha                             allnoconfig
+arc                               allnoconfig
+riscv                             allnoconfig
+powerpc                           allnoconfig
+mips                             allyesconfig
+powerpc                          allmodconfig
+sh                               allmodconfig
+powerpc                      pcm030_defconfig
+sh                   rts7751r2dplus_defconfig
+powerpc                     rainier_defconfig
+arm                      jornada720_defconfig
+arm64                            allyesconfig
+arm                                 defconfig
+arm                              allyesconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+arc                              allyesconfig
+alpha                            allyesconfig
+i386                          randconfig-c001
+mips                      loongson3_defconfig
+sh                          r7780mp_defconfig
+parisc64                            defconfig
+sh                           se7705_defconfig
+sh                          lboxre2_defconfig
+
+clang tested configs:
+i386                          randconfig-a013
+i386                          randconfig-a011
+i386                          randconfig-a015
+i386                          randconfig-a002
+i386                          randconfig-a004
+i386                          randconfig-a006
+x86_64                        randconfig-a001
+x86_64                        randconfig-a003
+x86_64                        randconfig-a005
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+hexagon              randconfig-r045-20220831
+hexagon              randconfig-r041-20220831
+arm                        vexpress_defconfig
+x86_64                        randconfig-k001
+
 -- 
-2.37.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
