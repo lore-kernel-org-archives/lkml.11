@@ -2,133 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 882EFECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 16:07:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66A40ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 16:07:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234837AbiIAQHS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 12:07:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32952 "EHLO
+        id S234851AbiIAQHY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 12:07:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234038AbiIAQHM (ORCPT
+        with ESMTP id S234815AbiIAQHN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 12:07:12 -0400
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE5886B8D2
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 09:07:10 -0700 (PDT)
-Received: by mail-qt1-x836.google.com with SMTP id g14so13776399qto.11
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 09:07:10 -0700 (PDT)
+        Thu, 1 Sep 2022 12:07:13 -0400
+Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AAE879A65
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 09:07:11 -0700 (PDT)
+Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-3378303138bso341620177b3.9
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 09:07:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=joelfernandes.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=exC6YY5zWRwfyIDcwOV/QzXSEf/bvkhfxpYyDtTJv38=;
-        b=RC8G2iP3Qz9ef0HlJibnz5RMtMYN0kFgkvXzu/0RYxDmJ2BYVdycg4Z0M/NPkJPifl
-         Stx4OybWmlicuifPeVvdHT8Q/hviplEO6ZtAmVio7GkbFfYslOOcRmWJJUaJNZWcpCg7
-         eSIY3nz1oUCqIRvroOgOu4zUqjzrl95Ey3BvY=
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=aOX3b5WRndoOqWfMYuBPMSz6xrM2daGYXLX/7kwuwZ0=;
+        b=GwWs2TE101XCnPEP8wKR+dSw6GxCCnubsLKNO61paDv/b4aqGIMAG18YmmPLgM7tL/
+         9rxLGJP7ak9XNNnjdQbCzL5iB225ng61KZfyh3olNNwiXcwXq+h7ffsMnPZ6pAlJCtYZ
+         bLH1QVrBdzA4VVUk2XpxtrkSITAV/Ux4pJMcF2oCM9VlSnufDfkhwlUbtk195Gwro7U5
+         g7RY3vz6GYmUmLlUKiLSvS3ZL5u8vzZe1L4nTOO/3oih+NGg56PcP0RM+dkrg4Oj4lO2
+         Ba4ny5o4vVi/kMzPE7kpTqTkZZ2uDTniFuM40424qKlkBW1erqkUlj7BbmP4i5zxlw0+
+         FvYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=exC6YY5zWRwfyIDcwOV/QzXSEf/bvkhfxpYyDtTJv38=;
-        b=uYeI30b02eSSctIXlAjaHqhCMwfx9PRrZXfxkGnYF61KSVZC9fPLlgvINrp2m7G7wE
-         FDCQuI02obQFcWNM/iV3LbeqyMBIEu2Wzl2d+ri9rCURKD/vpJpyF4CDJxB+fKMZfPtD
-         AZPMHV+X+lvw1RufSbzA83TBY323oQuGHS1E7LAi92lnPRHHhoEX0KVmzfF6Liwwjfhe
-         U/LwJwCZARNwsuq0g4vPxa4PYHJApHV4+4VQitWqYmnYFqcNrhSoSBkZdLWZUXBxCMnn
-         Ws39AM/yK+f0fui+cRnbuCna1g0cpp2ccS5nYfn8pO1UJAFeNHHMxdTZsgoY7OdFW4zA
-         POlQ==
-X-Gm-Message-State: ACgBeo2SCj1aN/NVKjDADrBrkvL8N4cE7z6ljHzUakoejUkEayo58/Y9
-        Wp4UK/HnKhP9AvCG2ThlOXuY7g==
-X-Google-Smtp-Source: AA6agR59WsOFotPEzy5AIS7rCnUJWQeP6vcmOBUIDhQmX7v1s9LezD2tI6+xpuRIlahHZggnPecElQ==
-X-Received: by 2002:ac8:5989:0:b0:343:4e22:c09b with SMTP id e9-20020ac85989000000b003434e22c09bmr23564499qte.520.1662048430057;
-        Thu, 01 Sep 2022 09:07:10 -0700 (PDT)
-Received: from [10.0.0.40] (c-73-148-104-166.hsd1.va.comcast.net. [73.148.104.166])
-        by smtp.gmail.com with ESMTPSA id bp44-20020a05622a1bac00b0034355a352d1sm10241880qtb.92.2022.09.01.09.07.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Sep 2022 09:07:09 -0700 (PDT)
-Message-ID: <edf7f0c9-6e17-be83-69bb-0ec421a3a352@joelfernandes.org>
-Date:   Thu, 1 Sep 2022 12:07:06 -0400
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=aOX3b5WRndoOqWfMYuBPMSz6xrM2daGYXLX/7kwuwZ0=;
+        b=Urtr4rVnFtR7ITdxRDx3RR7j/7d+eRLU7uhfaPMCP2oKv7bvLNn4q9E/TBC9ghIRPV
+         bvV4bW6GTsLQyTcWIk+iYdvaQb7FL0Glud1FaAPv1qs+kdJhCgbDKEciQckrNjPKORIK
+         na2Lt7TTqU/xAEEDRHktTiBKw7GB7ncpAH00S7bS3y26AGXUi39LDHruqUt799XLtNWv
+         U2ayl8wjQ5K/FcGIoUcg/rhxWIZDo6zJEIfAIkW8xj64FAsO4lpAMW5Ih1jP580YOJjI
+         qOy3xsNewB/cd99CEZwlXiaCvk/oADZRrLqNI4N0UmPFABLEtZldG/pI5srUHH9VUl3e
+         +N+Q==
+X-Gm-Message-State: ACgBeo0utmqcYx8G7NGnr5JTyWZaecVmI+Z9WKOBVyyyhLW+wGfG82UI
+        wlyhaF2+8iWHIlm0gmoL5ZURs8GGmTdsW7GLicU6mQ==
+X-Google-Smtp-Source: AA6agR4WWi3CPBRYCWEFVbnu2G8pTDzczJE8ASPxBsFd2QD0z+KnsqkUEdVwHr9uF0KxpAAczMEG+KuB9OxJUCT+Ths=
+X-Received: by 2002:a81:1c4b:0:b0:340:972f:abb0 with SMTP id
+ c72-20020a811c4b000000b00340972fabb0mr23600297ywc.489.1662048430253; Thu, 01
+ Sep 2022 09:07:10 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH v4 00/14] Implement call_rcu_lazy() and miscellaneous
- fixes
-Content-Language: en-US
-To:     Frederic Weisbecker <frederic@kernel.org>,
-        Uladzislau Rezki <urezki@gmail.com>
-Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Rushikesh S Kadam <rushikesh.s.kadam@intel.com>,
-        Neeraj upadhyay <neeraj.iitr10@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        rcu <rcu@vger.kernel.org>,
-        Vineeth Pillai <vineeth@bitbyteword.org>
-References: <20220829194622.GA58291@lothringen>
- <CAEXW_YS593n8Gget+REaD-c8vT8Ht_AzOY0kXA_uc674LOyvVw@mail.gmail.com>
- <20220829204202.GQ6159@paulmck-ThinkPad-P17-Gen-1>
- <20220830105324.GA71266@lothringen>
- <20220830114343.GS6159@paulmck-ThinkPad-P17-Gen-1>
- <20220830160316.GC71266@lothringen> <20220830162244.GA73392@lothringen>
- <Yw4+g/0yEf7fpHrh@pc636> <20220901112947.GA105556@lothringen>
- <YxCejoKH8dGIeW22@pc636> <20220901151350.GC105556@lothringen>
-From:   Joel Fernandes <joel@joelfernandes.org>
-In-Reply-To: <20220901151350.GC105556@lothringen>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220829114648.GA2409@debian> <CANn89iLkfMUK8n5w00naST9J+KrLaAqqg2r0X9Sd-L0XzpLzSQ@mail.gmail.com>
+ <20220901150115.GB31767@debian>
+In-Reply-To: <20220901150115.GB31767@debian>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 1 Sep 2022 09:06:59 -0700
+Message-ID: <CANn89iKMe7WZS-Q4rzqEUUD+ANL6Fmb6BnFo8TvX7y_EVi=HOw@mail.gmail.com>
+Subject: Re: [PATCH 3/4] net-next: frags: add inetpeer frag_mem tracking
+To:     Richard Gobert <richardbgobert@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Martin KaFai Lau <kafai@fb.com>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, linux-wpan@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Sep 1, 2022 at 8:03 AM Richard Gobert <richardbgobert@gmail.com> wrote:
+>
+> On Mon, Aug 29, 2022 at 03:15:47PM -0700, Eric Dumazet wrote:
+> > We tried to get rid of any dependence over inetpeer, which is not
+> > resistant against DDOS attacks.
+> >
+> > So I would not add a new dependency.
+>
+> I see your point. What do you suggest doing differently?
+>
+> The inetpeer mechanism is used for IPv4 frags. If it isn't resistant
+> against DDoS attacks, can it perhaps be improved?
 
+It can be disabled if needed, by changing ipfrag_max_dist sysctl.
 
-On 9/1/2022 11:13 AM, Frederic Weisbecker wrote:
-> On Thu, Sep 01, 2022 at 01:59:10PM +0200, Uladzislau Rezki wrote:
->> On Thu, Sep 01, 2022 at 01:29:47PM +0200, Frederic Weisbecker wrote:
->>> On Tue, Aug 30, 2022 at 06:44:51PM +0200, Uladzislau Rezki wrote:
->>>> Hello, Frederic.
->>>>
->>>>>
->>>>> Although who knows, may be some periodic file operation while idle are specific
->>>>> to Android. I'll try to trace lazy callbacks while idle and the number of grace
->>>>> periods associated.
->>>>>
->>>>>
->>>> Everything related to lazy call-backs is about not waking "nocb"
->>>> kthreads in order to offload one or i should say few callbacks
->>>> because it is more or less useless. Currently if incoming callback
->>>> is the only one, it will kick a GP whereas a GP will kick nocb_kthread
->>>> to offload.
->>>
->>> Not sure this is only about not waking "nocb" kthreads. The grace period
->>> kthread is also awaken in !NOCB and has quite some work to do. And there,
->>> having a server expands the issue because you may have a lot of CPUs's extended
->>> quiescent states to check.
->>>
->> I mean here the following combination: NOCB + call_rcu_lazy() tandem.
->> The !NOCB is not about power save, IMHO. Because it implies callbacks
->> to be processed on CPUs they are landed.
-> 
-> I'm sorry but I still feel confused reading that !NOCB is not about power
-> save. To me everything is about power save. NOCB just appears to help optimizing
-> it without significant tradeoff on some given workloads.
-
-Right, I think Fred is coming from the reasonable perspective of "Save power by
-making !NOCB RCU do less" (i.e. delay softirq, main GP thread, QS reports etc)
-which I think is also valid (not sure how much power that saves on servers but
-sounds reasonable to measure). When you hack your implementation to test that,
-it would be reasonable to also apply the old FAST NOHZ patch and measure
-with/without that.
-
-> 
->> In this scenario you can not let the EAS scheduler to find a more
->> efficient CPU for further handling.
-> 
-> Sure but that doesn't mean there wouldn't be a power saving gain anyway.
-
-Yes there might be.
-
-Thanks,
-
- - Joel
+Quite frankly IPv4 reassembly unit is a toy, I am always surprised
+some applications are still relying on IP fragments.
