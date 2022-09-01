@@ -2,113 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64A49ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:24:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28D3EECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:25:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234735AbiIAOYn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 10:24:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51206 "EHLO
+        id S234782AbiIAOZk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 10:25:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234722AbiIAOYP (ORCPT
+        with ESMTP id S234684AbiIAOXR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 10:24:15 -0400
-Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 514294DB07;
-        Thu,  1 Sep 2022 07:23:55 -0700 (PDT)
-Date:   Thu, 1 Sep 2022 10:23:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1662042233;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=JsB2G8WqLnYprEF0GcA9GFFIGkQht/MFH67dN0NC9t0=;
-        b=P+qdlVJWY093c1JvjMpoBsAhuM3mvnI3jUKrYjXhcXjA7JDkTxBBu4A2hC17CCO8ZZ5R3D
-        rLH5U4BLaxZ5HSxD5hP6U1jUXGFLfAJiihxtZ+Hfa0QaSzmc2WzHuvOvPKzjVyoQ9DuTBc
-        CcLrAriFlVtUQ4Ne/7Ga0hI19yi31Mw=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Kent Overstreet <kent.overstreet@linux.dev>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@suse.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        akpm@linux-foundation.org, vbabka@suse.cz, hannes@cmpxchg.org,
-        roman.gushchin@linux.dev, dave@stgolabs.net, willy@infradead.org,
-        liam.howlett@oracle.com, void@manifault.com, juri.lelli@redhat.com,
-        ldufour@linux.ibm.com, peterx@redhat.com, axboe@kernel.dk,
-        mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org,
-        changbin.du@intel.com, ytcoode@gmail.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
-        vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
-        iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
-        elver@google.com, dvyukov@google.com, shakeelb@google.com,
-        songmuchun@bytedance.com, arnd@arndb.de, jbaron@akamai.com,
-        rientjes@google.com, minchan@google.com, kaleshsingh@google.com,
-        kernel-team@android.com, linux-mm@kvack.org, iommu@lists.linux.dev,
-        kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
-        linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
-        linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
-Message-ID: <20220901142345.agkfp2d5lijdp6pt@moria.home.lan>
-References: <20220830214919.53220-1-surenb@google.com>
- <Yw8P8xZ4zqu121xL@hirez.programming.kicks-ass.net>
- <20220831084230.3ti3vitrzhzsu3fs@moria.home.lan>
- <20220831101948.f3etturccmp5ovkl@suse.de>
- <Yw88RFuBgc7yFYxA@dhcp22.suse.cz>
- <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
- <404e947a-e1b2-0fae-8b4f-6f2e3ba6328d@redhat.com>
+        Thu, 1 Sep 2022 10:23:17 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BD7C5302B;
+        Thu,  1 Sep 2022 07:22:57 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 281EMpOP016749;
+        Thu, 1 Sep 2022 09:22:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1662042172;
+        bh=DufLtdvu5GcQ5C94WiV6e3wj5DPCbSMzA1B1Ef6yJQQ=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=eS9uLpEIvir6gF6wxDDNeA3MtsU89lzE5VdXbxQA0sNPDA7pMemyg95djvkwbJDO9
+         DSjn0Vx2YjFmGwTCfEPsosH3cFxr+D8Ur75XRJzdFtxsfgObxEayzN9dbIWoaO1u8P
+         GMff57XhiZEpFdmX2v+yn8UoLItKXRT8TpiSZ6CE=
+Received: from DLEE106.ent.ti.com (dlee106.ent.ti.com [157.170.170.36])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 281EMpNi053344
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 1 Sep 2022 09:22:51 -0500
+Received: from DLEE106.ent.ti.com (157.170.170.36) by DLEE106.ent.ti.com
+ (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Thu, 1 Sep
+ 2022 09:22:51 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE106.ent.ti.com
+ (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Thu, 1 Sep 2022 09:22:51 -0500
+Received: from uda0132425.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 281EMmdq029774;
+        Thu, 1 Sep 2022 09:22:49 -0500
+From:   Vignesh Raghavendra <vigneshr@ti.com>
+To:     <nm@ti.com>, Roger Quadros <rogerq@kernel.org>
+CC:     Vignesh Raghavendra <vigneshr@ti.com>, <kishon@ti.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 0/2] arm64: dts: ti: k3-am64-main: Add GPMC & ELM nodes
+Date:   Thu, 1 Sep 2022 19:52:36 +0530
+Message-ID: <166204207692.900930.14532847277832309029.b4-ty@ti.com>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220802104456.11069-1-rogerq@kernel.org>
+References: <20220802104456.11069-1-rogerq@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <404e947a-e1b2-0fae-8b4f-6f2e3ba6328d@redhat.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 01, 2022 at 10:05:03AM +0200, David Hildenbrand wrote:
-> On 31.08.22 21:01, Kent Overstreet wrote:
-> > On Wed, Aug 31, 2022 at 12:47:32PM +0200, Michal Hocko wrote:
-> >> On Wed 31-08-22 11:19:48, Mel Gorman wrote:
-> >>> Whatever asking for an explanation as to why equivalent functionality
-> >>> cannot not be created from ftrace/kprobe/eBPF/whatever is reasonable.
-> >>
-> >> Fully agreed and this is especially true for a change this size
-> >> 77 files changed, 3406 insertions(+), 703 deletions(-)
-> > 
-> > In the case of memory allocation accounting, you flat cannot do this with ftrace
-> > - you could maybe do a janky version that isn't fully accurate, much slower,
-> > more complicated for the developer to understand and debug and more complicated
-> > for the end user.
-> > 
-> > But please, I invite anyone who's actually been doing this with ftrace to
-> > demonstrate otherwise.
-> > 
-> > Ftrace just isn't the right tool for the job here - we're talking about adding
-> > per callsite accounting to some of the fastest fast paths in the kernel.
-> > 
-> > And the size of the changes for memory allocation accounting are much more
-> > reasonable:
-> >  33 files changed, 623 insertions(+), 99 deletions(-)
-> > 
-> > The code tagging library should exist anyways, it's been open coded half a dozen
-> > times in the kernel already.
+Hi Roger Quadros,
+
+On Tue, 2 Aug 2022 13:44:54 +0300, Roger Quadros wrote:
+> This series adds GPMC and ELM controller device tree nodes to
+> AM64 SoC's dtsi file.
 > 
-> Hi Kent,
+> Changelog:
+> v4
+> - Rebased to v5.19
+> - use 'ti,am64-elm' compatible for ELM node
 > 
-> independent of the other discussions, if it's open coded already, does
-> it make sense to factor that already-open-coded part out independently
-> of the remainder of the full series here?
+> [...]
 
-It's discussed in the cover letter, that is exactly how the patch series is
-structured.
- 
-> [I didn't immediately spot if this series also attempts already to
-> replace that open-coded part]
+I have applied the following to branch ti-k3-dts-next on [1].
+Thank you!
 
-Uh huh.
+[1/2] arm64: dts: ti: k3-am64-main: Add GPMC memory controller node
+      commit: 5ec06904310da6441097c8f2d6e3fb196f42bca1
+[2/2] arm64: dts: ti: k3-am64-main: Add ELM (Error Location Module) node
+      commit: c920a6caba68196f48f8ee57cc193e396f941011
 
-Honestly, some days it feels like lkml is just as bad as slashdot, with people
-wanting to get in their two cents without actually reading...
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent up the chain during
+the next merge window (or sooner if it is a relevant bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/ti/linux.git
+--
+Vignesh
+
