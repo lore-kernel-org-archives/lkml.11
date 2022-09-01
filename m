@@ -2,72 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39057ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 23:17:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40EF9ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 23:18:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233595AbiIAXRK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 19:17:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41802 "EHLO
+        id S235045AbiIAXSG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 19:18:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233701AbiIAXQu (ORCPT
+        with ESMTP id S235076AbiIAXRr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 19:16:50 -0400
-Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A3739AFA9;
-        Thu,  1 Sep 2022 16:16:49 -0700 (PDT)
-Received: from meer.lwn.net (unknown [IPv6:2601:281:8300:73::5f6])
-        by ms.lwn.net (Postfix) with ESMTPA id ADF5E2B8;
-        Thu,  1 Sep 2022 23:16:48 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net ADF5E2B8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1662074209; bh=pjEqGsC3o1cCyVpcxwjXhbptLW8M3DxLII6MXHLKxx4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HttwhfoNd2RBCMXJyH3N5bOHMY8PiWeXU1xreO7WiF/30gPdnyEx/tMdeurqK1kWx
-         URVJCAicwSKYhN2RBXjmNJn7Xll1exANcYBIYJVF80j1nkolfEc9zgFuGs+T7S/Jhy
-         9xnW25hwAumA4FN7OeK/WtGFyo06HW2O8JdFnpbPeX7bwj31SoMmZRM1Q8NdG5H2zc
-         yCmWGjoVfUUaNjK62cPaWrRueB/IDSOkdr02SdUrHUoDR20GVAxtwAkP2OCKO9ESj6
-         r0tCQm8pgiigvhk1azYvKCuDnQcchdHUo63veJLaT2E8rY4EHW0gREcFblahCHV1ov
-         T1K6B/dntzGlQ==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     linux-doc@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>
-Subject: [PATCH 3/4] docs: reconfigure the HTML left column
-Date:   Thu,  1 Sep 2022 17:16:31 -0600
-Message-Id: <20220901231632.518583-4-corbet@lwn.net>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220901231632.518583-1-corbet@lwn.net>
-References: <20220901231632.518583-1-corbet@lwn.net>
+        Thu, 1 Sep 2022 19:17:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66304A1D2F
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 16:17:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662074249;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Up7P4fQPv3QO96X8W5CWpvLvhg+1IhrQIUpviyNAatM=;
+        b=KqOTvoR4V3OgcCQipF1wf7q84V+Lg06EJ2UMHbNvZNelUjqrT8zUERB9UpfXplPZTkXHKN
+        gwdgJBB8VObiR+9bk21W1jCtCPhm2y/CR/9mhUf7pgmWEOIQN842qd3Z/pWqreFtpOA98t
+        2fIXhAA0A1X0SUcv2GM1jSQNHlk1cWE=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-503-XmFb60JeN4y2p7YbEWngYA-1; Thu, 01 Sep 2022 19:17:27 -0400
+X-MC-Unique: XmFb60JeN4y2p7YbEWngYA-1
+Received: by mail-ej1-f72.google.com with SMTP id xh12-20020a170906da8c00b007413144e87fso106474ejb.14
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 16:17:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=Up7P4fQPv3QO96X8W5CWpvLvhg+1IhrQIUpviyNAatM=;
+        b=yzudIKMDGEKDayX0+kk23T4bqkxEYzgXOZlM5hkzZ1AVaq+S8y9Gv4axeWGnCkCNee
+         JsvhObbv6CxuQv3g5b8Td7APDZx9uHN0CQx9HwWdfWLrfzJIdPOm8UMW4wP7BH+JmqJg
+         kXp8llo4K4b6tRn/Pi3G/fIWkk4avq+cV+GjqPHVm9INs4sYrwszVe2b4HZ4M0063Yed
+         tAT5+vHklt1ZVX51r1vez42ud/nM92bdVzhhmtIP2Umq0qC5dDnQBRKoqTTuVpuQ3/qD
+         kLv/lW2JDxHUyDJoxzG+vwsaQqDr0NzM/b0L5UQ5IwDC+AhXDsvtNWuzek+o6/MMmcdE
+         0zmg==
+X-Gm-Message-State: ACgBeo05keNJxi9c351J27HBllAgjsx1DgauZMOeqsowBUfsgxgpGqUs
+        hmfxBfeWmUbxFe2/wL44bCN//Cn2UDFqRtfYO01nOqPB/ALI6+pn0dbhHEORrrNU+0cYpzS3pvE
+        Ou8YLtdwCcqiJV5znRNUmpxP+
+X-Received: by 2002:a17:907:6d16:b0:731:17b5:699 with SMTP id sa22-20020a1709076d1600b0073117b50699mr27462594ejc.23.1662074246837;
+        Thu, 01 Sep 2022 16:17:26 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6y4K1beuBiz4jt6PFGYmDzMiS8qZdf7rIE6G6RXdSmbOqLz+3jUKKZmGZUaP7ftlVLFR0z2A==
+X-Received: by 2002:a17:907:6d16:b0:731:17b5:699 with SMTP id sa22-20020a1709076d1600b0073117b50699mr27462584ejc.23.1662074246676;
+        Thu, 01 Sep 2022 16:17:26 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id h6-20020a170906828600b0073d6234ceebsm286510ejx.160.2022.09.01.16.17.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Sep 2022 16:17:26 -0700 (PDT)
+Message-ID: <5f15a3a0-446f-59a4-6bef-8be0e5630f5b@redhat.com>
+Date:   Fri, 2 Sep 2022 01:17:21 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH] KVM: fix memoryleak in kvm_init()
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>
+Cc:     vkuznets@redhat.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220823063414.59778-1-linmiaohe@huawei.com>
+ <Yw6C+tBZrbP5IX+e@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <Yw6C+tBZrbP5IX+e@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the html_sidebars directive to get a more useful set of links in the
-left column.
+On 8/30/22 23:36, Sean Christopherson wrote:
+> On Tue, Aug 23, 2022, Miaohe Lin wrote:
+>> When alloc_cpumask_var_node() fails for a certain cpu, there might be some
+>> allocated cpumasks for percpu cpu_kick_mask. We should free these cpumasks
+>> or memoryleak will occur.
+>>
+>> Fixes: baff59ccdc65 ("KVM: Pre-allocate cpumasks for kvm_make_all_cpus_request_except()")
+>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>> ---
+> 
+> Pushed to branch `for_paolo/6.1` at:
+> 
+>      https://github.com/sean-jc/linux.git
+> 
+> Unless you hear otherwise, it will make its way to kvm/queue "soon".
+> 
+> Note, the commit IDs are not guaranteed to be stable.
 
-Unfortunately, this is a no-op with the default RTD theme, but others
-observe it.
+Hmm, I was going to merge these memory leak fixes for 6.0, but no big 
+deal since they're mostly theoretical anyway.
 
-Signed-off-by: Jonathan Corbet <corbet@lwn.net>
----
- Documentation/conf.py | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/conf.py b/Documentation/conf.py
-index 78dd6d1e7b88..22c9d4df1967 100644
---- a/Documentation/conf.py
-+++ b/Documentation/conf.py
-@@ -370,7 +370,8 @@ html_static_path = ['sphinx-static']
- html_use_smartypants = False
- 
- # Custom sidebar templates, maps document names to template names.
--#html_sidebars = {}
-+# Note that the RTD theme ignores this
-+html_sidebars = { '**': ['searchbox.html', 'localtoc.html', 'sourcelink.html']}
- 
- # Additional templates that should be rendered to pages, maps page names to
- # template names.
--- 
-2.37.2
+Paolo
 
