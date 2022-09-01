@@ -2,196 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2123DECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 12:11:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DCCAECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 12:12:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232648AbiIAMLq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 08:11:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45058 "EHLO
+        id S232715AbiIAMMr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 08:12:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230455AbiIAMLm (ORCPT
+        with ESMTP id S229498AbiIAMMp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 08:11:42 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 610EF1402B;
-        Thu,  1 Sep 2022 05:11:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662034301; x=1693570301;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=KH4wwLYYR22LaR2ahETD9PzcSMcK/GwXPV7wTEaIDMY=;
-  b=PIGYH/m0Zt7SCHSxOVr8e11FUvyHWhyYGFaDbpovwzVPziPnTY59HsCA
-   PxRMOqu3yyvi3KScnkVlgVT1U6flruidIYRjU1+yyX6/2iBfy/YzJtatl
-   W1MbwNrFDhaRArL2UGhZYCODA+hXCsyZIAQoLm+ZViEWKy0g1Yq2YgEpE
-   IA4HA03j3r4ipIh7gATH5jB6w2edptlbhH2h3GEWIWaELEsPtcHM3RUYI
-   ZOC5QfZhJNo3thwRLTT+WJgDCIXMQrhyiIlTiE/oMhIncuN51Z1WBdAkk
-   +kjckC0lZQLItwNKkZRFI4jshMKJTPG2KzYtHDzpLE3O/5sCcoGNtXQVi
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="278714086"
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="278714086"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 05:11:40 -0700
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="673821546"
-Received: from rongch2-mobl.ccr.corp.intel.com (HELO [10.254.213.173]) ([10.254.213.173])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 05:11:36 -0700
-Subject: Re: [kbuild-all] Re: [PATCH v2 10/11] sh: mm: Convert to
- GENERIC_IOREMAP
-To:     Baoquan He <bhe@redhat.com>, kernel test robot <lkp@intel.com>
-Cc:     linux-kernel@vger.kernel.org, kbuild-all@lists.01.org,
-        linux-mm@kvack.org, akpm@linux-foundation.org, hch@infradead.org,
-        agordeev@linux.ibm.com, wangkefeng.wang@huawei.com,
-        linux-arm-kernel@lists.infradead.org,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>, linux-sh@vger.kernel.org
-References: <20220820003125.353570-11-bhe@redhat.com>
- <202208201146.8VeY9pez-lkp@intel.com> <YxCL4q1YSbh5wr8i@MiWiFi-R3L-srv>
-From:   "Chen, Rong A" <rong.a.chen@intel.com>
-Message-ID: <bdb4982b-cb3c-c4a5-a97b-f1b2c0483ef8@intel.com>
-Date:   Thu, 1 Sep 2022 20:11:34 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.12.0
+        Thu, 1 Sep 2022 08:12:45 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 989C797507;
+        Thu,  1 Sep 2022 05:12:43 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1oTj3o-0000jP-Dm; Thu, 01 Sep 2022 14:12:40 +0200
+Message-ID: <04ce8956-3285-345a-4ce5-b78500729e42@leemhuis.info>
+Date:   Thu, 1 Sep 2022 14:12:39 +0200
 MIME-Version: 1.0
-In-Reply-To: <YxCL4q1YSbh5wr8i@MiWiFi-R3L-srv>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Content-Language: en-US, de-DE
+To:     kernel test robot <oliver.sang@intel.com>
+Cc:     Kai Huang <kai.huang@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>, kvm@vger.kernel.org,
+        lkp@lists.01.org, lkp@intel.com, regressions@lists.linux.dev
+References: <YvpZYGa1Z1M38YcR@xsang-OptiPlex-9020>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+Subject: Re: [KVM] c3e0c8c2e8: leaking-addresses.proc..data..ro_after_init.
+In-Reply-To: <YvpZYGa1Z1M38YcR@xsang-OptiPlex-9020>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1662034363;299e0616;
+X-HE-SMSGID: 1oTj3o-0000jP-Dm
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi, this is your Linux kernel regression tracker.
 
-
-On 9/1/2022 6:39 PM, Baoquan He wrote:
-> Hi,
+On 15.08.22 16:34, kernel test robot wrote:
+> Greeting,
 > 
-> On 08/20/22 at 11:41am, kernel test robot wrote:
->> Hi Baoquan,
->>
->> I love your patch! Yet something to improve:
->>
->> [auto build test ERROR on akpm-mm/mm-everything]
->>
->> url:    https://github.com/intel-lab-lkp/linux/commits/Baoquan-He/mm-ioremap-Convert-architectures-to-take-GENERIC_IOREMAP-way/20220820-083435
->> base:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-everything
->> config: sh-allmodconfig
->> compiler: sh4-linux-gcc (GCC) 12.1.0
->> reproduce (this is a W=1 build):
->>          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->>          chmod +x ~/bin/make.cross
->>          # https://github.com/intel-lab-lkp/linux/commit/503a31451202f89e58bc5f0a49261398fafbd90e
->>          git remote add linux-review https://github.com/intel-lab-lkp/linux
->>          git fetch --no-tags linux-review Baoquan-He/mm-ioremap-Convert-architectures-to-take-GENERIC_IOREMAP-way/20220820-083435
->>          git checkout 503a31451202f89e58bc5f0a49261398fafbd90e
->>          # save the config file
->>          mkdir build_dir && cp config build_dir/.config
->>          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sh prepare
+> FYI, we noticed the following commit (built with gcc-11):
 > 
-> I can only find binutils-sh-linux-gnu on fedora, but no gcc-sh-linux-gnu
-> for cross compiling superh kernel. So I tried above steps, but it failed
-> as below, any suggestion I can fix it to proceed for reproducing the
-> reporting issues? Thanks in advance.
-
-Hi Baoquan,
-
-Sorry for the inconvenience, /root/0day/gcc-12.1.0-nolibc/sh4-linux/bin
-/sh4-linux-gcc is for x86_64 machine, as the name "ampere-mtsnow-altra",
-is it a arm server?
-
-the tool for arm64 can be downloaded from 
-https://cdn.kernel.org/pub/tools/crosstool/files/bin/arm64/12.1.0/
-
-Best Regards,
-Rong Chen
-
+> commit: c3e0c8c2e8b17bae30d5978bc2decdd4098f0f99 ("KVM: x86/mmu: Fully re-evaluate MMIO caching when SPTE masks change")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 > 
-> [root@ampere-mtsnow-altra-09 ~]# ls
-> 0day  anaconda-ks.cfg  bin  config  EFI_BOOT_ENTRY.TXT  linux  NETBOOT_METHOD.TXT  original-ks.cfg  RECIPE.TXT
-> [root@ampere-mtsnow-altra-09 ~]# ls 0day/gcc-12.1.0-nolibc/sh4-linux/bin/
-> sh4-linux-addr2line  sh4-linux-elfedit     sh4-linux-gcc-ranlib  sh4-linux-ld        sh4-linux-objdump  sh4-linux-strip
-> sh4-linux-ar         sh4-linux-gcc         sh4-linux-gcov        sh4-linux-ld.bfd    sh4-linux-ranlib
-> sh4-linux-as         sh4-linux-gcc-12.1.0  sh4-linux-gcov-dump   sh4-linux-lto-dump  sh4-linux-readelf
-> sh4-linux-c++filt    sh4-linux-gcc-ar      sh4-linux-gcov-tool   sh4-linux-nm        sh4-linux-size
-> sh4-linux-cpp        sh4-linux-gcc-nm      sh4-linux-gprof       sh4-linux-objcopy   sh4-linux-strings
-> [root@ampere-mtsnow-altra-09 ~]# ls bin
-> make.cross
-> [root@ampere-mtsnow-altra-09 ~]# cd linux/
-> [root@ampere-mtsnow-altra-09 linux]# ls
-> arch       certs    CREDITS        drivers  init      Kbuild   lib          Makefile  README   security  usr
-> block      config   crypto         fs       io_uring  Kconfig  LICENSES     mm        samples  sound     virt
-> build_dir  COPYING  Documentation  include  ipc       kernel   MAINTAINERS  net       scripts  tools
-> [root@ampere-mtsnow-altra-09 linux]# ls build_dir/  -a
-> .  ..  arch  .config  .gitignore  include  Makefile  scripts  source  usr
+> in testcase: leaking-addresses
+> version: leaking-addresses-x86_64-4f19048-1_20220518
+> with following parameters:
 > 
-> [root@ampere-mtsnow-altra-09 linux]# COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sh prepare
-> Compiler will be installed in /root/0day
-> 	not a dynamic executable
-> make --keep-going CONFIG_OF_ALL_DTBS=y CONFIG_DTC=y CROSS_COMPILE=/root/0day/gcc-12.1.0-nolibc/sh4-linux/bin/sh4-linux- --jobs=160 W=1 O=build_dir ARCH=sh prepare
-> make[1]: Entering directory '/root/linux/build_dir'
-> /bin/sh: line 1: /root/0day/gcc-12.1.0-nolibc/sh4-linux/bin/sh4-linux-gcc: cannot execute binary file: Exec format error
-> /bin/sh: line 1: /root/0day/gcc-12.1.0-nolibc/sh4-linux/bin/sh4-linux-gcc: cannot execute binary file: Exec format error
-> /bin/sh: line 1: /root/0day/gcc-12.1.0-nolibc/sh4-linux/bin/sh4-linux-gcc: cannot execute binary file: Exec format error
->    SYNC    include/config/auto.conf.cmd
-> /bin/sh: line 1: /root/0day/gcc-12.1.0-nolibc/sh4-linux/bin/sh4-linux-gcc: cannot execute binary file: Exec format error
-> /bin/sh: line 1: /root/0day/gcc-12.1.0-nolibc/sh4-linux/bin/sh4-linux-gcc: cannot execute binary file: Exec format error
-> /bin/sh: line 1: /root/0day/gcc-12.1.0-nolibc/sh4-linux/bin/sh4-linux-gcc: cannot execute binary file: Exec format error
->    GEN     Makefile
->    HOSTCC  scripts/basic/fixdep
->    HOSTCC  scripts/kconfig/conf.o
->    HOSTCC  scripts/kconfig/confdata.o
->    HOSTCC  scripts/kconfig/expr.o
->    LEX     scripts/kconfig/lexer.lex.c
->    YACC    scripts/kconfig/parser.tab.[ch]
->    HOSTCC  scripts/kconfig/menu.o
->    HOSTCC  scripts/kconfig/preprocess.o
->    HOSTCC  scripts/kconfig/symbol.o
->    HOSTCC  scripts/kconfig/util.o
->    HOSTCC  scripts/kconfig/lexer.lex.o
->    HOSTCC  scripts/kconfig/parser.tab.o
->    HOSTLD  scripts/kconfig/conf
-> /root/0day/gcc-12.1.0-nolibc/sh4-linux/bin/sh4-linux-gcc: unknown compiler
-> scripts/Kconfig.include:44: Sorry, this compiler is not supported.
-> make[3]: *** [../scripts/kconfig/Makefile:77: syncconfig] Error 1
-> make[2]: *** [../Makefile:632: syncconfig] Error 2
-> make[1]: *** [/root/linux/Makefile:734: include/config/auto.conf.cmd] Error 2
-> make[1]: Failed to remake makefile 'include/config/auto.conf.cmd'.
-> make[1]: Failed to remake makefile 'include/config/auto.conf'.
->    GEN     Makefile
->    SYSHDR  arch/sh/include/generated/uapi/asm/unistd_32.h
->    SYSTBL  arch/sh/include/generated/asm/syscall_table.h
-> Error: kernelrelease not valid - run 'make prepare' to update it
->    HOSTCC  scripts/dtc/dtc.o
->    HOSTCC  scripts/dtc/flattree.o
->    HOSTCC  scripts/dtc/fstree.o
->    HOSTCC  scripts/dtc/data.o
->    HOSTCC  scripts/dtc/livetree.o
->    HOSTCC  scripts/dtc/treesource.o
->    HOSTCC  scripts/dtc/srcpos.o
->    HOSTCC  scripts/dtc/checks.o
->    HOSTCC  scripts/dtc/util.o
->    LEX     scripts/dtc/dtc-lexer.lex.c
->    YACC    scripts/dtc/dtc-parser.tab.[ch]
->    HOSTCC  scripts/dtc/libfdt/fdt_ro.o
->    HOSTCC  scripts/dtc/libfdt/fdt.o
->    HOSTCC  scripts/dtc/libfdt/fdt_wip.o
->    HOSTCC  scripts/dtc/libfdt/fdt_sw.o
->    HOSTCC  scripts/dtc/libfdt/fdt_rw.o
->    HOSTCC  scripts/dtc/libfdt/fdt_strerror.o
->    HOSTCC  scripts/dtc/libfdt/fdt_empty_tree.o
->    HOSTCC  scripts/dtc/libfdt/fdt_addresses.o
->    HOSTCC  scripts/dtc/libfdt/fdt_overlay.o
->    HOSTCC  scripts/dtc/fdtoverlay.o
->    HOSTCC  scripts/dtc/dtc-lexer.lex.o
->    HOSTCC  scripts/dtc/dtc-parser.tab.o
->    HOSTLD  scripts/dtc/fdtoverlay
->    HOSTLD  scripts/dtc/dtc
-> make[1]: Target 'prepare' not remade because of errors.
-> make[1]: Leaving directory '/root/linux/build_dir'
-> make: *** [Makefile:222: __sub-make] Error 2
-> make: Target 'prepare' not remade because of errors.
-> _______________________________________________
-> kbuild-all mailing list -- kbuild-all@lists.01.org
-> To unsubscribe send an email to kbuild-all-leave@lists.01.org
+> 	ucode: 0x28
 > 
+> 
+> 
+> on test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz with 16G memory
+> 
+> caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
+> 
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+>
+> [...]
+>
+> #regzbot introduced: c3e0c8c2e8
+
+Removing this from the list of tracked regressions:
+
+#regzbot invalid: report from the kernel test report that was ignored by
+developers, so I assume it's not something bad
+
+To explain: Yeah, maybe tracking regressions found by CI systems in
+regzbot might be a good idea now or in the long run. If you are from
+Intel and would like to discuss how to do this, please get in touch (I
+tried recently, but got no answer[1]).
+
+But I'm not sure if it's a good idea right now to get regzbot involved
+by default (especially as long as the reports are not telling developers
+to add proper "Link:" tags that would allow regzbot to notice when fixes
+for the problem are posted or merged; see [1] and [2]), as it looks like
+developers ignore quite a few (many?) reports like the one partly quoted
+above.
+
+I guess there are various reasons why developers do so (too many false
+positives? issues unlikely to happen in practice? already fixed?).
+Normally I'd say "this is a regression and I should try to find out and
+prod developers to get it fixed". And I'll do that if the issue
+obviously looks important to a Linux kernel generalist like me.
+
+But that doesn't appear to be the case here (please correct me if I
+misjudged!). I hence chose to ignore this report, as there are quite a
+few other reports that are waiting for my attention, too. :-/
+
+Ciao, Thorsten
+
+[1]
+https://lore.kernel.org/all/384393c2-6155-9a07-ebd4-c2c410cbe947@leemhuis.info/
+
+
+[2] https://docs.kernel.org/process/handling-regressions.html
