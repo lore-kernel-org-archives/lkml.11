@@ -2,290 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F929ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 06:58:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F4CBECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 06:58:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233312AbiIAG60 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 02:58:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45648 "EHLO
+        id S232997AbiIAG66 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 02:58:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233038AbiIAG6V (ORCPT
+        with ESMTP id S233341AbiIAG6z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 02:58:21 -0400
-Received: from frasgout13.his.huawei.com (frasgout13.his.huawei.com [14.137.139.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FC7AD11E5;
-        Wed, 31 Aug 2022 23:58:18 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.18.147.227])
-        by frasgout13.his.huawei.com (SkyGuard) with ESMTP id 4MJBZ93wPyz9v7Hg;
-        Thu,  1 Sep 2022 14:52:49 +0800 (CST)
-Received: from roberto-ThinkStation-P620 (unknown [10.204.63.22])
-        by APP2 (Coremail) with SMTP id GxC2BwA3s13fVxBjZcATAA--.7637S2;
-        Thu, 01 Sep 2022 07:57:48 +0100 (CET)
-Message-ID: <2b2242f8d09378fbec49d4f7e29960d5e50d0a68.camel@huaweicloud.com>
-Subject: Re: [PATCH v15 12/12] selftests/bpf: Add tests for dynamic pointers
- parameters in kfuncs
-From:   Roberto Sassu <roberto.sassu@huaweicloud.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, mykolal@fb.com,
-        dhowells@redhat.com, jarkko@kernel.org, rostedt@goodmis.org,
-        mingo@redhat.com, paul@paul-moore.com, jmorris@namei.org,
-        serge@hallyn.com, shuah@kernel.org
-Cc:     bpf@vger.kernel.org, keyrings@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        deso@posteo.net, memxor@gmail.com,
-        Roberto Sassu <roberto.sassu@huawei.com>
-Date:   Thu, 01 Sep 2022 08:57:30 +0200
-In-Reply-To: <20220831165445.1071641-13-roberto.sassu@huaweicloud.com>
-References: <20220831165445.1071641-1-roberto.sassu@huaweicloud.com>
-         <20220831165445.1071641-13-roberto.sassu@huaweicloud.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5-0ubuntu1 
+        Thu, 1 Sep 2022 02:58:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0E541636D1
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 23:58:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662015531;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NP3BgHkO7zL9QtOduyDvBAI5h7SLpCA3Geb5dem5JMs=;
+        b=cEnHLB5V4oJLWtdZMSlt75bWGELkRxfPJv/fDSWwRrZyy8p8H+pweE3ojoubd9aB4N70de
+        CZTkGZnL40nYYKZWZD3g4RyW2n2qAJg8fkz9lOCDn6dzQfg9zvi2+fM8VcN6IKxhz45tnW
+        BPcxQQAyID9v/tKEIGMDJP1yR7NGkrk=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-48-F2gwWt3yPkOGqrumRQAKIA-1; Thu, 01 Sep 2022 02:58:50 -0400
+X-MC-Unique: F2gwWt3yPkOGqrumRQAKIA-1
+Received: by mail-wm1-f69.google.com with SMTP id h133-20020a1c218b000000b003a5fa79008bso831430wmh.5
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 23:58:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc;
+        bh=NP3BgHkO7zL9QtOduyDvBAI5h7SLpCA3Geb5dem5JMs=;
+        b=4lCpRjsdn3fSKQ+feNw6Zsg0IiQudD4a9mWx9wkg2Sot6oyr2VmhNsT25dQylRMHx4
+         9GeL44dogVrquFh3OGwrteCUddAij56JW0W+0+bpn7XdwVtEY6GMl40mqKWHVWaIIPYz
+         ptnoc964SRieFnA+mrGeVI3zNH7SMY5rwCno46SfgoT8ZQweh9sM0+nOv9XADEidtEC6
+         CdT7Pu6s3E5vHSTlPy1CtOZVPu7iULjYPB8khq/j4haW7yXQTZSkiKmX+iLku0is8GsB
+         h2Xiz+hJAKBmB7003+569TnE13DIo6gHMCKZEVEP4JahwHD3DChSLz8zScUFzXrybvqh
+         pqLQ==
+X-Gm-Message-State: ACgBeo3S9kxvmr6uvOpZOKCsgI/dgjAilbr7NAQSbL6HPUNjYv/jPMxU
+        xC35AC0y9btmj+K5nypS9+WlVkdnPn0qSg9nZqCoNqcTknDqXG2H243Uy4ifiuY1EtFBzGz1oMs
+        suk87YeiWeDZcJnKd8ySv/rv9
+X-Received: by 2002:a7b:cd11:0:b0:3a8:3f6c:9abf with SMTP id f17-20020a7bcd11000000b003a83f6c9abfmr4234644wmj.30.1662015529169;
+        Wed, 31 Aug 2022 23:58:49 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6selz8IoQMvN8smZKwySY3y3y8uR2hOOnmvhTkF7tEVcHaCNxWJ6MsInQkmFJjyfxSFj4zUA==
+X-Received: by 2002:a7b:cd11:0:b0:3a8:3f6c:9abf with SMTP id f17-20020a7bcd11000000b003a83f6c9abfmr4234634wmj.30.1662015528910;
+        Wed, 31 Aug 2022 23:58:48 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c707:9e00:fec0:7e96:15cb:742? (p200300cbc7079e00fec07e9615cb0742.dip0.t-ipconnect.de. [2003:cb:c707:9e00:fec0:7e96:15cb:742])
+        by smtp.gmail.com with ESMTPSA id bg41-20020a05600c3ca900b003a62bc1735asm5003223wmb.9.2022.08.31.23.58.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 31 Aug 2022 23:58:48 -0700 (PDT)
+Message-ID: <a5277667-1b41-dabe-837a-19afd0a68fd1@redhat.com>
+Date:   Thu, 1 Sep 2022 08:58:47 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v1] mm/ksm: update stale comment in write_protect_page()
+Content-Language: en-US
+To:     Yang Shi <shy828301@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Hugh Dickins <hughd@google.com>, Peter Xu <peterx@redhat.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+References: <20220831083024.37138-1-david@redhat.com>
+ <CAHbLzkqeDAnCdt3q4E2RZw64QEzVaO_pseR3VaoHUhB+rZFcZQ@mail.gmail.com>
+ <4845ae71-b7dd-1707-ebc3-2eb3521e7fa0@redhat.com>
+ <CAHbLzkoMMWAgai2bvgu7y5EAcKOhhx3gK+OA4v2+kOHBW4cauw@mail.gmail.com>
+ <ab41f458-eb0f-5edb-ccab-643bf00d5110@redhat.com>
+ <CAHbLzkpFqSBTv3HVye4UCKj93NPW8VRqCGZO1p5hk_wfNA_GtQ@mail.gmail.com>
+ <94c3217d-df73-2b6b-21f0-95baf117c584@redhat.com>
+ <CAHbLzkp+HNmz7hGS5uDrfDDW0HpSj5Z+xmmkRbwvgn1qYk8Btg@mail.gmail.com>
+ <CAHbLzkqM5qj7AZRpeCemsA56oKuHo2T51chTbh1pkGrr0wRFDQ@mail.gmail.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <CAHbLzkqM5qj7AZRpeCemsA56oKuHo2T51chTbh1pkGrr0wRFDQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: GxC2BwA3s13fVxBjZcATAA--.7637S2
-X-Coremail-Antispam: 1UD129KBjvJXoW3AF4kCF18Zr4UJrWUKr1kAFb_yoWxGF13pa
-        yrGFy29rWIq3W7Wr13XF4IvF4fKr48Zr1akrZFq34xAr1DXryxWF48Kr45Jwn5K395Xw45
-        Zw1Sgr4rCr4Uta7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkjb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
-        6cxKx2IYs7xG6r1S6rWUM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
-        vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7Cj
-        xVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVWUJVW8JwA2z4x0Y4vEx4A2jsIEc7CjxV
-        AFwI0_Gr0_Gr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40E
-        x7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x
-        0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l42xK82IYc2Ij
-        64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x
-        8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r4a6rW5MIIYrxkI7VAKI48JMIIF0xvE
-        2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42
-        xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIE
-        c7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07UAkuxUUUUU=
-X-CM-SenderInfo: purev21wro2thvvxqx5xdzvxpfor3voofrz/1tbiAgACBF1jj3589gAEsF
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-08-31 at 18:54 +0200, Roberto Sassu wrote:
-> From: Roberto Sassu <roberto.sassu@huawei.com>
+On 01.09.22 00:18, Yang Shi wrote:
+> On Wed, Aug 31, 2022 at 12:43 PM Yang Shi <shy828301@gmail.com> wrote:
+>>
+>> On Wed, Aug 31, 2022 at 12:36 PM David Hildenbrand <david@redhat.com> wrote:
+>>>
+>>> On 31.08.22 21:34, Yang Shi wrote:
+>>>> On Wed, Aug 31, 2022 at 12:15 PM David Hildenbrand <david@redhat.com> wrote:
+>>>>>
+>>>>> On 31.08.22 21:08, Yang Shi wrote:
+>>>>>> On Wed, Aug 31, 2022 at 11:29 AM David Hildenbrand <david@redhat.com> wrote:
+>>>>>>>
+>>>>>>> On 31.08.22 19:55, Yang Shi wrote:
+>>>>>>>> On Wed, Aug 31, 2022 at 1:30 AM David Hildenbrand <david@redhat.com> wrote:
+>>>>>>>>>
+>>>>>>>>> The comment is stale, because a TLB flush is no longer sufficient and
+>>>>>>>>> required to synchronize against concurrent GUP-fast. This used to be true
+>>>>>>>>> in the past, whereby a TLB flush would have implied an IPI on architectures
+>>>>>>>>> that support GUP-fast, resulting in GUP-fast that disables local interrupts
+>>>>>>>>> from completing before completing the flush.
+>>>>>>>>
+>>>>>>>> Hmm... it seems there might be problem for THP collapse IIUC. THP
+>>>>>>>> collapse clears and flushes pmd before doing anything on pte and
+>>>>>>>> relies on interrupt disable of fast GUP to serialize against fast GUP.
+>>>>>>>> But if TLB flush is no longer sufficient, then we may run into the
+>>>>>>>> below race IIUC:
+>>>>>>>>
+>>>>>>>>          CPU A                                                CPU B
+>>>>>>>> THP collapse                                             fast GUP
+>>>>>>>>
+>>>>>>>> gup_pmd_range() <-- see valid pmd
+>>>>>>>>
+>>>>>>>> gup_pte_range() <-- work on pte
+>>>>>>>> clear pmd and flush TLB
+>>>>>>>> __collapse_huge_page_isolate()
+>>>>>>>>     isolate page <-- before GUP bump refcount
+>>>>>>>>
+>>>>>>>>    pin the page
+>>>>>>>> __collapse_huge_page_copy()
+>>>>>>>>     copy data to huge page
+>>>>>>>>     clear pte (don't flush TLB)
+>>>>>>>> Install huge pmd for huge page
+>>>>>>>>
+>>>>>>>> return the obsolete page
+>>>>>>>
+>>>>>>> Hm, the is_refcount_suitable() check runs while the PTE hasn't been
+>>>>>>> cleared yet. And we don't check if the PMD changed once we're in
+>>>>>>> gup_pte_range().
+>>>>>>
+>>>>>> Yes
+>>>>>>
+>>>>>>>
+>>>>>>> The comment most certainly should be stale as well -- unless there is
+>>>>>>> some kind of an implicit IPI broadcast being done.
+>>>>>>>
+>>>>>>> 2667f50e8b81 mentions: "The RCU page table free logic coupled with an
+>>>>>>> IPI broadcast on THP split (which is a rare event), allows one to
+>>>>>>> protect a page table walker by merely disabling the interrupts during
+>>>>>>> the walk."
+>>>>>>>
+>>>>>>> I'm not able to quickly locate that IPI broadcast -- maybe there is one
+>>>>>>> being done here (in collapse) as well?
+>>>>>>
+>>>>>> The TLB flush may call IPI. I'm supposed it is arch dependent, right?
+>>>>>> Some do use IPI, some may not.
+>>>>>
+>>>>> Right, and the whole idea of the RCU GUP-fast was to support
+>>>>> architectures that don't do it. x86-64 does it. IIRC, powerpc doesn't do
+>>>>> it -- but maybe it does so for PMDs?
+>>>>
+>>>> It looks powerpc does issue IPI for pmd flush. But arm64 doesn't IIRC.
+>>>>
+>>>> So maybe we should implement pmdp_collapse_flush() for those arches to
+>>>> issue IPI.
+>>>
+>>> ... or find another way to detect and handle this in GUP-fast?
+>>>
+>>> Not sure if, for handling PMDs, it could be sufficient to propagate the
+>>> pmdp pointer + value and double check that the values didn't change.
+>>
+>> Should work too, right before pinning the page.
 > 
-> Add tests to ensure that only supported dynamic pointer types are
-> accepted,
-> that the passed argument is actually a dynamic pointer, and that the
-> passed
-> argument is a pointer to the stack.
-
-Sorry, forgot to add this test to the deny list of s390.
-
-I also rebased to the latest commit.
-
-Let me know if I should resend.
-
-Thanks
-
-Roberto
-
-> Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
-> ---
->  .../bpf/prog_tests/kfunc_dynptr_param.c       | 102
-> ++++++++++++++++++
->  .../bpf/progs/test_kfunc_dynptr_param.c       |  57 ++++++++++
->  2 files changed, 159 insertions(+)
->  create mode 100644
-> tools/testing/selftests/bpf/prog_tests/kfunc_dynptr_param.c
->  create mode 100644
-> tools/testing/selftests/bpf/progs/test_kfunc_dynptr_param.c
+> I actually mean the same place for checking pte. So, something like:
 > 
-> diff --git
-> a/tools/testing/selftests/bpf/prog_tests/kfunc_dynptr_param.c
-> b/tools/testing/selftests/bpf/prog_tests/kfunc_dynptr_param.c
-> new file mode 100644
-> index 000000000000..732897faf36b
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/prog_tests/kfunc_dynptr_param.c
-> @@ -0,0 +1,102 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (c) 2022 Facebook
-> + * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
-> + *
-> + * Author: Roberto Sassu <roberto.sassu@huawei.com>
-> + */
-> +
-> +#include <test_progs.h>
-> +#include "test_kfunc_dynptr_param.skel.h"
-> +
-> +static size_t log_buf_sz = 1048576; /* 1 MB */
-> +static char obj_log_buf[1048576];
-> +
-> +static struct {
-> +	const char *prog_name;
-> +	const char *expected_err_msg;
-> +} kfunc_dynptr_tests[] = {
-> +	{"dynptr_type_not_supp",
-> +	 "arg#0 pointer type STRUCT bpf_dynptr_kern points to
-> unsupported dynamic pointer type"},
-> +	{"not_valid_dynptr",
-> +	 "arg#0 pointer type STRUCT bpf_dynptr_kern must be valid and
-> initialized"},
-> +	{"not_ptr_to_stack", "arg#0 pointer type STRUCT bpf_dynptr_kern
-> not to stack"},
-> +};
-> +
-> +static bool kfunc_not_supported;
-> +
-> +static int libbpf_print_cb(enum libbpf_print_level level, const char
-> *fmt,
-> +			   va_list args)
-> +{
-> +	if (strcmp(fmt, "libbpf: extern (func ksym) '%s': not found in
-> kernel or module BTFs\n"))
-> +		return 0;
-> +
-> +	if (strcmp(va_arg(args, char *), "bpf_verify_pkcs7_signature"))
-> +		return 0;
-> +
-> +	kfunc_not_supported = true;
-> +	return 0;
-> +}
-> +
-> +static void verify_fail(const char *prog_name, const char
-> *expected_err_msg)
-> +{
-> +	struct test_kfunc_dynptr_param *skel;
-> +	LIBBPF_OPTS(bpf_object_open_opts, opts);
-> +	libbpf_print_fn_t old_print_cb;
-> +	struct bpf_program *prog;
-> +	int err;
-> +
-> +	opts.kernel_log_buf = obj_log_buf;
-> +	opts.kernel_log_size = log_buf_sz;
-> +	opts.kernel_log_level = 1;
-> +
-> +	skel = test_kfunc_dynptr_param__open_opts(&opts);
-> +	if (!ASSERT_OK_PTR(skel, "test_kfunc_dynptr_param__open_opts"))
-> +		goto cleanup;
-> +
-> +	prog = bpf_object__find_program_by_name(skel->obj, prog_name);
-> +	if (!ASSERT_OK_PTR(prog, "bpf_object__find_program_by_name"))
-> +		goto cleanup;
-> +
-> +	bpf_program__set_autoload(prog, true);
-> +
-> +	bpf_map__set_max_entries(skel->maps.ringbuf, getpagesize());
-> +
-> +	kfunc_not_supported = false;
-> +
-> +	old_print_cb = libbpf_set_print(libbpf_print_cb);
-> +	err = test_kfunc_dynptr_param__load(skel);
-> +	libbpf_set_print(old_print_cb);
-> +
-> +	if (err < 0 && kfunc_not_supported) {
-> +		fprintf(stderr,
-> +		  "%s:SKIP:bpf_verify_pkcs7_signature() kfunc not
-> supported\n",
-> +		  __func__);
-> +		test__skip();
-> +		goto cleanup;
-> +	}
-> +
-> +	if (!ASSERT_ERR(err, "unexpected load success"))
-> +		goto cleanup;
-> +
-> +	if (!ASSERT_OK_PTR(strstr(obj_log_buf, expected_err_msg),
-> "expected_err_msg")) {
-> +		fprintf(stderr, "Expected err_msg: %s\n",
-> expected_err_msg);
-> +		fprintf(stderr, "Verifier output: %s\n", obj_log_buf);
-> +	}
-> +
-> +cleanup:
-> +	test_kfunc_dynptr_param__destroy(skel);
-> +}
-> +
-> +void test_kfunc_dynptr_param(void)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(kfunc_dynptr_tests); i++) {
-> +		if
-> (!test__start_subtest(kfunc_dynptr_tests[i].prog_name))
-> +			continue;
-> +
-> +		verify_fail(kfunc_dynptr_tests[i].prog_name,
-> +			    kfunc_dynptr_tests[i].expected_err_msg);
-> +	}
-> +}
-> diff --git
-> a/tools/testing/selftests/bpf/progs/test_kfunc_dynptr_param.c
-> b/tools/testing/selftests/bpf/progs/test_kfunc_dynptr_param.c
-> new file mode 100644
-> index 000000000000..2f09f91a1576
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/test_kfunc_dynptr_param.c
-> @@ -0,0 +1,57 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +/*
-> + * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
-> + *
-> + * Author: Roberto Sassu <roberto.sassu@huawei.com>
-> + */
-> +
-> +#include "vmlinux.h"
-> +#include <errno.h>
-> +#include <bpf/bpf_helpers.h>
-> +#include <bpf/bpf_tracing.h>
-> +
-> +struct bpf_dynptr {
-> +	__u64 :64;
-> +	__u64 :64;
-> +} __attribute__((aligned(8)));
-> +
-> +extern int bpf_verify_pkcs7_signature(struct bpf_dynptr *data_ptr,
-> +				      struct bpf_dynptr *sig_ptr,
-> +				      struct bpf_key *trusted_keyring)
-> __ksym;
-> +
-> +struct {
-> +	__uint(type, BPF_MAP_TYPE_RINGBUF);
-> +} ringbuf SEC(".maps");
-> +
-> +char _license[] SEC("license") = "GPL";
-> +
-> +SEC("?lsm.s/bpf")
-> +int BPF_PROG(dynptr_type_not_supp, int cmd, union bpf_attr *attr,
-> +	     unsigned int size)
-> +{
-> +	char write_data[64] = "hello there, world!!";
-> +	struct bpf_dynptr ptr;
-> +
-> +	bpf_ringbuf_reserve_dynptr(&ringbuf, sizeof(write_data), 0,
-> &ptr);
-> +
-> +	return bpf_verify_pkcs7_signature(&ptr, &ptr, NULL);
-> +}
-> +
-> +SEC("?lsm.s/bpf")
-> +int BPF_PROG(not_valid_dynptr, int cmd, union bpf_attr *attr,
-> unsigned int size)
-> +{
-> +	unsigned long val;
-> +
-> +	return bpf_verify_pkcs7_signature((struct bpf_dynptr *)&val,
-> +					  (struct bpf_dynptr *)&val,
-> NULL);
-> +}
-> +
-> +SEC("?lsm.s/bpf")
-> +int BPF_PROG(not_ptr_to_stack, int cmd, union bpf_attr *attr,
-> unsigned int size)
-> +{
-> +	unsigned long val;
-> +
-> +	return bpf_verify_pkcs7_signature((struct bpf_dynptr *)val,
-> +					  (struct bpf_dynptr *)val,
-> NULL);
-> +}
+> diff --git a/mm/gup.c b/mm/gup.c
+> index 5abdaf487460..2b0703403902 100644
+> --- a/mm/gup.c
+> +++ b/mm/gup.c
+> @@ -2392,7 +2392,8 @@ static int gup_pte_range(pmd_t pmd, unsigned
+> long addr, unsigned long end,
+>                         goto pte_unmap;
+>                 }
+> 
+> -               if (unlikely(pte_val(pte) != pte_val(*ptep))) {
+> +               if (unlikely(pmd_val(pmd) != pmd_val(*pmdp)) ||
+> +                   unlikely(pte_val(pte) != pte_val(*ptep))) {
+>                         gup_put_folio(folio, 1, flags);
+>                         goto pte_unmap;
+>                 }
+> 
+> It doesn't build, just shows the idea.
+
+Exactly what I had in mind. We should add a comment spelling out that
+this is for handling huge PMD collapse.
+
+
+-- 
+Thanks,
+
+David / dhildenb
 
