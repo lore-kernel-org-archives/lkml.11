@@ -2,168 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2143EECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 10:43:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E06CECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 10:44:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233527AbiIAKna (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 06:43:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50022 "EHLO
+        id S233088AbiIAKog (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 06:44:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234312AbiIAKnH (ORCPT
+        with ESMTP id S233364AbiIAKoc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 06:43:07 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6720D7402
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 03:43:02 -0700 (PDT)
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2819qP90030339;
-        Thu, 1 Sep 2022 10:42:49 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=qcppdkim1;
- bh=MzYSklfDSZ1eVLHobpLfYIhewPgTOWPfrgVvYLnJNEA=;
- b=cM9iHRRDt5Q/QVsmoZVlWNtaOTicHSpbtUsHdU4NjxwmQBgAU6FQ5tj8Y3BUpScRPFrD
- w4qXrGODLz/hU/1dF0U2ZJOJ1APsLNK6gUm1Ag0jnWzu7qWXICACmz2YNXRgsOZR6eqj
- Cd5kfeQlNzxEADhl/QLFGzaCYlnt4S0ANEABMyp8IulRjytrt/gnyqT7O1cAG1sJCzED
- QBhUif//4Jv4xV88xt/zLefT+PcuL0Po7d8KsS8Y2odF4mC+VA9f9AqtutYH6jHqOdLL
- 2a4P1VvMbTgoVEnWYpFA545DmW52CEGJA+8+ZJpFaR59rOcC10NiR7r/9DPz5ULTnTyo 2g== 
-Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3ja79kkpvr-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 10:42:49 +0000
-Received: from pps.filterd (NASANPPMTA04.qualcomm.com [127.0.0.1])
-        by NASANPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 281ASLNx008420;
-        Thu, 1 Sep 2022 10:28:21 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by NASANPPMTA04.qualcomm.com (PPS) with ESMTPS id 3jadjkf964-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 10:28:21 +0000
-Received: from NASANPPMTA04.qualcomm.com (NASANPPMTA04.qualcomm.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 281ASLiS008414;
-        Thu, 1 Sep 2022 10:28:21 GMT
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
-        by NASANPPMTA04.qualcomm.com (PPS) with ESMTPS id 281ASLlA008410
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 10:28:21 +0000
-Received: from hu-mojha-hyd.qualcomm.com (10.80.80.8) by
- nasanex01c.na.qualcomm.com (10.45.79.139) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Thu, 1 Sep 2022 03:28:18 -0700
-From:   Mukesh Ojha <quic_mojha@quicinc.com>
-To:     <peterz@infradead.org>, <mingo@redhat.com>, <will@kernel.org>,
-        <longman@redhat.com>, <boqun.feng@gmail.com>
-CC:     <linux-kernel@vger.kernel.org>,
-        Gokul krishna Krishnakumar <quic_gokukris@quicinc.com>,
-        Mukesh Ojha <quic_mojha@quicinc.com>
-Subject: [PATCH] locking/rwsem: Disable preemption while trying for rwsem lock
-Date:   Thu, 1 Sep 2022 15:58:10 +0530
-Message-ID: <1662028090-26495-1-git-send-email-quic_mojha@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Thu, 1 Sep 2022 06:44:32 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4C93A50E2;
+        Thu,  1 Sep 2022 03:44:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662029070; x=1693565070;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=z0nHhpyQNt/z52vG9scDUVjFGYLIq163jnyWrsCmkKM=;
+  b=E3arJ6qadWEYD0diCEPq6xV64YIKNgV2JiG1RU8ewLRtCzryM01OPcGg
+   MIZx52ld0q0dDOP5eLa5Op82Ejlnz1YL3ClRY9qfR0ECE++qEJ4vr9KlN
+   QkqgGUzdaupzBZm/q5HCYe+CtlQoFZNygLugkWt9xyjIePebV8Y4GTwKE
+   eUZYDLZGb53NPc2e3+jbpbvNAnb53jT0b9Xl3RmK5NQCaisRFPUxnyYWp
+   9YYFpwLscm/ZatzJMt8fs1JFG5Fuj9qZEAHpjqa1yqBykrHnEk5Tdz8x9
+   cPpGHVpZAQRVYJ3QRJS1vOYM/+csFDGX87PAgCXcU1JtbWgbF3wPu8lM9
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="278698819"
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="278698819"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 03:44:30 -0700
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="673795597"
+Received: from luli3-mobl.ccr.corp.intel.com (HELO [10.254.215.169]) ([10.254.215.169])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 03:44:25 -0700
+Message-ID: <53837119-9348-f9c9-1f49-cad639fc6ecd@linux.intel.com>
+Date:   Thu, 1 Sep 2022 18:44:10 +0800
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01c.na.qualcomm.com (10.45.79.139)
-X-QCInternal: smtphost
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: xYlC6nAwc7SfkACCLavzV9zs6uMOxmW4
-X-Proofpoint-ORIG-GUID: xYlC6nAwc7SfkACCLavzV9zs6uMOxmW4
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-09-01_06,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 clxscore=1011
- adultscore=0 mlxscore=0 malwarescore=0 suspectscore=0 impostorscore=0
- priorityscore=1501 phishscore=0 mlxlogscore=797 bulkscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2209010048
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Zhangfei Gao <zhangfei.gao@linaro.org>,
+        Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v12 07/17] iommu: Try to allocate blocking domain when
+ probing device
+Content-Language: en-US
+To:     Jason Gunthorpe <jgg@nvidia.com>
+References: <20220826121141.50743-1-baolu.lu@linux.intel.com>
+ <20220826121141.50743-8-baolu.lu@linux.intel.com>
+ <YwjeL2SVmdRpoWb6@nvidia.com>
+ <316f6575-59ea-08e3-aaaf-bc1e4f42a574@linux.intel.com>
+ <Ywz3A3tHEzY+Sf7b@nvidia.com>
+ <c7d71936-ea06-3a71-d13a-cedd108413b5@linux.intel.com>
+ <Yw4Qzif8W53ykR6K@nvidia.com>
+ <c46ec383-bd51-1d78-ff81-0bee064ce1cb@linux.intel.com>
+ <Yw9rwktDY9Uca/cv@nvidia.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <Yw9rwktDY9Uca/cv@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gokul krishna Krishnakumar <quic_gokukris@quicinc.com>
+On 2022/8/31 22:10, Jason Gunthorpe wrote:
+> On Wed, Aug 31, 2022 at 09:49:44AM +0800, Baolu Lu wrote:
+>>> Maybe all of this is just the good reason to go to a simple
+>>> device->ops->remove_dev_pasid() callback and forget about blocking
+>>> domain here.
+>>
+>> Do you mean rolling back to what we did in v10?
+> 
+> Yeah, but it shouldn't be a domain_op, removing a pasid is a device op
+> 
+> Just
+> 
+> remove_dev_pasid(struct device *dev, ioasid_t pasid)
 
-Make the region inside the rwsem_write_trylock non preemptible.
+It's clear now. Thanks!
 
-We observe RT task is hogging CPU when trying to acquire rwsem lock
-which was acquired by a kworker task but before the rwsem owner was set.
+How about below iommu_attach/detach_device_pasid() code?
 
-Here is the scenario:
-1. CFS task (affined to a particular CPU) takes rwsem lock.
+By the way, how about naming it "block_dev_pasid(dev, pasid)"?
 
-2. CFS task gets preempted by a RT task before setting owner.
-
-3. RT task (FIFO) is trying to acquire the lock, but spinning until
-RT throttling happens for the lock as the lock was taken by CFS task.
-
-This patch attempts to fix the above issue by disabling preemption
-until owner is set for the lock. while at it also fix this issue
-at the place where owner being set/cleared.
-
-Signed-off-by: Gokul krishna Krishnakumar <quic_gokukris@quicinc.com>
-Signed-off-by: Mukesh Ojha <quic_mojha@quicinc.com>
----
- kernel/locking/rwsem.c | 18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
-
-diff --git a/kernel/locking/rwsem.c b/kernel/locking/rwsem.c
-index 65f0262..3b4b32e 100644
---- a/kernel/locking/rwsem.c
-+++ b/kernel/locking/rwsem.c
-@@ -251,13 +251,16 @@ static inline bool rwsem_read_trylock(struct rw_semaphore *sem, long *cntp)
- static inline bool rwsem_write_trylock(struct rw_semaphore *sem)
- {
- 	long tmp = RWSEM_UNLOCKED_VALUE;
-+	bool ret = false;
- 
-+	preempt_disable();
- 	if (atomic_long_try_cmpxchg_acquire(&sem->count, &tmp, RWSEM_WRITER_LOCKED)) {
- 		rwsem_set_owner(sem);
--		return true;
-+		ret = true;
- 	}
- 
--	return false;
-+	preempt_enable();
-+	return ret;
- }
- 
- /*
-@@ -686,16 +689,21 @@ enum owner_state {
- static inline bool rwsem_try_write_lock_unqueued(struct rw_semaphore *sem)
- {
- 	long count = atomic_long_read(&sem->count);
-+	bool ret = false;
- 
-+	preempt_disable();
- 	while (!(count & (RWSEM_LOCK_MASK|RWSEM_FLAG_HANDOFF))) {
- 		if (atomic_long_try_cmpxchg_acquire(&sem->count, &count,
- 					count | RWSEM_WRITER_LOCKED)) {
- 			rwsem_set_owner(sem);
- 			lockevent_inc(rwsem_opt_lock);
--			return true;
-+			ret = true;
-+			break;
- 		}
- 	}
--	return false;
++static int __iommu_set_group_pasid(struct iommu_domain *domain,
++				   struct iommu_group *group, ioasid_t pasid)
++{
++	struct group_device *device;
++	int ret = 0;
 +
-+	preempt_enable();
++	list_for_each_entry(device, &group->devices, list) {
++		ret = domain->ops->set_dev_pasid(domain, device->dev, pasid);
++		if (ret)
++			break;
++	}
++
 +	return ret;
- }
- 
- static inline bool rwsem_can_spin_on_owner(struct rw_semaphore *sem)
-@@ -1352,8 +1360,10 @@ static inline void __up_write(struct rw_semaphore *sem)
- 	DEBUG_RWSEMS_WARN_ON((rwsem_owner(sem) != current) &&
- 			    !rwsem_test_oflags(sem, RWSEM_NONSPINNABLE), sem);
- 
-+	preempt_disable();
- 	rwsem_clear_owner(sem);
- 	tmp = atomic_long_fetch_add_release(-RWSEM_WRITER_LOCKED, &sem->count);
-+	preempt_enable();
- 	if (unlikely(tmp & RWSEM_FLAG_WAITERS))
- 		rwsem_wake(sem);
- }
--- 
-2.7.4
++}
++
++static void __iommu_remove_group_pasid(struct iommu_group *group,
++				       ioasid_t pasid)
++{
++	struct group_device *device;
++	const struct iommu_ops *ops;
++
++	list_for_each_entry(device, &group->devices, list) {
++		ops = dev_iommu_ops(device->dev);
++		ops->remove_dev_pasid(device->dev, pasid);
++	}
++}
++
++/*
++ * iommu_attach_device_pasid() - Attach a domain to pasid of device
++ * @domain: the iommu domain.
++ * @dev: the attached device.
++ * @pasid: the pasid of the device.
++ *
++ * Return: 0 on success, or an error.
++ */
++int iommu_attach_device_pasid(struct iommu_domain *domain,
++			      struct device *dev, ioasid_t pasid)
++{
++	struct iommu_group *group;
++	void *curr;
++	int ret;
++
++	if (!domain->ops->set_dev_pasid)
++		return -EOPNOTSUPP;
++
++	group = iommu_group_get(dev);
++	if (!group)
++		return -ENODEV;
++
++	mutex_lock(&group->mutex);
++	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, GFP_KERNEL);
++	if (curr) {
++		ret = xa_err(curr) ? : -EBUSY;
++		goto out_unlock;
++	}
++
++	ret = __iommu_set_group_pasid(domain, group, pasid);
++	if (ret) {
++		__iommu_remove_group_pasid(group, pasid);
++		xa_erase(&group->pasid_array, pasid);
++	}
++out_unlock:
++	mutex_unlock(&group->mutex);
++	iommu_group_put(group);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(iommu_attach_device_pasid);
++
++/*
++ * iommu_detach_device_pasid() - Detach the domain from pasid of device
++ * @domain: the iommu domain.
++ * @dev: the attached device.
++ * @pasid: the pasid of the device.
++ *
++ * The @domain must have been attached to @pasid of the @dev with
++ * iommu_attach_device_pasid().
++ */
++void iommu_detach_device_pasid(struct iommu_domain *domain, struct 
+device *dev,
++			       ioasid_t pasid)
++{
++	struct iommu_group *group = iommu_group_get(dev);
++
++	mutex_lock(&group->mutex);
++	__iommu_remove_group_pasid(group, pasid);
++	WARN_ON(xa_erase(&group->pasid_array, pasid) != domain);
++	mutex_unlock(&group->mutex);
++
++	iommu_group_put(group);
++}
++EXPORT_SYMBOL_GPL(iommu_detach_device_pasid);
 
++ * @remove_dev_pasid: Remove any translation configurations of a specific
++ *                    pasid, so that any DMA transactions with this pasid
++ *                    will be blocked by the hardware.
+   * @pgsize_bitmap: bitmap of all possible supported page sizes
+   * @owner: Driver module providing these ops
+   */
+@@ -256,6 +259,7 @@ struct iommu_ops {
+  			     struct iommu_page_response *msg);
+
+  	int (*def_domain_type)(struct device *dev);
++	void (*remove_dev_pasid)(struct device *dev, ioasid_t pasid);
+
+Best regards,
+baolu
