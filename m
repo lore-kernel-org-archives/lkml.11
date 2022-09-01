@@ -2,190 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD197ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 06:12:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E552ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 06:13:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232351AbiIAGM5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 02:12:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55836 "EHLO
+        id S233036AbiIAGNw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 02:13:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233189AbiIAGMw (ORCPT
+        with ESMTP id S232124AbiIAGNq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 02:12:52 -0400
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25F211195F8;
-        Wed, 31 Aug 2022 23:12:49 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R231e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VNxZAUn_1662012766;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VNxZAUn_1662012766)
-          by smtp.aliyun-inc.com;
-          Thu, 01 Sep 2022 14:12:47 +0800
-Message-ID: <1662012653.6443956-2-xuanzhuo@linux.alibaba.com>
-Subject: Re: [RFC v3 6/7] virtio: in order support for virtio_ring
-Date:   Thu, 1 Sep 2022 14:10:53 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Guo Zhi <qtxuning1999@sjtu.edu.cn>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        Guo Zhi <qtxuning1999@sjtu.edu.cn>, eperezma@redhat.com,
-        jasowang@redhat.com, sgarzare@redhat.com, mst@redhat.com
-References: <20220901055434.824-1-qtxuning1999@sjtu.edu.cn>
- <20220901055434.824-7-qtxuning1999@sjtu.edu.cn>
-In-Reply-To: <20220901055434.824-7-qtxuning1999@sjtu.edu.cn>
+        Thu, 1 Sep 2022 02:13:46 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08FBB1195C8
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 23:13:44 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id m2so16178621pls.4
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 23:13:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=quanta-corp-partner-google-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=O8bBDnCoRs8QcF9a9YTHJW00uSuoqigF7Vl9n6fRN+g=;
+        b=oH31Gdf5vqRML0p5m5PZryA0ik7pfDhdhHogoEhiVTRPGL/GIP2ESBbkNlUqaE2W8g
+         X1+R5+4xiq3VdPB/xHuR6F1YTvXnK6eLW5VPTzrMCeg8CKdRBmmH5zeZ2dEiLzcC6TM/
+         MfKDOOeHwAPvdtmBs0esq8nd/djl0lLvVgqYf3J5XlAUE6vg/SFMThRYGL6lN5YrYTBI
+         lCGM+hILOwuPZY9veB4ychlnV7Ya/zvLNd4aq4n0v8K+ugQTOcY9a+b2rNgepzhQMu+V
+         65zxyEin6g9rJ4NGnvzwLftIxqCYEc+Dtkujn9xsdoie3yAwZ3v2b6gzr8PyBRThPetv
+         fOFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=O8bBDnCoRs8QcF9a9YTHJW00uSuoqigF7Vl9n6fRN+g=;
+        b=vQKZ7f4XaPUkduQ5VSXbcEpY7G8fvuc7RteQDgEfK37DIkQTGFaj5EzaiaLIHiTLTk
+         +0i9365N9MR0oEkfttbt8rbFlMBBnPWZbXBZ6LBRJzWK32f5cmCDvGXJrOHIq1nQvl1q
+         Kt2eOgx2G6OaVHIuK931KivZhVXLgNvt3qxWh5LctlWk9y/oTC56uV9F9FfwjSxCQ1VY
+         WmAYs8+C1oGc1TD0H2jUf0Vg02hxVqOSN3iMw0wUBDgcWVn0XuSXHWBF287vn36Vg5kG
+         XMVnp+pCk2nPlELC4+oYaUFmoJx11ZXZW+ZjGQOaKE8OHEYhBmn/MK9rThQqUPoPGrEn
+         IcIA==
+X-Gm-Message-State: ACgBeo298cfiBKWXfdDI+582nLrQjn6DwHuO4a+dJKahOz9HAC68xK+w
+        ORk2nnouRGcMj2I5xAOWyt3le6VgTwYphw==
+X-Google-Smtp-Source: AA6agR5rNhEiJTl8CoDIthnCVTDI97QMQTOGDirE9ldr1F2XOZkaos1pd7xmxmlsNjjvxVbJjVFArg==
+X-Received: by 2002:a17:90a:c1:b0:1f4:f757:6b48 with SMTP id v1-20020a17090a00c100b001f4f7576b48mr6963259pjd.56.1662012823273;
+        Wed, 31 Aug 2022 23:13:43 -0700 (PDT)
+Received: from liang-Predator-PH517-52.. (60-250-232-247.hinet-ip.hinet.net. [60.250.232.247])
+        by smtp.gmail.com with ESMTPSA id c14-20020a170903234e00b00174e9e14f60sm7016929plh.82.2022.08.31.23.13.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Aug 2022 23:13:42 -0700 (PDT)
+From:   Sheng-Liang Pan <sheng-liang.pan@quanta.corp-partner.google.com>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     mka@chromium.org, dianders@chromium.org,
+        Sheng-Liang Pan <sheng-liang.pan@quanta.corp-partner.google.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Subject: [PATCH 0/2] Add a new board device tree named 'evoker' for herobrine variant.
+Date:   Thu,  1 Sep 2022 14:13:33 +0800
+Message-Id: <20220901061336.61386-1-sheng-liang.pan@quanta.corp-partner.google.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu,  1 Sep 2022 13:54:33 +0800, Guo Zhi <qtxuning1999@sjtu.edu.cn> wrote:
-> If in order feature negotiated, we can skip the used ring to get
-> buffer's desc id sequentially.  For skipped buffers in the batch, the
-> used ring doesn't contain the buffer length, actually there is not need
-> to get skipped buffers' length as they are tx buffer.
+This patch add the initial dts file for new board 'evoker'.
 
-As far as I know, currently virtio-net will use the buffer's length here for
-statistics. So whether virtio-net also needs to make some changes.
 
-Thanks.
+Sheng-Liang Pan (2):
+  arm64: dts: qcom: sc7280: Add device tree for herobrine evoker
+  dt-bindings: arm: qcom: document sc7280 and evoker board
 
->
-> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
-> ---
->  drivers/virtio/virtio_ring.c | 74 +++++++++++++++++++++++++++++++-----
->  1 file changed, 64 insertions(+), 10 deletions(-)
->
-> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> index 00aa4b7a49c2..d52624179b43 100644
-> --- a/drivers/virtio/virtio_ring.c
-> +++ b/drivers/virtio/virtio_ring.c
-> @@ -103,6 +103,9 @@ struct vring_virtqueue {
->  	/* Host supports indirect buffers */
->  	bool indirect;
->
-> +	/* Host supports in order feature */
-> +	bool in_order;
-> +
->  	/* Host publishes avail event idx */
->  	bool event;
->
-> @@ -144,6 +147,19 @@ struct vring_virtqueue {
->  			/* DMA address and size information */
->  			dma_addr_t queue_dma_addr;
->  			size_t queue_size_in_bytes;
-> +
-> +			/* If in_order feature is negotiated, here is the next head to consume */
-> +			u16 next_desc_begin;
-> +			/*
-> +			 * If in_order feature is negotiated,
-> +			 * here is the last descriptor's id in the batch
-> +			 */
-> +			u16 last_desc_in_batch;
-> +			/*
-> +			 * If in_order feature is negotiated,
-> +			 * buffers except last buffer in the batch are skipped buffer
-> +			 */
-> +			bool is_skipped_buffer;
->  		} split;
->
->  		/* Available for packed ring */
-> @@ -584,8 +600,6 @@ static inline int virtqueue_add_split(struct virtqueue *_vq,
->  					 total_sg * sizeof(struct vring_desc),
->  					 VRING_DESC_F_INDIRECT,
->  					 false);
-> -		vq->split.desc_extra[head & (vq->split.vring.num - 1)].flags &=
-> -			~VRING_DESC_F_NEXT;
->  	}
->
->  	/* We're using some buffers from the free list. */
-> @@ -701,8 +715,16 @@ static void detach_buf_split(struct vring_virtqueue *vq, unsigned int head,
->  	}
->
->  	vring_unmap_one_split(vq, i);
-> -	vq->split.desc_extra[i].next = vq->free_head;
-> -	vq->free_head = head;
-> +	/*
-> +	 * If in_order feature is negotiated,
-> +	 * the descriptors are made available in order.
-> +	 * Since the free_head is already a circular list,
-> +	 * it must consume it sequentially.
-> +	 */
-> +	if (!vq->in_order) {
-> +		vq->split.desc_extra[i].next = vq->free_head;
-> +		vq->free_head = head;
-> +	}
->
->  	/* Plus final descriptor */
->  	vq->vq.num_free++;
-> @@ -744,7 +766,7 @@ static void *virtqueue_get_buf_ctx_split(struct virtqueue *_vq,
->  {
->  	struct vring_virtqueue *vq = to_vvq(_vq);
->  	void *ret;
-> -	unsigned int i;
-> +	unsigned int i, j;
->  	u16 last_used;
->
->  	START_USE(vq);
-> @@ -763,11 +785,38 @@ static void *virtqueue_get_buf_ctx_split(struct virtqueue *_vq,
->  	/* Only get used array entries after they have been exposed by host. */
->  	virtio_rmb(vq->weak_barriers);
->
-> -	last_used = (vq->last_used_idx & (vq->split.vring.num - 1));
-> -	i = virtio32_to_cpu(_vq->vdev,
-> -			vq->split.vring.used->ring[last_used].id);
-> -	*len = virtio32_to_cpu(_vq->vdev,
-> -			vq->split.vring.used->ring[last_used].len);
-> +	if (vq->in_order) {
-> +		last_used = (vq->last_used_idx & (vq->split.vring.num - 1));
-> +		if (!vq->split.is_skipped_buffer) {
-> +			vq->split.last_desc_in_batch =
-> +				virtio32_to_cpu(_vq->vdev,
-> +						vq->split.vring.used->ring[last_used].id);
-> +			vq->split.is_skipped_buffer = true;
-> +		}
-> +		/* For skipped buffers in batch, we can ignore the len info, simply set len as 0 */
-> +		if (vq->split.next_desc_begin != vq->split.last_desc_in_batch) {
-> +			*len = 0;
-> +		} else {
-> +			*len = virtio32_to_cpu(_vq->vdev,
-> +					       vq->split.vring.used->ring[last_used].len);
-> +			vq->split.is_skipped_buffer = false;
-> +		}
-> +		i = vq->split.next_desc_begin;
-> +		j = i;
-> +		/* Indirect only takes one descriptor in descriptor table */
-> +		while (!vq->indirect && (vq->split.desc_extra[j].flags & VRING_DESC_F_NEXT))
-> +			j = (j + 1) & (vq->split.vring.num - 1);
-> +		/* move to next */
-> +		j = (j + 1) % vq->split.vring.num;
-> +		/* Next buffer will use this descriptor in order */
-> +		vq->split.next_desc_begin = j;
-> +	} else {
-> +		last_used = (vq->last_used_idx & (vq->split.vring.num - 1));
-> +		i = virtio32_to_cpu(_vq->vdev,
-> +				    vq->split.vring.used->ring[last_used].id);
-> +		*len = virtio32_to_cpu(_vq->vdev,
-> +				       vq->split.vring.used->ring[last_used].len);
-> +	}
->
->  	if (unlikely(i >= vq->split.vring.num)) {
->  		BAD_RING(vq, "id %u out of range\n", i);
-> @@ -2223,6 +2272,7 @@ struct virtqueue *__vring_new_virtqueue(unsigned int index,
->
->  	vq->indirect = virtio_has_feature(vdev, VIRTIO_RING_F_INDIRECT_DESC) &&
->  		!context;
-> +	vq->in_order = virtio_has_feature(vdev, VIRTIO_F_IN_ORDER);
->  	vq->event = virtio_has_feature(vdev, VIRTIO_RING_F_EVENT_IDX);
->
->  	if (virtio_has_feature(vdev, VIRTIO_F_ORDER_PLATFORM))
-> @@ -2235,6 +2285,10 @@ struct virtqueue *__vring_new_virtqueue(unsigned int index,
->  	vq->split.avail_flags_shadow = 0;
->  	vq->split.avail_idx_shadow = 0;
->
-> +	vq->split.next_desc_begin = 0;
-> +	vq->split.last_desc_in_batch = 0;
-> +	vq->split.is_skipped_buffer = false;
-> +
->  	/* No callback?  Tell other side not to bother us. */
->  	if (!callback) {
->  		vq->split.avail_flags_shadow |= VRING_AVAIL_F_NO_INTERRUPT;
-> --
-> 2.17.1
->
+ .../devicetree/bindings/arm/qcom.yaml         |   5 +
+ arch/arm64/boot/dts/qcom/Makefile             |   1 +
+ .../dts/qcom/sc7280-herobrine-evoker-r0.dts   | 333 ++++++++++++++++++
+ 3 files changed, 339 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7280-herobrine-evoker-r0.dts
+
+-- 
+2.34.1
+
