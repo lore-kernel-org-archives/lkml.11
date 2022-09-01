@@ -2,151 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DC37C0502C
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:25:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD964ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:25:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234510AbiIANZT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 09:25:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33158 "EHLO
+        id S234503AbiIANZP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 09:25:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234316AbiIANYQ (ORCPT
+        with ESMTP id S234312AbiIANYP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 09:24:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97EF12CE09
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 06:24:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662038651;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GtRrZhfcr+HBskb37rMCSyo0Md1DArbhaGxGxxH8GQE=;
-        b=AwqEiXvrgU+J0nq1kBrZUh9m7PSY92lrIastG66Cc6OscYa69UXSLhRj1mNs9LD1v19rjq
-        xAFOK08UUGpUy2QiN2ndvfNgyIeD7LO1Bctz4gbXUrU2K/71uGbgYPa1mJk+cme47gxEw/
-        h1IBQgGZYlfnxv62yqyuOwBkTJ9GVDE=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-479-VevDvbQJPBuqR9Pw8Omr5Q-1; Thu, 01 Sep 2022 09:24:10 -0400
-X-MC-Unique: VevDvbQJPBuqR9Pw8Omr5Q-1
-Received: by mail-qt1-f197.google.com with SMTP id o21-20020ac87c55000000b00344646ea2ccso13484749qtv.11
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 06:24:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:subject:cc:from:references:to
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=GtRrZhfcr+HBskb37rMCSyo0Md1DArbhaGxGxxH8GQE=;
-        b=ZncZpSYYFwxz+HKuq4VkhsPycQZ96MV/rrrh8WDqQGnrwup4nDnN8nPJqys3C9i723
-         23VN7HIjHDJ/+aESrVsi8IuIAx+52Tg/erc9O1HMtk7S51NcHeMbtDN70ky0cMl9DNY4
-         0DVDiIp0/mSICan62L+GVkgkSyfijBYEdn0U0M703NYHxR0U/3CJ5Nsq+g7x5bEVFbCd
-         DwcnG43+QjYAJY7/9NrXo8fgEsZ9Dyw7rVx2O0cOzZIA+xbGeeRrf8cpG56mpBTS5BXm
-         j2o9tsVb9W2SI2vq4zAVrZjscP5c2i2EAqubkVl24fHeOxbLtz9E9lbsy3fpg/QIuQ3p
-         +ezA==
-X-Gm-Message-State: ACgBeo3m/d1Rj3TLUNhj9eXrdzoFbLLnWkMJ8cRQ7peYDhcDTnt/6MKG
-        +TC3NSMT5Ikc6EO4hvNtUrWFY/WWtI4TNBhS+a2ejQYI5c4Y//UYvTJU4KD1zQACBprCskjZlCt
-        548b/7VU1k1zf1E3hfk8qvk45
-X-Received: by 2002:a05:6214:5091:b0:496:dad0:6361 with SMTP id kk17-20020a056214509100b00496dad06361mr23925858qvb.81.1662038650193;
-        Thu, 01 Sep 2022 06:24:10 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4qoveEwai/Y3kskQEd+SFMIH7fGAf1B2jYVOWFiPGDe4ghdoizdDD4y7znxlpDIOI8OXv/Dw==
-X-Received: by 2002:a05:6214:5091:b0:496:dad0:6361 with SMTP id kk17-20020a056214509100b00496dad06361mr23925835qvb.81.1662038649901;
-        Thu, 01 Sep 2022 06:24:09 -0700 (PDT)
-Received: from [192.168.1.9] (pool-68-160-135-240.bstnma.fios.verizon.net. [68.160.135.240])
-        by smtp.gmail.com with ESMTPSA id m27-20020a05620a13bb00b006bbf85cad0fsm11311431qki.20.2022.09.01.06.24.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Sep 2022 06:24:09 -0700 (PDT)
-To:     Zhen Lei <thunder.leizhen@huawei.com>
-References: <20220901022706.813-1-thunder.leizhen@huawei.com>
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-Cc:     Josh Poimboeuf <jpoimboe@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>, linux-kernel@vger.kernel.org,
-        live-patching@vger.kernel.org
-Subject: Re: [PATCH] livepatch: Move error print out of lock protection in
- klp_enable_patch()
-Message-ID: <65fe1978-60da-5bd4-9559-fddec13f03bf@redhat.com>
-Date:   Thu, 1 Sep 2022 09:24:07 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Thu, 1 Sep 2022 09:24:15 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86C56275C6;
+        Thu,  1 Sep 2022 06:24:07 -0700 (PDT)
+Received: from canpemm500005.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MJM9f64f7zlWh9;
+        Thu,  1 Sep 2022 21:20:38 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by canpemm500005.china.huawei.com
+ (7.192.104.229) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 1 Sep
+ 2022 21:24:04 +0800
+From:   Zhang Yi <yi.zhang@huawei.com>
+To:     <linux-ext4@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <cluster-devel@redhat.com>,
+        <ntfs3@lists.linux.dev>, <ocfs2-devel@oss.oracle.com>,
+        <reiserfs-devel@vger.kernel.org>, <jack@suse.cz>
+CC:     <tytso@mit.edu>, <akpm@linux-foundation.org>, <axboe@kernel.dk>,
+        <viro@zeniv.linux.org.uk>, <rpeterso@redhat.com>,
+        <agruenba@redhat.com>, <almaz.alexandrovich@paragon-software.com>,
+        <mark@fasheh.com>, <dushistov@mail.ru>, <hch@infradead.org>,
+        <yi.zhang@huawei.com>, <chengzhihao1@huawei.com>,
+        <yukuai3@huawei.com>
+Subject: [PATCH v2 08/14] ocfs2: replace ll_rw_block()
+Date:   Thu, 1 Sep 2022 21:34:59 +0800
+Message-ID: <20220901133505.2510834-9-yi.zhang@huawei.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220901133505.2510834-1-yi.zhang@huawei.com>
+References: <20220901133505.2510834-1-yi.zhang@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <20220901022706.813-1-thunder.leizhen@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500005.china.huawei.com (7.192.104.229)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/31/22 10:27 PM, Zhen Lei wrote:
-> The patch->mod is not a protected object of mutex_lock(&klp_mutex). Since
-> it's in the error handling branch, it might not be helpful to reduce lock
-> conflicts, but it can reduce some code size.
-> 
-> Before:
->    text    data     bss     dec     hex filename
->   10330     464       8   10802    2a32 kernel/livepatch/core.o
-> 
-> After:
->    text    data     bss     dec     hex filename
->   10307     464       8   10779    2a1b kernel/livepatch/core.o
-> 
+ll_rw_block() is not safe for the sync read path because it cannot
+guarantee that submitting read IO if the buffer has been locked. We
+could get false positive EIO after wait_on_buffer() if the buffer has
+been locked by others. So stop using ll_rw_block() in ocfs2.
 
-Is a size change expected, or is it just compiler fall out from
-shuffling the code around a little bit?
+Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
+---
+ fs/ocfs2/aops.c  | 2 +-
+ fs/ocfs2/super.c | 4 +---
+ 2 files changed, 2 insertions(+), 4 deletions(-)
 
-I see some arches do a little better, some a little worse with gcc-9.3.0
-cross compilers:
-
-Before
-------
-   text    data     bss     dec     hex filename
-   8490     600       8    9098    238a arm64/kernel/livepatch/core.o
-   9424     680       8   10112    2780 s390/kernel/livepatch/core.o
-   9802     228       4   10034    2732 ppc32/kernel/livepatch/core.o
-  13746     456       8   14210    3782 ppc64le/kernel/livepatch/core.o
-  10443     464       8   10915    2aa3 x86_64/kernel/livepatch/core.o
-
-
-After
------
-   text    data     bss     dec     hex filename
-   8514     600       8    9122    23a2 arm64/kernel/livepatch/core.o
-   9424     680       8   10112    2780 s390/kernel/livepatch/core.o
-   9818     228       4   10050    2742 ppc32/kernel/livepatch/core.o
-  13762     456       8   14226    3792 ppc64le/kernel/livepatch/core.o
-  10446     464       8   10918    2aa6 x86_64/kernel/livepatch/core.o
-
-In which case, I'd just omit the size savings from the commit msg.
-
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> ---
->  kernel/livepatch/core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-> index 42f7e716d56bf72..cb7abc821a50584 100644
-> --- a/kernel/livepatch/core.c
-> +++ b/kernel/livepatch/core.c
-> @@ -1041,9 +1041,9 @@ int klp_enable_patch(struct klp_patch *patch)
->  	mutex_lock(&klp_mutex);
->  
->  	if (!klp_is_patch_compatible(patch)) {
-> +		mutex_unlock(&klp_mutex);
->  		pr_err("Livepatch patch (%s) is not compatible with the already installed livepatches.\n",
->  			patch->mod->name);
-> -		mutex_unlock(&klp_mutex);
->  		return -EINVAL;
->  	}
->  
-> 
-
-That said, I don't see anything obviously wrong about the change (we
-don't need to sync our error msgs, right?) so:
-
-Acked-by: Joe Lawrence <joe.lawrence@redhat.com>
-
+diff --git a/fs/ocfs2/aops.c b/fs/ocfs2/aops.c
+index af4157f61927..1d65f6ef00ca 100644
+--- a/fs/ocfs2/aops.c
++++ b/fs/ocfs2/aops.c
+@@ -636,7 +636,7 @@ int ocfs2_map_page_blocks(struct page *page, u64 *p_blkno,
+ 			   !buffer_new(bh) &&
+ 			   ocfs2_should_read_blk(inode, page, block_start) &&
+ 			   (block_start < from || block_end > to)) {
+-			ll_rw_block(REQ_OP_READ, 1, &bh);
++			bh_read_nowait(bh, 0);
+ 			*wait_bh++=bh;
+ 		}
+ 
+diff --git a/fs/ocfs2/super.c b/fs/ocfs2/super.c
+index e2cc9eec287c..26b4c2bfee49 100644
+--- a/fs/ocfs2/super.c
++++ b/fs/ocfs2/super.c
+@@ -1764,9 +1764,7 @@ static int ocfs2_get_sector(struct super_block *sb,
+ 	if (!buffer_dirty(*bh))
+ 		clear_buffer_uptodate(*bh);
+ 	unlock_buffer(*bh);
+-	ll_rw_block(REQ_OP_READ, 1, bh);
+-	wait_on_buffer(*bh);
+-	if (!buffer_uptodate(*bh)) {
++	if (bh_read(*bh, 0) < 0) {
+ 		mlog_errno(-EIO);
+ 		brelse(*bh);
+ 		*bh = NULL;
 -- 
-Joe
+2.31.1
 
