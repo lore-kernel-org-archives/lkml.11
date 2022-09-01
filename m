@@ -2,93 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1C5EECAAD8
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 15:28:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 253BDECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 15:28:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234324AbiIAP23 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 11:28:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38800 "EHLO
+        id S234440AbiIAP2o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 11:28:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234246AbiIAP2M (ORCPT
+        with ESMTP id S232790AbiIAP2c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 11:28:12 -0400
-Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A91B37331A;
-        Thu,  1 Sep 2022 08:28:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=iVZmXkRo7BKC/ObnBuv9eAWgxqprDCQYopbDV0cm8ZA=; b=R+861XU5V5SAXZ6YWA8ropbfi1
-        ZuvDKzYCbOhxZvRdUPuqyNRMmwBCmRE+eYTUGjXOCnC9kwk9L8ldpNkP7E41txt+kfyIlI4AskHiQ
-        /mA3ZiLe6noHRotbtsARf/0ttGGJNC25YrILvQbJlFyiRLcXxVNQ2TwYIPMejFR/e28K5/7jXtuFX
-        Ol2ngJ4ODZY+OCeFb0RXKMmSdajColXb3alNeSASgAFUeLvv9PvNX5Qej/aMEAN0wXfjv/INOaDCL
-        rP9pcDsPpHRukUR4RNAWMXGLCiFb9vRWCmhiyoBvM+MJtgQJJxpg0Jz6c674sjVIlLXbeOMUmpXE/
-        NBaRJWOhumtC8IV2lDBSdugPhNguo7rH0l2pdS3qlPIwTUUPPXXPfU6AND4hIBH1OsCAKaSZql42h
-        P29kr0ZVK2j4dCAEe0YOXS2LFhARIvUIf/8hHRfk53oA8FmlWMkgYWdbA0qUcb8nwsLwOXgYy8zj2
-        utkUOTarINxD40ClcNNmk1G8hn1Ay0gdFG47A+z8wzhCb4U9CBN6ghh7mLOnHQklCOE88998/TSMb
-        H17fX4p6wuy8osELaHFJy2gM13884RKYjjKlkMS6epGR8lT6rhgAkiA33JAArWIq0U4vypd3w/Gvo
-        oQ5DVn5LlzunLTQEPSdSdBHUTrDRsPDixuM6lqFvQ=;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     asmadeus@codewreck.org, Schspa Shi <schspa@gmail.com>
-Cc:     ericvh@gmail.com, lucho@ionkov.net, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] p9: trans_fd: Fix deadlock when connection cancel
-Date:   Thu, 01 Sep 2022 17:27:53 +0200
-Message-ID: <2739602.9NfmOOc9RC@silver>
-In-Reply-To: <m2bkrz7qc8.fsf@gmail.com>
-References: <20220831180950.76907-1-schspa@gmail.com> <Yw/HmHcmXBVIg/SW@codewreck.org>
- <m2bkrz7qc8.fsf@gmail.com>
+        Thu, 1 Sep 2022 11:28:32 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D4767549B
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 08:28:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662046108;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=L8f4s5rqo1zwV3cO5t7nG7LhzQRJNI558jhBcTgE3u0=;
+        b=T30M1WzxFpLQg55bDUl1vG9HgLZAteuJhJvSA5aoXFiCkVummT9NaACGVGJSKm0RAfgMVG
+        a5E6agCteIIE1jsKc6MnW7Xh4MokSFbn3QPWWR1FACYYjpxBauJbqe5L0uH5Q/DH4l3eQ9
+        CvZIIDUlzzQuIyOrf8H3kjQEwF4e69k=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-377-FMWSnnjNOQm5dVDtoAt1bQ-1; Thu, 01 Sep 2022 11:25:45 -0400
+X-MC-Unique: FMWSnnjNOQm5dVDtoAt1bQ-1
+Received: by mail-wr1-f70.google.com with SMTP id j12-20020adfff8c000000b002265dcdfad7so3111655wrr.2
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 08:25:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=L8f4s5rqo1zwV3cO5t7nG7LhzQRJNI558jhBcTgE3u0=;
+        b=VFDbQBLzoasaZxWYtKvLNn/ZAJkWh3wYlNYjQHDH1J7FrrUPGwyw/Gtm1ulDWFyeHT
+         mEAMPTz1BnO8gaPITNnWaikOtyO2rlTiyBQIH0FJ+vilg24nldepQnyfoqaaXk92EdCQ
+         KX9NOSFBRGZcrMUS4KjKqoGT8AA03O+xTawAP0G/r2KfqpKqkgMn3PnOv9tp/kSfE4bM
+         ULWkNfOP+9iKFGujhDjkImEZCOAbuoZqakHLTxVxgtv7gLoofIvhK79vJGWJKEBkWMc9
+         46/Wrl6K+qUGvayBKN5J8ccT56sEd9oIjcZmyE5T3MFI80D8Jwwih3KSUHh5rCHdAaxp
+         +S6w==
+X-Gm-Message-State: ACgBeo2xcXPKMfcS+W8kgAJObBNER5DG97veBnlTTcmmNKC47fVcnRcj
+        nexoFRlNKGfJ4gU1ty2ZLmcJXbzYIFq28+noXCJvuib/T+UVXqe5tJC27hwX8w7OGSZD7g0LhVe
+        uGcS9gSSoh/S2STJbw6Nw6cY=
+X-Received: by 2002:a05:600c:40d5:b0:3a5:3d9f:6e7f with SMTP id m21-20020a05600c40d500b003a53d9f6e7fmr5534142wmh.21.1662045902190;
+        Thu, 01 Sep 2022 08:25:02 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR52P3HlyK/lb9QikJKrVE3z2Tzfd31k/wfWxA+g+0yktZAJ4Y33BhiH/+VnAxRZ+FZJssSfTA==
+X-Received: by 2002:a05:600c:40d5:b0:3a5:3d9f:6e7f with SMTP id m21-20020a05600c40d500b003a53d9f6e7fmr5534136wmh.21.1662045901983;
+        Thu, 01 Sep 2022 08:25:01 -0700 (PDT)
+Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
+        by smtp.gmail.com with ESMTPSA id o8-20020a05600c4fc800b003a54f1d007csm6005807wmq.10.2022.09.01.08.25.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Sep 2022 08:25:00 -0700 (PDT)
+From:   Aaron Tomlin <atomlin@redhat.com>
+To:     mcgrof@kernel.org
+Cc:     petr.pavlu@suse.com, christophe.leroy@csgroup.eu,
+        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
+        atomlin@atomlin.com
+Subject: [PATCH v2 modules-next 1/1] module: Add debugfs interface to view unloaded tainted modules
+Date:   Thu,  1 Sep 2022 16:24:54 +0100
+Message-Id: <20220901152454.2394228-2-atomlin@redhat.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220901152454.2394228-1-atomlin@redhat.com>
+References: <20220901152454.2394228-1-atomlin@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Donnerstag, 1. September 2022 04:55:36 CEST Schspa Shi wrote:
-> asmadeus@codewreck.org writes:
-> > Schspa Shi wrote on Thu, Sep 01, 2022 at 02:09:50AM +0800:
-> >> To fix it, we can add extra reference counter to avoid deadlock, and
-> >> decrease it after we unlock the client->lock.
-> > 
-> > Thanks for the patch!
-> > 
-> > Unfortunately I already sent a slightly different version to the list,
-> > hidden in another syzbot thread, here:
-> > https://lkml.kernel.org/r/YvyD053bdbGE9xoo@codewreck.org
-> > 
-> > (yes, sorry, not exactly somewhere I'd expect someone to find it... 9p
-> > hasn't had many contributors recently)
-> > 
-> > 
-> > Basically instead of taking an extra lock I just released the client
-> > lock before calling p9_client_cb, so it shouldn't hang anymore.
-> > 
-> > We don't need the lock to call the cb as in p9_conn_cancel we already
-> > won't accept any new request and by this point the requests are in a
-> > local list that isn't shared anywhere.
-> 
-> Ok, thank you for pointing that out.
-> 
-> > If you have a test setup, would you mind testing my patch?
-> > That's the main reason I was delaying pushing it.
-> 
-> I have test it with my enviroment, it not hang anymore.
+This patch provides debug/modules/unloaded_tainted file to see a
+record of unloaded tainted modules.
 
-Are you fine with that Dominique, or do you want me to test your linked patch 
-as well?
+Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
+---
+ kernel/module/tracking.c | 68 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 68 insertions(+)
 
-You can also explicitly tell me if you need something to be reviewed/tested.
-
-> > Since you went out of your way to make this patch if you agree with my
-> > approach I don't mind adding your sign off or another mark of having
-> > worked on it.
-> > 
-> > Thank you,
-
-
-
+diff --git a/kernel/module/tracking.c b/kernel/module/tracking.c
+index 7f8133044d09..a139e63b6f20 100644
+--- a/kernel/module/tracking.c
++++ b/kernel/module/tracking.c
+@@ -10,6 +10,7 @@
+ #include <linux/printk.h>
+ #include <linux/slab.h>
+ #include <linux/list.h>
++#include <linux/debugfs.h>
+ #include <linux/rculist.h>
+ #include "internal.h"
+ 
+@@ -59,3 +60,70 @@ void print_unloaded_tainted_modules(void)
+ 		}
+ 	}
+ }
++
++#ifdef CONFIG_DEBUG_FS
++static void *unloaded_tainted_modules_seq_start(struct seq_file *m, loff_t *pos)
++	__acquires(rcu)
++{
++	rcu_read_lock();
++	return seq_list_start_rcu(&unloaded_tainted_modules, *pos);
++}
++
++static void *unloaded_tainted_modules_seq_next(struct seq_file *m, void *p, loff_t *pos)
++{
++	return seq_list_next_rcu(p, &unloaded_tainted_modules, pos);
++}
++
++static void unloaded_tainted_modules_seq_stop(struct seq_file *m, void *p)
++	__releases(rcu)
++{
++	rcu_read_unlock();
++}
++
++static int unloaded_tainted_modules_seq_show(struct seq_file *m, void *p)
++{
++	struct mod_unload_taint *mod_taint;
++	char buf[MODULE_FLAGS_BUF_SIZE];
++	size_t l;
++
++	mod_taint = list_entry(p, struct mod_unload_taint, list);
++	l = module_flags_taint(mod_taint->taints, buf);
++	buf[l++] = '\0';
++
++	seq_printf(m, "%s (%s) %llu", mod_taint->name, buf, mod_taint->count);
++	seq_puts(m, "\n");
++
++	return 0;
++}
++
++static const struct seq_operations unloaded_tainted_modules_seq_ops = {
++	.start = unloaded_tainted_modules_seq_start,
++	.next  = unloaded_tainted_modules_seq_next,
++	.stop  = unloaded_tainted_modules_seq_stop,
++	.show  = unloaded_tainted_modules_seq_show,
++};
++
++static int unloaded_tainted_modules_open(struct inode *inode, struct file *file)
++{
++	return seq_open(file, &unloaded_tainted_modules_seq_ops);
++}
++
++static const struct file_operations unloaded_tainted_modules_fops = {
++	.open = unloaded_tainted_modules_open,
++	.read = seq_read,
++	.llseek = seq_lseek,
++	.release = seq_release,
++};
++
++static int __init unloaded_tainted_modules_init(void)
++{
++	struct dentry *dir;
++
++	dir = debugfs_create_dir("modules", NULL);
++	debugfs_create_file("unloaded_tainted", 0444, dir, NULL,
++			    &unloaded_tainted_modules_fops);
++
++	return 0;
++}
++module_init(unloaded_tainted_modules_init);
++#endif /* CONFIG_DEBUG_FS */
+-- 
+2.37.1
 
