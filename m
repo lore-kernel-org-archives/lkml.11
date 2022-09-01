@@ -2,78 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F720ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:19:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBDDBECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:19:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233568AbiIANTQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 09:19:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41056 "EHLO
+        id S233781AbiIANTU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 09:19:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234315AbiIANSq (ORCPT
+        with ESMTP id S234341AbiIANSt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 09:18:46 -0400
-Received: from cstnet.cn (smtp23.cstnet.cn [159.226.251.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BFC6D7FFBB
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 06:15:52 -0700 (PDT)
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-03 (Coremail) with SMTP id rQCowADXy1BvsBBjyEsbAA--.35185S2;
-        Thu, 01 Sep 2022 21:15:27 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     gregkh@linuxfoundation.org
-Cc:     hdegoede@redhat.com, arnd@arndb.de, linux-kernel@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH 2/2] virt: vbox: Remove unproper information
-Date:   Thu,  1 Sep 2022 21:15:26 +0800
-Message-Id: <20220901131526.3550232-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 1 Sep 2022 09:18:49 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 391AE7C30A;
+        Thu,  1 Sep 2022 06:16:03 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MJM2D32LbzHnYY;
+        Thu,  1 Sep 2022 21:14:12 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 1 Sep 2022 21:16:00 +0800
+Received: from thunder-town.china.huawei.com (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 1 Sep 2022 21:16:00 +0800
+From:   Zhen Lei <thunder.leizhen@huawei.com>
+To:     "Paul E . McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        "Josh Triplett" <josh@joshtriplett.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>, <rcu@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Zhen Lei <thunder.leizhen@huawei.com>
+Subject: [PATCH v6 0/2] rcu/nocb: Delete local variable 'need_rcu_nocb_mask' in rcu_init_nohz()
+Date:   Thu, 1 Sep 2022 21:14:34 +0800
+Message-ID: <20220901131436.986-1-thunder.leizhen@huawei.com>
+X-Mailer: git-send-email 2.26.0.windows.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: rQCowADXy1BvsBBjyEsbAA--.35185S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7Jw4DKw43uF1kZry8XFyDAwb_yoWfKrbE9F
-        yqvF9FgrWkCFn5tr1qvwnxur9YvFW2qF1fWFyUtFyrX3sFvrnxu3W8ury3X3y3ur48AFW5
-        Jr4DAr10vr1rWjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb2kFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
-        Cr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s
-        1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0
-        cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJVW8Jw
-        ACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6ry8MxAI
-        w28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr
-        4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxG
-        rwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8Jw
-        CI42IY6xAIw20EY4v20xvaj40_Gr0_Zr1lIxAIcVC2z280aVAFwI0_Gr0_Cr1lIxAIcVC2
-        z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUURpBDUUUUU==
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When drivers are working properly, they are quiet.
-Therefore, the vbg_info() should be removed.
+v5 --> v6:
+1. Frist, update patch 1/2, so that, CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y takes
+   effect only when there are no 'rcu_nocbs=' and 'nohz_full='. Retain the same
+   semantics as the original.
+2. Then, add patch 2/2, so that, CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y takes effect
+   as long as there is no "rcu_nocbs=" boot parameter. This is suggested by
+   Frederic Weisbecker.
 
-Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- drivers/virt/vboxguest/vboxguest_linux.c | 4 ----
- 1 file changed, 4 deletions(-)
+Test cases and test results as below:
+ ----------------------------------------------------------------------
+| CONFIG_NO_HZ_FULL  | CONFIG_RCU_NOCB_CPU_DEFAULT_ALL |    cmdline    |
+ ----------------------------------------------------------------------
+1)         N         |                 N               |     none      |
+2)         N         |                 N               | rcu_nocbs=1-2 |
+3)         Y         |                 N               | nohz_full=2-3 |
+4)         Y         |                 N               | rcu_nocbs=1 nohz_full=3 |
+5)         Y         |                 Y               |      none     |
+6)         Y         |                 Y               | rcu_nocbs=1-2 |
+7)         Y         |                 Y               | nohz_full=2-3 |
+8)         Y         |                 Y               | rcu_nocbs=1 nohz_full=3 |
+ ----------------------------------------------------------------------
 
-diff --git a/drivers/virt/vboxguest/vboxguest_linux.c b/drivers/virt/vboxguest/vboxguest_linux.c
-index 6fc81347ae72..c47e62dc55da 100644
---- a/drivers/virt/vboxguest/vboxguest_linux.c
-+++ b/drivers/virt/vboxguest/vboxguest_linux.c
-@@ -398,10 +398,6 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
+dmesg | grep "Offload RCU callbacks"
+1) none
+2) Offload RCU callbacks from CPUs: 1-2.
+3) Offload RCU callbacks from CPUs: 2-3.
+4) Offload RCU callbacks from CPUs: 1,3.
+5) Offload RCU callbacks from CPUs: 0-3.
+6) Offload RCU callbacks from CPUs: 1-2.
+7) Offload RCU callbacks from CPUs: 0-3.
+8) Offload RCU callbacks from CPUs: 1,3.
+
+
+v4 --> v5:
+1. Cancel eliminate rcu_state.nocb_is_setup. It is useful for case 1) below.
+
+Test cases and test results as below:
+ ----------------------------------------------------------------------
+| CONFIG_NO_HZ_FULL  | CONFIG_RCU_NOCB_CPU_DEFAULT_ALL |    cmdline    |
+ ----------------------------------------------------------------------
+1)         N         |                 N               |     none      |
+2)         N         |                 N               | rcu_nocbs=1-2 |
+3)         Y         |                 N               | nohz_full=1-2 |
+4)         Y         |                 Y               |     none      |
+ ----------------------------------------------------------------------
  
- 	pci_set_drvdata(pci, gdev);
- 
--	vbg_info("vboxguest: misc device minor %d, IRQ %d, I/O port %x, MMIO at %pap (size %pap)\n",
--		 gdev->misc_device.minor, pci->irq, gdev->io_port,
--		 &mmio, &mmio_len);
--
- 	return 0;
- 
- err_unregister_misc_device_user:
+1)
+[ 1018.082417] rcu-torture:--- End of test: SUCCESS (default)
+root@genericarmv8:~# dmesg | grep "Offload RCU callbacks"
+
+root@genericarmv8:~# zcat /proc/config.gz | grep NOCB
+CONFIG_RCU_NOCB_CPU=y
+# CONFIG_RCU_NOCB_CPU_DEFAULT_ALL is not set
+root@genericarmv8:~# zcat /proc/config.gz | grep NO_HZ_FULL
+# CONFIG_NO_HZ_FULL is not set
+root@genericarmv8:~# cat /proc/cmdline
+console=ttyS0 earlyprintk=serial root=/dev/sda rw
+
+2) 3) 4)
+The same to v4.
+
+
+v3 --> v4:
+Fix a build warning.
+-       struct cpumask *cpumask = NULL;
++       const struct cpumask *cpumask = NULL;
+
+v2 --> v3:
+1. Eliminate rcu_state.nocb_is_setup
+2. Update the code based on the above patch and commit b37a667c6242
+   ("rcu/nocb: Add an option to offload all CPUs on boot").
+
+Test cases and test results as below:
+
+ ----------------------------------------------------------------------
+| CONFIG_NO_HZ_FULL  | CONFIG_RCU_NOCB_CPU_DEFAULT_ALL |    cmdline    |
+ ----------------------------------------------------------------------
+1)         N         |                 N               |     none      |
+2)         N         |                 N               | rcu_nocbs=1-2 |
+3)         Y         |                 N               | nohz_full=1-2 |
+4)         Y         |                 Y               |     none      |
+ ----------------------------------------------------------------------
+
+1)
+[ 1085.691770] rcu-torture:--- End of test: SUCCESS: (default)
+root@genericarmv8:~# dmesg | grep "Offload RCU callbacks"
+[    0.000000] rcu:     Offload RCU callbacks from CPUs: (none).
+root@genericarmv8:~# zcat /proc/config.gz | grep NOCB
+CONFIG_RCU_NOCB_CPU=y
+# CONFIG_RCU_NOCB_CPU_DEFAULT_ALL is not set
+root@genericarmv8:~# zcat /proc/config.gz | grep NO_HZ_FULL
+# CONFIG_NO_HZ_FULL is not set
+root@genericarmv8:~# cat /proc/cmdline
+console=ttyAMA0 root=/dev/vda2 crashkernel=256M@ee000000
+
+2)
+[ 1022.532198] rcu-torture:--- End of test: SUCCESS: (default)
+root@genericarmv8:~# dmesg | grep "Offload RCU callbacks"
+[    0.000000] rcu:     Offload RCU callbacks from CPUs: 1-2.
+root@genericarmv8:~# zcat /proc/config.gz | grep NOCB
+CONFIG_RCU_NOCB_CPU=y
+# CONFIG_RCU_NOCB_CPU_DEFAULT_ALL is not set
+root@genericarmv8:~# zcat /proc/config.gz | grep NO_HZ_FULL
+# CONFIG_NO_HZ_FULL is not set
+root@genericarmv8:~# cat /proc/cmdline
+console=ttyAMA0 root=/dev/vda2 crashkernel=256M@ee000000 rcu_nocbs=1-2
+
+3)
+[ 1011.714712] rcu-torture:--- End of test: SUCCESS: (default)
+root@genericarmv8:~# dmesg | grep "Offload RCU callbacks"
+[    0.000000] rcu:     Offload RCU callbacks from CPUs: 1-2.
+root@genericarmv8:~# zcat /proc/config.gz | grep NOCB
+CONFIG_RCU_NOCB_CPU=y
+# CONFIG_RCU_NOCB_CPU_DEFAULT_ALL is not set
+root@genericarmv8:~# zcat /proc/config.gz | grep NO_HZ_FULL
+CONFIG_NO_HZ_FULL=y
+root@genericarmv8:~# cat /proc/cmdline
+console=ttyAMA0 root=/dev/vda2 crashkernel=256M@ee000000 nohz_full=1-2
+
+4)
+[ 1031.047094] rcu-torture:--- End of test: SUCCESS: (default)
+root@genericarmv8:~# dmesg | grep "Offload RCU callbacks"
+[    0.000000] rcu:     Offload RCU callbacks from CPUs: 0-3.
+root@genericarmv8:~# zcat /proc/config.gz | grep NOCB
+CONFIG_RCU_NOCB_CPU=y
+CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y
+root@genericarmv8:~# zcat /proc/config.gz | grep NO_HZ_FULL
+CONFIG_NO_HZ_FULL=y
+root@genericarmv8:~# cat /proc/cmdline
+console=ttyAMA0 root=/dev/vda2 crashkernel=256M@ee000000
+
+
+v1 --> v2:
+Update commit message.
+
+Zhen Lei (2):
+  rcu: Simplify rcu_init_nohz() cpumask handling
+  rcu: Offload callback processing from all CPUs in the absence of
+    rcu_nocbs=
+
+ kernel/rcu/Kconfig     |  4 ++--
+ kernel/rcu/tree_nocb.h | 35 ++++++++++++-----------------------
+ 2 files changed, 14 insertions(+), 25 deletions(-)
+
 -- 
 2.25.1
 
