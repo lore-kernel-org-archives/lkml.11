@@ -2,124 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD120ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 09:01:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A446FECAAD5
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 09:02:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234382AbiIAJBG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 05:01:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37328 "EHLO
+        id S234411AbiIAJCK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 05:02:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234411AbiIAJAT (ORCPT
+        with ESMTP id S234228AbiIAJBN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 05:00:19 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2054.outbound.protection.outlook.com [40.107.244.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 771964AD75;
-        Thu,  1 Sep 2022 02:00:03 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=daKwIXnG21f5IQnwFLtP9tfgO380G8YdT3cnUzVBJyD8r52OT+38AqkrcjdrLbOfj4HE0NPZalQWsbeGP5npJSUqLjsyppM4fxv8uHXrKAKz6rnTxv/8uoyRaE8BrcrrtoP7noiqw352WowpjSS8pj3M5TR7/j+OpUi2nPJxIQf9PlaOev6Wk/u6t8L2gY5p5jvsX++zji3NB0YGLxdver7s13dExdFevn1MTLbzZZzrE1lVy/MQYSP3hbybjxnPzkEZHXaIimCWp3zV+JzHkndPEhic15+mDr4DyKDwUh8kQZj28Xg1Zz6jUVBlrwTKhLbIkN1YVZc+Z8ti7yboRg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lOwv1GDUtAoqnMgcMKPJGv6/T0bXxpHqD3jQSPNQWvM=;
- b=F1++p52BPRMSRBaZgZ1JtTKSs5UiIWjTCqhfAitUf/7rLuJT9WYSzgcHw7VazHZj0pa/VZaLo0cBYeYeOriKfGfXAnQSf/6biOC4AFkDrLFvkIELjRh48s39htybIHqK4OdSOQspBOmOHYoPBtXaNYZ8G3xoYvrDs2TqIqIbxhWURaib5QhiV6H/3V2H6dYUMuY1v7mgMc7RYQLOYLbZzj1TU1uP0EPz3Z7QrVc/MiaA0Uy2JXj2dytTU1HK4ieYz9Im2TkWxBCuQqQ19kX0te1yvApWFKWzK4uiyO3sCnhOzEsU536Bh7thsEIK6zguSfPOiDThcNBdk7dB6F+UQg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=intel.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lOwv1GDUtAoqnMgcMKPJGv6/T0bXxpHqD3jQSPNQWvM=;
- b=CYOq2TzJfEzuMKnpHuS0rkiSmwbLAnwaPxGVTEISmJItUOhwzDj0vfFz1hP+y9v2B3cVzQiM+79i4CLOhvjbwmnic14IjOPYa9OIsrAOICdXnRMpt/txLxLg3dcDvamU6pdd2FI6Fwu1QcyhD/YYdOd7g+CcU/mCF89sme5umsA=
-Received: from MW4PR04CA0317.namprd04.prod.outlook.com (2603:10b6:303:82::22)
- by MW4PR12MB5668.namprd12.prod.outlook.com (2603:10b6:303:16b::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Thu, 1 Sep
- 2022 09:00:01 +0000
-Received: from CO1NAM11FT009.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:82:cafe::7d) by MW4PR04CA0317.outlook.office365.com
- (2603:10b6:303:82::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.13 via Frontend
- Transport; Thu, 1 Sep 2022 09:00:01 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT009.mail.protection.outlook.com (10.13.175.61) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5588.10 via Frontend Transport; Thu, 1 Sep 2022 09:00:01 +0000
-Received: from aerithdevpyuan.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 1 Sep
- 2022 03:59:55 -0500
-From:   Perry Yuan <Perry.Yuan@amd.com>
-To:     <rafael.j.wysocki@intel.com>, <ray.huang@amd.com>,
-        <viresh.kumar@linaro.org>
-CC:     <Deepak.Sharma@amd.com>, <Mario.Limonciello@amd.com>,
-        <Nathan.Fontenot@amd.com>, <Alexander.Deucher@amd.com>,
-        <Jinzhou.Su@amd.com>, <Shimmer.Huang@amd.com>,
-        <Xiaojian.Du@amd.com>, <Li.Meng@amd.com>,
-        <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Perry Yuan <Perry.Yuan@amd.com>
-Subject: [PATCH v3] x86/cpu/amd: fix the highest perf query for new AMD processors
-Date:   Thu, 1 Sep 2022 16:59:39 +0800
-Message-ID: <20220901085939.2388861-1-Perry.Yuan@amd.com>
-X-Mailer: git-send-email 2.34.1
+        Thu, 1 Sep 2022 05:01:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2670312BC1E
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 02:00:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662022841;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8mt67aF+6co4O3ixWvunn6QiNw9LDIbjyfyYr/fh0ZY=;
+        b=c+/fTIpNLeR7YhfphaF5fIXLH6sCuapXX8TRQ1FTPKyIELjEMthJw0nNJ39JdIbQmgJ3dc
+        QuZqP9Q9bWj75WhlhWkNAx3h6VwGz+qz5SdU8M+Lxdd/vvqU+saroOZ0rNyY7rYIE28TYp
+        8gSZF2MfjtpZgHGH9sCMb7M37BtNYFk=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-563-CrBXpJY6PmS9UqBNSp1KaA-1; Thu, 01 Sep 2022 05:00:40 -0400
+X-MC-Unique: CrBXpJY6PmS9UqBNSp1KaA-1
+Received: by mail-qk1-f200.google.com with SMTP id m19-20020a05620a24d300b006bb85a44e96so13967284qkn.23
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 02:00:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=8mt67aF+6co4O3ixWvunn6QiNw9LDIbjyfyYr/fh0ZY=;
+        b=Yi6Ql9S5JfsMGLUgoHEk4mLHurKhigX8r7lkvu1ICgeYSd4lMoTi6H0qbUE+lPD9pi
+         v1EKVuksjysOZ9xtkWs2z5vKgssAFfhd32CTZbWJQHhihmPW1xOJ+LvKh5X4AWq3FrWm
+         yocCkwTwmsN2kZ+/3S0kWSK3w05C9DURuZfaUWU1QWB4dx//6sRS3XncRvdeRqrEOLg2
+         btCAUdKyBrpBBSiCrK+f6poTd+W/+Nq8RVd+bpfQt0RYHS8hB9ogGk/iMdpCwLGrxjiA
+         xnFVciCcwIYOb6qH3KGO4qwSXSWHoCLrBFPMY3wSs5x8dJ9FDLpYZTFvs3ktrPCsj/Nm
+         hrzg==
+X-Gm-Message-State: ACgBeo1fdjEVricBFIq/XxnxYig44IiKuoNc0xDLvvbirrxZwjF0lGWS
+        cCacGjBAWAPkEvvNrlhns5Ufeoz3DwzapqLXNkmZjBD5TxXk05FaurxuoS8neJrlBKspuN/VxSU
+        qkC+DTUcfooEMh8Pdah/DCvblw6OyRqToZPZMt8gK
+X-Received: by 2002:a05:622a:15c3:b0:344:7c48:bfb2 with SMTP id d3-20020a05622a15c300b003447c48bfb2mr22660911qty.370.1662022839488;
+        Thu, 01 Sep 2022 02:00:39 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6JniwzUbUHGWnENjDhen1GCDMSpZDyCOvT0FUaBOPK2wQyDY0m971rfQdjcLbJ80DkWju9fbvsYnge8l7FCVE=
+X-Received: by 2002:a05:622a:15c3:b0:344:7c48:bfb2 with SMTP id
+ d3-20020a05622a15c300b003447c48bfb2mr22660890qty.370.1662022839181; Thu, 01
+ Sep 2022 02:00:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: afc578a8-d0e7-4853-6899-08da8bf85a7e
-X-MS-TrafficTypeDiagnostic: MW4PR12MB5668:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: KESPGvNPpAuGVIycdHq3+ouZO+SdfKDruHpZga9QHd9L8a+Fe/wUmK7DtI+Qq05aKJiI5zgsU2lPgsEFc/U84jAL3LWaW7SgVGN6kF/mPue5cE5P5/znxfJpSvUu+xYvjeMUu93wb+wOkxyjQif1rTsIGRVNrWgFz1dEa3z2V5A+/vKIwHsWKMhSoAAY0XfISxu9VDWvOGlKQfa+gB/nHj4n9TlWhZ0UVMGTzWfybdlO8ackkm2tT1wtnzD2VhtsYFRMH4cdLBFFbxco/8bXD0scNLjtVCGPnJURIlyM5YBKMjcc6YRM7gS3GdDJH1LeQLcLkpUJywkNQ1IytI/LhwBMpXiZjOSzUlYEIxZABuuEA+AC5XUe1hXnkJfvgn4GOtG4ndYUMw/uHGRbz8BLJT0fmB4nUWxBHayav6BTaa15aigC0grz5/tKbfKqIODXYjXNh2jkc8k0PC9waFXXxVV46VETogxoXWt+JWVW1cRkd9DIC6pJNvXHAgvgr7ZWgPG1MY2/6D217IwSBTCyBWwYQ/xGaA4XMIvqlsi4Kcv/1duhxUAz+HGO5KgrUzFXeQ+PBJZHl7GAVRp48K0yAK4YT/WbhokmKXfLNwRWyhviG7lIreYRo9sfmhch2McBWua5Y9XzJeeBr+TjKj3e8X1a59oNqq4+h3QVnmaQ1pKyxIXRGMjlC2Tyyu0iYoHWYFZ/FZ45TmIY+iqKnSzn4ei36AQyOTW1f63MfKsXowpF0ewa0ArdCgGnduiRzFbKuUQqpORvhb1lKXK9RTAIyvCEUQxcnp0/1QFM8BhWtn+Dqbygq7xiki69v5gBwt2eDhHkSHwYnzcscuC9i2tU/w==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(396003)(136003)(39860400002)(346002)(376002)(36840700001)(40470700004)(46966006)(40460700003)(47076005)(426003)(6666004)(4744005)(26005)(7696005)(2616005)(1076003)(82740400003)(16526019)(336012)(8936002)(86362001)(82310400005)(186003)(478600001)(41300700001)(36860700001)(110136005)(356005)(5660300002)(4326008)(83380400001)(40480700001)(54906003)(316002)(36756003)(81166007)(2906002)(8676002)(70586007)(70206006)(2101003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2022 09:00:01.0855
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: afc578a8-d0e7-4853-6899-08da8bf85a7e
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT009.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB5668
+References: <20220901055434.824-1-qtxuning1999@sjtu.edu.cn> <20220901055434.824-4-qtxuning1999@sjtu.edu.cn>
+In-Reply-To: <20220901055434.824-4-qtxuning1999@sjtu.edu.cn>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Thu, 1 Sep 2022 11:00:03 +0200
+Message-ID: <CAJaqyWdSNVyWeHyeZgzhczL0+bcvYShwJEfzHpjmy45cSSre3Q@mail.gmail.com>
+Subject: Re: [RFC v3 3/7] vsock: batch buffers in tx
+To:     Guo Zhi <qtxuning1999@sjtu.edu.cn>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Michael Tsirkin <mst@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        kvm list <kvm@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to get the corrent highest perf for some new AMD processors,
-the amd_get_highest_perf() call will check the CPU model and
-return correct highest perf value.
+On Thu, Sep 1, 2022 at 7:55 AM Guo Zhi <qtxuning1999@sjtu.edu.cn> wrote:
+>
+> Vsock uses buffers in order, and for tx driver doesn't have to
+> know the length of the buffer. So we can do a batch for vsock if
+> in order negotiated, only write one used ring for a batch of buffers
+>
+> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
+> ---
+>  drivers/vhost/vsock.c | 12 ++++++++++--
+>  1 file changed, 10 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+> index 368330417bde..e08fbbb5439e 100644
+> --- a/drivers/vhost/vsock.c
+> +++ b/drivers/vhost/vsock.c
+> @@ -497,7 +497,7 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
+>         struct vhost_vsock *vsock = container_of(vq->dev, struct vhost_vsock,
+>                                                  dev);
+>         struct virtio_vsock_pkt *pkt;
+> -       int head, pkts = 0, total_len = 0;
+> +       int head, pkts = 0, total_len = 0, add = 0;
+>         unsigned int out, in;
+>         bool added = false;
+>
+> @@ -551,10 +551,18 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
+>                 else
+>                         virtio_transport_free_pkt(pkt);
+>
+> -               vhost_add_used(vq, head, 0);
+> +               if (!vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
+> +                       vhost_add_used(vq, head, 0);
+> +               } else {
+> +                       vq->heads[add].id = head;
+> +                       vq->heads[add++].len = 0;
 
-Acked-by: Huang Rui <ray.huang@amd.com>
-Signed-off-by: Perry Yuan <Perry.Yuan@amd.com>
----
- arch/x86/kernel/cpu/amd.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Knowing that the descriptors are used in order we can save a few
+memory writes to the vq->heads[] array. vhost.c is checking for the
+feature in_order anyway.
 
-diff --git a/arch/x86/kernel/cpu/amd.c b/arch/x86/kernel/cpu/amd.c
-index 48276c0e479d..bdb0bfa80525 100644
---- a/arch/x86/kernel/cpu/amd.c
-+++ b/arch/x86/kernel/cpu/amd.c
-@@ -1184,7 +1184,8 @@ u32 amd_get_highest_perf(void)
- 	struct cpuinfo_x86 *c = &boot_cpu_data;
- 
- 	if (c->x86 == 0x17 && ((c->x86_model >= 0x30 && c->x86_model < 0x40) ||
--			       (c->x86_model >= 0x70 && c->x86_model < 0x80)))
-+			       (c->x86_model >= 0x70 && c->x86_model < 0x80) ||
-+			       (c->x86_model >= 0xa0 && c->x86_model < 0xb0)))
- 		return 166;
- 
- 	if (c->x86 == 0x19 && ((c->x86_model >= 0x20 && c->x86_model < 0x30) ||
--- 
-2.34.1
+Thanks!
+
+> +               }
+>                 added = true;
+>         } while(likely(!vhost_exceeds_weight(vq, ++pkts, total_len)));
+>
+> +       /* If in order feature negotiaged, we can do a batch to increase performance */
+> +       if (vhost_has_feature(vq, VIRTIO_F_IN_ORDER) && added)
+> +               vhost_add_used_n(vq, vq->heads, add);
+>  no_more_replies:
+>         if (added)
+>                 vhost_signal(&vsock->dev, vq);
+> --
+> 2.17.1
+>
 
