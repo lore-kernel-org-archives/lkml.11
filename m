@@ -2,95 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90CCAC54EE9
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 08:56:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE4E2ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 08:56:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234301AbiIAI4e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 04:56:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35614 "EHLO
+        id S234216AbiIAI4i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 04:56:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234272AbiIAI4R (ORCPT
+        with ESMTP id S234297AbiIAI4U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 04:56:17 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36B3412CB12
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 01:56:13 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id bt10so23439291lfb.1
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 01:56:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=7mCanjn29Z/rrHV7lcGYwLLR3hfJpckAbbzYP2xrGHY=;
-        b=WPhWWn/baRHPBIBTEDEdWZ2nx+15sKff267S+Q6FCaFGh8NLGl2u2ZdG+7cQs30JKD
-         zfdalCK+Wf2le44fT7f5mk6UFHaaBnAqj0tb98hVhWSvrS1NZ4OVKHnuUThrlq1Qmo52
-         7FTUtGY4cwW8+K82DVBHc0ZHgG8B/FZKZonMgktGavPLOqgB8vHjkHk400bGLRzLmsb3
-         Db5ffWVKuGlL9BByhao1ceTrKIIxqPctrXMrphcxCNApQgg2/rZwnQSRTFKXAtyJBoRi
-         s9wT7Ip5/U6xvY3Vjx6bpXyzUOtf2ZX6333qshrxiSYAwMWZTGa5v0k8bqYKV2/DVp8u
-         5xjw==
+        Thu, 1 Sep 2022 04:56:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 814111314FE
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 01:56:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662022576;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Wlt+f7gBjVGkc0zcQ2pNtyBrX9IrrQuzBjMRXWCKVdg=;
+        b=Cmpm/rfqf5o2169JdnYIidR7jNgbYmful1YbSCZFNtAFM+/8otHwfwJGWGaupARiD+6oyt
+        qXmBobrMWIZ4uXYb49VEK5dfJJ+mtShowzcJEZDMBh8HR/J/cNC7I5hK0nyKxs0CdKfP/l
+        nvUnuViQ2pMejaRJYMLZedVuUjMC3sQ=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-637-v8dowpQhPbyC-lw3LcZ-XQ-1; Thu, 01 Sep 2022 04:56:15 -0400
+X-MC-Unique: v8dowpQhPbyC-lw3LcZ-XQ-1
+Received: by mail-qk1-f198.google.com with SMTP id u15-20020a05620a0c4f00b006b8b3f41303so13651583qki.8
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 01:56:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=7mCanjn29Z/rrHV7lcGYwLLR3hfJpckAbbzYP2xrGHY=;
-        b=dvLCXDhA/iLEctFHaZFFlhv2653eEEmYRzB3tl0WNFTd2DwA6aRUvgWYkWK92HkOyu
-         eHq9aS2w5H8ybYN65V4gfADLCcKNn5AFdsKrn3/xQw5c/0gLq8bSPIcav5pAKHKVX5X7
-         QokN2UsCMXfFi6tXAuuNzYFlQKsX5Sg2erLA60ebaASvEwOB+84h34a8QSxUiQ8fiXvD
-         YDC8zuZcTrI7G9kpyxhRLjEcf9VNOjD6oGKPxQqgFe0VDdi5yaIYHA3j7KMf0L9Cn2pR
-         Gx+g8yACmQqE5pIh3qaOWjxp6fn+mJbWWzdDyJHM55Sz09MiH5eRSyRNeOLUV1paMr9T
-         7JTQ==
-X-Gm-Message-State: ACgBeo0PksWELYHcClrz5uvPj28+UGt+IMEy/qFGUbfGmyTrsFoE9inJ
-        cCw8oHzfk7nB7hTAI/r16GR1i8ZhLSiE4lwv
-X-Google-Smtp-Source: AA6agR7z1Q9kJzKNUjrW5qttM4Ya/9QfDlxxbWpVIibldU9XBDwYcNl6KP/AHntIAF9zWQCYSFv1VQ==
-X-Received: by 2002:a05:6512:ad3:b0:492:d78f:2c09 with SMTP id n19-20020a0565120ad300b00492d78f2c09mr9793826lfu.99.1662022571822;
-        Thu, 01 Sep 2022 01:56:11 -0700 (PDT)
-Received: from krzk-bin.. (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id c20-20020a056512075400b004947984bc78sm883856lfs.188.2022.09.01.01.56.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 01:56:11 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH RFT 1/3] dt-bindings: soc: qcom: smd-rpm: add PMIC regulators nodes
-Date:   Thu,  1 Sep 2022 11:56:07 +0300
-Message-Id: <20220901085609.95624-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=Wlt+f7gBjVGkc0zcQ2pNtyBrX9IrrQuzBjMRXWCKVdg=;
+        b=B09EiJ0W1JAuFkCqCzHHH4BlQQV1etEvG2dqKD3J+jJt72X3N+K9ypAtRoyEuzbydD
+         XJKX1AWnMsqkvmPRT1JHV7uSTLT+jtgTO0p/jdWP3AEDg9iaUfTJwDHicSW+CyPAXy3I
+         BcjZefTg+7W5HD3ClVLu38+JLVmKEVKdkRe32+QTeMhOToc6MRSCOfA/DgnTnxuUooWI
+         HLbPwxlHKzExkso4/ULpClW4FWd+ViXFmrOPmE/laBDLOoQu6sfXncXEfUGGWTbGRuxs
+         G9LD5XjV9RiZMDoKt7IaB2kStHqmYKuEQY4v6E5QQPXxV61mjf8fFJrvq8jIGLAFkozH
+         khSg==
+X-Gm-Message-State: ACgBeo2JioAagegSZYtdOCv+NC9gMHmwOFO87aXQcU805qFa6gYayzTr
+        YoGKK/CwPkmYtwlcKHs2WNN48xXd8feIe79LtGd2DWA30/UfT3POGTLzH7VrBU9yBp3xCQNFELz
+        FjOw0RnStRwMPFdPPoE5HWgECca8U/8Z1X/rNoeWC
+X-Received: by 2002:a05:622a:4204:b0:344:e16c:e597 with SMTP id cp4-20020a05622a420400b00344e16ce597mr22689196qtb.592.1662022574904;
+        Thu, 01 Sep 2022 01:56:14 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5u2YDUEtCaIjrrUX8nL8zujU37Phr2hYBocVlhEmZWrU4E4NS/pqAa1UdI+qmflN4UtxuwF42IFeJEHEE3Luc=
+X-Received: by 2002:a05:622a:4204:b0:344:e16c:e597 with SMTP id
+ cp4-20020a05622a420400b00344e16ce597mr22689189qtb.592.1662022574715; Thu, 01
+ Sep 2022 01:56:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220901055434.824-1-qtxuning1999@sjtu.edu.cn> <20220901055434.824-2-qtxuning1999@sjtu.edu.cn>
+In-Reply-To: <20220901055434.824-2-qtxuning1999@sjtu.edu.cn>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Thu, 1 Sep 2022 10:55:38 +0200
+Message-ID: <CAJaqyWchvGKvtjFg_YkioGYtxSp6MmNVdhPvyRLHuz1aWrtgGA@mail.gmail.com>
+Subject: Re: [RFC v3 1/7] vhost: expose used buffers
+To:     Guo Zhi <qtxuning1999@sjtu.edu.cn>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Michael Tsirkin <mst@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        kvm list <kvm@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Qualcomm RPM over SMD contains devices for one or two PMIC
-regulators - already used in several DTS files.
+On Thu, Sep 1, 2022 at 7:55 AM Guo Zhi <qtxuning1999@sjtu.edu.cn> wrote:
+>
+> Follow VIRTIO 1.1 spec, only writing out a single used ring for a batch
+> of descriptors.
+>
+> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
+> ---
+>  drivers/vhost/vhost.c | 16 +++++++++++++---
+>  1 file changed, 13 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> index 40097826cff0..26862c8bf751 100644
+> --- a/drivers/vhost/vhost.c
+> +++ b/drivers/vhost/vhost.c
+> @@ -2376,10 +2376,20 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
+>         vring_used_elem_t __user *used;
+>         u16 old, new;
+>         int start;
+> +       int copy_n = count;
+>
+> +       /**
+> +        * If in order feature negotiated, devices can notify the use of a batch of buffers to
+> +        * the driver by only writing out a single used ring entry with the id corresponding
+> +        * to the head entry of the descriptor chain describing the last buffer in the batch.
+> +        */
+> +       if (vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
+> +               copy_n = 1;
+> +               heads = &heads[count - 1];
+> +       }
+>         start = vq->last_used_idx & (vq->num - 1);
+>         used = vq->used->ring + start;
+> -       if (vhost_put_used(vq, heads, start, count)) {
+> +       if (vhost_put_used(vq, heads, start, copy_n)) {
+>                 vq_err(vq, "Failed to write used");
+>                 return -EFAULT;
+>         }
+> @@ -2388,7 +2398,7 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
+>                 smp_wmb();
+>                 /* Log used ring entry write. */
+>                 log_used(vq, ((void __user *)used - (void __user *)vq->used),
+> -                        count * sizeof *used);
+> +                        copy_n * sizeof(*used));
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml | 5 +++++
- 1 file changed, 5 insertions(+)
+log_used reports to the VMM the modified memory by the device. It
+iterates over used descriptors translating them to do so.
 
-diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml
-index 09d5bfa920f2..deccc637b6d4 100644
---- a/Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml
-+++ b/Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml
-@@ -61,6 +61,11 @@ properties:
-     items:
-       - const: rpm_requests
- 
-+patternProperties:
-+  "^regulators(-[01])?$":
-+    $ref: /schemas/regulator/qcom,smd-rpm-regulator.yaml#
-+    unevaluatedProperties: false
-+
- if:
-   properties:
-     compatible:
--- 
-2.34.1
+We need to either report here all the descriptors or to modify
+log_used so it reports all the batch with in_order feature. The latter
+has an extra advantage: no need to report these non-existent writes to
+the used ring of the skipped buffers. Although it probably does not
+make a difference in performance.
+
+With the current code, we could iterate the heads[] array too, calling
+. However, I think it would be a waste. More on that later.
+
+Thanks!
+
+>         }
+>         old = vq->last_used_idx;
+>         new = (vq->last_used_idx += count);
+> @@ -2410,7 +2420,7 @@ int vhost_add_used_n(struct vhost_virtqueue *vq, struct vring_used_elem *heads,
+>
+>         start = vq->last_used_idx & (vq->num - 1);
+>         n = vq->num - start;
+> -       if (n < count) {
+> +       if (n < count && !vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
+>                 r = __vhost_add_used_n(vq, heads, n);
+>                 if (r < 0)
+>                         return r;
+> --
+> 2.17.1
+>
 
