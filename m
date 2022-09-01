@@ -2,164 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E3B4ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 03:11:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7B1DECAAD4
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 03:12:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231837AbiIADLs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 23:11:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60600 "EHLO
+        id S232211AbiIADM2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 23:12:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229746AbiIADLn (ORCPT
+        with ESMTP id S229572AbiIADMY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 23:11:43 -0400
-Received: from mail1.bemta37.messagelabs.com (mail1.bemta37.messagelabs.com [85.158.142.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 083A010A632;
-        Wed, 31 Aug 2022 20:11:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fujitsu.com;
-        s=170520fj; t=1662001895; i=@fujitsu.com;
-        bh=AHPZvJazFd1q87YaF+oOE/CDLh9RAqlmX9L7CcYBVwY=;
-        h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=GQIS20UmeaAXxyXF+CLkPX0X1EDJme6AUEJL3UzB6/1GQw6Mv9+0ypYS6HZqXfujV
-         cQYW6c4zHkQsffaDbO5YyTlk/FKAUCApXg6VDlD98Z9IVTXu/WNsXLtAS239/b52rY
-         5yYRgo0MGhTAhafVDuaF1iCjPwIHxro5I+YHozVGz7Lm9W7hPa1eCsb30MZTGPTrxx
-         SBLPsVtpt+Akst1NWrFimUF1a5JeT93JK9SAr8G9d4GHQDJKxs5zSkJaeXobJKr/tE
-         9jZ5QRtbw/BVTu1qPx9JErNqlBSrtQb8+nkR4bcl4VcEQoNgBHBVcg5SGOMhsy2R7D
-         ha/6/ZoZ8GxiA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrHIsWRWlGSWpSXmKPExsViZ8ORpPtMSSD
-  ZYNJiCYvXhz8xWlzeNYfNYvqd92wWlw5dZLKY8nIduwOrx+I9L5k8Nq3qZPP4vEkugDmKNTMv
-  Kb8igTVj9vbDjAXvRCr+TT7H2sDYLtjFyMUhJLCRUeLSh3csEM5SJomLs69AOUcZJfbs6GDtY
-  uTkYBPQkLjXcpMRxBYRCJA4fOs4mM0skCWxs/kdkM3BISwQJHF8UzxImEVAReJn10k2EJtXwF
-  Hiyt9v7CC2hICCxJSH75kh4oISJ2c+YYEYIyFx8MULZogaRYkjnX9ZIOxKidYPv6BsNYmr5zY
-  xT2Dkn4WkfRaS9gWMTKsYbZOKMtMzSnITM3N0DQ0MdA0NTYG0sa6RoZleYpVuol5qqW5eflFJ
-  hq6hXmJ5sV5qcbFecWVuck6KXl5qySZGYFCnFKff2MG4a98vvUOMkhxMSqK8FYv5k4X4kvJTK
-  jMSizPii0pzUosPMcpwcChJ8DID40RIsCg1PbUiLTMHGGEwaQkOHiUR3ieKQGne4oLE3OLMdI
-  jUKUZdjoO79u9lFmLJy89LlRLnzVUAKhIAKcoozYMbAYv2S4yyUsK8jAwMDEI8BalFuZklqPK
-  vGMU5GJWEeRlALuHJzCuB2/QK6AgmoCOmz+QHOaIkESEl1cDEyPfy59q3j7bZ7ry/WuZY1EcF
-  uyPe7SJ3NaX2HVq2/2xbWdKJKCbHXKct0/glfTqVsvv72xa8PeX6dD9PJtNdceaW4m832vUM4
-  /YG/1d+6rJfxfq4cl7F5Tdf3p54rXq9VF8olmfH8h/hYrcnxkZ8WlvxUDBz7q9Pp9ZPMlvKHC
-  rw8XPlZoPb9ouVVnPVxE09cH+Xb2i8pKSUh/m/LrlFdpwV0x3mB/wrqL3Ze9j13bnZe0IUV3H
-  vvJN4/fgpvqCcO2FbnFZ+OxYqFv3rWvjmB+tc1di9DCq1b68o2GuZq3XVduXTpQ+5hWoLCgrC
-  OI81fQl6MP1trfbKs5Vt9s+kfVfL63Q+Vrp/8P/e3DgOJZbijERDLeai4kQArxgR5HEDAAA=
-X-Env-Sender: lizhijian@fujitsu.com
-X-Msg-Ref: server-3.tower-728.messagelabs.com!1662001893!143285!1
-X-Originating-IP: [62.60.8.98]
-X-SYMC-ESS-Client-Auth: outbound-route-from=pass
-X-StarScan-Received: 
-X-StarScan-Version: 9.87.3; banners=-,-,-
-X-VirusChecked: Checked
-Received: (qmail 5747 invoked from network); 1 Sep 2022 03:11:34 -0000
-Received: from unknown (HELO n03ukasimr03.n03.fujitsu.local) (62.60.8.98)
-  by server-3.tower-728.messagelabs.com with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP; 1 Sep 2022 03:11:34 -0000
-Received: from n03ukasimr03.n03.fujitsu.local (localhost [127.0.0.1])
-        by n03ukasimr03.n03.fujitsu.local (Postfix) with ESMTP id BEF681AD;
-        Thu,  1 Sep 2022 04:11:33 +0100 (BST)
-Received: from R01UKEXCASM223.r01.fujitsu.local (R01UKEXCASM223 [10.182.185.121])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by n03ukasimr03.n03.fujitsu.local (Postfix) with ESMTPS id B35121AC;
-        Thu,  1 Sep 2022 04:11:33 +0100 (BST)
-Received: from fd75cb8233c6.g08.fujitsu.local (10.167.226.45) by
- R01UKEXCASM223.r01.fujitsu.local (10.182.185.121) with Microsoft SMTP Server
- (TLS) id 15.0.1497.32; Thu, 1 Sep 2022 04:11:30 +0100
-From:   Li Zhijian <lizhijian@fujitsu.com>
-To:     <brauner@kernel.org>, <shuah@kernel.org>,
-        <linux-kselftest@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, Li Zhijian <lizhijian@fujitsu.com>,
-        "Philip Li" <philip.li@intel.com>
-Subject: [PATCH v3] ksefltests: pidfd: Fix wait_states: Test terminated by timeout
-Date:   Thu, 1 Sep 2022 03:10:07 +0000
-Message-ID: <1662001807-7-1-git-send-email-lizhijian@fujitsu.com>
-X-Mailer: git-send-email 1.8.3.1
+        Wed, 31 Aug 2022 23:12:24 -0400
+Received: from baidu.com (mx20.baidu.com [111.202.115.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65315E0FCF;
+        Wed, 31 Aug 2022 20:12:23 -0700 (PDT)
+From:   "Li,Rongqing" <lirongqing@baidu.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+CC:     "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Suravee Suthikulpanit" <suravee.suthikulpanit@amd.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: RE: [PATCH 05/19] KVM: SVM: Compute dest based on sender's x2APIC
+ status for AVIC kick
+Thread-Topic: [PATCH 05/19] KVM: SVM: Compute dest based on sender's x2APIC
+ status for AVIC kick
+Thread-Index: AQHYvNGMxhPiKGt0AESRHXzY/kqZ3K3J4aVQ
+Date:   Thu, 1 Sep 2022 02:56:42 +0000
+Message-ID: <0e8caaf698e048a295be68530d15dcfd@baidu.com>
+References: <20220831003506.4117148-1-seanjc@google.com>
+ <20220831003506.4117148-6-seanjc@google.com>
+In-Reply-To: <20220831003506.4117148-6-seanjc@google.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.22.206.28]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.167.226.45]
-X-ClientProxiedBy: G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.80) To
- R01UKEXCASM223.r01.fujitsu.local (10.182.185.121)
-X-Virus-Scanned: ClamAV using ClamSMTP
+X-FEAS-Client-IP: 172.31.51.56
+X-FE-Last-Public-Client-IP: 100.100.100.38
+X-FE-Policy-ID: 15:10:21:SYSTEM
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-0Day/LKP observed that the kselftest blocks forever since one of the
-pidfd_wait doesn't terminate in 1 of 30 runs. After digging into
-the source, we found that it blocks at:
-ASSERT_EQ(sys_waitid(P_PIDFD, pidfd, &info, WCONTINUED, NULL), 0);
-
-wait_states has below testing flow:
-  CHILD                 PARENT
-  ---------------+--------------
-1 STOP itself
-2                   WAIT for CHILD STOPPED
-3                   SIGNAL CHILD to CONT
-4 CONT
-5 STOP itself
-5'                  WAIT for CHILD CONT
-6                   WAIT for CHILD STOPPED
-
-The problem is that the kernel cannot ensure the order of 5 and 5', once
-5 goes first, the test will fail.
-
-we can reproduce it by:
-$ while true; do make run_tests -C pidfd; done
-
-Introduce a blocking read in child process to make sure the parent can
-check its WCONTINUED.
-
-CC: Philip Li <philip.li@intel.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Li Zhijian <lizhijian@fujitsu.com>
-Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
----
-I have almost forgotten this patch since the former version post over 6 months
-ago. This time I just do a rebase and update the comments.
-V3: fixes description and add review tag
-V2: rewrite with pipe to avoid usleep
----
- tools/testing/selftests/pidfd/pidfd_wait.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/tools/testing/selftests/pidfd/pidfd_wait.c b/tools/testing/selftests/pidfd/pidfd_wait.c
-index 070c1c876df1..c3e2a3041f55 100644
---- a/tools/testing/selftests/pidfd/pidfd_wait.c
-+++ b/tools/testing/selftests/pidfd/pidfd_wait.c
-@@ -95,20 +95,28 @@ static int sys_waitid(int which, pid_t pid, siginfo_t *info, int options,
- 		.flags = CLONE_PIDFD | CLONE_PARENT_SETTID,
- 		.exit_signal = SIGCHLD,
- 	};
-+	int pfd[2];
- 	pid_t pid;
- 	siginfo_t info = {
- 		.si_signo = 0,
- 	};
- 
-+	ASSERT_EQ(pipe(pfd), 0);
- 	pid = sys_clone3(&args);
- 	ASSERT_GE(pid, 0);
- 
- 	if (pid == 0) {
-+		char buf[2];
-+
-+		close(pfd[1]);
- 		kill(getpid(), SIGSTOP);
-+		ASSERT_EQ(read(pfd[0], buf, 1), 1);
-+		close(pfd[0]);
- 		kill(getpid(), SIGSTOP);
- 		exit(EXIT_SUCCESS);
- 	}
- 
-+	close(pfd[0]);
- 	ASSERT_EQ(sys_waitid(P_PIDFD, pidfd, &info, WSTOPPED, NULL), 0);
- 	ASSERT_EQ(info.si_signo, SIGCHLD);
- 	ASSERT_EQ(info.si_code, CLD_STOPPED);
-@@ -117,6 +125,8 @@ static int sys_waitid(int which, pid_t pid, siginfo_t *info, int options,
- 	ASSERT_EQ(sys_pidfd_send_signal(pidfd, SIGCONT, NULL, 0), 0);
- 
- 	ASSERT_EQ(sys_waitid(P_PIDFD, pidfd, &info, WCONTINUED, NULL), 0);
-+	ASSERT_EQ(write(pfd[1], "C", 1), 1);
-+	close(pfd[1]);
- 	ASSERT_EQ(info.si_signo, SIGCHLD);
- 	ASSERT_EQ(info.si_code, CLD_CONTINUED);
- 	ASSERT_EQ(info.si_pid, parent_tid);
--- 
-1.8.3.1
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBTZWFuIENocmlzdG9waGVyc29u
+IDxzZWFuamNAZ29vZ2xlLmNvbT4NCj4gU2VudDogV2VkbmVzZGF5LCBBdWd1c3QgMzEsIDIwMjIg
+ODozNSBBTQ0KPiBUbzogU2VhbiBDaHJpc3RvcGhlcnNvbiA8c2VhbmpjQGdvb2dsZS5jb20+OyBQ
+YW9sbyBCb256aW5pDQo+IDxwYm9uemluaUByZWRoYXQuY29tPg0KPiBDYzoga3ZtQHZnZXIua2Vy
+bmVsLm9yZzsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgU3VyYXZlZSBTdXRoaWt1bHBh
+bml0DQo+IDxzdXJhdmVlLnN1dGhpa3VscGFuaXRAYW1kLmNvbT47IE1heGltIExldml0c2t5IDxt
+bGV2aXRza0ByZWRoYXQuY29tPjsNCj4gTGksUm9uZ3FpbmcgPGxpcm9uZ3FpbmdAYmFpZHUuY29t
+Pg0KPiBTdWJqZWN0OiBbUEFUQ0ggMDUvMTldIEtWTTogU1ZNOiBDb21wdXRlIGRlc3QgYmFzZWQg
+b24gc2VuZGVyJ3MgeDJBUElDDQo+IHN0YXR1cyBmb3IgQVZJQyBraWNrDQo+IA0KPiBDb21wdXRl
+IHRoZSBkZXN0aW5hdGlvbiBmcm9tIElDUkggdXNpbmcgdGhlIHNlbmRlcidzIHgyQVBJQyBzdGF0
+dXMsIG5vdCBlYWNoDQo+IChwb3RlbnRpYWwpIHRhcmdldCdzIHgyQVBJQyBzdGF0dXMuDQo+IA0K
+PiBGaXhlczogYzUxNGQzYTM0OGFjICgiS1ZNOiBTVk06IFVwZGF0ZSBhdmljX2tpY2tfdGFyZ2V0
+X3ZjcHVzIHRvIHN1cHBvcnQNCj4gMzItYml0IEFQSUMgSUQiKQ0KPiBDYzogTGkgUm9uZ1Fpbmcg
+PGxpcm9uZ3FpbmdAYmFpZHUuY29tPg0KPiBTaWduZWQtb2ZmLWJ5OiBTZWFuIENocmlzdG9waGVy
+c29uIDxzZWFuamNAZ29vZ2xlLmNvbT4NCj4gLS0tDQo+ICBhcmNoL3g4Ni9rdm0vc3ZtL2F2aWMu
+YyB8IDggKy0tLS0tLS0NCj4gIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgNyBkZWxl
+dGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9hcmNoL3g4Ni9rdm0vc3ZtL2F2aWMuYyBiL2Fy
+Y2gveDg2L2t2bS9zdm0vYXZpYy5jIGluZGV4DQo+IGI1OWY4ZWUyNjcxZi4uM2FjZTBmMmY1MmYw
+IDEwMDY0NA0KPiAtLS0gYS9hcmNoL3g4Ni9rdm0vc3ZtL2F2aWMuYw0KPiArKysgYi9hcmNoL3g4
+Ni9rdm0vc3ZtL2F2aWMuYw0KPiBAQCAtNDQxLDYgKzQ0MSw3IEBAIHN0YXRpYyBpbnQgYXZpY19r
+aWNrX3RhcmdldF92Y3B1c19mYXN0KHN0cnVjdCBrdm0gKmt2bSwNCj4gc3RydWN0IGt2bV9sYXBp
+YyAqc291cmNlICBzdGF0aWMgdm9pZCBhdmljX2tpY2tfdGFyZ2V0X3ZjcHVzKHN0cnVjdCBrdm0g
+Kmt2bSwNCj4gc3RydWN0IGt2bV9sYXBpYyAqc291cmNlLA0KPiAgCQkJCSAgIHUzMiBpY3JsLCB1
+MzIgaWNyaCwgdTMyIGluZGV4KQ0KPiAgew0KPiArCXUzMiBkZXN0ID0gYXBpY194MmFwaWNfbW9k
+ZShzb3VyY2UpID8gaWNyaCA6DQo+ICtHRVRfWEFQSUNfREVTVF9GSUVMRChpY3JoKTsNCj4gIAl1
+bnNpZ25lZCBsb25nIGk7DQo+ICAJc3RydWN0IGt2bV92Y3B1ICp2Y3B1Ow0KPiANCj4gQEAgLTQ1
+NiwxMyArNDU3LDYgQEAgc3RhdGljIHZvaWQgYXZpY19raWNrX3RhcmdldF92Y3B1cyhzdHJ1Y3Qg
+a3ZtICprdm0sDQo+IHN0cnVjdCBrdm1fbGFwaWMgKnNvdXJjZSwNCj4gIAkgKiBzaW5jZSBlbnRl
+cmVkIHRoZSBndWVzdCB3aWxsIGhhdmUgcHJvY2Vzc2VkIHBlbmRpbmcgSVJRcyBhdCBWTVJVTi4N
+Cj4gIAkgKi8NCj4gIAlrdm1fZm9yX2VhY2hfdmNwdShpLCB2Y3B1LCBrdm0pIHsNCj4gLQkJdTMy
+IGRlc3Q7DQo+IC0NCj4gLQkJaWYgKGFwaWNfeDJhcGljX21vZGUodmNwdS0+YXJjaC5hcGljKSkN
+Cj4gLQkJCWRlc3QgPSBpY3JoOw0KPiAtCQllbHNlDQo+IC0JCQlkZXN0ID0gR0VUX1hBUElDX0RF
+U1RfRklFTEQoaWNyaCk7DQo+IC0NCj4gIAkJaWYgKGt2bV9hcGljX21hdGNoX2Rlc3QodmNwdSwg
+c291cmNlLCBpY3JsICYgQVBJQ19TSE9SVF9NQVNLLA0KPiAgCQkJCQlkZXN0LCBpY3JsICYgQVBJ
+Q19ERVNUX01BU0spKSB7DQo+ICAJCQl2Y3B1LT5hcmNoLmFwaWMtPmlycl9wZW5kaW5nID0gdHJ1
+ZTsNCj4gLS0NCj4gMi4zNy4yLjY3Mi5nOTQ3NjlkMDZmMC1nb29nDQoNClJldmlld2VkLWJ5OiBM
+aSBSb25nUWluZyA8bGlyb25ncWluZ0BiYWlkdS5jb20+DQoNClRoYW5rcy4NCg0KLUxpDQo=
