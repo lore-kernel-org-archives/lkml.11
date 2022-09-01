@@ -2,87 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BD90ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:23:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF426ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:24:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232069AbiIABXR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 21:23:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36648 "EHLO
+        id S232509AbiIABYh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 21:24:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232483AbiIABXO (ORCPT
+        with ESMTP id S232078AbiIABYf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 21:23:14 -0400
-Received: from smtpbg.qq.com (bg4.exmail.qq.com [43.154.221.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED58214FC82;
-        Wed, 31 Aug 2022 18:23:08 -0700 (PDT)
-X-QQ-mid: bizesmtp86t1661995383tf6b7xma
-Received: from localhost.localdomain ( [182.148.14.80])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 01 Sep 2022 09:23:01 +0800 (CST)
-X-QQ-SSF: 01000000000000D0F000000A0000000
-X-QQ-FEAT: 9E3Ddn8eo0LQgNSXZVdgud8z0yQ0Cn35g1PJs2XVEc34sQusOu8mptrcaab57
-        r2TgtwvWyDLddhRh7bsRDIAyCRME8N0tkXEVREDX0053GLdLw5mszFVjj5knZkFY/PmppyA
-        u10RMrXxaXaOY9NdUUEmliGdY/Md1X07ZxGAoRO/8DNNw6Sza5x9Ywj/K7X+9PZTMjBM2fa
-        6F6kvP72AgJpVQHd/irmSzPSc36K8KUN9nYJ5vVRc6CPMRQkcg7e65plJw6aRivdAl/gd82
-        jY6uepBGCYmZXK5usF6nwCudXwZRk4C/cOqLara48DJvOrd9fCp6jjQXynehq/BEmsbxcJB
-        qfidrLyi6qDkiuU+uTQWifLB7Noqlt+WofNyRFoViQtbvwB90uiLTax4EcK/w==
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     tfiga@chromium.org, m.szyprowski@samsung.com, mchehab@kernel.org
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] media: videobuf2: Use 'unsigned int' instead of just 'unsigned'.
-Date:   Thu,  1 Sep 2022 09:22:55 +0800
-Message-Id: <20220901012255.26586-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Wed, 31 Aug 2022 21:24:35 -0400
+Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE3214FC9E;
+        Wed, 31 Aug 2022 18:24:33 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VNtA9pB_1661995469;
+Received: from 30.97.48.53(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VNtA9pB_1661995469)
+          by smtp.aliyun-inc.com;
+          Thu, 01 Sep 2022 09:24:30 +0800
+Message-ID: <aee00134-794a-1589-e4a7-a1480d7a559f@linux.alibaba.com>
+Date:   Thu, 1 Sep 2022 09:24:42 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH] hugetlb: simplify hugetlb handling in follow_page_mask
+To:     Mike Kravetz <mike.kravetz@oracle.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        inuxppc-dev@lists.ozlabs.org, linux-ia64@vger.kernel.org,
+        David Hildenbrand <david@redhat.com>,
+        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>,
+        Naoya Horiguchi <naoya.horiguchi@linux.dev>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+References: <20220829234053.159158-1-mike.kravetz@oracle.com>
+ <57c8f032-e48a-bacb-7922-3e2cc10dc0d2@linux.alibaba.com>
+ <Yw4+YvdS9kJUnx1s@monkey> <Yw5ZTEqxZCAgEbK9@monkey>
+ <0a8025eb-cf15-453a-7d7d-7c72d008889a@linux.alibaba.com>
+ <Yw/2CDbFDX5cnB2o@monkey>
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <Yw/2CDbFDX5cnB2o@monkey>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'unsigned int' should be clearer than 'unsigned'.
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- drivers/media/common/videobuf2/videobuf2-core.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/media/common/videobuf2/videobuf2-core.c b/drivers/media/common/videobuf2/videobuf2-core.c
-index b203c1e26353..abfd84173df6 100644
---- a/drivers/media/common/videobuf2/videobuf2-core.c
-+++ b/drivers/media/common/videobuf2/videobuf2-core.c
-@@ -1590,7 +1590,7 @@ static int vb2_start_streaming(struct vb2_queue *q)
- 	 * should be returned to vb2 in start_streaming().
- 	 */
- 	if (WARN_ON(atomic_read(&q->owned_by_drv_count))) {
--		unsigned i;
-+		unsigned int i;
- 
- 		/*
- 		 * Forcefully reclaim buffers if the driver did not
-@@ -2738,7 +2738,7 @@ static size_t __vb2_perform_fileio(struct vb2_queue *q, char __user *data, size_
- 	 * else is able to provide this information with the write() operation.
- 	 */
- 	bool copy_timestamp = !read && q->copy_timestamp;
--	unsigned index;
-+	unsigned int index;
- 	int ret;
- 
- 	dprintk(q, 3, "mode %s, offset %ld, count %zd, %sblocking\n",
-@@ -2914,8 +2914,8 @@ static int vb2_thread(void *data)
- 	struct vb2_queue *q = data;
- 	struct vb2_threadio_data *threadio = q->threadio;
- 	bool copy_timestamp = false;
--	unsigned prequeue = 0;
--	unsigned index = 0;
-+	unsigned int prequeue = 0;
-+	unsigned int index = 0;
- 	int ret = 0;
- 
- 	if (q->is_output) {
--- 
-2.36.1
+On 9/1/2022 8:00 AM, Mike Kravetz wrote:
+> On 08/31/22 09:07, Baolin Wang wrote:
+>>
+>>
+>> On 8/31/2022 2:39 AM, Mike Kravetz wrote:
+>>> On 08/30/22 09:44, Mike Kravetz wrote:
+>>>> On 08/30/22 09:06, Baolin Wang wrote:
+>>>>> Hi Mike,
+>>>>>
+>>>>> On 8/30/2022 7:40 AM, Mike Kravetz wrote:
+>>>>>> During discussions of this series [1], it was suggested that hugetlb
+>>>>>> handling code in follow_page_mask could be simplified.  At the beginning
+>>>>>> of follow_page_mask, there currently is a call to follow_huge_addr which
+>>>>>> 'may' handle hugetlb pages.  ia64 is the only architecture which provides
+>>>>>> a follow_huge_addr routine that does not return error.  Instead, at each
+>>>>>> level of the page table a check is made for a hugetlb entry.  If a hugetlb
+>>>>>> entry is found, a call to a routine associated with that entry is made.
+>>>>>>
+>>>>>> Currently, there are two checks for hugetlb entries at each page table
+>>>>>> level.  The first check is of the form:
+>>>>>> 	if (p?d_huge())
+>>>>>> 		page = follow_huge_p?d();
+>>>>>> the second check is of the form:
+>>>>>> 	if (is_hugepd())
+>>>>>> 		page = follow_huge_pd().
+>>>>>>
+>>>>>> We can replace these checks, as well as the special handling routines
+>>>>>> such as follow_huge_p?d() and follow_huge_pd() with a single routine to
+>>>>>> handle hugetlb vmas.
+>>>>>>
+>>>>>> A new routine hugetlb_follow_page_mask is called for hugetlb vmas at the
+>>>>>> beginning of follow_page_mask.  hugetlb_follow_page_mask will use the
+>>>>>> existing routine huge_pte_offset to walk page tables looking for hugetlb
+>>>>>> entries.  huge_pte_offset can be overwritten by architectures, and already
+>>>>>> handles special cases such as hugepd entries.
+>>>>>
+>>>>> Could you also mention that this patch will fix the lock issue for
+>>>>> CONT-PTE/PMD hugetlb by changing to use huge_pte_lock()? which will help
+>>>>> people to understand the issue.
+>>>>
+>>>> Will update message in v2.  Thanks for taking a look!
+>>>>
+>>>
+>>> One additional thought, we 'may' need a separate patch to fix the locking
+>>> issues that can be easily backported.  Not sure this 'simplification' is
+>>> a good backport candidate.
+>>
+>> Yes, that was my thought before, but David did not like adding more
+>> make-legacy-cruft-happy code.
+>>
+>> So how about creating a series that contains 3 patches: picking up patch 1
+>> and patch 3 of my previous series [1], and your current patch? That means
+>> patch 1 and patch 2 in this series can fix the lock issue explicitly and be
+>> suitable to backport, meanwhile patch 3 (which is your current patch) will
+>> cleanup the legacy code.
+>>
+> 
+> When I looked at patch 3, I was thinking the update follow_huge_pmd routine
+> would work for the PTE level with a few more modifications.  Perhaps, this is
+> too ugly but it is a smaller set of changes for backport.
+> 
+> Of course, this would be followed up with the simplification patch which
+> removes all this code.
 
+Yes, looks more simple. I can send you a formal patch with your 
+suggestion, which can be added into your cleanup series. Thanks.
