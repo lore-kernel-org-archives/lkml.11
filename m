@@ -2,182 +2,362 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7054AECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 19:39:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1E24ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 19:41:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234659AbiIATja (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 15:39:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43186 "EHLO
+        id S232877AbiIATlA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 15:41:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234595AbiIATjZ (ORCPT
+        with ESMTP id S233652AbiIATk4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 15:39:25 -0400
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B6C59A98B
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 12:39:23 -0700 (PDT)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-33dc31f25f9so347061627b3.11
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 12:39:23 -0700 (PDT)
+        Thu, 1 Sep 2022 15:40:56 -0400
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BFF242AEF;
+        Thu,  1 Sep 2022 12:40:55 -0700 (PDT)
+Received: by mail-ot1-x335.google.com with SMTP id 6-20020a9d0106000000b0063963134d04so38893otu.3;
+        Thu, 01 Sep 2022 12:40:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=rw5PRlxl7tO0yi2f42RcudRuneYpC4HLzAgnvXZWG5E=;
-        b=lG3CtwEra2JQqN/veO23yk3cgaTJHFCiebuuRZY/xNehRm+m0fM4bIsWwBppGA+dxf
-         mGwrLGImeNf4NmD+qiiJAgJrRcvEAfMmmsjPutkxq2y7CzoFE7qGuyTBDkwrYwo0ghp+
-         DIdTURnQpZf4mS51OcBm4/JauLAis6X1OUJhsFMZ1Eii1uGdRpU21Q08G5BpjTO5hJLN
-         9L5Fsbu9o5yfqdUojSVuS9kjs1tQfCEVguOYiQkyDJxdrNwv3a8BIeLV7PQsB1938bTI
-         TTsL41uELqXnesIe6dBtowmfUnvD7Y1/Zc9uEXdIILlsmZXFDiVnDH9hCWWOHKwToPd1
-         MnoA==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=yDHzEYFqAKf8wDX5bZiEmg0+i6WsMr7NDvxZECaRGFg=;
+        b=XwbBVLCC4oOoUR6PqROVU/E5/I2lBrkSxhphBOtb1WwdUjHdHH/sO8l6AgjCf6oGBX
+         q+LHD5M4UrEqNOmZwjLMVaOT0WTKu4PgdtQf7e51UfrqKQI0lkSKMc9qywvMXuNWUW71
+         1L+OzdMhCF5790o+xGGNDuKj3G/yvGgR5u7iPiB/NsdMuokSrV+zciNyByo9274ow/9x
+         eD4NSmMQHbp8F/S5P1QYl2rM9hQQlEcraqh14412NOjcI8aeayzFA67ygdV8F2lIIwaK
+         onaNfeg6jOgBLzrkMhVXO8E4GhIMvNqGKvHsxJpEyF2s3ly7Gl9xiguNKNlIEq8dcBux
+         w3Ng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=rw5PRlxl7tO0yi2f42RcudRuneYpC4HLzAgnvXZWG5E=;
-        b=bWNkzZG9iJ6buoH0Ac5qdBaVoEvU7M3m4ZOfv/h4YEqkZWE57yvEC6I5Ua5OxLxqt5
-         yLImqqhnQGCXiLX2PVHJwvDis2zrYsRhiAeYRDcucbgu932SHBLreafahWkq6ZAyQIZ6
-         GKRES0o3cVeK9Gi3UYtXBBLhWGNZzn7DruY2ktMlKayM3irdGd0pE7fA2l+EnBlPc+cj
-         LskQGqf2YB/+sgzx33QYHz/pp+/7TE1Ae8B/75/AKsH1pLBPJZWxlwZUdBvyWpvKNxWU
-         poYIi7RdPXHt8CwVENAu7NRchF6zCrK7MOXRK1fZ1DEp/n2x8U6hAErNgoRsnUw6dcer
-         WgGw==
-X-Gm-Message-State: ACgBeo0BwDtUMMSQnvx7Qa3eSAEtYj2CxR/spjdp6uxGUgToic1/X/yV
-        pem35TDPlNzsFSyRmjFzOwbQIZSh57QO6HGMfU903A==
-X-Google-Smtp-Source: AA6agR43mbcplTcd3Q6E6SWUR/a0QzgezQxqYw6L8vriq8koQ7chGwVsb4h58VmaT16qZLx9mcJbzjGRj/xFE0GH57Q=
-X-Received: by 2002:a0d:d850:0:b0:340:d2c0:b022 with SMTP id
- a77-20020a0dd850000000b00340d2c0b022mr21758237ywe.469.1662061162404; Thu, 01
- Sep 2022 12:39:22 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=yDHzEYFqAKf8wDX5bZiEmg0+i6WsMr7NDvxZECaRGFg=;
+        b=cyGEgvs8cf57d4ysZET9VcL7SObLi7q/ID9Kbgjo6MWBWtL9jnV+goA+p2rcnBBMd6
+         yjze8B+dRYA5GB+l1osGSan16s5U5zzY9hdUgtGirrldlN2iff5EPDMtgktWVluOfHk1
+         pT5kD0qZF/+iUNQMhjQvI6c/yAas2jCNBI5yO5kOXgmXuPk+V+nXToN5uy3e1mKMx9RO
+         lij+te9XsN0l5g0YLVz/qSm2XNJhQjLLIu8nbUDwCGLx4igRy4UKzB6Ha23/QS1qEKWR
+         HFkQvm5NJ1A0becPADX92C3myQOg/KwhvHkulFqwZ5GFo8KYHDvlAh872O3NLy/16At7
+         Fm9g==
+X-Gm-Message-State: ACgBeo1dbatfn8VjkU2+zkFUfDD8BluwAqXk54k973i/H7gJhdqqdHMF
+        bZm0vhNKocOFrx+c0T2WT4A=
+X-Google-Smtp-Source: AA6agR4N9bW8XeupAtYwfZg48c7xnls0o3d2Bct4CdCmb+yHfxso87OwDsLyDkPbF4AOFxkdFp9vmg==
+X-Received: by 2002:a05:6830:4ce:b0:638:f7cb:2f80 with SMTP id s14-20020a05683004ce00b00638f7cb2f80mr12759200otd.172.1662061254337;
+        Thu, 01 Sep 2022 12:40:54 -0700 (PDT)
+Received: from ian.penurio.us ([47.184.51.90])
+        by smtp.gmail.com with ESMTPSA id z125-20020aca3383000000b00326cb6225f8sm39989oiz.44.2022.09.01.12.40.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Sep 2022 12:40:54 -0700 (PDT)
+From:   Ian Pilcher <arequipeno@gmail.com>
+To:     pavel@ucw.cz
+Cc:     linux-leds@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kabel@kernel.org, lee.jones@linaro.org
+Subject: [PATCH v10 1/2] docs: Add block device (blkdev) LED trigger documentation
+Date:   Thu,  1 Sep 2022 14:40:50 -0500
+Message-Id: <20220901194051.1116975-2-arequipeno@gmail.com>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220901194051.1116975-1-arequipeno@gmail.com>
+References: <20220901194051.1116975-1-arequipeno@gmail.com>
 MIME-Version: 1.0
-References: <20220830214919.53220-1-surenb@google.com> <Yw8P8xZ4zqu121xL@hirez.programming.kicks-ass.net>
- <20220831084230.3ti3vitrzhzsu3fs@moria.home.lan> <20220831101948.f3etturccmp5ovkl@suse.de>
- <Yw88RFuBgc7yFYxA@dhcp22.suse.cz> <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
- <YxBc1xuGbB36f8zC@dhcp22.suse.cz> <CAJuCfpGhwPFYdkOLjwwD4ra9JxPqq1T5d1jd41Jy3LJnVnhNdg@mail.gmail.com>
- <YxEE1vOwRPdzKxoq@dhcp22.suse.cz>
-In-Reply-To: <YxEE1vOwRPdzKxoq@dhcp22.suse.cz>
-From:   Suren Baghdasaryan <surenb@google.com>
-Date:   Thu, 1 Sep 2022 12:39:11 -0700
-Message-ID: <CAJuCfpHuzJGTA_-m0Jfawc7LgJLt4GztUUY4K9N9-7bFqJuXnw@mail.gmail.com>
-Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Kent Overstreet <kent.overstreet@linux.dev>,
-        Mel Gorman <mgorman@suse.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Liam R. Howlett" <liam.howlett@oracle.com>,
-        David Vernet <void@manifault.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Laurent Dufour <ldufour@linux.ibm.com>,
-        Peter Xu <peterx@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, mcgrof@kernel.org,
-        masahiroy@kernel.org, nathan@kernel.org, changbin.du@intel.com,
-        ytcoode@gmail.com, Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Benjamin Segall <bsegall@google.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Christopher Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>, 42.hyeyoo@gmail.com,
-        Alexander Potapenko <glider@google.com>,
-        Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Muchun Song <songmuchun@bytedance.com>, arnd@arndb.de,
-        jbaron@akamai.com, David Rientjes <rientjes@google.com>,
-        Minchan Kim <minchan@google.com>,
-        Kalesh Singh <kaleshsingh@google.com>,
-        kernel-team <kernel-team@android.com>,
-        linux-mm <linux-mm@kvack.org>, iommu@lists.linux.dev,
-        kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
-        linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
-        linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 1, 2022 at 12:15 PM Michal Hocko <mhocko@suse.com> wrote:
->
-> On Thu 01-09-22 08:33:19, Suren Baghdasaryan wrote:
-> > On Thu, Sep 1, 2022 at 12:18 AM Michal Hocko <mhocko@suse.com> wrote:
-> [...]
-> > > So I find Peter's question completely appropriate while your response to
-> > > that not so much! Maybe ftrace is not the right tool for the intented
-> > > job. Maybe there are other ways and it would be really great to show
-> > > that those have been evaluated and they are not suitable for a), b) and
-> > > c) reasons.
-> >
-> > That's fair.
-> > For memory tracking I looked into using kmemleak and page_owner which
-> > can't match the required functionality at an overhead acceptable for
-> > production and pre-production testing environments.
->
-> Being more specific would be really helpful. Especially when your cover
-> letter suggests that you rely on page_owner/memcg metadata as well to
-> match allocation and their freeing parts.
+Add Documentation/ABI/testing/sysfs-class-led-trigger-blkdev to
+document:
 
-kmemleak is known to be slow and it's even documented [1], so I hope I
-can skip that part. For page_owner to provide the comparable
-information we would have to capture the call stacks for all page
-allocations unlike our proposal which allows to do that selectively
-for specific call sites. I'll post the overhead numbers of call stack
-capturing once I'm finished with profiling the latest code, hopefully
-sometime tomorrow, in the worst case after the long weekend.
+  * /sys/class/leds/<led>/blink_time
+  * /sys/class/leds/<led>/check_interval
+  * /sys/class/leds/<led>/blink_on_{read,write,discard,flush}
+  * /sys/class/leds/<led>/link_dev_by_path
+  * /sys/class/leds/<led>/unlink_dev_by_path
+  * /sys/class/leds/<led>/linked_devices
 
->
-> > traces + BPF I
-> > haven't evaluated myself but heard from other members of my team who
-> > tried using that in production environment with poor results. I'll try
-> > to get more specific information on that.
->
-> That would be helpful as well.
+Add /sys/block/<disk>/linked_leds to
+Documentation/ABI/stable/sysfs-block.
 
-Ack.
+Add overview in Documentation/leds/ledtrig-blkdev.rst.
 
->
-> > > E.g. Oscar has been working on extending page_ext to track number of
-> > > allocations for specific calltrace[1]. Is this 1:1 replacement? No! But
-> > > it can help in environments where page_ext can be enabled and it is
-> > > completely non-intrusive to the MM code.
-> >
-> > Thanks for pointing out this work. I'll need to review and maybe
-> > profile it before making any claims.
-> >
-> > >
-> > > If the page_ext overhead is not desirable/acceptable then I am sure
-> > > there are other options. E.g. kprobes/LivePatching framework can hook
-> > > into functions and alter their behavior. So why not use that for data
-> > > collection? Has this been evaluated at all?
-> >
-> > I'm not sure how I can hook into say alloc_pages() to find out where
-> > it was called from without capturing the call stack (which would
-> > introduce an overhead at every allocation). Would love to discuss this
-> > or other alternatives if they can be done with low enough overhead.
->
-> Yes, tracking back the call trace would be really needed. The question
-> is whether this is really prohibitively expensive. How much overhead are
-> we talking about? There is no free lunch here, really.  You either have
-> the overhead during runtime when the feature is used or on the source
-> code level for all the future development (with a maze of macros and
-> wrappers).
+Signed-off-by: Ian Pilcher <arequipeno@gmail.com>
+---
+ Documentation/ABI/stable/sysfs-block          |  10 ++
+ .../testing/sysfs-class-led-trigger-blkdev    |  68 ++++++++
+ Documentation/leds/index.rst                  |   1 +
+ Documentation/leds/ledtrig-blkdev.rst         | 155 ++++++++++++++++++
+ 4 files changed, 234 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-class-led-trigger-blkdev
+ create mode 100644 Documentation/leds/ledtrig-blkdev.rst
 
-Will post the overhead numbers soon.
-What I hear loud and clear is that we need a kernel command-line kill
-switch that mitigates the overhead for having this feature. That seems
-to be the main concern.
-Thanks,
-Suren.
+diff --git a/Documentation/ABI/stable/sysfs-block b/Documentation/ABI/stable/sysfs-block
+index cd14ecb3c9a5..d11d04d804fe 100644
+--- a/Documentation/ABI/stable/sysfs-block
++++ b/Documentation/ABI/stable/sysfs-block
+@@ -101,6 +101,16 @@ Description:
+ 		devices that support receiving integrity metadata.
+ 
+ 
++What:		/sys/block/<disk>/linked_leds
++Date:		September 2022
++Contact:	Ian Pilcher <arequipeno@gmail.com>
++Description:
++		Directory that contains symbolic links to all LEDs that
++		are associated with (linked to) this block device by the
++		blkdev LED trigger.  Only present when at least one LED
++		is linked.  (See Documentation/leds/ledtrig-blkdev.rst.)
++
++
+ What:		/sys/block/<disk>/<partition>/alignment_offset
+ Date:		April 2009
+ Contact:	Martin K. Petersen <martin.petersen@oracle.com>
+diff --git a/Documentation/ABI/testing/sysfs-class-led-trigger-blkdev b/Documentation/ABI/testing/sysfs-class-led-trigger-blkdev
+new file mode 100644
+index 000000000000..d8d403569b21
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-class-led-trigger-blkdev
+@@ -0,0 +1,68 @@
++What:		/sys/class/leds/<led>/blink_time
++Date:		September 2022
++Contact:	Ian Pilcher <arequipeno@gmail.com>
++Description:
++		Time (in milliseconds) that the LED will be on during a single
++		"blink".
++
++What:		/sys/class/leds/<led>/check_interval
++Date:		September 2022
++Contact:	Ian Pilcher <arequipeno@gmail.com>
++Description:
++		Frequency (in milliseconds) with which block devices linked to
++		this LED will be checked for activity and the LED will
++		(potentially) be blinked.
++
++What:		/sys/class/leds/<led>/blink_on_read
++Date:		September 2022
++Contact:	Ian Pilcher <arequipeno@gmail.com>
++Description:
++		Boolean that determines whether the LED will blink in response
++		to read activity on any of its linked block devices.
++
++What:		/sys/class/leds/<led>/blink_on_write
++Date:		September 2022
++Contact:	Ian Pilcher <arequipeno@gmail.com>
++Description:
++		Boolean that determines whether the LED will blink in response
++		to write activity on any of its linked block devices.
++
++What:		/sys/class/leds/<led>/blink_on_discard
++Date:		September 2022
++Contact:	Ian Pilcher <arequipeno@gmail.com>
++Description:
++		Boolean that determines whether the LED will blink in response
++		to discard activity on any of its linked block devices.
++
++What:		/sys/class/leds/<led>/blink_on_flush
++Date:		September 2022
++Contact:	Ian Pilcher <arequipeno@gamil.com>
++Description:
++		Boolean that determines whether the LED will blink in response
++		to cache flush activity on any of its linked block devices.
++
++What:		/sys/class/leds/<led>/link_dev_by_path
++Date:		September 2022
++Contact:	Ian Pilcher <arequipeno@gmail.com>
++Description:
++		Associate a block device with this LED by writing the path to
++		the device special file (e.g. /dev/sda) to this attribute.
++		Symbolic links are followed.
++
++What:		/sys/class/leds/<led>/unlink_dev_by_path
++Date:		September 2022
++Contact:	Ian Pilcher <arequipeno@gmail.com>
++Description:
++		Remove the association between this LED and a block device by
++		writing the path to the device special file (e.g. /dev/sda) to
++		this attribute.  Symbolic links are followed.
++
++What:		/sys/class/leds/<led>/linked_devices
++Date:		September 2022
++Contact:	Ian Pilcher <arequipeno@gmail.com>
++Description:
++		Directory containing links to all block devices that are
++		associated with this LED.  (Note that the names of the
++		symbolic links in this directory are *kernel* names, which
++		may not match the device special file paths written to
++		link_device and unlink_device.)
+diff --git a/Documentation/leds/index.rst b/Documentation/leds/index.rst
+index e5d63b940045..e3c24e468cbc 100644
+--- a/Documentation/leds/index.rst
++++ b/Documentation/leds/index.rst
+@@ -10,6 +10,7 @@ LEDs
+    leds-class
+    leds-class-flash
+    leds-class-multicolor
++   ledtrig-blkdev
+    ledtrig-oneshot
+    ledtrig-transient
+    ledtrig-usbport
+diff --git a/Documentation/leds/ledtrig-blkdev.rst b/Documentation/leds/ledtrig-blkdev.rst
+new file mode 100644
+index 000000000000..ae92aa559257
+--- /dev/null
++++ b/Documentation/leds/ledtrig-blkdev.rst
+@@ -0,0 +1,155 @@
++.. SPDX-License-Identifier: GPL-2.0
++
++=================================
++Block Device (blkdev) LED Trigger
++=================================
++
++Available when ``CONFIG_LEDS_TRIGGER_BLKDEV=y`` or
++``CONFIG_LEDS_TRIGGER_BLKDEV=m``.
++
++See also:
++
++* ``Documentation/ABI/testing/sysfs-class-led-trigger-blkdev``
++* ``Documentation/ABI/stable/sysfs-block`` (``/sys/block/<disk>/linked_leds``)
++
++Overview
++========
++
++.. note::
++	The examples below use ``<LED>`` to refer to the name of a
++	system-specific LED.  If no suitable LED is available on a test
++	system (in a virtual machine, for example), it is possible to
++	use a userspace LED.  (See ``Documentation/leds/uleds.rst``.)
++
++Verify that the ``blkdev`` LED trigger is available::
++
++	# grep blkdev /sys/class/leds/<LED>/trigger
++	... rfkill-none blkdev
++
++(If the previous command produces no output, you may need to load the trigger
++module - ``modprobe ledtrig_blkdev``.  If the module is not available, check
++the value of ``CONFIG_LEDS_TRIGGER_BLKDEV`` in your kernel configuration.)
++
++Associate the LED with the ``blkdev`` LED trigger::
++
++	# echo blkdev > /sys/class/leds/<LED>/trigger
++
++	# cat /sys/class/leds/<LED>/trigger
++	... rfkill-none [blkdev]
++
++Note that several new device attributes are available in the
++``/sys/class/leds/<LED>`` directory.
++
++* ``link_dev_by_path`` and ``unlink_dev_by_path`` are used to manage the set of
++  block devices associated with this LED.  The LED will blink in response to
++  read or write activity on its linked devices.
++
++* ``blink_on_read``, ``blink_on_write``, ``blink_on_discard``, and
++  ``blink_on_flush`` are boolean values that determine whether the LED will
++  blink when a particular type of activity is detected on one of its linked
++  block devices.
++
++* ``blink_time`` is the duration (in milliseconds) of each blink of this LED.
++  (The minimum value is 10 milliseconds.)
++
++* ``check_interval`` is the frequency (in milliseconds) with which block devices
++  linked to this LED will be checked for activity and the LED blinked (if the
++  correct type of activity has occurred).
++
++* The ``linked_devices`` directory will contain a symbolic link to every device
++  that is associated with this LED.
++
++Link a block device to the LED::
++
++	# echo /dev/sda > /sys/class/leds/<LED>/link_dev_by_path
++
++	# ls /sys/class/leds/<LED>/linked_devices
++	sda
++
++(The value written to ``link_dev_by_path`` must be the path of the device
++special file, such as ``/dev/sda``, that represents the block device - or the
++path of a symbolic link to such a device special file.)
++
++Activity on the device will now cause the LED to blink.  The duration of each
++blink (in milliseconds) can be adjusted by setting
++``/sys/class/leds/<LED>/blink_time``.  (But see **check_interval and
++blink_time** below.)
++
++Associate a second device with the LED::
++
++	# echo /dev/sdb > /sys/class/leds/<LED>/link_dev_by_path
++
++	# ls /sys/class/leds/<LED>/linked_devices
++	sda  sdb
++
++When a block device is linked to one or more LEDs, the LEDs are linked from
++the device's ``linked_leds`` directory::
++
++	# ls /sys/class/block/sd{a,b}/linked_leds
++	/sys/class/block/sda/linked_leds:
++	<LED>
++
++	/sys/class/block/sdb/linked_leds:
++	<LED>
++
++(The ``linked_leds`` directory only exists when the block device is linked to
++at least one LED.)
++
++``check_interval`` and ``blink_time``
++=====================================
++
++* By default, linked block devices are checked for activity every 100
++  milliseconds.  This frequency can be changed for an LED via the
++  ``/sys/class/leds/<led>/check_interval`` attribute.  (The minimum value is 25
++  milliseconds.)
++
++* All block devices associated with an LED are checked for activity every
++  ``check_interval`` milliseconds, and a blink is triggered if the correct type
++  of activity (as determined by the LED's ``blink_on_*`` attributes) is
++  detected.  The duration of an LED's blink is determined by its ``blink_time``
++  attribute.  Thus (when the correct type of activity is detected), the LED will
++  be on for ``blink_time`` milliseconds and off for
++  ``check_interval - blink_time`` milliseconds.
++
++* The LED subsystem ignores new blink requests for an LED that is already in
++  in the process of blinking, so setting a ``blink_time`` greater than or equal
++  to ``check_interval`` will cause some blinks to be missed.
++
++* Because of processing times, scheduling latencies, etc., avoiding missed
++  blinks actually requires a difference of at least a few milliseconds between
++  the ``blink_time`` and ``check_interval``.  The required difference is likely
++  to vary from system to system.  As a  reference, a Thecus N5550 NAS requires a
++  difference of 7 milliseconds (e.g. ``check_interval == 100``,
++  ``blink_time == 93``).
++
++* The default values (``check_interval == 100``, ``blink_time == 75``) cause the
++  LED associated with a continuously active device to blink rapidly.  For a more
++  "always on" effect, increase the ``blink_time`` (but not too much; see the
++  previous bullet).
++
++Other Notes
++===========
++
++* Many (possibly all) types of block devices work with this trigger, including:
++
++  * SCSI (including SATA and USB) hard disk drives and SSDs
++  * SCSI (including SATA and USB) optical drives
++  * NVMe SSDs
++  * SD cards
++  * loopback block devices (``/dev/loop*``)
++  * device mapper devices, such as LVM logical volumes
++  * MD RAID devices
++  * zRAM compressed RAM-disks
++  * partitions on block devics that support them
++
++* The names of the symbolic links in ``/sys/class/leds/<LED>/linked_devices``
++  are **kernel** names, which may not match the paths used for
++  ``link_dev_by_path`` and ``unlink_dev_by_path``.  This is most likely when a
++  symbolic link is used to refer to the device (as is common with logical
++  volumes), but it can be true for any device, because nothing prevents the
++  creation of device special files with arbitrary names (e.g.
++  ``sudo mknod /foo b 8 0``).
++
++* The ``blkdev`` LED trigger supports many-to-many device/LED associations.
++  A device can be associated with multiple LEDs, and an LED can be associated
++  with multiple devices.
+-- 
+2.37.2
 
-[1] https://docs.kernel.org/dev-tools/kmemleak.html#limitations-and-drawbacks
-
->
-> Thanks!
-> --
-> Michal Hocko
-> SUSE Labs
