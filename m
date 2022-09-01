@@ -2,85 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77443C0502C
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:22:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55D08C0502C
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:22:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234663AbiIAOWw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 10:22:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50946 "EHLO
+        id S234633AbiIAOW5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 10:22:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234697AbiIAOWQ (ORCPT
+        with ESMTP id S234686AbiIAOWQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 1 Sep 2022 10:22:16 -0400
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FC6E74DDB;
-        Thu,  1 Sep 2022 07:22:11 -0700 (PDT)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-3378303138bso338299287b3.9;
-        Thu, 01 Sep 2022 07:22:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=llgzYf8llaL/EQFs3tuAuAqt9Z5KoWpl+4uUr05iaK8=;
-        b=fcbSSEhR2ZsvmYNnB/aQXc9F/i+SM/d8jxzsdHWSMPfcgdbV3linpJ3wj3+SnkwD/F
-         o2AqZR86xlBVfHaLatuNGZp/wIvsXTblUOiZhNZ0VGvX05Zas9Iy9jJ6Yd7UqidYl8jp
-         HqNqfkE3mL8FomBZh6rlRAQANs9ddDhQ6WeoLi402TMQnOzCD73ebnojKbyajx7ZhVvc
-         aNOk7ww7q9txqFLIwp3OA4NGG6nnNwHH5ZoxKJ0EWKjQEsRMa6olk9yvYTbD7afvYMVY
-         oUxxCFYT5z78M7jb1PlHwG/YwY+6FJ8jrhbEXt6/0ansIhBJ7G9n1mxaebM3nIwx1me4
-         bO6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=llgzYf8llaL/EQFs3tuAuAqt9Z5KoWpl+4uUr05iaK8=;
-        b=2wbW5l1mZKQjHq97p7jrRkmRLrIdnpDYaBGBlORlXAYsxfMFuRYQRrAWEjSrLfD6PR
-         UJUr6BdHPjf9+byWWULwdUXFOnttbbtgq6+BGsFv/4YLyDV+Yaic31hn2+UAUF1F7Mcu
-         X2Y3GgD+JGzvJ3QxdmbX8oRakNPKoDU5nak2vA2v+lNLXv6dwYtoW2v3jRIxmc6rIkXM
-         SuAaNkYrxL5NJw+FABYmjElZRMVb1pcH2CK3rzWyWQlXvyxQ0Ur4NpOFi3+/142D3Vyy
-         QS1k8H5j2apULSYjs1YVADt+WV/j5u19WHIXe3iFCVwPqt7/u5+CdyjJrb6IxZ3PSKzj
-         4NFw==
-X-Gm-Message-State: ACgBeo2ZwfwJnQeEbXcbkyZft8mG4zPKQIUijiuR+KPiY6u7FMlM5w3h
-        qzL+7sEQzOKpyHIYbTbZ4nwDgZf4kl4XN/FdhI6MRK/Ayrw=
-X-Google-Smtp-Source: AA6agR6fFQP4CuyJerD+YutxFwlcsRBQyahL7qL90WE1xL3YQzvbookqIiRTL+KO+aqqpWa+nD9OWIyOWVuuhH0vIko=
-X-Received: by 2002:a81:8984:0:b0:33e:1114:2598 with SMTP id
- z126-20020a818984000000b0033e11142598mr23329655ywf.75.1662042129959; Thu, 01
- Sep 2022 07:22:09 -0700 (PDT)
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FCD5760D1;
+        Thu,  1 Sep 2022 07:22:13 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 281EM1mX116947;
+        Thu, 1 Sep 2022 09:22:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1662042121;
+        bh=FKmC4JLsRogIkhLlI8/LwvBBow/yayBkmdAZPERKEJU=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=h2NRpw2WhT7/FaJQbVREgAr6Y3HIOyPFpUxIuji5pGv07+TPzuj9EVLw74O8HtfnS
+         gi8m2nsnSXWL4/4JvLNbV/BOUzf1v9wq5UJf+7N1RN6bpgV9h6UmxP3n1SuKzGGDlW
+         golpzKyFuRxLmXCN+Kb58ifWkx8C/ZwULUCrx7oI=
+Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 281EM049023486
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 1 Sep 2022 09:22:01 -0500
+Received: from DLEE111.ent.ti.com (157.170.170.22) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Thu, 1 Sep
+ 2022 09:22:00 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE111.ent.ti.com
+ (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Thu, 1 Sep 2022 09:22:00 -0500
+Received: from uda0132425.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 281ELvOR086348;
+        Thu, 1 Sep 2022 09:21:58 -0500
+From:   Vignesh Raghavendra <vigneshr@ti.com>
+To:     Andrew Davis <afd@ti.com>, <linux-arm-kernel@lists.infradead.org>,
+        Rob Herring <robh+dt@kernel.org>, Nishanth Menon <nm@ti.com>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        Tero Kristo <kristo@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+CC:     Vignesh Raghavendra <vigneshr@ti.com>
+Subject: Re: [PATCH] arm64: dts: ti: k3-j7200-main: Add main domain watchdog entries
+Date:   Thu, 1 Sep 2022 19:51:48 +0530
+Message-ID: <166204207691.900930.3562407276066506695.b4-ty@ti.com>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220822235006.7081-1-afd@ti.com>
+References: <20220822235006.7081-1-afd@ti.com>
 MIME-Version: 1.0
-References: <20220829065239.4531-1-lf32.dev@gmail.com> <87wnarnf4k.fsf@meer.lwn.net>
-In-Reply-To: <87wnarnf4k.fsf@meer.lwn.net>
-From:   lf32 dev <lf32.dev@gmail.com>
-Date:   Thu, 1 Sep 2022 19:51:59 +0530
-Message-ID: <CAOUyfw0aoZaaJ0yZzAVDQO=RHvNa=ZAXRDTO7yiNEomtyKb9-g@mail.gmail.com>
-Subject: Re: [PATCH] Delete duplicate words from kernel docs
-To:     Jonathan Corbet <corbet@lwn.net>,
-        Shuah Khan <skhan@linuxfoundation.org>
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Awesome, thanks for merging this!
+Hi Andrew Davis,
 
+On Mon, 22 Aug 2022 18:50:06 -0500, Andrew Davis wrote:
+> From: Gowtham Tammana <g-tammana@ti.com>
+> 
+> Add DT entries for main domain watchdog instances.
+> 
+> 
 
-On Mon, Aug 29, 2022 at 10:47 PM Jonathan Corbet <corbet@lwn.net> wrote:
->
-> Akhil Raj <lf32.dev@gmail.com> writes:
->
-> > I have deleted duplicate words like
-> >
-> > to, guest, trace, when, we
-> >
-> > Signed-off-by: Akhil Raj <lf32.dev@gmail.com>
-> > ---
-> >  Documentation/RCU/checklist.rst         | 2 +-
-> >  Documentation/RCU/lockdep.rst           | 2 +-
-> >  Documentation/bpf/instruction-set.rst   | 2 +-
-> >  Documentation/trace/histogram.rst       | 2 +-
-> >  Documentation/trace/timerlat-tracer.rst | 2 +-
-> >  Documentation/virt/kvm/x86/mmu.rst      | 2 +-
-> >  6 files changed, 6 insertions(+), 6 deletions(-)
->
-> Applied, thanks,
->
-> jon
+I have applied the following to branch ti-k3-dts-next on [1].
+Thank you!
+
+[1/1] arm64: dts: ti: k3-j7200-main: Add main domain watchdog entries
+      commit: 6038f1171162faaebbbe3acd1c6712a18a161a41
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent up the chain during
+the next merge window (or sooner if it is a relevant bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/ti/linux.git
+--
+Vignesh
+
