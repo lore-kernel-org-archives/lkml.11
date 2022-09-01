@@ -2,116 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06CF2C6FA83
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 18:34:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A255ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 18:34:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234433AbiIASeI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 14:34:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39628 "EHLO
+        id S234524AbiIASeP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 14:34:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234017AbiIASd5 (ORCPT
+        with ESMTP id S233925AbiIASeF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 14:33:57 -0400
-Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7F057E81F;
-        Thu,  1 Sep 2022 11:33:54 -0700 (PDT)
-Received: by mail-qk1-x733.google.com with SMTP id f4so13967336qkl.7;
-        Thu, 01 Sep 2022 11:33:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=WQ1Q0mz9FFzqj4DZ/mjMEZ15Ws6UL1GezqnQ2p7zS64=;
-        b=UM51+arlg6z/CCre6QPOKyXnLdhVedrQVQT4q1qYMERqndsL0vqFdZxRK6fHfiD5vR
-         p2fGC+qIRw4yd8hPKMl2PY3J+TlLj9VkJeaJT4YMYVUEMjAZIVsr8WJCYJUeIcKJTHPY
-         OgH0c4LuWAsGoBl4pSAjTW6sYKAxngaN9pvI/OvElZRVZtCmni5xQ7RUhlRHBNSpPKF8
-         lXwbef53MF/0m5so3LokRkX6+dwrY0kRhRGPHvDUwJL0R//qkAHISL4wsGXTk5aMDlLQ
-         sKz0jlc7893EdDWW0QOKXdEmgsMBBLv/kri1qptyani3GrXl8V86UwQ9/aFb0kX0icqj
-         Y1gw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=WQ1Q0mz9FFzqj4DZ/mjMEZ15Ws6UL1GezqnQ2p7zS64=;
-        b=JnJfWYMvVRTteFyHk57OfRvlUFD7OtlOLgCA4iaYe3avSV2aZIxd690T6rKxu+jXbA
-         iYoP+f6r1qe+aUFJAEgso/NOtUH45FRC8aijd0ff3MWo/xISnZUUzoGMRZ80aJWitTLU
-         kQADc4Z5cfIZEvIMrQpqp95nCaORNL2rQ5B7zALlTIK79H25qcpEYjIUQBL4TfqMwCEx
-         2beedAXnkQrBd7dsmNoaAKH1bkGbJbNHVH3omqRgu4oEkUEyCHCihhyAkf6V3lt4gzGW
-         6Z2tlPJJQCghO40gctF6HllVtCq8WQgmXlcysF82g5yJWUM8RbQD9S3wak14hxx4Dq0a
-         7qLg==
-X-Gm-Message-State: ACgBeo0eNgHG8vRJj9q2Netrm3l10bnRLcuV2Kr21RQ1wjpoqjE8FNwk
-        Didtfncsojny1Ic/fXAfQ2U=
-X-Google-Smtp-Source: AA6agR6pT51eIYfYIyYoIomfGEmepLPuLA7x8eDUHmhlaEnFi4XboSuLFgKSOOhCsW5nCmXv4bc7Ew==
-X-Received: by 2002:a05:620a:c50:b0:6b9:6e6:428d with SMTP id u16-20020a05620a0c5000b006b906e6428dmr20469297qki.280.1662057233500;
-        Thu, 01 Sep 2022 11:33:53 -0700 (PDT)
-Received: from jesse-desktop.jtp-bos.lab (146-115-144-188.s4282.c3-0.nwt-cbr1.sbo-nwt.ma.cable.rcncustomer.com. [146.115.144.188])
-        by smtp.gmail.com with ESMTPSA id u20-20020ac87514000000b00342e86b3bdasm10563343qtq.12.2022.09.01.11.33.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 11:33:52 -0700 (PDT)
-From:   Jesse Taube <mr.bossman075@gmail.com>
-X-Google-Original-From: Jesse Taube <Mr.Bossman075@gmail.com>
-To:     linux-imx@nxp.com
-Cc:     robh+dt@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, aisheng.dong@nxp.com, stefan@agner.ch,
-        linus.walleij@linaro.org, daniel.lezcano@linaro.org,
-        tglx@linutronix.de, arnd@arndb.de, olof@lixom.net, soc@kernel.org,
-        linux@armlinux.org.uk, abel.vesa@nxp.com, dev@lynxeye.de,
-        marcel.ziswiler@toradex.com, tharvey@gateworks.com,
-        leoyang.li@nxp.com, sebastian.reichel@collabora.com,
-        cniedermaier@dh-electronics.com, Mr.Bossman075@gmail.com,
-        clin@suse.com, giulio.benetti@benettiengineering.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-gpio@vger.kernel.org, Rob Herring <robh@kernel.org>
-Subject: [PATCH v6 03/10] dt-bindings: mmc: fsl-imx-esdhc: add i.MXRT1170 compatible
-Date:   Thu,  1 Sep 2022 14:33:36 -0400
-Message-Id: <20220901183343.3188903-4-Mr.Bossman075@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220901183343.3188903-1-Mr.Bossman075@gmail.com>
-References: <20220901183343.3188903-1-Mr.Bossman075@gmail.com>
+        Thu, 1 Sep 2022 14:34:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E887EFCA;
+        Thu,  1 Sep 2022 11:33:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AA21AB82894;
+        Thu,  1 Sep 2022 18:33:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B968FC433D6;
+        Thu,  1 Sep 2022 18:33:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662057233;
+        bh=qtHWF6S3i85fV/boOivAFmcEhYa2jatpJ2WrW9WWZ7Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OGQxbvWH7tx4vhuwp4yp8BSQ3qLhHKKPZKll7SMhAlHKTUns7AYAeWtqb7tOa7i5Q
+         NZgstt1SxKl7kVTTF40gPtVIOs+wbWEy/rrlqGw/cEZSixj3tYPRdBG+pOV3pXRTGr
+         RADcuemUP1c2xB7o6zSFLtd2TpsZsKmyS9LGrX+k=
+Date:   Thu, 1 Sep 2022 20:33:50 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        Stable <stable@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Florian Fainelli <f.fainelli@gmail.com>, slade@sladewatkins.com
+Subject: Re: [PATCH 5.15 000/136] 5.15.64-rc1 review
+Message-ID: <YxD7DqDe0vWRIl3E@kroah.com>
+References: <20220829105804.609007228@linuxfoundation.org>
+ <CADVatmOLoaGgAW951JqEk3v88EA7mn3qur84Xd30QJWP21+eVg@mail.gmail.com>
+ <YxB/ZPFEQG9zS+wa@kroah.com>
+ <CADVatmPxfdEA3yi9KGHtvmQA2n-mA=ekBidqU+keGrBsL+rFeQ@mail.gmail.com>
+ <YxCJzr0XCd+6/JW4@kroah.com>
+ <CADVatmPMGmvabWb0S21P8Xycu5ZYe+imyR8tbG27qX28VuyUtg@mail.gmail.com>
+ <YxCgFemX8nn0Bzm1@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YxCgFemX8nn0Bzm1@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add i.MXRT1170 compatible string to Documentation.
+On Thu, Sep 01, 2022 at 02:05:41PM +0200, Greg Kroah-Hartman wrote:
+> On Thu, Sep 01, 2022 at 11:56:20AM +0100, Sudip Mukherjee wrote:
+> > On Thu, Sep 1, 2022 at 11:30 AM Greg Kroah-Hartman
+> > <gregkh@linuxfoundation.org> wrote:
+> > >
+> > > On Thu, Sep 01, 2022 at 11:22:53AM +0100, Sudip Mukherjee wrote:
+> > > > On Thu, Sep 1, 2022 at 10:46 AM Greg Kroah-Hartman
+> > > > <gregkh@linuxfoundation.org> wrote:
+> > > > >
+> > > > > On Mon, Aug 29, 2022 at 09:11:28PM +0100, Sudip Mukherjee wrote:
+> > > > > > Hi Greg,
+> > > > > >
+> > > > > > On Mon, Aug 29, 2022 at 12:00 PM Greg Kroah-Hartman
+> > > > > > <gregkh@linuxfoundation.org> wrote:
+> > > > > > >
+> > > > > > > This is the start of the stable review cycle for the 5.15.64 release.
+> > > > > > > There are 136 patches in this series, all will be posted as a response
+> > > > > > > to this one.  If anyone has any issues with these being applied, please
+> > > > > > > let me know.
+> > > > > > >
+> > > > > > > Responses should be made by Wed, 31 Aug 2022 10:57:37 +0000.
+> > > > > > > Anything received after that time might be too late.
+> > > > > >
+> > > > > > My builds are still running, but just an initial report for gcc-12. (I
+> > > > > > know v5.15.y still does not build completely with gcc-12).
+> > > > > >
+> > > > > > x86_64 and arm64 allmodconfig build fails with gcc-12, with the error:
+> > > > > >
+> > > >
+> > > > <snip>
+> > > >
+> > > > > >
+> > > > > > Introduced in v5.15.61 due to 2711bedab26c ("Bluetooth: L2CAP: Fix
+> > > > > > l2cap_global_chan_by_psm regression").
+> > > > > > But v5.19.y and mainline does not show the build failure as they also
+> > > > > > have 41b7a347bf14 ("powerpc: Book3S 64-bit outline-only KASAN
+> > > > > > support").
+> > > > >
+> > > > > Ick, ok, what to do here?  I can't really backport 41b7a347bf14 to 5.15
+> > > > > easily as it's huge and a new feature.  Any other ideas?
+> > > >
+> > > > Yeah.
+> > > > https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=b840304fb46cdf7012722f456bce06f151b3e81b
+> > > > will fix the it for mips and csky failure in mainline and v5.19.y. And
+> > > > I just verified that it will fix for powerpc also in v5.15.y. So, we
+> > > > just need to wait for now.
+> > >
+> > > Ah good, thanks for pointing that out!
+> > 
+> > uhh.. I can see you already added to the stable tree, but its not in
+> > mainline yet.
+> 
+> It's on track to get to Linus and fixes a build problem, should be ok.
 
-Cc: Giulio Benetti <giulio.benetti@benettiengineering.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
----
-V1 -> V2:
- - New commit to fix dtbs_check
-V2 -> V3:
- - Fix typo
- - Remove unused const
-V3 -> V4:
- - Nothing done
-V4 -> V5:
- - Nothing done
-V5 -> V6:
- - Nothing done
----
- Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml b/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
-index 29339d0196ec..0e7833478869 100644
---- a/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
-+++ b/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
-@@ -75,6 +75,10 @@ properties:
-           - const: fsl,imx8qxp-usdhc
-           - const: fsl,imx7d-usdhc
-         deprecated: true
-+      - items:
-+          - enum:
-+              - fsl,imxrt1170-usdhc
-+          - const: fsl,imxrt1050-usdhc
- 
-   reg:
-     maxItems: 1
--- 
-2.36.1
-
+And it's now in Linus's tree so all is good :)
