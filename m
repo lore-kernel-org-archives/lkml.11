@@ -2,101 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AF56ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 18:56:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40906ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 18:57:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232418AbiIAS4U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 14:56:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50268 "EHLO
+        id S233195AbiIAS5l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 14:57:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233291AbiIAS4N (ORCPT
+        with ESMTP id S231484AbiIAS5k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 14:56:13 -0400
-Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF395F10F;
-        Thu,  1 Sep 2022 11:55:44 -0700 (PDT)
-Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-11e9a7135easo31359922fac.6;
-        Thu, 01 Sep 2022 11:55:44 -0700 (PDT)
+        Thu, 1 Sep 2022 14:57:40 -0400
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80F7A74374
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 11:57:39 -0700 (PDT)
+Received: by mail-il1-x133.google.com with SMTP id t11so6969665ilf.3
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 11:57:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=nia9jI2O88KcphJGb5RxJpwde9w47ORDSNyakk4/vu4=;
+        b=hg8tXGlRx/SHRdCMcUjwsB9CQwcZ1IenwElcgFvFC8TAzOIuj/aoS1YyRlxk5vauL0
+         msx5OMOm8pzSFwsfukf2yerhoTmxXHpUiLcMFp8GjtPNwoOUdFUC9SKV01PcBc0fcMsC
+         aB+G8hQSkYpnaA2IAd8P2pmZ3Z4wg5OPTmRwM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=HpWmElkb3R8nLlh0+N2tUY+L3VStUb6ARl+EPTzp0N4=;
-        b=YW42FbChuGrGb1pkeoWD3/7AQF0Hizr94VwlNqc9xOG7GOabCZPTf/jslLWIn7N4Om
-         44mUmiGuOy54NuW3UQl6VqmOwDktDGvkzqMRJr51QlDqgovT+9/a8ezH1XQIRpOQR6lO
-         +3TfDi8Vi/Iw4jL+16EMfjMTNOTri8OaZ88CkIc65gimSmiq/WigZMcRi5zNnliHNDpa
-         NdM2MdgY+U58IrymZA1Fq01I06R/9cSsdJ9uuRB92I9izgicZlbDkw/j0NL5AEZbp/37
-         kNgSyQyf0Qy3JMsokH2imJBdWUrBBQ3qwHWdAQuRP9vuUDQkl4AL5roeFK+YdL2WdpM6
-         acAA==
-X-Gm-Message-State: ACgBeo3n7nvOLGlRM0ml2MR6EXyyXOOGQwlxwNeHw1UovlzVcHQwnvjv
-        UldJ/G8onbHP5f9pSH6xmg==
-X-Google-Smtp-Source: AA6agR4D9pq4NyfWjraGzlzw87ULKE55HAZBZgcBs7+Ik3FYQNdM8Ow4WFUtGSA8GA16Z/Y81W6+mQ==
-X-Received: by 2002:a05:6870:c350:b0:11c:cd92:3fdd with SMTP id e16-20020a056870c35000b0011ccd923fddmr297621oak.85.1662058543586;
-        Thu, 01 Sep 2022 11:55:43 -0700 (PDT)
-Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.googlemail.com with ESMTPSA id u5-20020a056830118500b0063ade5856f2sm930otq.64.2022.09.01.11.55.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 11:55:43 -0700 (PDT)
-From:   Rob Herring <robh@kernel.org>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>
-Cc:     James Clark <james.clark@arm.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] perf: Ignore format attributes with an unknown perf_event_attr field
-Date:   Thu,  1 Sep 2022 13:47:10 -0500
-Message-Id: <20220901184709.2179309-1-robh@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=nia9jI2O88KcphJGb5RxJpwde9w47ORDSNyakk4/vu4=;
+        b=UYIYOxvYYSLbayLD5rBjtjENWammZiCqae0osRp9729mXIzn/7vBahOkO3+j96a1KF
+         QoW1LUPp8Cmf98x80SyOBT6HbB0I+7bNzoAC+i3lYa7N5Plm01SCj+f5UGq8hUJ67qhe
+         iBanYfCra8AXDumYQW4Mgy6c8i8aCVN9BE5cGoS+v32oZtEZjoG8y/hkXi15NVv4OM99
+         9vG19US4mjKjm4+SMP23xY1V57bl/sbnXJIqDqUb6r06/h616uYttRvgtSN3nrdVo9ub
+         APPoJHw9TktIFh8SlQc3xfOn7lwgkRLmGUFVpMmYsqfnPjyuHZw7Ytcp7NmEAykBBtRf
+         hljQ==
+X-Gm-Message-State: ACgBeo1e0kptxKspJktsKGaWxsz8Vfxr4eMDuynXT1u34clfzHf4cozR
+        Tr4hlT3qVhhLWhC4rJDT1p25WA==
+X-Google-Smtp-Source: AA6agR7dw1ZlZ/aQIVwXijEoBDwRoQ/vPMU/DT6/0bpcHuPPUyUq35r2u4ojDWcQq1/WRafGqsNBzA==
+X-Received: by 2002:a05:6e02:1849:b0:2ee:6664:9301 with SMTP id b9-20020a056e02184900b002ee66649301mr385667ilv.266.1662058658824;
+        Thu, 01 Sep 2022 11:57:38 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id i1-20020a056602134100b006887640a5edsm9345405iov.23.2022.09.01.11.57.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Sep 2022 11:57:38 -0700 (PDT)
+Message-ID: <cb8b16a1-a7d6-1b04-c748-3f2d802b54e5@linuxfoundation.org>
+Date:   Thu, 1 Sep 2022 12:57:37 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2] tools: Add new "test" taint to kernel-chktaint
+Content-Language: en-US
+To:     David Gow <davidgow@google.com>,
+        Joe Fradley <joefradley@google.com>
+Cc:     Brendan Higgins <brendanhiggins@google.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        Jonathan Corbet <corbet@lwn.net>, kernel-team@android.com,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220824041933.822838-1-joefradley@google.com>
+ <CABVgOSki72Yqb1DBSCgi-qk+FbNniL4GX+19MXwq=K9VEzAyoA@mail.gmail.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+In-Reply-To: <CABVgOSki72Yqb1DBSCgi-qk+FbNniL4GX+19MXwq=K9VEzAyoA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the kernel exposes a new perf_event_attr field in a format attr, perf
-will return an error stating the specified PMU can't be found. For
-example, a format attr with 'config3:0-63' causes an error if config3 is
-unknown to perf. This causes a compatibility issue between a newer
-kernel and an older perf tool.
+On 8/23/22 22:41, David Gow wrote:
+> On Wed, Aug 24, 2022 at 12:19 PM Joe Fradley <joefradley@google.com> wrote:
+>>
+>> Commit c272612cb4a2 ("kunit: Taint the kernel when KUnit tests are run")
+>> added a new taint flag for when in-kernel tests run. This commit adds
+>> recognition of this new flag in kernel-chktaint.
+>>
 
-The addition here makes any attr string up to the ':' ignored, but
-still checks the 'bits' portion.
+What happens without this change? It isn't clear what this change is
+fixing.
 
-Signed-off-by: Rob Herring <robh@kernel.org>
----
-This is the YACC mud I threw and seems to stick. Maybe there's a better 
-way to handle this. It doesn't seem like there's a way to do wildcards 
-(i.e. config.*) in YACC.
+>> Reviewed-by: David Gow <davidgow@google.com>
+>> Signed-off-by: Joe Fradley <joefradley@google.com>
+>> ---
+>> Changes in v2:
+>> - based off of kselftest/kunit branch
+>> - Added David's Reviewed-by tag
+>>
+> 
+> This still looks good to me.
+> 
+> Unless anyone objects, I guess we'll take this through the KUnit
+> branch (which, after all, is where the taint was originally added).
+> I've added it to the list for 6.1, but it technically could be
+> considered a fix for 6.0 as well.
+> 
 
-This is needed for this series[1]. Unfortunately the best we do to avoid 
-the issue is applying this to stable. I think there's some time before 
-v8.7 h/w is deployed, too.
+I can definitely take this for Linux 6.0 with additional information
+on the problems seen without this change.
 
-Rob
-
-[1] https://lore.kernel.org/all/20220825-arm-spe-v8-7-v1-0-c75b8d92e692@kernel.org/
-
- tools/perf/util/pmu.y | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/tools/perf/util/pmu.y b/tools/perf/util/pmu.y
-index bfd7e8509869..3096864ec9b9 100644
---- a/tools/perf/util/pmu.y
-+++ b/tools/perf/util/pmu.y
-@@ -60,6 +60,9 @@ PP_CONFIG2 ':' bits
- 				      PERF_PMU_FORMAT_VALUE_CONFIG2,
- 				      $3));
- }
-+|
-+error ':' bits
-+{}
- 
- bits:
- bits ',' bit_term
--- 
-2.34.1
+thanks,
+-- Shuah
 
