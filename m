@@ -2,94 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E795ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:01:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ECFAECAAD2
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:01:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233513AbiIAHBM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 03:01:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50822 "EHLO
+        id S233520AbiIAHBQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 03:01:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233484AbiIAHAr (ORCPT
+        with ESMTP id S232561AbiIAHAr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 1 Sep 2022 03:00:47 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B346D6D9C0;
-        Thu,  1 Sep 2022 00:00:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=lP/axgW6wVbLw99T8GY0xIMHkeiyf6aNs2WovZZWBOY=; b=DsovPIHjiTzLDFEHMUZax6kdiz
-        YmrmwM4nfhUlXHU6+jwtzeSmRIqJzuk4utR6vlplHXI5NoTsSiI6NPT6mQ1h/o6UlCxpUVBSYBOGF
-        mAwUrbTARvU58QmTx2lzLaDbpKSsvApZwYA684cbuuNFGxM7GOsrIGOTXXVvQaBIhlfCdGZ/9loBM
-        L3IgWlK3G+key+g2ORNzZ1jfQX4w6GwCWwHdxGrO4bIeb/Qje5accP3+IyavFM2jCZdaLz1F3Z14t
-        Fw+hvjFeYcySCXoo9Bh3TdJ8voxVMcJyDg7RBGMnnwLLPADNOXfsqH/S6AwZDXh9BZoWO7rjOM3mx
-        f18fOvcQ==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oTeBX-005oaa-An; Thu, 01 Sep 2022 07:00:19 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id C4CAE30041D;
-        Thu,  1 Sep 2022 09:00:17 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id A749520981381; Thu,  1 Sep 2022 09:00:17 +0200 (CEST)
-Date:   Thu, 1 Sep 2022 09:00:17 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Mel Gorman <mgorman@suse.de>
-Cc:     Kent Overstreet <kent.overstreet@linux.dev>,
-        Suren Baghdasaryan <surenb@google.com>,
-        akpm@linux-foundation.org, mhocko@suse.com, vbabka@suse.cz,
-        hannes@cmpxchg.org, roman.gushchin@linux.dev, dave@stgolabs.net,
-        willy@infradead.org, liam.howlett@oracle.com, void@manifault.com,
-        juri.lelli@redhat.com, ldufour@linux.ibm.com, peterx@redhat.com,
-        david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org,
-        masahiroy@kernel.org, nathan@kernel.org, changbin.du@intel.com,
-        ytcoode@gmail.com, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
-        bristot@redhat.com, vschneid@redhat.com, cl@linux.com,
-        penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com,
-        glider@google.com, elver@google.com, dvyukov@google.com,
-        shakeelb@google.com, songmuchun@bytedance.com, arnd@arndb.de,
-        jbaron@akamai.com, rientjes@google.com, minchan@google.com,
-        kaleshsingh@google.com, kernel-team@android.com,
-        linux-mm@kvack.org, iommu@lists.linux.dev,
-        kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
-        linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
-        linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
-Message-ID: <YxBYgcyP7IvMLJwq@hirez.programming.kicks-ass.net>
-References: <20220830214919.53220-1-surenb@google.com>
- <Yw8P8xZ4zqu121xL@hirez.programming.kicks-ass.net>
- <20220831084230.3ti3vitrzhzsu3fs@moria.home.lan>
- <20220831101948.f3etturccmp5ovkl@suse.de>
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B38DA237FB;
+        Thu,  1 Sep 2022 00:00:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662015621; x=1693551621;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=CY1iO3BM8UNn7xnUwBW3HOrJ71N81smEewSeDB8vwsg=;
+  b=j4A3DYMzba/1Vz7x0n/ESOUo5oUyF0k/sHOJDZ3qwPhCm84W/bhCiYG0
+   S1ZCR8z9Vu8H48LRHE0X95e02kM5HBaWL145gLRS2skmrzQkYva3Gs2+f
+   53csgkkzsBgAm1xUNObataL1+tERN1S6rt90F8PEjTk3KyUjTEKLzwIbf
+   VWUS6/T3DzzsKAJgwZmKbekTNPcGaBGMiXKe4zqrKFwh9t8keCFxJMhzg
+   Sj3zztqt2CE6nBIgIQmszWcInuKUSXlXI968Djn+RsRceSGFtOeZlFkns
+   CixO1DXXAuVWyDtNqY6utddOg2i9zsKfHEj6hGuNCyZ8QmdBG1bPCLZfV
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="278651604"
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="278651604"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 23:59:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="680728921"
+Received: from lkp-server02.sh.intel.com (HELO 811e2ceaf0e5) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 31 Aug 2022 23:59:54 -0700
+Received: from kbuild by 811e2ceaf0e5 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oTeB7-0001Gs-19;
+        Thu, 01 Sep 2022 06:59:53 +0000
+Date:   Thu, 1 Sep 2022 14:59:21 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     shravan kumar <shravan.chippa@microchip.com>,
+        paul.j.murphy@intel.com, daniele.alessandrelli@intel.com,
+        mchehab@kernel.org
+Cc:     kbuild-all@lists.01.org, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Shravan Chippa <shravan.chippa@microchip.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Prakash Battu <Prakash.Battu@microchip.com>
+Subject: Re: [PATCH v2] media: i2c: imx334: support lower bandwidth mode
+Message-ID: <202209011420.aFw0x1Jm-lkp@intel.com>
+References: <20220830060613.11335-1-shravan.chippa@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220831101948.f3etturccmp5ovkl@suse.de>
+In-Reply-To: <20220830060613.11335-1-shravan.chippa@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 11:19:48AM +0100, Mel Gorman wrote:
+Hi shravan,
 
-> It's also unclear *who* would enable this. It looks like it would mostly
-> have value during the development stage of an embedded platform to track
-> kernel memory usage on a per-application basis in an environment where it
-> may be difficult to setup tracing and tracking. Would it ever be enabled
-> in production? 
+Thank you for the patch! Perhaps something to improve:
 
-Afaict this is developer only; it is all unconditional code.
+[auto build test WARNING on v6.0-rc3]
+[also build test WARNING on linus/master next-20220831]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-> Would a distribution ever enable this? 
+url:    https://github.com/intel-lab-lkp/linux/commits/shravan-kumar/media-i2c-imx334-support-lower-bandwidth-mode/20220830-140816
+base:    b90cb1053190353cc30f0fef0ef1f378ccc063c5
+config: openrisc-randconfig-m031-20220830 (https://download.01.org/0day-ci/archive/20220901/202209011420.aFw0x1Jm-lkp@intel.com/config)
+compiler: or1k-linux-gcc (GCC) 12.1.0
 
-I would sincerely hope not. Because:
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-> If it's enabled, any overhead cannot be disabled/enabled at run or
-> boot time so anyone enabling this would carry the cost without never
-> necessarily consuming the data.
+smatch warnings:
+drivers/media/i2c/imx334.c:832 imx334_set_pad_format() warn: unsigned 'code' is never less than zero.
 
-this.
+vim +/code +832 drivers/media/i2c/imx334.c
+
+   811	
+   812	/**
+   813	 * imx334_set_pad_format() - Set subdevice pad format
+   814	 * @sd: pointer to imx334 V4L2 sub-device structure
+   815	 * @sd_state: V4L2 sub-device state
+   816	 * @fmt: V4L2 sub-device format need to be set
+   817	 *
+   818	 * Return: 0 if successful, error code otherwise.
+   819	 */
+   820	static int imx334_set_pad_format(struct v4l2_subdev *sd,
+   821					 struct v4l2_subdev_state *sd_state,
+   822					 struct v4l2_subdev_format *fmt)
+   823	{
+   824		struct imx334 *imx334 = to_imx334(sd);
+   825		const struct imx334_mode *mode;
+   826		int ret = 0;
+   827		u32 code;
+   828	
+   829		mutex_lock(&imx334->mutex);
+   830	
+   831		code = imx219_get_format_code(imx334, fmt);
+ > 832		if (code < 0)
+   833			return -EINVAL;
+   834	
+   835		imx334->cur_code = code;
+   836	
+   837		mode = v4l2_find_nearest_size(supported_modes,
+   838					      ARRAY_SIZE(supported_modes),
+   839					      width, height,
+   840					      fmt->format.width, fmt->format.height);
+   841	
+   842		imx334_fill_pad_format(imx334, mode, fmt);
+   843	
+   844		if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
+   845			struct v4l2_mbus_framefmt *framefmt;
+   846	
+   847			framefmt = v4l2_subdev_get_try_format(sd, sd_state, fmt->pad);
+   848			*framefmt = fmt->format;
+   849		} else if (imx334->cur_mode != mode) {
+   850			ret = imx334_update_controls(imx334, mode);
+   851			if (!ret)
+   852				imx334->cur_mode = mode;
+   853		}
+   854	
+   855		mutex_unlock(&imx334->mutex);
+   856	
+   857		return ret;
+   858	}
+   859	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
