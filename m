@@ -2,97 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77E8DECAAD5
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 18:08:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 374B6ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 18:10:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234336AbiIASIH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 14:08:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54074 "EHLO
+        id S229781AbiIASKK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 14:10:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234306AbiIASIE (ORCPT
+        with ESMTP id S232987AbiIASJ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 14:08:04 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C049550BF;
-        Thu,  1 Sep 2022 11:08:03 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id BB4DF6CD;
-        Thu,  1 Sep 2022 20:08:00 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1662055681;
-        bh=YMIi5UBpbzantzAuqdDxtUWjhWEbfNnLmbHpGpFj4hA=;
+        Thu, 1 Sep 2022 14:09:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0951512605;
+        Thu,  1 Sep 2022 11:09:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B718AB81BDF;
+        Thu,  1 Sep 2022 18:09:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D736FC433D6;
+        Thu,  1 Sep 2022 18:09:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662055794;
+        bh=PeWtP00smkSpUEiQrOJA6rliFGmYI4kqQTePTz49dyc=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uP4w2XjNoWnYv+NUW1ikTgl4PQ6YdmfO4kGwEQOohDS6HFacyg1DmN0lC0SujVq7n
-         1Fm+7l28dNUIRjUsOmyNfzGwpwgDOc+FqWNeAA5YCIWheoDVA2ZuTxrRJ+ccrxE0q+
-         sfoDf/26SCpwQQIqow8iJXiU/NN3mBVY5+ZeYjXw=
-Date:   Thu, 1 Sep 2022 21:07:49 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Max Krummenacher <max.oss.09@gmail.com>
-Cc:     Max Krummenacher <max.krummenacher@toradex.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] arm64: dts: imx8mp-verdin: add dsi to hdmi
- functionality
-Message-ID: <YxD09SqpcbB3dt8I@pendragon.ideasonboard.com>
-References: <20220901154051.1885509-1-max.oss.09@gmail.com>
+        b=I/viAXs2cJKyQ2EUZ6PMYdDcEO6cVIz3EpeLLpUXJJF2rnagRnT0t144sE2LyYrBo
+         EfNGD3GRtupFph2X9hW1pu2RC6g0+folrgGOuvebbtr64zuMrV9cXlm3G9jbS/J5u9
+         Zloihw3Cyhx/UJlCiAGy+H6Gq6/aPXvqxoZp0+bk=
+Date:   Thu, 1 Sep 2022 20:09:51 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     Kai Ye <yekai13@huawei.com>, herbert@gondor.apana.org.au,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        wangzhou1@hisilicon.com, liulongfang@huawei.com
+Subject: Re: [PATCH v7 2/3] Documentation: add a isolation strategy sysfs
+ node for uacce
+Message-ID: <YxD1byMGE03R8YWT@kroah.com>
+References: <20220806022943.47292-1-yekai13@huawei.com>
+ <20220806022943.47292-3-yekai13@huawei.com>
+ <YxDJ6PEWd/3c1jPd@kroah.com>
+ <YxDlOFYih5tQ37Av@sol.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220901154051.1885509-1-max.oss.09@gmail.com>
+In-Reply-To: <YxDlOFYih5tQ37Av@sol.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Max,
-
-Thank you for the patch.
-
-On Thu, Sep 01, 2022 at 05:40:50PM +0200, Max Krummenacher wrote:
-> From: Max Krummenacher <max.krummenacher@toradex.com>
+On Thu, Sep 01, 2022 at 10:00:40AM -0700, Eric Biggers wrote:
+> On Thu, Sep 01, 2022 at 05:04:08PM +0200, Greg KH wrote:
+> > On Sat, Aug 06, 2022 at 10:29:42AM +0800, Kai Ye wrote:
+> > > Update documentation describing sysfs node that could help to
+> > > configure isolation strategy for users in the user space. And
+> > > describing sysfs node that could read the device isolated state.
+> > > 
+> > > Signed-off-by: Kai Ye <yekai13@huawei.com>
+> > > ---
+> > >  Documentation/ABI/testing/sysfs-driver-uacce | 26 ++++++++++++++++++++
+> > >  1 file changed, 26 insertions(+)
+> > > 
+> > > diff --git a/Documentation/ABI/testing/sysfs-driver-uacce b/Documentation/ABI/testing/sysfs-driver-uacce
+> > > index 08f2591138af..e09fd160d3fa 100644
+> > > --- a/Documentation/ABI/testing/sysfs-driver-uacce
+> > > +++ b/Documentation/ABI/testing/sysfs-driver-uacce
+> > > @@ -19,6 +19,32 @@ Contact:        linux-accelerators@lists.ozlabs.org
+> > >  Description:    Available instances left of the device
+> > >                  Return -ENODEV if uacce_ops get_available_instances is not provided
+> > >  
+> > > +What:           /sys/class/uacce/<dev_name>/isolate_strategy
+> > > +Date:           Jul 2022
+> > 
+> > July was a while ago, you sent this patch in August :(
+> > 
 > 
-> Add the hdmi connector present on the dsi to hdmi adapter now
-> required by the upstream lontium bridge driver.
-> The dsi to hdmi adapter is enabled in an device tree overlay.
-
-Shouldn't the connector also be in the overlay ? There's certainly no
-physical HDMI connector on the i.MX8MP Verdin SoM :-)
-
-> Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+> Does the date in the sysfs documentation files serve any purpose besides making
+> people have to update their patchsets every month?
 > 
-> ---
-> 
->  arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi b/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
-> index 76cc89296150..bd84a0d135dc 100644
-> --- a/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
-> +++ b/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
-> @@ -59,6 +59,14 @@ button-wakeup {
->  		};
->  	};
->  
-> +	hdmi_connector: hdmi-connector {
-> +		compatible = "hdmi-connector";
-> +		ddc-i2c-bus = <&i2c2>;
-> +		label = "hdmi";
-> +		type = "a";
-> +		status = "disabled";
-> +	};
-> +
->  	/* Carrier Board Supplies */
->  	reg_1p8v: regulator-1p8v {
->  		compatible = "regulator-fixed";
+> The kernel version number would be more useful to readers of the documentation,
+> and it wouldn't have to be updated quite as often.
 
--- 
-Regards,
+True, I have seen people use that instead, or no date at all, I don't
+require it.  But if you do put the field in there, it should at least be
+correct :)
 
-Laurent Pinchart
+thanks,
+
+greg k-h
