@@ -2,118 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67491ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 17:45:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE1ABECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 17:47:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231650AbiIARpo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 13:45:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42694 "EHLO
+        id S232590AbiIARrt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 13:47:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233322AbiIARpE (ORCPT
+        with ESMTP id S233295AbiIARrY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 13:45:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DBF95C97C
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 10:44:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662054246;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FQOn0UueP4f1CSvnyezbvyIBmYegvrdiesOa5q4EoyU=;
-        b=e1GnV13wXBMlZlgO7uuVSOcU/+5wbNy3WSRrdsNd6Rl2RljUUHqub6pwPS/XHbaYu4POoK
-        Aa9dzqsHymPvrz84guDpwUJpQ+NSHOE55aYz3+cw1Z3U6us7OU1i21b0MJ6fX5A7mhOnet
-        1VcGwu4ZGE2LwAGIByKObzdcil1h/4U=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-462-bIaAbxaDPjO_6FjCE6IHmQ-1; Thu, 01 Sep 2022 13:44:05 -0400
-X-MC-Unique: bIaAbxaDPjO_6FjCE6IHmQ-1
-Received: by mail-wm1-f72.google.com with SMTP id h82-20020a1c2155000000b003a64d0510d9so10149226wmh.8
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 10:44:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date;
-        bh=FQOn0UueP4f1CSvnyezbvyIBmYegvrdiesOa5q4EoyU=;
-        b=qH2JfvS0VbNxi3ZjzrN8gDAgisEage5mzY/UFABb6xx/0NEnryqUONFgwZQvU8e2aV
-         DUgvQhQD0CUZmwb5hQBTLvtoxRdxfzMddBUTrtyFf/HjKFEkzJOUCBWpuA3yoNAVufK0
-         tR+XuGe3OnsfY4JV3mk9qu+rwiq1uN4sEZ+vCx3HGTKhYDXpYMz5POlR0V8z89/O7mNx
-         HOnFzmHCrdc+0mCDCWlL1WmsJ1BV1nolrTz8JodnlI0y05rhkphQR9yU9SyQYLBqbxVh
-         1UzGw3y0ENi62/MuyOjDXR7dqsu4Z6IkU8rUHroolzl8wPFJB3cYRp9Qivs2tGLnr8Oe
-         ZnoA==
-X-Gm-Message-State: ACgBeo2FHEdEPEx5lwUwfS5paDD7yz3ya2gTIh53GgOWVMaFHOPsip4h
-        nXVcp21+TXPs6ivvR7ATZ2H5CTCFSQt8AgrhxFxBpsrnyJBFvz2DLzauVO6eMcjH0A357qeXo/t
-        IPSx5J990+ws871Cmr63dJrsy
-X-Received: by 2002:a1c:7c0d:0:b0:3a6:673a:395e with SMTP id x13-20020a1c7c0d000000b003a6673a395emr169622wmc.67.1662054244061;
-        Thu, 01 Sep 2022 10:44:04 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4RzluDc/Wv+Wtio+db/BCrCcybF1ARP21JtBC1oqfw+IAEf7B2nGKiBSs5+C9mOhjB/UwFRw==
-X-Received: by 2002:a1c:7c0d:0:b0:3a6:673a:395e with SMTP id x13-20020a1c7c0d000000b003a6673a395emr169606wmc.67.1662054243823;
-        Thu, 01 Sep 2022 10:44:03 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c707:9e00:fec0:7e96:15cb:742? (p200300cbc7079e00fec07e9615cb0742.dip0.t-ipconnect.de. [2003:cb:c707:9e00:fec0:7e96:15cb:742])
-        by smtp.gmail.com with ESMTPSA id k14-20020a5d428e000000b00225232154d7sm9124954wrq.110.2022.09.01.10.44.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Sep 2022 10:44:03 -0700 (PDT)
-Message-ID: <c6990d62-a456-b7c5-f128-311ee758c161@redhat.com>
-Date:   Thu, 1 Sep 2022 19:44:02 +0200
+        Thu, 1 Sep 2022 13:47:24 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48A162A72C;
+        Thu,  1 Sep 2022 10:47:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=jG1diFKmAnHq55rmungboNRp5UxEdvvxP5T+GF1eM+o=; b=JmJhfwm9B+IKOtcaWKo8wllhi9
+        bIoTPO8pisJ8sBfD8BhnjGd3T2x1tYWNwjZXD+5bbwQmmBpzcrJ26LIJcZ1eEuiyOACVvu+y18I3v
+        lEXMQxdqsXD3ERXToXsaDXBxJkuoGVgDXVdS/EuWvm5olQmzmVHzdB3Zq1g1Prmg89VW/sQcWkS9S
+        5M+/SfB9u80s1Njbe6gh8GeZ9N3UidFntusoNzxnTRW/uzl1dabwZukyaLl4cslsI0G92S1B/iOEB
+        d07vzEPEylgobuA03CarQQooRZL0YAgwiodM8PoJzPM1RBP8v94PQOaGaOGf8omX+TlH8HQ7ugaU9
+        mUp/Rocg==;
+Received: from 189-69-202-182.dial-up.telesp.net.br ([189.69.202.182] helo=[192.168.1.60])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1oToHN-007s7h-Q5; Thu, 01 Sep 2022 19:47:02 +0200
+Message-ID: <85683284-db85-7e3a-57bd-750e1c204e3e@igalia.com>
+Date:   Thu, 1 Sep 2022 14:46:48 -0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.12.0
-Subject: Re: [PATCH v1] mm/gup: adjust stale comment for RCU GUP-fast
+Subject: Re: [PATCH V3] firmware: google: Test spinlock on panic path to avoid
+ lockups
 Content-Language: en-US
-To:     Peter Xu <peterx@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Sasha Levin <sasha.levin@oracle.com>,
-        "Aneesh Kumar K . V" <aneesh.kumar@linux.vnet.ibm.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Jerome Marchand <jmarchan@redhat.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Yang Shi <shy828301@gmail.com>
-References: <20220901072119.37588-1-david@redhat.com>
- <YxDdycTur733hMgt@xz-m1.local>
- <fa0bb4b1-3edd-eb5a-7ad6-dff785d88d8f@redhat.com>
- <YxDghv54uHYMGCfG@xz-m1.local>
- <c9dc3f22-4a72-9b9d-7a74-ad77fe4f3b6e@redhat.com>
- <YxDu51TQTz8lhIPP@xz-m1.local>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <YxDu51TQTz8lhIPP@xz-m1.local>
+To:     Greg KH <gregkh@linuxfoundation.org>, evgreen@chromium.org
+Cc:     arnd@arndb.de, linux-efi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@gpiccoli.net, ardb@kernel.org,
+        davidgow@google.com, jwerner@chromium.org,
+        Petr Mladek <pmladek@suse.com>
+References: <20220819155059.451674-1-gpiccoli@igalia.com>
+ <YxDVPqVkdgQbAIvY@kroah.com>
+ <f89cd87c-7d1c-d8e6-ed95-6876f0201872@igalia.com>
+ <YxDX9+p+58q2sip2@kroah.com>
+ <6bc5dbc3-2cdd-5cb8-1632-11de2008a85a@igalia.com>
+ <YxDhiSDs4YcUrqV5@kroah.com>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <YxDhiSDs4YcUrqV5@kroah.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->>> It can be dropped later if you want to rework the thp collapse side and
->>> finally remove IPI dependency on fast-gup, but so far it seems to me it's
->>> still needed.  Or just drop this patch until that rework happens?
+On 01/09/2022 13:44, Greg KH wrote:
+> [...]
+>>> How are we supposed to know this here?
+>>>
 >>
->> The doc as is is obviously stale, why drop this patch?
->>
->> We should see a fix for the THP collapse issue very soon I guess. Most
->> probably this patch will go upstream after that fix.
+>> Reading the code?
+>> Or you mean, in the commit description this should be mentioned?
 > 
-> No objection to have this patch alone as the removal statement is only
-> about "thp split".  But IMHO this patch alone didn't really help a great
-> lot, especially if you plan to have more to come that is very relevant to
-> this, so it'll be clearer to put them together.  Your call.
+> Yes, and in the comment as this type of call is very rare and should
+> almost never be used.
 
-I can hold off the resend until the the fix is in place. Then I can add
-to the description that we are not aware of remaining IPI dependencies,
-and one undocumented case was broken and got fixed without the need for
-IPIs.
-
-Thanks!
+OK, I can add that, for sure.
 
 
--- 
-Thanks,
+>> [...]
+>> I don't think it is so simple - we are in the panic path.
+> 
+> Great, then the lock doesn't matter :)
+> 
+>> So, imagine the lock was taken in CPU0, where GSMI is doing some
+>> operation. During that operation, CPU1 panics!
+>>
+>> When that happens, panic() executes in CPU1, disabling CPU0 through
+>> "strong" mechanisms (NMI). So, CPU0 had the lock, it is now off, and
+>> when CPU1 goes through the panic notifiers, it'll eventually wait
+>> forever for this lock in the GSMI handler, unless we have this patch
+>> that would prevent the handler to run in such case.
+>> Makes sense?
+> 
+> I'm trying to say "if you are in panic, never grab the lock in the first
+> place".  So change the place when you grab the lock, not here.
+> 
 
-David / dhildenb
+Evan, any comment here?
+I think the patch is still well suited for this case. Suggestions on how
+to improve it are welcome, of course.
 
+I honestly didn't understand exactly what you're suggesting Greg...
+Mind clarifying?
+
+Cheers,
+
+
+Guilherme
