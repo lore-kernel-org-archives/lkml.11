@@ -2,88 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00827ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 05:27:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A520ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 05:28:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233022AbiIAF1f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 01:27:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37454 "EHLO
+        id S233052AbiIAF2s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 01:28:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233036AbiIAF11 (ORCPT
+        with ESMTP id S233003AbiIAF2r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 01:27:27 -0400
-Received: from smtp.smtpout.orange.fr (smtp05.smtpout.orange.fr [80.12.242.127])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C08DF13285C
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 22:27:23 -0700 (PDT)
-Received: from pop-os.home ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id TcjYoNolFez1rTcjZop1CC; Thu, 01 Sep 2022 07:27:21 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Thu, 01 Sep 2022 07:27:21 +0200
-X-ME-IP: 90.11.190.129
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Chuck Lever <chuck.lever@oracle.com>,
-        Jeff Layton <jlayton@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-nfs@vger.kernel.org
-Subject: [PATCH v2 3/3] nfsd: Propagate some error code returned by memdup_user()
-Date:   Thu,  1 Sep 2022 07:27:19 +0200
-Message-Id: <d8af52e13f53dcb14d72486d6ac92607d5f42716.1662009844.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <14d802144c88da0eb9e201b3acbf4bde376b2473.1662009844.git.christophe.jaillet@wanadoo.fr>
-References: <14d802144c88da0eb9e201b3acbf4bde376b2473.1662009844.git.christophe.jaillet@wanadoo.fr>
+        Thu, 1 Sep 2022 01:28:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D895DF666;
+        Wed, 31 Aug 2022 22:28:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4CAEB81619;
+        Thu,  1 Sep 2022 05:28:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCBB0C433C1;
+        Thu,  1 Sep 2022 05:28:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662010123;
+        bh=0e3zj4uy1iVmgegJwpAbXPvOJ9xzYtDAws9Y1UFGV+A=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Ws9qL7Cdx72e0H/U5M7wVdw+RWUJM1gZZrdWFzBeOsX42IiOqzcN41d5y/9Wr6zQn
+         I3CqPtrJtbSEyhU4QUTGMFBjF3mTtCvH28rGJbEoEBRd+kwi6qG9WN0gWFFHdMxW1t
+         Bkb8ytx6T88AEB7v20TVcyue8h464F5WF+T+jqz0=
+Date:   Thu, 1 Sep 2022 07:28:59 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     "Isaac J. Manjarres" <isaacmanjarres@google.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        stable@vger.kernel.org, Saravana Kannan <saravanak@google.com>,
+        Guenter Roeck <linux@roeck-us.net>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] driver core: Don't probe devices after
+ bus_type.match() probe deferral
+Message-ID: <YxBDG9ebNDwEni2j@kroah.com>
+References: <20220817184026.3468620-1-isaacmanjarres@google.com>
+ <Yw/CyRFr1bYNlNGh@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yw/CyRFr1bYNlNGh@shell.armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Propagate the error code returned by memdup_user() instead of a hard coded
--EFAULT.
+On Wed, Aug 31, 2022 at 09:21:29PM +0100, Russell King (Oracle) wrote:
+> Greg,
+> 
+> Are you happy for me to pick up this patch as part of the fixes for the
+> AMBA changes? The original patch that it is fixing is a patch that was
+> part of a series that was merged through my tree.
+> 
+> It's fixing a problem that has been noticed by several people and the
+> fix is now a few weeks old.
 
-Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-This patch is speculative. The whole call chains have not been checked to
-see if there was no path explicitly expecting a -EFAULT.
----
- fs/nfsd/nfs4recover.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Sorry, I'm behind in driver core stuff.  I'll pick it up later today.
 
-diff --git a/fs/nfsd/nfs4recover.c b/fs/nfsd/nfs4recover.c
-index 2968cf604e3b..78b8cd9651d5 100644
---- a/fs/nfsd/nfs4recover.c
-+++ b/fs/nfsd/nfs4recover.c
-@@ -808,7 +808,7 @@ __cld_pipe_inprogress_downcall(const struct cld_msg_v2 __user *cmsg,
- 				return -EFAULT;
- 			name.data = memdup_user(&ci->cc_name.cn_id, namelen);
- 			if (IS_ERR(name.data))
--				return -EFAULT;
-+				return PTR_ERR(name.data);
- 			name.len = namelen;
- 			get_user(princhashlen, &ci->cc_princhash.cp_len);
- 			if (princhashlen > 0) {
-@@ -817,7 +817,7 @@ __cld_pipe_inprogress_downcall(const struct cld_msg_v2 __user *cmsg,
- 						princhashlen);
- 				if (IS_ERR(princhash.data)) {
- 					kfree(name.data);
--					return -EFAULT;
-+					return PTR_ERR(princhash.data);
- 				}
- 				princhash.len = princhashlen;
- 			} else
-@@ -830,7 +830,7 @@ __cld_pipe_inprogress_downcall(const struct cld_msg_v2 __user *cmsg,
- 				return -EFAULT;
- 			name.data = memdup_user(&cnm->cn_id, namelen);
- 			if (IS_ERR(name.data))
--				return -EFAULT;
-+				return PTR_ERR(name.data);
- 			name.len = namelen;
- 		}
- 		if (name.len > 5 && memcmp(name.data, "hash:", 5) == 0) {
--- 
-2.34.1
-
+greg k-h
