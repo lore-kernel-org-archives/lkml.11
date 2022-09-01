@@ -2,99 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEC98ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 06:14:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03F1AECAAD8
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 06:14:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233287AbiIAGOM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 02:14:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56796 "EHLO
+        id S233295AbiIAGOV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 02:14:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233058AbiIAGOC (ORCPT
+        with ESMTP id S233174AbiIAGOO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 02:14:02 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12707119C42
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 23:13:55 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id 145so16215469pfw.4
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 23:13:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=quanta-corp-partner-google-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=u2QS6fg72hwaCjD3sPqvtQp+8aS8fo77aTYpyXjXL8Y=;
-        b=QYZ39M/brjdmrbBFxHKRM/xw3eqZTzhWWd8GZLQ2ZdqduWz9JSy5FqUhK8PyVfXd22
-         x5UvjyR/eTpcJnHQqGCZPI/07E0+KhJ4Jbd7TTNFdBOHMQv3AbLzE/m37K5EaFBTQviQ
-         NJtEB6f/XCqv+VL0nWqXeVmIkF+iVaU2mmCaeZdDrLZMHy3G5pZVuvU9KPZcVcSGzW7C
-         ucTHomik0CLWA/jdKoA6iWBnHnucuyO27lUpOBW6CWU5XC4Fc3qIpyjsesswsosIEl3u
-         IGZlUTZamO+3FHQZMnxpvbDiV3iuOFEV1f8hae5Lf9zVKb7mpvEkxnLPM0DwuBCZNGVB
-         8d6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=u2QS6fg72hwaCjD3sPqvtQp+8aS8fo77aTYpyXjXL8Y=;
-        b=pYNbmkp29RsAUILpdXo2Yvwx+A1bGnHQ2vgIKjL0hcQzfbHkxQTAtIAe3QoirfDkDD
-         xEu5O9p8etyf4kCIWog6DmMaIjoASp3m8C22WM8hacFq7czo8GuJxqyhHKkD3GcE4jn+
-         eMgBOBIkk956jFm2McRfNdyTZCxY+iB7yQ8EHcO0nyUNzGE5DlwVRy0os4dbl4F/jRZj
-         jRKd7xn6i6DWQLKRe4ors1VfU5nPtAY2eKpYp04zJnXkXaqEe/ur/rttBbs3XKKO2L/j
-         Ee/n6DWWRf6dYlpiBTB+hFB7gvywdaFzmtoqL4zvBvb9RaLdqUCRckSo+LIPNKfmkG5I
-         nnag==
-X-Gm-Message-State: ACgBeo2H1RHx/3Uply4d6B0nVq/b8Ihth0C029+5hM2lrQwhNVY2svE2
-        n7i4TRwjZLeotduRMqSWmY1nhIkh7KdQsw==
-X-Google-Smtp-Source: AA6agR49J7Y71mPjD7u9FvaoRAz+HMtSv25FhhVXHQ5FVGPKTEGFja0XTTohrXxhlBGO3wfEvgAGow==
-X-Received: by 2002:a63:4b5e:0:b0:41d:e04b:4515 with SMTP id k30-20020a634b5e000000b0041de04b4515mr24514182pgl.100.1662012834367;
-        Wed, 31 Aug 2022 23:13:54 -0700 (PDT)
-Received: from liang-Predator-PH517-52.. (60-250-232-247.hinet-ip.hinet.net. [60.250.232.247])
-        by smtp.gmail.com with ESMTPSA id c14-20020a170903234e00b00174e9e14f60sm7016929plh.82.2022.08.31.23.13.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Aug 2022 23:13:54 -0700 (PDT)
-From:   Sheng-Liang Pan <sheng-liang.pan@quanta.corp-partner.google.com>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     mka@chromium.org, dianders@chromium.org,
-        Sheng-Liang Pan <sheng-liang.pan@quanta.corp-partner.google.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-Subject: [PATCH 2/2] dt-bindings: arm: qcom: document sc7280 and evoker board
-Date:   Thu,  1 Sep 2022 14:13:35 +0800
-Message-Id: <20220901141304.2.Ief93544cd0cbfa412092f5de92de10d59a2a5b3a@changeid>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220901061336.61386-1-sheng-liang.pan@quanta.corp-partner.google.com>
-References: <20220901061336.61386-1-sheng-liang.pan@quanta.corp-partner.google.com>
+        Thu, 1 Sep 2022 02:14:14 -0400
+Received: from smtp237.sjtu.edu.cn (smtp237.sjtu.edu.cn [202.120.2.237])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15537119C50;
+        Wed, 31 Aug 2022 23:14:13 -0700 (PDT)
+Received: from mta91.sjtu.edu.cn (unknown [10.118.0.91])
+        by smtp237.sjtu.edu.cn (Postfix) with ESMTPS id 6F06D10087D60;
+        Thu,  1 Sep 2022 14:14:10 +0800 (CST)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by mta91.sjtu.edu.cn (Postfix) with ESMTP id 1FC8237C83F;
+        Thu,  1 Sep 2022 14:14:10 +0800 (CST)
+X-Virus-Scanned: amavisd-new at 
+Received: from mta91.sjtu.edu.cn ([127.0.0.1])
+        by localhost (mta91.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id sNz9ikVBzg68; Thu,  1 Sep 2022 14:14:10 +0800 (CST)
+Received: from mstore105.sjtu.edu.cn (mstore101.sjtu.edu.cn [10.118.0.105])
+        by mta91.sjtu.edu.cn (Postfix) with ESMTP id E611837C83E;
+        Thu,  1 Sep 2022 14:14:09 +0800 (CST)
+Date:   Thu, 1 Sep 2022 14:14:09 +0800 (CST)
+From:   Guo Zhi <qtxuning1999@sjtu.edu.cn>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        kvm list <kvm@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        eperezma <eperezma@redhat.com>, jasowang <jasowang@redhat.com>,
+        sgarzare <sgarzare@redhat.com>, Michael Tsirkin <mst@redhat.com>
+Message-ID: <1987009989.9672563.1662012849811.JavaMail.zimbra@sjtu.edu.cn>
+In-Reply-To: <1662012423.9200838-1-xuanzhuo@linux.alibaba.com>
+References: <20220901055434.824-1-qtxuning1999@sjtu.edu.cn> <20220901055434.824-6-qtxuning1999@sjtu.edu.cn> <1662012423.9200838-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [RFC v3 5/7] virtio: unmask F_NEXT flag in desc_extra
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=GB2312
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.162.206.161]
+X-Mailer: Zimbra 8.8.15_GA_4308 (ZimbraWebClient - GC104 (Mac)/8.8.15_GA_3928)
+Thread-Topic: virtio: unmask F_NEXT flag in desc_extra
+Thread-Index: 2yceLelHrZ0oQXoJXM26DE2cdEtpSw==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds Chromebook Evoker to the yaml.
 
-Signed-off-by: Sheng-Liang Pan <sheng-liang.pan@quanta.corp-partner.google.com>
----
 
- Documentation/devicetree/bindings/arm/qcom.yaml | 5 +++++
- 1 file changed, 5 insertions(+)
+----- Original Message -----
+> From: "Xuan Zhuo" <xuanzhuo@linux.alibaba.com>
+> To: "Guo Zhi" <qtxuning1999@sjtu.edu.cn>
+> Cc: "netdev" <netdev@vger.kernel.org>, "linux-kernel" <linux-kernel@vger.kernel.org>, "kvm list" <kvm@vger.kernel.org>,
+> "virtualization" <virtualization@lists.linux-foundation.org>, "Guo Zhi" <qtxuning1999@sjtu.edu.cn>, "eperezma"
+> <eperezma@redhat.com>, "jasowang" <jasowang@redhat.com>, "sgarzare" <sgarzare@redhat.com>, "Michael Tsirkin"
+> <mst@redhat.com>
+> Sent: Thursday, September 1, 2022 2:07:03 PM
+> Subject: Re: [RFC v3 5/7] virtio: unmask F_NEXT flag in desc_extra
 
-diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-index fb1d00bcc847c..d4b2d947859d4 100644
---- a/Documentation/devicetree/bindings/arm/qcom.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -565,6 +565,11 @@ properties:
-           - const: google,piglin
-           - const: qcom,sc7280
- 
-+      - description: Google Evoker (newest rev)
-+        items:
-+          - const: google,evoker
-+          - const: qcom,sc7280
-+
-       - description: Google Herobrine (newest rev)
-         items:
-           - const: google,herobrine
--- 
-2.34.1
+> On Thu,  1 Sep 2022 13:54:32 +0800, Guo Zhi <qtxuning1999@sjtu.edu.cn> wrote:
+>> We didn't unmask F_NEXT flag in desc_extra in the end of a chain,
+>> unmask it so that we can access desc_extra to get next information.
+>>
+>> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
+>> ---
+>>  drivers/virtio/virtio_ring.c | 7 ++++---
+>>  1 file changed, 4 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+>> index a5ec724c01d8..00aa4b7a49c2 100644
+>> --- a/drivers/virtio/virtio_ring.c
+>> +++ b/drivers/virtio/virtio_ring.c
+>> @@ -567,7 +567,7 @@ static inline int virtqueue_add_split(struct virtqueue *_vq,
+>>  	}
+>>  	/* Last one doesn't continue. */
+>>  	desc[prev].flags &= cpu_to_virtio16(_vq->vdev, ~VRING_DESC_F_NEXT);
+>> -	if (!indirect && vq->use_dma_api)
+>> +	if (!indirect)
+>>  		vq->split.desc_extra[prev & (vq->split.vring.num - 1)].flags &=
+>>  			~VRING_DESC_F_NEXT;
+>>
+>> @@ -584,6 +584,8 @@ static inline int virtqueue_add_split(struct virtqueue *_vq,
+>>  					 total_sg * sizeof(struct vring_desc),
+>>  					 VRING_DESC_F_INDIRECT,
+>>  					 false);
+>> +		vq->split.desc_extra[head & (vq->split.vring.num - 1)].flags &=
+>> +			~VRING_DESC_F_NEXT;
+> 
+> Wondering if this is necessary? When setting flags, NEXT is not included.
 
+I adopted your advice in this patch series and remove this unnecessary code, but I
+leave that modification i patch 6/7. Sorry for my git rebase mistake.
+
+Thanks
+
+> 
+>>  	}
+>>
+>>  	/* We're using some buffers from the free list. */
+>> @@ -685,7 +687,6 @@ static void detach_buf_split(struct vring_virtqueue *vq,
+>> unsigned int head,
+>>  			     void **ctx)
+>>  {
+>>  	unsigned int i, j;
+>> -	__virtio16 nextflag = cpu_to_virtio16(vq->vq.vdev, VRING_DESC_F_NEXT);
+>>
+>>  	/* Clear data ptr. */
+>>  	vq->split.desc_state[head].data = NULL;
+>> @@ -693,7 +694,7 @@ static void detach_buf_split(struct vring_virtqueue *vq,
+>> unsigned int head,
+>>  	/* Put back on free list: unmap first-level descriptors and find end */
+>>  	i = head;
+>>
+>> -	while (vq->split.vring.desc[i].flags & nextflag) {
+>> +	while (vq->split.desc_extra[i].flags & VRING_DESC_F_NEXT) {
+>>  		vring_unmap_one_split(vq, i);
+>>  		i = vq->split.desc_extra[i].next;
+>>  		vq->vq.num_free++;
+>> --
+>> 2.17.1
+>>
