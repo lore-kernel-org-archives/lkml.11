@@ -2,74 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77BBDECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:54:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28095ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:56:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234448AbiIANyE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 09:54:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46250 "EHLO
+        id S233295AbiIAN4u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 09:56:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233968AbiIANx7 (ORCPT
+        with ESMTP id S232864AbiIAN4r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 09:53:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF7CBF4C;
-        Thu,  1 Sep 2022 06:53:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77293B826E2;
-        Thu,  1 Sep 2022 13:53:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D679C433C1;
-        Thu,  1 Sep 2022 13:53:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662040435;
-        bh=HdsYKZmyvUhpJZba03oAmfYjwzHbDOVaQz9sEmXDhww=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CGrJY5mf/CEotU+aiZKDeb0eBpmRY6SlPOv3KQjdek5+gw7JXxzyEgfpFkMyRHDtj
-         OpRCF7x7vDdT4ldIXyVuKFV0kDWHvR1XmBpvtqnEXHXZWzTuciKoZ4s5LFRa14UjM7
-         Ca8tJnTRfof1qW4GTQ8tcSMXSfQT8fCZ8NhWrDg2/fsys4mP5DMpJDMn9DcpL8h6Ir
-         5JgVvucNoMULavFe9OFOMiydvLfqfATmqGPaqNHLcfk4BVWRT27AWssjozNakNrNzH
-         hXi8x0XmPLCvRSmudnfTfmfRuq2I+6QsASRvqVR7NICjAXDMGJEeaRFmwP884Q6P1u
-         N091/JLRHBgEA==
-Date:   Thu, 1 Sep 2022 21:44:37 +0800
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Anup Patel <anup@brainfault.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, kvm-riscv@lists.infradead.org
-Subject: Re: [PATCH v2 0/5] riscv: add PREEMPT_RT support
-Message-ID: <YxC3Ra5iZDdYX7sW@xhacker>
-References: <20220831175920.2806-1-jszhang@kernel.org>
- <YxBZZWopVftK/WBk@linutronix.de>
+        Thu, 1 Sep 2022 09:56:47 -0400
+Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34F4A54CA2
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 06:56:46 -0700 (PDT)
+Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-11f11d932a8so23325944fac.3
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 06:56:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=I6b2BpVPciHMhVZH7YUBZEI4uoChzNOCc33KlKxQssU=;
+        b=UfYagmTCEAKlJiF5vi9Lr4zhbHBYRckggijCHnrDqm9tdNhJroir28h2rwqGdpX+sk
+         bM9G4RF1NQXxJkb+WSLhb+DNdA4zYtWHOeKkoUJU/gn4R7xXldKgldHrvGWKm0MgsszT
+         JNLT7Fipig6CmtfO5qF57rUTh1wjU8SW2aleHywPOZBU4t9AxJy3qSN12N44DvWvqnQI
+         qq6IKO+Fz/J1QlCe4s+BhLxonUQdOgBEJQYs4Haq/9MkDWXxBCHkJDIO3z2qDjGcvPQN
+         MZ0z0P6jfZILZbGYcWu7kfSNnvvXZB5FPoKcZvG7LNetYcf96Dl398fGyrxEPN5HT1tW
+         wHBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=I6b2BpVPciHMhVZH7YUBZEI4uoChzNOCc33KlKxQssU=;
+        b=LI67KRUyNablrFOI0AcMG+FvIvqYDqHZSZnlaLdMPzmVYNIjEkpCUASvqF7r1wLM7W
+         7VBZbF/hiYCePXWzID4nHrVicaO3JZ8OltJQg01Z+uOIFwra4Z+mZppg2VKIbSYYJCzL
+         VjBurojOg/t2HSJPVd3aHdshStQsbWsJE/1av2JhgeBJLq1yWW54U9IGmHlINbJYRVez
+         UJ9kfPDYfb3SykPzFVF+0ImCyZBw4zhWuqD7TWCUIIgOdJFrUrzDN/6OiMTFTYMetuyC
+         DFK4lHi6tAy6DRf8M9dkgS2/cJ7e4h3bUiTWb2f7LIDiDXKvGebBP5pWqkCcFiML/jug
+         IWSw==
+X-Gm-Message-State: ACgBeo3SYckA1S+8km+X5gcrJGB+nLfylfFcHyfXHCi2jtEiWhLGv82+
+        kQPRu4f8dAowGuhn9rGAEqtkcwM7ZWNBhnZn3gm9B1ZDWQ==
+X-Google-Smtp-Source: AA6agR6sJmqeUCe9RB5vYfnF5hulI5nC7gPvNmZKeMuLtjUoo0UVYScgBw5MsE89TbGdAZbxgapbu7NuE7Gc4/ZtmGk=
+X-Received: by 2002:a05:6808:bd1:b0:345:da59:d3ae with SMTP id
+ o17-20020a0568080bd100b00345da59d3aemr3525523oik.136.1662040605439; Thu, 01
+ Sep 2022 06:56:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YxBZZWopVftK/WBk@linutronix.de>
+References: <20220901122739.6d1a54ef@canb.auug.org.au>
+In-Reply-To: <20220901122739.6d1a54ef@canb.auug.org.au>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Thu, 1 Sep 2022 09:56:34 -0400
+Message-ID: <CAHC9VhQV2qW3o_bPnabhfdN_YoY7n7ncU1-8cUpVHhPZ1iLWQw@mail.gmail.com>
+Subject: Re: linux-next: manual merge of the security tree with Linus' tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Frederick Lawler <fred@cloudflare.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 01, 2022 at 09:04:05AM +0200, Sebastian Andrzej Siewior wrote:
-> On 2022-09-01 01:59:15 [+0800], Jisheng Zhang wrote:
-> > I assume patch1, patch2 and patch3 can be reviewed and merged for
-> > riscv-next, patch4 and patch5 can be reviewed and maintained in rt tree,
-> > and finally merged once the remaining patches in rt tree are all
-> > mainlined.
-> 
-> I would say so, yes.
-> 
-> What about JUMP_LABEL support? Do you halt all CPUs while patching the
-> code?
-> 
+On Wed, Aug 31, 2022 at 10:27 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+> Hi all,
+>
+> Today's linux-next merge of the security tree got a conflict in:
+>
+>   security/selinux/include/classmap.h
+>
+> between commit:
+>
+>   f4d653dcaa4e ("selinux: implement the security_uring_cmd() LSM hook")
+>
+> from Linus' tree and commit:
+>
+>   ed5d44d42c95 ("selinux: Implement userns_create hook")
+>
+> from the security tree.
+>
+> I fixed it up (see below) and can carry the fix as necessary. This
+> is now fixed as far as linux-next is concerned, but any non trivial
+> conflicts should be mentioned to your upstream maintainer when your tree
+> is submitted for merging.  You may also want to consider cooperating
+> with the maintainer of the conflicting tree to minimise any particularly
+> complex conflicts.
+>
+> --
+> Cheers,
+> Stephen Rothwell
+>
+> diff --cc security/selinux/include/classmap.h
+> index 1c2f41ff4e55,0bff55bb9cde..000000000000
+> --- a/security/selinux/include/classmap.h
+> +++ b/security/selinux/include/classmap.h
+> @@@ -253,7 -253,9 +253,9 @@@ const struct security_class_mapping sec
+>         { "anon_inode",
+>           { COMMON_FILE_PERMS, NULL } },
+>         { "io_uring",
+>  -        { "override_creds", "sqpoll", NULL } },
+>  +        { "override_creds", "sqpoll", "cmd", NULL } },
+> +       { "user_namespace",
+> +         { "create", NULL } },
+>         { NULL }
+>     };
 
-FWICT, riscv JUMP_LABEL implementation doesn't rely on stop all cpus while
-patching text.
+Thanks Stephen, that looks correct.
 
-Thanks
+-- 
+paul-moore.com
