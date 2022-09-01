@@ -2,217 +2,305 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D99FECAAD2
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 20:20:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37D5CECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 20:21:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234877AbiIAUUg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 16:20:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58272 "EHLO
+        id S234764AbiIAUVC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 16:21:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231650AbiIAUUe (ORCPT
+        with ESMTP id S231650AbiIAUU6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 16:20:34 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5A6C481D5;
-        Thu,  1 Sep 2022 13:20:32 -0700 (PDT)
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 281JHjfq011034;
-        Thu, 1 Sep 2022 20:20:18 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=7NdMKjCGr0VH2jWf99Ve+nXSQZagUgzEpQTAIP2HZc4=;
- b=N7MQ++j1zzlVZo+jZzD9xTnA9UPKT4OqxhshqBUvwERux2q0HtbTU0ySNxJ0pCRSmr/v
- NPjQPQNs4/1EiDFY9k5yj6VVTEsZJwhOWz+L8NVNHLIHcIHI0ECwT+noBQTLQXprShlL
- UPgAm0Ub+Nx/t4SPhs0Dpvk49B3uiGzo1g7TaZZLrWRDa3goP5C5sbRB5WnFXDyTUmTD
- kq/XDrr7L3V9bFS0SVL79vjEA467uo3B6s9KRzatXMFQ5aeLs5Gov6JEv2gZ5rcAxpyz
- 0IPwNNaVC3L6hBpl8QU7tm9qzeVYRcjx3XlzKG+TOlqmMb1vvjGGQrAAhgkGqcU+otlt VA== 
-Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3ja79knp0g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 20:20:17 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 281KKGrn004976
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 1 Sep 2022 20:20:16 GMT
-Received: from [10.216.21.90] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Thu, 1 Sep 2022
- 13:20:11 -0700
-Message-ID: <2339be29-c35a-67a4-8e98-daf247dd77dd@quicinc.com>
-Date:   Fri, 2 Sep 2022 01:50:07 +0530
+        Thu, 1 Sep 2022 16:20:58 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAC6952838
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 13:20:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662063656; x=1693599656;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=RIdw1o8lMeQiPYD/hq6j4185lloDV+aPMtOEshs7Rzg=;
+  b=HElRujAne/Ypu02orXZPXyQK2xL61X2dK5zXA4bHWENmDdZLkY+Jm6r7
+   pdPicJJrNehKTHiSw2VJ4+rR3XSem2JQsKOxsx8T5yZdZPSrkcbAHM3Ei
+   fNhTCiADg1XsPebxXriNKXcoDGsOrHsM/J5/X+noxnBJUxLrH3grMfo+z
+   7jL42BAqJhXlBw2pgZockKZzD0tilvvEgRWV8RGOdjRXKd/6K1tt11U5o
+   KKkkeHl2CYzMUJmkvUyZ/VqRvkGGiuDsAZpDa2UshAHA3mNCuby/jbXdL
+   Lbtmmx+gK1FKz8WhfyPyL6wG/CFl2G2gBtoNSPKRRl07Jdz4ZujAJlV9y
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="276219418"
+X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
+   d="scan'208";a="276219418"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 13:20:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
+   d="scan'208";a="754977544"
+Received: from lkp-server02.sh.intel.com (HELO b138c9e8658c) ([10.239.97.151])
+  by fmsmga001.fm.intel.com with ESMTP; 01 Sep 2022 13:20:54 -0700
+Received: from kbuild by b138c9e8658c with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oTqgI-0000jx-16;
+        Thu, 01 Sep 2022 20:20:54 +0000
+Date:   Fri, 2 Sep 2022 04:20:47 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: drivers/dma/ppc4xx/adma.c:140:17: sparse: sparse: cast to restricted
+ __le32
+Message-ID: <202209020435.vmFRI5KR-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [PATCH v6 3/6] clk: qcom: gdsc: Add a reset op to poll gdsc
- collapse
-Content-Language: en-US
-To:     Philipp Zabel <p.zabel@pengutronix.de>
-CC:     freedreno <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        <krzysztof.kozlowski@linaro.org>, Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, <linux-clk@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <1661923108-789-1-git-send-email-quic_akhilpo@quicinc.com>
- <20220831104741.v6.3.I162c4be55f230cd439f0643f1624527bdc8a9831@changeid>
- <20220901102817.GB32271@pengutronix.de>
-From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
-In-Reply-To: <20220901102817.GB32271@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: RrxUfKEOlK-krrFliA-9F3YbRt6ORIds
-X-Proofpoint-ORIG-GUID: RrxUfKEOlK-krrFliA-9F3YbRt6ORIds
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-09-01_12,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 clxscore=1015
- adultscore=0 mlxscore=0 malwarescore=0 suspectscore=0 impostorscore=0
- priorityscore=1501 phishscore=0 mlxlogscore=999 bulkscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2209010088
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 9/1/2022 3:58 PM, Philipp Zabel wrote:
-> On Wed, Aug 31, 2022 at 10:48:24AM +0530, Akhil P Oommen wrote:
->> Add a reset op compatible function to poll for gdsc collapse.
->>
->> Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
->> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
->> ---
->>
->> (no changes since v2)
->>
->> Changes in v2:
->> - Minor update to function prototype
->>
->>   drivers/clk/qcom/gdsc.c | 23 +++++++++++++++++++----
->>   drivers/clk/qcom/gdsc.h |  7 +++++++
->>   2 files changed, 26 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/clk/qcom/gdsc.c b/drivers/clk/qcom/gdsc.c
->> index 44520ef..2d0f1d1 100644
->> --- a/drivers/clk/qcom/gdsc.c
->> +++ b/drivers/clk/qcom/gdsc.c
->> @@ -17,6 +17,7 @@
->>   #include <linux/reset-controller.h>
->>   #include <linux/slab.h>
->>   #include "gdsc.h"
->> +#include "reset.h"
->>   
->>   #define PWR_ON_MASK		BIT(31)
->>   #define EN_REST_WAIT_MASK	GENMASK_ULL(23, 20)
->> @@ -116,7 +117,8 @@ static int gdsc_hwctrl(struct gdsc *sc, bool en)
->>   	return regmap_update_bits(sc->regmap, sc->gdscr, HW_CONTROL_MASK, val);
->>   }
->>   
->> -static int gdsc_poll_status(struct gdsc *sc, enum gdsc_status status)
->> +static int gdsc_poll_status(struct gdsc *sc, enum gdsc_status status,
->> +		s64 timeout_us, unsigned int interval_ms)
->>   {
->>   	ktime_t start;
->>   
->> @@ -124,7 +126,9 @@ static int gdsc_poll_status(struct gdsc *sc, enum gdsc_status status)
->>   	do {
->>   		if (gdsc_check_status(sc, status))
->>   			return 0;
->> -	} while (ktime_us_delta(ktime_get(), start) < TIMEOUT_US);
->> +		if (interval_ms)
->> +			msleep(interval_ms);
->> +	} while (ktime_us_delta(ktime_get(), start) < timeout_us);
-> Could this loop be implemented with read_poll_timeout()?
-I felt it is not worth the code churn. Currently, we hit this path only 
-during GPU recovery which is a rare event.
->
->>   	if (gdsc_check_status(sc, status))
->>   		return 0;
->> @@ -172,7 +176,7 @@ static int gdsc_toggle_logic(struct gdsc *sc, enum gdsc_status status)
->>   		udelay(1);
->>   	}
->>   
->> -	ret = gdsc_poll_status(sc, status);
->> +	ret = gdsc_poll_status(sc, status, TIMEOUT_US, 0);
->>   	WARN(ret, "%s status stuck at 'o%s'", sc->pd.name, status ? "ff" : "n");
->>   
->>   	if (!ret && status == GDSC_OFF && sc->rsupply) {
->> @@ -343,7 +347,7 @@ static int _gdsc_disable(struct gdsc *sc)
->>   		 */
->>   		udelay(1);
->>   
->> -		ret = gdsc_poll_status(sc, GDSC_ON);
->> +		ret = gdsc_poll_status(sc, GDSC_ON, TIMEOUT_US, 0);
->>   		if (ret)
->>   			return ret;
->>   	}
->> @@ -565,3 +569,14 @@ int gdsc_gx_do_nothing_enable(struct generic_pm_domain *domain)
->>   	return 0;
->>   }
->>   EXPORT_SYMBOL_GPL(gdsc_gx_do_nothing_enable);
->> +
->> +int gdsc_wait_for_collapse(void *priv)
->> +{
->> +	struct gdsc *sc = priv;
->> +	int ret;
->> +
->> +	ret = gdsc_poll_status(sc, GDSC_OFF, 500000, 5);
->> +	WARN(ret, "%s status stuck at 'on'", sc->pd.name);
->> +	return ret;
->> +}
->> +EXPORT_SYMBOL_GPL(gdsc_wait_for_collapse);
-> Superficially, using this as a reset op seems like abuse of the reset
-> controller API. Calling reset_control_reset() on this in the GPU driver
-> will not trigger a reset signal on the GPU's "cx_collapse" reset input.
->
-> So at the very least, this patchset should contain an explanation why
-> this is a good idea regardless, and how this is almost a reset control.
->
-> I have read the linked discussion, and I'm not sure I understand all
-> of it, so please correct me if I'm wrong: There is some other way to
-> force the GDSC into a state that will eventually cause a GPU reset, and
-> this is just the remaining part to make sure that the workaround dance
-> is finished?
->
-> If so, it should be explained that this depends on something else to
-> actually indirectly trigger the reset, and where this happens.
+Hi Christophe,
 
-Let me clarify a bit. In Qcom gpu subsystem, power collapse is the only 
-way to properly reset the cx domain. Power collapse is a bit complex 
-here because multiple subsystems/drivers can keep a vote on the 
-regulator which blocks power collapse. So we remove the vote from gpu 
-driver and poll (with a reasonable timeout obviously) until everyone 
-removes their vote and gdsc collapses.
+First bad commit (maybe != root cause):
 
-I suppose generally a reset implementation would look like this:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   42e66b1cc3a070671001f8a1e933a80818a192bf
+commit: 2255411d1d0f0661d1e5acd5f6edf4e6652a345a powerpc/44x: Fix build failure with GCC 12 (unrecognized opcode: `wrteei')
+date:   5 weeks ago
+config: powerpc-randconfig-s053-20220901 (https://download.01.org/0day-ci/archive/20220902/202209020435.vmFRI5KR-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 12.1.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=2255411d1d0f0661d1e5acd5f6edf4e6652a345a
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 2255411d1d0f0661d1e5acd5f6edf4e6652a345a
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/dma/ppc4xx/
 
-reset {
-         Step 1: Trigger a reset pulse
-         Step 2: Wait/poll for reset to complete
-}
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-We skip step1 because we don't have a way to force it during gpu reset. 
-Instead of that, we just remove the gdsc vote from the gpu driver. So 
-all that is left to do here is step 2.
+sparse warnings: (new ones prefixed by >>)
+>> drivers/dma/ppc4xx/adma.c:140:17: sparse: sparse: cast to restricted __le32
+>> drivers/dma/ppc4xx/adma.c:140:17: sparse: sparse: cast to restricted __le32
+>> drivers/dma/ppc4xx/adma.c:140:17: sparse: sparse: cast to restricted __le32
+>> drivers/dma/ppc4xx/adma.c:140:17: sparse: sparse: cast to restricted __le32
+>> drivers/dma/ppc4xx/adma.c:140:17: sparse: sparse: cast to restricted __le32
+>> drivers/dma/ppc4xx/adma.c:140:17: sparse: sparse: cast to restricted __le32
+>> drivers/dma/ppc4xx/adma.c:140:17: sparse: sparse: cast to restricted __le32
+>> drivers/dma/ppc4xx/adma.c:543:35: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int [usertype] sg1l @@     got restricted __le32 [usertype] @@
+   drivers/dma/ppc4xx/adma.c:543:35: sparse:     expected unsigned int [usertype] sg1l
+   drivers/dma/ppc4xx/adma.c:543:35: sparse:     got restricted __le32 [usertype]
+>> drivers/dma/ppc4xx/adma.c:544:35: sparse: sparse: invalid assignment: |=
+>> drivers/dma/ppc4xx/adma.c:544:35: sparse:    left side has type unsigned int
+>> drivers/dma/ppc4xx/adma.c:544:35: sparse:    right side has type restricted __le32
+   drivers/dma/ppc4xx/adma.c:589:23: sparse: sparse: invalid assignment: |=
+   drivers/dma/ppc4xx/adma.c:589:23: sparse:    left side has type unsigned int
+   drivers/dma/ppc4xx/adma.c:589:23: sparse:    right side has type restricted __le32
+>> drivers/dma/ppc4xx/adma.c:627:23: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int [usertype] @@     got restricted __le32 [usertype] @@
+   drivers/dma/ppc4xx/adma.c:627:23: sparse:     expected unsigned int [usertype]
+   drivers/dma/ppc4xx/adma.c:627:23: sparse:     got restricted __le32 [usertype]
+   drivers/dma/ppc4xx/adma.c:628:23: sparse: sparse: invalid assignment: |=
+   drivers/dma/ppc4xx/adma.c:628:23: sparse:    left side has type unsigned int
+   drivers/dma/ppc4xx/adma.c:628:23: sparse:    right side has type restricted __le32
+>> drivers/dma/ppc4xx/adma.c:653:34: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int [usertype] cnt @@     got restricted __le32 [usertype] @@
+   drivers/dma/ppc4xx/adma.c:653:34: sparse:     expected unsigned int [usertype] cnt
+   drivers/dma/ppc4xx/adma.c:653:34: sparse:     got restricted __le32 [usertype]
+>> drivers/dma/ppc4xx/adma.c:686:38: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void volatile [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:686:38: sparse:     expected void volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:686:38: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:687:38: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void volatile [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:687:38: sparse:     expected void volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:687:38: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:688:38: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void volatile [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:688:38: sparse:     expected void volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:688:38: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:689:39: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void volatile [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:689:39: sparse:     expected void volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:689:39: sparse:     got unsigned int *
+>> drivers/dma/ppc4xx/adma.c:734:17: sparse: sparse: Using plain integer as NULL pointer
+>> drivers/dma/ppc4xx/adma.c:1185:25: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct dma_regs *dma_reg @@     got struct dma_regs [noderef] __iomem *dma_reg @@
+   drivers/dma/ppc4xx/adma.c:1185:25: sparse:     expected struct dma_regs *dma_reg
+   drivers/dma/ppc4xx/adma.c:1185:25: sparse:     got struct dma_regs [noderef] __iomem *dma_reg
+>> drivers/dma/ppc4xx/adma.c:1186:34: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1186:34: sparse:     expected void const volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1186:34: sparse:     got unsigned int *
+>> drivers/dma/ppc4xx/adma.c:1188:25: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct xor_regs *xor_reg @@     got struct xor_regs [noderef] __iomem *xor_reg @@
+   drivers/dma/ppc4xx/adma.c:1188:25: sparse:     expected struct xor_regs *xor_reg
+   drivers/dma/ppc4xx/adma.c:1188:25: sparse:     got struct xor_regs [noderef] __iomem *xor_reg
+>> drivers/dma/ppc4xx/adma.c:1189:36: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1189:36: sparse:     expected void const [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1189:36: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:1136:25: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct xor_regs *xor_reg @@     got struct xor_regs [noderef] __iomem *xor_reg @@
+   drivers/dma/ppc4xx/adma.c:1136:25: sparse:     expected struct xor_regs *xor_reg
+   drivers/dma/ppc4xx/adma.c:1136:25: sparse:     got struct xor_regs [noderef] __iomem *xor_reg
+   drivers/dma/ppc4xx/adma.c:1145:35: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1145:35: sparse:     expected void const [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1145:35: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:1155:49: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1155:49: sparse:     expected void const [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1155:49: sparse:     got unsigned int *
+>> drivers/dma/ppc4xx/adma.c:1157:38: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1157:38: sparse:     expected void [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1157:38: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:909:25: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct dma_regs *dma_reg @@     got struct dma_regs [noderef] __iomem *dma_reg @@
+   drivers/dma/ppc4xx/adma.c:909:25: sparse:     expected struct dma_regs *dma_reg
+   drivers/dma/ppc4xx/adma.c:909:25: sparse:     got struct dma_regs [noderef] __iomem *dma_reg
+   drivers/dma/ppc4xx/adma.c:910:40: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:910:40: sparse:     expected void const volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:910:40: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:927:37: sparse: sparse: cast to restricted __le32
+   drivers/dma/ppc4xx/adma.c:972:32: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:972:32: sparse:     expected void const volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:972:32: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:977:40: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void volatile [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:977:40: sparse:     expected void volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:977:40: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:982:25: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct xor_regs *xor_reg @@     got struct xor_regs [noderef] __iomem *xor_reg @@
+   drivers/dma/ppc4xx/adma.c:982:25: sparse:     expected struct xor_regs *xor_reg
+   drivers/dma/ppc4xx/adma.c:982:25: sparse:     got struct xor_regs [noderef] __iomem *xor_reg
+   drivers/dma/ppc4xx/adma.c:983:34: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:983:34: sparse:     expected void const [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:983:34: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:984:34: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:984:34: sparse:     expected void [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:984:34: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:991:55: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:991:55: sparse:     expected void const [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:991:55: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:993:51: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:993:51: sparse:     expected void [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:993:51: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:995:51: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:995:51: sparse:     expected void const [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:995:51: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:997:46: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:997:46: sparse:     expected void [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:997:46: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:1006:35: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1006:35: sparse:     expected void const [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1006:35: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:1025:25: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct dma_regs *dma_reg @@     got struct dma_regs [noderef] __iomem *dma_reg @@
+   drivers/dma/ppc4xx/adma.c:1025:25: sparse:     expected struct dma_regs *dma_reg
+   drivers/dma/ppc4xx/adma.c:1025:25: sparse:     got struct dma_regs [noderef] __iomem *dma_reg
+>> drivers/dma/ppc4xx/adma.c:1029:31: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got unsigned short * @@
+   drivers/dma/ppc4xx/adma.c:1029:31: sparse:     expected void const volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1029:31: sparse:     got unsigned short *
+   drivers/dma/ppc4xx/adma.c:1029:60: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got unsigned short * @@
+   drivers/dma/ppc4xx/adma.c:1029:60: sparse:     expected void const volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1029:60: sparse:     got unsigned short *
+   drivers/dma/ppc4xx/adma.c:1030:31: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got unsigned short * @@
+   drivers/dma/ppc4xx/adma.c:1030:31: sparse:     expected void const volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1030:31: sparse:     got unsigned short *
+   drivers/dma/ppc4xx/adma.c:1030:60: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got unsigned short * @@
+   drivers/dma/ppc4xx/adma.c:1030:60: sparse:     expected void const volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1030:60: sparse:     got unsigned short *
+   drivers/dma/ppc4xx/adma.c:1036:25: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct xor_regs *xor_reg @@     got struct xor_regs [noderef] __iomem *xor_reg @@
+   drivers/dma/ppc4xx/adma.c:1036:25: sparse:     expected struct xor_regs *xor_reg
+   drivers/dma/ppc4xx/adma.c:1036:25: sparse:     got struct xor_regs [noderef] __iomem *xor_reg
+   drivers/dma/ppc4xx/adma.c:1037:37: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1037:37: sparse:     expected void const [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1037:37: sparse:     got unsigned int *
+>> drivers/dma/ppc4xx/adma.c:1051:48: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected struct xor_regs *xor_reg @@     got struct xor_regs [noderef] __iomem *xor_reg @@
+   drivers/dma/ppc4xx/adma.c:1051:48: sparse:     expected struct xor_regs *xor_reg
+   drivers/dma/ppc4xx/adma.c:1051:48: sparse:     got struct xor_regs [noderef] __iomem *xor_reg
+   drivers/dma/ppc4xx/adma.c:1053:25: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1053:25: sparse:     expected void const [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1053:25: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:1060:41: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1060:41: sparse:     expected void [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1060:41: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:1062:39: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1062:39: sparse:     expected void [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1062:39: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:1063:25: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1063:25: sparse:     expected void [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1063:25: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:1064:33: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1064:33: sparse:     expected void const [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1064:33: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:1065:22: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1065:22: sparse:     expected void [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1065:22: sparse:     got unsigned int *
+>> drivers/dma/ppc4xx/adma.c:1078:48: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected struct dma_regs *dma_reg @@     got struct dma_regs [noderef] __iomem *dma_reg @@
+   drivers/dma/ppc4xx/adma.c:1078:48: sparse:     expected struct dma_regs *dma_reg
+   drivers/dma/ppc4xx/adma.c:1078:48: sparse:     got struct dma_regs [noderef] __iomem *dma_reg
+   drivers/dma/ppc4xx/adma.c:1088:26: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void volatile [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1088:26: sparse:     expected void volatile [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1088:26: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:1208:25: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct xor_regs *xor_reg @@     got struct xor_regs [noderef] __iomem *xor_reg @@
+   drivers/dma/ppc4xx/adma.c:1208:25: sparse:     expected struct xor_regs *xor_reg
+   drivers/dma/ppc4xx/adma.c:1208:25: sparse:     got struct xor_regs [noderef] __iomem *xor_reg
+   drivers/dma/ppc4xx/adma.c:1212:30: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __iomem *addr @@     got unsigned int * @@
+   drivers/dma/ppc4xx/adma.c:1212:30: sparse:     expected void [noderef] __iomem *addr
+   drivers/dma/ppc4xx/adma.c:1212:30: sparse:     got unsigned int *
+   drivers/dma/ppc4xx/adma.c:2775:62: sparse: sparse: Using plain integer as NULL pointer
+>> drivers/dma/ppc4xx/adma.c:4091:14: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void *regs @@     got void [noderef] __iomem * @@
+   drivers/dma/ppc4xx/adma.c:4091:14: sparse:     expected void *regs
+   drivers/dma/ppc4xx/adma.c:4091:14: sparse:     got void [noderef] __iomem *
+>> drivers/dma/ppc4xx/adma.c:4099:31: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct xor_regs [noderef] __iomem *xor_reg @@     got void *regs @@
+   drivers/dma/ppc4xx/adma.c:4099:31: sparse:     expected struct xor_regs [noderef] __iomem *xor_reg
+   drivers/dma/ppc4xx/adma.c:4099:31: sparse:     got void *regs
+>> drivers/dma/ppc4xx/adma.c:4106:31: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct dma_regs [noderef] __iomem *dma_reg @@     got void *regs @@
+   drivers/dma/ppc4xx/adma.c:4106:31: sparse:     expected struct dma_regs [noderef] __iomem *dma_reg
+   drivers/dma/ppc4xx/adma.c:4106:31: sparse:     got void *regs
 
-Like you suggested, I think it would be better if we document this in 
-patch 4.
+vim +140 drivers/dma/ppc4xx/adma.c
 
-Thanks for the review. Please let me know if you have any feedback.
+12458ea06efd7b Anatolij Gustschin 2009-12-11  128  
+12458ea06efd7b Anatolij Gustschin 2009-12-11  129  static void print_cb(struct ppc440spe_adma_chan *chan, void *block)
+12458ea06efd7b Anatolij Gustschin 2009-12-11  130  {
+12458ea06efd7b Anatolij Gustschin 2009-12-11  131  	struct dma_cdb *cdb;
+12458ea06efd7b Anatolij Gustschin 2009-12-11  132  	struct xor_cb *cb;
+12458ea06efd7b Anatolij Gustschin 2009-12-11  133  	int i;
+12458ea06efd7b Anatolij Gustschin 2009-12-11  134  
+12458ea06efd7b Anatolij Gustschin 2009-12-11  135  	switch (chan->device->id) {
+12458ea06efd7b Anatolij Gustschin 2009-12-11  136  	case 0:
+12458ea06efd7b Anatolij Gustschin 2009-12-11  137  	case 1:
+12458ea06efd7b Anatolij Gustschin 2009-12-11  138  		cdb = block;
+12458ea06efd7b Anatolij Gustschin 2009-12-11  139  
+12458ea06efd7b Anatolij Gustschin 2009-12-11 @140  		pr_debug("CDB at %p [%d]:\n"
+12458ea06efd7b Anatolij Gustschin 2009-12-11  141  			"\t attr 0x%02x opc 0x%02x cnt 0x%08x\n"
+12458ea06efd7b Anatolij Gustschin 2009-12-11  142  			"\t sg1u 0x%08x sg1l 0x%08x\n"
+12458ea06efd7b Anatolij Gustschin 2009-12-11  143  			"\t sg2u 0x%08x sg2l 0x%08x\n"
+12458ea06efd7b Anatolij Gustschin 2009-12-11  144  			"\t sg3u 0x%08x sg3l 0x%08x\n",
+12458ea06efd7b Anatolij Gustschin 2009-12-11  145  			cdb, chan->device->id,
+12458ea06efd7b Anatolij Gustschin 2009-12-11  146  			cdb->attr, cdb->opc, le32_to_cpu(cdb->cnt),
+12458ea06efd7b Anatolij Gustschin 2009-12-11  147  			le32_to_cpu(cdb->sg1u), le32_to_cpu(cdb->sg1l),
+12458ea06efd7b Anatolij Gustschin 2009-12-11  148  			le32_to_cpu(cdb->sg2u), le32_to_cpu(cdb->sg2l),
+12458ea06efd7b Anatolij Gustschin 2009-12-11  149  			le32_to_cpu(cdb->sg3u), le32_to_cpu(cdb->sg3l)
+12458ea06efd7b Anatolij Gustschin 2009-12-11  150  		);
+12458ea06efd7b Anatolij Gustschin 2009-12-11  151  		break;
+12458ea06efd7b Anatolij Gustschin 2009-12-11  152  	case 2:
+12458ea06efd7b Anatolij Gustschin 2009-12-11  153  		cb = block;
+12458ea06efd7b Anatolij Gustschin 2009-12-11  154  
+12458ea06efd7b Anatolij Gustschin 2009-12-11  155  		pr_debug("CB at %p [%d]:\n"
+12458ea06efd7b Anatolij Gustschin 2009-12-11  156  			"\t cbc 0x%08x cbbc 0x%08x cbs 0x%08x\n"
+12458ea06efd7b Anatolij Gustschin 2009-12-11  157  			"\t cbtah 0x%08x cbtal 0x%08x\n"
+12458ea06efd7b Anatolij Gustschin 2009-12-11  158  			"\t cblah 0x%08x cblal 0x%08x\n",
+12458ea06efd7b Anatolij Gustschin 2009-12-11  159  			cb, chan->device->id,
+12458ea06efd7b Anatolij Gustschin 2009-12-11  160  			cb->cbc, cb->cbbc, cb->cbs,
+12458ea06efd7b Anatolij Gustschin 2009-12-11  161  			cb->cbtah, cb->cbtal,
+12458ea06efd7b Anatolij Gustschin 2009-12-11  162  			cb->cblah, cb->cblal);
+12458ea06efd7b Anatolij Gustschin 2009-12-11  163  		for (i = 0; i < 16; i++) {
+12458ea06efd7b Anatolij Gustschin 2009-12-11  164  			if (i && !cb->ops[i].h && !cb->ops[i].l)
+12458ea06efd7b Anatolij Gustschin 2009-12-11  165  				continue;
+12458ea06efd7b Anatolij Gustschin 2009-12-11  166  			pr_debug("\t ops[%2d]: h 0x%08x l 0x%08x\n",
+12458ea06efd7b Anatolij Gustschin 2009-12-11  167  				i, cb->ops[i].h, cb->ops[i].l);
+12458ea06efd7b Anatolij Gustschin 2009-12-11  168  		}
+12458ea06efd7b Anatolij Gustschin 2009-12-11  169  		break;
+12458ea06efd7b Anatolij Gustschin 2009-12-11  170  	}
+12458ea06efd7b Anatolij Gustschin 2009-12-11  171  }
+12458ea06efd7b Anatolij Gustschin 2009-12-11  172  
 
--Akhil.
->
-> regards
-> Philipp
+:::::: The code at line 140 was first introduced by commit
+:::::: 12458ea06efd7b44281e68fe59c950ec7d59c649 ppc440spe-adma: adds updated ppc440spe adma driver
 
+:::::: TO: Anatolij Gustschin <agust@denx.de>
+:::::: CC: Dan Williams <dan.j.williams@intel.com>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
