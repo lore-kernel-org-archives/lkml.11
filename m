@@ -2,149 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B492AECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 12:14:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EDD6ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 12:17:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232887AbiIAMO3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 08:14:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46894 "EHLO
+        id S232753AbiIAMRK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 08:17:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231737AbiIAMO0 (ORCPT
+        with ESMTP id S229498AbiIAMRH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 08:14:26 -0400
-Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A68B1157E3;
-        Thu,  1 Sep 2022 05:14:26 -0700 (PDT)
+        Thu, 1 Sep 2022 08:17:07 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E67D4117AE4
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 05:17:06 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id z187so17274587pfb.12
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 05:17:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1662034466; x=1693570466;
-  h=message-id:date:mime-version:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:subject;
-  bh=/vA7gC+PVHNkG1R/rakP0JdQCUqSGd0Sd7RAHPh/RrE=;
-  b=HmjLhhBDR3/a5jcsZF7TtG6yLsGJZ3ioJRFZadVyogu/NUPMaLG5yqDU
-   sMxvVeULMB97CFobbVruyjkWWC6sOcIDNa9Aurz7Eh3DcBAtXpjHHRmG0
-   EQRPbwqy1KdXJEgRdG/iwTXohQMmJgtbz6Rx1sfvKsnVkfgbJt7ysOXXx
-   I=;
-X-IronPort-AV: E=Sophos;i="5.93,280,1654560000"; 
-   d="scan'208";a="1050300137"
-Subject: Re: [PATCH v3 15/19] hwmon: (mr75203) add support for series 6 temperature
- equation
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-2dbf0206.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 12:14:10 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2a-2dbf0206.us-west-2.amazon.com (Postfix) with ESMTPS id C5D72A25C2;
-        Thu,  1 Sep 2022 12:14:09 +0000 (UTC)
-Received: from EX19D013UWB004.ant.amazon.com (10.13.138.62) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Thu, 1 Sep 2022 12:14:09 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (10.43.161.207) by
- EX19D013UWB004.ant.amazon.com (10.13.138.62) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.1118.12; Thu, 1 Sep 2022 12:14:09 +0000
-Received: from [192.168.93.228] (10.85.143.172) by mail-relay.amazon.com
- (10.43.161.249) with Microsoft SMTP Server id 15.0.1497.38 via Frontend
- Transport; Thu, 1 Sep 2022 12:14:03 +0000
-Message-ID: <7b4baf42-eb8e-ad83-a259-a4a0e4e4ac01@amazon.com>
-Date:   Thu, 1 Sep 2022 15:14:02 +0300
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=xWg9vWseJ0vGCFN4/5PNMcvbHQf9T6lN5XKy27FC6ac=;
+        b=IgpsmeVmKubge+xXzYFDFlQF06BsFao8lKDbEayczz0tTLfNRmCcJm3lk/xmNhxp7Z
+         nFwkqMD7WaxHSsaHS26w05bgLYWY/BrMWFm0XawJ+4Yc1gWgi7LioAQRQzmf55EiTR5o
+         ECQMIcwHdY15ue7kGAYmApQY1H/2Qz/aFyk8bA1TLrAgrXToxVruoFddRL3SjGY/j5th
+         kx2HdElyBvUsW0CUFxDllqfNH5+6Mlk9dYq1NiwMEOCjKiyvLT9y9hC/b27BY/0Vg7I+
+         ctJu8dUXe7wIZ5JHq4uLYfV3BDECkR4pbVnIBGRsRuPkfYezm89MysKKssqJsGKYzurL
+         h/Hg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=xWg9vWseJ0vGCFN4/5PNMcvbHQf9T6lN5XKy27FC6ac=;
+        b=qighQHy6thXwhJDnUaSStK52ogVOYU/yNv6sCkR+q8QXyt3YQt8EmB31ALxVuhB/+Q
+         8gBV9ASKUyXHVRrrB+1BNYKrM1rfUQyVOJK4IEPYPld2KiaI3p3KnVPTcp8zOxU4lqK8
+         YFcOHQDHf5Ct/ZKreki7c9rILix91dMXVvwbiOHk0K0kUUe48s+v5nDMyTWrpzCMih/L
+         0OXqH+wyX+jG4Z3L97VkJp5/MK4MusQJBVty8WG5vw0vw5oNG4qQY0AsAfq2Oqic8ByU
+         h9YhiXYznajuz8JSDRvB0q32sjfWnFk8TGEfwEeg1zu+tplFmrc8gd4Vr2MR9iZ2Xwd+
+         DY7A==
+X-Gm-Message-State: ACgBeo2OPSizr2C5o9Vp6jA3wMsbhyKeuplgyf9t9b+bQmHZ0Yl92Jzy
+        L9MIXlDlxV24YZ4LbrVvBRJdVzto++Zg3eAu18A=
+X-Google-Smtp-Source: AA6agR6TEK+tqlcnxtFCFr/6xyVnEZt6VEpgROats0J7Z0KAJHpJJaNEeQpk+RhjXcgdfWleJqb0IZugg4VAplsz5W4=
+X-Received: by 2002:a63:4142:0:b0:42b:5b22:f2fc with SMTP id
+ o63-20020a634142000000b0042b5b22f2fcmr26808494pga.573.1662034626413; Thu, 01
+ Sep 2022 05:17:06 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@intel.com>
-CC:     <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
-        <p.zabel@pengutronix.de>, <rtanwar@maxlinear.com>,
-        <linux-hwmon@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <talel@amazon.com>,
-        <hhhawa@amazon.com>, <jonnyc@amazon.com>, <hanochu@amazon.com>,
-        <ronenk@amazon.com>, <itamark@amazon.com>, <shellykz@amazon.com>,
-        <shorer@amazon.com>, <amitlavi@amazon.com>, <almogbs@amazon.com>,
-        <dkl@amazon.com>, "Farber, Eliav" <farbere@amazon.com>
-References: <20220830192212.28570-1-farbere@amazon.com>
- <20220830192212.28570-16-farbere@amazon.com>
- <Yw9PTobSRlkh/0i4@smile.fi.intel.com>
-From:   "Farber, Eliav" <farbere@amazon.com>
-In-Reply-To: <Yw9PTobSRlkh/0i4@smile.fi.intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220831052734.3423079-1-song@kernel.org> <20220831160111.a6e7d17785ca21ce7c43981c@linux-foundation.org>
+ <CAPhsuW4SGguyoFKpN8S=jFCWfLiDM-f5QwV7UPwkQ=LjQEXaNg@mail.gmail.com>
+In-Reply-To: <CAPhsuW4SGguyoFKpN8S=jFCWfLiDM-f5QwV7UPwkQ=LjQEXaNg@mail.gmail.com>
+From:   Uladzislau Rezki <urezki@gmail.com>
+Date:   Thu, 1 Sep 2022 14:16:55 +0200
+Message-ID: <CA+KHdyUDGkUBtnAcvu+NB=S7chp_1N3XviTkkMoP-8LrLJQgbg@mail.gmail.com>
+Subject: Re: [PATCH] mm/vmalloc: Extend find_vmap_lowest_match_check with
+ extra arguments
+To:     Song Liu <song@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Linux-MM <linux-mm@kvack.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>, Baoquan He <bhe@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/31/2022 3:08 PM, Andy Shevchenko wrote:
-> On Tue, Aug 30, 2022 at 07:22:08PM +0000, Eliav Farber wrote:
->> The current equation used in code is aligned to series 5:
->> T = G + H * (n / cal5 - 0.5) + J * F
->> Where:
->> G = 60, H = 200, cal5 = 4094, J = -0.1, F = frequency clock in MHz
->>
->> Series 6 has a slightly different equation:
->> T = G + H * (n / cal5 - 0.5)
->> and a different set of coefficients:
->> G = 57.4, H = 249.4, cal5 = 4096
->>
->> This change supports equation and coefficients for both series.
->> (for series 6, J is set to 0).
->>
->> The series is determined according to “ts-series” property in device
->> tree.
->> If absent, series 5 is assumed to be the default.
->
-> ...
->
->> -#define PVT_H_CONST          200000
->> -#define PVT_G_CONST          60000
->> -#define PVT_J_CONST          -100
->> -#define PVT_CAL5_CONST               4094
->
-> You just introduced them patch before. Please, avoid ping-pong style in
-> the same series.
+This is only for debug purpose.
 
-
-Fixed for v4.
-I now introduce these defines in patch 13 to avoid modifying the above
-ones and then remove them:
-/* Temperature coefficients for series 5 */
-#define PVT_SERIES5_H_CONST    200000
-#define PVT_SERIES5_G_CONST    60000
-#define PVT_SERIES5_J_CONST    -100
-#define PVT_SERIES5_CAL5_CONST    4094
-
-> ...
->
->> +     ret = of_property_read_u32(np, "moortec,ts-series", &series);
->
-> of_ ?!
->
-> Be consistent. Either you use OF everywhere, or device property APIs.
->
-
-Fixed for v4.
-Using device_property_read_u32() instead.
-
-> ...
->
->> +     if (ret)
->> +             series = TEMPERATURE_SENSOR_SERIES_5;
->> +
->> +     if (series == TEMPERATURE_SENSOR_SERIES_5) {
->> +             ts_coeff->h = PVT_SERIES5_H_CONST;
->> +             ts_coeff->g = PVT_SERIES5_G_CONST;
->> +             ts_coeff->j = PVT_SERIES5_J_CONST;
->> +             ts_coeff->cal5 = PVT_SERIES5_CAL5_CONST;
->> +     } else if (series == TEMPERATURE_SENSOR_SERIES_6) {
->> +             ts_coeff->h = PVT_SERIES6_H_CONST;
->> +             ts_coeff->g = PVT_SERIES6_G_CONST;
->> +             ts_coeff->j = PVT_SERIES6_J_CONST;
->> +             ts_coeff->cal5 = PVT_SERIES6_CAL5_CONST;
->> +     } else {
->> +             dev_err(dev, "invalid temperature sensor series (%u)\n",
->> +                     series);
->> +             return -EINVAL;
->> +     }
->
-> switch-case? 
-
-Changed to switch-case (will be part of v4).
+Even without this patch, the debug path would work correctly. The
+difference is just only in
+whether roots are hardcoded or passed over function paramter.
 
 --
-Thanks, Eliav
+Uladzislau Rezki
+
+On Thu, Sep 1, 2022 at 2:47 AM Song Liu <song@kernel.org> wrote:
+>
+> On Wed, Aug 31, 2022 at 4:01 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+> >
+> > On Tue, 30 Aug 2022 22:27:34 -0700 Song Liu <song@kernel.org> wrote:
+> >
+> > > find_vmap_lowest_match() is now able to handle different roots. Make
+> > > similar changes to find_vmap_lowest_match_check() and
+> > > find_vmap_lowest_linear_match() to handle different trees.
+> >
+> > What are the runtime effects of this change?
+>
+> The code is gated by DEBUG_AUGMENT_LOWEST_MATCH_CHECK. It
+> is only compiled when the developer enables it explicitly. Therefore,
+> there isn't
+> any runtime effect.
+>
+> Thanks,
+> Song
+
+
+
+-- 
+Uladzislau Rezki
