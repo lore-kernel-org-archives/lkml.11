@@ -2,142 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 638F7ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 22:30:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E47A7ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 22:30:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235391AbiIAWaR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 18:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47928 "EHLO
+        id S235333AbiIAWac (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 18:30:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235317AbiIAW3a (ORCPT
+        with ESMTP id S234546AbiIAW3k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 18:29:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 843872CDEB;
-        Thu,  1 Sep 2022 15:28:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14AEBB82967;
-        Thu,  1 Sep 2022 22:23:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 409D2C433C1;
-        Thu,  1 Sep 2022 22:23:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662070983;
-        bh=w57zJjChMCAF0tiCRRkMgdO5xn4agumfjbmYJSkZIB4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Xl4wDJOO4pUO6SG9nTu5QZuqmYJb+F+A9EOr86gy/hpROglt1BkB64OgAS8GFxLj/
-         MHh7emmj3U89uJ3uUIZ/+WO+7ztZSlKIvZeXomrdDww4HjKegcRhFgeF8HgFutSB5J
-         9ekdknVe7ozu78vaI7DaGrvTGdTAcNjGRNjf032sexu6PgfoiKIhPDHHFEwwLguvs1
-         mT8kkhLPuI1QeChJS0m2VGNVMGPEaSsm109oCtwe9GebIEGNGtszsd77QqPpdUXeL5
-         LLZc+VaBdqLsqijaEQz3ljy7dXmp3wWOcngEh2mrc/hZXxlXFsCmOKIdQSiYp6+DPv
-         87ojfTFOrwB1w==
-Date:   Fri, 2 Sep 2022 01:22:59 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Reinette Chatre <reinette.chatre@intel.com>
-Cc:     linux-sgx@vger.kernel.org,
-        Haitao Huang <haitao.huang@linux.intel.com>,
-        Vijay Dhanraj <vijay.dhanraj@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Shuah Khan <shuah@kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 4/6] selftests/sgx: Add SGX selftest
- augment_via_eaccept_long
-Message-ID: <YxEwwzXOsCliznQJ@kernel.org>
-References: <20220831173829.126661-1-jarkko@kernel.org>
- <20220831173829.126661-5-jarkko@kernel.org>
- <d2b76530-82a2-6ac1-32ea-696e653d767d@intel.com>
+        Thu, 1 Sep 2022 18:29:40 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 844DA3ED60
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 15:28:25 -0700 (PDT)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
+        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <heiko@sntech.de>)
+        id 1oTsfW-0007wk-5B; Fri, 02 Sep 2022 00:28:14 +0200
+From:   Heiko Stuebner <heiko@sntech.de>
+To:     paul.walmsley@sifive.com, palmer@dabbelt.com, aou@eecs.berkeley.edu
+Cc:     conor.dooley@microchip.com, guoren@kernel.org,
+        apatel@ventanamicro.com, atishp@rivosinc.com,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Heiko Stuebner <heiko@sntech.de>
+Subject: [PATCH 2/4] riscv: drop some idefs from CMO initialization
+Date:   Fri,  2 Sep 2022 00:27:42 +0200
+Message-Id: <20220901222744.2210215-2-heiko@sntech.de>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220901222744.2210215-1-heiko@sntech.de>
+References: <20220901222744.2210215-1-heiko@sntech.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d2b76530-82a2-6ac1-32ea-696e653d767d@intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 01:07:35PM -0700, Reinette Chatre wrote:
-> Hi Jarkko,
-> 
-> On 8/31/2022 10:38 AM, Jarkko Sakkinen wrote:
-> > From: Vijay Dhanraj <vijay.dhanraj@intel.com>
-> > 
-> > Add a new test case which is same as augment_via_eaccept but adds a
-> > larger number of EPC pages to stress test EAUG via EACCEPT.
-> > 
-> > Signed-off-by: Vijay Dhanraj <vijay.dhanraj@intel.com>
-> > Co-developed-by: Jarkko Sakkinen <jarkko@kernel.org>
-> > Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
-> > ---
-> > v3:
-> > - Addressed Reinette's feedback:
-> >   https://lore.kernel.org/linux-sgx/bd5285dd-d6dd-8a46-fca9-728db5e2f369@intel.com/
-> > v2:
-> > - Addressed Reinette's feedback:
-> >   https://lore.kernel.org/linux-sgx/24bd8e42-ff4e-0090-d9e1-cd81e4807f21@intel.com/
-> > ---
-> >  tools/testing/selftests/sgx/load.c |   5 +-
-> >  tools/testing/selftests/sgx/main.c | 143 +++++++++++++++++++++++++----
-> >  tools/testing/selftests/sgx/main.h |   3 +-
-> 
-> Is this test passing on your system? This version is missing the change to
-> mrenclave_ecreate() that causes SGX_IOC_ENCLAVE_INIT to fail when I try it out.
+Wrapping things in #ifdefs makes the code harder to read
+while we also have IS_ENABLED() macros to do this in regular code
+and the extension detection is not _that_ runtime critical.
 
-I *did* get a pass in my test machine. Hmm... I'll check if
-the kernel tree was out-of-sync, which could be the reason.
+So define a stub for riscv_noncoherent_supported() in the
+non-CONFIG_RISCV_DMA_NONCOHERENT case and move the code to
+us IS_ENABLED.
 
-I do not compile kernel on that machine but have the kernel
-tree for running selftests. So there is a possiblity for
-a human error. Thanks for pointing this out.
+Suggested-by: Conor Dooley <conor.dooley@microchip.com>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/riscv/errata/thead/errata.c    |  7 +++----
+ arch/riscv/include/asm/cacheflush.h |  2 ++
+ arch/riscv/kernel/cpufeature.c      | 22 +++++++++-------------
+ 3 files changed, 14 insertions(+), 17 deletions(-)
 
-> 
-> >  3 files changed, 130 insertions(+), 21 deletions(-)
-> > 
-> > diff --git a/tools/testing/selftests/sgx/load.c b/tools/testing/selftests/sgx/load.c
-> > index 94bdeac1cf04..47b2786d6a77 100644
-> > --- a/tools/testing/selftests/sgx/load.c
-> > +++ b/tools/testing/selftests/sgx/load.c
-> > @@ -171,7 +171,8 @@ uint64_t encl_get_entry(struct encl *encl, const char *symbol)
-> >  	return 0;
-> >  }
-> >  
-> > -bool encl_load(const char *path, struct encl *encl, unsigned long heap_size)
-> > +bool encl_load(const char *path, struct encl *encl, unsigned long heap_size,
-> > +	       unsigned long edmm_size)
-> >  {
-> >  	const char device_path[] = "/dev/sgx_enclave";
-> >  	struct encl_segment *seg;
-> > @@ -300,7 +301,7 @@ bool encl_load(const char *path, struct encl *encl, unsigned long heap_size)
-> >  
-> >  	encl->src_size = encl->segment_tbl[j].offset + encl->segment_tbl[j].size;
-> >  
-> > -	for (encl->encl_size = 4096; encl->encl_size < encl->src_size; )
-> > +	for (encl->encl_size = 4096; encl->encl_size < encl->src_size + edmm_size;)
-> >  		encl->encl_size <<= 1;
-> >  
-> >  	return true;
-> > diff --git a/tools/testing/selftests/sgx/main.c b/tools/testing/selftests/sgx/main.c
-> > index 9820b3809c69..c5aa9f323745 100644
-> > --- a/tools/testing/selftests/sgx/main.c
-> > +++ b/tools/testing/selftests/sgx/main.c
-> > @@ -23,6 +23,10 @@
-> >  
-> >  static const uint64_t MAGIC = 0x1122334455667788ULL;
-> >  static const uint64_t MAGIC2 = 0x8877665544332211ULL;
-> > +/* Message-ID: <DM8PR11MB55912A7F47A84EC9913A6352F6999@DM8PR11MB5591.namprd11.prod.outlook.com> */
-> > +static const uint64_t EDMM_SIZE_LONG = 8L * 1024L * 1024L * 1024L;
-> > +static const uint64_t TIMEOUT_LONG = 900; /* seconds */
-> > +
-> 
-> Apologies if my feedback was vague - I actually think that the comments in V1 added
-> valuable information, it was just the variation in formatting that was distracting.
+diff --git a/arch/riscv/errata/thead/errata.c b/arch/riscv/errata/thead/errata.c
+index 202c83f677b2..bffa711aaf64 100644
+--- a/arch/riscv/errata/thead/errata.c
++++ b/arch/riscv/errata/thead/errata.c
+@@ -30,7 +30,9 @@ static bool errata_probe_pbmt(unsigned int stage,
+ static bool errata_probe_cmo(unsigned int stage,
+ 			     unsigned long arch_id, unsigned long impid)
+ {
+-#ifdef CONFIG_ERRATA_THEAD_CMO
++	if (!IS_ENABLED(CONFIG_ERRATA_THEAD_CMO))
++		return false;
++
+ 	if (arch_id != 0 || impid != 0)
+ 		return false;
+ 
+@@ -39,9 +41,6 @@ static bool errata_probe_cmo(unsigned int stage,
+ 
+ 	riscv_noncoherent_supported();
+ 	return true;
+-#else
+-	return false;
+-#endif
+ }
+ 
+ static u32 thead_errata_probe(unsigned int stage,
+diff --git a/arch/riscv/include/asm/cacheflush.h b/arch/riscv/include/asm/cacheflush.h
+index a60acaecfeda..4363d0beb38a 100644
+--- a/arch/riscv/include/asm/cacheflush.h
++++ b/arch/riscv/include/asm/cacheflush.h
+@@ -50,6 +50,8 @@ static inline void riscv_init_cbom_blocksize(void) { }
+ 
+ #ifdef CONFIG_RISCV_DMA_NONCOHERENT
+ void riscv_noncoherent_supported(void);
++#else
++static inline void riscv_noncoherent_supported(void) {}
+ #endif
+ 
+ /*
+diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
+index 764ea220161f..729f7a218093 100644
+--- a/arch/riscv/kernel/cpufeature.c
++++ b/arch/riscv/kernel/cpufeature.c
+@@ -264,21 +264,17 @@ static bool __init_or_module cpufeature_probe_svpbmt(unsigned int stage)
+ 
+ static bool __init_or_module cpufeature_probe_zicbom(unsigned int stage)
+ {
+-#ifdef CONFIG_RISCV_ISA_ZICBOM
+-	switch (stage) {
+-	case RISCV_ALTERNATIVES_EARLY_BOOT:
++	if (!IS_ENABLED(CONFIG_RISCV_ISA_ZICBOM))
++		return false;
++
++	if (stage == RISCV_ALTERNATIVES_EARLY_BOOT)
++		return false;
++
++	if (!riscv_isa_extension_available(NULL, ZICBOM))
+ 		return false;
+-	default:
+-		if (riscv_isa_extension_available(NULL, ZICBOM)) {
+-			riscv_noncoherent_supported();
+-			return true;
+-		} else {
+-			return false;
+-		}
+-	}
+-#endif
+ 
+-	return false;
++	riscv_noncoherent_supported();
++	return true;
+ }
+ 
+ /*
+-- 
+2.35.1
 
-IMHO message ID is pretty good reference. Can you
-propose how would you redo it to minimize the number
-of iterations in the series?
-
-> Reinette
-
-BR, Jarkko
