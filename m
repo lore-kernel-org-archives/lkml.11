@@ -2,98 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EDD6ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 12:17:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 545DBC54EE9
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 12:17:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232753AbiIAMRK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 08:17:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53372 "EHLO
+        id S233267AbiIAMR0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 08:17:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbiIAMRH (ORCPT
+        with ESMTP id S232868AbiIAMRW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 08:17:07 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E67D4117AE4
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 05:17:06 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id z187so17274587pfb.12
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 05:17:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=xWg9vWseJ0vGCFN4/5PNMcvbHQf9T6lN5XKy27FC6ac=;
-        b=IgpsmeVmKubge+xXzYFDFlQF06BsFao8lKDbEayczz0tTLfNRmCcJm3lk/xmNhxp7Z
-         nFwkqMD7WaxHSsaHS26w05bgLYWY/BrMWFm0XawJ+4Yc1gWgi7LioAQRQzmf55EiTR5o
-         ECQMIcwHdY15ue7kGAYmApQY1H/2Qz/aFyk8bA1TLrAgrXToxVruoFddRL3SjGY/j5th
-         kx2HdElyBvUsW0CUFxDllqfNH5+6Mlk9dYq1NiwMEOCjKiyvLT9y9hC/b27BY/0Vg7I+
-         ctJu8dUXe7wIZ5JHq4uLYfV3BDECkR4pbVnIBGRsRuPkfYezm89MysKKssqJsGKYzurL
-         h/Hg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=xWg9vWseJ0vGCFN4/5PNMcvbHQf9T6lN5XKy27FC6ac=;
-        b=qighQHy6thXwhJDnUaSStK52ogVOYU/yNv6sCkR+q8QXyt3YQt8EmB31ALxVuhB/+Q
-         8gBV9ASKUyXHVRrrB+1BNYKrM1rfUQyVOJK4IEPYPld2KiaI3p3KnVPTcp8zOxU4lqK8
-         YFcOHQDHf5Ct/ZKreki7c9rILix91dMXVvwbiOHk0K0kUUe48s+v5nDMyTWrpzCMih/L
-         0OXqH+wyX+jG4Z3L97VkJp5/MK4MusQJBVty8WG5vw0vw5oNG4qQY0AsAfq2Oqic8ByU
-         h9YhiXYznajuz8JSDRvB0q32sjfWnFk8TGEfwEeg1zu+tplFmrc8gd4Vr2MR9iZ2Xwd+
-         DY7A==
-X-Gm-Message-State: ACgBeo2OPSizr2C5o9Vp6jA3wMsbhyKeuplgyf9t9b+bQmHZ0Yl92Jzy
-        L9MIXlDlxV24YZ4LbrVvBRJdVzto++Zg3eAu18A=
-X-Google-Smtp-Source: AA6agR6TEK+tqlcnxtFCFr/6xyVnEZt6VEpgROats0J7Z0KAJHpJJaNEeQpk+RhjXcgdfWleJqb0IZugg4VAplsz5W4=
-X-Received: by 2002:a63:4142:0:b0:42b:5b22:f2fc with SMTP id
- o63-20020a634142000000b0042b5b22f2fcmr26808494pga.573.1662034626413; Thu, 01
- Sep 2022 05:17:06 -0700 (PDT)
+        Thu, 1 Sep 2022 08:17:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC006118A63;
+        Thu,  1 Sep 2022 05:17:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3C462B825E4;
+        Thu,  1 Sep 2022 12:17:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8490C433D6;
+        Thu,  1 Sep 2022 12:17:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662034638;
+        bh=HMRBvtGrMdseHHO8WD6RRw3JemO/uRhitrcEcBh7oNk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=JI38jC2mevkX/4GtWpVjQre7XaNbn7VhZ+Rkhr5IpRF7UZvDH5XtH3JLJL8qdirl+
+         Cj7CH8pj40ihyuVu6GQF/Bf3e0VZ6/LxPC2yXycJopLmTWI4Xtxhqk40NqrnQtVg8d
+         zi3zvxmPfRS1JLpJa9fMCqGzXhOvcXClFUvpC2yevjgLyZk2PVOyOkCCp6EQS+9pHE
+         ZDN1pjgpUw+le3WE/VmsnR5pEkX47pYbZMgTwMHBy6KCf3+8pjTkYGbk6lmWCviG7f
+         vbGIubjeVMuSqwdxdutaaV/Il3IrzTukDESCtg5R7nLPG3wi+Qh9yEvTIxxtwAZsy+
+         uF5I3/4+RPJ4A==
+From:   Jeff Layton <jlayton@kernel.org>
+To:     tytso@mit.edu, adilger.kernel@dilger.ca, djwong@kernel.org,
+        david@fromorbit.com, trondmy@hammerspace.com, neilb@suse.de,
+        viro@zeniv.linux.org.uk, zohar@linux.ibm.com, xiubli@redhat.com,
+        chuck.lever@oracle.com, lczerner@redhat.com, jack@suse.cz,
+        bfields@fieldses.org, brauner@kernel.org, linux-man@vger.kernel.org
+Cc:     linux-api@vger.kernel.org, linux-btrfs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ceph-devel@vger.kernel.org, linux-ext4@vger.kernel.org,
+        linux-nfs@vger.kernel.org, linux-xfs@vger.kernel.org
+Subject: [RFC PATCH v2] statx, inode: document the new STATX_INO_VERSION field
+Date:   Thu,  1 Sep 2022 08:17:14 -0400
+Message-Id: <20220901121714.20051-1-jlayton@kernel.org>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-References: <20220831052734.3423079-1-song@kernel.org> <20220831160111.a6e7d17785ca21ce7c43981c@linux-foundation.org>
- <CAPhsuW4SGguyoFKpN8S=jFCWfLiDM-f5QwV7UPwkQ=LjQEXaNg@mail.gmail.com>
-In-Reply-To: <CAPhsuW4SGguyoFKpN8S=jFCWfLiDM-f5QwV7UPwkQ=LjQEXaNg@mail.gmail.com>
-From:   Uladzislau Rezki <urezki@gmail.com>
-Date:   Thu, 1 Sep 2022 14:16:55 +0200
-Message-ID: <CA+KHdyUDGkUBtnAcvu+NB=S7chp_1N3XviTkkMoP-8LrLJQgbg@mail.gmail.com>
-Subject: Re: [PATCH] mm/vmalloc: Extend find_vmap_lowest_match_check with
- extra arguments
-To:     Song Liu <song@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Linux-MM <linux-mm@kvack.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>, Baoquan He <bhe@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is only for debug purpose.
+I'm proposing to expose the inode change attribute via statx [1]. Document
+what this value means and what an observer can infer from it changing.
 
-Even without this patch, the debug path would work correctly. The
-difference is just only in
-whether roots are hardcoded or passed over function paramter.
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
 
---
-Uladzislau Rezki
+[1]: https://lore.kernel.org/linux-nfs/20220826214703.134870-1-jlayton@kernel.org/T/#t
+---
+ man2/statx.2 | 17 +++++++++++++++++
+ man7/inode.7 | 12 ++++++++++++
+ 2 files changed, 29 insertions(+)
 
-On Thu, Sep 1, 2022 at 2:47 AM Song Liu <song@kernel.org> wrote:
->
-> On Wed, Aug 31, 2022 at 4:01 PM Andrew Morton <akpm@linux-foundation.org> wrote:
-> >
-> > On Tue, 30 Aug 2022 22:27:34 -0700 Song Liu <song@kernel.org> wrote:
-> >
-> > > find_vmap_lowest_match() is now able to handle different roots. Make
-> > > similar changes to find_vmap_lowest_match_check() and
-> > > find_vmap_lowest_linear_match() to handle different trees.
-> >
-> > What are the runtime effects of this change?
->
-> The code is gated by DEBUG_AUGMENT_LOWEST_MATCH_CHECK. It
-> is only compiled when the developer enables it explicitly. Therefore,
-> there isn't
-> any runtime effect.
->
-> Thanks,
-> Song
+v2: revised the definition to be more strict, since that seemed to be
+    consensus on desired behavior. Spurious i_version bumps would now
+    be considered bugs, by this definition.
 
-
-
+diff --git a/man2/statx.2 b/man2/statx.2
+index 0d1b4591f74c..493e4e234809 100644
+--- a/man2/statx.2
++++ b/man2/statx.2
+@@ -62,6 +62,7 @@ struct statx {
+     __u32 stx_dev_major;   /* Major ID */
+     __u32 stx_dev_minor;   /* Minor ID */
+     __u64 stx_mnt_id;      /* Mount ID */
++    __u64 stx_ino_version; /* Inode change attribute */
+ };
+ .EE
+ .in
+@@ -247,6 +248,7 @@ STATX_BTIME	Want stx_btime
+ STATX_ALL	The same as STATX_BASIC_STATS | STATX_BTIME.
+ 	It is deprecated and should not be used.
+ STATX_MNT_ID	Want stx_mnt_id (since Linux 5.8)
++STATX_INO_VERSION	Want stx_ino_version (DRAFT)
+ .TE
+ .in
+ .PP
+@@ -411,6 +413,21 @@ and corresponds to the number in the first field in one of the records in
+ For further information on the above fields, see
+ .BR inode (7).
+ .\"
++.TP
++.I stx_ino_version
++The inode version, also known as the inode change attribute. This
++value must change any time there is an inode status change. Any
++operation that would cause the
++.I stx_ctime
++to change must also cause
++.I stx_ino_version
++to change, even when there is no apparent change to the
++.I stx_ctime
++due to coarse timestamp granularity.
++.IP
++An observer cannot infer anything about the nature or magnitude of the change
++from the value of this field. A change in this value only indicates that
++there has been an explicit change in the inode.
+ .SS File attributes
+ The
+ .I stx_attributes
+diff --git a/man7/inode.7 b/man7/inode.7
+index 9b255a890720..d5e0890a52c0 100644
+--- a/man7/inode.7
++++ b/man7/inode.7
+@@ -184,6 +184,18 @@ Last status change timestamp (ctime)
+ This is the file's last status change timestamp.
+ It is changed by writing or by setting inode information
+ (i.e., owner, group, link count, mode, etc.).
++.TP
++Inode version (i_version)
++(not returned in the \fIstat\fP structure); \fIstatx.stx_ino_version\fP
++.IP
++This is the inode change attribute. Any operation that would result in a change
++to \fIstatx.stx_ctime\fP must result in a change to this value. The value must
++change even in the case where the ctime change is not evident due to coarse
++timestamp granularity.
++.IP
++An observer cannot infer anything from the returned value about the nature or
++magnitude of the change. If the returned value is different from the last time
++it was checked, then something has made an explicit change to the inode.
+ .PP
+ The timestamp fields report time measured with a zero point at the
+ .IR Epoch ,
 -- 
-Uladzislau Rezki
+2.37.2
+
