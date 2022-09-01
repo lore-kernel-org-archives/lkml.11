@@ -2,81 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60F41ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 06:50:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D614ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 06:50:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233396AbiIAGuO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 02:50:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57874 "EHLO
+        id S233397AbiIAGuZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 02:50:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233376AbiIAGuM (ORCPT
+        with ESMTP id S232995AbiIAGuU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 02:50:12 -0400
-Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E5672E9D2;
-        Wed, 31 Aug 2022 23:50:04 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VNxyTX7_1662014999;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0VNxyTX7_1662014999)
-          by smtp.aliyun-inc.com;
-          Thu, 01 Sep 2022 14:50:00 +0800
-Date:   Thu, 1 Sep 2022 14:49:59 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     liuyacan@corp.netease.com
-Cc:     davem@davemloft.net, edumazet@google.com, kgraul@linux.ibm.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, wenjia@linux.ibm.com, hwippel@linux.ibm.com,
-        ubraun@linux.ibm.com
-Subject: Re: [PATCH net v2] net/smc: Remove redundant refcount increase
-Message-ID: <YxBWF7QCN+TnLk+4@TonyMac-Alibaba>
-Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <YwzirUcxlQW3ydT7@TonyMac-Alibaba>
- <20220830152314.838736-1-liuyacan@corp.netease.com>
+        Thu, 1 Sep 2022 02:50:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 663CF61103;
+        Wed, 31 Aug 2022 23:50:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 445F0B82475;
+        Thu,  1 Sep 2022 06:50:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B91D0C433D6;
+        Thu,  1 Sep 2022 06:50:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662015014;
+        bh=h1oiY9w4cNEx8MJKBHCH3T5N0k2k5oJzR61LVSvcHrg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Gd1ErZ+q7NwGcGtyf0/rwW8SeFcTxhoG3P2PscNUUIDHNPRY0GY7jRPRmgSkbfm7R
+         MWImIKeOBKRi+jkEtTu93tVyGo3lNdXRJAa2rJra0XbzY6i2COrhYtl2oKRufpc0Fc
+         cAJkAjY9ritbMKxxNEksik3bI8vthjl3TXQ8wrtLhhkgx6cAt6avSRt7Pmp8yJsbvA
+         t3PycBJYozJtPtYli7bc37GdzLJpGkPhu/VscGcLHHeB2vVjqQacpf1IS+9ohKqvbk
+         3Ibu3qrxueRRbMAuRlBC3N8XCre1VuTNCDQ4k4pjtIkFO/9Ip0GLqcUDTrmRaSDnpV
+         D1dr+TiPtf3EA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9538DE924DA;
+        Thu,  1 Sep 2022 06:50:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220830152314.838736-1-liuyacan@corp.netease.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next,v2] net: sched: remove redundant NULL check in change
+ hook function
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166201501460.7647.7189614631931905429.git-patchwork-notify@kernel.org>
+Date:   Thu, 01 Sep 2022 06:50:14 +0000
+References: <20220829071219.208646-1-shaozhengchao@huawei.com>
+In-Reply-To: <20220829071219.208646-1-shaozhengchao@huawei.com>
+To:     Zhengchao Shao <shaozhengchao@huawei.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org, toke@toke.dk,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, stephen@networkplumber.org,
+        cake@lists.bufferbloat.net, weiyongjun1@huawei.com,
+        yuehaibing@huawei.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 11:23:14PM +0800, liuyacan@corp.netease.com wrote:
-> From: Yacan Liu <liuyacan@corp.netease.com>
-> 
-> For passive connections, the refcount increment has been done in
-> smc_clcsock_accept()-->smc_sock_alloc().
-> 
-> Fixes: 3b2dec2603d5 ("net/smc: restructure client and server code in af_smc")
-> Signed-off-by: Yacan Liu <liuyacan@corp.netease.com>
-> 
-> ---
-> Change in v2:
->   -- Tune commit message
-> ---
->  net/smc/af_smc.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-> index 79c1318af..0939cc3b9 100644
-> --- a/net/smc/af_smc.c
-> +++ b/net/smc/af_smc.c
-> @@ -1855,7 +1855,6 @@ static void smc_listen_out_connected(struct smc_sock *new_smc)
->  {
->  	struct sock *newsmcsk = &new_smc->sk;
->  
-> -	sk_refcnt_debug_inc(newsmcsk);
->  	if (newsmcsk->sk_state == SMC_INIT)
->  		newsmcsk->sk_state = SMC_ACTIVE;
->  
+Hello:
 
-Thanks for this fixes. I dig into this sk_refcnt_debug_* facility. It
-seems this is a very old debug methods and doesn't help a lot for sock
-leak issue. Maybe there is another method to help track this issue?
+This patch was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-For this patch, It looks good for me and tested in our environment.
+On Mon, 29 Aug 2022 15:12:19 +0800 you wrote:
+> Currently, the change function can be called by two ways. The one way is
+> that qdisc_change() will call it. Before calling change function,
+> qdisc_change() ensures tca[TCA_OPTIONS] is not empty. The other way is
+> that .init() will call it. The opt parameter is also checked before
+> calling change function in .init(). Therefore, it's no need to check the
+> input parameter opt in change function.
+> 
+> [...]
 
-Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
+Here is the summary with links:
+  - [net-next,v2] net: sched: remove redundant NULL check in change hook function
+    https://git.kernel.org/netdev/net-next/c/a102c8973db7
 
-Cheers,
-Tony Lu
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
