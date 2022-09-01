@@ -2,91 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CBEBC54EE9
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 10:02:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38D9CECAAD5
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 10:02:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233434AbiIAKCV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 06:02:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41076 "EHLO
+        id S233545AbiIAKCY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 06:02:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232059AbiIAKCT (ORCPT
+        with ESMTP id S233386AbiIAKCV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 06:02:19 -0400
+        Thu, 1 Sep 2022 06:02:21 -0400
 Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0091D134880;
-        Thu,  1 Sep 2022 03:02:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EF1017071;
+        Thu,  1 Sep 2022 03:02:20 -0700 (PDT)
 Received: from toolbox.toradex.int ([31.10.206.125]) by mrelay.perfora.net
- (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0LdpDh-1pCPRQ3a0h-00j4Xv;
- Thu, 01 Sep 2022 12:02:04 +0200
+ (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MV6ct-1otOmR3avt-00YQm9;
+ Thu, 01 Sep 2022 12:02:07 +0200
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
-Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+Cc:     Philippe Schenker <philippe.schenker@toradex.com>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
         Fabio Estevam <festevam@gmail.com>,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         NXP Linux Team <linux-imx@nxp.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
         Rob Herring <robh+dt@kernel.org>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v1 2/4] arm64: dts: verdin-imx8mm: add lvds panel node
-Date:   Thu,  1 Sep 2022 12:01:49 +0200
-Message-Id: <20220901100151.1378709-3-marcel@ziswiler.com>
+Subject: [PATCH v1 3/4] arm64: dts: verdin-imx8mm: introduce hdmi-connector
+Date:   Thu,  1 Sep 2022 12:01:50 +0200
+Message-Id: <20220901100151.1378709-4-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220901100151.1378709-1-marcel@ziswiler.com>
 References: <20220901100151.1378709-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:VnJ1NtTLb2JU1Blx2e3SKtrQp3EdMQeViKJsWwf5rLUxEB1shvY
- vS064QvQGr55BCiteGpK48LHQqjnsIgT+riivzy3+97mTAsKNuZIzMPujfQKU7QEj3yJenl
- C6FoPqn57Dnl64+kmH2sgMqssAi+/InQUA3NZf2coWa0/S2ODlfzvkhgx4yzFJyGCLFvDG4
- 3iXWk9b6/KFm+8mOgWdGg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:y7q2VLfuQ70=:7Oha8K3JZ7BotefxI7rMap
- iEwLgYETh8v2s4dy92xO/+HZBiC9IE3g/OJD93w5C8C9u1YdL/Hqj2w+Rp+5khecp6Pjmhecn
- qXek6xSL8+twy3g4qY4zHCwNBeWQld1dv5GSkamrTC4+WRS5LC38FL3Th4Zrg1htASAab5W3r
- 6gesfIBrNmkkhqCBQfodZ/9wIllmmc8tassD5JsSc5AuGK9uIk0KV/ovGleB7bH1Nwiw7dzwf
- PL6vVZT3Ckrfk14O5DWP0L2+YK4kyn7GKkknOMDR8stK+UNQgXzl7wUPsGbsBzVYB/G7d/gYu
- fzmEYAovOb7MM5JshKsG/bHkfuUcxofPuWRVsan/H8s5Wp+MX9Ud3y+69U9cRE1ZKlRg7AzAT
- ZhcGDXS+6zKae83mTG4828xHzBPXT35MUFCUTktToSyOQ5sT/A2EcrQU/B+0UTG3mbcakjVYL
- tf27ELOIxL1jZeyAgCCqBhFL9DfNLBqzV+WG7FThd94arjy1n0qVgivpl+ilclpVD2TwQZGB0
- ZR+Gr961q8x1JDDOpsXcWvsxaEFOtaTe+Fbd9rQF3QNPSfpSQjL7r3101jDO1ttV9iqDz921c
- e86ZipHISmIjmssg5L1YWxCHHlYpf04Kb5IjvnLq4OGl61MNb0/6ZScCFqTsnUUqISx8vKyuu
- xA8wyN09vwqOo+l/lAgCgA0EvsSNIV1VEl/r+wTpfgZMpktry4IlnnWBHZE9iE/PmJo0ra0DY
- uJGEWB9GOLbj81itonLs2bD8HaSfw0i3qGk0mWfpIAE3pOV128NH4jIbVvE+082LPSxBirdkR
- ZNZlfoc
+X-Provags-ID: V03:K1:LXOmTNdFKPJxuWZHGqYmHqJ1VtSMGz/vML/YNY05KiJW//e4MhF
+ DeRx7Gvdt+tibbVuMiOuU3T4dIPcqxek/at5lRUgFRN0ZW6R0XqZPsNFEu1sYGqPLsNy7Ik
+ XUEnoWfLDgeWpDFXrg8PatFpwq7HsmQCUQBbx8duAVbq3Rx/nLF6UAvV/u7jL5RQbNwbbGg
+ 3cU4nPOCbcMUqBLyRioyg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:qvCXlYxqcUs=:/v0MSBpll8TpqkOxtdyESx
+ kgGxk4o7GtLCTR83v+r9K1SvS35Mw11ufdz/U/Ssq5T7fQ1DwUB46Uchl8Au5As+eihvKl+61
+ X1nJOqreCec6YBdTmxTHv1LS5m6xkCRCbgDvJeRPfybjBk2cEm4K/xI9pmS+SvoG8Psq+IZzn
+ Y5cEZICT2XvEU6roSKRnfzfGqs/ad1zzUPAQ6kHHYmmxaQbBgRZXz6ZHAoQW1+JoMxXNgsXbB
+ jQAk7S/T467EKcguudi2oXxmsJpLZjYQsTAmrz1Uls9BUwyul2ji/hxDsSOvS3v8QIKKvlPpX
+ 2Pkuk6jEdU+BzCciiKI9QPd0aL22FL565bnXt9AybLiBV/MNllN76PbcDekI7KDotgBSe2z1H
+ in3bw2MN2Uc1ZWDcHfCvjSXUZLmbqHKVYc25XRfiPPFYX4i5agP9BtLjnXh/G7/yEUH+VYUYD
+ JOHZQG72zl3kTRjeT9ycZatKPGc16rbho1x5VjoL+QOuzQU4jNU9/XqFq12R3YlA+34jFbqkt
+ WLQ2NV9Z/MtvlPyjQTynBXhsS2p3XkxYOFd9IroQk04NR3TpeQ4q0gb1lyWRdhtTGbgT1UjGm
+ 19JjuoshZjVA/5A4D43fRpzqUhnAhZ101FEIVPVbp3752s/oga/LN4sJsiuJlAAfaWeGOeiKi
+ +Ru3kQfk6CuLonRFNzVnbJi+gE5E9njYRwYD3KemyUT7x03hoaZ+l0QbSRuVdmH6VnZNwYajq
+ VzxlWfmrJb8LHRKMypFDviERCqE3qmi8QPYpjAFY3TNC+zkNkJGKjOyPvkc7VeG6p8DosZ/kX
+ SBEzpmE
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+From: Philippe Schenker <philippe.schenker@toradex.com>
 
-Add an LVDS panel node to be extended by a device tree overlay.
+The Lontium LT8912B driver needs a HDMI connector to be connected to
+port 1. Introduce this connector to be enabled in a device tree overlay.
 
+Signed-off-by: Philippe Schenker <philippe.schenker@toradex.com>
 Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 ---
 
- arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi | 7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
-index f5a2dade24a1..ca1c087e7c29 100644
+index ca1c087e7c29..ef105c0745eb 100644
 --- a/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
 +++ b/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
-@@ -53,6 +53,13 @@ key-wakeup {
+@@ -53,6 +53,14 @@ key-wakeup {
  		};
  	};
  
-+	panel_lvds: panel-lvds {
-+		compatible = "panel-lvds";
-+		backlight = <&backlight>;
-+		data-mapping = "vesa-24";
++	hdmi_connector: hdmi-connector {
++		compatible = "hdmi-connector";
++		ddc-i2c-bus = <&i2c2>;
++		label = "hdmi";
++		type = "a";
 +		status = "disabled";
 +	};
 +
- 	/* Carrier Board Supplies */
- 	reg_1p8v: regulator-1p8v {
- 		compatible = "regulator-fixed";
+ 	panel_lvds: panel-lvds {
+ 		compatible = "panel-lvds";
+ 		backlight = <&backlight>;
 -- 
 2.36.1
 
