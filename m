@@ -2,80 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF849ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 05:11:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CC9BECAAD2
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 05:11:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232585AbiIAFLC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 01:11:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44428 "EHLO
+        id S232820AbiIAFLx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 01:11:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231249AbiIAFK7 (ORCPT
+        with ESMTP id S231249AbiIAFLv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 01:10:59 -0400
-X-Greylist: delayed 343 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 31 Aug 2022 22:10:57 PDT
-Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA7F810853F;
-        Wed, 31 Aug 2022 22:10:57 -0700 (PDT)
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
-        by isilmar-4.linta.de (Postfix) with ESMTPSA id 668752000AD;
-        Thu,  1 Sep 2022 05:05:13 +0000 (UTC)
-Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
-        id CD4E08084B; Thu,  1 Sep 2022 07:05:01 +0200 (CEST)
-Date:   Thu, 1 Sep 2022 07:05:01 +0200
-From:   Dominik Brodowski <linux@dominikbrodowski.net>
-To:     Sven van Ashbrook <svenva@chromium.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Alex Levin <levinale@google.com>,
-        Rajat Jain <rajatja@google.com>,
-        Andrey Pronin <apronin@google.com>,
-        Stephen Boyd <swboyd@google.com>,
-        Eric Biggers <ebiggers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Olivia Mackall <olivia@selenic.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Theodore Ts'o <tytso@mit.edu>, linux-crypto@vger.kernel.org
-Subject: Re: [PATCH v1 1/2] random: make add_hwgenerator_randomness() more
- flexible
-Message-ID: <YxA9fTXqVFrHvyTj@owl.dominikbrodowski.net>
-References: <20220831172024.1613208-1-svenva@chromium.org>
+        Thu, 1 Sep 2022 01:11:51 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7810F10D4FC;
+        Wed, 31 Aug 2022 22:11:50 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6E5A9D6E;
+        Wed, 31 Aug 2022 22:11:56 -0700 (PDT)
+Received: from [10.162.43.7] (unknown [10.162.43.7])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B05CD3F71A;
+        Wed, 31 Aug 2022 22:11:48 -0700 (PDT)
+Message-ID: <81864464-8cd1-8afe-ed57-c04b1b22a35b@arm.com>
+Date:   Thu, 1 Sep 2022 10:41:46 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220831172024.1613208-1-svenva@chromium.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: linux-next: build failure after merge of the perf tree
+Content-Language: en-US
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220831083452.2fc938cf@canb.auug.org.au>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+In-Reply-To: <20220831083452.2fc938cf@canb.auug.org.au>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello Stephen,
 
-Am Wed, Aug 31, 2022 at 05:20:23PM +0000 schrieb Sven van Ashbrook:
-> add_hwgenerator_randomness() currently blocks until more entropy
-> is needed. But, the required delay function will depend on the
-> the caller: e.g. freezable kthreads have their own freezable_XXX()
-> APIs; and delayed_work might prefer to use mod_delayed_work().
+This seems to be the same problem as pointed by ACME on the patch series [1].
+Could this be a compiler false positive ? Because the new code block is exact
+same like the existing one. This warning seems to only occurs on powerpc64el
+platform, but not on others.
+
+[1] https://lore.kernel.org/lkml/Yw59CkHUVbfrHdkh@kernel.org/
+
+- Anshuman
+
+On 8/31/22 04:04, Stephen Rothwell wrote:
+> Hi all,
 > 
-> To accommodate these requirements, remove the blocking wait, and
-> let the function return the delay needed until more entropy is needed.
-
-AFAICS, there's only one caller in the kernel, and its specific requirements
-are currently met by the callee. So the rationale for this patch is wanting,
-yet you may wish to justify this patch more explicitly as a preparation for
-the second patch.
-
-Thanks,
-	Dominik
+> After merging the perf tree, today's linux-next build (native perf)
+> failed like this:
+> 
+> In file included from /usr/include/stdio.h:866,
+>                  from /home/sfr/next/next/tools/perf/util/branch.h:9,
+>                  from util/branch.c:2:
+> In function 'fprintf',
+>     inlined from 'branch_type_stat_display' at util/branch.c:152:4:
+> /usr/include/powerpc64le-linux-gnu/bits/stdio2.h:105:10: error: '%8s' directive argument is null [-Werror=format-overflow=]
+>   105 |   return __fprintf_chk (__stream, __USE_FORTIFY_LEVEL - 1, __fmt,
+>       |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>   106 |                         __va_arg_pack ());
+>       |                         ~~~~~~~~~~~~~~~~~
+> cc1: all warnings being treated as errors
+> 
+> Presumably caused by commit
+> 
+>   9781e500dcb8 ("perf branch: Extend branch type classification")
+> 
+> "native" here is PowerPC64 LE.
+> $ gcc --version
+> gcc (Debian 11.2.0-10) 11.2.0
+> 
+> I have used the perf tree from next-20220830 for today.
+> 
