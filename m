@@ -2,167 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55096ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 12:50:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17C4AC0502C
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 12:50:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231764AbiIAMul (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 08:50:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36834 "EHLO
+        id S233479AbiIAMu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 08:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232604AbiIAMug (ORCPT
+        with ESMTP id S233056AbiIAMuq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 08:50:36 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 652AF3ECD6
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 05:50:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662036633; x=1693572633;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=DlIMpYko/Y2Es4sT+Pe1aXFnnl85LOJ8PPDtIU9pU9M=;
-  b=hqmu9MHrjCD6OJAUGoxAiZ1+LBtXf16DUHuyCX/X2LfVAeQrIayis1o0
-   Jhc0+JjaESCdYvKtX4xhp4WgoKnQZX0HJvNUDaS54ndelrFOpuSAEuiiI
-   lTIZXJe6mXnQtFf0CPn+6rDqiRsz/4GuRxVrJz+dN0j/39Zm9U0u/7rri
-   /Dtp49MJ/YU/oq97yXGDfkZPEqvQL/6kuesCG4l8PvbQ7y1W1GRzkzQ1U
-   sMJBnCQZbzvPQIUfNJhGIhqe41GSU2BQxqt6on6UJGhjfGIfr92SYFk1i
-   MUBFxOyqgRFUSTmHRWVtphHINE+Bkj3H+VRgnzp905DkVu1GIjB8ODOXz
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="296488953"
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="296488953"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 05:50:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="754809905"
-Received: from lkp-server02.sh.intel.com (HELO b138c9e8658c) ([10.239.97.151])
-  by fmsmga001.fm.intel.com with ESMTP; 01 Sep 2022 05:50:30 -0700
-Received: from kbuild by b138c9e8658c with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oTjeP-0000Ih-2T;
-        Thu, 01 Sep 2022 12:50:29 +0000
-Date:   Thu, 1 Sep 2022 20:49:48 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Johannes Berg <johannes.berg@intel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:wireless/wireless-next/mld-wip 16/20]
- drivers/net/wireless/st/cw1200/sta.c:198:58: error: too few arguments to
- function call, expected 4, have 3
-Message-ID: <202209012046.5sg4d0qh-lkp@intel.com>
+        Thu, 1 Sep 2022 08:50:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F1EC79632
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 05:50:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662036639;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jzJH/mFnhHzqFHe2QCKkbQOatunPBFjzCPFC0VNIipc=;
+        b=XRRd/h06lhaOYIWtA5c1Q/OdyKjLFNUgFmNPSkjZZXWNYpMOLO4omKMGNu3kuFfel//eQE
+        i5GOw6fT7OY7Mr15wfNyjuPdMBp3He3dEp8GOBEXWLVgtto5HYjvlieageQAy2Lym0qMvQ
+        HGO9gloQpGuMJKf1qZurnsw7RLzC/eY=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-638-XFFghBbIPHKM7FJT2bJRoQ-1; Thu, 01 Sep 2022 08:50:38 -0400
+X-MC-Unique: XFFghBbIPHKM7FJT2bJRoQ-1
+Received: by mail-ed1-f69.google.com with SMTP id w17-20020a056402269100b0043da2189b71so11464654edd.6
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 05:50:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=jzJH/mFnhHzqFHe2QCKkbQOatunPBFjzCPFC0VNIipc=;
+        b=HoyAJ7krVKB0D8X++5OLXdM4P1CR3fE4NIMVhtXzKawywHhx0EZzHx9ARjYtcDvupF
+         0qxN0KCQVdFaR2CxbVodlHX5A9tzPjaFr8wp4yjAqUKKjMpopijQm8K8+FMZwpah2FFQ
+         WFzEdF2JqBmEls+dIkwXCX0bubk3JYL3m8Ds2dGVYSvLWG36FinXUnkuRTgsLnXq1g7D
+         9bA9Bh69rPFvJi/HLSsQzpLOaWY6fS9bWvSnFGCZjfL7lyKCXmNkZitexabXxrGzJqm+
+         PRkMuzpBAFqG+LYbdGy369J1Gn+r433CIWSRbtEmbBu4ZYw1qcr9TNpEG5pwPIQZ5FJw
+         RLvQ==
+X-Gm-Message-State: ACgBeo3oqot/JmijiyIRerxM3VcFmc+dxooD+uABpdlgjs8yzSyMoVk/
+        S/C+uKuxSJmgbxA3AaD2Gk9j+2RJcd7wI27uZ5ySZq9C90ZJXcbLHtq6sS6s/VAkpJJJPMrrpNe
+        BL/8HnDMoA/B0hRRXyq5rwVs7
+X-Received: by 2002:a05:6402:1909:b0:447:f0d3:a9b1 with SMTP id e9-20020a056402190900b00447f0d3a9b1mr24135158edz.100.1662036637540;
+        Thu, 01 Sep 2022 05:50:37 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6+fKohXs2E7Q+sSvhx52Aj58JDBgSTfq5zaBn0bqfrs76ZEUkvx9l1CgzEdzGFMvMDzeU2Hw==
+X-Received: by 2002:a05:6402:1909:b0:447:f0d3:a9b1 with SMTP id e9-20020a056402190900b00447f0d3a9b1mr24135150edz.100.1662036637371;
+        Thu, 01 Sep 2022 05:50:37 -0700 (PDT)
+Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
+        by smtp.gmail.com with ESMTPSA id k21-20020a17090632d500b007419b73bb8dsm5148750ejk.10.2022.09.01.05.50.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Sep 2022 05:50:36 -0700 (PDT)
+Message-ID: <1e23900b-a1f4-b3b1-8ed5-2b1db6eeb519@redhat.com>
+Date:   Thu, 1 Sep 2022 14:50:36 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v1 1/1] platform/x86: intel_cht_int33fe: Fix comment
+ according to the code flow
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Mark Gross <markgross@kernel.org>
+References: <20220824152115.88012-1-andriy.shevchenko@linux.intel.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220824152115.88012-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block wireless/wireless-next/mld-wip
-head:   10cf17b0508f56ee45e15ad2a612b64999264d4f
-commit: 60286c25de214ab636d7af34c4c05db0023fd827 [16/20] wifi: mac80211: extend ieee80211_nullfunc_get() for MLO
-config: x86_64-randconfig-a003 (https://download.01.org/0day-ci/archive/20220901/202209012046.5sg4d0qh-lkp@intel.com/config)
-compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/60286c25de214ab636d7af34c4c05db0023fd827
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block wireless/wireless-next/mld-wip
-        git checkout 60286c25de214ab636d7af34c4c05db0023fd827
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/wireless/st/cw1200/
+Hi,
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+On 8/24/22 17:21, Andy Shevchenko wrote:
+> We don't use software_node_register_nodes() in the code, fix the comment.
+> 
+> Fixes: 140355e5db8b ("platform/x86: intel_cht_int33fe: Convert software node array to group")
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-All errors (new ones prefixed by >>):
+Thank you for your patch, I've applied this patch to my review-hans 
+branch:
+https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/log/?h=review-hans
 
->> drivers/net/wireless/st/cw1200/sta.c:198:58: error: too few arguments to function call, expected 4, have 3
-                   skb = ieee80211_nullfunc_get(priv->hw, priv->vif, false);
-                         ~~~~~~~~~~~~~~~~~~~~~~                           ^
-   include/net/mac80211.h:5319:17: note: 'ieee80211_nullfunc_get' declared here
-   struct sk_buff *ieee80211_nullfunc_get(struct ieee80211_hw *hw,
-                   ^
-   drivers/net/wireless/st/cw1200/sta.c:2266:63: error: too few arguments to function call, expected 4, have 3
-           frame.skb = ieee80211_nullfunc_get(priv->hw, priv->vif, false);
-                       ~~~~~~~~~~~~~~~~~~~~~~                           ^
-   include/net/mac80211.h:5319:17: note: 'ieee80211_nullfunc_get' declared here
-   struct sk_buff *ieee80211_nullfunc_get(struct ieee80211_hw *hw,
-                   ^
-   2 errors generated.
+Note it will show up in my review-hans branch once I've pushed my
+local branch there, which might take a while.
+
+Once I've run some tests on this branch the patches there will be
+added to the platform-drivers-x86/for-next branch and eventually
+will be included in the pdx86 pull-request to Linus for the next
+merge-window.
+
+Regards,
+
+Hans
 
 
-vim +198 drivers/net/wireless/st/cw1200/sta.c
+> ---
+>  drivers/platform/x86/intel/chtwc_int33fe.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/platform/x86/intel/chtwc_int33fe.c b/drivers/platform/x86/intel/chtwc_int33fe.c
+> index c52ac23e2331..9448e2e67c3f 100644
+> --- a/drivers/platform/x86/intel/chtwc_int33fe.c
+> +++ b/drivers/platform/x86/intel/chtwc_int33fe.c
+> @@ -219,7 +219,7 @@ static int cht_int33fe_add_nodes(struct cht_int33fe_data *data)
+>  
+>  	/*
+>  	 * Update node used in "usb-role-switch" property. Note that we
+> -	 * rely on software_node_register_nodes() to use the original
+> +	 * rely on software_node_register_node_group() to use the original
+>  	 * instance of properties instead of copying them.
+>  	 */
+>  	fusb302_mux_refs[0].node = mux_ref_node;
 
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  146  
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  147  
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  148  void __cw1200_cqm_bssloss_sm(struct cw1200_common *priv,
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  149  			     int init, int good, int bad)
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  150  {
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  151  	int tx = 0;
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  152  
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  153  	priv->delayed_link_loss = 0;
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  154  	cancel_work_sync(&priv->bss_params_work);
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  155  
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  156  	pr_debug("[STA] CQM BSSLOSS_SM: state: %d init %d good %d bad: %d txlock: %d uj: %d\n",
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  157  		 priv->bss_loss_state,
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  158  		 init, good, bad,
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  159  		 atomic_read(&priv->tx_lock),
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  160  		 priv->delayed_unjoin);
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  161  
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  162  	/* If we have a pending unjoin */
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  163  	if (priv->delayed_unjoin)
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  164  		return;
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  165  
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  166  	if (init) {
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  167  		queue_delayed_work(priv->workqueue,
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  168  				   &priv->bss_loss_work,
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  169  				   HZ);
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  170  		priv->bss_loss_state = 0;
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  171  
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  172  		/* Skip the confimration procedure in P2P case */
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  173  		if (!priv->vif->p2p && !atomic_read(&priv->tx_lock))
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  174  			tx = 1;
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  175  	} else if (good) {
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  176  		cancel_delayed_work_sync(&priv->bss_loss_work);
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  177  		priv->bss_loss_state = 0;
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  178  		queue_work(priv->workqueue, &priv->bss_params_work);
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  179  	} else if (bad) {
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  180  		/* XXX Should we just keep going until we time out? */
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  181  		if (priv->bss_loss_state < 3)
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  182  			tx = 1;
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  183  	} else {
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  184  		cancel_delayed_work_sync(&priv->bss_loss_work);
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  185  		priv->bss_loss_state = 0;
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  186  	}
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  187  
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  188  	/* Bypass mitigation if it's disabled */
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  189  	if (!cw1200_bssloss_mitigation)
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  190  		tx = 0;
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  191  
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  192  	/* Spit out a NULL packet to our AP if necessary */
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  193  	if (tx) {
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  194  		struct sk_buff *skb;
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  195  
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  196  		priv->bss_loss_state++;
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  197  
-7b6ddeaf27eca72 drivers/net/wireless/st/cw1200/sta.c Johannes Berg  2017-11-21 @198  		skb = ieee80211_nullfunc_get(priv->hw, priv->vif, false);
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  199  		WARN_ON(!skb);
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  200  		if (skb)
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  201  			cw1200_tx(priv->hw, NULL, skb);
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  202  	}
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  203  }
-a910e4a94f6923c drivers/net/wireless/cw1200/sta.c    Solomon Peachy 2013-05-24  204  
-
-:::::: The code at line 198 was first introduced by commit
-:::::: 7b6ddeaf27eca72795ceeae2f0f347db1b5f9a30 mac80211: use QoS NDP for AP probing
-
-:::::: TO: Johannes Berg <johannes.berg@intel.com>
-:::::: CC: Johannes Berg <johannes.berg@intel.com>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
