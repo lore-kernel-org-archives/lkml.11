@@ -2,110 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B00F9ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:27:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59343ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:27:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234122AbiIAH1b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 03:27:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46816 "EHLO
+        id S234126AbiIAH1j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 03:27:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234009AbiIAH0G (ORCPT
+        with ESMTP id S233736AbiIAH02 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 03:26:06 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 804833F1D5;
-        Thu,  1 Sep 2022 00:25:05 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id u17so1836803wrp.3;
-        Thu, 01 Sep 2022 00:25:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=6VaWfIMqQwWIuH48wiOxaFvCdMYIP4kQOJiPuxxadM0=;
-        b=OvNo35JDbauqpe3x9P30vcfSSWjPy+fWJ89Jp87PYKrFjQ8boMGXr8SAcZAzIRAebG
-         gs8GhdSk1whQyVnb3Mo5YP4xuYDu3xibPXrSR14ovgnS+u5/8mjM2MUdGr8MBs/8iNt8
-         JVQXECy/YYWbG4J+Mz9bhmLaYrCCc91xSWYOT4Q17BSsVOIweqbKcTFmpbO9sKONBXCv
-         qdu/gKWknhVLv3J2+2BalvyiXi6KXLjoxbx9IlsUJi8n7a4O4PibF2vCSLM+HNsnx06P
-         VLnnmW4Z6b3KPWWYIOEO+WirJAWS4WKVPwEMmVb1X/eiCroMEqDWxj19qZ8Na7lCEYYx
-         PGoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=6VaWfIMqQwWIuH48wiOxaFvCdMYIP4kQOJiPuxxadM0=;
-        b=xp8SFr7Q6r++eDOA0we4ZxVdi8ErRvXXi5rHDaiByPE4CbQkzUDMxSkuUOi/nSCErw
-         ynELNbCCr+DSqKGnryA7bBfQSgBoO70A7gabT81KUvVZ85+Vi7sS8Mmh95VKmnRzmot7
-         m6AUziTZESiCgGeweclo48N8L6VgHNUtXeMwOeGFtl96wtKoCcTUz/jII2DT9Zzp8PYO
-         sXlxcZS6jIN2Gdd9Oj3GrLzFhcsoIIquGgQ/wAgSnmFyG0A/6APNp1FQO5XnQosb+LUc
-         cUbzf4fPq5Hr94sFbac/LoDnIjIGP/1OKk1RhvzK2ddxtvYTNGaeuJSbZmVL7SR3WQFm
-         PLxQ==
-X-Gm-Message-State: ACgBeo0csv3rLMxEEH2KVa+G5gkisebqsuVe1ab8Ft5vwrz5IDnKb0sg
-        RIbynEExgsyf6GI4IxBt1nw=
-X-Google-Smtp-Source: AA6agR52gXzUQSFvEIvbGObr1bidRkmMGaq7HFEyiC3HcjgEoPt7GTbsou6ii3QSCLAMOhrlpssdKQ==
-X-Received: by 2002:a5d:6c6b:0:b0:225:dde:ab40 with SMTP id r11-20020a5d6c6b000000b002250ddeab40mr13860932wrz.690.1662017104138;
-        Thu, 01 Sep 2022 00:25:04 -0700 (PDT)
-Received: from localhost (87-126-55-15.ip.btc-net.bg. [87.126.55.15])
-        by smtp.gmail.com with ESMTPSA id o21-20020a05600c4fd500b003a32297598csm4740010wmq.43.2022.09.01.00.25.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Sep 2022 00:25:03 -0700 (PDT)
-From:   Iskren Chernev <iskren.chernev@gmail.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        Iskren Chernev <iskren.chernev@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 13/14] dt-bindings: arm: qcom: Add compatible for oneplus,billie2 phone
-Date:   Thu,  1 Sep 2022 10:24:12 +0300
-Message-Id: <20220901072414.1923075-14-iskren.chernev@gmail.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220901072414.1923075-1-iskren.chernev@gmail.com>
-References: <20220901072414.1923075-1-iskren.chernev@gmail.com>
+        Thu, 1 Sep 2022 03:26:28 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 663ED3884
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 00:25:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2B6A8CE24F2
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 07:25:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3F13C433C1;
+        Thu,  1 Sep 2022 07:25:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662017117;
+        bh=wFBxgLE3ZKENwiyGQvZkmf0lQ+nkRd9E9wQrdKxQ/pw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Nx+Vz2yadBlXqmB6mN0pWinuEwxeVrsKNBWvD2k0uXISs3cAMKJhrrCZmZEs6gu31
+         hYnTLg8w3rxCg8EtPBH/PCVvX+tGAU8LPYyLD3GyyZp6vGjULev/k40TaOSbXWMr3Z
+         jLUgV6aDdN4jifZ4BjpI0kHDwTQOUHe1GN1MznmfXdNVwXmk0U94fH6jjnj0MH5mPE
+         uzB7AClQ26HdjHL8GdHq54asN0puEwicseuMkKbL0G7uW4KFJjk+oxddovX+FwBr4Z
+         9MVTdOTJ/ATlVrqMU9Mh4fUemQ4kEtEFColcwKWqiVNxXMWxq9YhFjjdebynIygckr
+         vG0iaJFB2ZrLg==
+Date:   Thu, 1 Sep 2022 10:24:59 +0300
+From:   Mike Rapoport <rppt@kernel.org>
+To:     Baoquan He <bhe@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        catalin.marinas@arm.com, ardb@kernel.org,
+        guanghuifeng@linux.alibaba.com, mark.rutland@arm.com,
+        will@kernel.org, linux-mm@kvack.org, thunder.leizhen@huawei.com,
+        wangkefeng.wang@huawei.com, kexec@lists.infradead.org
+Subject: Re: [PATCH 1/2] arm64, kdump: enforce to take 4G as the crashkernel
+ low memory end
+Message-ID: <YxBeS0G+F+fsBgod@kernel.org>
+References: <20220828005545.94389-1-bhe@redhat.com>
+ <20220828005545.94389-2-bhe@redhat.com>
+ <Yw8PvF5d2uuWy6Cl@kernel.org>
+ <Yw9wU/S8cP0ntR3g@MiWiFi-R3L-srv>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yw9wU/S8cP0ntR3g@MiWiFi-R3L-srv>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-oneplus,billie2 (OnePlus Nord N100) is based on QualComm Snapdragon
-SM4250 SoC.
+On Wed, Aug 31, 2022 at 10:29:39PM +0800, Baoquan He wrote:
+> On 08/31/22 at 10:37am, Mike Rapoport wrote:
+> > On Sun, Aug 28, 2022 at 08:55:44AM +0800, Baoquan He wrote:
+> > > 
+> > > Solution:
+> > > =========
+> > > To fix the problem, we should always take 4G as the crashkernel low
+> > > memory end in case CONFIG_ZONE_DMA or CONFIG_ZONE_DMA32 is enabled.
+> > > With this, we don't need to defer the crashkernel reservation till
+> > > bootmem_init() is called to set the arm64_dma_phys_limit. As long as
+> > > memblock init is done, we can conclude what is the upper limit of low
+> > > memory zone.
+> > > 
+> > > 1) both CONFIG_ZONE_DMA or CONFIG_ZONE_DMA32 are disabled or memblock_start_of_DRAM() > 4G
+> > >   limit = PHYS_ADDR_MAX+1  (Corner cases)
+> > 
+> > Why these are corner cases? 
+> > The case when CONFIG_ZONE_DMA or CONFIG_ZONE_DMA32 are disabled is the
+> > simplest one because it does not require the whole dancing around
+> > arm64_dma_phys_limit initialization.
+> > 
+> > And AFAIK, memblock_start_of_DRAM() > 4G is not uncommon on arm64, but it
+> > does not matter for device DMA addressing.
+> 
+> Thanks for reviewing.
+> 
+> I could be wrong and have misunderstanding about corner case.
+> 
+> With my understanding, both ZONE_DMA and ZONE_DMA32 are enabled by
+> default in kernel. And on distros, I believe they are on too. The both
+> ZONE_DMA and ZONE_DMA32 disabled case should only exist on one specific
+> product, and the memblock_start_of_DRAM() > 4G case too. At least, I
+> haven't seen one in our LAB. What I thought the non generic as corner
+> case could be wrong. I will change that phrasing.
+> 
+> mm/Kconfig:
+> config ZONE_DMA
+>         bool "Support DMA zone" if ARCH_HAS_ZONE_DMA_SET
+>         default y if ARM64 || X86
+> 
+> config ZONE_DMA32
+>         bool "Support DMA32 zone" if ARCH_HAS_ZONE_DMA_SET
+>         depends on !X86_32
+>         default y if ARM64
 
-Add support for the same in dt-bindings.
-
-Signed-off-by: Iskren Chernev <iskren.chernev@gmail.com>
----
- Documentation/devicetree/bindings/arm/qcom.yaml | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-index 19c2f4314741..63cc41cd0119 100644
---- a/Documentation/devicetree/bindings/arm/qcom.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -54,6 +54,8 @@ description: |
-         sdm845
-         sdx55
-         sdx65
-+        sm4250
-+        sm6115
-         sm6125
-         sm6350
-         sm7225
-@@ -670,6 +672,11 @@ properties:
-               - xiaomi,polaris
-           - const: qcom,sdm845
+My point was that the cases with ZONE_DMA/DMA32 disabled or with RAM above
+4G do not require detection of arm64_dma_phys_limit before reserving the
+crash kernel, can use predefined constants and are simple to handle.
  
-+      - items:
-+          - enum:
-+              - oneplus,billie2
-+          - const: qcom,sm4250
-+
-       - items:
-           - enum:
-               - sony,pdx201
--- 
-2.37.2
+> > The actual corner cases are systems with ZONE_DMA/DMA32 and with <32 bits
+> > limit for device DMA addressing (e.g RPi 4). I think the changelog should
+> 
+> Right, RPi4's 30bit DMA addressing device is corner case.
+> 
+> > mention that to use kdump on these devices user must specify
+> > crashkernel=X@Y 
+> 
+> Makes sense. I will add words in log, and add sentences to
+> mention that in code comment or some place of document.
+> Thanks for advice.
+> 
+> > 
+> > > 2) CONFIG_ZONE_DMA or CONFIG_ZONE_DMA32 are enabled:
+> > >    limit = 4G  (generic case)
+> > > 
 
+...
+
+> > > +static phys_addr_t __init crash_addr_low_max(void)
+> > > +{
+> > > +	phys_addr_t low_mem_mask = U32_MAX;
+> > > +	phys_addr_t phys_start = memblock_start_of_DRAM();
+> > > +
+> > > +	if ((!IS_ENABLED(CONFIG_ZONE_DMA) && !IS_ENABLED(CONFIG_ZONE_DMA32)) ||
+> > > +	     (phys_start > U32_MAX))
+> > > +		low_mem_mask = PHYS_ADDR_MAX;
+> > > +
+> > > +	return min(low_mem_mask, memblock_end_of_DRAM() - 1) + 1;
+> > 
+> > Since RAM frequently starts on non-zero address the limit for systems with
+> > ZONE_DMA/DMA32 should be memblock_start_of_DRAM() + 4G. There is no need to
+> 
+> It may not be right for memblock_start_of_DRAM(). On most of arm64
+> servers I ever tested, their memblock usually starts from a higher
+> address, but not zero which is like x86. E.g below memory ranges printed
+> on an ampere-mtsnow-altra system, the starting addr is 0x83000000. With
+> my understanding, DMA addressing bits correspond to the cpu logical
+> address range devices can address. So memblock_start_of_DRAM() + 4G
+> seems not right for normal system, and not right for system which
+> starting physical address is above 4G. I refer to max_zone_phys() of
+> arch/arm64/mm/init.c when implementing crash_addr_low_max(). Please
+> correct me if I am wrong.
+
+My understanding was that no matter where DRAM starts, the first 4G would
+be accessible by 32-bit devices, but I maybe wrong as well :)
+
+I haven't notice you used max_zone_phys() as a reference. Wouldn't it be
+simpler to just call it from crash_addr_low_max():
+
+static phys_addr_t __init crash_addr_low_max(void)
+{
+	return max_zone_phys(32);
+}
+ 
+-- 
+Sincerely yours,
+Mike.
