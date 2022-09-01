@@ -2,89 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CABECECAAD2
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 22:32:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F04D2C6FA82
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 22:33:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234938AbiIAWcv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 18:32:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47740 "EHLO
+        id S233598AbiIAWdc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 18:33:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233057AbiIAWcd (ORCPT
+        with ESMTP id S233057AbiIAWda (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 18:32:33 -0400
-Received: from mail-vs1-xe2b.google.com (mail-vs1-xe2b.google.com [IPv6:2607:f8b0:4864:20::e2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54FFC1092
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 15:32:32 -0700 (PDT)
-Received: by mail-vs1-xe2b.google.com with SMTP id c3so334330vsc.6
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 15:32:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gateworks-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date;
-        bh=H6ognOyqgR63Qc5uxwtLsdJe5XquKuPnICVqa9a8AKs=;
-        b=Yjx+TGhJgVa88DDNYKa0fjVNTMlJaMO/tyUZU6y3og+6nYzwev4neOE97zwDXbETHB
-         fF8xoIuqF5Tvstqbf0dU8zyUh2QMzGkB6U6gEOucvqJ/Oies13jEAaSE2lmhVxwnLR/D
-         bAW/WmZGGvKCxuD3kEv5YwNQilRT+kwbX7WTSn74VQayUDRZcOF4cfE2AEVwO90bCsTK
-         A5/53sGWlHQ6U3RTWPd5dUpH7BdUy9SM+IbMOlPIzsVeFYdpRlsfMPlplnQM0wH/e3lZ
-         BrgbmP5weBThNZuaevXlt9J7GkkCohcjr0ngBG3AWCQOOmt1ZxtrV0Nqf3q/E0MU9443
-         opuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=H6ognOyqgR63Qc5uxwtLsdJe5XquKuPnICVqa9a8AKs=;
-        b=noHhDdM/r2ah98N4DpRU31FDLb2i2BfBQojXAz1wp/F3ZrrCENKuerHTuL+9Bdx9Kc
-         XO1EFK4Vk9IC/IgBuJbdl1DOdMMPGfVQRsOxNmeGV8CZO9QA3A+cl0qx+CFvWofm91Bg
-         OPvoyys69JQQaXDBD4Z/8DckrYjtMwI55pa0YWSF+/pTax8zX8z3Gcq/q0tLRNS7KgGo
-         AGM5Hin9u7CGbmyNjZDI6aY57jfjQVLGNQNsEr++XseHb9Mp9C4MPYKXonVrtIzHveWG
-         mItajogwuMQUtkU5LobDk8XIL5uIlGATGQ5m+HdJlMVDOXZyWscRCKNEN9jzmtPXqh/8
-         GgeQ==
-X-Gm-Message-State: ACgBeo25hQhnA4B9zw4CXLPB9kjyQP4E9wkJt4PRw+nevH9iKj7BXqiC
-        ZycIMCRsnnXDIPuchr+Sa9mQzJ/l3Ym7bWJ6Rj+eUGKhHKjJgBVv
-X-Google-Smtp-Source: AA6agR6m2BFDhZF8xc/TQvHE5/JD07yIzmeqHx3EbH+37ZwhGDqt/hrDf3heDlbAYgGk5SNZLDBr4+9lbVnFAuVS9Xg=
-X-Received: by 2002:a17:903:41c6:b0:174:3acf:8294 with SMTP id
- u6-20020a17090341c600b001743acf8294mr32176674ple.118.1662071024760; Thu, 01
- Sep 2022 15:23:44 -0700 (PDT)
+        Thu, 1 Sep 2022 18:33:30 -0400
+Received: from mx1.riseup.net (mx1.riseup.net [198.252.153.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A723BC64
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 15:33:29 -0700 (PDT)
+Received: from fews1.riseup.net (fews1-pn.riseup.net [10.0.1.83])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
+         client-signature RSA-PSS (2048 bits) client-digest SHA256)
+        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
+        by mx1.riseup.net (Postfix) with ESMTPS id 4MJbRX4RfqzDqTD;
+        Thu,  1 Sep 2022 22:33:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
+        t=1662071609; bh=vFOW28U7e2tmiwu+hjUzu0rmnJAQnKcUXDY+PUL93FA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=bjL2tfuvdZwU5me4+LwChwaZ4tR3xFknXrbL8wlri/Yu5A4d0tYsX/jLRPRRsWeYL
+         +uoiLRPVbiRn5TeD40hxN1K/IQhbYe715525dnHUhz1gSc2HKFCqAepCBa0Kpzgree
+         9DvN7ZvPaT2oV58dcBXUKFUO2PhFL8kyeucLyoPg=
+X-Riseup-User-ID: 1041B213356A975CFCF07C5A2FA5585F2A3B2C49FBA60EE30A8D0728AC31891F
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+         by fews1.riseup.net (Postfix) with ESMTPSA id 4MJbRP4PJgz5vXJ;
+        Thu,  1 Sep 2022 22:33:20 +0000 (UTC)
+Message-ID: <04aeba53-793c-3196-3137-915f0640dc2a@riseup.net>
+Date:   Thu, 1 Sep 2022 19:33:18 -0300
 MIME-Version: 1.0
-From:   Tim Harvey <tharvey@gateworks.com>
-Date:   Thu, 1 Sep 2022 15:23:33 -0700
-Message-ID: <CAJ+vNU1Za2CPGVX3q4HKufsxbL5zRrk1B5CWFpKritetrTs4dA@mail.gmail.com>
-Subject: BD71847 clk driver disables clk-32k-out causing RTC/WDT failure
-To:     linux-clk <linux-clk@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>
-Cc:     NXP Linux Team <linux-imx@nxp.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Matti Vaittinen <mazziesaccount@gmail.com>,
-        Michael Turquette <mturquette@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH v2 2/2] drm/tests: Change "igt_" prefix to "test_drm_"
+Content-Language: en-US
+To:     Maxime Ripard <maxime@cerno.tech>
+Cc:     Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
+        tales.aparecida@gmail.com, mwen@igalia.com, andrealmeid@riseup.net,
+        siqueirajordao@riseup.net, Trevor Woerner <twoerner@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        David Gow <davidgow@google.com>, brendanhiggins@google.com,
+        Arthur Grillo <arthur.grillo@usp.br>,
+        michal.winiarski@intel.com,
+        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        kunit-dev@googlegroups.com
+References: <20220901124210.591994-1-mairacanal@riseup.net>
+ <20220901124210.591994-2-mairacanal@riseup.net>
+ <20220901125530.b56s4zisnkfuigvc@houat>
+From:   =?UTF-8?Q?Ma=c3=adra_Canal?= <mairacanal@riseup.net>
+In-Reply-To: <20220901125530.b56s4zisnkfuigvc@houat>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Greetings,
+Hi Maxime,
 
-I've found that the bd71847 clk driver (CONFIG_COMMON_CLK_BD718XX
-drivers/clk/clk-bd718x7.c) disables clk-32k-out (the BD71847 C32K_OUT
-pin) which is connected IMX8MM RTC_XTALI which ends up disabling the
-IMX RTC as well as the IMX WDOG functionality.
+On 9/1/22 09:55, Maxime Ripard wrote:
+> Hi,
+> 
+> On Thu, Sep 01, 2022 at 09:42:10AM -0300, Maíra Canal wrote:
+>> With the introduction of KUnit, IGT is no longer the only option to run
+>> the DRM unit tests, as the tests can be run through kunit-tool or on
+>> real hardware with CONFIG_KUNIT.
+>>
+>> Therefore, remove the "igt_" prefix from the tests and replace it with
+>> the "test_drm_" prefix, making the tests' names independent from the tool
+>> used.
+>>
+>> Signed-off-by: Maíra Canal <mairacanal@riseup.net>
+>>
+>> ---
+>> v1 -> v2: https://lore.kernel.org/dri-devel/20220830211603.191734-1-mairacanal@riseup.net/
+>> - Change "drm_" prefix to "test_drm_", as "drm_" can be a bit confusing (Jani Nikula).
+> 
+> I appreciate it's a bit of a bikeshed but I disagree with this. The
+> majority of the kunit tests already out there start with the framework
+> name, including *all* the examples in the kunit doc. Plus, it's fairly
+> obvious that it's a test, kunit is only about running tests in the first
+> place.
 
-You can see this with:
-# cat /sys/kernel/debug/clk/clk-32k-out/clk_rate
-32768
-# cat /sys/kernel/debug/clk/clk-32k-out/clk_enable_count
-0
-# cat /sys/class/rtc/rtc0/name
-snvs_rtc 30370000.snvs:snvs-rtc-lp
-# cat /sys/class/rtc/rtc0/time
-00:00:03
-^^^ time never changes
+Would it be better to keep it as "drm_"?
 
-This happens via clk_unprepare_unused() as nothing is flagging the
-clk-32k-out as being used. What should be added to the device-tree to
-signify that this clk is indeed necessary and should not be disabled?
+Currently, I don't think it is appropriate to hold the "igt_" prefix, as
+the tests are not IGT exclusive, but I don't have a strong opinion on
+using the "drm_" or the "test_drm" prefixes.
 
 Best Regards,
+- Maíra Canal
 
-Tim
+> 
+> Maxime
+> 
