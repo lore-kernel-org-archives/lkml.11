@@ -2,124 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAE22ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:42:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 463F7ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233798AbiIAOmS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 10:42:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37004 "EHLO
+        id S233617AbiIAOms (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 10:42:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234603AbiIAOmD (ORCPT
+        with ESMTP id S233652AbiIAOmp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 10:42:03 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5021E2CDCC
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 07:42:01 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id C281021A58;
-        Thu,  1 Sep 2022 14:41:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1662043319; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=QrSvIq+kMZL8ZVB3bc4dE7hfMkUNEf2GZlOwWQRLNMg=;
-        b=tK4OC23lz34I+UBj+52pNeXDN9zw3iVeO0Rnj+zYKdqSUoGfERYQ8svV0rbF9JyP2peWw7
-        d6mTP/gNtWuksEUvKtJFsJYQbQXRPFfBpkkGEcjTRttWMjjA5BQLke5WLeljzmC/GZdYka
-        VOK9Lq3WK6VISl+meb3ja9b10RJcNl4=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A6ED413A79;
-        Thu,  1 Sep 2022 14:41:59 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id Wg2EJrfEEGO/YwAAMHmgww
-        (envelope-from <mhocko@suse.com>); Thu, 01 Sep 2022 14:41:59 +0000
-Date:   Thu, 1 Sep 2022 16:41:59 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
-Subject: Re: [PATCH v2 4/8] mm/debug: Provide VM_WARN_ON_IRQS_ENABLED()
-Message-ID: <YxDEt4JbcgQzEpjj@dhcp22.suse.cz>
-References: <20220825164131.402717-1-bigeasy@linutronix.de>
- <20220825164131.402717-5-bigeasy@linutronix.de>
+        Thu, 1 Sep 2022 10:42:45 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC80776976
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 07:42:41 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id s206so16588653pgs.3
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 07:42:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=fbvLaxBSrUU1twip21pfwSPLgyOYXUmDr/PBKjQl9Hk=;
+        b=iBNu0BAJj/GpEUqQRjnaHH1UAVKM0yqNr+vLtcPE94fECJjuF6vBMeoGPa5BqbF31d
+         aCdf1DE9mIPgnNBkJCcVS5e9oT+mAhFu6N85WXBEU4D42jTaTdR/FTe9a9R/l5c16W96
+         x8Ps2dkMZ/jFStSqosO9ss1JRD7GN2Nvz6GjU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=fbvLaxBSrUU1twip21pfwSPLgyOYXUmDr/PBKjQl9Hk=;
+        b=5GlVfrP5ppBdWJtSB7QrjYsiDX/nSjTrznKSrptwalwJiHOHUCHVhWoZVKDhPQIu2Q
+         +Pz7mVx7erdXmv0w6PsMfz/6Ey0d7v9QqeMgtjn5xdEqfxQ0diQuM441qSY7gMMo5eUx
+         ZgthUEewH46xV9On9sKZqamasq3oyfT6HtCKeoj1N74pMaV0xQbcJ8OmAABkbRnpjv3V
+         Or9FO0JnYzEaoG/NCFzm3kyChify5sWhOBIUPRHBpkBJuyKuEhCGbfLIE+3Ms1xp2mGH
+         sW/9w5Wm4BUuRf/plgPCPQpJDRUcY3v8ZRaoo2JBBbzf2m4d0kqei4phxdw0M1rv+dsf
+         TtVQ==
+X-Gm-Message-State: ACgBeo2Bz+uKEwNXkHS4vp4eEzXnTQSKGP5LpGKbdIpMrQuG/geW+ZUI
+        jwDWXrsTwsrB3+/c0gnpauJVUQnFSZHQghY+
+X-Google-Smtp-Source: AA6agR6BfX/F1wz6XflLFLFd19euXTh7VtM19NzJrOeQTVd832Lr0ExH5kSESTiAQwpUNn2ABOJ4Wg==
+X-Received: by 2002:a63:1a46:0:b0:42c:414a:95ee with SMTP id a6-20020a631a46000000b0042c414a95eemr14901158pgm.386.1662043361169;
+        Thu, 01 Sep 2022 07:42:41 -0700 (PDT)
+Received: from pteerapong.c.googlers.com.com (148.175.199.104.bc.googleusercontent.com. [104.199.175.148])
+        by smtp.gmail.com with ESMTPSA id z18-20020a170903019200b001709b9d292esm4238112plg.268.2022.09.01.07.42.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Sep 2022 07:42:40 -0700 (PDT)
+From:   Pattara Teerapong <pteerapong@chromium.org>
+To:     alsa-devel@alsa-project.org
+Cc:     Pattara Teerapong <pteerapong@chromium.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH] ALSA: aloop: Fix random zeros in capture data when using jiffies timer
+Date:   Thu,  1 Sep 2022 14:40:36 +0000
+Message-Id: <20220901144036.4049060-1-pteerapong@chromium.org>
+X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220825164131.402717-5-bigeasy@linutronix.de>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 25-08-22 18:41:27, Sebastian Andrzej Siewior wrote:
-> From: Thomas Gleixner <tglx@linutronix.de>
-> 
-> Some places in the VM code expect interrupts disabled, which is a valid
-> expectation on non-PREEMPT_RT kernels, but does not hold on RT kernels in
-> some places because the RT spinlock substitution does not disable
-> interrupts.
-> 
-> To avoid sprinkling CONFIG_PREEMPT_RT conditionals into those places,
-> provide VM_WARN_ON_IRQS_ENABLED() which is only enabled when VM_DEBUG=y and
-> PREEMPT_RT=n.
-> 
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: linux-mm@kvack.org
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+In loopback_jiffies_timer_pos_update(), we are getting jiffies twice.
+First time for playback, second time for capture. Jiffies can be updated
+between these two calls and if the capture jiffies is larger, extra zeros
+will be filled in the capture buffer.
 
-Acked-by: Michal Hocko <mhocko@suse.com>
-Thanks!
+Change to get jiffies once and use it for both playback and capture.
 
-> ---
->  include/linux/mmdebug.h | 6 ++++++
->  lib/Kconfig.debug       | 3 +++
->  2 files changed, 9 insertions(+)
-> 
-> diff --git a/include/linux/mmdebug.h b/include/linux/mmdebug.h
-> index 15ae78cd28536..b8728d11c9490 100644
-> --- a/include/linux/mmdebug.h
-> +++ b/include/linux/mmdebug.h
-> @@ -94,6 +94,12 @@ void dump_mm(const struct mm_struct *mm);
->  #define VM_WARN(cond, format...) BUILD_BUG_ON_INVALID(cond)
->  #endif
->  
-> +#ifdef CONFIG_DEBUG_VM_IRQSOFF
-> +#define VM_WARN_ON_IRQS_ENABLED() WARN_ON_ONCE(!irqs_disabled())
-> +#else
-> +#define VM_WARN_ON_IRQS_ENABLED() do { } while (0)
-> +#endif
-> +
->  #ifdef CONFIG_DEBUG_VIRTUAL
->  #define VIRTUAL_BUG_ON(cond) BUG_ON(cond)
->  #else
-> diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-> index 072e4b289c13e..c96fc6820544c 100644
-> --- a/lib/Kconfig.debug
-> +++ b/lib/Kconfig.debug
-> @@ -803,6 +803,9 @@ config ARCH_HAS_DEBUG_VM_PGTABLE
->  	  An architecture should select this when it can successfully
->  	  build and run DEBUG_VM_PGTABLE.
->  
-> +config DEBUG_VM_IRQSOFF
-> +	def_bool DEBUG_VM && !PREEMPT_RT
-> +
->  config DEBUG_VM
->  	bool "Debug VM"
->  	depends on DEBUG_KERNEL
-> -- 
-> 2.37.2
+Signed-off-by: Pattara Teerapong <pteerapong@chromium.org>
+---
 
+ sound/drivers/aloop.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/sound/drivers/aloop.c b/sound/drivers/aloop.c
+index 9b4a7cdb103a..12f12a294df5 100644
+--- a/sound/drivers/aloop.c
++++ b/sound/drivers/aloop.c
+@@ -605,17 +605,18 @@ static unsigned int loopback_jiffies_timer_pos_update
+ 			cable->streams[SNDRV_PCM_STREAM_PLAYBACK];
+ 	struct loopback_pcm *dpcm_capt =
+ 			cable->streams[SNDRV_PCM_STREAM_CAPTURE];
+-	unsigned long delta_play = 0, delta_capt = 0;
++	unsigned long delta_play = 0, delta_capt = 0, cur_jiffies;
+ 	unsigned int running, count1, count2;
+ 
++	cur_jiffies = jiffies;
+ 	running = cable->running ^ cable->pause;
+ 	if (running & (1 << SNDRV_PCM_STREAM_PLAYBACK)) {
+-		delta_play = jiffies - dpcm_play->last_jiffies;
++		delta_play = cur_jiffies - dpcm_play->last_jiffies;
+ 		dpcm_play->last_jiffies += delta_play;
+ 	}
+ 
+ 	if (running & (1 << SNDRV_PCM_STREAM_CAPTURE)) {
+-		delta_capt = jiffies - dpcm_capt->last_jiffies;
++		delta_capt = cur_jiffies - dpcm_capt->last_jiffies;
+ 		dpcm_capt->last_jiffies += delta_capt;
+ 	}
+ 
 -- 
-Michal Hocko
-SUSE Labs
+2.37.2.789.g6183377224-goog
+
