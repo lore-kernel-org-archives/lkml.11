@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 434DCECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 22:19:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 745F7ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 22:19:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235225AbiIAWTc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 18:19:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45908 "EHLO
+        id S235060AbiIAWTg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 18:19:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234784AbiIAWST (ORCPT
+        with ESMTP id S234728AbiIAWSL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 18:18:19 -0400
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B0B5A8BE
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 15:18:06 -0700 (PDT)
-Received: by mail-qt1-x82f.google.com with SMTP id c20so221190qtw.8
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 15:18:05 -0700 (PDT)
+        Thu, 1 Sep 2022 18:18:11 -0400
+Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77F395C9D3
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 15:18:07 -0700 (PDT)
+Received: by mail-qt1-x832.google.com with SMTP id x5so219442qtv.9
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 15:18:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=joelfernandes.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=GmZL9QRJG3JGAUAVfGfSTA34gmVVbLMug2meh+hLHJM=;
-        b=dWo8eLEyEw5jcTSOIhe0J42iN+xFaer3fDsss15lmAIIREY+MawFShJoU5lQXs152W
-         5bBsVEo8OeqyIN1jsIXSjKgdCCZW0EZC9yD75V/Uy2UCsKQA1A2x2/RnRq2779uXc7NO
-         fuaowWwCJUf5JBRU4sL3dTWtVU2pKz7JGf3F4=
+        bh=5xn60rDjdB3Rf7Wir8y+6b2hKXDgCuU2pqQZqimv/ck=;
+        b=Os4hTQX+7UasiETS+y9NSvg4ja5hDOYYPQYGOfJ5sv7/j1Yu4A2w2gXnSlW0jOFCDp
+         bLTIIkeTRy+1cbbBwSjwl3rHEw4Ocq3dzKdcSC+TunfEtEl+yuu5I44XNzQiXUAY3Ewk
+         QEeYCOdMfWSgWfckJw059MAJSVHel1agDUyiA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=GmZL9QRJG3JGAUAVfGfSTA34gmVVbLMug2meh+hLHJM=;
-        b=5cd18HgW2qVVt4ENrpZtH6OU04mw3Ox4fz4FehfRL3HeOy/Gbj91ETvdsmbKTOcYDF
-         QHBK0brzAnWc11Qr6uoTqlXOsKxNX8swIazEdMDae3bg9wT/u4wfNuPgEJD+V1UVrjrT
-         EG/pH9dWLq2X9n+x9JKtJccv7ifkHY3tfbFkcdDw1sQvv3W8iMn3sy+QhofvxZv5Y4tg
-         B+3MDs27yfO5L/hzHEHRSr/s0+8vg/RKGBtoriuK2hg8BMExN2EcbDYhOgJn4vW24X8n
-         rIVRUJzjpHj3CD9tF4E6PSl/QUAd4ZibWFqPDaC8ydQv4jPaBCA6Php9jFP2Zj3ayEj1
-         ilDA==
-X-Gm-Message-State: ACgBeo0F1sRDGf6XtIKYVr4ysyju6PE89fSsazmAokwDmWVCKVzp2k5x
-        gl0V67nVYmCrstrgRyHfYSQldA==
-X-Google-Smtp-Source: AA6agR5d0+TO4TcTHxSbXssriWeXw2oFTaGpGLqzcaqhAOpXB66/FUakNqneNIoAQAkF8kDVHuirhQ==
-X-Received: by 2002:a05:622a:3d0:b0:343:58db:d5c7 with SMTP id k16-20020a05622a03d000b0034358dbd5c7mr25537687qtx.21.1662070685069;
-        Thu, 01 Sep 2022 15:18:05 -0700 (PDT)
+        bh=5xn60rDjdB3Rf7Wir8y+6b2hKXDgCuU2pqQZqimv/ck=;
+        b=g+vn5cWP5fzsVmqzSQlqg3qIkJ6gOuLuBOGQtYWFBLSGluxbFyzAlJhW5F6jhoUH7R
+         TvXTu66rvuH6yjMv8Lc21OIA2i5vxOK+DLIepD8/fkltm2LGzqncIWkSRD++iKtDmS6g
+         szxT4UMXt42oF5PjmLA7ZLa2c5s13zWNuIizzMv0nPCVNhAWyz8NE+L7xDcqdqPO4YEa
+         AJUFyWQ0rm84CMTR8Qd6KhxLCGijpVdEbyxu+ATDJVeBAiX1ALCxdXVRhvUjCbaqJW75
+         X7dWS3xxpDl7OfSBlJkUT9y8CfSYht5+jNak0/MnQfxrrzCD6dv+orseA1V1TYWyvc4W
+         RQOw==
+X-Gm-Message-State: ACgBeo1tGvsUoujeZ8vuu2CtjxhvEoX7q22PJ50yO1dzf9aHxRiYetc8
+        4MVqdBjtPJBmlw4cg0S5vKHgTw==
+X-Google-Smtp-Source: AA6agR4diTGOE7swnbaEjFmZk8h1Ql35CL92QOFXkcefETWvplUeM3qM08T8V0Y69YU08rm48PY+vQ==
+X-Received: by 2002:ac8:4e45:0:b0:343:5faf:3af6 with SMTP id e5-20020ac84e45000000b003435faf3af6mr26987399qtw.340.1662070686395;
+        Thu, 01 Sep 2022 15:18:06 -0700 (PDT)
 Received: from joelboxx.c.googlers.com.com (228.221.150.34.bc.googleusercontent.com. [34.150.221.228])
-        by smtp.gmail.com with ESMTPSA id s16-20020ac85290000000b0034305a91aaesm11060794qtn.83.2022.09.01.15.18.04
+        by smtp.gmail.com with ESMTPSA id s16-20020ac85290000000b0034305a91aaesm11060794qtn.83.2022.09.01.15.18.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 15:18:04 -0700 (PDT)
+        Thu, 01 Sep 2022 15:18:06 -0700 (PDT)
 From:   "Joel Fernandes (Google)" <joel@joelfernandes.org>
 To:     rcu@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, rushikesh.s.kadam@intel.com,
@@ -52,9 +52,9 @@ Cc:     linux-kernel@vger.kernel.org, rushikesh.s.kadam@intel.com,
         paulmck@kernel.org, rostedt@goodmis.org, vineeth@bitbyteword.org,
         boqun.feng@gmail.com,
         "Joel Fernandes (Google)" <joel@joelfernandes.org>
-Subject: [PATCH v5 11/18] fs: Move call_rcu() to call_rcu_lazy() in some paths
-Date:   Thu,  1 Sep 2022 22:17:13 +0000
-Message-Id: <20220901221720.1105021-12-joel@joelfernandes.org>
+Subject: [PATCH v5 13/18] security: Move call_rcu() to call_rcu_lazy()
+Date:   Thu,  1 Sep 2022 22:17:15 +0000
+Message-Id: <20220901221720.1105021-14-joel@joelfernandes.org>
 X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
 In-Reply-To: <20220901221720.1105021-1-joel@joelfernandes.org>
 References: <20220901221720.1105021-1-joel@joelfernandes.org>
@@ -67,78 +67,47 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 This is required to prevent callbacks triggering RCU machinery too
 quickly and too often, which adds more power to the system.
 
-When testing, we found that these paths were invoked often when the
-system is not doing anything (screen is ON but otherwise idle).
-
 Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
 ---
- fs/dcache.c     | 4 ++--
- fs/eventpoll.c  | 2 +-
- fs/file_table.c | 2 +-
- fs/inode.c      | 2 +-
- 4 files changed, 5 insertions(+), 5 deletions(-)
+ security/security.c    | 2 +-
+ security/selinux/avc.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/fs/dcache.c b/fs/dcache.c
-index c5dc32a59c76..28a159a7e460 100644
---- a/fs/dcache.c
-+++ b/fs/dcache.c
-@@ -366,7 +366,7 @@ static void dentry_free(struct dentry *dentry)
- 	if (unlikely(dname_external(dentry))) {
- 		struct external_name *p = external_name(dentry);
- 		if (likely(atomic_dec_and_test(&p->u.count))) {
--			call_rcu(&dentry->d_u.d_rcu, __d_free_external);
-+			call_rcu_lazy(&dentry->d_u.d_rcu, __d_free_external);
- 			return;
- 		}
- 	}
-@@ -374,7 +374,7 @@ static void dentry_free(struct dentry *dentry)
- 	if (dentry->d_flags & DCACHE_NORCU)
- 		__d_free(&dentry->d_u.d_rcu);
- 	else
--		call_rcu(&dentry->d_u.d_rcu, __d_free);
-+		call_rcu_lazy(&dentry->d_u.d_rcu, __d_free);
- }
- 
- /*
-diff --git a/fs/eventpoll.c b/fs/eventpoll.c
-index 8b56b94e2f56..530e62538d3d 100644
---- a/fs/eventpoll.c
-+++ b/fs/eventpoll.c
-@@ -728,7 +728,7 @@ static int ep_remove(struct eventpoll *ep, struct epitem *epi)
- 	 * ep->mtx. The rcu read side, reverse_path_check_proc(), does not make
- 	 * use of the rbn field.
+diff --git a/security/security.c b/security/security.c
+index 14d30fec8a00..b51b4bdb567d 100644
+--- a/security/security.c
++++ b/security/security.c
+@@ -1053,7 +1053,7 @@ void security_inode_free(struct inode *inode)
+ 	 * The inode will be freed after the RCU grace period too.
  	 */
--	call_rcu(&epi->rcu, epi_rcu_free);
-+	call_rcu_lazy(&epi->rcu, epi_rcu_free);
- 
- 	percpu_counter_dec(&ep->user->epoll_watches);
- 
-diff --git a/fs/file_table.c b/fs/file_table.c
-index 99c6796c9f28..36b3de669771 100644
---- a/fs/file_table.c
-+++ b/fs/file_table.c
-@@ -56,7 +56,7 @@ static inline void file_free(struct file *f)
- 	security_file_free(f);
- 	if (!(f->f_mode & FMODE_NOACCOUNT))
- 		percpu_counter_dec(&nr_files);
--	call_rcu(&f->f_rcuhead, file_free_rcu);
-+	call_rcu_lazy(&f->f_rcuhead, file_free_rcu);
+ 	if (inode->i_security)
+-		call_rcu((struct rcu_head *)inode->i_security,
++		call_rcu_lazy((struct rcu_head *)inode->i_security,
+ 				inode_free_by_rcu);
  }
  
- /*
-diff --git a/fs/inode.c b/fs/inode.c
-index 6462276dfdf0..7d1573cf3a97 100644
---- a/fs/inode.c
-+++ b/fs/inode.c
-@@ -312,7 +312,7 @@ static void destroy_inode(struct inode *inode)
- 			return;
- 	}
- 	inode->free_inode = ops->free_inode;
--	call_rcu(&inode->i_rcu, i_callback);
-+	call_rcu_lazy(&inode->i_rcu, i_callback);
+diff --git a/security/selinux/avc.c b/security/selinux/avc.c
+index 9a43af0ebd7d..381f046d820f 100644
+--- a/security/selinux/avc.c
++++ b/security/selinux/avc.c
+@@ -442,7 +442,7 @@ static void avc_node_free(struct rcu_head *rhead)
+ static void avc_node_delete(struct selinux_avc *avc, struct avc_node *node)
+ {
+ 	hlist_del_rcu(&node->list);
+-	call_rcu(&node->rhead, avc_node_free);
++	call_rcu_lazy(&node->rhead, avc_node_free);
+ 	atomic_dec(&avc->avc_cache.active_nodes);
  }
  
- /**
+@@ -458,7 +458,7 @@ static void avc_node_replace(struct selinux_avc *avc,
+ 			     struct avc_node *new, struct avc_node *old)
+ {
+ 	hlist_replace_rcu(&old->list, &new->list);
+-	call_rcu(&old->rhead, avc_node_free);
++	call_rcu_lazy(&old->rhead, avc_node_free);
+ 	atomic_dec(&avc->avc_cache.active_nodes);
+ }
+ 
 -- 
 2.37.2.789.g6183377224-goog
 
