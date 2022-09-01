@@ -2,124 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F061C64991
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 10:47:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91A43ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 10:49:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233869AbiIAKrV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 06:47:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40814 "EHLO
+        id S233516AbiIAKtO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 06:49:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229495AbiIAKrS (ORCPT
+        with ESMTP id S231447AbiIAKtM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 06:47:18 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FB3026122;
-        Thu,  1 Sep 2022 03:47:17 -0700 (PDT)
-Received: from [192.168.2.145] (109-252-119-13.nat.spd-mgts.ru [109.252.119.13])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: dmitry.osipenko)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 0F1A86601E0A;
-        Thu,  1 Sep 2022 11:47:13 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1662029236;
-        bh=601JQW1vRODbZW3nXgrYwKwIYLdatGO7bqQS64cjbC8=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=gvIVOPIBzWZGuD6NygXzh1sohbyafn5m4zlspwSvOk7AqMsde4hQLAfTpZRLGT/Xg
-         tZCPVrVupNm/ycsQg0HqK9JAnd7gStXHbCQs/hnoLYCspCe/qIfCqS3tgCPNdjs6sS
-         6ns55hsCsiGqdQjsubmEAVFEAIr1tWG+6jF0V0SgiLyirr7LqTX8z2z8vQEx25L7xu
-         2xXzrL/ZUdOZB7ntAgCtSMwR/pQbOLBKNp236a2yKz2+EFYW2nQ4gkKtpamcIbbFgE
-         dA/wt53VbNU8A3PjajlEJ4BJ2/tgJLW7ng1Zhlr12NCwAZ4urG6dRbPgfbiRq0WfC9
-         7rk9NN0l3hsgQ==
-Message-ID: <532eedc8-b468-4409-1887-8fff264a6486@collabora.com>
-Date:   Thu, 1 Sep 2022 13:47:10 +0300
+        Thu, 1 Sep 2022 06:49:12 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4432311EB77
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 03:49:11 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MJHkc5llwzkWnM;
+        Thu,  1 Sep 2022 18:45:28 +0800 (CST)
+Received: from dggpemm500016.china.huawei.com (7.185.36.25) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 1 Sep 2022 18:49:09 +0800
+Received: from huawei.com (10.67.175.41) by dggpemm500016.china.huawei.com
+ (7.185.36.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 1 Sep
+ 2022 18:49:09 +0800
+From:   Yipeng Zou <zouyipeng@huawei.com>
+To:     <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <rostedt@goodmis.org>, <mingo@redhat.com>,
+        <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
+        <aou@eecs.berkeley.edu>
+CC:     <liaochang1@huawei.com>, <chris.zjh@huawei.com>,
+        <zouyipeng@huawei.com>
+Subject: [PATCH 1/2] tracing: hold caller_addr to hardirq_{enable,disable}_ip
+Date:   Thu, 1 Sep 2022 18:45:14 +0800
+Message-ID: <20220901104515.135162-2-zouyipeng@huawei.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220901104515.135162-1-zouyipeng@huawei.com>
+References: <20220901104515.135162-1-zouyipeng@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v4 00/21] Move all drivers to a common dma-buf locking
- convention
-Content-Language: en-US
-To:     =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        Daniel Stone <daniel@fooishbar.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Rob Clark <robdclark@gmail.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        =?UTF-8?Q?Thomas_Hellstr=c3=b6m?= <thomas_os@shipmail.org>,
-        Qiang Yu <yuq825@gmail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Amol Maheshwari <amahesh@qti.qualcomm.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        Tomi Valkeinen <tomba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Dmitry Osipenko <digetx@gmail.com>,
-        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
-        amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        kernel@collabora.com, virtualization@lists.linux-foundation.org,
-        linux-rdma@vger.kernel.org, linux-arm-msm@vger.kernel.org
-References: <20220831153757.97381-1-dmitry.osipenko@collabora.com>
- <8322099f-4ef3-6a5d-4a66-27c4b3329884@amd.com>
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-In-Reply-To: <8322099f-4ef3-6a5d-4a66-27c4b3329884@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.67.175.41]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500016.china.huawei.com (7.185.36.25)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Christian,
+Currently, The arguments passing to lockdep_hardirqs_{on,off} was fixed
+in CALLER_ADDR0.
+The function trace_hardirqs_on_caller should have been intended to use
+caller_addr to represent the address that caller wants to be traced.
 
-On 9/1/22 10:49, Christian König wrote:
-> Hi Dmitry,
-> 
-> I've gone over this multiple times now and while it is still possible
-> that we missed something I think that this should land now.
+For example, lockdep log in riscv showing the last {enabled,disabled} at
+__trace_hardirqs_{on,off} all the time(if called by):
+[   57.853175] hardirqs last  enabled at (2519): __trace_hardirqs_on+0xc/0x14
+[   57.853848] hardirqs last disabled at (2520): __trace_hardirqs_off+0xc/0x14
 
-Thank you very much for the review!
+After use trace_hardirqs_xx_caller, we can get more effective information:
+[   53.781428] hardirqs last  enabled at (2595): restore_all+0xe/0x66
+[   53.782185] hardirqs last disabled at (2596): ret_from_exception+0xa/0x10
 
-> The whole topic is just to complicated that we can 100% sure guarantee
-> that there isn't anything wrong with the locking, but lockdep and driver
-> testing should allow us to quickly find remaining issues.
+Signed-off-by: Yipeng Zou <zouyipeng@huawei.com>
+---
+ kernel/trace/trace_preemptirq.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-At least the most popular drivers should be okay. If anyone will find
-issue introduced by this series, then indeed shouldn't be a problem to
-fix it later on.
-
-> Do you have commit rights to drm-misc-next or should I push it?
-
-I got the drm-misc commit right two weeks ago, haven't pushed anything
-there yet. Please let me try to do the push. I'll let you know if any
-kind of help will be needed from you.
-
-I'll wait for more acks/r-bs and then do the push.
-
+diff --git a/kernel/trace/trace_preemptirq.c b/kernel/trace/trace_preemptirq.c
+index 95b58bd757ce..1e130da1b742 100644
+--- a/kernel/trace/trace_preemptirq.c
++++ b/kernel/trace/trace_preemptirq.c
+@@ -95,14 +95,14 @@ __visible void trace_hardirqs_on_caller(unsigned long caller_addr)
+ 	}
+ 
+ 	lockdep_hardirqs_on_prepare();
+-	lockdep_hardirqs_on(CALLER_ADDR0);
++	lockdep_hardirqs_on(caller_addr);
+ }
+ EXPORT_SYMBOL(trace_hardirqs_on_caller);
+ NOKPROBE_SYMBOL(trace_hardirqs_on_caller);
+ 
+ __visible void trace_hardirqs_off_caller(unsigned long caller_addr)
+ {
+-	lockdep_hardirqs_off(CALLER_ADDR0);
++	lockdep_hardirqs_off(caller_addr);
+ 
+ 	if (!this_cpu_read(tracing_irq_cpu)) {
+ 		this_cpu_write(tracing_irq_cpu, 1);
 -- 
-Best regards,
-Dmitry
+2.17.1
+
