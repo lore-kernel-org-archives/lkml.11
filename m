@@ -2,147 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51739ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 23:02:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B18CAECAAD2
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 23:04:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235163AbiIAXCO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 19:02:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48294 "EHLO
+        id S234608AbiIAXEs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 19:04:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232833AbiIAXCM (ORCPT
+        with ESMTP id S234533AbiIAXEp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 19:02:12 -0400
-Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2110.outbound.protection.outlook.com [40.107.114.110])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 804B07A752
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 16:02:10 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TOg+fvGzwNeI+rba2G2QO2adXaUUrWJXufzb3m5wioAhk3aluwZKSwsR1GOBVKS/0y9LhZlkxEQtPx1dqwOq/TIwyXm5+YXQg1t/zbLhH84SS7wQ7FawX7oUQ+28hn4IPmQ6A0wRemAthuycRIa9wh3wuZgJq9f9VgCWfAuJvnFUFK8QOzVAmxWxxIPuZDEeiiJS6dn9e3aQsGOcIv2aWXM/+k+ILvZee4m9bdgDL/YFoBcddmvalqi8hAu+5cXrT5jQc+1IEdsAbmZWbITnIY79lnBJmaIRn6Gh7ylKNNOs4vJbFdD2FUHMbgDhs14WHzXzEWdLCGJLmy8BblJ/WA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mD4Yy/VtjGQ7jb42cvnkYLrpDK1rmRh3xskU4vaWS9o=;
- b=lhUspfnbpCBayMZ/cNsqUBKHa4jNobVvwToe+cikehMcNjpcqJsKX+T/C5XFDzRYU/3bAD48aDRn3mm23LJaDVciyv2cQdEUXVFUANZgniIsY0wxsbYgQ+pI/47l1zvtynPD/1rTA8/dvZW/uxP6KFim5L5G7tuBtfsUMdm40iJdHMEFCo8TEZSXJcvCo0vrkOkcgaP0It6e4cCiqWE/9cNehzeBUn2DaI4TsDQxuMKYqj4D6xo+SPrGCxUnduUPt03hrpyh84heqkwas3cZGZDJ1zyt0qkXnqMYzNbVuLIzzOk0ydWNhmi5Pxe3PUWWGGMMipfH0iPA4+eZXxihYw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mD4Yy/VtjGQ7jb42cvnkYLrpDK1rmRh3xskU4vaWS9o=;
- b=f6u86VKhznI8mmzTSPT8cxarturWrHnfTd1oiAj0usFI7Y+MU70oWCfm5xQHHEioeGsNQlJxLAobK3aG6DdBvWS1iLxhs4agEZL6aBXnySXFdYpBpa382wHMU4ZG/PrXya4q6rWziDNV8O4VQESo2zWhYuwQM95rguJ0rS8xNn8=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=renesas.com;
-Received: from OS3PR01MB8426.jpnprd01.prod.outlook.com (2603:1096:604:194::10)
- by OSZPR01MB8848.jpnprd01.prod.outlook.com (2603:1096:604:15d::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.12; Thu, 1 Sep
- 2022 23:02:08 +0000
-Received: from OS3PR01MB8426.jpnprd01.prod.outlook.com
- ([fe80::bdab:be26:6e36:88c6]) by OS3PR01MB8426.jpnprd01.prod.outlook.com
- ([fe80::bdab:be26:6e36:88c6%3]) with mapi id 15.20.5588.015; Thu, 1 Sep 2022
- 23:02:08 +0000
-Date:   Fri, 02 Sep 2022 08:02:02 +0900
-Message-ID: <87fshavgut.wl-kuninori.morimoto.gx@renesas.com>
-From:   Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     lgirdwood@gmail.com, broonie@kernel.org, perex@perex.cz,
-        tiwai@suse.com, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ASoC: rsnd: Add check for rsnd_mod_power_on
-In-Reply-To: <20220901071127.3448059-1-jiasheng@iscas.ac.cn>
-References: <20220901071127.3448059-1-jiasheng@iscas.ac.cn>
-User-Agent: Wanderlust/2.15.9 Emacs/26.3 Mule/6.0
-Content-Type: text/plain; charset=US-ASCII
-X-ClientProxiedBy: TYWPR01CA0013.jpnprd01.prod.outlook.com
- (2603:1096:400:a9::18) To OS3PR01MB8426.jpnprd01.prod.outlook.com
- (2603:1096:604:194::10)
+        Thu, 1 Sep 2022 19:04:45 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4386D1DA67
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 15:55:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662072905; x=1693608905;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=xZecgiVtGDKAmT4vgslybwpy2wW/tgvX/mNGxe5JJpg=;
+  b=HLxQaL6UZDlhC1SERi7z8KU9yxNcgkuT76Ek1KEf6vBXI1dXPWyXkf31
+   xnidHrObSiXlulcUddlSrMDkvouDwBUrVpLwxlkdtFpEIyHbtRZpb136y
+   G0XoSUnaSr2KbyOBML1ZQ6Y02GERDfw7KHM1uZHpkx+pG6C/s/z0VOnv0
+   VbbBem2L+RwgH6V5RjMCKWCDWBHiGqJOBnHK44Tb7HhmfBpHNOrGxiTzB
+   Jnfki1CPmkHepfkqRscrX567tHgj+ji0BhlruXFhutA3CyDzI3IrWgxPz
+   3gJAYBFGpNM9uT5eUyMxuuiffYY0Zg1Ubj1to+UhM6tjdg9sZBZ3VyhTV
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="296627664"
+X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
+   d="scan'208";a="296627664"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 15:55:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
+   d="scan'208";a="738664959"
+Received: from lkp-server02.sh.intel.com (HELO b138c9e8658c) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 01 Sep 2022 15:55:03 -0700
+Received: from kbuild by b138c9e8658c with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oTt5S-0000sD-1E;
+        Thu, 01 Sep 2022 22:55:02 +0000
+Date:   Fri, 2 Sep 2022 06:54:02 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Avaneesh Kumar Dwivedi <akdwived@codeaurora.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Ben Chan <benchan@chromium.org>
+Subject: [jsarha:topic/cros-sof-v4.14 3732/9354]
+ drivers/firmware/qcom_scm.c:469:47: error: passing argument 3 of
+ 'dma_alloc_coherent' from incompatible pointer type
+Message-ID: <202209020615.uk7OtnTY-lkp@intel.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5affd808-ed74-4d5c-319e-08da8c6dfeb2
-X-MS-TrafficTypeDiagnostic: OSZPR01MB8848:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: A9BFoc9O9ZHUXvX/IjWhI0mMJa6OVXzm/CijLPMP/LSyj+li1J0jbUH8cSiRrYfgP9XFneH2n68jgE3mR0IJir8X1gW3jTbMe23MbNIZd9rt6R0Q0l2b+IlFuvjNz8SeeLpzeor5QwuC7Vi04uSVR01qiJL+QzuyTB7oSnjy/LDa6Gw+Ps0pGa/I3ulRuFhyV9fGvX2IURqzPuJCukNJken9ZQrpixB0rDc2p0kss872CZCXghfE71Pod3MISa4KVcdMavOM4tUO287xz0RtNhANYAOj07EmfkfKTeLKteo8ehlB4lmYW29c9tqIl2MIxeOocJgUKaCjwndkbvjMH3J0MvA/l4WFYIy5AQbhRHjxEQ4SDnRUtu4rxT/ysNwnsZKgAy844oNPMgAjo+Q7o0x4vS+Y7I/3aGYzZyufuzfNcwAlI8/TekSrhFMQq8f9/lYZGUWskSRVcteRGEbE6d9yWEXtSymdeg8j+hJVdWlJk73ps/EXSkddIYz4TzNDlNWWCckhkmh+eBexGg5oYfXpyq+zih3GM2Sgetb/ddMaFz52F8FpPXgQQ1iiOyE1K93bEiUEjMPRNniJu9I2xgargvVhMjozyjWBPsFF7boC+NN49ZPdGTAUKXhxD2xnnokm64uDgLB/iqJ4Sqwx6oaAkiBItZNjov1WILD9dsPM9tNeUljT9WGY5I9XI4T7cB8G4KFLVmapWmaTv8pzyU4d/ezova+4Y4mlLF2meUzCWtZqXKCrexyHQ04tPOpQ
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS3PR01MB8426.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(396003)(346002)(136003)(376002)(39860400002)(66556008)(66946007)(66476007)(41300700001)(8676002)(4326008)(2616005)(186003)(6916009)(478600001)(316002)(6666004)(36756003)(26005)(6512007)(52116002)(6506007)(86362001)(8936002)(5660300002)(2906002)(6486002)(38100700002)(38350700002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?y6+jvVvllAfjJO8H5cLwpi4Ks0YH/VyU6AQaqeg0Z6Nkppo4lHb65k0+T3hY?=
- =?us-ascii?Q?1DUBl9BhU4sd9fNtHBZkRqM4GMa3tbGNQ3M37Aq4A2nMK2eL8DzBOdNNsVlA?=
- =?us-ascii?Q?yueMesJFKrijbpglLoCh0CHf1D47ixOhzbG57xPjtB/v+7QPe5WjviINntcn?=
- =?us-ascii?Q?UkIjWbwKDKXaNavcD4ddtIKCidQlj3lEnrl1zNYhupCKcdCbygUK1MRCI1MU?=
- =?us-ascii?Q?Ejj0ozSoU+iHe8ti8hiiULECWZr1c54KeGc8o3NZJ8wWrX/rXnQV73eMSOJx?=
- =?us-ascii?Q?++nPPQGktrajYlsvAnzb3TacZIdgtCcvsDLDVHmcsGvhJ8usHXL3yDSaUTzk?=
- =?us-ascii?Q?DLdmV+LFce6bikZwIy+U1Tf91Rbuc3/vup8Ku7dFBFAlvZrkeulsbHDreB4Q?=
- =?us-ascii?Q?qu9Md5rLQJPg2sAhEwySuPjcgXhIVdLr3wcgdLAJ+O9PGm5orFhFPLNHdizS?=
- =?us-ascii?Q?s2e5XUfy6MjMVLOCWDkhdWATUjXyCceS/qYgzU3LrDW4MdaGrXdrazkH6H8d?=
- =?us-ascii?Q?fEuX9TeNrcU7h5gBzWBjFb3dRGRhN0rxz2nyypXXeChIAh0iULBGanwWPUEj?=
- =?us-ascii?Q?hJG2syR/iOkbgagbBuLvUk+anru2LZLZ7D46c03cdUyfLkzWErWXUT/YS5ot?=
- =?us-ascii?Q?zHLuBXh+Rs76lEXvfMQnrAz629IK92BZje41tQk2yav58Tgt+44EAXfdYTLF?=
- =?us-ascii?Q?CuwRhJHWy/ykvqfj6gcXa9X3tvGvXHCtI7ROIL/DNJmxCElMBOvw+/3eSDru?=
- =?us-ascii?Q?+itNt0nHAUZJpdtfNvTQGErguvjh0JtnDrDMbahMhl/s2IjSU+6n+iy6orT1?=
- =?us-ascii?Q?kPNcF5vFlEkpy3e2+dWKc/q3DuBrmiwSpKt8E23ML0EWtmlN1lria5UguDRX?=
- =?us-ascii?Q?Auwr+V9qGwgGow5yfyRQa3LuKcLlFFVBikp/bynIMcGyUWd8/XvK0a4Oyu9S?=
- =?us-ascii?Q?oL+L7yBkg+oUSF4sLG4BV3kaP9N6diPLoGiafHfBKhP3kSlb42QLmXSpMbRh?=
- =?us-ascii?Q?aBIFpQCkzPyLP37bTGtjZ2lZDHc76w+PEZPqFTshXgsodiC3yXwA5N85eJA9?=
- =?us-ascii?Q?d2Y9/lfHCN8rPiT63LQVMh80OMrfKtWkwfg+rTiCJkuOq27ckUt5op22VXfr?=
- =?us-ascii?Q?i6nwcI0cTecQo8Nob44Zw/xBy5zoTwg4G9QWfQr2fDbIV73ONSd/QDvyuczU?=
- =?us-ascii?Q?HUaNIkk1xWfo6/XES0wVEvFxcsJIz2hwQRweeMt3IP8aF0oZ9e76B8HN3jqL?=
- =?us-ascii?Q?YBrQULU1t3qOnNH73Q3iIQWmtBkEs38Jqpt+08FuZOcuNlAbW7+2kGn2a8jD?=
- =?us-ascii?Q?v4EAdmZ5Hxisy8oXjSvnhDuOrmSoc8Nz7/HlDfWUuKlATne0w3S3FHTT6wCM?=
- =?us-ascii?Q?JSp2sMhkR5zQtvo3DPioBfcxdwXLMaOcl+Gtn3faO5sVjpPweCpyY4fL1F6r?=
- =?us-ascii?Q?V+WDEYRCnKiK6E6UBj74DoGi3AjTI7fbO4IyXPhJkQbyUqQAu2VU0xt0iPxH?=
- =?us-ascii?Q?FSOU2281RptjdZbwIJzgf6p9ctbK6DXJRIMS3hkZU4qyeT9WT5R46I1tqd2W?=
- =?us-ascii?Q?y/W3l7eaUPN7/4vsIxDqUVCokPuHYcllFL9SovL8oGonbFs8ysZnR7GNORZ4?=
- =?us-ascii?Q?S4D4dHmfXx897bJ9uj+Nf6Q=3D?=
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5affd808-ed74-4d5c-319e-08da8c6dfeb2
-X-MS-Exchange-CrossTenant-AuthSource: OS3PR01MB8426.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2022 23:02:08.0011
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: obSWr08+5Hefj9OIu5+0yC/AjxoRCHeTVOSdH8MJszxrSvZ99/8knNSsu+MXYpYAUBl8R1JBbL2yZT1zPjlBc95mkDE2bC9HJr0l+viyw29gbtM1gRXs15BTEqAmsAPY
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSZPR01MB8848
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://github.com/jsarha/linux topic/cros-sof-v4.14
+head:   6f750b16c322c9191168a3a97c427c90581d9144
+commit: 0a3be2a2dde39be93f49bbfb657edbaf29871648 [3732/9354] UPSTREAM: firmware: scm: Add new SCM call API for switching memory ownership
+config: arm-randconfig-r021-20220901 (https://download.01.org/0day-ci/archive/20220902/202209020615.uk7OtnTY-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 7.5.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/jsarha/linux/commit/0a3be2a2dde39be93f49bbfb657edbaf29871648
+        git remote add jsarha https://github.com/jsarha/linux
+        git fetch --no-tags jsarha topic/cros-sof-v4.14
+        git checkout 0a3be2a2dde39be93f49bbfb657edbaf29871648
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-7.5.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash M=drivers/firmware
 
-Hi
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-> As rsnd_mod_power_on() can return negative numbers,
-> it should be better to check the return value and
-> deal with the exception.
-> 
-> Fixes: e7d850dd10f4 ("ASoC: rsnd: use mod base common method on SSI-parent")
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> ---
-(snip)
-> --- a/sound/soc/sh/rcar/ssi.c
-> +++ b/sound/soc/sh/rcar/ssi.c
-> @@ -480,7 +480,9 @@ static int rsnd_ssi_init(struct rsnd_mod *mod,
->  
->  	ssi->usrcnt++;
->  
-> -	rsnd_mod_power_on(mod);
-> +	ret = rsnd_mod_power_on(mod);
-> +	if (ret < 0)
-> +		return ret;
+All errors (new ones prefixed by >>):
 
-This looks good to me, but, the code which is using rsnd_mod_power_on()
-and not checking the return value is not only ssi.c.
+   drivers/firmware/qcom_scm.c: In function 'qcom_scm_assign_mem':
+>> drivers/firmware/qcom_scm.c:469:47: error: passing argument 3 of 'dma_alloc_coherent' from incompatible pointer type [-Werror=incompatible-pointer-types]
+     ptr = dma_alloc_coherent(__scm->dev, ptr_sz, &ptr_phys, GFP_KERNEL);
+                                                  ^
+   In file included from drivers/firmware/qcom_scm.c:21:0:
+   include/linux/dma-mapping.h:542:21: note: expected 'dma_addr_t * {aka long long unsigned int *}' but argument is of type 'phys_addr_t * {aka unsigned int *}'
+    static inline void *dma_alloc_coherent(struct device *dev, size_t size,
+                        ^~~~~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
 
-	> grep rsnd_mod_power_on ./sound/soc/sh/rcar/*.c                                                              [~/Mail/tmp]
-	sound/soc/sh/rcar/ctu.c:      rsnd_mod_power_on(mod);
-	sound/soc/sh/rcar/dvc.c:      rsnd_mod_power_on(mod);
-	sound/soc/sh/rcar/mix.c:      rsnd_mod_power_on(mod);
-	sound/soc/sh/rcar/src.c:      rsnd_mod_power_on(mod);
-	sound/soc/sh/rcar/ssi.c:      rsnd_mod_power_on(mod);
 
-Thank you for your help !!
+vim +/dma_alloc_coherent +469 drivers/firmware/qcom_scm.c
 
-Best regards
----
-Kuninori Morimoto
+   430	
+   431	/**
+   432	 * qcom_scm_assign_mem() - Make a secure call to reassign memory ownership
+   433	 * @mem_addr: mem region whose ownership need to be reassigned
+   434	 * @mem_sz:   size of the region.
+   435	 * @srcvm:    vmid for current set of owners, each set bit in
+   436	 *            flag indicate a unique owner
+   437	 * @newvm:    array having new owners and corrsponding permission
+   438	 *            flags
+   439	 * @dest_cnt: number of owners in next set.
+   440	 *
+   441	 * Return negative errno on failure, 0 on success, with @srcvm updated.
+   442	 */
+   443	int qcom_scm_assign_mem(phys_addr_t mem_addr, size_t mem_sz,
+   444				unsigned int *srcvm,
+   445				struct qcom_scm_vmperm *newvm, int dest_cnt)
+   446	{
+   447		struct qcom_scm_current_perm_info *destvm;
+   448		struct qcom_scm_mem_map_info *mem_to_map;
+   449		phys_addr_t mem_to_map_phys;
+   450		phys_addr_t dest_phys;
+   451		phys_addr_t ptr_phys;
+   452		size_t mem_to_map_sz;
+   453		size_t dest_sz;
+   454		size_t src_sz;
+   455		size_t ptr_sz;
+   456		int next_vm;
+   457		__le32 *src;
+   458		void *ptr;
+   459		int ret;
+   460		int len;
+   461		int i;
+   462	
+   463		src_sz = hweight_long(*srcvm) * sizeof(*src);
+   464		mem_to_map_sz = sizeof(*mem_to_map);
+   465		dest_sz = dest_cnt * sizeof(*destvm);
+   466		ptr_sz = ALIGN(src_sz, SZ_64) + ALIGN(mem_to_map_sz, SZ_64) +
+   467				ALIGN(dest_sz, SZ_64);
+   468	
+ > 469		ptr = dma_alloc_coherent(__scm->dev, ptr_sz, &ptr_phys, GFP_KERNEL);
+   470		if (!ptr)
+   471			return -ENOMEM;
+   472	
+   473		/* Fill source vmid detail */
+   474		src = ptr;
+   475		len = hweight_long(*srcvm);
+   476		for (i = 0; i < len; i++) {
+   477			src[i] = cpu_to_le32(ffs(*srcvm) - 1);
+   478			*srcvm ^= 1 << (ffs(*srcvm) - 1);
+   479		}
+   480	
+   481		/* Fill details of mem buff to map */
+   482		mem_to_map = ptr + ALIGN(src_sz, SZ_64);
+   483		mem_to_map_phys = ptr_phys + ALIGN(src_sz, SZ_64);
+   484		mem_to_map[0].mem_addr = cpu_to_le64(mem_addr);
+   485		mem_to_map[0].mem_size = cpu_to_le64(mem_sz);
+   486	
+   487		next_vm = 0;
+   488		/* Fill details of next vmid detail */
+   489		destvm = ptr + ALIGN(mem_to_map_sz, SZ_64) + ALIGN(src_sz, SZ_64);
+   490		dest_phys = ptr_phys + ALIGN(mem_to_map_sz, SZ_64) + ALIGN(src_sz, SZ_64);
+   491		for (i = 0; i < dest_cnt; i++) {
+   492			destvm[i].vmid = cpu_to_le32(newvm[i].vmid);
+   493			destvm[i].perm = cpu_to_le32(newvm[i].perm);
+   494			destvm[i].ctx = 0;
+   495			destvm[i].ctx_size = 0;
+   496			next_vm |= BIT(newvm[i].vmid);
+   497		}
+   498	
+   499		ret = __qcom_scm_assign_mem(__scm->dev, mem_to_map_phys, mem_to_map_sz,
+   500					    ptr_phys, src_sz, dest_phys, dest_sz);
+   501		dma_free_coherent(__scm->dev, ALIGN(ptr_sz, SZ_64), ptr, ptr_phys);
+   502		if (ret) {
+   503			dev_err(__scm->dev,
+   504				"Assign memory protection call failed %d.\n", ret);
+   505			return -EINVAL;
+   506		}
+   507	
+   508		*srcvm = next_vm;
+   509		return 0;
+   510	}
+   511	EXPORT_SYMBOL(qcom_scm_assign_mem);
+   512	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
