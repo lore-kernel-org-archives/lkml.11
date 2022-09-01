@@ -2,114 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AFE4ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 17:55:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 685F1ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 17:55:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231843AbiIARy5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 13:54:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60772 "EHLO
+        id S232649AbiIARzZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 13:55:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232590AbiIARyu (ORCPT
+        with ESMTP id S234107AbiIARzR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 13:54:50 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B99CC21837
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 10:45:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662054304; x=1693590304;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=/59lUBPazWehnHqG6Yhvtz5YTUoyACoFaPW03K4rfaA=;
-  b=LGr/A96zmRPOjV3DZinoW+yDvub3agj0kLKUNNCbAtVaQTEFc5d/iZD1
-   M6iO6ggeCUQ+PcX5YI119XeealMLprPWFxH06E8okVfH1CoK5GrAjwcUi
-   9GKUpB2s10KzD7e9pVeRG3sUViLFgQAxfyuCUsp84HWC/TLse00/MSAsZ
-   qtFDnQee3E0cl1937xG2hQM4OfEiRRyexOOivTb9PEhoCYd0fP1Ncs1Da
-   IaohzE9jFWGefq9iHVLauTtZ+QgZz2MrwPv0vvmzmge5Ox8jcLsyWf/HU
-   eL8Elgu1IGcbzz17W9Uk52plwqhOTs4MYeuScytRyb7ycr7o52GdnIqRA
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="282767539"
-X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
-   d="scan'208";a="282767539"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 10:45:02 -0700
-X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
-   d="scan'208";a="680961760"
-Received: from araj-dh-work.jf.intel.com (HELO araj-dh-work) ([10.165.157.158])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 10:45:02 -0700
-Date:   Thu, 1 Sep 2022 17:45:08 +0000
-From:   Ashok Raj <ashok_raj@linux.intel.com>
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
-        Kostya Serebryany <kcc@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Taras Madan <tarasmadan@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "H . J . Lu" <hjl.tools@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Jacon Jun Pan <jacob.jun.pan@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>
-Subject: Re: [PATCHv8 00/11] Linear Address Masking enabling
-Message-ID: <YxDvpLb77lwb8zaT@araj-dh-work>
-References: <20220830010104.1282-1-kirill.shutemov@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+        Thu, 1 Sep 2022 13:55:17 -0400
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 802D81145D
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 10:55:14 -0700 (PDT)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 281Hmx4r031531;
+        Thu, 1 Sep 2022 12:48:59 -0500
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 281Hmwrg031525;
+        Thu, 1 Sep 2022 12:48:58 -0500
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Thu, 1 Sep 2022 12:48:58 -0500
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Gabriel Paubert <paubert@iram.es>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Zhouyi Zhou <zhouzhouyi@gmail.com>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Nicholas Piggin <npiggin@gmail.com>
+Subject: Re: [PATCH v2] powerpc: Fix irq_soft_mask_set() and irq_soft_mask_return() with sanitizer
+Message-ID: <20220901174858.GG25951@gate.crashing.org>
+References: <c0b486e782b6695092dcdb2cd340a3d44c8c266d.1661272738.git.christophe.leroy@csgroup.eu> <CMJ3VICKD1CI.SVFJOKYJPKZQ@bobo> <e022754d-b4d3-bc9f-cc79-2cf556180459@csgroup.eu> <CMJ8P06JA9OY.1S8VDV2XRU3W5@bobo> <7c11b659-5b8e-256c-508e-39395041fccb@csgroup.eu> <20220831224522.GX25951@gate.crashing.org> <ad5ebb37-6b6f-372c-dd07-fc4cfc5f5fe5@csgroup.eu> <YxBhRtTuJ4Ut7wUt@lt-gp.iram.es> <24253442-9878-c5ed-cbaa-05a5c4851a6e@csgroup.eu>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220830010104.1282-1-kirill.shutemov@linux.intel.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <24253442-9878-c5ed-cbaa-05a5c4851a6e@csgroup.eu>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kirill,
+On Thu, Sep 01, 2022 at 07:47:10AM +0000, Christophe Leroy wrote:
+> Le 01/09/2022 à 09:37, Gabriel Paubert a écrit :
+> > Agree, but there is one thing which escapes me: why is r3 listed in the
+> > outputs section (actually as a read write operand with the "+"
+> > constraint modifier) but is not used after the asm which is the last
+> > statement of function returning void?
+> > 
+> > Do I miss something?
+> 
+> As far as I remember, that's to tell GCC that r3 register is modified by 
+> the callee. As it is an input, it couldn't be listed in the clobber list.
 
-On Tue, Aug 30, 2022 at 04:00:53AM +0300, Kirill A. Shutemov wrote:
-> Linear Address Masking[1] (LAM) modifies the checking that is applied to
-> 64-bit linear addresses, allowing software to use of the untranslated
-> address bits for metadata.
+Inputs can be clobbered just fine, in general.  But here the operand
+is tied to a register variable, and that causes the error ("'asm'
+specifier for variable 'r3' conflicts with 'asm' clobber list").
 
-We discussed this internally, but didn't bubble up here.
-
-Given that we are working on enabling Shared Virtual Addressing (SVA)
-within the IOMMU. This permits user to share VA directly with the device,
-and the device can participate even in fixing page-faults and such.
-
-IOMMU enforces canonical addressing, since we are hijacking the top order
-bits for meta-data, it will fail sanity check and we would return a failure
-back to device on any page-faults from device. 
-
-It also complicates how device TLB and ATS work, and needs some major
-improvements to detect device capability to accept tagged pointers, adjust
-the devtlb to act accordingly. 
+Marking it in/out here is more appropriate anyway :-)
 
 
-Both are orthogonal features, but there is an intersection of both
-that are fundamentally incompatible.
-
-Its even more important, since an application might be using SVA under the
-cover provided by some library that's used without their knowledge.
-
-The path would be:
-
-1. Ensure both LAM and SVM are incompatible by design, without major
-   changes.
-   	- If LAM is enabled already and later SVM enabling is requested by
-	  user, that should fail. and Vice versa.
-	- Provide an API to user to ask for opt-out. Now they know they
-	  must sanitize the pointers before sending to device, or the
-	  working set is already isolated and needs no work.
-2. I suppose for any syscalls that take tagged pointers you would maybe
-   relax checks for how many bits to ignore for canonicallity. This is
-   required so user don't need to do the same for everything sanitization
-   before every syscall. 
-
-If you have it fail, the library might choose a less optimal path if one is
-available.
-
-Cheers,
-Ashok
+Segher
