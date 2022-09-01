@@ -2,82 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3F2AECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:34:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FA5DECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:35:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233903AbiIANe2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 09:34:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49520 "EHLO
+        id S234078AbiIANfK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 09:35:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234684AbiIANeD (ORCPT
+        with ESMTP id S234065AbiIANeh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 09:34:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71521C937
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 06:31:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6171E61F6E
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 13:31:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89E3DC43470;
-        Thu,  1 Sep 2022 13:31:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662039117;
-        bh=VgZDTCN6uXpF6cIuenTHt0f7IH6SBBbyM2a2aGID29U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Sy0Yje61ngYQBQ5Duy54Hy1pEigXmYuXfoMqBgqrycRSGbDZMybM7l15VQcIvV7VM
-         NsPrzKGLVplS2mKBsQrrh0jagn0rTum/TjqVoBdvRw2LtUXbGouS7nLB2jbuJe7LqR
-         EKu7sMVGNR3vnybYOtrrCARHT1Wg8C7kKAHsSvc6aBPCKDttkZm3q2qzyjNIJ4fVYf
-         MZnqAdg+bguUO+e9oVEM5kkk/yhEPdyfBAVnwJuV9L846zKGV8Nrv0yml5i5Njo4S2
-         fy6dBRTPzR4SG+opln4LXS+YlIQLCIGW2BQ5nRX3+lxdGM9wPqdx3VzKORxGJNw+lD
-         xOy4k6UxjYuMQ==
-Date:   Thu, 1 Sep 2022 14:31:53 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Dmitry Rokosov <DDRokosov@sberdevices.ru>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [PATCH v1 2/3] regmap: trace: Remove explicit castings
-Message-ID: <YxC0SYShl14TSw2o@sirena.org.uk>
-References: <20220901132336.33234-1-andriy.shevchenko@linux.intel.com>
- <20220901132336.33234-2-andriy.shevchenko@linux.intel.com>
+        Thu, 1 Sep 2022 09:34:37 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A882265D0
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 06:32:44 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id p16so31575161ejb.9
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 06:32:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=GkqcXxkxbiGAUS3mDZ9ZIlXaqo2ypwaG4SLF3IzWGD4=;
+        b=tkpJ8P7txLgCLaajgTyWxraKpmNbXD2ahq6miX/0cQFc3LKU8YlP5w+LoFTWnFrfVO
+         6yDZzgrZy/mlnubTM6WmNE3Gg8dIXrU0W62XZwsPa/TpuK7QzdU2JYGZIc43/FjL+W+C
+         dIjx9ZRnVsHA3w8p0yKeS7RZ6UvAyLDq4bs6/WjQ0JaMb9a0nNuiyzMd0RpPCKfH7w88
+         NcZ6N6GM+wioxWFJox4PZT/Bxgq/vErFeHY6dfOupzUPmXNSpR/2p9TkbVGWI5FeBoDd
+         MBpx/zeJmfQBdUZZjgNw2H9/AeTHjWtmm4a5/x+RA9DkkH2CCDWDI62VorgsACZe7AOc
+         6dKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=GkqcXxkxbiGAUS3mDZ9ZIlXaqo2ypwaG4SLF3IzWGD4=;
+        b=nQZ781UcEPL1nCeMd+gLB31anEODaV184gWclOCYb5t1vq8x72tNw4RO4eCU1Fgf7N
+         H5DRhytAq11JdqINFHbk45bCPmonLXIDV1TlNLQ1B3HpKKYO7Hk/YkXrLXA+eDAbVJFZ
+         yHDuYb08EMcpX1Xv7i70X37jNLsyRMArrRQDEJoSkqRDauZP31sIDtIoQcSsGdM4CXqG
+         CTaEi/xR5O4+xu8BOsLzIEUp5uzN5P+dkeAGS0POf6Aiftuh79W4IHI9hOxhsg59+jbN
+         6AoPHqrkOAAvlVv38HZjQ5m1JSZ8ZYJNHT8CPdRL+l8AxjskK2SEDS8UTBPcQ0L3h0Lo
+         Hu2A==
+X-Gm-Message-State: ACgBeo2UZ/zcsPTjIbk2hAlxQRn45CDvIETdj6ys5i0M7A2qu6iOUVb5
+        0Q5jvTGr3szT7xJKsgUzIx7jFNeYG2UDw1vd7/2QUQ==
+X-Google-Smtp-Source: AA6agR7EMbR1VhzyEbx3KwgyWcAgNnqnpvQizf8d4bjXBqesyVusbdQz6O0joQ2RKwf/Kfu2EXgvGVOlU4GQMZ6WMtQ=
+X-Received: by 2002:a17:906:58c8:b0:6fe:91d5:18d2 with SMTP id
+ e8-20020a17090658c800b006fe91d518d2mr24160316ejs.190.1662039163171; Thu, 01
+ Sep 2022 06:32:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="QOnwprNmah3DD6Kj"
-Content-Disposition: inline
-In-Reply-To: <20220901132336.33234-2-andriy.shevchenko@linux.intel.com>
-X-Cookie: This bag is recyclable.
+References: <SA0PR15MB3919F42FFE3C2FBF09D08026997B9@SA0PR15MB3919.namprd15.prod.outlook.com>
+In-Reply-To: <SA0PR15MB3919F42FFE3C2FBF09D08026997B9@SA0PR15MB3919.namprd15.prod.outlook.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Thu, 1 Sep 2022 15:32:31 +0200
+Message-ID: <CACRpkdZd17c-0h=LLep71LEtLtc9iqv54kEMF+TbXx-K5tPcQw@mail.gmail.com>
+Subject: Re: [PATCH] RDMA/siw: Solve the error of compiling the 32BIT mips
+ kernel when enable CONFIG_RDMA_SIW
+To:     Bernard Metzler <BMT@zurich.ibm.com>
+Cc:     jianghaoran <jianghaoran@kylinos.cn>,
+        "jgg@ziepe.ca" <jgg@ziepe.ca>, "leon@kernel.org" <leon@kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Sep 1, 2022 at 9:05 AM Bernard Metzler <BMT@zurich.ibm.com> wrote:
 
---QOnwprNmah3DD6Kj
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> We discussed same thing a few days ago - see PATCH from Linus:
+> '[PATCH] RDMA/siw: Pass a pointer to virt_to_page()'
+(...)
+> Could one of you two re-send?
 
-On Thu, Sep 01, 2022 at 04:23:35PM +0300, Andy Shevchenko wrote:
-> There is no need to have explicit castings to the same type the
-> variables are of. Remove the explicit castings.
+I updated and resent my patch now!
 
-IIRC this was an idiom that the trace code was using for some deep magic
-reason to do with some fiddly preprocessor stuff.
-
---QOnwprNmah3DD6Kj
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmMQtEgACgkQJNaLcl1U
-h9B7UAf/UzDHQHXRnG/vYmFhz2WgUr2A1ucRWo/7CFSkxXN2/o90aKzBkePaG5HL
-t916fRQCYG3PrsX5ZWt+m73o+336zZbZitevlrM2UrzGsZuv+zvT6KQhkmLIbAHW
-e1+EXWFtItFQUmylDFfuHoG3attCtV8qmmakhuO+enSTSuBuQ4vPufUZIz7RyNlP
-84wjlCQh+mZE7hiRMkU2YxVjARuQNPaF2aLgRcpwbZ19SVs3hH9dGZUKcNTL1hw9
-8FDE6dNt+3IKoQQ0H3hs1IQSAt89oymYOJJMBKQYUjeYg+q+qa+CXobpg6KWkQkT
-5BTKZDrCS3+j5B53p4jkkin+OEWq2Q==
-=6gOI
------END PGP SIGNATURE-----
-
---QOnwprNmah3DD6Kj--
+Yours,
+Linus Walleij
