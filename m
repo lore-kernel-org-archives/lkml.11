@@ -2,77 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4D81ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 05:55:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC2AAECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 05:55:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233159AbiIAFzH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 01:55:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49608 "EHLO
+        id S233196AbiIAFzL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 01:55:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233145AbiIAFy6 (ORCPT
+        with ESMTP id S233157AbiIAFzC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 01:54:58 -0400
-Received: from smtp236.sjtu.edu.cn (smtp236.sjtu.edu.cn [202.120.2.236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C5B66375;
-        Wed, 31 Aug 2022 22:54:53 -0700 (PDT)
-Received: from proxy02.sjtu.edu.cn (smtp188.sjtu.edu.cn [202.120.2.188])
-        by smtp236.sjtu.edu.cn (Postfix) with ESMTPS id 5CEFD1008B39D;
-        Thu,  1 Sep 2022 13:54:49 +0800 (CST)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by proxy02.sjtu.edu.cn (Postfix) with ESMTP id D6FAB2009BEAD;
-        Thu,  1 Sep 2022 13:54:47 +0800 (CST)
-X-Virus-Scanned: amavisd-new at 
-Received: from proxy02.sjtu.edu.cn ([127.0.0.1])
-        by localhost (proxy02.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id GtBnxunfCybj; Thu,  1 Sep 2022 13:54:46 +0800 (CST)
-Received: from localhost.localdomain (unknown [202.120.40.82])
-        (Authenticated sender: qtxuning1999@sjtu.edu.cn)
-        by proxy02.sjtu.edu.cn (Postfix) with ESMTPSA id 00982200A5E62;
-        Thu,  1 Sep 2022 13:54:34 +0800 (CST)
-From:   Guo Zhi <qtxuning1999@sjtu.edu.cn>
-To:     eperezma@redhat.com, jasowang@redhat.com, sgarzare@redhat.com,
-        mst@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        Guo Zhi <qtxuning1999@sjtu.edu.cn>
-Subject: [RFC v3 0/7] In order support for virtio_ring, vhost and vsock.
-Date:   Thu,  1 Sep 2022 13:54:27 +0800
-Message-Id: <20220901055434.824-1-qtxuning1999@sjtu.edu.cn>
-X-Mailer: git-send-email 2.17.1
+        Thu, 1 Sep 2022 01:55:02 -0400
+Received: from mailgw.kylinos.cn (unknown [124.126.103.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48A99CEF;
+        Wed, 31 Aug 2022 22:54:52 -0700 (PDT)
+X-UUID: 1c4bb7b35c3f4b39934073075f8d7343-20220901
+X-CPASD-INFO: e866358f380b453c9e91ee249368a376@rohwVmBnZpZfWHKug3h-nVmWaWGVkVK
+        De21WaY9jY1aVhH5xTV5uYFV9fWtVXmJdY2RgVHh0bFJgZmJeZXabg3JqUIdiYXlRqH6FeG1VaZRj
+X-CLOUD-ID: e866358f380b453c9e91ee249368a376
+X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,OB:1.0,URL:-5,TVAL:173.
+        0,ESV:0.0,ECOM:-5.0,ML:-10.0,FD:0.0,CUTS:283.0,IP:-2.0,MAL:-5.0,PHF:-5.0,PHC:
+        -5.0,SPF:4.0,EDMS:-5,IPLABEL:4992.0,FROMTO:0,AD:0,FFOB:1.0,CFOB:1.0,SPC:0,SIG
+        :-5,AUF:2,DUF:3755,ACD:67,DCD:67,SL:0,EISP:0,AG:0,CFC:0.229,CFSR:0.159,UAT:0,
+        RAF:0,IMG:-5.0,DFA:0,DTA:0,IBL:-2.0,ADI:-5,SBL:0,REDM:0,REIP:0,ESB:0,ATTNUM:0
+        ,EAF:0,CID:-5.0,VERSION:2.3.17
+X-CPASD-ID: 1c4bb7b35c3f4b39934073075f8d7343-20220901
+X-CPASD-BLOCK: 1000
+X-CPASD-STAGE: 1
+X-UUID: 1c4bb7b35c3f4b39934073075f8d7343-20220901
+X-User: jianghaoran@kylinos.cn
+Received: from localhost.localdomain [(210.12.40.82)] by mailgw
+        (envelope-from <jianghaoran@kylinos.cn>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES128-GCM-SHA256 128/128)
+        with ESMTP id 594133427; Thu, 01 Sep 2022 13:55:08 +0800
+From:   jianghaoran <jianghaoran@kylinos.cn>
+To:     bmt@zurich.ibm.com
+Cc:     jgg@ziepe.ca, leon@kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] RDMA/siw: Solve the error of compiling the 32BIT mips kernel when enable CONFIG_RDMA_SIW
+Date:   Thu,  1 Sep 2022 13:51:38 +0800
+Message-Id: <20220901055138.1704755-1-jianghaoran@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In virtio-spec 1.1, new feature bit VIRTIO_F_IN_ORDER was introduced.
-When this feature has been negotiated, virtio driver will use
-descriptors in ring order: starting from offset 0 in the table, and
-wrapping around at the end of the table. Vhost devices will always use
-descriptors in the same order in which they have been made available.
-This can reduce virtio accesses to used ring.
+cross-compilation environment：
+ubuntu 20.04
+mips-linux-gnu-gcc (Ubuntu 10.3.0-1ubuntu1~20.04) 10.3.0
 
-Based on updated virtio-spec, this series realized IN_ORDER prototype in virtio
-driver and vhost. Currently IN_ORDER feature supported devices are *vhost_test*
-and *vsock* in vhost and virtio-net in QEMU. IN_ORDER feature works well
-combined with INDIRECT feature in this patch series.
+generate a configuration file by make randconfig:
+CONFIG_32BIT=y
+CONFIG_RDMA_SIW=y
 
-Virtio driver in_order support for packed vq hasn't been done in this patch
-series now.
+the error message as follows：
+In file included from ../arch/mips/include/asm/page.h:270,
+                 from ../arch/mips/include/asm/io.h:29,
+                 from ../arch/mips/include/asm/mmiowb.h:5,
+                 from ../include/linux/spinlock.h:64,
+                 from ../include/linux/wait.h:9,
+                 from ../include/linux/net.h:19,
+                 from ../drivers/infiniband/sw/siw/siw_qp_tx.c:8:
+../drivers/infiniband/sw/siw/siw_qp_tx.c: In function ‘siw_tx_hdt’:
+../arch/mips/include/asm/page.h:255:53: error: cast to pointer from integer of different size [-Werror=int-to-pointer-cast]
+  255 | #define virt_to_pfn(kaddr)    PFN_DOWN(virt_to_phys((void *)(kaddr)))
+      |                                                     ^
+../include/asm-generic/memory_model.h:18:41: note: in definition of macro ‘__pfn_to_page’
+   18 | #define __pfn_to_page(pfn) (mem_map + ((pfn) - ARCH_PFN_OFFSET))
+      |                                         ^~~
+../arch/mips/include/asm/page.h:255:31: note: in expansion of macro ‘PFN_DOWN’
+  255 | #define virt_to_pfn(kaddr)    PFN_DOWN(virt_to_phys((void *)(kaddr)))
+      |                               ^~~~~~~~
+../arch/mips/include/asm/page.h:256:41: note: in expansion of macro ‘virt_to_pfn’
+  256 | #define virt_to_page(kaddr) pfn_to_page(virt_to_pfn(kaddr))
+      |                                         ^~~~~~~~~~~
+../drivers/infiniband/sw/siw/siw_qp_tx.c:538:23: note: in expansion of macro ‘virt_to_page’
+  538 |     page_array[seg] = virt_to_page(va & PAGE_MASK);
+      |                       ^~~~~~~~~~~~
+cc1: all warnings being treated as errors
+make[5]: *** [../scripts/Makefile.build:249: drivers/infiniband/sw/siw/siw_qp_tx.o] Error 1
+make[4]: *** [../scripts/Makefile.build:465: drivers/infiniband/sw/siw] Error 2
+make[3]: *** [../scripts/Makefile.build:465: drivers/infiniband/sw] Error 2
+make[3]: *** Waiting for unfinished jobs....
 
-Guo Zhi (7):
-  vhost: expose used buffers
-  vhost_test: batch used buffer
-  vsock: batch buffers in tx
-  vsock: announce VIRTIO_F_IN_ORDER in vsock
-  virtio: unmask F_NEXT flag in desc_extra
-  virtio: in order support for virtio_ring
-  virtio: announce VIRTIO_F_IN_ORDER support
+Reported-by: k2ci <kernel-bot@kylinos.cn>
+Signed-off-by: jianghaoran <jianghaoran@kylinos.cn>
+---
+ drivers/infiniband/sw/siw/siw_qp_tx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- drivers/vhost/test.c         | 16 ++++++--
- drivers/vhost/vhost.c        | 16 ++++++--
- drivers/vhost/vsock.c        | 13 +++++-
- drivers/virtio/virtio_ring.c | 79 +++++++++++++++++++++++++++++++-----
- 4 files changed, 104 insertions(+), 20 deletions(-)
-
+diff --git a/drivers/infiniband/sw/siw/siw_qp_tx.c b/drivers/infiniband/sw/siw/siw_qp_tx.c
+index 1f4e60257700..55ed0c27f449 100644
+--- a/drivers/infiniband/sw/siw/siw_qp_tx.c
++++ b/drivers/infiniband/sw/siw/siw_qp_tx.c
+@@ -533,7 +533,7 @@ static int siw_tx_hdt(struct siw_iwarp_tx *c_tx, struct socket *s)
+ 					kunmap_local(kaddr);
+ 				}
+ 			} else {
+-				u64 va = sge->laddr + sge_off;
++				unsigned long va = sge->laddr + sge_off;
+ 
+ 				page_array[seg] = virt_to_page(va & PAGE_MASK);
+ 				if (do_crc)
 -- 
-2.17.1
+2.25.1
 
