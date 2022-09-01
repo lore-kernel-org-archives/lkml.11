@@ -2,143 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8030BECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:50:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B613ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:51:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234053AbiIAOuj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 10:50:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58712 "EHLO
+        id S234238AbiIAOvB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 10:51:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233849AbiIAOuf (ORCPT
+        with ESMTP id S233918AbiIAOuv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 10:50:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5298432BAC;
-        Thu,  1 Sep 2022 07:50:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D5CF061DE5;
-        Thu,  1 Sep 2022 14:50:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 753EBC4314A;
-        Thu,  1 Sep 2022 14:50:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662043833;
-        bh=Eme6Jpl1dpN6KSO3d/NwtB8aYk/1sMq97j6D1VP3rXU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LDuqUoZqJmDmnf8DgGXRAR3l5RAEaKbXeIimHUIoM8y2hn5Ps3WAgNJKp87I+1KGQ
-         MRaelA0wd8mIa05A+94C2vs2vG0R1QLLKRKozoNuk9cWV0Avwy5MPJ8kpYUgRaZdd0
-         IbafHfWY64tCPL35xigTonhroAHZ6mRAfeCy8B+vSGxpimwGdxzxXVmKNvSOpsZZSZ
-         h5yelfm84qc2JcKSxSmCAY8EKstAAL4AWsVfDoX9nZYGt35V3PwKUZtt3XzTrmBI3G
-         nHKZJC5l4LnBZfCW2LOfbmZX95QJZ4zWDId/cz69lAX6VWYz7UQHGvlD3T0KDrzrTe
-         ZWudog5ZyEVBw==
-Date:   Thu, 1 Sep 2022 16:50:28 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     Seth Jenkins <sethjenkins@google.com>
-Cc:     viro@zeniv.linux.org.uk, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dhowells@redhat.com,
-        Jann Horn <jannh@google.com>,
-        Natalie Silvanovich <natashenka@google.com>
-Subject: Re: fsconfig parsing bugs
-Message-ID: <20220901145028.3lndphzrylsyqx5o@wittgenstein>
-References: <CALxfFW4BXhEwxR0Q5LSkg-8Vb4r2MONKCcUCVioehXQKr35eHg@mail.gmail.com>
+        Thu, 1 Sep 2022 10:50:51 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56F984AD72;
+        Thu,  1 Sep 2022 07:50:43 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id n17-20020a05600c501100b003a84bf9b68bso1616714wmr.3;
+        Thu, 01 Sep 2022 07:50:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=+ZP6o1gBBlBVeWAFEqgtYPLn6+d3r7xqEVeih0fyUso=;
+        b=iFrD1NozxA6YVu/pF75I5AvknHZH0pFYr0Ht2CqUidAoEzNuE45O8UivGswS3F+2MO
+         tI+GAGT4gXRqxaJpTMNjUivI7L77XgfmnnqwhkJ50GCb3FuakSkrZoL75xX6mzwfjWTQ
+         P/HRjyOYZIcBL0/qfDmABdX/0BxlNqU0FAtQkEqfMMHYCSxGdm9rLlcmYLe43pg1cc7h
+         WrC5+1ddVMQ9PANwg4bP8KGiX8+1J0Fmr2cT8nvimFiL4wA+FXtebFDs3LAPQm9aJinE
+         6jSG5eD0hBWEMBn/s/r8tyiGdnqNkHVGxoIib3crCA772KUd1huXzl5Inl1JdlR9HJbC
+         L+vw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=+ZP6o1gBBlBVeWAFEqgtYPLn6+d3r7xqEVeih0fyUso=;
+        b=LTvxVjBE9I89pKPLnne1PQzDDrh6PBRwoqlQHFtgIle6f8eloSErGTCFrxEjaOUnBy
+         tDZNLXeJF5GSD/0LUvPdxJIYzDno20Q8MQqCd3GGXZWPhgs5kmAGfWxgp4+sBa8RjAc+
+         IZU/aKro+UThCt+5CFPJroeofKdOcWWXh+44UbwW9K8jdWYo+p7yjkQ7f7JuWuTfo2ED
+         AHpK8haaUF3TdCR/KwCvcLMneVT3LiErcrh230EQf0jXq+fJ2mrz5yKizNpFsGPphrNE
+         lZnsHMfSZLyum97xci8XPh3qtWEeQtMqiYbZpZ+mQvCoGsSxQ1ngi3zP2zYsEU37Ig8v
+         aYFA==
+X-Gm-Message-State: ACgBeo0230T5eL5XTwSiiRKmlVadv2TxpBdxc98ZGcNBa5ummNY1b5NJ
+        Djy0Kxvd+Mh6b7G1suiGalY=
+X-Google-Smtp-Source: AA6agR6QGHgUJ6JL78VmA9OekXr5ZRCUaKHcp8uzSaCgosq6wKYvw6oMjyK6sGuqR3194MMhIKcKkw==
+X-Received: by 2002:a05:600c:3790:b0:3a5:435d:b2d3 with SMTP id o16-20020a05600c379000b003a5435db2d3mr5611084wmr.134.1662043841499;
+        Thu, 01 Sep 2022 07:50:41 -0700 (PDT)
+Received: from debian ([89.238.191.199])
+        by smtp.gmail.com with ESMTPSA id r21-20020adfa155000000b0022585f6679dsm14872979wrr.106.2022.09.01.07.50.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Sep 2022 07:50:41 -0700 (PDT)
+Date:   Thu, 1 Sep 2022 16:48:47 +0200
+From:   Richard Gobert <richardbgobert@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Martin KaFai Lau <kafai@fb.com>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, linux-wpan@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
+Subject: Re: [PATCH 2/4] net-next: ip6: fetch inetpeer in ip6frag_init
+Message-ID: <20220901144810.GA31767@debian>
+References: <20220829114600.GA2374@debian>
+ <CANn89iLH4nDuOHS-0AzYBYOz4f3byZndKXG3_VefVxUbujJZNg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CALxfFW4BXhEwxR0Q5LSkg-8Vb4r2MONKCcUCVioehXQKr35eHg@mail.gmail.com>
+In-Reply-To: <CANn89iLH4nDuOHS-0AzYBYOz4f3byZndKXG3_VefVxUbujJZNg@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 04:12:21PM -0700, Seth Jenkins wrote:
-> The codebase-wide refactor efforts to using the latest fs mounting API
-> (with support for fsopen/fsconfig/fsmount etc.) have introduced some
-> bugs into mount configuration parsing in several parse_param handlers,
-> most notably shmem_parse_one() which can be accessed from a userns.
-> There are several cases where the following code pattern is used:
+On Mon, Aug 29, 2022 at 03:20:54PM -0700, Eric Dumazet wrote:
+> Sorry, this is adding yet another bottleneck, and will make DDOS
+> attacks based on fragments more effective.
 > 
-> ctx->value = <expression>
-> if(ctx->value is invalid)
->    goto fail;
-> ctx->seen |= SHMEM_SEEN_X;
-> break;
-> 
-> However, this coding pattern does not work in the case where multiple
-> fsconfig calls are made. For example, if I were to call fsconfig with
-> the key "nr_blocks" twice, the first time with a valid value, and the
-> second time with an invalid value, the invalid value will be persisted
-> and used upon creation of the mount for the value of ctx->blocks, and
-> consequently for sbinfo->max_blocks.
-> 
-> This code pattern is used for Opt_nr_blocks, Opt_nr_inodes, Opt_uid,
-> Opt_gid and Opt_huge. Probably the proper thing to do is to check for
-> validity before assigning the value to the shmem_options struct in the
-> fs_context.
-> 
-> We also see this code pattern replicated throughout other filesystems
-> for uid/gid resolution, including hugetlbfs, FUSE, ntfs3 and ffs.
-> 
-> The other outstanding issue I noticed comes from the fact that
-> fsconfig syscalls may occur in a different userns than that which
-> called fsopen. That means that resolving the uid/gid via
-> current_user_ns() can save a kuid that isn't mapped in the associated
-> namespace when the filesystem is finally mounted. This means that it
-> is possible for an unprivileged user to create files owned by any
-> group in a tmpfs mount (since we can set the SUID bit on the tmpfs
-> directory), or a tmpfs that is owned by any user, including the root
-> group/user. This is probably outside the original intention of this
-> code.
-> 
-> The fix for this bug is not quite so simple as the others. The options
-> that I've assessed are:
-> 
-> - Resolve the kuid/kgid via the fs_context namespace - this does
-> however mean that any task outside the fsopen'ing userns that tries to
-> set the uid/gid of a tmpfs will have to know that the uid/gid will be
-> resolved by a different namespace than that which the current task is
-> in. It also subtly changes the behavior of this specific subsystem in
-> a userland visible way.
-> - Globally disallow fsconfig calls originating from outside the
-> fs_context userns - This is a more robust solution that would prevent
-> any similar bugs, but it may impinge on valid mount use-cases. It's
-> the best from a security standpoint and if it's determined that it was
-> not in the original intention to be juggling user/mount namespaces
-> this way, it's probably the ideal solution.
-> - Throw EINVAL if the kuid specified cannot be mapped in the mounting
-> userns (and/or potentially in the fs_context userns) - This is
-> probably the solution that remains most faithful to all potential
-> use-cases, but it doesn't reduce the potential for variants in the
-> future in other parts of the codebase and it also introduces some
-> slight derivative logic bug risk.
-> - Don't resolve the uid/gid specified in fsconfig at all, and resolve
-> it during mount-time when calling an associated fill_super. This is
-> precedented and used in other parts of the codebase, but specificity
-> is lost in the final error case since an end-user cannot easily
-> attribute a mount failure to an unmappable uid.
-> 
-> I've also attached a PoC for this bug that demonstrates that an
-> unprivileged user can create files/directories with root uid/gid's.
-> There is no deadline for this issue as we can't see any obvious way to
-> cross a privilege boundary with this.
-> 
-> Thanks in advance!
+> Whole concept of 'peers' based on IPv6 addresses is rather weak, as
+> hosts with IPv6 can easily
+> get millions of different 'addresses'.
 
-I'm involved in 2 large projects that make use of the new mount api LXC
-and CRIU. None of them call fsconfig() outside of the target user
-namespace. util-linux mount(2) does not yet use the new mount api and so
-can't be affected either but will in maybe even the next release.
-Additionally, glibc 2.36 is the first glibc with support for the new
-mount api which just released. So all users before that users would have
-to write their own system call wrappers so I think we have some liberty
-here.
-
-I think this is too much of a restriction to require that fsopen() and
-fsconfig() userns must match in order to set options. It is pretty handy
-to be able to set mount options outside of fc->user_ns. And we'd
-definitely want to make use of this in the future.
-
-So ideally, we just switch all filesystems that are mountable in userns
-over to use fc->user_ns. There's not really a big regression risk here
-because it's not used in userns workloads widely today. Taking a close
-look, the affected filesystems are devpts and tmpfs. Having them rely on
-fc->user_ns aligns them with how fuse does it today.
+I understand the problem with the implementation. Since peers don't 
+carry much weight in IPv6, this patch can be dropped.
