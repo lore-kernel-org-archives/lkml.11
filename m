@@ -2,267 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F33DFECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 19:26:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09040ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 19:26:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232744AbiIAT0Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 15:26:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45914 "EHLO
+        id S234101AbiIAT0x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 15:26:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232874AbiIAT0P (ORCPT
+        with ESMTP id S234301AbiIAT0n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 15:26:15 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 544EA4E61C;
-        Thu,  1 Sep 2022 12:25:21 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id f24so15225826plr.1;
-        Thu, 01 Sep 2022 12:25:21 -0700 (PDT)
+        Thu, 1 Sep 2022 15:26:43 -0400
+Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 830617B1C4
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 12:26:39 -0700 (PDT)
+Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-11ee4649dfcso27625115fac.1
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 12:26:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :sender:from:to:cc:subject:date;
-        bh=C6sKHTsSE/X9c2+J9QgkAtiQ7L50Tlqyc0fm3w0aWMI=;
-        b=UXoaUTKr0dnbx5dRk4uYqsLaXtX1VUkPS7MAikC1UpGIJ9/S21utmpR2yAEIfv0Mkh
-         5dhw3yp0ZQWk6DrilvAzqqpTrL7DYq5oJ5/bdZjoElSMnfLKN1MIaQkOwaImTlGpZZ2E
-         1lJC1nE21+c+T3KQyVIQyisSPYbpstmFG5uDz4NKalQxYUtZ5vdcc2jteWGoRqyeNq/A
-         ob/m/QL2upUdnwNf17dqLfX6Sp/qYkL2g91CtykNG/x0L59b47TBVprgkMbCswimomkB
-         RAA1vcBqJIPSVzY5yRQppNtOcJEVanrbgrHrSkxxmD043moILv55j8g9hl1Ou5my22tU
-         ykBA==
+        d=ffwll.ch; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=nUFKb0lwuoJnPBzhuuDRyGpS99t7DT6AsET+CKwieMQ=;
+        b=kab0/IS7ZlINDcHCLmc50JrBFqemoC73endhL3ZpKsJ3xs4hicL9pGZtRgbHUVZHJ6
+         9Np79qggyerdPcGnJ463kP4VGbE1WVilQH4gI8q2W09RSjHrThq5srLUj2g4yBnjXSbb
+         kdcWybUERjlnw69YdIO9w2hmaYZltUrxsDfxc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :sender:x-gm-message-state:from:to:cc:subject:date;
-        bh=C6sKHTsSE/X9c2+J9QgkAtiQ7L50Tlqyc0fm3w0aWMI=;
-        b=Stl4SLB/NvLyGoj+7PoP0Ke2v8Bt2nP8Ng8u4R3aTgMrH0SK6Ryi0oH9SesgcCXvop
-         u/URhQsdALcp95he7T+dOqugfns8TTgEOhCEihDjpT44Et8AEECm60McnFXgzUkg7PDX
-         mTZ41QiiwOnMBQElgwVZ/3mtb4QvTuvR7Rr3MWBonEf9fHTQs0hv7Si1jm8/HE+pcwEl
-         e0pIdtkqCvIzCOWOPlqaWNMInm2Rm34eNC8ARghidfDp+cDAnVE70+svnS7KQWXeo+W5
-         pxe/8Y2f/wRnVqQr3PHFDtSqNVkOOjqs8AnOuGBsFTTgzQgLs0YxlkugVxMpq11B294L
-         voCA==
-X-Gm-Message-State: ACgBeo1l9iw6pxtSy0Hy0R9dlbsKo2LxD50u1NG5v3WrWdXIE1M14Thq
-        QJ0/vib3+V8szL4b+nrT5VLB04vNhbDukw==
-X-Google-Smtp-Source: AA6agR40dbVSsTjS/+gDWWX+qOQDH8/azaHs9ltdhGtOQ7MpyhUH1OUjwcJajgb490PeQ0lhFq36XA==
-X-Received: by 2002:a17:90a:8b82:b0:1fa:973c:1d34 with SMTP id z2-20020a17090a8b8200b001fa973c1d34mr693556pjn.31.1662060320464;
-        Thu, 01 Sep 2022 12:25:20 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id s66-20020a625e45000000b005350ea966c7sm13822199pfb.154.2022.09.01.12.25.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Sep 2022 12:25:19 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <fa3e91f0-fae5-cfed-4656-c7be74e37a74@roeck-us.net>
-Date:   Thu, 1 Sep 2022 12:25:16 -0700
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=nUFKb0lwuoJnPBzhuuDRyGpS99t7DT6AsET+CKwieMQ=;
+        b=4p/bfdpTGRtVQsryA3ApwX3jlo1fMvk77A/Ak/hV+y0wbqwqsY1WwGcOzJPIvYbzWC
+         HS92CMcxZ+L6UKOi35eUqhXKuZcsZM//lkV09A6pyJoV64v3WrXh81z7s9XWjdciwdQH
+         WRcCAxbzPRF5lyhLu17Igi4GmSjjUx+vD24LyCpAKWaxoqA/r2PBdfH/HviNKYtbpE6+
+         zev5G8xn37EePiLC81hty5K8T7G5KcJUj8oe+wNuMKHzmZ501w93DUnQ6HCC9NEPZxYU
+         pmK3d6fO468BMx1m5SJUOPOKHCwn6fHF0dfiRAOmE49FXunbVKIApiUN8MpBQHDuDlYo
+         /V7A==
+X-Gm-Message-State: ACgBeo0uH8fboBsPsgx5GUVJwRDckooI5+8ozHlZ3g8Ngyuoz4JP64dq
+        PqwEmpzZ8L8h6g4ifbfIHF/JZlmhsc7RF4WqH5mMXg==
+X-Google-Smtp-Source: AA6agR76Qx1UhZamCUF7S9TUTYDl6xeDAqqmTX5Bo6k+e7Hx34+fSOeUvrMaPFePMLZcsKk4Dq+ttY1jW3moMxdkm/k=
+X-Received: by 2002:a54:448a:0:b0:344:99d1:1578 with SMTP id
+ v10-20020a54448a000000b0034499d11578mr325859oiv.7.1662060398178; Thu, 01 Sep
+ 2022 12:26:38 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v3 02/19] hwmon: (mr75203) fix VM sensor allocation when
- "intel, vm-map" not defined
-Content-Language: en-US
-To:     "Farber, Eliav" <farbere@amazon.com>
-Cc:     jdelvare@suse.com, robh+dt@kernel.org, p.zabel@pengutronix.de,
-        rtanwar@maxlinear.com, linux-hwmon@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        talel@amazon.com, hhhawa@amazon.com, jonnyc@amazon.com,
-        hanochu@amazon.com, ronenk@amazon.com, itamark@amazon.com,
-        shellykz@amazon.com, shorer@amazon.com, amitlavi@amazon.com,
-        almogbs@amazon.com, dkl@amazon.com, andriy.shevchenko@intel.com
-References: <20220830192212.28570-1-farbere@amazon.com>
- <20220830192212.28570-3-farbere@amazon.com>
- <cddebb5a-3b83-e89d-db00-9a59ddbd6741@roeck-us.net>
- <84a68eff-be64-71ce-1533-1e228d3da2a4@amazon.com>
- <71d6d57c-2165-5fe3-515d-9395022921e2@roeck-us.net>
- <2f5c5828-87b9-f3d2-e3d3-0200adbe830c@amazon.com>
- <20220901144434.GB3477025@roeck-us.net>
- <ceef1c33-1af5-53d1-5e5b-5aeb5d2679ca@amazon.com>
- <a48f6c26-232a-f3ae-01d1-277e5c9800ee@roeck-us.net>
- <3364aecd-c1d0-3929-9f51-4d90549d8731@amazon.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <3364aecd-c1d0-3929-9f51-4d90549d8731@amazon.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220830145004.430545-1-daniel.vetter@ffwll.ch> <YxCY57DmFfTuHs1q@alley>
+In-Reply-To: <YxCY57DmFfTuHs1q@alley>
+From:   Daniel Vetter <daniel.vetter@ffwll.ch>
+Date:   Thu, 1 Sep 2022 21:26:27 +0200
+Message-ID: <CAKMK7uFwJumoLCddSxtd=tPoV1xLFw5uCWpY+WDtiRC=fiSedg@mail.gmail.com>
+Subject: Re: [PATCH] kernel/panic: Drop unblank_screen call
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Xuezhi Zhang <zhangxuezhi1@coolpad.com>,
+        Yangxi Xiang <xyangxi5@gmail.com>,
+        nick black <dankamongmen@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        Marco Elver <elver@google.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        David Gow <davidgow@google.com>,
+        tangmeng <tangmeng@uniontech.com>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Chris Wilson <chris@chris-wilson.co.uk>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 9/1/22 11:36, Farber, Eliav wrote:
-> On 9/1/2022 8:11 PM, Guenter Roeck wrote:
->> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
->>
->>
->>
->> On 9/1/22 08:24, Farber, Eliav wrote:
->>> On 9/1/2022 5:44 PM, Guenter Roeck wrote:
->>>> On Thu, Sep 01, 2022 at 11:39:58AM +0300, Farber, Eliav wrote:
->>>>> On 8/31/2022 2:48 PM, Guenter Roeck wrote:
->>>>> > On 8/30/22 22:49, Farber, Eliav wrote:
->>>>> > > On 8/31/2022 8:36 AM, Guenter Roeck wrote:
->>>>> > > > On 8/30/22 12:21, Eliav Farber wrote:
->>>>> > > > > Bug fix - in case "intel,vm-map" is missing in device-tree
->>>>> > > > > ,'num' is set
->>>>> > > > > to 0, and no voltage channel infos are allocated.
->>>>> > > > >
->>>>> > > > > Signed-off-by: Eliav Farber <farbere@amazon.com>
->>>>> > > > > ---
->>>>> > > > >   drivers/hwmon/mr75203.c | 28 ++++++++++++----------------
->>>>> > > > >   1 file changed, 12 insertions(+), 16 deletions(-)
->>>>> > > > >
->>>>> > > > > diff --git a/drivers/hwmon/mr75203.c b/drivers/hwmon/mr75203.c
->>>>> > > > > index 046523d47c29..0e29877a1a9c 100644
->>>>> > > > > --- a/drivers/hwmon/mr75203.c
->>>>> > > > > +++ b/drivers/hwmon/mr75203.c
->>>>> > > > > @@ -580,8 +580,6 @@ static int mr75203_probe(struct
->>>>> > > > > platform_device *pdev)
->>>>> > > > >       }
->>>>> > > > >
->>>>> > > > >       if (vm_num) {
->>>>> > > > > -             u32 num = vm_num;
->>>>> > > > > -
->>>>> > > > >               ret = pvt_get_regmap(pdev, "vm", pvt);
->>>>> > > > >               if (ret)
->>>>> > > > >                       return ret;
->>>>> > > > > @@ -594,30 +592,28 @@ static int mr75203_probe(struct
->>>>> > > > > platform_device *pdev)
->>>>> > > > >               ret = device_property_read_u8_array(dev, "intel,vm-map",
->>>>> > > > > pvt->vm_idx, vm_num);
->>>>> > > > >               if (ret) {
->>>>> > > > > -                     num = 0;
->>>>> > > > > +                     /*
->>>>> > > > > +                      * Incase intel,vm-map property is not
->>>>> > > > > defined, we
->>>>> > > > > +                      * assume incremental channel numbers.
->>>>> > > > > +                      */
->>>>> > > > > +                     for (i = 0; i < vm_num; i++)
->>>>> > > > > + pvt->vm_idx[i] = i;
->>>>> > > > >               } else {
->>>>> > > > >                       for (i = 0; i < vm_num; i++)
->>>>> > > > >                               if (pvt->vm_idx[i] >= vm_num ||
->>>>> > > > > - pvt->vm_idx[i] == 0xff) {
->>>>> > > > > - num = i;
->>>>> > > > > + pvt->vm_idx[i] == 0xff)
->>>>> > > > > break;
->>>>> > > >
->>>>> > > > So all vm_idx values from 0x00 to 0xfe would be acceptable ?
->>>>> > > > Does the chip really have that many registers (0x200 + 0x40 +
->>>>> > > > 0x200 * 0xfe) ?
->>>>> > > > Is that documented somewhere ?
->>>>> > > According to the code vm_num is limited to 32 because the mask is
->>>>> > > only 5 bits:
->>>>> > >
->>>>> > > #define VM_NUM_MSK    GENMASK(20, 16)
->>>>> > > #define VM_NUM_SFT    16
->>>>> > > vm_num = (val & VM_NUM_MSK) >> VM_NUM_SFT;
->>>>> > >
->>>>> > > In practice according to the data sheet I have:
->>>>> > > 0 <= VM instances <= 8
->>>>> > >
->>>>> > Sorry, my bad. I misread the patch and thought the first part of
->>>>> > the if statement was removed.
->>>>> >
->>>>> > Anyway, what is the difference between specifying an vm_idx value of
->>>>> > 0xff and not specifying anything ? Or, in other words, taking the dt
->>>>> > example, the difference between
->>>>> >        intel,vm-map = [03 01 04 ff ff];
->>>>> > and
->>>>> >        intel,vm-map = [03 01 04];
->>>>>
->>>>> The actual number of VMs is read from a HW register:
->>>>>     ret = regmap_read(pvt->c_map, PVT_IP_CONFIG, &val);
->>>>>     ...
->>>>>     vm_num = (val & VM_NUM_MSK) >> VM_NUM_SFT;
->>>>>
->>>>> Also, using:
->>>>>     ret = device_property_read_u8_array(dev, "intel,vm-map", vm_idx,
->>>>>                         vm_num);
->>>>> in the driver will fail if vm_num > sizeof array in device-tree.
->>>>>
->>>>> So, if for example vm_num = 5, but you will want to map only 3 of them
->>>>> you most set property to be:
->>>>>     intel,vm-map = [03 01 04 ff ff];
->>>>> otherwise if you set:
->>>>>     intel,vm-map = [03 01 04];
->>>>> it will assume the property doesn't, and will continue the flow in code
->>>>> as if it doesn’t exist (which is not what the user wanted, and before my
->>>>> fix also has a bug).
->>>>
->>>> There should be some error handling to catch this case (ie if the number
->>>> of entries does not match the expected count), or if a value in the array
->>>> is larger or equal to vm_num. Today the latter is silently handled as end
->>>> of entries (similar to 0xff), but that should result in an error.
->>>> This would avoid situations like
->>>>        intel,vm-map = [01 02 03 04 05];
->>>> ie where the person writing the devicetree file accidentally entered
->>>> index values starting with 1 instead of 0. A mismatch between vm_num
->>>> and the number of entries in the array is silently handled as if there
->>>> was no property at all, which is at the very least misleading and
->>>> most definitely unexpected and should also result in an error.
->>>
->>>
->>> I assume it is possible to tell according to the return value, if property
->>> doesn’t exist at all, or if it does exists and size of array in
->>> device-tree is smaller than vm_num.
->>> In [PATCH v3 17/19] Andy wrote that “code shouldn't be a YAML validator.
->>> Drop this and make sure you have correct DT schema” so I’m a bit confused
->>> if code should validate “intel,bm-map” or if it is the user responsibility.
->>> As this property was not added by me, I prefer not to fix it as part of
->>> this series of patches.
->>>
->>
->> You are changing the driver all over the place with 19 patches, including
->> this code, but you don't want to add code that validates the devicetree
->> data ? That seems odd.
->>
-> OK. I have added patch #20 to validate that same VM index doesn't appear
-> more than once in intel,vm-map.
-> 
-> u32 vm_mask = 0;
-> 
-> for (i = 0; i < vm_num; i++) {
->      if (vm_idx[i] >= vm_num || vm_idx[i] == 0xff)
+On Thu, 1 Sept 2022 at 13:35, Petr Mladek <pmladek@suse.com> wrote:
+>
+> On Tue 2022-08-30 16:50:04, Daniel Vetter wrote:
+> > console_unblank() does this too (called in both places right after),
+> > and with a lot more confidence inspiring approach to locking.
+> >
+> > Reconstructing this story is very strange:
+> >
+> > In b61312d353da ("oops handling: ensure that any oops is flushed to
+> > the mtdoops console") it is claimed that a printk(" "); flushed out
+> > the console buffer, which was removed in e3e8a75d2acf ("[PATCH]
+> > Extract and use wake_up_klogd()"). In todays kernels this is done way
+> > earlier in console_flush_on_panic with some really nasty tricks. I
+> > didn't bother to fully reconstruct this all, least because the call to
+> > bust_spinlock(0); gets moved every few years, depending upon how the
+> > wind blows (or well, who screamed loudest about the various issue each
+> > call site caused).
+> >
+> > Before that commit the only calls to console_unblank() where in s390
+> > arch code.
+> >
+> > The other side here is the console->unblank callback, which was
+> > introduced in 2.1.31 for the vt driver. Which predates the
+> > console_unblank() function by a lot, which was added (without users)
+> > in 2.4.14.3. So pretty much impossible to guess at any motivation
+> > here. Also afaict the vt driver is the only (and always was the only)
+> > console driver implementing the unblank callback, so no idea why a
+> > call to console_unblank() was added for the mtdooops driver - the
+> > action actually flushing out the console buffers is done from
+> > console_unlock() only.
+>
+> My understanding is that mtdoops is not a real console. The commit
+> 4b23aff083649eafa141 ("[MTD] oops and panic message logging to MTD
+> device") suggests that it was just (mis)using the console
+> infrastructure.
+>
+> The commit 2e386e4bac90554887e73d ("mtd: mtdoops: refactor as a
+> kmsg_dumper") converted it to use the new kmsg_dumper API that
+> was created for this use case.
+>
+> So, I would consider all the mtdoops-related changes as a misuse
+> of the console API.
 
-I think "vm_idx[i] >= vm_num && vm_idx[i] != 0xff)
-should also be invalid, ie.
+Ah, that's a good piece of information that I didn't figure out.
 
-	if (vm_idx[i] == 0xff)
-		break;
-	if (vm_idx[i] >= vm_num)
-		return -EINVAL;
+Greg, if you haven't baked in the patch yet, can you perhaps add the
+above information from Petr to the commit message?
 
-Thanks,
-Guenter
+Thanks, Daniel
 
->          break;
-> 
->      if (vm_mask & BIT(vm_idx[i])) {
->          dev_err(dev, "Same VM appears more than once in intel,vm-map\n",
->              vm_idx[i]);
->          return EINVAL;
->      }
-> 
->      vm_mask |= BIT(vm_idx[i]);
-> }
-> 
-> 
->>>
->>>> Also, what happens if the devicetree content is something like the
->>>> following ? Would that be valid ?
->>>>        intel,vm-map = [00 01 01 01 01 01];
->>>
->>> If device-tree content would be:
->>>      intel,vm-map = [00 01 01 01 01 01];
->>> and assuming 16 channels for each VM, the hwmon sub-system will expose 90
->>> sysfs to read voltage values.
->>> In practice 16 – 31, 32 – 47, 48 – 63, 64 – 89 will all report the same
->>> input signals for VM1.
->>>
->>
->> Does that make any sense, and is there a valid reason to have a mapping
->> table like the one in this example ?
-> 
-> I can't find any sense in having such a mapping.
-> Anyway the new patch will not allow it to happen.
-> 
-> -- 
-> Regards, Eliav
-> 
+>
+>
+> > Note that as prep for the s390 users the locking was adjusted in
+> > 2.5.22 (I couldn't figure out how to properly reference the BK commit
+> > from the historical git trees) from a normal semaphore to a trylock.
+> >
+> > Note that a copy of the direct unblank_screen() call was added to
+> > panic() in c7c3f05e341a ("panic: avoid deadlocks in re-entrant console
+> > drivers"), which partially inlined the bust_spinlocks(0); call.
+> >
+> > Long story short, I have no idea why the direct call to unblank_screen
+> > survived for so long (the infrastructure to do it properly existed for
+> > years), nor why it wasn't removed when the console_unblank() call was
+> > finally added. But it makes a ton more sense to finally do that than
+> > not - it's just better encapsulation to go through the console
+> > functions instead of doing a direct call, so let's dare. Plus it
+> > really does not make much sense to call the only unblank
+> > implementation there is twice, once without, and once with appropriate
+> > locking.
+> >
+> > Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+>
+> Nice analyze. The change makes perfect sense from my POV:
+>
+> Reviewed-by: Petr Mladek <pmladek@suse.com>
+>
+> Best Regards,
+> Petr
 
+
+
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
