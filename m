@@ -2,154 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63EEBC6FA83
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 19:35:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7EFEC6FA81
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 19:36:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234518AbiIATf4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 15:35:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36110 "EHLO
+        id S234514AbiIATgp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 15:36:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234453AbiIATfx (ORCPT
+        with ESMTP id S233151AbiIATgm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 15:35:53 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BA2645066;
-        Thu,  1 Sep 2022 12:35:46 -0700 (PDT)
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 281JHYFm007763;
-        Thu, 1 Sep 2022 19:35:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=RHi6c/HBjJZ34f0IuzhsVo7+lap45J1tiyyW4j0h/y4=;
- b=p8zzxfIc6AVdZdKEDoz7SI7HVElrQMf3FCUXRgepex1gHD0cwEoUd+I6656Nl/3oiXDg
- hi0lSTlVBEmNOAXXaRZjhp7enbJuHv39zbI6y3bN/3HtWj5GUAQD3EYSxR2/1+ttoPHY
- MeckbzLB9LMEr4Ryk9o1ZMDMlKRUXhybYmOXRLpM1TiqxnZ2gMrV8AWMmHzmJ2XXxzCj
- /yl6A7bgzFBF7iv8KwJj0JACfbJLjo2zKb9X6rwdD0soXF44MHi3cFoBMNqknsmiDcJi
- zWAGhcbMfP+rGgANyuxiSVlw+2149bqwgyy+mmTq+oNPvuoI4miptK9l9ObW4Psd4I55 wg== 
+        Thu, 1 Sep 2022 15:36:42 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 640E874DE4;
+        Thu,  1 Sep 2022 12:36:41 -0700 (PDT)
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 281JHWEd018923;
+        Thu, 1 Sep 2022 19:36:37 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=qcppdkim1;
+ bh=7Ayr88upFoAxOPJlgVTA7aDSTmbLOGrnVb+89Sm6Lj4=;
+ b=c+vGDo0UmSPlL5JH9VNASYsPvcK8RZlRHZWBOqF6yOAsxs1M/dlESGpyIQP0B5kmxF9J
+ novVfHhaDYpYTN6pzuseAM20DII3XQWt/YmCjlWuWuBnG/odI6lXYTVUXX+1ITVrIc+I
+ nvlwIFDiDHv74MHfTBYTG1UDGxGFTuCVUzXmqu9z/HPQq/ScV6qIUrb/TBCI2gSu8K7P
+ Envgw1te3syJqABLOXKpuySXDvNrxxjEORGBdohILVFbV5qIdle614gUPXhTC+HpxMDW
+ dbBIFPM3kkd28lb2FvzKnLqsm8GXD06OtZgErYZNgfL2qiQpt8E7wK5xWJ2E4gjBMCq/ bg== 
 Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3jabqk4qnc-1
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3jabgcvucw-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 19:35:32 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 281JZVqq024780
+        Thu, 01 Sep 2022 19:36:37 +0000
+Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
+        by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 281JabMb025583
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 1 Sep 2022 19:35:31 GMT
-Received: from [10.216.21.90] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Thu, 1 Sep 2022
- 12:35:25 -0700
-Message-ID: <0a4f3234-ab54-8e2e-0945-b0be159e38a0@quicinc.com>
-Date:   Fri, 2 Sep 2022 01:05:22 +0530
+        Thu, 1 Sep 2022 19:36:37 GMT
+Received: from hu-wcheng-lv.qualcomm.com (10.49.16.6) by
+ nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.29; Thu, 1 Sep 2022 12:36:36 -0700
+From:   Wesley Cheng <quic_wcheng@quicinc.com>
+To:     <balbi@kernel.org>, <gregkh@linuxfoundation.org>,
+        <Thinh.Nguyen@synopsys.com>
+CC:     <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <quic_jackp@quicinc.com>, Wesley Cheng <quic_wcheng@quicinc.com>
+Subject: [PATCH v8 1/5] usb: dwc3: Avoid unmapping USB requests if endxfer is not complete
+Date:   Thu, 1 Sep 2022 12:36:21 -0700
+Message-ID: <20220901193625.8727-2-quic_wcheng@quicinc.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220901193625.8727-1-quic_wcheng@quicinc.com>
+References: <20220901193625.8727-1-quic_wcheng@quicinc.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [Freedreno] [PATCH v6 4/6] clk: qcom: gpucc-sc7280: Add cx
- collapse reset support
-Content-Language: en-US
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-CC:     Stephen Boyd <sboyd@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        <dri-devel@lists.freedesktop.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        <krzysztof.kozlowski@linaro.org>, Rob Clark <robdclark@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        <linux-clk@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <1661923108-789-1-git-send-email-quic_akhilpo@quicinc.com>
- <20220831104741.v6.4.I5e64ff4b77bb9079eb2edeea8a02585c9e76778f@changeid>
- <20220901103449.GC32271@pengutronix.de>
- <ff2d8784-0cf9-fac9-4360-71cac30fbd76@linaro.org>
-From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
-In-Reply-To: <ff2d8784-0cf9-fac9-4360-71cac30fbd76@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain
+X-Originating-IP: [10.49.16.6]
+X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: PqSAWRVPKVjxcWpI1GrozR2ZS-tQsvWV
-X-Proofpoint-ORIG-GUID: PqSAWRVPKVjxcWpI1GrozR2ZS-tQsvWV
+X-Proofpoint-ORIG-GUID: Kte_YrRP_VVelE_EUwdJWrVwaF2xAhdY
+X-Proofpoint-GUID: Kte_YrRP_VVelE_EUwdJWrVwaF2xAhdY
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-09-01_12,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1015
- impostorscore=0 mlxscore=0 priorityscore=1501 adultscore=0
- lowpriorityscore=0 malwarescore=0 spamscore=0 phishscore=0 bulkscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 mlxscore=0
+ lowpriorityscore=0 adultscore=0 clxscore=1015 phishscore=0 bulkscore=0
+ priorityscore=1501 mlxlogscore=849 spamscore=0 malwarescore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2207270000 definitions=main-2209010085
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 9/1/2022 4:16 PM, Dmitry Baryshkov wrote:
-> On 01/09/2022 13:34, Philipp Zabel wrote:
->> On Wed, Aug 31, 2022 at 10:48:25AM +0530, Akhil P Oommen wrote:
->>> Allow a consumer driver to poll for cx gdsc collapse through Reset
->>> framework.
->>>
->>> Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
->>> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
->>> ---
->>>
->>> (no changes since v3)
->>>
->>> Changes in v3:
->>> - Convert 'struct qcom_reset_ops cx_gdsc_reset' to 'static const' 
->>> (Krzysztof)
->>>
->>> Changes in v2:
->>> - Minor update to use the updated custom reset ops implementation
->>>
->>>   drivers/clk/qcom/gpucc-sc7280.c | 10 ++++++++++
->>>   1 file changed, 10 insertions(+)
->>>
->>> diff --git a/drivers/clk/qcom/gpucc-sc7280.c 
->>> b/drivers/clk/qcom/gpucc-sc7280.c
->>> index 9a832f2..fece3f4 100644
->>> --- a/drivers/clk/qcom/gpucc-sc7280.c
->>> +++ b/drivers/clk/qcom/gpucc-sc7280.c
->>> @@ -433,12 +433,22 @@ static const struct regmap_config 
->>> gpu_cc_sc7280_regmap_config = {
->>>       .fast_io = true,
->>>   };
->>>   +static const struct qcom_reset_ops cx_gdsc_reset = {
->>> +    .reset = gdsc_wait_for_collapse,
->>
->> This should be accompanied by a comment explaining the not-quite-reset
->> nature of this workaround, i.e. what is the prerequisite for this to
->> actually work as expected?
->>
->>> +};
->>> +
->>> +static const struct qcom_reset_map gpucc_sc7280_resets[] = {
->>> +    [GPU_CX_COLLAPSE] = { .ops = &cx_gdsc_reset, .priv = &cx_gdsc },
->>> +};
->>> +
->>>   static const struct qcom_cc_desc gpu_cc_sc7280_desc = {
->>>       .config = &gpu_cc_sc7280_regmap_config,
->>>       .clks = gpu_cc_sc7280_clocks,
->>>       .num_clks = ARRAY_SIZE(gpu_cc_sc7280_clocks),
->>>       .gdscs = gpu_cc_sc7180_gdscs,
->>>       .num_gdscs = ARRAY_SIZE(gpu_cc_sc7180_gdscs),
->>> +    .resets = gpucc_sc7280_resets,
->>> +    .num_resets = ARRAY_SIZE(gpucc_sc7280_resets),
->>
->> See my comment on patch 2. I think instead of adding a const struct
->> qcom_reset_ops * to gpucc_sc7280_resets, this should just add a const
->> struct reset_control * to gpu_cc_sc7280_desc.
->
-> While this will work for the sc7280, the platform that Akhil was 
-> developing, this will not work for other platforms (like sm8250), 
-> where the dispcc also provides traditional BCR resets.
->
-Like Dimtry mentioned, we should eventually implement this feature on 
-all gpucc drivers and some of them already use the existing reset ops. 
-The current implementation creates the least code churn and duplication's.
+If DWC3_EP_DELAYED_STOP is set during stop active transfers, then do not
+continue attempting to unmap request buffers during dwc3_remove_requests().
+This can lead to SMMU faults, as the controller has not stopped the
+processing of the TRB.  Defer this sequence to the EP0 out start, which
+ensures that there are no pending SETUP transactions before issuing the
+endxfer.
 
--Akhil
+Reviewed-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Signed-off-by: Wesley Cheng <quic_wcheng@quicinc.com>
+---
+ drivers/usb/dwc3/core.h   | 1 +
+ drivers/usb/dwc3/ep0.c    | 5 ++++-
+ drivers/usb/dwc3/gadget.c | 6 +++++-
+ 3 files changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/usb/dwc3/core.h b/drivers/usb/dwc3/core.h
+index 4fe4287dc934..7c9368145f37 100644
+--- a/drivers/usb/dwc3/core.h
++++ b/drivers/usb/dwc3/core.h
+@@ -1560,6 +1560,7 @@ int dwc3_send_gadget_ep_cmd(struct dwc3_ep *dep, unsigned int cmd,
+ int dwc3_send_gadget_generic_command(struct dwc3 *dwc, unsigned int cmd,
+ 		u32 param);
+ void dwc3_gadget_clear_tx_fifos(struct dwc3 *dwc);
++void dwc3_remove_requests(struct dwc3 *dwc, struct dwc3_ep *dep, int status);
+ #else
+ static inline int dwc3_gadget_init(struct dwc3 *dwc)
+ { return 0; }
+diff --git a/drivers/usb/dwc3/ep0.c b/drivers/usb/dwc3/ep0.c
+index 33cee0089609..61de693461da 100644
+--- a/drivers/usb/dwc3/ep0.c
++++ b/drivers/usb/dwc3/ep0.c
+@@ -293,7 +293,10 @@ void dwc3_ep0_out_start(struct dwc3 *dwc)
+ 			continue;
+ 
+ 		dwc3_ep->flags &= ~DWC3_EP_DELAY_STOP;
+-		dwc3_stop_active_transfer(dwc3_ep, true, true);
++		if (dwc->connected)
++			dwc3_stop_active_transfer(dwc3_ep, true, true);
++		else
++			dwc3_remove_requests(dwc, dwc3_ep, -ESHUTDOWN);
+ 	}
+ }
+ 
+diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
+index d6c0cb79ace3..6f2491fc109e 100644
+--- a/drivers/usb/dwc3/gadget.c
++++ b/drivers/usb/dwc3/gadget.c
+@@ -965,12 +965,16 @@ static int __dwc3_gadget_ep_enable(struct dwc3_ep *dep, unsigned int action)
+ 	return 0;
+ }
+ 
+-static void dwc3_remove_requests(struct dwc3 *dwc, struct dwc3_ep *dep, int status)
++void dwc3_remove_requests(struct dwc3 *dwc, struct dwc3_ep *dep, int status)
+ {
+ 	struct dwc3_request		*req;
+ 
+ 	dwc3_stop_active_transfer(dep, true, false);
+ 
++	/* If endxfer is delayed, avoid unmapping requests */
++	if (dep->flags & DWC3_EP_DELAY_STOP)
++		return;
++
+ 	/* - giveback all requests to gadget driver */
+ 	while (!list_empty(&dep->started_list)) {
+ 		req = next_request(&dep->started_list);
