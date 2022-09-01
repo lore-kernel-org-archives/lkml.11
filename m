@@ -2,134 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15959C6FA8A
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 21:46:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9561FC54EE9
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 21:46:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233521AbiIAVql (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 17:46:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43006 "EHLO
+        id S233907AbiIAVqq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 17:46:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233250AbiIAVqi (ORCPT
+        with ESMTP id S233353AbiIAVqi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 1 Sep 2022 17:46:38 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19EE379A45;
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34D947A506;
         Thu,  1 Sep 2022 14:46:37 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 281LUgSW031933;
-        Thu, 1 Sep 2022 21:46:23 GMT
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 281LD2D3006720;
+        Thu, 1 Sep 2022 21:46:26 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=r2ZqQzsxMzMBvy51gRpn7fAMC1irQrpsOuT7QpcOflw=;
- b=Ket3w1/Aq7qOEsc1YWBmSvfDetKV0jycPNgjtk3WQz4+UqU9QmMUv2aY7WA9w2pHCekL
- wO0oTAuRi0TJNALLyyK9+8vfuOAWj20F2UsS+5D7XPsKaWI3WG/SEbT5aygf8que9ukB
- 5GUp+vkg8ka3NP9Hl4yvISnny3swTxU1LyF+rF07evkOPGS2C+MCbwHtU0/6eulxYlNp
- Pk00G4vRokI7ualg5vnFn418SdkAS1PmPLqVM59mqzSF7M96TtdAXVOPw4lh73yocgeQ
- HMTtznSqxXpH4uxnh/hpcr+7btmzBHJiXYsOiYiQCuGxkmV3qnzA9z5JPYnHJ2qrUH9E 8A== 
-Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jb4qg0h3e-1
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=gruSY6eWw/NEwHExJKnsxDdwOlp80csb3xc/7VDhcAE=;
+ b=ioZAMWuWHiVCCXe7Ggkhw6y4vv3yzLyuJtiWOUVrn8v5RNfv4EjB3LyYmfHAv5N8gDNM
+ DhDrpW8bxxnCoXcuMfRCLMEC4X/Wl2QQg1u/oIHq+NjnC86jN+p29hMo6v2PfapI4IoI
+ fdQyPmyPIU3nFE7tJRIMEZcrNnZpxh0sbNqzdCqbrxyj0sAOFBq7CCT9z0tog0O/AFO4
+ ChD5IEUaZ0U0oAPIR2BG8jDKH7rt8354Zf+HxjdOCVxkb1AVVgO7K6dSQexC4jt+fOYb
+ 5hvlkLuXr52JNPf7UO/cKMGU0o5opLKU1Is9uq4t885tIKrnvmnGY7ba6MtFrnKk0kx8 iQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jb4f5gvy0-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 21:46:23 +0000
-Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
-        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 281LaGBO019083;
-        Thu, 1 Sep 2022 21:46:22 GMT
-Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
-        by ppma02dal.us.ibm.com with ESMTP id 3j7awa4v52-1
+        Thu, 01 Sep 2022 21:46:26 +0000
+Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 281LEcpQ019800;
+        Thu, 1 Sep 2022 21:46:25 GMT
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jb4f5gvxe-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 21:46:22 +0000
+        Thu, 01 Sep 2022 21:46:25 +0000
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 281LZJwU012098;
+        Thu, 1 Sep 2022 21:46:24 GMT
+Received: from b03cxnp07027.gho.boulder.ibm.com (b03cxnp07027.gho.boulder.ibm.com [9.17.130.14])
+        by ppma04dal.us.ibm.com with ESMTP id 3j7awacwnc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 01 Sep 2022 21:46:24 +0000
 Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
-        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 281LkL3S15860208
+        by b03cxnp07027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 281LkNbn5308996
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 1 Sep 2022 21:46:21 GMT
+        Thu, 1 Sep 2022 21:46:23 GMT
 Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E35A5C6057;
-        Thu,  1 Sep 2022 21:46:20 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id A55A6C6057;
+        Thu,  1 Sep 2022 21:46:22 +0000 (GMT)
 Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5DE01C6055;
-        Thu,  1 Sep 2022 21:46:20 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id C6C53C6055;
+        Thu,  1 Sep 2022 21:46:21 +0000 (GMT)
 Received: from sbct-3.pok.ibm.com (unknown [9.47.158.153])
         by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu,  1 Sep 2022 21:46:20 +0000 (GMT)
+        Thu,  1 Sep 2022 21:46:21 +0000 (GMT)
 From:   Stefan Berger <stefanb@linux.ibm.com>
 To:     kexec@lists.infradead.org, devicetree@vger.kernel.org,
         linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
         linuxppc-dev@lists.ozlabs.org
 Cc:     nayna@linux.ibm.com, nasastry@in.ibm.com, mpe@ellerman.id.au,
-        Stefan Berger <stefanb@linux.ibm.com>
-Subject: [PATCH v8 0/4] tpm: Preserve TPM measurement log across kexec (ppc64)
-Date:   Thu,  1 Sep 2022 17:46:06 -0400
-Message-Id: <20220901214610.768645-1-stefanb@linux.ibm.com>
+        Stefan Berger <stefanb@linux.ibm.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Nageswara R Sastry <rnsastry@linux.ibm.com>,
+        Coiby Xu <coxu@redhat.com>
+Subject: [PATCH v8 2/4] tpm: of: Make of-tree specific function commonly available
+Date:   Thu,  1 Sep 2022 17:46:08 -0400
+Message-Id: <20220901214610.768645-3-stefanb@linux.ibm.com>
 X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220901214610.768645-1-stefanb@linux.ibm.com>
+References: <20220901214610.768645-1-stefanb@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: GsA1unPRsVQRw4jZ6R8Ro8Eu6KpIZ5_9
-X-Proofpoint-GUID: GsA1unPRsVQRw4jZ6R8Ro8Eu6KpIZ5_9
+X-Proofpoint-GUID: TKqq_umCHPuN1kpay-xmiI9ot655_6da
+X-Proofpoint-ORIG-GUID: V1jxbQB1zFNWy15QnMKrZlpGvPTy3gfj
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-09-01_12,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 adultscore=0
- bulkscore=0 mlxscore=0 lowpriorityscore=0 phishscore=0 clxscore=1011
- priorityscore=1501 spamscore=0 suspectscore=0 malwarescore=0
- mlxlogscore=757 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 adultscore=0
+ mlxscore=0 impostorscore=0 bulkscore=0 mlxlogscore=999 spamscore=0
+ malwarescore=0 suspectscore=0 lowpriorityscore=0 phishscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2207270000 definitions=main-2209010094
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The of-tree subsystem does not currently preserve the IBM vTPM 1.2 and
-vTPM 2.0 measurement logs across a kexec on PowerVM and PowerKVM. This
-series fixes this for the kexec_file_load() syscall using the flattened
-device tree (fdt) to carry the TPM measurement log's buffer across kexec.
+Simplify tpm_read_log_of() by moving reusable parts of the code into
+an inline function that makes it commonly available so it can be
+used also for kexec support. Call the new of_tpm_get_sml_parameters()
+function from the TPM Open Firmware driver.
 
-   Stefan
+Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+Cc: Jarkko Sakkinen <jarkko@kernel.org>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Frank Rowand <frowand.list@gmail.com>
+Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
+Tested-by: Nageswara R Sastry <rnsastry@linux.ibm.com>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Tested-by: Coiby Xu <coxu@redhat.com>
 
-v8:
- - Added Jarkko's, Coiby's, and Rob's tags
- - Rebase on v6.0-rc3 that absorbed 2 already upstreamed patches
-
+---
 v7:
- - Added Nageswara's Tested-by tags
- - Added back original comment to inline function and removed Jarkko's R-b tag
-
-v6:
- - Add __init to get_kexec_buffer as suggested by Jonathan
- - Fixed issue detected by kernel test robot
-
-v5:
- - Rebased on 1 more patch that would otherwise create merge conflicts
+ - Added original comment back into inlined function
 
 v4:
- - Rebased on 2 patches that would otherwise create merge conflicts;
-   posting these patches in this series with several tags removed so
-   krobot can test the series already
- - Changes to individual patches documented in patch descripitons
+ - converted to inline function
+---
+ drivers/char/tpm/eventlog/of.c | 31 +++++------------------------
+ include/linux/tpm.h            | 36 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 41 insertions(+), 26 deletions(-)
 
-v3:
- - Moved TPM Open Firmware related function to drivers/char/tpm/eventlog/tpm_of.c
-
-v2:
- - rearranged patches
- - fixed compilation issues for x86
-
-Palmer Dabbelt (1):
-  drivers: of: kexec ima: Support 32-bit platforms
-
-Stefan Berger (3):
-  tpm: of: Make of-tree specific function commonly available
-  of: kexec: Refactor IMA buffer related functions to make them reusable
-  tpm/kexec: Duplicate TPM measurement log in of-tree for kexec
-
- drivers/char/tpm/eventlog/of.c |  31 +--
- drivers/of/kexec.c             | 336 ++++++++++++++++++++++++++++-----
- include/linux/kexec.h          |   6 +
- include/linux/of.h             |   9 +-
- include/linux/tpm.h            |  36 ++++
- kernel/kexec_file.c            |   6 +
- 6 files changed, 346 insertions(+), 78 deletions(-)
-
-
-base-commit: b90cb1053190353cc30f0fef0ef1f378ccc063c5
+diff --git a/drivers/char/tpm/eventlog/of.c b/drivers/char/tpm/eventlog/of.c
+index a9ce66d09a75..f9462d19632e 100644
+--- a/drivers/char/tpm/eventlog/of.c
++++ b/drivers/char/tpm/eventlog/of.c
+@@ -12,6 +12,7 @@
+ 
+ #include <linux/slab.h>
+ #include <linux/of.h>
++#include <linux/tpm.h>
+ #include <linux/tpm_eventlog.h>
+ 
+ #include "../tpm.h"
+@@ -20,11 +21,10 @@
+ int tpm_read_log_of(struct tpm_chip *chip)
+ {
+ 	struct device_node *np;
+-	const u32 *sizep;
+-	const u64 *basep;
+ 	struct tpm_bios_log *log;
+ 	u32 size;
+ 	u64 base;
++	int ret;
+ 
+ 	log = &chip->log;
+ 	if (chip->dev.parent && chip->dev.parent->of_node)
+@@ -35,30 +35,9 @@ int tpm_read_log_of(struct tpm_chip *chip)
+ 	if (of_property_read_bool(np, "powered-while-suspended"))
+ 		chip->flags |= TPM_CHIP_FLAG_ALWAYS_POWERED;
+ 
+-	sizep = of_get_property(np, "linux,sml-size", NULL);
+-	basep = of_get_property(np, "linux,sml-base", NULL);
+-	if (sizep == NULL && basep == NULL)
+-		return -ENODEV;
+-	if (sizep == NULL || basep == NULL)
+-		return -EIO;
+-
+-	/*
+-	 * For both vtpm/tpm, firmware has log addr and log size in big
+-	 * endian format. But in case of vtpm, there is a method called
+-	 * sml-handover which is run during kernel init even before
+-	 * device tree is setup. This sml-handover function takes care
+-	 * of endianness and writes to sml-base and sml-size in little
+-	 * endian format. For this reason, vtpm doesn't need conversion
+-	 * but physical tpm needs the conversion.
+-	 */
+-	if (of_property_match_string(np, "compatible", "IBM,vtpm") < 0 &&
+-	    of_property_match_string(np, "compatible", "IBM,vtpm20") < 0) {
+-		size = be32_to_cpup((__force __be32 *)sizep);
+-		base = be64_to_cpup((__force __be64 *)basep);
+-	} else {
+-		size = *sizep;
+-		base = *basep;
+-	}
++	ret = of_tpm_get_sml_parameters(np, &base, &size);
++	if (ret < 0)
++		return ret;
+ 
+ 	if (size == 0) {
+ 		dev_warn(&chip->dev, "%s: Event log area empty\n", __func__);
+diff --git a/include/linux/tpm.h b/include/linux/tpm.h
+index dfeb25a0362d..6356baaa1393 100644
+--- a/include/linux/tpm.h
++++ b/include/linux/tpm.h
+@@ -460,4 +460,40 @@ static inline struct tpm_chip *tpm_default_chip(void)
+ 	return NULL;
+ }
+ #endif
++
++#ifdef CONFIG_OF
++static inline int of_tpm_get_sml_parameters(struct device_node *np,
++					    u64 *base, u32 *size)
++{
++	const u32 *sizep;
++	const u64 *basep;
++
++	sizep = of_get_property(np, "linux,sml-size", NULL);
++	basep = of_get_property(np, "linux,sml-base", NULL);
++	if (sizep == NULL && basep == NULL)
++		return -ENODEV;
++	if (sizep == NULL || basep == NULL)
++		return -EIO;
++
++	/*
++	 * For both vtpm/tpm, firmware has log addr and log size in big
++	 * endian format. But in case of vtpm, there is a method called
++	 * sml-handover which is run during kernel init even before
++	 * device tree is setup. This sml-handover function takes care
++	 * of endianness and writes to sml-base and sml-size in little
++	 * endian format. For this reason, vtpm doesn't need conversion
++	 * but physical tpm needs the conversion.
++	 */
++	if (of_property_match_string(np, "compatible", "IBM,vtpm") < 0 &&
++	    of_property_match_string(np, "compatible", "IBM,vtpm20") < 0) {
++		*size = be32_to_cpup((__force __be32 *)sizep);
++		*base = be64_to_cpup((__force __be64 *)basep);
++	} else {
++		*size = *sizep;
++		*base = *basep;
++	}
++	return 0;
++}
++#endif
++
+ #endif
 -- 
 2.35.1
 
