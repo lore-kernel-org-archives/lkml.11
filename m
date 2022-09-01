@@ -2,119 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BB89ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 16:13:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05597ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 16:14:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234970AbiIAQM6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 12:12:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47822 "EHLO
+        id S235008AbiIAQN5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 12:13:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234974AbiIAQMy (ORCPT
+        with ESMTP id S235002AbiIAQNk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 12:12:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57FB4915F3
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 09:12:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662048767;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UHmYOlxrBiaepineueJ+BA2NniHKUIf3ILRk7FlgVfY=;
-        b=iGhdxqlWzgkGCJ6rLO+U/azTwVBLuQq2UkT3SaWFrujZCBZwChdO4N0QOEIhsk5IvVx17s
-        ze91o/2urXSnAgZQYAiasmpKTDNoo9otSQPz77S+97oQ7EvAHqr1hLrqGgcBGOBdAAOLBT
-        cqXhdLVOY2zymrmo8lq0p0RE3ruOWgA=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-442-Du0mSLDPMe-xNlqIJu9UJw-1; Thu, 01 Sep 2022 12:12:40 -0400
-X-MC-Unique: Du0mSLDPMe-xNlqIJu9UJw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C8FEF80A0AE;
-        Thu,  1 Sep 2022 16:12:39 +0000 (UTC)
-Received: from oldenburg.str.redhat.com (unknown [10.39.192.37])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 301FE40CF8F2;
-        Thu,  1 Sep 2022 16:12:34 +0000 (UTC)
-From:   Florian Weimer <fweimer@redhat.com>
-To:     Jeff Layton <jlayton@kernel.org>
-Cc:     tytso@mit.edu, adilger.kernel@dilger.ca, djwong@kernel.org,
-        david@fromorbit.com, trondmy@hammerspace.com, neilb@suse.de,
-        viro@zeniv.linux.org.uk, zohar@linux.ibm.com, xiubli@redhat.com,
-        chuck.lever@oracle.com, lczerner@redhat.com, jack@suse.cz,
-        bfields@fieldses.org, brauner@kernel.org,
-        linux-man@vger.kernel.org, linux-api@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ceph-devel@vger.kernel.org,
-        linux-ext4@vger.kernel.org, linux-nfs@vger.kernel.org,
-        linux-xfs@vger.kernel.org
-Subject: Re: [RFC PATCH v2] statx, inode: document the new STATX_INO_VERSION
- field
-References: <20220901121714.20051-1-jlayton@kernel.org>
-Date:   Thu, 01 Sep 2022 18:12:33 +0200
-In-Reply-To: <20220901121714.20051-1-jlayton@kernel.org> (Jeff Layton's
-        message of "Thu, 1 Sep 2022 08:17:14 -0400")
-Message-ID: <874jxrqdji.fsf@oldenburg.str.redhat.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
+        Thu, 1 Sep 2022 12:13:40 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A3B91D0A
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 09:13:39 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id w8so16081147lft.12
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 09:13:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=/h8fdpcLhY4wu6EZotB0ad3yUb1WuRgsZLCw3g30N7s=;
+        b=AL58HhQtL8dAINZDiR9Jy7SCy6M1Dh/RHGgmNLEaJXlbv04ar66bwmzyAjo/AkOzfM
+         HLA0NmZy0HcVlc//0crt4Y78sdwVeYZTRZLrBnkasm5jDooceRFzNsWaHLxzN64ZSxio
+         ARI582Qi7CFJFX8Ee2UaYuB2gR/LGnTLRoevMAjhm+l3ZrZYgQFCzaEnSEm3xa/MpFy/
+         77VlrEwioFsuiM0TPssqXQmgUBrbaSOeTKg5tc+GlAqSsBC6dVQCIat3X4ER7Td7kPzV
+         uJEEZaN9PXuPkfjY9VlCDcFrxKsmrWV+aOyykph5dmYow4TwiBnkEUxNd53xh2ZdcbG8
+         FgLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=/h8fdpcLhY4wu6EZotB0ad3yUb1WuRgsZLCw3g30N7s=;
+        b=16BOJx1X9ylO2cFwpXf1pD2+z1WqZ+GM9nUJQUYnh2Kw5zY86mTbt83fGpzjD02ePw
+         1qZclc81Rcg5wcR4bfg3Cy96At5lSTnntOLVqoMbvZt29qmb86G+kBdED2iQMD/72B/i
+         7K8SPVKiyV8R2AQhFZoBMQMzrQW/7ETSyHQnMpfGcku3H/ulnEWydSF+rbD1VDwZ6LV2
+         vFVaxzXMzYE0UMOapORi6hboU8P2lhBXHzHLh4mGf7vlPjpnF/7UdNjppE26gvNLxI7E
+         ZUguP/7++b9FbbioIr2AmUn9r9WerCxBfCtOFnGFMVze6kOgZaB4By+0CIXF9wWQCjuN
+         nKHQ==
+X-Gm-Message-State: ACgBeo3jwVyc/u3P7BYqJ5glcuz+sWREA3QHnRUzjNR3LWwq4m9Ntjvf
+        Pw3ZcqFWyaXmaTehbRCZXqBDeQ==
+X-Google-Smtp-Source: AA6agR4WPGNknCusu5ZB4w+TzAKz+hU2cGpzNsGUYnCdtjfKXHgQ3HQZ0okBViuMoNSFRKc4vQ/Vdg==
+X-Received: by 2002:a05:6512:6c8:b0:494:796e:93b6 with SMTP id u8-20020a05651206c800b00494796e93b6mr4379172lff.213.1662048817367;
+        Thu, 01 Sep 2022 09:13:37 -0700 (PDT)
+Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
+        by smtp.gmail.com with ESMTPSA id m9-20020a197109000000b00485caa0f5dfsm2389640lfc.44.2022.09.01.09.13.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Sep 2022 09:13:36 -0700 (PDT)
+Message-ID: <a0204dc3-af13-6b0b-d779-0f207d1aff7e@linaro.org>
+Date:   Thu, 1 Sep 2022 19:13:35 +0300
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH 09/14] arm64: dts: qcom: sm6115: Add UFS nodes
+Content-Language: en-US
+To:     Iskren Chernev <iskren.chernev@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-kernel@vger.kernel.org
+References: <20220901072414.1923075-1-iskren.chernev@gmail.com>
+ <20220901072414.1923075-10-iskren.chernev@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220901072414.1923075-10-iskren.chernev@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Jeff Layton:
+On 01/09/2022 10:24, Iskren Chernev wrote:
+> The SM6115 comes with UFS support, so add the related UFS and UFS PHY
+> nodes.
+> 
+> Signed-off-by: Iskren Chernev <iskren.chernev@gmail.com>
+> ---
+>  arch/arm64/boot/dts/qcom/sm6115.dtsi | 70 ++++++++++++++++++++++++++++
+>  1 file changed, 70 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sm6115.dtsi b/arch/arm64/boot/dts/qcom/sm6115.dtsi
+> index cde963c56ac9..491fffff8aa1 100644
+> --- a/arch/arm64/boot/dts/qcom/sm6115.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sm6115.dtsi
+> @@ -620,6 +620,76 @@ opp-202000000 {
+>  			};
+>  		};
+>  
+> +		ufs_mem_hc: ufshc@4804000 {
+> +			compatible = "qcom,sm6115-ufshc", "qcom,ufshc",
+> +				     "jedec,ufs-2.0";
+> +			reg = <0x4804000 0x3000>, <0x4810000 0x8000>;
+> +			reg-names = "std", "ice";
 
-> @@ -411,6 +413,21 @@ and corresponds to the number in the first field in one of the records in
->  For further information on the above fields, see
->  .BR inode (7).
->  .\"
-> +.TP
-> +.I stx_ino_version
-> +The inode version, also known as the inode change attribute. This
-> +value must change any time there is an inode status change. Any
-> +operation that would cause the
-> +.I stx_ctime
-> +to change must also cause
-> +.I stx_ino_version
-> +to change, even when there is no apparent change to the
-> +.I stx_ctime
-> +due to coarse timestamp granularity.
-> +.IP
-> +An observer cannot infer anything about the nature or magnitude of the change
-> +from the value of this field. A change in this value only indicates that
-> +there has been an explicit change in the inode.
+I could imagine that testing DTS against existing bindings might miss a
+lot, because we have still a lot of errors. But at least I would expect
+you test your DTS against your own bindings, which you submit here (and
+previously).
 
-What happens if the file system does not support i_version?
+You just wrote that ice is not allowed.
 
-> diff --git a/man7/inode.7 b/man7/inode.7
-> index 9b255a890720..d5e0890a52c0 100644
-> --- a/man7/inode.7
-> +++ b/man7/inode.7
-> @@ -184,6 +184,18 @@ Last status change timestamp (ctime)
->  This is the file's last status change timestamp.
->  It is changed by writing or by setting inode information
->  (i.e., owner, group, link count, mode, etc.).
-> +.TP
-> +Inode version (i_version)
-> +(not returned in the \fIstat\fP structure); \fIstatx.stx_ino_version\fP
-> +.IP
-> +This is the inode change attribute. Any operation that would result in a change
-> +to \fIstatx.stx_ctime\fP must result in a change to this value. The value must
-> +change even in the case where the ctime change is not evident due to coarse
-> +timestamp granularity.
-> +.IP
-> +An observer cannot infer anything from the returned value about the nature or
-> +magnitude of the change. If the returned value is different from the last time
-> +it was checked, then something has made an explicit change to the inode.
+> +			interrupts = <GIC_SPI 356 IRQ_TYPE_LEVEL_HIGH>;
+> +			phys = <&ufs_mem_phy_lanes>;
+> +			phy-names = "ufsphy";
+> +			lanes-per-direction = <1>;
+> +			#reset-cells = <1>;
+> +			resets = <&gcc GCC_UFS_PHY_BCR>;
+> +			reset-names = "rst";
+> +
+> +			power-domains = <&gcc GCC_UFS_PHY_GDSC>;
+> +			iommus = <&apps_smmu 0x100 0>;
+> +
+> +			clocks = <&gcc GCC_UFS_PHY_AXI_CLK>,
+> +				 <&gcc GCC_SYS_NOC_UFS_PHY_AXI_CLK>,
+> +				 <&gcc GCC_UFS_PHY_AHB_CLK>,
+> +				 <&gcc GCC_UFS_PHY_UNIPRO_CORE_CLK>,
+> +				 <&gcc GCC_UFS_PHY_ICE_CORE_CLK>,
+> +				 <&rpmcc RPM_SMD_XO_CLK_SRC>,
+> +				 <&gcc GCC_UFS_PHY_TX_SYMBOL_0_CLK>,
+> +				 <&gcc GCC_UFS_PHY_RX_SYMBOL_0_CLK>;
+> +			clock-names = "core_clk",
+> +				      "bus_aggr_clk",
+> +				      "iface_clk",
+> +				      "core_clk_unipro",
+> +				      "core_clk_ice",
+> +				      "ref_clk",
+> +				      "tx_lane0_sync_clk",
+> +				      "rx_lane0_sync_clk";
+> +
+> +			freq-table-hz = <50000000 200000000>,
+> +					<0 0>,
+> +					<0 0>,
+> +					<37500000 150000000>,
+> +					<75000000 300000000>,
+> +					<0 0>,
+> +					<0 0>,
+> +					<0 0>;
+> +
+> +			non-removable;
 
-What is the wraparound behavior for i_version?  Does it use the full
-64-bit range?
+Is it allowed property?
 
-If the system crashes without flushing disks, is it possible to observe
-new file contents without a change of i_version?
+> +			status = "disabled";
+> +		};
+> +
+> +		ufs_mem_phy: phy@4807000 {
+> +			compatible = "qcom,sm6115-qmp-ufs-phy";
+> +			reg = <0x4807000 0x1c4>;
+> +			#address-cells = <1>;
+> +			#size-cells = <1>;
+> +			ranges;
+> +
+> +			clocks = <&gcc GCC_UFS_CLKREF_CLK>,
+> +				 <&gcc GCC_UFS_PHY_PHY_AUX_CLK>;
+> +			clock-names = "ref", "ref_aux";
+> +
+> +			resets = <&ufs_mem_hc 0>;
+> +			reset-names = "ufsphy";
+> +			status = "disabled";
+> +
+> +			ufs_mem_phy_lanes: lanes@4807400 {
+> +				reg = <0x4807400 0x098>,
+> +				      <0x4807600 0x130>,
+> +				      <0x4807c00 0x16c>;
+> +				#phy-cells = <0>;
+> +			};
+> +		};
+> +
+> +
 
-Thanks,
-Florian
+Just one blank line.
 
+Best regards,
+Krzysztof
