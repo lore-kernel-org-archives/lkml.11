@@ -2,70 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DCDAECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 00:49:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8AB6ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 00:51:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231874AbiIAAtG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 20:49:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42712 "EHLO
+        id S232027AbiIAAvR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 20:51:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231700AbiIAAtE (ORCPT
+        with ESMTP id S231645AbiIAAvN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 20:49:04 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A0A411BE2A
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 17:49:03 -0700 (PDT)
-Received: from kwepemi500008.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MJ2SK28mxzHnVx;
-        Thu,  1 Sep 2022 08:47:13 +0800 (CST)
-Received: from huawei.com (10.67.175.83) by kwepemi500008.china.huawei.com
- (7.221.188.139) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 1 Sep
- 2022 08:49:00 +0800
-From:   ruanjinjie <ruanjinjie@huawei.com>
-To:     <lkundrak@v3.sk>, <linux@armlinux.org.uk>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <ruanjinjie@huawei.com>
-Subject: [PATCH -next] ARM: mmp: Make mmp2_resource_gpio static
-Date:   Thu, 1 Sep 2022 08:45:24 +0800
-Message-ID: <20220901004524.81383-1-ruanjinjie@huawei.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.175.83]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemi500008.china.huawei.com (7.221.188.139)
+        Wed, 31 Aug 2022 20:51:13 -0400
+Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC8A725C8
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 17:49:49 -0700 (PDT)
+Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220901004947epoutp04aa87eddaf5ddb0a832c2db3ffce69592~Qli48MjDM1181911819epoutp04d
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 00:49:47 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220901004947epoutp04aa87eddaf5ddb0a832c2db3ffce69592~Qli48MjDM1181911819epoutp04d
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1661993387;
+        bh=F+DSRmrJxDlQ34jLvI5bieObIeH2rYC6PXiOIfkWjjU=;
+        h=Subject:Reply-To:From:To:CC:Date:References:From;
+        b=AIR9crDXAJg0t0vY3/MfDeNNiActLEPmM9+agiEKgU7AIWrT59gDP+upWk6Aw/Ssy
+         v3a6c5WpPVyBGeIRGA+umcYl3KyOqV6vpzBB4CikeLTI0218syvCg0Wj5xXDQc2u0U
+         i0DIj+BkF/uLpwZW+RGLmOkInqfGjEiwLw1xEAcE=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas2p4.samsung.com (KnoxPortal) with ESMTP id
+        20220901004947epcas2p4298714009c3c8aacc0135baba32c4f3e~Qli4jnZC01107511075epcas2p4Z;
+        Thu,  1 Sep 2022 00:49:47 +0000 (GMT)
+Received: from epsmges2p2.samsung.com (unknown [182.195.36.99]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4MJ2W94pSzz4x9Py; Thu,  1 Sep
+        2022 00:49:41 +0000 (GMT)
+X-AuditID: b6c32a46-aa5ff70000018104-72-631001a56c3d
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+        epsmges2p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        02.1E.33028.5A100136; Thu,  1 Sep 2022 09:49:41 +0900 (KST)
+Mime-Version: 1.0
+Subject: [PATCH v2] drivers/nvme/host: Fix namespace duplication check rule
+Reply-To: sungup.moon@samsung.com
+Sender: Sungup Moon <sungup.moon@samsung.com>
+From:   Sungup Moon <sungup.moon@samsung.com>
+To:     "kbusch@kernel.org" <kbusch@kernel.org>,
+        "axboe@fb.com" <axboe@fb.com>, "hch@lst.de" <hch@lst.de>,
+        "sagi@grimberg.me" <sagi@grimberg.me>
+CC:     "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Sungup Moon <sungup.moon@samsung.com>
+X-Priority: 3
+X-Content-Kind-Code: NORMAL
+X-CPGS-Detection: blocking_info_exchange
+X-Drm-Type: N,general
+X-Msg-Generator: Mail
+X-Msg-Type: PERSONAL
+X-Reply-Demand: N
+Message-ID: <20220901004941epcms2p4e5e1c53484889619f050a02d8e671eca@epcms2p4>
+Date:   Thu, 01 Sep 2022 09:49:41 +0900
+X-CMS-MailID: 20220901004941epcms2p4e5e1c53484889619f050a02d8e671eca
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprAJsWRmVeSWpSXmKPExsWy7bCmhe5SRoFkg3OHVC3+7znGZrFy9VEm
+        i0mHrjFaXN41h81i/rKn7BbrXr9nsbj76SWrA7vHxOZ37B7n721k8di0qpPNY/OSeo/dNxvY
+        PPq2rGL0+LxJLoA9KtsmIzUxJbVIITUvOT8lMy/dVsk7ON453tTMwFDX0NLCXEkhLzE31VbJ
+        xSdA1y0zB+geJYWyxJxSoFBAYnGxkr6dTVF+aUmqQkZ+cYmtUmpBSk6BeYFecWJucWleul5e
+        aomVoYGBkSlQYUJ2RvPuT8wFy8UrTrzqZm1gPC7QxcjJISFgIrFp+mLWLkYuDiGBHYwSG1a1
+        ADkcHLwCghJ/dwiD1AgLeEu03t3FDmILCShK/H3WxwgR15VY838KM4jNJqAtce/MWyaQOSIC
+        fYwSfd/Pgw1lFljPKHHrwjJmiG28EjPan7JA2NIS25dvZYSwNSR+LOuFqhGVuLn6LTuM/f7Y
+        fKgaEYnWe2ehagQlHvzcDRWXlHh68gNUPF+i7fciNpDFEgIdjBLnHx5hgkiYS/x5eR1sKK+A
+        r8TWH2/ZQGwWAVWJfV+vsULUuEjsmvcW7DhmAXmJ7W/nMINCgllAU2L9Ln0QU0JAWeLILagK
+        PomOw3/ZYd7aMe8J1CZViYsTethgXlw5r4ERotVD4t5ZI0gYBkrMbDrFPIFRYRYipGchWTsL
+        Ye0CRuZVjGKpBcW56anFRgVG8MhNzs/dxAhOmlpuOxinvP2gd4iRiYPxEKMEB7OSCO/3czzJ
+        QrwpiZVVqUX58UWlOanFhxhNgR6eyCwlmpwPTNt5JfGGJpYGJmZmhuZGpgbmSuK8LtqMyUIC
+        6YklqdmpqQWpRTB9TBycUg1MvVr3siUbDrox1m4ra2N2ffK0XN956oo/d3TnbJH7dHqDb+BJ
+        l+PxgY73a2NynCdeC51o1bDIvbfofMpZO/7DB6Zuu8v5v2oGE+unxADF050607c8Wj/h7m1n
+        3XvKzef7WcI+aE5hur2etYV1vl9uk8Oz4ycmPOTzKZh6o54xYUPb3gDWH9OvlTkuUGk6f8PH
+        bEJicKJn2AGFr0ZPfLJLPu3YKM0grVmssWpexr4VSklZbSkfvvxacFVi6o7tv47WPcs7/Paj
+        lrPo+/1n857Z6kVcPMrGmnL2x16lqRbfgjfMvWSz5ueKMJ63mR/vl3z4dqXn+dWSyWfmsE5h
+        WnNuzX4d8y88ZXeN5sw44GT5N1qJpTgj0VCLuag4EQAQr2NuIwQAAA==
+DLP-Filter: Pass
 X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220901002815epcms2p6ae137d9de49bef5764f19c0fa7f3536e
+References: <CGME20220901002815epcms2p6ae137d9de49bef5764f19c0fa7f3536e@epcms2p4>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The symbol is not used outside of the file, so mark it static.
+Some NVMe device, use EUI64 and NGUID, has fixed value EUI64 on a
+sub-system because of the bit size of ID. Current kernel check the
+all IDs should have unique value in a sub-system and globally.
+However, if an namespace has duplicate IDs (not all) in a sub-system,
+current kernel raise "duplicate IDs in subsystem for nsid" error. But
+NVMe Specification defines the namespace unique identifier like this:
 
-Fixes the following warning:
+When creating a namespace, the controller shall indicate a globally
+unique value in one or more of the following:
+a) the EUI64 field;
+b) the NGUID field; or
+c) a Namespace Identification Descriptor with the Namespace Identifier
+Type field set to 3h
+(reference: 7.11 Unique Identifier; NVM Express 1.4c spec)
 
-./arch/arm/mach-mmp/mmp2.c:157:17: warning: symbol 'mmp2_resource_gpio' was not declared. Should it be static?
+So, I suggest the modified nvme_subsys_check_duplicate_ids function
+checking uniqueness from all IDS to one more IDs.
 
-Signed-off-by: ruanjinjie <ruanjinjie@huawei.com>
+I missed the initializing of "duplicated" variable, so I reissue the
+version2 patch.
+
+Signed-off-by: Sungup Moon <sungup.moon@samsung.com>
 ---
- arch/arm/mach-mmp/mmp2.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/nvme/host/core.c | 25 ++++++++++++++++++-------
+ 1 file changed, 18 insertions(+), 7 deletions(-)
 
-diff --git a/arch/arm/mach-mmp/mmp2.c b/arch/arm/mach-mmp/mmp2.c
-index bbc4c2274de3..696bc1856e6d 100644
---- a/arch/arm/mach-mmp/mmp2.c
-+++ b/arch/arm/mach-mmp/mmp2.c
-@@ -154,7 +154,7 @@ MMP2_DEVICE(asram, "asram", -1, NONE, 0xe0000000, 0x4000);
- /* 0xd1000000 ~ 0xd101ffff is reserved for secure processor */
- MMP2_DEVICE(isram, "isram", -1, NONE, 0xd1020000, 0x18000);
- 
--struct resource mmp2_resource_gpio[] = {
-+static struct resource mmp2_resource_gpio[] = {
- 	{
- 		.start	= 0xd4019000,
- 		.end	= 0xd4019fff,
--- 
-2.25.1
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index af367b22871b..8c2faa2881a4 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -3902,24 +3902,35 @@ static struct nvme_ns_head *nvme_find_ns_head(struct nvme_ctrl *ctrl,
+        return NULL;
+ }
 
++#define IDS_EQUAL(A, B) (memcmp(&(A), &(B), sizeof(A)) == 0)
++
+ static int nvme_subsys_check_duplicate_ids(struct nvme_subsystem *subsys,
+                struct nvme_ns_ids *ids)
+ {
+        bool has_uuid = !uuid_is_null(&ids->uuid);
+        bool has_nguid = memchr_inv(ids->nguid, 0, sizeof(ids->nguid));
+        bool has_eui64 = memchr_inv(ids->eui64, 0, sizeof(ids->eui64));
++       bool duplicated;
+        struct nvme_ns_head *h;
+
+        lockdep_assert_held(&subsys->lock);
+
+        list_for_each_entry(h, &subsys->nsheads, entry) {
+-               if (has_uuid && uuid_equal(&ids->uuid, &h->ids.uuid))
+-                       return -EINVAL;
+-               if (has_nguid &&
+-                   memcmp(&ids->nguid, &h->ids.nguid, sizeof(ids->nguid)) == 0)
+-                       return -EINVAL;
+-               if (has_eui64 &&
+-                   memcmp(&ids->eui64, &h->ids.eui64, sizeof(ids->eui64)) == 0)
++               duplicated = has_uuid || has_nguid || has_eui64;
++
++               if (has_uuid)
++                       duplicated = duplicated &&
++                               uuid_equal(&ids->uuid, &h->ids.uuid);
++
++               if (has_nguid)
++                       duplicated = duplicated &&
++                               IDS_EQUAL(ids->nguid, h->ids.nguid);
++
++               if (has_eui64)
++                       duplicated = duplicated &&
++                               IDS_EQUAL(ids->eui64, h->ids.eui64);
++
++               if (duplicated)
+                        return -EINVAL;
+        }
+
+--
+2.34.1
