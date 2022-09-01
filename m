@@ -2,83 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0C95ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 15:04:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5DE2ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 15:05:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234550AbiIAPE5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 11:04:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54714 "EHLO
+        id S233651AbiIAPF0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 11:05:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234011AbiIAPEy (ORCPT
+        with ESMTP id S233225AbiIAPFU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 11:04:54 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E4D8F1121;
-        Thu,  1 Sep 2022 08:04:51 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4AF61D6E;
-        Thu,  1 Sep 2022 08:04:57 -0700 (PDT)
-Received: from [10.57.18.92] (unknown [10.57.18.92])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 10EE73F766;
-        Thu,  1 Sep 2022 08:04:08 -0700 (PDT)
-Message-ID: <58d14cfc-f8ba-777b-a975-371ff2b29e5a@arm.com>
-Date:   Thu, 1 Sep 2022 16:03:36 +0100
+        Thu, 1 Sep 2022 11:05:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 376F220BE2
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 08:05:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D06E161E2F
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 15:05:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD6BEC433C1;
+        Thu,  1 Sep 2022 15:05:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662044717;
+        bh=tWzWn0gW8BzXNqiAiZbScYJiINyRkPfjVCCo5/EfHrg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UhEgNktqoIw5GmTNE8yBGpp1wszbIa4x+a3aFYjP+gd6nej+A6+TWsoXrh9oFtdIS
+         35J83eHSg/SohtEw+IBHsQpt3uW4YCaUO1YSTe3DZjxK5XLIcKV6bY3Dk84tYKf6jj
+         CKUY5GG6Zwr3qx5kmY1AVlcuGSAn+Q5fy3h98T94=
+Date:   Thu, 1 Sep 2022 17:05:09 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Li Zhong <floridsleeves@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, rafael@kernel.org
+Subject: Re: [PATCH v1] drivers/base/auxiliary: check return value of
+ strrchr()
+Message-ID: <YxDKJUozlGUQIrSp@kroah.com>
+References: <20220828204040.1953493-1-floridsleeves@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH v4 1/2] iommu/s390: Fix race with release_device ops
-Content-Language: en-GB
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Niklas Schnelle <schnelle@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>, iommu@lists.linux.dev,
-        linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, joro@8bytes.org, will@kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220831201236.77595-1-mjrosato@linux.ibm.com>
- <20220831201236.77595-2-mjrosato@linux.ibm.com>
- <9887e2f4-3f3d-137d-dad7-59dab5f98aab@linux.ibm.com>
- <52d3fe0b86bdc04fdbf3aae095b2f71f4ea12d44.camel@linux.ibm.com>
- <e01e6ef2-ba45-7433-5fe4-a6806dac3af9@arm.com>
- <8b561ad3023fc146ba0779cbd8fff14d6409c6aa.camel@linux.ibm.com>
- <3e402947-61f9-b7e8-1414-fde006257b6f@arm.com> <YxDDD2DF9KFDQ+Yk@nvidia.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <YxDDD2DF9KFDQ+Yk@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220828204040.1953493-1-floridsleeves@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-09-01 15:34, Jason Gunthorpe wrote:
-> On Thu, Sep 01, 2022 at 03:29:16PM +0100, Robin Murphy wrote:
+On Sun, Aug 28, 2022 at 01:40:40PM -0700, Li Zhong wrote:
+> From: lily <floridsleeves@gmail.com>
 > 
->> Right, the next step would be to bridge that gap to iommu-dma to dump the
->> flush queue when IOVA allocation failure implies we've reached the
->> "rollover" point, and perhaps not use the timer at all. By that point a
->> dedicated domain type, or at least some definite internal flag, for this
->> alternate behaviour seems like the logical way to go.
+> The return value of strrchr() could be NULL, which will cause invalid
+> offset in (int)(p - name). So we check it here.
 > 
-> At least on this direction, I've been thinking it would be nice to
-> replace the domain type _FQ with a flag inside the domain, maybe the
-> ops, saying how the domain wants the common DMA API to operate. If it
-> wants FQ mode or other tuning parameters
+> Signed-off-by: Li Zhong <floridsleeves@gmail.com>
+> ---
+>  drivers/base/auxiliary.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/base/auxiliary.c b/drivers/base/auxiliary.c
+> index 8c5e65930617..7ac23be47e1f 100644
+> --- a/drivers/base/auxiliary.c
+> +++ b/drivers/base/auxiliary.c
+> @@ -191,7 +191,8 @@ static int auxiliary_uevent(struct device *dev, struct kobj_uevent_env *env)
+>  
+>  	name = dev_name(dev);
+>  	p = strrchr(name, '.');
+> -
+> +	if (!p)
+> +		return -EINVAL;
+>  	return add_uevent_var(env, "MODALIAS=%s%.*s", AUXILIARY_MODULE_PREFIX,
+>  			      (int)(p - name), name);
+>  }
+> -- 
+> 2.25.1
+> 
 
-Compare the not-necessarily-obvious matrix of "strict" and "passthrough" 
-command-line parameters with the nice understandable kconfig and sysfs 
-controls for a reminder of why I moved things *from* that paradigm in 
-the first place ;)
+Hi,
 
-This idea still fits perfectly into the the "continuum of strictness" 
-notion underlying that domain type rework, since it potentially leaves a 
-lot more address space mapped for a much longer time than our current FQ 
-implementation. I would agree that exposing FQ tuneables in their own 
-right may well have some potential value, much like John's equivalent 
-idea for the IOVA cache layer, but I for one have no desire to bring 
-back DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE, much less any further mess of 
-disjoint properties at that level.
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
 
-Thanks,
-Robin.
+You are receiving this message because of the following common error(s)
+as indicated below:
+
+- It looks like you did not use your "real" name for the patch on either
+  the Signed-off-by: line, or the From: line (both of which have to
+  match).  Please read the kernel file, Documentation/SubmittingPatches
+  for how to do this correctly.
+
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
