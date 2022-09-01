@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80BE0ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 22:22:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAA28ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 22:22:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235140AbiIAWWt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 18:22:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46760 "EHLO
+        id S235357AbiIAWW5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 18:22:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234523AbiIAWWB (ORCPT
+        with ESMTP id S234968AbiIAWWH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 18:22:01 -0400
-Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAB6FA3473;
-        Thu,  1 Sep 2022 15:19:35 -0700 (PDT)
+        Thu, 1 Sep 2022 18:22:07 -0400
+Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E8167962F;
+        Thu,  1 Sep 2022 15:19:33 -0700 (PDT)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id F2BBE220D;
-        Fri,  2 Sep 2022 00:19:13 +0200 (CEST)
+        by mail.3ffe.de (Postfix) with ESMTPSA id EF3D62221;
+        Fri,  2 Sep 2022 00:19:15 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1662070754;
+        t=1662070756;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=EFD+0mrv3jpvtYWREXPyq1wWMmEP8gipYWNhSEthauI=;
-        b=oNNfzaxeanq1HoAf+vPwChOwaGCEVCu3KYV1OE/511BdJsIt/utKnfzGoKyx44xEkUW8bg
-        pRYRGg5vyAb7NLJnjHIE49UFaBBpczMHCCWihArQ6L2FMSxpaXGSOfHm1gvaahW1moew13
-        AurmHTvzWtkQMV3hmjRp2Zcz4oy9eWLASnuPCJVSFirZh1OAIPqVHF8ZuJGnrelUjFCudz
-        EU8Aa/nqFSxUvRMnWSAtHoRMPfP0sl6IQzds/Ony9ZkCEhkjdttsBpYQVuMdLxjBJ47Dj5
-        li6F/WYGVYmqzXB4Qw7s3GtfEozvYCW7HAEAmDCPmUA0BGk1cILpeSBZ7gtY1A==
+        bh=KKvaxDezpVglQbvUlzzvJIhuhv9lpFlXJWy0f0xohsQ=;
+        b=hSJiAoEqoFLiXl618NYj5ODCGWBKsRSBRjJyZajQCq7YvEFL7TUa2cRG0rF0YAxW3ml3S/
+        kYWFF/sQeJvRRn0RC1oJALu4df2WuE3VFELUQnzMrOYG2cJzE4LMOL9VVILuduncXO+Pxz
+        cCBvFy+vBwKEeKaSkAxyKbmuEX8H7PE6pRXJ9fbIRbwEG0jFZqOGjXlKqaw6Ix4Ria98Zc
+        TXdV4OVehj8MT25E3CPtFPX0oyfokMnHje+BuQCyHbzHTCF0uB1QGvqagVu/3+xSy4PrH6
+        eQNhkvXMJ01RqVJAYFYBhBIhl7gdB8E10UYdrz/Ex6JNy2QkgvTxiMjV1Fk9jA==
 From:   Michael Walle <michael@walle.cc>
 To:     Miquel Raynal <miquel.raynal@bootlin.com>,
         Richard Weinberger <richard@nod.at>,
@@ -48,9 +48,9 @@ Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
         Ahmad Fatoum <a.fatoum@pengutronix.de>,
         Philipp Zabel <p.zabel@pengutronix.de>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH v2 15/20] dt-bindings: nvmem: add YAML schema for the sl28 vpd layout
-Date:   Fri,  2 Sep 2022 00:18:52 +0200
-Message-Id: <20220901221857.2600340-16-michael@walle.cc>
+Subject: [RFC PATCH v2 20/20] nvmem: layouts: u-boot-env: add device node
+Date:   Fri,  2 Sep 2022 00:18:57 +0200
+Message-Id: <20220901221857.2600340-21-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220901221857.2600340-1-michael@walle.cc>
 References: <20220901221857.2600340-1-michael@walle.cc>
@@ -61,94 +61,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a schema for the NVMEM layout on Kontron's sl28 boards.
+Register the device node so we can actually make use of the cells from
+within the device tree.
+
+This obviously only works if the environment variable name can be mapped
+to the device node, which isn't always the case. Think of "_" vs "-".
+But for simple things like ethaddr, this will work.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
 changes since v1:
- - add custom select
- - add description
- - add "additionalProperties: false", I wasn't sure if all the
-   subnodes needs it. I'd say yes, but the brcm,nvram binding
-   doesn't have them neither.
+ - none
 
- .../nvmem/layouts/kontron,sl28-vpd.yaml       | 67 +++++++++++++++++++
- 1 file changed, 67 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/nvmem/layouts/kontron,sl28-vpd.yaml
+ drivers/nvmem/layouts/u-boot-env.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/nvmem/layouts/kontron,sl28-vpd.yaml b/Documentation/devicetree/bindings/nvmem/layouts/kontron,sl28-vpd.yaml
-new file mode 100644
-index 000000000000..0c180f29e880
---- /dev/null
-+++ b/Documentation/devicetree/bindings/nvmem/layouts/kontron,sl28-vpd.yaml
-@@ -0,0 +1,67 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/nvmem/layouts/kontron,sl28-vpd.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: NVMEM layout of the Kontron SMARC-sAL28 vital product data
-+
-+maintainers:
-+  - Michael Walle <michael@walle.cc>
-+
-+description:
-+  The vital product data (VPD) of the sl28 boards contains a serial
-+  number and a base MAC address. The actual MAC addresses for the
-+  on-board ethernet devices are derived from this base MAC address by
-+  adding an offset.
-+
-+# We need a select here so we don't match all nodes with 'user-otp'
-+select:
-+  properties:
-+    compatible:
-+      contains:
-+        const: kontron,sl28-vpd
-+  required:
-+    - compatible
-+
-+properties:
-+  compatible:
-+    items:
-+      - const: kontron,sl28-vpd
-+      - const: user-otp
-+
-+  serial-number:
-+    type: object
-+    description: The board's serial number
-+
-+  base-mac-address:
-+    type: object
-+    description:
-+      Base MAC address for all on-module network interfaces. The first
-+      argument of the phandle will be treated as an offset.
-+
-+    properties:
-+      "#nvmem-cell-cells":
-+        const: 1
-+
-+    additionalProperties: false
-+
-+required:
-+  - compatible
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+      otp-1 {
-+          compatible = "kontron,sl28-vpd", "user-otp";
-+
-+          serial_number: serial-number {
-+          };
-+
-+          base_mac_address: base-mac-address {
-+              #nvmem-cell-cells = <1>;
-+          };
-+      };
-+
-+...
+diff --git a/drivers/nvmem/layouts/u-boot-env.c b/drivers/nvmem/layouts/u-boot-env.c
+index f184d1424b1e..d2adc246c93a 100644
+--- a/drivers/nvmem/layouts/u-boot-env.c
++++ b/drivers/nvmem/layouts/u-boot-env.c
+@@ -8,6 +8,7 @@
+ #include <linux/device.h>
+ #include <linux/nvmem-consumer.h>
+ #include <linux/nvmem-provider.h>
++#include <linux/of.h>
+ #include <linux/slab.h>
+ 
+ enum u_boot_env_format {
+@@ -47,6 +48,7 @@ static int u_boot_env_add_cells(struct device *dev,
+ 		info.name = var;
+ 		info.offset = data_offset + value - data;
+ 		info.bytes = strlen(value);
++		info.np = of_get_child_by_name(dev->of_node, var);
+ 
+ 		err = nvmem_add_one_cell(nvmem, &info);
+ 		if (err)
 -- 
 2.30.2
 
