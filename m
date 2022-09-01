@@ -2,133 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8754AECAAD2
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 22:30:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 638F7ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 22:30:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235386AbiIAWaC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 18:30:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48184 "EHLO
+        id S235391AbiIAWaR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 18:30:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235266AbiIAW31 (ORCPT
+        with ESMTP id S235317AbiIAW3a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 18:29:27 -0400
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D792FB96;
-        Thu,  1 Sep 2022 15:27:53 -0700 (PDT)
-Date:   Thu, 1 Sep 2022 15:27:27 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1662071272;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=b1dqv/ByZCeKtjIN7qAh4WTPe6OgIYJaSbL14h63ejE=;
-        b=bPfcK47fQmtHNFob8GO9qIi7EZXfoe+hOaMo2O4o8g+RsQj0PRQRLbLh445WIZSWHQmRJV
-        LBroBJTCjF+9G5EQfhS7vnCo2+GliQ+zE+1OzI+y/mfqfGmc828gVfAcGLWPRyK/BsjEWu
-        UCE5u2mL8EZXYlZBvRfTopuCwq247po=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Yosry Ahmed <yosryahmed@google.com>
-Cc:     Kent Overstreet <kent.overstreet@linux.dev>,
-        Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@suse.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Johannes Weiner <hannes@cmpxchg.org>, dave@stgolabs.net,
-        Matthew Wilcox <willy@infradead.org>, liam.howlett@oracle.com,
-        void@manifault.com, juri.lelli@redhat.com, ldufour@linux.ibm.com,
-        Peter Xu <peterx@redhat.com>,
-        David Hildenbrand <david@redhat.com>, axboe@kernel.dk,
-        mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org,
-        changbin.du@intel.com, ytcoode@gmail.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        Steven Rostedt <rostedt@goodmis.org>, bsegall@google.com,
-        bristot@redhat.com, vschneid@redhat.com,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>, 42.hyeyoo@gmail.com,
-        glider@google.com, elver@google.com, dvyukov@google.com,
-        Shakeel Butt <shakeelb@google.com>,
-        Muchun Song <songmuchun@bytedance.com>, arnd@arndb.de,
-        jbaron@akamai.com, David Rientjes <rientjes@google.com>,
-        minchan@google.com, kaleshsingh@google.com,
-        kernel-team@android.com, Linux-MM <linux-mm@kvack.org>,
-        iommu@lists.linux.dev, kasan-dev@googlegroups.com,
-        io-uring@vger.kernel.org, linux-arch@vger.kernel.org,
-        xen-devel@lists.xenproject.org, linux-bcache@vger.kernel.org,
-        linux-modules@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
-Message-ID: <YxExz+c1k3nbQMh4@P9FQF9L96D.corp.robot.car>
-References: <20220830214919.53220-1-surenb@google.com>
- <Yw8P8xZ4zqu121xL@hirez.programming.kicks-ass.net>
- <20220831084230.3ti3vitrzhzsu3fs@moria.home.lan>
- <20220831101948.f3etturccmp5ovkl@suse.de>
- <Yw88RFuBgc7yFYxA@dhcp22.suse.cz>
- <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
- <CAJD7tkaev9B=UDYj2RL6pz-1454J8tv4gEr9y-2dnCksoLK0bw@mail.gmail.com>
+        Thu, 1 Sep 2022 18:29:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 843872CDEB;
+        Thu,  1 Sep 2022 15:28:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 14AEBB82967;
+        Thu,  1 Sep 2022 22:23:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 409D2C433C1;
+        Thu,  1 Sep 2022 22:23:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662070983;
+        bh=w57zJjChMCAF0tiCRRkMgdO5xn4agumfjbmYJSkZIB4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Xl4wDJOO4pUO6SG9nTu5QZuqmYJb+F+A9EOr86gy/hpROglt1BkB64OgAS8GFxLj/
+         MHh7emmj3U89uJ3uUIZ/+WO+7ztZSlKIvZeXomrdDww4HjKegcRhFgeF8HgFutSB5J
+         9ekdknVe7ozu78vaI7DaGrvTGdTAcNjGRNjf032sexu6PgfoiKIhPDHHFEwwLguvs1
+         mT8kkhLPuI1QeChJS0m2VGNVMGPEaSsm109oCtwe9GebIEGNGtszsd77QqPpdUXeL5
+         LLZc+VaBdqLsqijaEQz3ljy7dXmp3wWOcngEh2mrc/hZXxlXFsCmOKIdQSiYp6+DPv
+         87ojfTFOrwB1w==
+Date:   Fri, 2 Sep 2022 01:22:59 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Reinette Chatre <reinette.chatre@intel.com>
+Cc:     linux-sgx@vger.kernel.org,
+        Haitao Huang <haitao.huang@linux.intel.com>,
+        Vijay Dhanraj <vijay.dhanraj@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Shuah Khan <shuah@kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 4/6] selftests/sgx: Add SGX selftest
+ augment_via_eaccept_long
+Message-ID: <YxEwwzXOsCliznQJ@kernel.org>
+References: <20220831173829.126661-1-jarkko@kernel.org>
+ <20220831173829.126661-5-jarkko@kernel.org>
+ <d2b76530-82a2-6ac1-32ea-696e653d767d@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAJD7tkaev9B=UDYj2RL6pz-1454J8tv4gEr9y-2dnCksoLK0bw@mail.gmail.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+In-Reply-To: <d2b76530-82a2-6ac1-32ea-696e653d767d@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 01:56:08PM -0700, Yosry Ahmed wrote:
-> On Wed, Aug 31, 2022 at 12:02 PM Kent Overstreet
-> <kent.overstreet@linux.dev> wrote:
-> >
-> > On Wed, Aug 31, 2022 at 12:47:32PM +0200, Michal Hocko wrote:
-> > > On Wed 31-08-22 11:19:48, Mel Gorman wrote:
-> > > > Whatever asking for an explanation as to why equivalent functionality
-> > > > cannot not be created from ftrace/kprobe/eBPF/whatever is reasonable.
-> > >
-> > > Fully agreed and this is especially true for a change this size
-> > > 77 files changed, 3406 insertions(+), 703 deletions(-)
-> >
-> > In the case of memory allocation accounting, you flat cannot do this with ftrace
-> > - you could maybe do a janky version that isn't fully accurate, much slower,
-> > more complicated for the developer to understand and debug and more complicated
-> > for the end user.
-> >
-> > But please, I invite anyone who's actually been doing this with ftrace to
-> > demonstrate otherwise.
-> >
-> > Ftrace just isn't the right tool for the job here - we're talking about adding
-> > per callsite accounting to some of the fastest fast paths in the kernel.
-> >
-> > And the size of the changes for memory allocation accounting are much more
-> > reasonable:
-> >  33 files changed, 623 insertions(+), 99 deletions(-)
-> >
-> > The code tagging library should exist anyways, it's been open coded half a dozen
-> > times in the kernel already.
-> >
-> > And once we've got that, the time stats code is _also_ far simpler than doing it
-> > with ftrace would be. If anyone here has successfully debugged latency issues
-> > with ftrace, I'd really like to hear it. Again, for debugging latency issues you
-> > want something that can always be on, and that's not cheap with ftrace - and
-> > never mind the hassle of correlating start and end wait trace events, builting
-> > up histograms, etc. - that's all handled here.
-> >
-> > Cheap, simple, easy to use. What more could you want?
-> >
+On Wed, Aug 31, 2022 at 01:07:35PM -0700, Reinette Chatre wrote:
+> Hi Jarkko,
 > 
-> This is very interesting work! Do you have any data about the overhead
-> this introduces, especially in a production environment? I am
-> especially interested in memory allocations tracking and detecting
-> leaks.
+> On 8/31/2022 10:38 AM, Jarkko Sakkinen wrote:
+> > From: Vijay Dhanraj <vijay.dhanraj@intel.com>
+> > 
+> > Add a new test case which is same as augment_via_eaccept but adds a
+> > larger number of EPC pages to stress test EAUG via EACCEPT.
+> > 
+> > Signed-off-by: Vijay Dhanraj <vijay.dhanraj@intel.com>
+> > Co-developed-by: Jarkko Sakkinen <jarkko@kernel.org>
+> > Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+> > ---
+> > v3:
+> > - Addressed Reinette's feedback:
+> >   https://lore.kernel.org/linux-sgx/bd5285dd-d6dd-8a46-fca9-728db5e2f369@intel.com/
+> > v2:
+> > - Addressed Reinette's feedback:
+> >   https://lore.kernel.org/linux-sgx/24bd8e42-ff4e-0090-d9e1-cd81e4807f21@intel.com/
+> > ---
+> >  tools/testing/selftests/sgx/load.c |   5 +-
+> >  tools/testing/selftests/sgx/main.c | 143 +++++++++++++++++++++++++----
+> >  tools/testing/selftests/sgx/main.h |   3 +-
+> 
+> Is this test passing on your system? This version is missing the change to
+> mrenclave_ecreate() that causes SGX_IOC_ENCLAVE_INIT to fail when I try it out.
 
-+1
+I *did* get a pass in my test machine. Hmm... I'll check if
+the kernel tree was out-of-sync, which could be the reason.
 
-I think the question whether it indeed can be always turned on in the production
-or not is the main one. If not, the advantage over ftrace/bpf/... is not that
-obvious. Otherwise it will be indeed a VERY useful thing.
+I do not compile kernel on that machine but have the kernel
+tree for running selftests. So there is a possiblity for
+a human error. Thanks for pointing this out.
 
-Also, there is a lot of interesting stuff within this patchset, which
-might be useful elsewhere. So thanks to Kent and Suren for this work!
+> 
+> >  3 files changed, 130 insertions(+), 21 deletions(-)
+> > 
+> > diff --git a/tools/testing/selftests/sgx/load.c b/tools/testing/selftests/sgx/load.c
+> > index 94bdeac1cf04..47b2786d6a77 100644
+> > --- a/tools/testing/selftests/sgx/load.c
+> > +++ b/tools/testing/selftests/sgx/load.c
+> > @@ -171,7 +171,8 @@ uint64_t encl_get_entry(struct encl *encl, const char *symbol)
+> >  	return 0;
+> >  }
+> >  
+> > -bool encl_load(const char *path, struct encl *encl, unsigned long heap_size)
+> > +bool encl_load(const char *path, struct encl *encl, unsigned long heap_size,
+> > +	       unsigned long edmm_size)
+> >  {
+> >  	const char device_path[] = "/dev/sgx_enclave";
+> >  	struct encl_segment *seg;
+> > @@ -300,7 +301,7 @@ bool encl_load(const char *path, struct encl *encl, unsigned long heap_size)
+> >  
+> >  	encl->src_size = encl->segment_tbl[j].offset + encl->segment_tbl[j].size;
+> >  
+> > -	for (encl->encl_size = 4096; encl->encl_size < encl->src_size; )
+> > +	for (encl->encl_size = 4096; encl->encl_size < encl->src_size + edmm_size;)
+> >  		encl->encl_size <<= 1;
+> >  
+> >  	return true;
+> > diff --git a/tools/testing/selftests/sgx/main.c b/tools/testing/selftests/sgx/main.c
+> > index 9820b3809c69..c5aa9f323745 100644
+> > --- a/tools/testing/selftests/sgx/main.c
+> > +++ b/tools/testing/selftests/sgx/main.c
+> > @@ -23,6 +23,10 @@
+> >  
+> >  static const uint64_t MAGIC = 0x1122334455667788ULL;
+> >  static const uint64_t MAGIC2 = 0x8877665544332211ULL;
+> > +/* Message-ID: <DM8PR11MB55912A7F47A84EC9913A6352F6999@DM8PR11MB5591.namprd11.prod.outlook.com> */
+> > +static const uint64_t EDMM_SIZE_LONG = 8L * 1024L * 1024L * 1024L;
+> > +static const uint64_t TIMEOUT_LONG = 900; /* seconds */
+> > +
+> 
+> Apologies if my feedback was vague - I actually think that the comments in V1 added
+> valuable information, it was just the variation in formatting that was distracting.
 
-Thanks!
+IMHO message ID is pretty good reference. Can you
+propose how would you redo it to minimize the number
+of iterations in the series?
+
+> Reinette
+
+BR, Jarkko
