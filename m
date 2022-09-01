@@ -2,65 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C224BECAAD5
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:12:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47FB5ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:12:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232152AbiIABL7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 21:11:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45162 "EHLO
+        id S232209AbiIABMG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 21:12:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230437AbiIABL5 (ORCPT
+        with ESMTP id S232178AbiIABMB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 21:11:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0848DC09E;
-        Wed, 31 Aug 2022 18:11:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5552961CD5;
-        Thu,  1 Sep 2022 01:11:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A264FC433D6;
-        Thu,  1 Sep 2022 01:11:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661994715;
-        bh=K0IlwXuix3BvINpGFkVRnlr166FlxhMBm++Ywj0zDcg=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=G34RDrEQDBcZAlf3xZr+fmbay6EBPT7wXw8i/eixWy2rw2QH+3sXm/2Y9zIW/YXuJ
-         kWTwirpkoRZLHAhorbAL5UPGOcHN3M60pr7AwJf30GbHp/hObb79sOKG9jMOI2thHK
-         YXxRYbQVD46K95SfdZS/+6tvb6J1TTK48UyaQxVPfZUV1cH2F7eITXy4vSro7hi+Md
-         qRAtnBWebBdonZWHJ3xHDSfpUQayPp4zT1q1C9gW0RK5D7jtYrX6iyepfDaan/Yv7z
-         fS9rG9zpVtAqW+osYtsvmDdnZuipqWDQwuN7S2bbIgYTJ4NjJZ3jmpT6RS+UzgjNI0
-         Wk5T8FjGKiQ3Q==
-Content-Type: text/plain; charset="utf-8"
+        Wed, 31 Aug 2022 21:12:01 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2626C11C179
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:12:00 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id ay39-20020a05600c1e2700b003a5503a80cfso536533wmb.2
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:12:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=oiRKibOWnwcDr9MycfE0W4welp6qByX+iDD5DjNb+M8=;
+        b=neSWI5SrQVJX2N0BbmSZyD5btOBzGyzzq9dar/Rs/7HVXdqflXxQVTzZW4tz/x68yg
+         r+AHr/uCx+rIWgEfog9OtwRSD5jt1ThIhg0oeWbCr+6h2bshtUaWJFCguJRnGsHxtCS/
+         PVBmHnKRmocIlDNChnjM8tr/3sDYKVaX7fc1A=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=oiRKibOWnwcDr9MycfE0W4welp6qByX+iDD5DjNb+M8=;
+        b=XqXOsOYKD/vL/+NkltPdhH265aVrIya+dRRgKzUEqf8XJFEYf/W0xbO5huyWIpKElY
+         6QmypzNzGpURqmIQja5DzKLuQfqNB/QVkRj2X1QP07QVQYZ8TlspzOgjfh80ks0c/ntd
+         wEfFYA+WU8lILIWQYVccOZHaGCZzwP77ekHl9BKrkoXvqfQ7KO71kx+0H8KOKsT19+G3
+         eSUomS3IU/xqEz7CaIaNVk4NGeEdXMfaBP7tBAZt4MwYcxxclmgXXt+TbQa80uO98Q2b
+         oDCuBJWxBNOMM3nEMTaHsrjt+mcYu2acLZ50xB5NLmOFUnWhngoe6E4vO+tfLeUcoQ67
+         hHpQ==
+X-Gm-Message-State: ACgBeo0Tec1kuPijrRlGKCgsNUrRgoC33HcsbOUFb25rUBJS/4jOnQes
+        IH78dry0HyJSDSQnuYcvqdYko2Yjq6lZINJfeFXbspF3nO4=
+X-Google-Smtp-Source: AA6agR5GatofRchhs7w0hTPqWcUW7vhKebjxJj5Hfk40e0mwziDDMVQLZapn8Hj+iaDsM8K/3zxb/1M/PJhxuPFZUUY=
+X-Received: by 2002:a05:600c:3b10:b0:3a5:3357:ecf4 with SMTP id
+ m16-20020a05600c3b1000b003a53357ecf4mr3457812wms.193.1661994718395; Wed, 31
+ Aug 2022 18:11:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220720082934.17741-1-lukas.bulwahn@gmail.com>
-References: <20220720082934.17741-1-lukas.bulwahn@gmail.com>
-Subject: Re: [PATCH] clk: davinci: remove PLL and PSC clocks for DaVinci DM644x and DM646x
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     David Lechner <david@lechnology.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Sekhar Nori <nsekhar@ti.com>, linux-clk@vger.kernel.org
-Date:   Wed, 31 Aug 2022 18:11:53 -0700
-User-Agent: alot/0.10
-Message-Id: <20220901011155.A264FC433D6@smtp.kernel.org>
+References: <20220831013359.1807905-1-jwerner@chromium.org>
+ <20220831013359.1807905-5-jwerner@chromium.org> <63c350a0-2393-208b-4fab-94db050407c2@linaro.org>
+In-Reply-To: <63c350a0-2393-208b-4fab-94db050407c2@linaro.org>
+From:   Julius Werner <jwerner@chromium.org>
+Date:   Wed, 31 Aug 2022 18:11:46 -0700
+Message-ID: <CAODwPW-9njhmjf1jEYsm68-StqciovgXo8VFBYksrdmqDJGC7g@mail.gmail.com>
+Subject: Re: [PATCH 4/4] dt-bindings: memory: Add jedec,lpddrX-channel binding
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Julius Werner <jwerner@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Doug Anderson <dianders@chromium.org>,
+        Jian-Jia Su <jjsu@google.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Lukas Bulwahn (2022-07-20 01:29:34)
-> Commit 7dd33764486d ("ARM: davinci: Delete DM644x board files") and commit
-> b4aed01de486 ("ARM: davinci: Delete DM646x board files") removes the
-> support for DaVinci DM644x and DM646x boards.
->=20
-> Hence, remove the PLL and PSC clock descriptions for those boards as well.
->=20
-> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-> ---
+> > +description:
+> > +  An LPDDR channel is a completely independent set of LPDDR pins (DQ, CA, CS,
+> > +  CK, etc.) that connect one or more LPDDR chips to a host system. The main
+> > +  purpose of this node is to overall LPDDR topology of the system, including the
+> > +  amount of individual LPDDR chips and the ranks per chip.
+>
+> "channel" in this context confuses me a bit, because usually everyone is
+> talking about DDR controller channels, not memory channels. I think this
+> actually maps to a DDR controller channel?
 
-Applied to clk-next
+I'm not really sure what you mean by "memory channel" here (that would
+be different from the DDR controller channel)? According to my
+understanding there's only one kind of "channel" in the context of
+main memory, that's the DDR controller channel (i.e. each separate
+complete set of DDR pins coming out of the controller, as I tried to
+explain in the description).
+
+> > +    lpddr-channel1 {
+> > +      #address-cells = <1>;
+> > +      #size-cells = <0>;
+> > +      compatible = "jedec,lpddr4-channel";
+> > +      io-width = <32>;
+>
+> I wonder now, how does it exactly work - channel is 32 bits, two ranks
+> each with 32 bit IO bus. Your description said that:
+>
+> total_ram = (rank0 + rank1) * (channel_width / chip_width)
+> so for this case: (4+2)*(32/32) = 6 Mbit
+>
+> If channel io-width = <64>, then memories are stacked in parallel and
+> according to your description total RAM would be: (4+2)*(64/32) = 12 Mbit
+> I wonder why stacking memories in parallel increases their size?
+
+Well, stacking in parallel just means you have more of them? In the
+original example, you have a single LPDDR chip with two ranks, one
+4Gbit rank and one 2Gbit rank. That chip is directly hooked up to the
+LPDDR controller and that's the only chip you have, so you have 4+2 =
+6Gbit total memory in the system.
+
+In your next example, the LPDDR controller has a 64 bit wide channel,
+but you're still using that same 6Gbit LPDDR chip that only has 32 DQ
+pins. The only way to fill out that 64 bit channel with this kind of
+chip is to have two of them in parallel (one connected to DQ[0:31] and
+one connected to DQ[32:63]). So we infer from the mismatch in io-width
+that we have two chips. Each chip still has 6Gbit of memory, so the
+total system would have 12Gbit.
