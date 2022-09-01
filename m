@@ -2,98 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4CE6ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 18:37:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DD70ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 18:37:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234723AbiIASh3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 14:37:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39918 "EHLO
+        id S234806AbiIAShg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 14:37:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234693AbiIASg7 (ORCPT
+        with ESMTP id S234217AbiIAShK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 14:36:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F7F920190
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 11:36:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 56F1661CF7
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 18:36:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E538C433C1;
-        Thu,  1 Sep 2022 18:36:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662057366;
-        bh=Y/mO+qRCMrK0idcc254YXG8TJylthMPW6zBfv4IQves=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cLnQGwP/0DENf2zZ79Ge/zMKw5j8Lnv8OnJayM7BMzFac5qxleNiZuzrAzzXYqdh+
-         HTXRzfcJnkO+CIyy/QPdXMsorwS85AtvaWYO/6S43WnwJ6r3XwqrGm4mXAYurJX/Wi
-         1rmHorJlig9l+4vl/y8Hji+eaKRrXv0kr+saHSKvSskJYAuXL1FOKqoWXeu25NxPX+
-         wmIWAAbtzjS/vg5ZISrXYyJG7UHiecX+WHkIUPWP5f9jAmIDQn+gdWG/zAFiRoLoe3
-         FBRNPjw81Y2E/7ElZN4GwPM+jepGdbmiIGTChlaXeHgtQ7R7nPSb7V/pDeO3bWzCoQ
-         Gf13MF2V8b8DQ==
-Date:   Thu, 1 Sep 2022 19:36:01 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Jiho Chu <jiho.chu@samsung.com>
-Cc:     gregkh@linuxfoundation.org, arnd@arndb.de,
-        linux-kernel@vger.kernel.org, yelini.jeong@samsung.com,
-        myungjoo.ham@samsung.com
-Subject: Re: [PATCH 1/9] trinity: Add base driver
-Message-ID: <YxD7kWBl88kMbdi5@sirena.org.uk>
-References: <20220725065308.2457024-1-jiho.chu@samsung.com>
- <CGME20220725065309epcas1p4565e7bb0fea1aaf3e5e300de00774c2a@epcas1p4.samsung.com>
- <20220725065308.2457024-2-jiho.chu@samsung.com>
+        Thu, 1 Sep 2022 14:37:10 -0400
+Received: from sonic306-24.consmr.mail.ne1.yahoo.com (sonic306-24.consmr.mail.ne1.yahoo.com [66.163.189.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8932F13F6F
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 11:36:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=att.net; s=s1024; t=1662057389; bh=miKz9E/t+j0zfgkfNgkCMzSl7+VSjrFh7pyePOaAuYU=; h=Date:From:Subject:To:References:From:Subject:Reply-To; b=2L7MEymt9g6vzXzZuGiFSxmq9HR6HCEBakQqkJ/u5s4OKS4aNDV/bZNV6SvLgPqLZX+C/6R7iCf8SSs/AmZN3fFS+Hp1dCWSi30EyCie6En9WDak8/nXxAXyTOhdltzWLJZkxxtQXj/cehdlW+n8CkdTqWWSFyMzB8a6jnx89OQ=
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1662057389; bh=IETlV+LsKIjs4oyZzb3fwN2Up+vpOAi7Sv901hW/XbP=; h=X-Sonic-MF:Date:From:Subject:To:From:Subject; b=ivnMnmtV3Pu1QDUctn9BzCVzMm6wHRGEkX0PP/uUDWLInV4aYYS6zflpnxd01ltb3hP8IuNv2oBkCAgqufNe1FcK4nvZ+9kg5NBag9jdWkQNbg9Lh6HJYibNbwmCARAlOIEWjD992in6eQVQJV8jUUjOB6mNTbJZhovzH8PJpEStXJEWUBTCr5FulABkb4KRbAxvbP0QVaPDWn3B49qgvMaCSeqmbcsFZEsGcXWXaIGEA0ayKBHt2eXAUU0uHkpsAmqxTPwmMlYDyJC7fzM7i3mtTt+Urv0IVRg6w/aDxv6k3qvgGrba6dFFBZAoeUnC1/ON+tobIPev9d3hZXxgHQ==
+X-YMail-OSG: VbZWa9kVM1nOp9TttpRD18x3F2Vf48fMGI6zD7tMm_gBOawyKsVwh9Khz6XEtu3
+ 9zNfueDxmIA.X0JxWx_WQdNXZfELUOQj133zYVsIdM0goX..RAGHAQ2eEXb3Cev.g6x2f9i2ENkZ
+ ow3rGKCbaq1GZDvTQc6ma8.j8ap6P.funouM09cYMuLBqk3TK8EXqOprtRUAsV0TcBcym18oSJg7
+ 5nO8FFMSgZMNloQ8fJRvQrgkI9NHEJIyQoUi88xmKhDYQT_RbOLpS8p8_m_2rRq6413zcM5ZfIcK
+ dKRByHghN5XcEHPvC5a7GPn8wU_fUSOdme0NJnkFKGP.1I.j4qLUjbPwg8OcvJOWuu8djbnFHCx_
+ U6nTrx0wAX5CDeCQS8PLhOFLfJe..VulcldEuz4zGs18_DfeafoihOIwRt9J13UEz__wElNVAyMu
+ DK5ficijn1DfTlJmlnn0QQmkRYP_NGRlj7olUC4ZEbRncncJR6gDhLxGFQmzDfyY.oUCO_vGzdVW
+ JaGkIFAsDXKIuvUROnOrLvD96JnXXK9PuKT0oukrx1czasVRLEmuGNewe85bY1vijT4mWmQE7.nG
+ w0XTcvyWQOj0LEof2TB1giVA9zN12o2_VOE8g6YVEBhDFt_byF63Fkcwa0.SJ.MAokLp0nOcz6Ui
+ fbiq8R0NmwhEiCReD3SVIIGhdnppiqDPkqwcPSFInHoyw0AD3oj62XxIrb0LNkQ5rwviQBBSEmIl
+ 1HLrDXza.KQAHLWnrlttRrti7JlqGqetI6NnrCeMItTB4QaJcfmBQpUNU2KgJ5z_RRn3hRHifhIm
+ xW4Q_95EXdmJq6xYfE9SY2NfhY.67Fn44gvwca4Qv7yeYm7sQl8R0nzH_AOWNTgUWT0kyJ2cSZCj
+ hL21.NP4w5HUu5NUNYySebYgZc9JtFno_vG.IHzH9HT4UcZsBdufR9vwfxEXfmPKnhBac_VVBNaU
+ 6ox2MpJ9e0g3Z7IMDyVGiyPy6FTnD33dA3Lh8whwr7WOUunWWsWTpigyg.05l_Kb.aPGvsnO4F8Y
+ C3W82AUgUEfD3tK.s5FK9ZX39tkP8zY7LJahU9iJtkCClOl5WrG8HZuq.NkEAZul3HBc7L.x4BLE
+ 85cmLyZv_9uzZDfKByO._v9f6AKzeyCB75jE.qTU2VpCnJXeUQcLS_NOwEJ7NZIb54kSaZkkdr3X
+ Xb7y3F9EDrLW3q9_dv8adSBgLwJab6jdS.ereb6yeIstG4KI36PhTLUUR1VqusJ6hWRW2aJtSbyg
+ d7MKqxXL91El6mrPS7nn37OfDT0.aJLx321EzOqNKcZvDS3dWVLeNIuaUKm8nGdwIzDsiJx2_IGU
+ TtytFPtAOKxfyjYeGTFwo2skPxe52S8mz2MVoX5LUvFWJNnNOwBZXBzEsWSzVuoNX3Nj_aKxAbuG
+ z86Ss40hChBxk3sEXH_yzWvXhufRJGiYnifq3PGfVTlqJYFhDp6OYSi28QVA5TmOpaTv8DQjCFm2
+ QW0N4lp4S.cc0Yn_d1x7KfoynWf9nNscn4pBBEWhDZfgW4aL1uSaS1oiXh2IpHQWjvxANs.cpn_7
+ x_sNqat02SRi6IGvOYyV7ziYMde_FCwOKl4xqp1RKomhdST4IKv3DLHM0JxnXHkDRVZ4MZ5X1Uin
+ 87pNWUDI3GmQtcMdR21PQYKy2y5k40vL4GPJizQVHl7dgd1uQnLw4qo4FjYx8VnN8oYeM0jB36Y8
+ hNqKFxEgrPiy.DRkZJra3xYA5kWCXK_8fKXXnEXLt93mNpKFLLchQBpKRVBUagUgoZhcWSxsP.5Y
+ W.QSeIbGYCkHMfRwCTze2ktv5mnFYqPmFLFMlYohOxCdUw9GlHDOcb.7ABWQP.vVQ.TOSCnSygqF
+ 6Rfo4QCLgAKN0iPh8m9_Fudo0n40Vt3DVtKxigkN.7Sq8aouz1HCPycNPThmWcSiCATTaOXzHMFZ
+ rcWcpqSLTqByrwmNYU933Tu7YcqEX62TaJ4Vw.Pg4iq7A.pFIhwwRmt_CkOhfA5h8G4l4XWPOhCx
+ UoLh85rxjngvYv_4El1FjT_Q19YVFO8V4cA.fnNljr2bvV9cfBz_RI2SIpbsmVyra9ZXS10lO85.
+ pIkismyOSJA1DobUuMGUKkIhn3vHR7EV_w9FoMG7.QTC4iZ.h8d6bDh5J1FyskhpQCeyaG0Jw3yL
+ 8vKbe.65_GJZSRneM7Zln6MVDU1NBvOAsoups1vcarRMTEQT6dhCMi.cDRjYFM2HKfcRE7G1M82h
+ LInaNqSUDV1gW
+X-Sonic-MF: <pheonix.sja@att.net>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic306.consmr.mail.ne1.yahoo.com with HTTP; Thu, 1 Sep 2022 18:36:29 +0000
+Received: by hermes--production-bf1-64b498bbdd-jxpwc (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID d545f606c774c2ebb115064e8fb446f6;
+          Thu, 01 Sep 2022 18:36:27 +0000 (UTC)
+Date:   Thu, 01 Sep 2022 14:36:20 -0400
+From:   Steven J Abner <pheonix.sja@att.net>
+Subject: amd iommu configuration
+To:     linux-kernel@vger.kernel.org
+Message-Id: <KONJHR.T3DS4EBAXDVX1@att.net>
+X-Mailer: geary/3.36.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="9lpWXlZqwrEMGTTR"
-Content-Disposition: inline
-In-Reply-To: <20220725065308.2457024-2-jiho.chu@samsung.com>
-X-Cookie: Information is the inverse of entropy.
+Content-Type: text/plain; charset=us-ascii; format=flowed
+References: <KONJHR.T3DS4EBAXDVX1.ref@att.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi
+Building a kernel tailored for AMD 2400g on ASRock B450 using 5.18.12 
+as base.
+I stumbled across an odd situation and which lacked Kconfig info and 
+lead to oddity.
+/drivers/iommu/amd/Kconfig states 'config AMD_IOMMU_V2' is 'tristate' 
+but unlike many
+other tristate configures doesn't mention that module name is 
+'iommu_v2.ko' and loading should be done by adding to modules-load.d.
 
---9lpWXlZqwrEMGTTR
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+The oddity is that by loading as module is as follows (differences):
 
-On Mon, Jul 25, 2022 at 03:53:00PM +0900, Jiho Chu wrote:
+builtin iommu_v2 version dmesg:
+amdgpu: HMM registered 2048MB device memory
+amdgpu: Topology: Add APU node [0x0:0x0]
+amdgpu: Topology: Add APU node [0x15dd:0x1002]
+AMD-Vi: AMD IOMMUv2 loaded and initialized
+kfd kfd: amdgpu: added device 1002:15dd
+kfd kfd: amdgpu: Allocated 3969056 bytes on gart
+memmap_init_zone_device initialised 524288 pages in 0ms
 
-> +	drv->opened = drv->opened - 1;
-> +	if (drv->opened == 0) {
-> +		/* wait already submitted requests */
-> +		if (drv->desc->drain_reqs)
-> +			drv->desc->drain_reqs(drv);
+module not loaded due to missing iommu.conf dmesg:
+amdgpu: CRAT table disabled by module option
+amdgpu: Topology: Add CPU node
+amdgpu: Virtual CRAT table created for CPU
+kfd kfd: amdgpu: GC IP 090100 not supported in kfd
 
-> +		drv->desc->set_state(drv, TRINITY_STATE_PAUSE);
+module load through iommu.conf dmesg:
+amdgpu: CRAT table disabled by module option
+amdgpu: Topology: Add CPU node
+amdgpu: Virtual CRAT table created for CPU
+AMD-Vi: AMD IOMMUv2 loaded and initialized
+kfd kfd: amdgpu: GC IP 090100 not supported in kfd
 
-> +	mutex_lock(&drv->lock);
-> +	/** remove PAUSE set on the CP of the NPU */
-> +	if (drv->opened == 0) {
-> +		ret = trinity_wait_ready(drv);
-> +		if (ret != 0)
-> +			goto out;
-> +	}
-> +	drv->opened = drv->opened + 1;
+Note, only difference on witk/without iommu.conf is:
+AMD-Vi: AMD IOMMUv2 loaded and initialized
 
-Would it perhaps be cleaner to hold a runtime PM reference on the
-device for each file and deal with the power up/down of the hardware in
-the runtime PM callbacks?
+So does this mean missing features by not having builtin?
+If not, should Kconfig have hint about module and loading?
 
---9lpWXlZqwrEMGTTR
-Content-Type: application/pgp-signature; name="signature.asc"
+Steve
 
------BEGIN PGP SIGNATURE-----
+I wish to be personally CC'ed the answers/comments posted to the list
+in response to my posting, please:) Not a list member.
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmMQ+5AACgkQJNaLcl1U
-h9BlHgf9EFnETk9uty/p+c7YsUZXO8zTfgSmK4Ckc+tItNAEHdUVnq1v5qIqjFmq
-vAM4wfGeIV9NnmxjTGmAu9t4OP0pVZkSb4uTV89Y+fXuti5XuB6OJuT3Smqham+g
-DXRB/oV+Bs1qqnrEJN3cMJc9IZal66VCSeFDq2zcLxJk5xTv9NDlaHXL27/nxvLt
-YykqEOaitb1lJ0aw9Uyo/NDMzy5BJMZXlAZQgfKXd7s65PMs0GxZWhiVceYwavXe
-lulmAQzZplm5mVFW/QgN/nLtllLAZdsuV2YlshL60nTg7b+pPQsaiycPOqF7Wpmr
-mzlyK3kOfbmJ3HDT347rp57G91grHg==
-=edp6
------END PGP SIGNATURE-----
 
---9lpWXlZqwrEMGTTR--
+
+
