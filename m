@@ -2,99 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7F15C0502C
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 02:59:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B68E9ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 02:59:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232369AbiIAC7c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 22:59:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39966 "EHLO
+        id S232531AbiIAC7m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 22:59:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232658AbiIAC7R (ORCPT
+        with ESMTP id S232476AbiIAC7j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 22:59:17 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A43A2161DF3;
-        Wed, 31 Aug 2022 19:59:13 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MJ5Jd716czlWft;
-        Thu,  1 Sep 2022 10:55:45 +0800 (CST)
-Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 1 Sep 2022 10:59:11 +0800
-Received: from [127.0.0.1] (10.174.177.249) by kwepemm600003.china.huawei.com
- (7.193.23.202) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 1 Sep
- 2022 10:59:10 +0800
-To:     <djwong@kernel.org>, <linux-xfs@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     linfeilong <linfeilong@huawei.com>,
-        wuguanghao <wuguanghao3@huawei.com>, <liuzhiqiang26@huawei.com>
-From:   Zhiqiang Liu <liuzhiqiang26@huawei.com>
-Subject: [PATCH v2] xfs: donot need to check return value of xlog_kvmalloc()
-Message-ID: <471db2ec-8836-14f5-fb33-579b294943e9@huawei.com>
-Date:   Thu, 1 Sep 2022 10:59:08 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        Wed, 31 Aug 2022 22:59:39 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2AEE162155;
+        Wed, 31 Aug 2022 19:59:36 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id q63so15132004pga.9;
+        Wed, 31 Aug 2022 19:59:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:from:to:cc:subject:date;
+        bh=eVRGKtfHojTP92sNkJnJ80bmZvj7fSvzpyBR/tNw3ks=;
+        b=Z9FrDCeLSWgX3RZSj2UxqAE8u1GU8ozB47W0KevNli961D6+XCr2sF2kcSXaA+mt66
+         bp87G2N6IE6JEEcNo1WYs8rR2EccX6rR0XhQyZBnFmGVaLNzRFolalJog6YKLv0q0Ll0
+         Iuhu8EM2+R8jTPoQ++idc26GxuhUB0bqI7viJ8EombycdKbAQv+9ELLx8wF1wD3Ah4DF
+         AK+DRoOfJJlmYOF35lFIk4kQqQrwxUqbvuMCal9AGB29iH0bPHG+uRyWnn+SlfoJTdgy
+         R0bvt56TLQBY9gD2W48QpXXgio08W9g76BJSe6OCzoR6EIpPimc3XDvF7H1fN8qaSEfr
+         eoXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:x-gm-message-state:from:to:cc:subject:date;
+        bh=eVRGKtfHojTP92sNkJnJ80bmZvj7fSvzpyBR/tNw3ks=;
+        b=Q9ZGn3m9HSW/BFMpgxNdAggh4wNq6XV1tWCmp59WK3GyLX+UA85g3nQcL3lGT3+sTT
+         0czygwIr1KXNzXOvI4Z5zAR9VBXC7qmHCnrw5bX73BhJXetexUoKgLDF2nPrtermG5jf
+         YUL9tzZK5xv0gWt1TWAJeUEp0nZZoTWjvpBoAEQeMW2QWxPVh3CpOUO4RcxMFJy+FZJ4
+         pC1ov9T+gup2+3zalQhvltz4lt4pfDsi4WObyKt5yNiNgl5MsvQ3zqDa6UwpO30st8fl
+         UnSY/NGVDRNnzaidJD1TdO0v3eKSfuoHcpOklg+W5f+k0TpSDr7zD66y68KK2vhGjukq
+         vq5Q==
+X-Gm-Message-State: ACgBeo3rnQ++vPR92FjUaEpoyT0LmzRTNxXvTrmkw4FELlmMn6wdHNSd
+        gj+CdV/QpNZQBgKJFyTtrWrQWcffCCXPyw==
+X-Google-Smtp-Source: AA6agR5robk+ckbRzd9sqLD+fqCogMqIgVeonf5UanMs9BholsVn+R4Jip+Pi6Wu0kwqJ3LkUNrAlA==
+X-Received: by 2002:a63:5715:0:b0:42a:d7a4:4c30 with SMTP id l21-20020a635715000000b0042ad7a44c30mr24290092pgb.525.1662001176034;
+        Wed, 31 Aug 2022 19:59:36 -0700 (PDT)
+Received: from MBP ([39.170.101.209])
+        by smtp.gmail.com with ESMTPSA id u6-20020a654c06000000b0043057fe66c0sm1014591pgq.48.2022.08.31.19.59.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Aug 2022 19:59:35 -0700 (PDT)
+References: <20220831180950.76907-1-schspa@gmail.com>
+ <Yw/HmHcmXBVIg/SW@codewreck.org>
+User-agent: mu4e 1.6.10; emacs 27.2
+From:   Schspa Shi <schspa@gmail.com>
+To:     asmadeus@codewreck.org
+Cc:     ericvh@gmail.com, lucho@ionkov.net, linux_oss@crudebyte.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, v9fs-developer@lists.sourceforge.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] p9: trans_fd: Fix deadlock when connection cancel
+Date:   Thu, 01 Sep 2022 10:55:36 +0800
+In-reply-to: <Yw/HmHcmXBVIg/SW@codewreck.org>
+Message-ID: <m2bkrz7qc8.fsf@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.249]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600003.china.huawei.com (7.193.23.202)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In xfs_attri_log_nameval_alloc(), xlog_kvmalloc() is called
-to alloc memory, which will always return
-successfully, so we donot need to check return value.
 
-Reviewed-by: Eric Sandeen <sandeen@redhat.com>
-Signed-off-by: Zhiqiang Liu <liuzhiqiang26@huawei.com>
----
-Changelog:
-V1 -> V2:
-  1.add Reviewed-by: Eric Sandeen <sandeen@redhat.com>
-  2.remove santity check of xfs_attri_log_nameval_alloc()
-    suggested by Eric Sandeen.
+asmadeus@codewreck.org writes:
 
- fs/xfs/xfs_attr_item.c | 6 ------
- 1 file changed, 6 deletions(-)
+> Schspa Shi wrote on Thu, Sep 01, 2022 at 02:09:50AM +0800:
+>> To fix it, we can add extra reference counter to avoid deadlock, and
+>> decrease it after we unlock the client->lock.
+>
+> Thanks for the patch!
+>
+> Unfortunately I already sent a slightly different version to the list,
+> hidden in another syzbot thread, here:
+> https://lkml.kernel.org/r/YvyD053bdbGE9xoo@codewreck.org
+>
+> (yes, sorry, not exactly somewhere I'd expect someone to find it... 9p
+> hasn't had many contributors recently)
+>
+>
+> Basically instead of taking an extra lock I just released the client
+> lock before calling p9_client_cb, so it shouldn't hang anymore.
+>
+> We don't need the lock to call the cb as in p9_conn_cancel we already
+> won't accept any new request and by this point the requests are in a
+> local list that isn't shared anywhere.
+>
 
-diff --git a/fs/xfs/xfs_attr_item.c b/fs/xfs/xfs_attr_item.c
-index 5077a7ad5646..cf5ce607dc05 100644
---- a/fs/xfs/xfs_attr_item.c
-+++ b/fs/xfs/xfs_attr_item.c
-@@ -86,8 +86,6 @@ xfs_attri_log_nameval_alloc(
- 	 */
- 	nv = xlog_kvmalloc(sizeof(struct xfs_attri_log_nameval) +
- 					name_len + value_len);
--	if (!nv)
--		return nv;
+Ok, thank you for pointing that out.
 
- 	nv->name.i_addr = nv + 1;
- 	nv->name.i_len = name_len;
-@@ -441,8 +439,6 @@ xfs_attr_create_intent(
- 		attr->xattri_nameval = xfs_attri_log_nameval_alloc(args->name,
- 				args->namelen, args->value, args->valuelen);
- 	}
--	if (!attr->xattri_nameval)
--		return ERR_PTR(-ENOMEM);
+> If you have a test setup, would you mind testing my patch?
+> That's the main reason I was delaying pushing it.
+>
 
- 	attrip = xfs_attri_init(mp, attr->xattri_nameval);
- 	xfs_trans_add_item(tp, &attrip->attri_item);
-@@ -762,8 +758,6 @@ xlog_recover_attri_commit_pass2(
- 	nv = xfs_attri_log_nameval_alloc(attr_name,
- 			attri_formatp->alfi_name_len, attr_value,
- 			attri_formatp->alfi_value_len);
--	if (!nv)
--		return -ENOMEM;
+I have test it with my enviroment, it not hang anymore.
 
- 	attrip = xfs_attri_init(mp, nv);
- 	error = xfs_attri_copy_format(&item->ri_buf[0], &attrip->attri_format);
+> Since you went out of your way to make this patch if you agree with my
+> approach I don't mind adding your sign off or another mark of having
+> worked on it.
+>
+> Thank you,
+
 -- 
-2.33.0
-
+BRs
+Schspa Shi
