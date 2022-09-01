@@ -2,82 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76BD2ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:15:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49937ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:15:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232351AbiIABPV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 21:15:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50416 "EHLO
+        id S232374AbiIABPq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 21:15:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232007AbiIABPS (ORCPT
+        with ESMTP id S232178AbiIABPn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 21:15:18 -0400
-Received: from conuserg-10.nifty.com (conuserg-10.nifty.com [210.131.2.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E231057210;
-        Wed, 31 Aug 2022 18:15:15 -0700 (PDT)
-Received: from grover.sesame (133-32-182-133.west.xps.vectant.ne.jp [133.32.182.133]) (authenticated)
-        by conuserg-10.nifty.com with ESMTP id 2811DDtu004311;
-        Thu, 1 Sep 2022 10:13:13 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-10.nifty.com 2811DDtu004311
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1661994794;
-        bh=pSLA7lAlGxKHbICT8gTY7i5Zp2giDjasDzYgClZZbNY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=qID+LEtprhEh9OzWC/QN0PYJNs5/bV9Yf3wWeIehxq6QVxx1Qrfi1dBZy4N3dHPQw
-         h3Hw5f0kjWFaP4dS5Ix7dittJ4MidYbEIBUw1PJFnoMhjbvy32oFsrvRWP+30lYLdW
-         aFhZHBX8mFEmEMOUZoTk7FTTfe1r9mGp+/gcxt7d2cLATiGhjQAQBWzVodLvalrK9V
-         Uqlyz013HHH2cxFkYyF+Z/TQVy1W1XlvVdR/fgaJjpy6ln1xvk6/Nt0giw+GYZCSFL
-         NW2AsX7J7P82MpQZ914zQFNWWqTxAAVivHrQBwGPRbVlZDJntbN+9cD7voBgRfI7bZ
-         VouolwA3KaAJA==
-X-Nifty-SrcIP: [133.32.182.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] kbuild: disable header exports for UML in a straightforward way
-Date:   Thu,  1 Sep 2022 10:12:52 +0900
-Message-Id: <20220901011252.550830-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Wed, 31 Aug 2022 21:15:43 -0400
+Received: from smtpbg.qq.com (bg4.exmail.qq.com [43.154.221.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA7487E31D;
+        Wed, 31 Aug 2022 18:15:38 -0700 (PDT)
+X-QQ-mid: bizesmtp69t1661994934tx9ikm69
+Received: from localhost.localdomain ( [182.148.14.80])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 01 Sep 2022 09:15:33 +0800 (CST)
+X-QQ-SSF: 01000000000000D0F000000A0000000
+X-QQ-FEAT: 1wca0hqBk6dTXiaDyqK0laN1XnNv0ApWFsPTZWz2mG501M14BcdtzBn5sVQwT
+        ykmPinSvBFAorVbIIIE/kvO3/6WnCtdZskcbTTHzQ+x0tcVAL79n8CtNcEkiZjf77eomFGM
+        fhynqQ/ZCjCuqj1+UspBb9LndHYZux9ei4Ypf0RXl2/8arnczZiPGoaojZ76w6np4rTAIoe
+        2Qt/C8tilF2eJWag95FklOCXOFTD/KXbR5Tisua5j5cUwY3DYPLb4gDvImWx+0t85t42kaa
+        8R+COtfJJUvxP7N869adX9LKxgGyZYKnW2olv8U2CX62Lz46xVq0UL31ejeQFwlp1Z6s1R1
+        1B/rfvVITPfCm7CjVpZWgv6ZKDyJa0HKnl+Z0URixPPXlbKf/I=
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     mchehab@kernel.org
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] [media] siano: Use 'unsigned int' instead of just 'unsigned'.
+Date:   Thu,  1 Sep 2022 09:15:26 +0800
+Message-Id: <20220901011526.23839-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Previously 'make ARCH=um headers' stopped because of missing
-arch/um/include/uapi/asm/Kbuild.
+'unsigned int' should be clearer than 'unsigned'.
 
-The error is not shown since commit ed102bf2afed ("um: Fix W=1
-missing-include-dirs warnings") because UML got
-arch/um/include/uapi/asm/Kbuild.
-
-Hard-code the unsupported architecture, so it works like before.
-
-Fixes: ed102bf2afed ("um: Fix W=1 missing-include-dirs warnings")
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
 ---
+ drivers/media/common/siano/sms-cards.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- Makefile | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/Makefile b/Makefile
-index 9d40255d1557..8d2047a4de9b 100644
---- a/Makefile
-+++ b/Makefile
-@@ -1304,8 +1304,7 @@ hdr-inst := -f $(srctree)/scripts/Makefile.headersinst obj
+diff --git a/drivers/media/common/siano/sms-cards.h b/drivers/media/common/siano/sms-cards.h
+index 028c5cb435bc..7f2a551bd1a6 100644
+--- a/drivers/media/common/siano/sms-cards.h
++++ b/drivers/media/common/siano/sms-cards.h
+@@ -85,7 +85,7 @@ struct sms_board {
+ 	struct sms_antenna_config_ST *antenna_config;
+ };
  
- PHONY += headers
- headers: $(version_h) scripts_unifdef uapi-asm-generic archheaders archscripts
--	$(if $(wildcard $(srctree)/arch/$(SRCARCH)/include/uapi/asm/Kbuild),, \
--	  $(error Headers not exportable for the $(SRCARCH) architecture))
-+	$(if $(filter um, $(SRCARCH)), $(error Headers not exportable for UML))
- 	$(Q)$(MAKE) $(hdr-inst)=include/uapi
- 	$(Q)$(MAKE) $(hdr-inst)=arch/$(SRCARCH)/include/uapi
+-struct sms_board *sms_get_board(unsigned id);
++struct sms_board *sms_get_board(unsigned int id);
+ 
+ extern struct smscore_device_t *coredev;
  
 -- 
-2.34.1
+2.36.1
 
