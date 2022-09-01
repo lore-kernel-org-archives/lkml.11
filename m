@@ -2,116 +2,297 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCAB6ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 08:59:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D06E0ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 09:00:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234376AbiIAI7i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 04:59:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37998 "EHLO
+        id S234421AbiIAJAm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 05:00:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234277AbiIAI64 (ORCPT
+        with ESMTP id S234386AbiIAJAD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 04:58:56 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A3571257D7
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 01:58:46 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id p18so13843217ljc.9
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 01:58:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=mwYkPkbDpVvKnBCUeAO6SqNihrRVFRauQ3ciXakJntA=;
-        b=cKwqNiIrCuxruPskUUyXVi0JY9nUNWB8yP5ZQhyNNBSUopD4SsK0P8gePIAcydCr7z
-         r4crGQCX9xEDitfqH9Z6UxWKwsc02KM9E3EXGBjDxhJ/U9YJi0znHlHwoseHOaHNqiui
-         z5FuuckuAUnshfoG1UFLG0MIPBJq6sEzM/cPdZDPL7TESLplsAH2ky6hEpuJkNgWPfyp
-         nhGOokE0WMs01y19cc3exxaVmloPYyb//W6rFybNcFd/Y7AWbYNPBJ3OoozvSHzQjoJc
-         RbuI9L+mP6sPKtqx+3EBJKqzFSXH8joq7o6XRrmeh2rpGwQETP24AyyrVOF93bnLkTa9
-         8Drg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=mwYkPkbDpVvKnBCUeAO6SqNihrRVFRauQ3ciXakJntA=;
-        b=u36CVP2l0THPwm2vSURMasopuTLxkZ0Cdv6/hcbxEdzH4Fu9rUu5c3qOzb8RAhtRbL
-         2tv75yNhBV9vt0PvZhTkvFAVjxzLnBVTNmFmEZbs2ThV/FNYTnbfmvIS14MWLv5P/+YY
-         IMUOVhe5QSRHjptv229XVY3xQtgQhXyj3u+OCWbvqY6eXKtpy3c+CwKeZUQNM9ZIMnjb
-         o1RcSP5aUHWRHqCxci5dORL+kRfzghPNwzd4tM95b+Pbjzg5iMZOtiVTPMa5Q7ygDfPx
-         e0tqqPzweUR1TQLojUbfbAm/+CT9mL2CMbUE0tDtJK9n9GLmX2lIAQNWelHIv7t1b4Xs
-         DCrA==
-X-Gm-Message-State: ACgBeo3h1TloINUImi2ZLLmBE4IGKxOXCel+xOyb/bFajTG3SVprVncm
-        L85woSKDiZvlSTvaZBOHCRk6XA==
-X-Google-Smtp-Source: AA6agR4A/NKeMsV4Ak8gwgmbbPOMBHhorkS3+tj93KcLuvLF0EZl4lxNAvCjmnsb+w611pd+BKfYHg==
-X-Received: by 2002:a05:651c:4c9:b0:25e:7979:573a with SMTP id e9-20020a05651c04c900b0025e7979573amr9289821lji.445.1662022724895;
-        Thu, 01 Sep 2022 01:58:44 -0700 (PDT)
-Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id f8-20020a05651c03c800b002663afd079fsm1263777ljp.115.2022.09.01.01.58.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Sep 2022 01:58:44 -0700 (PDT)
-Message-ID: <a9f4de46-e1ce-f8cd-2b0d-cd4bf36b1f84@linaro.org>
-Date:   Thu, 1 Sep 2022 11:58:43 +0300
+        Thu, 1 Sep 2022 05:00:03 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A14862253A;
+        Thu,  1 Sep 2022 01:59:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662022801; x=1693558801;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=+wV57Ugim8e+hUHQe53ZHL64V54MVO9BVTKu14E+k3Y=;
+  b=lIr4lpjVVLwgRDayiL6B1Q74GXc8N7VK0cHcN3VlysH0h+gDjZUWrrK3
+   MYFu32AJFff6yTAlXBZEZQj1T2IxesyJok5q9d/9uYmAY0Ms1thFqhErG
+   +grzuvRvg8AwUg+5RGn5JGY7rTB8OMT59OeIFUwFggZ+hgJXdaeh5uR43
+   3cQIah5l8qNJVglP7YxzzEVy4f0IeBJWt/E/ZhMT2ca8l/5LJhhfhBEhP
+   TVPJ9sDkBixsIyrU5c94rJI+g+cw3LcKO2z9GMKZm+ggqzH9lyQQhW9Lw
+   w1OOmL0G10SDxrVlIpmSp49313mLAQGN+3SvJQeiKjxWR7j1CZmcAS2gS
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="296943723"
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="296943723"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 01:59:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="615267552"
+Received: from yy-desk-7060.sh.intel.com (HELO localhost) ([10.239.159.76])
+  by fmsmga007.fm.intel.com with ESMTP; 01 Sep 2022 01:59:55 -0700
+Date:   Thu, 1 Sep 2022 16:59:54 +0800
+From:   Yuan Yao <yuan.yao@linux.intel.com>
+To:     isaku.yamahata@intel.com
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>,
+        erdemaktas@google.com, Sean Christopherson <seanjc@google.com>,
+        Sagi Shahar <sagis@google.com>
+Subject: Re: [PATCH v8 042/103] KVM: x86/mmu: Add a private pointer to struct
+ kvm_mmu_page
+Message-ID: <20220901085954.ykko7u6dvupuayzm@yy-desk-7060>
+References: <cover.1659854790.git.isaku.yamahata@intel.com>
+ <a02d8e9a3c46b9627a5edccd76416abeccf45a20.1659854790.git.isaku.yamahata@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v4 3/3] ARM: dts: qcom: Add support for Samsung Galaxy Tab
- 4 10.1 (SM-T530)
-Content-Language: en-US
-To:     =?UTF-8?Q?Matti_Lehtim=c3=a4ki?= <matti.lehtimaki@gmail.com>,
-        linux-arm-msm@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        soc@kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220831173207.238080-1-matti.lehtimaki@gmail.com>
- <20220831173207.238080-4-matti.lehtimaki@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220831173207.238080-4-matti.lehtimaki@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a02d8e9a3c46b9627a5edccd76416abeccf45a20.1659854790.git.isaku.yamahata@intel.com>
+User-Agent: NeoMutt/20171215
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 31/08/2022 20:32, Matti Lehtimäki wrote:
-> Add a device tree for the Samsung Galaxy Tab 4 10.1 (SM-T530) wifi tablet
-> based on the apq8026 platform.
-> 
-> Currently supported are accelerometer sensor, hall sensor,
-> internal storage, physical buttons (power & volume), screen
-> (based on simple-framebuffer set up by the bootloader), sdcard,
-> touchscreen and USB.
-> 
-> Signed-off-by: Matti Lehtimäki <matti.lehtimaki@gmail.com>
+On Sun, Aug 07, 2022 at 03:01:27PM -0700, isaku.yamahata@intel.com wrote:
+> From: Isaku Yamahata <isaku.yamahata@intel.com>
+>
+> For private GPA, CPU refers a private page table whose contents are
+> encrypted.  The dedicated APIs to operate on it (e.g. updating/reading its
+> PTE entry) are used and their cost is expensive.
+>
+> When KVM resolves KVM page fault, it walks the page tables.  To reuse the
+> existing KVM MMU code and mitigate the heavy cost to directly walk
+> protected (encrypted) page table, allocate one more page to copy the
+> protected page table for KVM MMU code to directly walk.  Resolve KVM page
+> fault with the existing code, and do additional operations necessary for
+> the protected page table.  To distinguish such cases, the existing KVM page
+> table is called a shared page table (i.e. not associated with protected
+> page table), and the page table with protected page table is called a
+> private page table.  The relationship is depicted below.
+>
+> Add a private pointer to struct kvm_mmu_page for protected page table and
+> add helper functions to allocate/initialize/free a protected page table
+> page.
+>
+>               KVM page fault                     |
+>                      |                           |
+>                      V                           |
+>         -------------+----------                 |
+>         |                      |                 |
+>         V                      V                 |
+>      shared GPA           private GPA            |
+>         |                      |                 |
+>         V                      V                 |
+>     shared PT root      private PT root          |    protected PT root
+>         |                      |                 |           |
+>         V                      V                 |           V
+>      shared PT            private PT ----propagate----> protected PT
+>         |                      |                 |           |
+>         |                      \-----------------+------\    |
+>         |                                        |      |    |
+>         V                                        |      V    V
+>   shared guest page                              |    private guest page
+>                                                  |
+>                            non-encrypted memory  |    encrypted memory
+>                                                  |
+> PT: page table
+> - Shared PT is visible to KVM and it is used by CPU.
+> - Protected PT is used by CPU but it is invisible to KVM.
+> - Private PT is visible to KVM but not used by CPU.  It is used to
+>   propagate PT change to the actual protected PT which is used by CPU.
+>
+> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 > ---
-> Changes in v4:
->   - Move delete-node to memory-region
->   - Move usb-switch node to blsp_i2c4
-> 
-
-(...)
-
-> +};
+>  arch/x86/include/asm/kvm_host.h |  1 +
+>  arch/x86/kvm/mmu/mmu.c          |  9 ++++
+>  arch/x86/kvm/mmu/mmu_internal.h | 73 +++++++++++++++++++++++++++++++++
+>  arch/x86/kvm/mmu/tdp_mmu.c      |  2 +
+>  4 files changed, 85 insertions(+)
+>
+> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+> index 25835b8c4c12..e4ecf6b8ea0b 100644
+> --- a/arch/x86/include/asm/kvm_host.h
+> +++ b/arch/x86/include/asm/kvm_host.h
+> @@ -743,6 +743,7 @@ struct kvm_vcpu_arch {
+>  	struct kvm_mmu_memory_cache mmu_shadow_page_cache;
+>  	struct kvm_mmu_memory_cache mmu_shadowed_info_cache;
+>  	struct kvm_mmu_memory_cache mmu_page_header_cache;
+> +	struct kvm_mmu_memory_cache mmu_private_sp_cache;
+>
+>  	/*
+>  	 * QEMU userspace and the guest each have their own FPU state.
+> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> index 0e5a6dcc4966..aa0819905874 100644
+> --- a/arch/x86/kvm/mmu/mmu.c
+> +++ b/arch/x86/kvm/mmu/mmu.c
+> @@ -669,6 +669,13 @@ static int mmu_topup_shadow_page_cache(struct kvm_vcpu *vcpu)
+>  	struct kvm_mmu_memory_cache *mc = &vcpu->arch.mmu_shadow_page_cache;
+>  	int start, end, i, r;
+>
+> +	if (kvm_gfn_shared_mask(vcpu->kvm)) {
+> +		r = kvm_mmu_topup_memory_cache(&vcpu->arch.mmu_private_sp_cache,
+> +					       PT64_ROOT_MAX_LEVEL);
+> +		if (r)
+> +			return r;
+> +	}
 > +
-> +&rpm_requests {
-> +	pm8226-regulators {
+>  	start = kvm_mmu_memory_cache_nr_free_objects(mc);
+>  	r = kvm_mmu_topup_memory_cache(mc, PT64_ROOT_MAX_LEVEL);
+>
+> @@ -718,6 +725,7 @@ static void mmu_free_memory_caches(struct kvm_vcpu *vcpu)
+>  	kvm_mmu_free_memory_cache(&vcpu->arch.mmu_pte_list_desc_cache);
+>  	kvm_mmu_free_memory_cache(&vcpu->arch.mmu_shadow_page_cache);
+>  	kvm_mmu_free_memory_cache(&vcpu->arch.mmu_shadowed_info_cache);
+> +	kvm_mmu_free_memory_cache(&vcpu->arch.mmu_private_sp_cache);
+>  	kvm_mmu_free_memory_cache(&vcpu->arch.mmu_page_header_cache);
+>  }
+>
+> @@ -2162,6 +2170,7 @@ static struct kvm_mmu_page *kvm_mmu_alloc_shadow_page(struct kvm *kvm,
+>  		sp->shadowed_translation = kvm_mmu_memory_cache_alloc(caches->shadowed_info_cache);
+>
+>  	set_page_private(virt_to_page(sp->spt), (unsigned long)sp);
+> +	kvm_mmu_init_private_sp(sp, NULL);
+>
+>  	/*
+>  	 * active_mmu_pages must be a FIFO list, as kvm_zap_obsolete_pages()
+> diff --git a/arch/x86/kvm/mmu/mmu_internal.h b/arch/x86/kvm/mmu/mmu_internal.h
+> index c9446e4e16e3..d43c01e7e37b 100644
+> --- a/arch/x86/kvm/mmu/mmu_internal.h
+> +++ b/arch/x86/kvm/mmu/mmu_internal.h
+> @@ -82,6 +82,10 @@ struct kvm_mmu_page {
+>  	 */
+>  	u64 *shadowed_translation;
+>
+> +#ifdef CONFIG_KVM_MMU_PRIVATE
+> +	/* associated private shadow page, e.g. SEPT page. */
+> +	void *private_sp;
+> +#endif
+>  	/* Currently serving as active root */
+>  	union {
+>  		int root_count;
+> @@ -153,6 +157,75 @@ static inline bool is_private_sptep(u64 *sptep)
+>  	return is_private_sp(sptep_to_sp(sptep));
+>  }
+>
+> +#ifdef CONFIG_KVM_MMU_PRIVATE
+> +static inline void *kvm_mmu_private_sp(struct kvm_mmu_page *sp)
+> +{
+> +	return sp->private_sp;
+> +}
+> +
+> +static inline void kvm_mmu_init_private_sp(struct kvm_mmu_page *sp, void *private_sp)
+> +{
+> +	sp->private_sp = private_sp;
+> +}
 
-I don't think this passes bindings. Run `make dtbs_check`. I don't want
-to keep accepting DTS which does not validate and none of submiters want
-to fix this...
+How about "kvm_mmu_set_private_sp()" ? Because it just sets variable.
+"init" means things more than just setting.
 
-Rebase on top of:
-https://lore.kernel.org/linux-devicetree/20220901085609.95624-1-krzysztof.kozlowski@linaro.org/T/#t
+> +
+> +static inline void kvm_mmu_alloc_private_sp(
+> +	struct kvm_vcpu *vcpu, struct kvm_mmu_memory_cache *private_sp_cache,
+> +	struct kvm_mmu_page *sp)
+> +{
+> +	/*
+> +	 * vcpu == NULL means non-root SPT:
+> +	 * vcpu == NULL is used to split a large SPT into smaller SPT.  Root SPT
+> +	 * is not a large SPT.
+> +	 */
 
-Node name should be "regulators".
+Can we rely on sp->tdp_mmu_root_count to know it's root or not ?
+Depends on vcpu looks odd, because it's often to split
+huge pages in per-vcpu level, or things I missed here...
 
-Be sure your DTS has 0 warning.
+> +	bool is_root = vcpu &&
+> +		vcpu->arch.root_mmu.root_role.level == sp->role.level;
+> +
+> +	if (vcpu)
+> +		private_sp_cache = &vcpu->arch.mmu_private_sp_cache;
 
-Best regards,
-Krzysztof
+how about totally rely on caller for this, e.g caller to decide
+uses per-vcpu cache or per-VM cache ?
+
+> +	WARN_ON(!kvm_mmu_page_role_is_private(sp->role));
+
+Please move to begin of this function because this should be
+first step to check bad cases.
+
+> +	if (is_root)
+> +		/*
+> +		 * Because TDX module assigns root Secure-EPT page and set it to
+> +		 * Secure-EPTP when TD vcpu is created, secure page table for
+> +		 * root isn't needed.
+> +		 */
+> +		sp->private_sp = NULL;
+> +	else {
+> +		sp->private_sp = kvm_mmu_memory_cache_alloc(private_sp_cache);
+> +		/*
+> +		 * Because mmu_private_sp_cache is topped up before staring kvm
+> +		 * page fault resolving, the allocation above shouldn't fail.
+> +		 */
+> +		WARN_ON_ONCE(!sp->private_sp);
+> +	}
+> +}
+> +
+> +static inline void kvm_mmu_free_private_sp(struct kvm_mmu_page *sp)
+> +{
+> +	if (sp->private_sp)
+> +		free_page((unsigned long)sp->private_sp);
+> +}
+> +#else
+> +static inline void *kvm_mmu_private_sp(struct kvm_mmu_page *sp)
+> +{
+> +	return NULL;
+> +}
+> +
+> +static inline void kvm_mmu_init_private_sp(struct kvm_mmu_page *sp, void *private_sp)
+> +{
+> +}
+> +
+> +static inline void kvm_mmu_alloc_private_sp(
+> +	struct kvm_vcpu *vcpu, struct kvm_mmu_memory_cache *private_sp_cache,
+> +	struct kvm_mmu_page *sp)
+> +{
+> +}
+> +
+> +static inline void kvm_mmu_free_private_sp(struct kvm_mmu_page *sp)
+> +{
+> +}
+> +#endif
+> +
+>  static inline bool kvm_mmu_page_ad_need_write_protect(struct kvm_mmu_page *sp)
+>  {
+>  	/*
+> diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+> index 823c1ef807eb..3f5b019f9774 100644
+> --- a/arch/x86/kvm/mmu/tdp_mmu.c
+> +++ b/arch/x86/kvm/mmu/tdp_mmu.c
+> @@ -71,6 +71,7 @@ void kvm_mmu_uninit_tdp_mmu(struct kvm *kvm)
+>
+>  static void tdp_mmu_free_sp(struct kvm_mmu_page *sp)
+>  {
+> +	kvm_mmu_free_private_sp(sp);
+>  	free_page((unsigned long)sp->spt);
+>  	kmem_cache_free(mmu_page_header_cache, sp);
+>  }
+> @@ -300,6 +301,7 @@ static void tdp_mmu_init_sp(struct kvm_mmu_page *sp, tdp_ptep_t sptep,
+>  	sp->gfn = gfn;
+>  	sp->ptep = sptep;
+>  	sp->tdp_mmu_page = true;
+> +	kvm_mmu_init_private_sp(sp, NULL);
+
+This set the private sp allocated by kvm_mmu_alloc_private_sp(), I
+think it's wrong here.
+
+>
+>  	trace_kvm_mmu_get_page(sp, true);
+>  }
+> --
+> 2.25.1
+>
