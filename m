@@ -2,77 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AA57ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 12:23:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE073ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 12:24:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233420AbiIAMXq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 08:23:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37498 "EHLO
+        id S233348AbiIAMYb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 08:24:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233348AbiIAMXe (ORCPT
+        with ESMTP id S233401AbiIAMY1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 08:23:34 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F9C412206B;
-        Thu,  1 Sep 2022 05:23:33 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MJKqV2rp5zkWkW;
-        Thu,  1 Sep 2022 20:19:50 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 1 Sep
- 2022 20:23:30 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <seanjc@google.com>, <pbonzini@redhat.com>, <tglx@linutronix.de>,
-        <mingo@redhat.com>, <bp@alien8.de>, <dave.hansen@linux.intel.com>
-CC:     <x86@kernel.org>, <hpa@zytor.com>, <kvm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH] KVM: x86: fix memoryleak in kvm_arch_vcpu_create()
-Date:   Thu, 1 Sep 2022 20:23:00 +0800
-Message-ID: <20220901122300.22298-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
+        Thu, 1 Sep 2022 08:24:27 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9453C1223B2;
+        Thu,  1 Sep 2022 05:24:26 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6248BD6E;
+        Thu,  1 Sep 2022 05:24:32 -0700 (PDT)
+Received: from [10.57.18.92] (unknown [10.57.18.92])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2B9643F7B4;
+        Thu,  1 Sep 2022 05:24:53 -0700 (PDT)
+Message-ID: <ccacc117-0be8-2cd3-480b-dcbca5485d6f@arm.com>
+Date:   Thu, 1 Sep 2022 13:24:18 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH v2] Revert "swiotlb: panic if nslabs is too small"
+Content-Language: en-GB
+To:     Dongli Zhang <dongli.zhang@oracle.com>, Yu Zhao <yuzhao@google.com>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        iommu@lists.linux.dev, linux-mips@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+References: <20220829232934.3277747-1-yuzhao@google.com>
+ <20220831063818.3902572-1-yuzhao@google.com>
+ <747f76e1-a5ec-150c-311e-a60396f6f7ab@oracle.com>
+ <CAOUHufYHh3B6A8_pAusnW5==r3VhPxy6bOoUHbxe0qvhNGovqA@mail.gmail.com>
+ <982a4b95-0ab5-f18e-cbaf-1f503a35ada7@oracle.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <982a4b95-0ab5-f18e-cbaf-1f503a35ada7@oracle.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When allocating memory for mci_ctl2_banks fails, KVM doesn't release
-mce_banks leading to memoryleak. Fix this issue by calling kfree()
-for it when kcalloc() fails.
+On 2022-09-01 03:18, Dongli Zhang wrote:
+> Hi Yu,
+> 
+> On 8/31/22 5:24 PM, Yu Zhao wrote:
+>> On Wed, Aug 31, 2022 at 4:20 PM Dongli Zhang <dongli.zhang@oracle.com> wrote:
+>>>
+>>> Hi Yu,
+>>>
+>>> As we discussed in the past, the swiotlb panic on purpose
+>>
+>> We should not panic() at all, especially on a platform that has been
+>> working well since at least 4.14.
+>>
+>> Did you check out this link I previously shared with you?
+>> https://urldefense.com/v3/__https://lore.kernel.org/r/CAHk-=wit-DmhMfQErY29JSPjFgebx_Ld*pnerc4J2Ag990WwAA@mail.gmail.com/__;Kw!!ACWV5N9M2RV99hQ!PXzSLurBv7VqxI1451TV4zO3_-BYj4grk-HYBsXzSnA6nZcXaBzdsQ-rF2DAqlICSRPMt-efYv_Uu2A2CQ$
+> 
+> Thanks for sharing! I used to read that in the past. To be honest I am still
+> confused on when to use BUG/panic and when to not, as I still see many usage in
+> some patches.
+> 
+> Just about swiotlb, it may panic in many cases during boot, e.g.,:
+> 
+> https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1955655
 
-Fixes: 281b52780b57 ("KVM: x86: Add emulation for MSR_IA32_MCx_CTL2 MSRs.")
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
----
- arch/x86/kvm/x86.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+That's really a different thing, but frankly that panic is also bogus 
+anyway - there is no good reason to have different behaviour for failing 
+to allocate a buffer slot because the buffer is full vs. failing to 
+allocate a buffer slot because there is no buffer. If we can fail 
+gracefully some of the time we should fail gracefully all of the time. 
+Yes, there's a slight difference in that one case has a chance of 
+succeeding if retried in future while the other definitely doesn't, but 
+it's not SWIOTLB's place to decide that the entire system is terminally 
+unusable just because some device can't make a DMA mapping.
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index d7374d768296..396f4c9e9880 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -11563,7 +11563,7 @@ int kvm_arch_vcpu_create(struct kvm_vcpu *vcpu)
- 	vcpu->arch.mci_ctl2_banks = kcalloc(KVM_MAX_MCE_BANKS, sizeof(u64),
- 					    GFP_KERNEL_ACCOUNT);
- 	if (!vcpu->arch.mce_banks || !vcpu->arch.mci_ctl2_banks)
--		goto fail_free_pio_data;
-+		goto fail_free_mce_banks;
- 	vcpu->arch.mcg_cap = KVM_MAX_MCE_BANKS;
- 
- 	if (!zalloc_cpumask_var(&vcpu->arch.wbinvd_dirty_mask,
-@@ -11617,7 +11617,6 @@ int kvm_arch_vcpu_create(struct kvm_vcpu *vcpu)
- fail_free_mce_banks:
- 	kfree(vcpu->arch.mce_banks);
- 	kfree(vcpu->arch.mci_ctl2_banks);
--fail_free_pio_data:
- 	free_page((unsigned long)vcpu->arch.pio_data);
- fail_free_lapic:
- 	kvm_free_lapic(vcpu);
--- 
-2.23.0
+Similarly for the other panics at init time, which seem to have 
+originated from a mechanical refactoring of the memblock API with the 
+expectation of preserving the existing behaviour at the time. Those have 
+then just been moved around without anyone thinking to question why 
+they're there, and if memblock *does* now return usable error 
+information, why don't we start handling that error properly like we do 
+in other init paths?
 
+Really there is no reason to panic anywhere in SWIOTLB. This is old 
+code, things have moved on over the last 20 years, and we can and should 
+do much better. I'll add this to my list of things to look at for 
+cleanup once I find a bit of free time, unless anyone else fancies 
+taking it on.
+
+Thanks,
+Robin.
