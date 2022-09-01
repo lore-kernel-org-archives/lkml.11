@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 476F2C54EE9
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 22:22:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51AC4ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 22:22:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234705AbiIAWWF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 18:22:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46758 "EHLO
+        id S235304AbiIAWWJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 18:22:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234960AbiIAWU7 (ORCPT
+        with ESMTP id S234986AbiIAWU7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 1 Sep 2022 18:20:59 -0400
-Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0F2FA223D;
-        Thu,  1 Sep 2022 15:19:20 -0700 (PDT)
+Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEC99A2223;
+        Thu,  1 Sep 2022 15:19:19 -0700 (PDT)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 78B6E2205;
-        Fri,  2 Sep 2022 00:19:13 +0200 (CEST)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 7B95521C6;
+        Fri,  2 Sep 2022 00:19:11 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1662070753;
+        t=1662070751;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ZGryqp6PN2Xl4uE1Cl8ul5MHURkXagR6tqozK7Gh86g=;
-        b=NHxHG204Y9W9I0zSVh0EVs8SFiwhe9ccuNqrQNRb6USXzgjoncd/2WxYqubX0TaRuCtBJn
-        C+dK2S002mU8Ra8ZAMChbkkwIadhH+9P5DERw2aCazNBy2TBDP4Q+nzB4GeLsMa0RnOyx4
-        gL/m43Nzb117yWQPXfCuApkTtcwx1/wyt4SBKrpz5uv7YOT8DUWd5XgaTJjdn65aAbqCAL
-        PuoGIN4XWUg0zUaWoHTGPhl192nLkdOSMFHCunchKktSaEI3SYfQURf9lbNmyizNJQRdmW
-        TKalRIq1T7LBbQouNAvlGCvVrMzs5S6We3v7crBY9yuZBeO0UcFQxo/Futg5YA==
+        bh=mp1Anrg7RvtSnRweTlYNf0dthMjXidxRy4304FCk4PI=;
+        b=WMetcScz3c92KdUF5vL3GP2woDolbQbrOFvSwM5HWetbrnJdWEQ6AIbOZwK0HfdJ0WBQ9x
+        UjSKDDX+BV3qpnl25BoRj1Z9XPG1AZ4cOAy8Cq1/CBasQ9PMrm4dnbJZ0kkWcwXhzntikR
+        7NwDg6LelDwwbKzOHStD6BqRQ7nv7Zltus8m2lPifwgV8vUQif5jvYTvVMWsDF/d36znFH
+        wmDoQWSmNnaoJ9z6vzLVRBYzGDaTt+V42ZfRkphxjpwfo4xXq3uCaYmEJzUlOiT4CP/+ju
+        HnaxMnnL5cCH/fohA8JuaG6z42FatZoCJZfuZeyyFxTum7Tz9vrR01wPnyn3gg==
 From:   Michael Walle <michael@walle.cc>
 To:     Miquel Raynal <miquel.raynal@bootlin.com>,
         Richard Weinberger <richard@nod.at>,
@@ -48,9 +48,9 @@ Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
         Ahmad Fatoum <a.fatoum@pengutronix.de>,
         Philipp Zabel <p.zabel@pengutronix.de>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH v2 13/20] nvmem: core: drop priv pointer in post process callback
-Date:   Fri,  2 Sep 2022 00:18:50 +0200
-Message-Id: <20220901221857.2600340-14-michael@walle.cc>
+Subject: [PATCH v2 07/20] nvmem: core: use nvmem_add_one_cell() in nvmem_add_cells_from_of()
+Date:   Fri,  2 Sep 2022 00:18:44 +0200
+Message-Id: <20220901221857.2600340-8-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220901221857.2600340-1-michael@walle.cc>
 References: <20220901221857.2600340-1-michael@walle.cc>
@@ -61,66 +61,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It doesn't make any more sense to have a opaque pointer set up by the
-nvmem device. Usually, the layout isn't associated with a particular
-nvmem device.
+Convert nvmem_add_cells_from_of() to use the new nvmem_add_one_cell().
+This will remove duplicate code and it will make it possible to add a
+hook to a nvmem layout in between, which can change fields before the
+cell is finally added.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
 changes since v1:
  - new patch
 
- drivers/nvmem/core.c           | 4 ++--
- drivers/nvmem/imx-ocotp.c      | 4 ++--
- include/linux/nvmem-provider.h | 5 +++--
- 3 files changed, 7 insertions(+), 6 deletions(-)
+ drivers/nvmem/core.c | 38 ++++++++++++++------------------------
+ 1 file changed, 14 insertions(+), 24 deletions(-)
 
 diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
-index d31d3f0ab517..6910796937f9 100644
+index 3dfd149374a8..c640d411ab15 100644
 --- a/drivers/nvmem/core.c
 +++ b/drivers/nvmem/core.c
-@@ -1523,8 +1523,8 @@ static int __nvmem_cell_read(struct nvmem_device *nvmem,
- 		nvmem_shift_read_buffer_in_place(cell, buf);
+@@ -687,15 +687,15 @@ static int nvmem_validate_keepouts(struct nvmem_device *nvmem)
  
- 	if (cell->read_post_process) {
--		rc = cell->read_post_process(nvmem->priv, id, index,
--					     cell->offset, buf, cell->bytes);
-+		rc = cell->read_post_process(id, index, cell->offset, buf,
-+					     cell->bytes);
- 		if (rc)
- 			return rc;
- 	}
-diff --git a/drivers/nvmem/imx-ocotp.c b/drivers/nvmem/imx-ocotp.c
-index ac0edb6398f1..5e869d4a81c5 100644
---- a/drivers/nvmem/imx-ocotp.c
-+++ b/drivers/nvmem/imx-ocotp.c
-@@ -222,8 +222,8 @@ static int imx_ocotp_read(void *context, unsigned int offset,
- 	return ret;
- }
- 
--static int imx_ocotp_cell_pp(void *context, const char *id, int index,
--			     unsigned int offset, void *data, size_t bytes)
-+static int imx_ocotp_cell_pp(const char *id, int index, unsigned int offset,
-+			     void *data, size_t bytes)
+ static int nvmem_add_cells_from_of(struct nvmem_device *nvmem)
  {
- 	u8 *buf = data;
- 	int i;
-diff --git a/include/linux/nvmem-provider.h b/include/linux/nvmem-provider.h
-index 9d22dc5a3fa5..46067a6a0395 100644
---- a/include/linux/nvmem-provider.h
-+++ b/include/linux/nvmem-provider.h
-@@ -19,8 +19,9 @@ typedef int (*nvmem_reg_read_t)(void *priv, unsigned int offset,
- typedef int (*nvmem_reg_write_t)(void *priv, unsigned int offset,
- 				 void *val, size_t bytes);
- /* used for vendor specific post processing of cell data */
--typedef int (*nvmem_cell_post_process_t)(void *priv, const char *id, int index,
--					 unsigned int offset, void *buf, size_t bytes);
-+typedef int (*nvmem_cell_post_process_t)(const char *id, int index,
-+					 unsigned int offset, void *buf,
-+					 size_t bytes);
+-	struct device_node *parent, *child;
+ 	struct device *dev = &nvmem->dev;
+ 	struct nvmem_cell_entry *cell;
++	struct device_node *child;
+ 	const __be32 *addr;
+-	int len;
++	int len, ret;
  
- enum nvmem_type {
- 	NVMEM_TYPE_UNKNOWN = 0,
+-	parent = dev->of_node;
++	for_each_child_of_node(dev->of_node, child) {
++		struct nvmem_cell_info info = {0};
+ 
+-	for_each_child_of_node(parent, child) {
+ 		addr = of_get_property(child, "reg", &len);
+ 		if (!addr)
+ 			continue;
+@@ -711,34 +711,24 @@ static int nvmem_add_cells_from_of(struct nvmem_device *nvmem)
+ 			return -ENOMEM;
+ 		}
+ 
+-		cell->nvmem = nvmem;
+-		cell->offset = be32_to_cpup(addr++);
+-		cell->bytes = be32_to_cpup(addr);
+-		cell->name = kasprintf(GFP_KERNEL, "%pOFn", child);
++		info.offset = be32_to_cpup(addr++);
++		info.bytes = be32_to_cpup(addr);
++		info.name = kasprintf(GFP_KERNEL, "%pOFn", child);
+ 
+ 		addr = of_get_property(child, "bits", &len);
+ 		if (addr && len == (2 * sizeof(u32))) {
+-			cell->bit_offset = be32_to_cpup(addr++);
+-			cell->nbits = be32_to_cpup(addr);
++			info.bit_offset = be32_to_cpup(addr++);
++			info.nbits = be32_to_cpup(addr);
+ 		}
+ 
+-		if (cell->nbits)
+-			cell->bytes = DIV_ROUND_UP(
+-					cell->nbits + cell->bit_offset,
+-					BITS_PER_BYTE);
++		info.np = of_node_get(child);
+ 
+-		if (!IS_ALIGNED(cell->offset, nvmem->stride)) {
+-			dev_err(dev, "cell %s unaligned to nvmem stride %d\n",
+-				cell->name, nvmem->stride);
+-			/* Cells already added will be freed later. */
+-			kfree_const(cell->name);
+-			kfree(cell);
++		ret = nvmem_add_one_cell(nvmem, &info);
++		kfree(info.name);
++		if (ret) {
+ 			of_node_put(child);
+-			return -EINVAL;
++			return ret;
+ 		}
+-
+-		cell->np = of_node_get(child);
+-		nvmem_cell_entry_add(cell);
+ 	}
+ 
+ 	return 0;
 -- 
 2.30.2
 
