@@ -2,173 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B642ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 11:21:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FB8CECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 11:21:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234466AbiIALVa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 07:21:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43850 "EHLO
+        id S231484AbiIALVr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 07:21:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234279AbiIALVO (ORCPT
+        with ESMTP id S234472AbiIALVd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 07:21:14 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18FCE125B90
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 04:21:13 -0700 (PDT)
-Received: from fraeml709-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MJJW81QP1z682sP;
-        Thu,  1 Sep 2022 19:20:36 +0800 (CST)
-Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
- fraeml709-chm.china.huawei.com (10.206.15.37) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 1 Sep 2022 13:21:11 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 1 Sep 2022 12:21:09 +0100
-From:   John Garry <john.garry@huawei.com>
-To:     <xuwei5@hisilicon.com>
-CC:     <andriy.shevchenko@linux.intel.com>, <linuxarm@huawei.com>,
-        <rafael.j.wysocki@intel.com>, <linux-kernel@vger.kernel.org>,
-        <soc@kernel.org>, <yangyingliang@huawei.com>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH 5/5] bus: hisi_lpc: Use platform_device_register_full()
-Date:   Thu, 1 Sep 2022 19:14:31 +0800
-Message-ID: <1662030871-182688-6-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1662030871-182688-1-git-send-email-john.garry@huawei.com>
-References: <1662030871-182688-1-git-send-email-john.garry@huawei.com>
+        Thu, 1 Sep 2022 07:21:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A218A12649E;
+        Thu,  1 Sep 2022 04:21:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C58861DBA;
+        Thu,  1 Sep 2022 11:21:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5674C433D6;
+        Thu,  1 Sep 2022 11:21:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662031288;
+        bh=Y1ObXWZoAPO9a3cVwM+9DOIhRMb2NN2/YlncxX1cYIA=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=g8HIcvDfJ7+Kvvz7+2WkqooremfBKbH+fzUyNPoCCJ2aYsc9DWatob971V4yk03CO
+         CF6JpCsGQDyY0QDjoCeC8LtYUjVtluTRQnHT+In0odOoTv1u/fhLc26r3d+JtsKvMH
+         5PuERM7bTHJjhKOVQZCMjMVa45wyctq94eCQtHyhw46Akh48FlQ6jSlJYP6T8kKM3x
+         RugJdDoqIJ3L6xxhrT6ZYLyWIG8ao+H+lluQYn4OM88a8h3sfyWsoFA+/06aPUwOym
+         RBlIYrKDULw2WTZ7K3lmhXwcE94QUucjPYFUeWQRUAZXqT0Kxu8vaaotXrYDElSDNc
+         VVGWuzmYv6mxw==
+Message-ID: <5c5d87f8329e44275bda36657be4de2390f065d4.camel@kernel.org>
+Subject: Re: [PATCH v2 1/3] nfsd: Fix a memory leak in an error handling path
+From:   Jeff Layton <jlayton@kernel.org>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        "J. Bruce Fields" <bfields@redhat.com>,
+        Scott Mayhew <smayhew@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-nfs@vger.kernel.org
+Date:   Thu, 01 Sep 2022 07:21:26 -0400
+In-Reply-To: <14d802144c88da0eb9e201b3acbf4bde376b2473.1662009844.git.christophe.jaillet@wanadoo.fr>
+References: <14d802144c88da0eb9e201b3acbf4bde376b2473.1662009844.git.christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- lhrpeml500003.china.huawei.com (7.191.162.67)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The code to create the child platform device is essentially the same as
-what platform_device_register_full() does, so change over to use
-that same function to reduce duplication.
+On Thu, 2022-09-01 at 07:27 +0200, Christophe JAILLET wrote:
+> If this memdup_user() call fails, the memory allocated in a previous call
+> a few lines above should be freed. Otherwise it leaks.
+>=20
+> Fixes: 6ee95d1c8991 ("nfsd: add support for upcall version 2")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+>  fs/nfsd/nfs4recover.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/fs/nfsd/nfs4recover.c b/fs/nfsd/nfs4recover.c
+> index b29d27eaa8a6..248ff9f4141c 100644
+> --- a/fs/nfsd/nfs4recover.c
+> +++ b/fs/nfsd/nfs4recover.c
+> @@ -815,8 +815,10 @@ __cld_pipe_inprogress_downcall(const struct cld_msg_=
+v2 __user *cmsg,
+>  				princhash.data =3D memdup_user(
+>  						&ci->cc_princhash.cp_data,
+>  						princhashlen);
+> -				if (IS_ERR_OR_NULL(princhash.data))
+> +				if (IS_ERR_OR_NULL(princhash.data)) {
+> +					kfree(name.data);
+>  					return -EFAULT;
+> +				}
+>  				princhash.len =3D princhashlen;
+>  			} else
+>  				princhash.len =3D 0;
 
-Signed-off-by: John Garry <john.garry@huawei.com>
-Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/bus/hisi_lpc.c | 70 ++++++++++++++++++++++--------------------
- 1 file changed, 36 insertions(+), 34 deletions(-)
-
-diff --git a/drivers/bus/hisi_lpc.c b/drivers/bus/hisi_lpc.c
-index 74f4448bff9d..2203ee57eaaf 100644
---- a/drivers/bus/hisi_lpc.c
-+++ b/drivers/bus/hisi_lpc.c
-@@ -472,9 +472,7 @@ static int hisi_lpc_acpi_clear_enumerated(struct acpi_device *adev, void *not_us
- 
- struct hisi_lpc_acpi_cell {
- 	const char *hid;
--	const char *name;
--	void *pdata;
--	size_t pdata_size;
-+	const struct platform_device_info *pdevinfo;
- };
- 
- static void hisi_lpc_acpi_remove(struct device *hostdev)
-@@ -505,28 +503,51 @@ static int hisi_lpc_acpi_add_child(struct acpi_device *child, void *data)
- 		/* ipmi */
- 		{
- 			.hid = "IPI0001",
--			.name = "hisi-lpc-ipmi",
-+			.pdevinfo = (struct platform_device_info []) {
-+				{
-+					.parent = hostdev,
-+					.fwnode = acpi_fwnode_handle(child),
-+
-+					.name = "hisi-lpc-ipmi",
-+					.id = PLATFORM_DEVID_AUTO,
-+
-+					.res = res,
-+					.num_res = num_res,
-+				},
-+			},
- 		},
- 		/* 8250-compatible uart */
- 		{
- 			.hid = "HISI1031",
--			.name = "serial8250",
--			.pdata = (struct plat_serial8250_port []) {
-+			.pdevinfo = (struct platform_device_info []) {
- 				{
--					.iobase = res->start,
--					.uartclk = 1843200,
--					.iotype = UPIO_PORT,
--					.flags = UPF_BOOT_AUTOCONF,
-+					.parent = hostdev,
-+					.fwnode = acpi_fwnode_handle(child),
-+
-+					.name = "serial8250",
-+					.id = PLATFORM_DEVID_AUTO,
-+
-+					.res = res,
-+					.num_res = num_res,
-+
-+					.data = (struct plat_serial8250_port []) {
-+						{
-+							.iobase = res->start,
-+							.uartclk = 1843200,
-+							.iotype = UPIO_PORT,
-+							.flags = UPF_BOOT_AUTOCONF,
-+						},
-+						{}
-+					},
-+					.size_data =  2 *
-+						sizeof(struct plat_serial8250_port),
- 				},
--				{}
- 			},
--			.pdata_size = 2 *
--				sizeof(struct plat_serial8250_port),
- 		},
- 		{}
- 	};
- 
--	for (; cell && cell->name; cell++) {
-+	for (; cell && cell->hid; cell++) {
- 		if (!strcmp(cell->hid, hid)) {
- 			found = true;
- 			break;
-@@ -540,31 +561,12 @@ static int hisi_lpc_acpi_add_child(struct acpi_device *child, void *data)
- 		return 0;
- 	}
- 
--	pdev = platform_device_alloc(cell->name, PLATFORM_DEVID_AUTO);
-+	pdev = platform_device_register_full(cell->pdevinfo);
- 	if (!pdev)
- 		return -ENOMEM;
- 
--	pdev->dev.parent = hostdev;
--	ACPI_COMPANION_SET(&pdev->dev, child);
--
--	ret = platform_device_add_resources(pdev, res, num_res);
--	if (ret)
--		goto fail;
--
--	ret = platform_device_add_data(pdev, cell->pdata, cell->pdata_size);
--	if (ret)
--		goto fail;
--
--	ret = platform_device_add(pdev);
--	if (ret)
--		goto fail;
--
- 	acpi_device_set_enumerated(child);
- 	return 0;
--
--fail:
--	platform_device_put(pdev);
--	return ret;
- }
- 
- /*
--- 
-2.35.3
-
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
