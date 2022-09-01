@@ -2,95 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E08FECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:17:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A405AECAAD2
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:18:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233688AbiIAHR4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 03:17:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60280 "EHLO
+        id S233213AbiIAHSI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 03:18:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233666AbiIAHRr (ORCPT
+        with ESMTP id S233586AbiIAHRx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 03:17:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F6B312537A
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 00:17:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662016663;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MRH/N9umluFecU95mxeumXvzG19EehDFSI9n31sNO3I=;
-        b=fNVtu98gAhM/UNoToIZqrxcLY+UtN6UBOncG0TpYjpVERsyoCDLCVEg7ATNUMwDfKNTjoO
-        LHdrbVHQsj5+obdbT1qgoHkXHs6SpnhuddkjM34t3rlYgOucn77cbqVxtwqW1mS5VEKdLc
-        WgbyeemPUj/4PAWrWieS/7AHr8K5FO4=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-434-tezC0ux-OH65MubcGifSsQ-1; Thu, 01 Sep 2022 03:17:42 -0400
-X-MC-Unique: tezC0ux-OH65MubcGifSsQ-1
-Received: by mail-qv1-f72.google.com with SMTP id cz3-20020a056214088300b00498f11a6d8aso9871343qvb.11
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 00:17:42 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc;
-        bh=MRH/N9umluFecU95mxeumXvzG19EehDFSI9n31sNO3I=;
-        b=FhGDUz+W8qb0whyq0GXdvoTB1VrAfYbHDDdDCfr7BEiw6wRDtHnGZ3JwZk9TCdtnBO
-         T0FlYaAX+nlowcBgUVzSVBlPcuFGi6tl2JpR28/hfa7DTL2ClNXxfAUMqiGD1U38TSeG
-         49z9BBWeVSlD1NIjz0XA80cgMcLrEdEbeHt+kG7yCRWlslbJeoKrmETaPcPb7Sc32AIz
-         aalVoN0pvvmJLGpfhpKGgzIWVWU02VK9BFf0UJmT6MqqnXRl0Xx97Q0bgjJWiLKktKA3
-         lhvP5ULJH4LqRLzzk3cUMklLYaDfI+yVYcphSe8kQbVQ6E2Q29yq0BZgfSLm3+qqqBYT
-         HErw==
-X-Gm-Message-State: ACgBeo1d1o5sqr2sqiV5raMmlK1KEZc75dMP4qy38qiI4bSP75sxB78R
-        uzdXfNovXibiLwMx4VyhublvUiQ6J7Tex/F6dwDqpKVB/A5+HZaBHQr9X20eluIxGizkPyDuERc
-        a/BHmQkLwO6ERz/zsfgswpSVE
-X-Received: by 2002:a05:620a:1993:b0:6bb:7564:a31f with SMTP id bm19-20020a05620a199300b006bb7564a31fmr17955726qkb.201.1662016661681;
-        Thu, 01 Sep 2022 00:17:41 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6xI0mCkMJoz80W9gKGqFCAXq9xVYzbiD7oUtBs3Wb3F+4WhkA9toTEUqY8coZeGLWiv9/tsQ==
-X-Received: by 2002:a05:620a:1993:b0:6bb:7564:a31f with SMTP id bm19-20020a05620a199300b006bb7564a31fmr17955721qkb.201.1662016661424;
-        Thu, 01 Sep 2022 00:17:41 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-97-176.dyn.eolo.it. [146.241.97.176])
-        by smtp.gmail.com with ESMTPSA id h5-20020a05622a170500b0034490214788sm10406775qtk.49.2022.09.01.00.17.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 00:17:40 -0700 (PDT)
-Message-ID: <703b0c990f4c7b7db8496cb397fdc6dbccdc1c67.camel@redhat.com>
-Subject: Re: [PATCH net] net: fec: add pm_qos support on imx6q platform
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     wei.fang@nxp.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Thu, 01 Sep 2022 09:17:37 +0200
-In-Reply-To: <20220830070148.2021947-1-wei.fang@nxp.com>
-References: <20220830070148.2021947-1-wei.fang@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Thu, 1 Sep 2022 03:17:53 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E455112537A;
+        Thu,  1 Sep 2022 00:17:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662016671; x=1693552671;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=jGTUjhPCvzJ9QdTm5I51HBIMaR4fq+kRXdGH4c8lm4k=;
+  b=hfmumWktpdizdqk3xgunRAvqOzHOZrCocb5KvxFQgwv6PkaV2szaBydu
+   hRpPrVKh7NzuhCvkFCUNfs/b7k9HTIgQpSmpPZPd5gMcHA5n7c9AdSGBH
+   gYwnAg62DdbHbCNo1r2B/tcrfgc/Uw1Z6hlq85zyP5Ua7VC/G2V0m99Jh
+   e0DO27Lhs6IJANXEIkg0smAp8DecTmMQg47OSONmNPEqtqOMxMN2JuHGu
+   Py4xssc5gYFNU5Jc4JNfncrSIlAB0MM7RS2vhV2lvkDyFlzMxX7keZsvS
+   hEw/kzIRmpxVsvYlekPGrFrRXApLH0TCujUaOekxiy/pkjJ6n4hsJFebO
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="278655514"
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="278655514"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 00:17:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="673719876"
+Received: from sqa-gate.sh.intel.com (HELO michael.clx.dev.tsp.org) ([10.239.48.212])
+  by fmsmga008.fm.intel.com with ESMTP; 01 Sep 2022 00:17:42 -0700
+From:   Kevin Tian <kevin.tian@intel.com>
+To:     Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Zhi Wang <zhi.a.wang@intel.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Eric Farman <farman@linux.ibm.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Tony Krowiak <akrowiak@linux.ibm.com>,
+        Jason Herne <jjherne@linux.ibm.com>,
+        Harald Freudenberger <freude@linux.ibm.com>,
+        Diana Craciun <diana.craciun@oss.nxp.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Longfang Liu <liulongfang@huawei.com>,
+        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Kirti Wankhede <kwankhede@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Abhishek Sahu <abhsahu@nvidia.com>,
+        intel-gvt-dev@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org
+Cc:     Yi Liu <yi.l.liu@intel.com>
+Subject: [PATCH v2 02/15] vfio/pci: Use the new device life cycle helpers
+Date:   Thu,  1 Sep 2022 22:37:34 +0800
+Message-Id: <20220901143747.32858-3-kevin.tian@intel.com>
+X-Mailer: git-send-email 2.21.3
+In-Reply-To: <20220901143747.32858-1-kevin.tian@intel.com>
+References: <20220901143747.32858-1-kevin.tian@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-08-30 at 15:01 +0800, wei.fang@nxp.com wrote:
-> From: Wei Fang <wei.fang@nxp.com>
-> 
-> There is a very low probability that tx timeout will occur during
-> suspend and resume stress test on imx6q platform. So we add pm_qos
-> support to prevent system from entering low level idles which may
-> affect the transmission of tx.
-> 
-> Signed-off-by: Wei Fang <wei.fang@nxp.com>
+From: Yi Liu <yi.l.liu@intel.com>
 
-Since this IMHO causes a significal behavior change I suggest to target
-the net-next tree, does that fit you?
+Also introduce two pci core helpers as @init/@release for pci drivers:
 
-Additionally, it would be great if you could provide in the changelog
-the references to the relevant platform documentation and (even rough)
-power consumption delta estimates.
+ - vfio_pci_core_init_dev()
+ - vfio_pci_core_release_dev()
 
-Thanks!
+Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+Signed-off-by: Kevin Tian <kevin.tian@intel.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/vfio/pci/vfio_pci.c      | 20 +++++++++---------
+ drivers/vfio/pci/vfio_pci_core.c | 35 ++++++++++++++++++++++++++++++++
+ include/linux/vfio_pci_core.h    |  2 ++
+ 3 files changed, 47 insertions(+), 10 deletions(-)
 
-Paolo
+diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
+index 4d1a97415a27..c1223c458615 100644
+--- a/drivers/vfio/pci/vfio_pci.c
++++ b/drivers/vfio/pci/vfio_pci.c
+@@ -127,6 +127,8 @@ static int vfio_pci_open_device(struct vfio_device *core_vdev)
+ 
+ static const struct vfio_device_ops vfio_pci_ops = {
+ 	.name		= "vfio-pci",
++	.init		= vfio_pci_core_init_dev,
++	.release	= vfio_pci_core_release_dev,
+ 	.open_device	= vfio_pci_open_device,
+ 	.close_device	= vfio_pci_core_close_device,
+ 	.ioctl		= vfio_pci_core_ioctl,
+@@ -146,20 +148,19 @@ static int vfio_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	if (vfio_pci_is_denylisted(pdev))
+ 		return -EINVAL;
+ 
+-	vdev = kzalloc(sizeof(*vdev), GFP_KERNEL);
+-	if (!vdev)
+-		return -ENOMEM;
+-	vfio_pci_core_init_device(vdev, pdev, &vfio_pci_ops);
++	vdev = vfio_alloc_device(vfio_pci_core_device, vdev, &pdev->dev,
++				 &vfio_pci_ops);
++	if (IS_ERR(vdev))
++		return PTR_ERR(vdev);
+ 
+ 	dev_set_drvdata(&pdev->dev, vdev);
+ 	ret = vfio_pci_core_register_device(vdev);
+ 	if (ret)
+-		goto out_free;
++		goto out_put_vdev;
+ 	return 0;
+ 
+-out_free:
+-	vfio_pci_core_uninit_device(vdev);
+-	kfree(vdev);
++out_put_vdev:
++	vfio_put_device(&vdev->vdev);
+ 	return ret;
+ }
+ 
+@@ -168,8 +169,7 @@ static void vfio_pci_remove(struct pci_dev *pdev)
+ 	struct vfio_pci_core_device *vdev = dev_get_drvdata(&pdev->dev);
+ 
+ 	vfio_pci_core_unregister_device(vdev);
+-	vfio_pci_core_uninit_device(vdev);
+-	kfree(vdev);
++	vfio_put_device(&vdev->vdev);
+ }
+ 
+ static int vfio_pci_sriov_configure(struct pci_dev *pdev, int nr_virtfn)
+diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
+index c8d3b0450fb3..708b61d1b364 100644
+--- a/drivers/vfio/pci/vfio_pci_core.c
++++ b/drivers/vfio/pci/vfio_pci_core.c
+@@ -1825,6 +1825,41 @@ static void vfio_pci_vga_uninit(struct vfio_pci_core_device *vdev)
+ 					      VGA_RSRC_LEGACY_MEM);
+ }
+ 
++int vfio_pci_core_init_dev(struct vfio_device *core_vdev)
++{
++	struct vfio_pci_core_device *vdev =
++		container_of(core_vdev, struct vfio_pci_core_device, vdev);
++
++	vdev->pdev = to_pci_dev(core_vdev->dev);
++	vdev->irq_type = VFIO_PCI_NUM_IRQS;
++	mutex_init(&vdev->igate);
++	spin_lock_init(&vdev->irqlock);
++	mutex_init(&vdev->ioeventfds_lock);
++	INIT_LIST_HEAD(&vdev->dummy_resources_list);
++	INIT_LIST_HEAD(&vdev->ioeventfds_list);
++	mutex_init(&vdev->vma_lock);
++	INIT_LIST_HEAD(&vdev->vma_list);
++	INIT_LIST_HEAD(&vdev->sriov_pfs_item);
++	init_rwsem(&vdev->memory_lock);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(vfio_pci_core_init_dev);
++
++void vfio_pci_core_release_dev(struct vfio_device *core_vdev)
++{
++	struct vfio_pci_core_device *vdev =
++		container_of(core_vdev, struct vfio_pci_core_device, vdev);
++
++	mutex_destroy(&vdev->igate);
++	mutex_destroy(&vdev->ioeventfds_lock);
++	mutex_destroy(&vdev->vma_lock);
++	kfree(vdev->region);
++	kfree(vdev->pm_save);
++	vfio_free_device(core_vdev);
++}
++EXPORT_SYMBOL_GPL(vfio_pci_core_release_dev);
++
+ void vfio_pci_core_init_device(struct vfio_pci_core_device *vdev,
+ 			       struct pci_dev *pdev,
+ 			       const struct vfio_device_ops *vfio_pci_ops)
+diff --git a/include/linux/vfio_pci_core.h b/include/linux/vfio_pci_core.h
+index 5579ece4347b..98c8c66e2400 100644
+--- a/include/linux/vfio_pci_core.h
++++ b/include/linux/vfio_pci_core.h
+@@ -233,6 +233,8 @@ void vfio_pci_core_close_device(struct vfio_device *core_vdev);
+ void vfio_pci_core_init_device(struct vfio_pci_core_device *vdev,
+ 			       struct pci_dev *pdev,
+ 			       const struct vfio_device_ops *vfio_pci_ops);
++int vfio_pci_core_init_dev(struct vfio_device *core_vdev);
++void vfio_pci_core_release_dev(struct vfio_device *core_vdev);
+ int vfio_pci_core_register_device(struct vfio_pci_core_device *vdev);
+ void vfio_pci_core_uninit_device(struct vfio_pci_core_device *vdev);
+ void vfio_pci_core_unregister_device(struct vfio_pci_core_device *vdev);
+-- 
+2.21.3
 
