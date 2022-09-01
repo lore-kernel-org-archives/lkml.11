@@ -2,101 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B4E9ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:46:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFC41ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:46:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232433AbiIABp7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 21:45:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51038 "EHLO
+        id S232708AbiIABq1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 21:46:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229555AbiIABp4 (ORCPT
+        with ESMTP id S229555AbiIABqY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 21:45:56 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0415D659E6
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:45:54 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MJ3jw2Cl1zHnbJ;
-        Thu,  1 Sep 2022 09:44:04 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 1 Sep 2022 09:45:52 +0800
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 1 Sep 2022 09:45:51 +0800
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-To:     Andrew Morton <akpm@linux-foundation.org>, <linux-mm@kvack.org>
-CC:     <linux-kernel@vger.kernel.org>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: [PATCH] mm: remove BUG_ON() in __isolate_free_page()
-Date:   Thu, 1 Sep 2022 09:50:43 +0800
-Message-ID: <20220901015043.189276-1-wangkefeng.wang@huawei.com>
-X-Mailer: git-send-email 2.35.3
+        Wed, 31 Aug 2022 21:46:24 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D93F915EB
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:46:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661996783; x=1693532783;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=nEnqZOLNMxV4VhWt6dGK2kIybG1Ju24/QgWYZinT50Y=;
+  b=b6McElgvpJDebBB97X4UNJBBk4h59Vx/KRELxgQqw0/AFJ7Gcg2JC6qh
+   89jV229jQHcuxl6VlSmqkKVpIQ07XW6f6FYaETWZj6zUoAPR9A15xb+o1
+   9gKTuitsjEPd/b9bRj33H4DZD7koog3wnmffGH1dZBvJHdwvEXbDT3Url
+   qAoIOR9+8URabv0BBw6zrJkPo15rJxIMmpo35JGcorq1DF8JbxHbHTk7R
+   idX7kD/u9BDfZ2qh4ova/x6iOD8qz8ICo845WUo5iU3MreCOGt79z2fPG
+   A95REm2uyA5aj3j/9SCxtGYfIuUkfXwSSGRUVfzIVAbLKiGmK17VyXrYP
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="275993674"
+X-IronPort-AV: E=Sophos;i="5.93,279,1654585200"; 
+   d="scan'208";a="275993674"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 18:46:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,279,1654585200"; 
+   d="scan'208";a="940653232"
+Received: from lkp-server02.sh.intel.com (HELO 811e2ceaf0e5) ([10.239.97.151])
+  by fmsmga005.fm.intel.com with ESMTP; 31 Aug 2022 18:46:22 -0700
+Received: from kbuild by 811e2ceaf0e5 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oTZHh-0000xF-1Z;
+        Thu, 01 Sep 2022 01:46:21 +0000
+Date:   Thu, 01 Sep 2022 09:45:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [paulmck-rcu:dev.2022.08.29a] BUILD SUCCESS
+ ff670fc591f8d0ef00f3862ddbfaedbb7b154335
+Message-ID: <63100ece.zgc/Tl1hVwYWhLNP%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop unneed comment and blank, adjust the variable, and the most
-important is to delete BUG_ON(). The page passed is always buddy
-page into __isolate_free_page() from compaction, page_isolation
-and page_reporting, and the caller also check the return, BUG_ON()
-is a too drastic measure, remove it.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev.2022.08.29a
+branch HEAD: ff670fc591f8d0ef00f3862ddbfaedbb7b154335  rcutorture: Avoid torture.sh compressing identical files
 
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
----
- mm/page_alloc.c | 14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
+elapsed time: 873m
 
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 9f2e250c2589..7ad0c7b14ad2 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -3600,16 +3600,11 @@ EXPORT_SYMBOL_GPL(split_page);
- 
- int __isolate_free_page(struct page *page, unsigned int order)
- {
--	unsigned long watermark;
--	struct zone *zone;
--	int mt;
--
--	BUG_ON(!PageBuddy(page));
--
--	zone = page_zone(page);
--	mt = get_pageblock_migratetype(page);
-+	struct zone *zone = page_zone(page);
-+	int mt = get_pageblock_migratetype(page);
- 
- 	if (!is_migrate_isolate(mt)) {
-+		unsigned long watermark;
- 		/*
- 		 * Obey watermarks as if the page was being allocated. We can
- 		 * emulate a high-order watermark check with a raised order-0
-@@ -3623,8 +3618,6 @@ int __isolate_free_page(struct page *page, unsigned int order)
- 		__mod_zone_freepage_state(zone, -(1UL << order), mt);
- 	}
- 
--	/* Remove page from free list */
--
- 	del_page_from_free_list(page, zone, order);
- 
- 	/*
-@@ -3645,7 +3638,6 @@ int __isolate_free_page(struct page *page, unsigned int order)
- 		}
- 	}
- 
--
- 	return 1UL << order;
- }
- 
+configs tested: 75
+configs skipped: 2
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+um                             i386_defconfig
+um                           x86_64_defconfig
+arc                  randconfig-r043-20220830
+powerpc                           allnoconfig
+x86_64                              defconfig
+m68k                             allyesconfig
+i386                                defconfig
+x86_64                        randconfig-a006
+i386                          randconfig-a014
+i386                          randconfig-a012
+i386                          randconfig-a016
+arm                                 defconfig
+i386                             allyesconfig
+x86_64                          rhel-8.3-func
+x86_64                         rhel-8.3-kunit
+x86_64                           rhel-8.3-kvm
+x86_64                    rhel-8.3-kselftests
+x86_64                           rhel-8.3-syz
+x86_64                        randconfig-a013
+i386                          randconfig-a001
+x86_64                        randconfig-a011
+i386                          randconfig-a003
+i386                          randconfig-a005
+x86_64                        randconfig-a015
+arc                  randconfig-r043-20220831
+s390                 randconfig-r044-20220831
+riscv                randconfig-r042-20220831
+arm                              allyesconfig
+arm64                            allyesconfig
+ia64                             allmodconfig
+x86_64                           allyesconfig
+x86_64                               rhel-8.3
+m68k                             allmodconfig
+arc                              allyesconfig
+alpha                            allyesconfig
+mips                             allyesconfig
+powerpc                          allmodconfig
+sh                               allmodconfig
+sh                   sh7724_generic_defconfig
+sparc                       sparc32_defconfig
+arc                 nsimosci_hs_smp_defconfig
+sh                          rsk7203_defconfig
+sh                               alldefconfig
+arm                           imxrt_defconfig
+nios2                         10m50_defconfig
+arm                        spear6xx_defconfig
+parisc                              defconfig
+mips                    maltaup_xpa_defconfig
+csky                              allnoconfig
+alpha                             allnoconfig
+arc                               allnoconfig
+riscv                             allnoconfig
+mips                      loongson3_defconfig
+sh                          r7780mp_defconfig
+parisc64                            defconfig
+sh                           se7705_defconfig
+sh                          lboxre2_defconfig
+
+clang tested configs:
+hexagon              randconfig-r045-20220830
+hexagon              randconfig-r041-20220830
+riscv                randconfig-r042-20220830
+s390                 randconfig-r044-20220830
+x86_64                        randconfig-a005
+i386                          randconfig-a013
+i386                          randconfig-a011
+i386                          randconfig-a015
+i386                          randconfig-a002
+x86_64                        randconfig-a012
+i386                          randconfig-a004
+hexagon              randconfig-r041-20220831
+i386                          randconfig-a006
+x86_64                        randconfig-a016
+hexagon              randconfig-r045-20220831
+x86_64                        randconfig-a014
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+
 -- 
-2.35.3
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
