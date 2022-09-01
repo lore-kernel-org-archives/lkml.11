@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD14AECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 11:21:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7943DECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 11:21:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234317AbiIALVS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 07:21:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43722 "EHLO
+        id S234387AbiIALVV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 07:21:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234234AbiIALVI (ORCPT
+        with ESMTP id S234259AbiIALVM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 07:21:08 -0400
+        Thu, 1 Sep 2022 07:21:12 -0400
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C87C125B92
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 04:21:07 -0700 (PDT)
-Received: from fraeml710-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MJJVv5Wkcz67Nl1;
-        Thu,  1 Sep 2022 19:20:23 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CE06107C48
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 04:21:11 -0700 (PDT)
+Received: from fraeml712-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MJJRQ18NKz67jxm;
+        Thu,  1 Sep 2022 19:17:22 +0800 (CST)
 Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
- fraeml710-chm.china.huawei.com (10.206.15.59) with Microsoft SMTP Server
+ fraeml712-chm.china.huawei.com (10.206.15.61) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 1 Sep 2022 13:21:05 +0200
+ 15.1.2375.31; Thu, 1 Sep 2022 13:21:09 +0200
 Received: from localhost.localdomain (10.69.192.58) by
  lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 1 Sep 2022 12:21:02 +0100
+ 15.1.2375.24; Thu, 1 Sep 2022 12:21:07 +0100
 From:   John Garry <john.garry@huawei.com>
 To:     <xuwei5@hisilicon.com>
 CC:     <andriy.shevchenko@linux.intel.com>, <linuxarm@huawei.com>,
         <rafael.j.wysocki@intel.com>, <linux-kernel@vger.kernel.org>,
         <soc@kernel.org>, <yangyingliang@huawei.com>,
         John Garry <john.garry@huawei.com>
-Subject: [PATCH 2/5] bus: hisi_lpc: Use devm_platform_ioremap_resource
-Date:   Thu, 1 Sep 2022 19:14:28 +0800
-Message-ID: <1662030871-182688-3-git-send-email-john.garry@huawei.com>
+Subject: [PATCH 4/5] bus: hisi_lpc: Don't guard ACPI IDs with ACPI_PTR()
+Date:   Thu, 1 Sep 2022 19:14:30 +0800
+Message-ID: <1662030871-182688-5-git-send-email-john.garry@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1662030871-182688-1-git-send-email-john.garry@huawei.com>
 References: <1662030871-182688-1-git-send-email-john.garry@huawei.com>
@@ -50,38 +50,51 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-The struct resource is not used for anything else, so we can simplify
-the code a bit by using the helper function.
+The OF ID table is not guarded, and the ACPI table does not needs it either.
+The IDs do not depend on the configuration. Hence drop ACPI_PTR() from the
+code and move ID table closer to its user.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: John Garry <john.garry@huawei.com>
 ---
- drivers/bus/hisi_lpc.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/bus/hisi_lpc.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/bus/hisi_lpc.c b/drivers/bus/hisi_lpc.c
-index 6d432a07cbba..03d4d96ff794 100644
+index a6513a571d7b..74f4448bff9d 100644
 --- a/drivers/bus/hisi_lpc.c
 +++ b/drivers/bus/hisi_lpc.c
-@@ -618,7 +618,6 @@ static int hisi_lpc_probe(struct platform_device *pdev)
- 	struct logic_pio_hwaddr *range;
- 	struct hisi_lpc_dev *lpcdev;
- 	resource_size_t io_end;
--	struct resource *res;
- 	int ret;
+@@ -589,11 +589,6 @@ static int hisi_lpc_acpi_probe(struct device *hostdev)
  
- 	lpcdev = devm_kzalloc(dev, sizeof(*lpcdev), GFP_KERNEL);
-@@ -627,8 +626,7 @@ static int hisi_lpc_probe(struct platform_device *pdev)
+ 	return ret;
+ }
+-
+-static const struct acpi_device_id hisi_lpc_acpi_match[] = {
+-	{"HISI0191"},
+-	{}
+-};
+ #else
+ static int hisi_lpc_acpi_probe(struct device *dev)
+ {
+@@ -688,11 +683,16 @@ static const struct of_device_id hisi_lpc_of_match[] = {
+ 	{}
+ };
  
- 	spin_lock_init(&lpcdev->cycle_lock);
- 
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	lpcdev->membase = devm_ioremap_resource(dev, res);
-+	lpcdev->membase = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(lpcdev->membase))
- 		return PTR_ERR(lpcdev->membase);
- 
++static const struct acpi_device_id hisi_lpc_acpi_match[] = {
++	{"HISI0191"},
++	{}
++};
++
+ static struct platform_driver hisi_lpc_driver = {
+ 	.driver = {
+ 		.name           = DRV_NAME,
+ 		.of_match_table = hisi_lpc_of_match,
+-		.acpi_match_table = ACPI_PTR(hisi_lpc_acpi_match),
++		.acpi_match_table = hisi_lpc_acpi_match,
+ 	},
+ 	.probe = hisi_lpc_probe,
+ 	.remove = hisi_lpc_remove,
 -- 
 2.35.3
 
