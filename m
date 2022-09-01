@@ -2,407 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 066CDECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 18:17:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B8FBECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 18:17:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234200AbiIASRU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 14:17:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41640 "EHLO
+        id S233846AbiIASRu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 14:17:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233392AbiIASRR (ORCPT
+        with ESMTP id S234284AbiIASRo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 14:17:17 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDA947B1F4;
-        Thu,  1 Sep 2022 11:17:14 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id E14DE6CD;
-        Thu,  1 Sep 2022 20:17:12 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1662056233;
-        bh=vM4kNuawJRlFDMSYNJFOYcifKa4oGwA3zJmZKGA9lXU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ko1tq0hiyKSoljpQcW3qg0t7V8ACMCU267KcqdRZukWHbRKXndoVPGhatxzZ5HuX0
-         XfsqBVXH9Cg6cspzG+XYBCqe9rVQv3rNO8mNNqxUy0962sRUzy66m9y2K5KHTyiM/4
-         LJpD8BgkEPDdNvZEPuRZs6GPFunAue2+wC9ToB9U=
-Date:   Thu, 1 Sep 2022 21:17:01 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v6 6/6] media: sun6i-csi: Add support for hooking to the
- isp devices
-Message-ID: <YxD3HfWIvzdgyRZh@pendragon.ideasonboard.com>
-References: <20220826184144.605605-1-paul.kocialkowski@bootlin.com>
- <20220826184144.605605-7-paul.kocialkowski@bootlin.com>
- <YwlMsAG/vPUTNd4o@pendragon.ideasonboard.com>
- <YxDH0jZE1laFnfcu@aptenodytes>
+        Thu, 1 Sep 2022 14:17:44 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5D2C7B7AA
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 11:17:42 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id mj6so12878265pjb.1
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 11:17:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=Qndv3o1BDX4jKEhP6/cOGCGzKhPbNgFyLvmips1cGSw=;
+        b=FB7FfwWCgxkwUTWFM7Sw5xQt+sq6IDLt2GAs7if+LO4ecKp/ZUo6kDhfslTqqthehO
+         2RK8MzFbGVTTc4iiOy4fY3BnMqA6JXgN7S1VKmuJHPkGqBpUGH8ZY9dbQ0NOECAFuWRp
+         +UUDhfKaT9rmV+JhYm+Wm+PhPPpzPaqZA03GSvr0XQsoWaZa7FafP1bq8gMlE4X2DBRk
+         UPITBeIrd815eFRsQX6bDIn0dwOzVWwoEI5mUHkLU5ya3DEgDQHKyMv/P7Xrautiovy5
+         NYnt8vuKn8lR0GvNHF0lEVLrxQOlBoCizuB+s32VtUfzz1M03JJds1K4bq+FR7vragN6
+         2o1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=Qndv3o1BDX4jKEhP6/cOGCGzKhPbNgFyLvmips1cGSw=;
+        b=zOGSB6tQ/qvl0cq5J3LkwhK9c3LOXHTSdLkn7y+au0Vkpjt6cwGowxdC7N1/eqbOmM
+         dwhclF0dG/501Om8cJLGuwikpvvQjKh5IhmBz0ajO8nsAELhP+QxXFm5H/21+dqrl8G8
+         1KXELZqyjjSJPsQ6oj5p2LPHDuRcbHYBqItFKnpMxMP/DArXtxkUAq0ttQ+5K2oAK/UW
+         rlIEeBbrwpQ2/W6a01sD+0Ld9Z1JJ5SYhyXX5rAhcKByddO4+78YiFKwBrgAJ8jjb9Ns
+         ov54nwWypnF3c6YBplQof6nyIm13bI25mJiU8q6wyVgUJ3h80DYXo9YY2V7xcbGcKn17
+         fmcA==
+X-Gm-Message-State: ACgBeo1vysoFTxYxXbXmbovwb3w0s4QfVV7BxAPEwZ8k9PndcyeFOg+i
+        4O9dhshR2ROuW83MGLID1dSRmg==
+X-Google-Smtp-Source: AA6agR4PxlK0UMCpv71RWneKT6bQBirMFB3bozWatDAlt9JYr56eh/p2iO9GDm2iig97kJwvE3nR4g==
+X-Received: by 2002:a17:90a:c789:b0:1fa:6bc0:77f6 with SMTP id gn9-20020a17090ac78900b001fa6bc077f6mr431798pjb.1.1662056262329;
+        Thu, 01 Sep 2022 11:17:42 -0700 (PDT)
+Received: from C02F63J9MD6R.bytedance.net ([61.120.150.77])
+        by smtp.gmail.com with ESMTPSA id b13-20020a170903228d00b0017519b86996sm6320538plh.218.2022.09.01.11.17.36
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 01 Sep 2022 11:17:42 -0700 (PDT)
+From:   Zhuo Chen <chenzhuo.1@bytedance.com>
+To:     fancer.lancer@gmail.com, jdmason@kudzu.us, dave.jiang@intel.com,
+        allenbh@gmail.com, bhelgaas@google.com, ruscur@russell.cc,
+        oohall@gmail.com, james.smart@broadcom.com,
+        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
+        martin.petersen@oracle.com
+Cc:     chenzhuo.1@bytedance.com, ntb@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-scsi@vger.kernel.org
+Subject: [PATCH 1/3] PCI/AER: Use pci_aer_clear_uncorrect_error_status() to clear uncorrectable error status
+Date:   Fri,  2 Sep 2022 02:16:32 +0800
+Message-Id: <20220901181634.99591-2-chenzhuo.1@bytedance.com>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+In-Reply-To: <20220901181634.99591-1-chenzhuo.1@bytedance.com>
+References: <20220901181634.99591-1-chenzhuo.1@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YxDH0jZE1laFnfcu@aptenodytes>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paul,
+Status bits for ERR_NONFATAL errors only are cleared in
+pci_aer_clear_nonfatal_status(), but we want clear uncorrectable
+error status in ntb_hw_idt.c and lpfc_attr.c. So we add
+pci_aer_clear_uncorrect_error_status() and change to use it.
 
-On Thu, Sep 01, 2022 at 04:55:14PM +0200, Paul Kocialkowski wrote:
-> On Sat 27 Aug 22, 01:44, Laurent Pinchart wrote:
-> > On Fri, Aug 26, 2022 at 08:41:44PM +0200, Paul Kocialkowski wrote:
-> > > In order to use the isp and csi together, both devices need to be
-> > > parented to the same v4l2 and media devices. We use the isp as
-> > > top-level device and let the csi code hook to its v4l2 and media
-> > > devices when async subdev registration takes place.
-> > 
-> > Have you considered the option of making the CSI the master device, with
-> > the ISP registering an async subdev instead ?
-> 
-> Yes I did consider it but the issue is that some platforms using these drivers
-> have 2 CSI blocks and always 1 ISP block that can be fed from either CSI.
-> So if we want to have a single media device where we can switch the ISP between
-> the two CSIs, the only choice is to have the media/v4l2 devices registered
-> by the ISP driver.
+Use pci_aer_clear_nonfatal_status() in dpc_process_error(), which has
+no functional changes.
 
-Indeed.
+Since pci_aer_clear_nonfatal_status() is used only internally, move
+its declaration to the PCI internal header file. Also, no one cares
+about return value of pci_aer_clear_nonfatal_status(), so make it void.
 
-> For the next generation it would be absolutely necessary to have a single driver
-> using the component framework instead of separate drivers because the number of
-> components and routing capabilities are much more complex.
+Signed-off-by: Zhuo Chen <chenzhuo.1@bytedance.com>
+---
+ drivers/ntb/hw/idt/ntb_hw_idt.c |  4 ++--
+ drivers/pci/pci.h               |  2 ++
+ drivers/pci/pcie/aer.c          | 23 ++++++++++++++++++-----
+ drivers/pci/pcie/dpc.c          |  3 +--
+ drivers/scsi/lpfc/lpfc_attr.c   |  4 ++--
+ include/linux/aer.h             |  4 ++--
+ 6 files changed, 27 insertions(+), 13 deletions(-)
 
-Not the component framework please :-) But we do need something, I
-agree. There's a media device allocator API that was meant to care for
-this kind of use cases, but I'm not happy with the implementation, we
-need something better. We can discuss it later once you'll have a need
-for that.
-
-> > I'm also wondering, what will happen if userspace tries to capture from
-> > both the CSI output and the ISP output at the same time ?
-> 
-> Well there's a media link to select where the sun6i-csi-bridge data should
-> flow, so if it's routed to the sun6i-isp-proc instead of sun6i-csi-capture
-> it should fail when trying to capture via sun6i-csi.
-> 
-> I'll double-check that this is actually the case, but I think
-> media_pipeline_start in sun6i_csi_capture_start_streaming should error out
-> in this case.
-
-OK, that sounds good.
-
-> > > As a result v4l2/media device setup is only called when the ISP
-> > > is missing and the capture device is registered after the devices
-> > > are hooked. The bridge subdev and its notifier are registered
-> > > without any device when the ISP is available. Top-level pointers
-> > > for the devices are introduced to either redirect to the hooked ones
-> > > (isp available) or the registered ones (isp missing).
-> > > 
-> > > Also keep track of whether the capture node was setup or not to
-> > > avoid cleaning up resources when it wasn't.
-> > > 
-> > > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> > > ---
-> > >  .../platform/sunxi/sun6i-csi/sun6i_csi.c      | 45 +++++++++++++++----
-> > >  .../platform/sunxi/sun6i-csi/sun6i_csi.h      |  7 +++
-> > >  .../sunxi/sun6i-csi/sun6i_csi_bridge.c        | 32 +++++++++++--
-> > >  .../sunxi/sun6i-csi/sun6i_csi_capture.c       | 19 ++++++--
-> > >  .../sunxi/sun6i-csi/sun6i_csi_capture.h       |  1 +
-> > >  5 files changed, 89 insertions(+), 15 deletions(-)
-> > > 
-> > > diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
-> > > index b16166cba2ef..0bac89d8112f 100644
-> > > --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
-> > > +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
-> > > @@ -26,6 +26,18 @@
-> > >  
-> > >  /* ISP */
-> > >  
-> > > +int sun6i_csi_isp_complete(struct sun6i_csi_device *csi_dev,
-> > > +			   struct v4l2_device *v4l2_dev)
-> > > +{
-> > > +	if (csi_dev->v4l2_dev && csi_dev->v4l2_dev != v4l2_dev)
-> > > +		return -EINVAL;
-> > > +
-> > > +	csi_dev->v4l2_dev = v4l2_dev;
-> > > +	csi_dev->media_dev = v4l2_dev->mdev;
-> > > +
-> > > +	return sun6i_csi_capture_setup(csi_dev);
-> > > +}
-> > > +
-> > >  static bool sun6i_csi_isp_detect(struct sun6i_csi_device *csi_dev)
-> > >  {
-> > >  	struct device *dev = csi_dev->dev;
-> > > @@ -95,6 +107,9 @@ static int sun6i_csi_v4l2_setup(struct sun6i_csi_device *csi_dev)
-> > >  		goto error_media;
-> > >  	}
-> > >  
-> > > +	csi_dev->v4l2_dev = v4l2_dev;
-> > > +	csi_dev->media_dev = media_dev;
-> > > +
-> > >  	return 0;
-> > >  
-> > >  error_media:
-> > > @@ -323,17 +338,27 @@ static int sun6i_csi_probe(struct platform_device *platform_dev)
-> > >  	if (ret)
-> > >  		goto error_resources;
-> > >  
-> > > -	ret = sun6i_csi_v4l2_setup(csi_dev);
-> > > -	if (ret)
-> > > -		goto error_resources;
-> > > +	/*
-> > > +	 * Register our own v4l2 and media devices when there is no ISP around.
-> > > +	 * Otherwise the ISP will use async subdev registration with our bridge,
-> > > +	 * which will provide v4l2 and media devices that are used to register
-> > > +	 * the video interface.
-> > > +	 */
-> > > +	if (!csi_dev->isp_available) {
-> > > +		ret = sun6i_csi_v4l2_setup(csi_dev);
-> > > +		if (ret)
-> > > +			goto error_resources;
-> > > +	}
-> > >  
-> > >  	ret = sun6i_csi_bridge_setup(csi_dev);
-> > >  	if (ret)
-> > >  		goto error_v4l2;
-> > >  
-> > > -	ret = sun6i_csi_capture_setup(csi_dev);
-> > > -	if (ret)
-> > > -		goto error_bridge;
-> > > +	if (!csi_dev->isp_available) {
-> > > +		ret = sun6i_csi_capture_setup(csi_dev);
-> > > +		if (ret)
-> > > +			goto error_bridge;
-> > > +	}
-> > >  
-> > >  	return 0;
-> > >  
-> > > @@ -341,7 +366,8 @@ static int sun6i_csi_probe(struct platform_device *platform_dev)
-> > >  	sun6i_csi_bridge_cleanup(csi_dev);
-> > >  
-> > >  error_v4l2:
-> > > -	sun6i_csi_v4l2_cleanup(csi_dev);
-> > > +	if (!csi_dev->isp_available)
-> > > +		sun6i_csi_v4l2_cleanup(csi_dev);
-> > >  
-> > >  error_resources:
-> > >  	sun6i_csi_resources_cleanup(csi_dev);
-> > > @@ -355,7 +381,10 @@ static int sun6i_csi_remove(struct platform_device *pdev)
-> > >  
-> > >  	sun6i_csi_capture_cleanup(csi_dev);
-> > >  	sun6i_csi_bridge_cleanup(csi_dev);
-> > > -	sun6i_csi_v4l2_cleanup(csi_dev);
-> > > +
-> > > +	if (!csi_dev->isp_available)
-> > > +		sun6i_csi_v4l2_cleanup(csi_dev);
-> > > +
-> > >  	sun6i_csi_resources_cleanup(csi_dev);
-> > >  
-> > >  	return 0;
-> > > diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
-> > > index 8e232cd91ebe..bc3f0dae35df 100644
-> > > --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
-> > > +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
-> > > @@ -36,6 +36,8 @@ struct sun6i_csi_v4l2 {
-> > >  
-> > >  struct sun6i_csi_device {
-> > >  	struct device			*dev;
-> > > +	struct v4l2_device		*v4l2_dev;
-> > > +	struct media_device		*media_dev;
-> > >  
-> > >  	struct sun6i_csi_v4l2		v4l2;
-> > >  	struct sun6i_csi_bridge		bridge;
-> > > @@ -53,4 +55,9 @@ struct sun6i_csi_variant {
-> > >  	unsigned long	clock_mod_rate;
-> > >  };
-> > >  
-> > > +/* ISP */
-> > > +
-> > > +int sun6i_csi_isp_complete(struct sun6i_csi_device *csi_dev,
-> > > +			   struct v4l2_device *v4l2_dev);
-> > > +
-> > >  #endif
-> > > diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_bridge.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_bridge.c
-> > > index 492f93b0db28..86d20c1c35ed 100644
-> > > --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_bridge.c
-> > > +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_bridge.c
-> > > @@ -653,6 +653,7 @@ sun6i_csi_bridge_notifier_bound(struct v4l2_async_notifier *notifier,
-> > >  	struct sun6i_csi_bridge *bridge = &csi_dev->bridge;
-> > >  	struct sun6i_csi_bridge_source *source = bridge_async_subdev->source;
-> > >  	bool enabled;
-> > > +	int ret;
-> > >  
-> > >  	switch (source->endpoint.base.port) {
-> > >  	case SUN6I_CSI_PORT_PARALLEL:
-> > > @@ -667,6 +668,16 @@ sun6i_csi_bridge_notifier_bound(struct v4l2_async_notifier *notifier,
-> > >  
-> > >  	source->subdev = remote_subdev;
-> > >  
-> > > +	if (csi_dev->isp_available) {
-> > > +		/*
-> > > +		 * Hook to the first available remote subdev to get v4l2 and
-> > > +		 * media devices and register the capture device then.
-> > > +		 */
-> > > +		ret = sun6i_csi_isp_complete(csi_dev, remote_subdev->v4l2_dev);
-> > > +		if (ret)
-> > > +			return ret;
-> > > +	}
-> > > +
-> > >  	return sun6i_csi_bridge_link(csi_dev, SUN6I_CSI_BRIDGE_PAD_SINK,
-> > >  				     remote_subdev, enabled);
-> > >  }
-> > > @@ -679,6 +690,9 @@ sun6i_csi_bridge_notifier_complete(struct v4l2_async_notifier *notifier)
-> > >  			     bridge.notifier);
-> > >  	struct v4l2_device *v4l2_dev = &csi_dev->v4l2.v4l2_dev;
-> > >  
-> > > +	if (csi_dev->isp_available)
-> > > +		return 0;
-> > > +
-> > >  	return v4l2_device_register_subdev_nodes(v4l2_dev);
-> > >  }
-> > >  
-> > > @@ -752,7 +766,7 @@ int sun6i_csi_bridge_setup(struct sun6i_csi_device *csi_dev)
-> > >  {
-> > >  	struct device *dev = csi_dev->dev;
-> > >  	struct sun6i_csi_bridge *bridge = &csi_dev->bridge;
-> > > -	struct v4l2_device *v4l2_dev = &csi_dev->v4l2.v4l2_dev;
-> > > +	struct v4l2_device *v4l2_dev = csi_dev->v4l2_dev;
-> > >  	struct v4l2_subdev *subdev = &bridge->subdev;
-> > >  	struct v4l2_async_notifier *notifier = &bridge->notifier;
-> > >  	struct media_pad *pads = bridge->pads;
-> > > @@ -793,7 +807,11 @@ int sun6i_csi_bridge_setup(struct sun6i_csi_device *csi_dev)
-> > >  
-> > >  	/* V4L2 Subdev */
-> > >  
-> > > -	ret = v4l2_device_register_subdev(v4l2_dev, subdev);
-> > > +	if (csi_dev->isp_available)
-> > > +		ret = v4l2_async_register_subdev(subdev);
-> > > +	else
-> > > +		ret = v4l2_device_register_subdev(v4l2_dev, subdev);
-> > > +
-> > >  	if (ret) {
-> > >  		dev_err(dev, "failed to register v4l2 subdev: %d\n", ret);
-> > >  		goto error_media_entity;
-> > > @@ -810,7 +828,10 @@ int sun6i_csi_bridge_setup(struct sun6i_csi_device *csi_dev)
-> > >  	sun6i_csi_bridge_source_setup(csi_dev, &bridge->source_mipi_csi2,
-> > >  				      SUN6I_CSI_PORT_MIPI_CSI2, NULL);
-> > >  
-> > > -	ret = v4l2_async_nf_register(v4l2_dev, notifier);
-> > > +	if (csi_dev->isp_available)
-> > > +		ret = v4l2_async_subdev_nf_register(subdev, notifier);
-> > > +	else
-> > > +		ret = v4l2_async_nf_register(v4l2_dev, notifier);
-> > >  	if (ret) {
-> > >  		dev_err(dev, "failed to register v4l2 async notifier: %d\n",
-> > >  			ret);
-> > > @@ -822,7 +843,10 @@ int sun6i_csi_bridge_setup(struct sun6i_csi_device *csi_dev)
-> > >  error_v4l2_async_notifier:
-> > >  	v4l2_async_nf_cleanup(notifier);
-> > >  
-> > > -	v4l2_device_unregister_subdev(subdev);
-> > > +	if (csi_dev->isp_available)
-> > > +		v4l2_async_unregister_subdev(subdev);
-> > > +	else
-> > > +		v4l2_device_unregister_subdev(subdev);
-> > >  
-> > >  error_media_entity:
-> > >  	media_entity_cleanup(&subdev->entity);
-> > > diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
-> > > index c9e7526b84c4..69ea1cbaea0c 100644
-> > > --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
-> > > +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
-> > > @@ -570,7 +570,7 @@ static int sun6i_csi_capture_buffer_prepare(struct vb2_buffer *buffer)
-> > >  {
-> > >  	struct sun6i_csi_device *csi_dev = vb2_get_drv_priv(buffer->vb2_queue);
-> > >  	struct sun6i_csi_capture *capture = &csi_dev->capture;
-> > > -	struct v4l2_device *v4l2_dev = &csi_dev->v4l2.v4l2_dev;
-> > > +	struct v4l2_device *v4l2_dev = csi_dev->v4l2_dev;
-> > >  	struct vb2_v4l2_buffer *v4l2_buffer = to_vb2_v4l2_buffer(buffer);
-> > >  	unsigned long size = capture->format.fmt.pix.sizeimage;
-> > >  
-> > > @@ -889,7 +889,7 @@ static int sun6i_csi_capture_link_validate(struct media_link *link)
-> > >  	struct video_device *video_dev =
-> > >  		media_entity_to_video_device(link->sink->entity);
-> > >  	struct sun6i_csi_device *csi_dev = video_get_drvdata(video_dev);
-> > > -	struct v4l2_device *v4l2_dev = &csi_dev->v4l2.v4l2_dev;
-> > > +	struct v4l2_device *v4l2_dev = csi_dev->v4l2_dev;
-> > >  	const struct sun6i_csi_capture_format *capture_format;
-> > >  	const struct sun6i_csi_bridge_format *bridge_format;
-> > >  	unsigned int capture_width, capture_height;
-> > > @@ -971,7 +971,7 @@ int sun6i_csi_capture_setup(struct sun6i_csi_device *csi_dev)
-> > >  {
-> > >  	struct sun6i_csi_capture *capture = &csi_dev->capture;
-> > >  	struct sun6i_csi_capture_state *state = &capture->state;
-> > > -	struct v4l2_device *v4l2_dev = &csi_dev->v4l2.v4l2_dev;
-> > > +	struct v4l2_device *v4l2_dev = csi_dev->v4l2_dev;
-> > >  	struct v4l2_subdev *bridge_subdev = &csi_dev->bridge.subdev;
-> > >  	struct video_device *video_dev = &capture->video_dev;
-> > >  	struct vb2_queue *queue = &capture->queue;
-> > > @@ -980,6 +980,10 @@ int sun6i_csi_capture_setup(struct sun6i_csi_device *csi_dev)
-> > >  	struct v4l2_pix_format *pix_format = &format->fmt.pix;
-> > >  	int ret;
-> > >  
-> > > +	/* This may happen with multiple bridge notifier bound calls. */
-> > > +	if (state->setup)
-> > > +		return 0;
-> > > +
-> > >  	/* State */
-> > >  
-> > >  	INIT_LIST_HEAD(&state->queue);
-> > > @@ -1055,6 +1059,7 @@ int sun6i_csi_capture_setup(struct sun6i_csi_device *csi_dev)
-> > >  	ret = media_create_pad_link(&bridge_subdev->entity,
-> > >  				    SUN6I_CSI_BRIDGE_PAD_SOURCE,
-> > >  				    &video_dev->entity, 0,
-> > > +				    csi_dev->isp_available ? 0 :
-> > >  				    MEDIA_LNK_FL_ENABLED |
-> > >  				    MEDIA_LNK_FL_IMMUTABLE);
-> > >  	if (ret < 0) {
-> > > @@ -1065,6 +1070,8 @@ int sun6i_csi_capture_setup(struct sun6i_csi_device *csi_dev)
-> > >  		goto error_video_device;
-> > >  	}
-> > >  
-> > > +	state->setup = true;
-> > > +
-> > >  	return 0;
-> > >  
-> > >  error_video_device:
-> > > @@ -1083,7 +1090,13 @@ void sun6i_csi_capture_cleanup(struct sun6i_csi_device *csi_dev)
-> > >  	struct sun6i_csi_capture *capture = &csi_dev->capture;
-> > >  	struct video_device *video_dev = &capture->video_dev;
-> > >  
-> > > +	/* This may happen if async registration failed to complete. */
-> > > +	if (!capture->state.setup)
-> > > +		return;
-> > > +
-> > >  	vb2_video_unregister_device(video_dev);
-> > >  	media_entity_cleanup(&video_dev->entity);
-> > >  	mutex_destroy(&capture->lock);
-> > > +
-> > > +	capture->state.setup = false;
-> > >  }
-> > > diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h
-> > > index 29893cf96f6b..3ee5ccefbd10 100644
-> > > --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h
-> > > +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h
-> > > @@ -45,6 +45,7 @@ struct sun6i_csi_capture_state {
-> > >  
-> > >  	unsigned int			sequence;
-> > >  	bool				streaming;
-> > > +	bool				setup;
-> > >  };
-> > >  
-> > >  struct sun6i_csi_capture {
-
+diff --git a/drivers/ntb/hw/idt/ntb_hw_idt.c b/drivers/ntb/hw/idt/ntb_hw_idt.c
+index 733557231ed0..de1dbbc5b9de 100644
+--- a/drivers/ntb/hw/idt/ntb_hw_idt.c
++++ b/drivers/ntb/hw/idt/ntb_hw_idt.c
+@@ -2657,8 +2657,8 @@ static int idt_init_pci(struct idt_ntb_dev *ndev)
+ 	ret = pci_enable_pcie_error_reporting(pdev);
+ 	if (ret != 0)
+ 		dev_warn(&pdev->dev, "PCIe AER capability disabled\n");
+-	else /* Cleanup nonfatal error status before getting to init */
+-		pci_aer_clear_nonfatal_status(pdev);
++	else /* Cleanup uncorrectable error status before getting to init */
++		pci_aer_clear_uncorrect_error_status(pdev);
+ 
+ 	/* First enable the PCI device */
+ 	ret = pcim_enable_device(pdev);
+diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+index e10cdec6c56e..574176f43025 100644
+--- a/drivers/pci/pci.h
++++ b/drivers/pci/pci.h
+@@ -686,6 +686,7 @@ void pci_aer_init(struct pci_dev *dev);
+ void pci_aer_exit(struct pci_dev *dev);
+ extern const struct attribute_group aer_stats_attr_group;
+ void pci_aer_clear_fatal_status(struct pci_dev *dev);
++void pci_aer_clear_nonfatal_status(struct pci_dev *dev);
+ int pci_aer_clear_status(struct pci_dev *dev);
+ int pci_aer_raw_clear_status(struct pci_dev *dev);
+ #else
+@@ -693,6 +694,7 @@ static inline void pci_no_aer(void) { }
+ static inline void pci_aer_init(struct pci_dev *d) { }
+ static inline void pci_aer_exit(struct pci_dev *d) { }
+ static inline void pci_aer_clear_fatal_status(struct pci_dev *dev) { }
++static inline void pci_aer_clear_nonfatal_status(struct pci_dev *dev) { }
+ static inline int pci_aer_clear_status(struct pci_dev *dev) { return -EINVAL; }
+ static inline int pci_aer_raw_clear_status(struct pci_dev *dev) { return -EINVAL; }
+ #endif
+diff --git a/drivers/pci/pcie/aer.c b/drivers/pci/pcie/aer.c
+index 7952e5efd6cf..d2996afa80f6 100644
+--- a/drivers/pci/pcie/aer.c
++++ b/drivers/pci/pcie/aer.c
+@@ -251,13 +251,13 @@ int pci_disable_pcie_error_reporting(struct pci_dev *dev)
+ }
+ EXPORT_SYMBOL_GPL(pci_disable_pcie_error_reporting);
+ 
+-int pci_aer_clear_nonfatal_status(struct pci_dev *dev)
++void pci_aer_clear_nonfatal_status(struct pci_dev *dev)
+ {
+ 	int aer = dev->aer_cap;
+ 	u32 status, sev;
+ 
+ 	if (!pcie_aer_is_native(dev))
+-		return -EIO;
++		return;
+ 
+ 	/* Clear status bits for ERR_NONFATAL errors only */
+ 	pci_read_config_dword(dev, aer + PCI_ERR_UNCOR_STATUS, &status);
+@@ -265,10 +265,7 @@ int pci_aer_clear_nonfatal_status(struct pci_dev *dev)
+ 	status &= ~sev;
+ 	if (status)
+ 		pci_write_config_dword(dev, aer + PCI_ERR_UNCOR_STATUS, status);
+-
+-	return 0;
+ }
+-EXPORT_SYMBOL_GPL(pci_aer_clear_nonfatal_status);
+ 
+ void pci_aer_clear_fatal_status(struct pci_dev *dev)
+ {
+@@ -286,6 +283,22 @@ void pci_aer_clear_fatal_status(struct pci_dev *dev)
+ 		pci_write_config_dword(dev, aer + PCI_ERR_UNCOR_STATUS, status);
+ }
+ 
++int pci_aer_clear_uncorrect_error_status(struct pci_dev *dev)
++{
++	int aer = dev->aer_cap;
++	u32 status;
++
++	if (!pcie_aer_is_native(dev))
++		return -EIO;
++
++	pci_read_config_dword(dev, aer + PCI_ERR_UNCOR_STATUS, &status);
++	if (status)
++		pci_write_config_dword(dev, aer + PCI_ERR_UNCOR_STATUS, status);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(pci_aer_clear_uncorrect_error_status);
++
+ /**
+  * pci_aer_raw_clear_status - Clear AER error registers.
+  * @dev: the PCI device
+diff --git a/drivers/pci/pcie/dpc.c b/drivers/pci/pcie/dpc.c
+index 3e9afee02e8d..7942073fbb34 100644
+--- a/drivers/pci/pcie/dpc.c
++++ b/drivers/pci/pcie/dpc.c
+@@ -288,8 +288,7 @@ void dpc_process_error(struct pci_dev *pdev)
+ 		 dpc_get_aer_uncorrect_severity(pdev, &info) &&
+ 		 aer_get_device_error_info(pdev, &info)) {
+ 		aer_print_error(pdev, &info);
+-		pci_aer_clear_nonfatal_status(pdev);
+-		pci_aer_clear_fatal_status(pdev);
++		pci_aer_clear_uncorrect_error_status(pdev);
+ 	}
+ }
+ 
+diff --git a/drivers/scsi/lpfc/lpfc_attr.c b/drivers/scsi/lpfc/lpfc_attr.c
+index 3caaa7c4af48..1ed8d1640325 100644
+--- a/drivers/scsi/lpfc/lpfc_attr.c
++++ b/drivers/scsi/lpfc/lpfc_attr.c
+@@ -4712,7 +4712,7 @@ static DEVICE_ATTR_RW(lpfc_aer_support);
+  * Description:
+  * If the @buf contains 1 and the device currently has the AER support
+  * enabled, then invokes the kernel AER helper routine
+- * pci_aer_clear_nonfatal_status() to clean up the uncorrectable
++ * pci_aer_clear_uncorrect_error_status() to clean up the uncorrectable
+  * error status register.
+  *
+  * Notes:
+@@ -4738,7 +4738,7 @@ lpfc_aer_cleanup_state(struct device *dev, struct device_attribute *attr,
+ 		return -EINVAL;
+ 
+ 	if (phba->hba_flag & HBA_AER_ENABLED)
+-		rc = pci_aer_clear_nonfatal_status(phba->pcidev);
++		rc = pci_aer_clear_uncorrect_error_status(phba->pcidev);
+ 
+ 	if (rc == 0)
+ 		return strlen(buf);
+diff --git a/include/linux/aer.h b/include/linux/aer.h
+index 97f64ba1b34a..f638ad955deb 100644
+--- a/include/linux/aer.h
++++ b/include/linux/aer.h
+@@ -44,7 +44,7 @@ struct aer_capability_regs {
+ /* PCIe port driver needs this function to enable AER */
+ int pci_enable_pcie_error_reporting(struct pci_dev *dev);
+ int pci_disable_pcie_error_reporting(struct pci_dev *dev);
+-int pci_aer_clear_nonfatal_status(struct pci_dev *dev);
++int pci_aer_clear_uncorrect_error_status(struct pci_dev *dev);
+ void pci_save_aer_state(struct pci_dev *dev);
+ void pci_restore_aer_state(struct pci_dev *dev);
+ #else
+@@ -56,7 +56,7 @@ static inline int pci_disable_pcie_error_reporting(struct pci_dev *dev)
+ {
+ 	return -EINVAL;
+ }
+-static inline int pci_aer_clear_nonfatal_status(struct pci_dev *dev)
++static inline int pci_aer_clear_uncorrect_error_status(struct pci_dev *dev)
+ {
+ 	return -EINVAL;
+ }
 -- 
-Regards,
+2.30.1 (Apple Git-130)
 
-Laurent Pinchart
