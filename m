@@ -2,215 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8F58ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 22:23:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4F91ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 22:28:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235252AbiIAWXR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 18:23:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46702 "EHLO
+        id S235170AbiIAW2S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 18:28:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235202AbiIAWWQ (ORCPT
+        with ESMTP id S231936AbiIAW1q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 18:22:16 -0400
-Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6869AA3D1D;
-        Thu,  1 Sep 2022 15:19:39 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Thu, 1 Sep 2022 18:27:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B22847199D;
+        Thu,  1 Sep 2022 15:25:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 0556E2219;
-        Fri,  2 Sep 2022 00:19:15 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1662070755;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zRsiRxIvVLTYwaf26x4VwnBi3EbjID5udnHi2XzBIfw=;
-        b=WL0WEDtus7dVCPBs0Q71ZwdW+UExMlJyJl4ZfbX/kA+9MlEj7oekaHIkH9kyEqF7SNE0Oh
-        HBAUi44gC+4EwUSfXunnLbKg+XKR11sLeHCoBiJolDZVYQGC4DlfwQhi4q4un7DpBm2ws0
-        eXF8BAbaQmewoJ6ZvONwKQawcV5aLzA0vYrZRkpdjzqqRT0hJaCHRxxKOaSzI/k/5RxXGI
-        yntnktGWFWUXS7vX3d6H5/HShVyjtLwYuKEKeO1Qs5rQKIlIVD/YhgOVhkFmj/W2OCwHgg
-        apQp7KkBrbpGHwxTAw1BoYlo9fQ7NTHz+Eftps+q4WFodCAf8PbIZonJOnR+3w==
-From:   Michael Walle <michael@walle.cc>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        Frank Rowand <frowand.list@gmail.com>
-Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH v2 18/20] arm64: dts: ls1028a: sl28: get MAC addresses from VPD
-Date:   Fri,  2 Sep 2022 00:18:55 +0200
-Message-Id: <20220901221857.2600340-19-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220901221857.2600340-1-michael@walle.cc>
-References: <20220901221857.2600340-1-michael@walle.cc>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 121C7B8293A;
+        Thu,  1 Sep 2022 22:24:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A03BC433D6;
+        Thu,  1 Sep 2022 22:24:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662071049;
+        bh=Hm8DwC0GrmApv2fYWEKeBc4h9nbEKqLf6rw3zQeK5LE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BRA5/HQdm95Mz2LfUa1n1wgpWrWr62tXwr21FmiNChxR3dk+tR7La0ns1/+OmLFH3
+         qDj402hH2s4HI487xv3vXDtSJvUF/ZV8nazEmw8XomiGMfM37tsQCfkixZ5zI61FqN
+         5y/11INJwlGfRNus2snrc8q2AfxMr9jaX29i1ctdJbbKzHyzwHOzOnOikY0HsMLFJY
+         2MohBNhBbATg+1QniClgBEJB+K3wvaTdj86gwW+9Igs718Q21dBhrwIdeJbD3Xq818
+         p01Pywux+4/9M02DGDd1MgVxBvorbC+omZMb/Avmx0t3/ABylTHV3Z39qAjD5kZvU8
+         pR3cnmCaM+WWQ==
+Date:   Fri, 2 Sep 2022 01:24:04 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Reinette Chatre <reinette.chatre@intel.com>
+Cc:     linux-sgx@vger.kernel.org,
+        Haitao Huang <haitao.huang@linux.intel.com>,
+        Vijay Dhanraj <vijay.dhanraj@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Shuah Khan <shuah@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+Subject: Re: [PATCH v2 6/6] selftests/sgx: Add a bpftrace script for tracking
+ allocation errors
+Message-ID: <YxExBGYLGihU9jpC@kernel.org>
+References: <20220831173829.126661-1-jarkko@kernel.org>
+ <20220831173829.126661-7-jarkko@kernel.org>
+ <048cdd4c-0454-1fb2-ebac-3bdb4cde792b@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam: Yes
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <048cdd4c-0454-1fb2-ebac-3bdb4cde792b@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that it is finally possible to get the MAC addresses from the OTP
-memory, use it to set the addresses of the network devices.
+On Wed, Aug 31, 2022 at 01:09:21PM -0700, Reinette Chatre wrote:
+> Hi Jarkko,
+> 
+> On 8/31/2022 10:38 AM, Jarkko Sakkinen wrote:
+> > Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+> > ---
+> > v2:
+> > * Added comments.
+> > ---
+> >  tools/testing/selftests/sgx/alloc-error.bt | 9 +++++++++
+> >  1 file changed, 9 insertions(+)
+> >  create mode 100644 tools/testing/selftests/sgx/alloc-error.bt
+> > 
+> > diff --git a/tools/testing/selftests/sgx/alloc-error.bt b/tools/testing/selftests/sgx/alloc-error.bt
+> > new file mode 100644
+> > index 000000000000..0cc8b2e41852
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/sgx/alloc-error.bt
+> > @@ -0,0 +1,9 @@
+> > +/* EPC allocation */
+> > +kr:sgx_alloc_epc_page /(uint64)retval >= (uint64)(-4095)/ {
+> > +		 printf("sgx_alloc_epc_page: retval=%d\n", (int64)retval);
+> > +}
+> > +
+> > +/* kzalloc for struct sgx_encl_page */
+> > +kr:sgx_encl_page_alloc /(uint64)retval >= (uint64)(-4095)/ {
+> > +		 printf("sgx_encl_page_alloc: retval=%d\n", (int64)retval);
+> > +}
+> 
+> I did see you response in [1]. I continue to find this
+> addition very cryptic in that it assumes global familiarity
+> with BPF scripting which I do not think can be assumed. I
+> still think this script can benefit from a comment to describe
+> what the script does and how to use it.
 
-There are 8 reserved MAC addresses in total per board. Distribute them
-as follows:
 
-+----------+------+------+------+------+------+
-|          | var1 | var2 | var3 | var4 | kbox |
-+----------+------+------+------+------+------+
-| enetc #0 |   +0 |      |      |   +0 |   +0 |
-| enetc #1 |      |      |   +0 |   +1 |   +1 |
-| enetc #2 | rand | rand | rand | rand | rand |
-| enetc #3 |      |      |      |      |      |
-| felix p0 |      |   +0 |      |      |   +4 |
-| felix p1 |      |   +1 |      |      |   +5 |
-| felix p2 |      |      |      |      |   +6 |
-| felix p3 |      |      |      |      |   +7 |
-| felix p4 |      |      |      |      |      |
-| felix p5 |      |      |      |      |      |
-+----------+------+------+------+------+------+
+I think I follow Dave's advice to use perf here. I'll
+make a header which explains what the script does.
 
-An empty cell means, the port is not available and thus doesn't need an
-ethernet address.
-
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- .../freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts |  8 ++++++++
- .../dts/freescale/fsl-ls1028a-kontron-sl28-var1.dts |  2 ++
- .../dts/freescale/fsl-ls1028a-kontron-sl28-var2.dts |  4 ++++
- .../dts/freescale/fsl-ls1028a-kontron-sl28-var4.dts |  2 ++
- .../boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts | 13 +++++++++++++
- 5 files changed, 29 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts
-index 6b575efd84a7..b5c874c145d3 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts
-@@ -76,6 +76,8 @@ &mscc_felix_port0 {
- 	managed = "in-band-status";
- 	phy-handle = <&qsgmii_phy0>;
- 	phy-mode = "qsgmii";
-+	nvmem-cells = <&base_mac_address 4>;
-+	nvmem-cell-names = "mac-address";
- 	status = "okay";
- };
- 
-@@ -84,6 +86,8 @@ &mscc_felix_port1 {
- 	managed = "in-band-status";
- 	phy-handle = <&qsgmii_phy1>;
- 	phy-mode = "qsgmii";
-+	nvmem-cells = <&base_mac_address 5>;
-+	nvmem-cell-names = "mac-address";
- 	status = "okay";
- };
- 
-@@ -92,6 +96,8 @@ &mscc_felix_port2 {
- 	managed = "in-band-status";
- 	phy-handle = <&qsgmii_phy2>;
- 	phy-mode = "qsgmii";
-+	nvmem-cells = <&base_mac_address 6>;
-+	nvmem-cell-names = "mac-address";
- 	status = "okay";
- };
- 
-@@ -100,6 +106,8 @@ &mscc_felix_port3 {
- 	managed = "in-band-status";
- 	phy-handle = <&qsgmii_phy3>;
- 	phy-mode = "qsgmii";
-+	nvmem-cells = <&base_mac_address 7>;
-+	nvmem-cell-names = "mac-address";
- 	status = "okay";
- };
- 
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var1.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var1.dts
-index 7cd29ab970d9..1f34c7553459 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var1.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var1.dts
-@@ -55,5 +55,7 @@ &enetc_port0 {
- &enetc_port1 {
- 	phy-handle = <&phy0>;
- 	phy-mode = "rgmii-id";
-+	nvmem-cells = <&base_mac_address 0>;
-+	nvmem-cell-names = "mac-address";
- 	status = "okay";
- };
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var2.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var2.dts
-index 330e34f933a3..0ed0d2545922 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var2.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var2.dts
-@@ -48,6 +48,8 @@ &mscc_felix_port0 {
- 	managed = "in-band-status";
- 	phy-handle = <&phy0>;
- 	phy-mode = "sgmii";
-+	nvmem-cells = <&base_mac_address 0>;
-+	nvmem-cell-names = "mac-address";
- 	status = "okay";
- };
- 
-@@ -56,6 +58,8 @@ &mscc_felix_port1 {
- 	managed = "in-band-status";
- 	phy-handle = <&phy1>;
- 	phy-mode = "sgmii";
-+	nvmem-cells = <&base_mac_address 1>;
-+	nvmem-cell-names = "mac-address";
- 	status = "okay";
- };
- 
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var4.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var4.dts
-index 9b5e92fb753e..a4421db3784e 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var4.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var4.dts
-@@ -43,5 +43,7 @@ vddh: vddh-regulator {
- &enetc_port1 {
- 	phy-handle = <&phy1>;
- 	phy-mode = "rgmii-id";
-+	nvmem-cells = <&base_mac_address 1>;
-+	nvmem-cell-names = "mac-address";
- 	status = "okay";
- };
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts
-index 4ab17b984b03..72429b37a8b4 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts
-@@ -92,6 +92,8 @@ &enetc_port0 {
- 	phy-handle = <&phy0>;
- 	phy-mode = "sgmii";
- 	managed = "in-band-status";
-+	nvmem-cells = <&base_mac_address 0>;
-+	nvmem-cell-names = "mac-address";
- 	status = "okay";
- };
- 
-@@ -154,6 +156,17 @@ partition@3e0000 {
- 				label = "bootloader environment";
- 			};
- 		};
-+
-+		otp-1 {
-+			compatible = "kontron,sl28-vpd", "user-otp";
-+
-+			serial_number: serial-number {
-+			};
-+
-+			base_mac_address: base-mac-address {
-+				#nvmem-cell-cells = <1>;
-+			};
-+		};
- 	};
- };
- 
--- 
-2.30.2
-
+BR, Jarkko
