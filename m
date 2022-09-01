@@ -2,101 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E9FECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 12:20:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAF99C0502C
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 12:21:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233480AbiIAMUj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 08:20:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57476 "EHLO
+        id S233353AbiIAMVH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 08:21:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233470AbiIAMUS (ORCPT
+        with ESMTP id S233470AbiIAMUk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 08:20:18 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C1A2474F7;
-        Thu,  1 Sep 2022 05:20:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1662034807; x=1693570807;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=53b9EBspOpKrf/YGZr2ZNHUm/X4axsD5jzJZykL/iEU=;
-  b=IWtpa9QjZEnDwWqIXDFHxQu5whIj89DJipdapaNPbBTpJ1cwOiM45QKB
-   1dtJl4i4o3TeRAAeYSYKGPO7ytAYuScrwlgNth599BHhZjqiButw9KjDw
-   F6XyoJuTUCQfaC7hm00+WHFxTUQJjiSxgDTx1pMEJpjpPi5jRxBO1LL6i
-   4jHFcDvEY1R1qKvRcqU+9QQ/L7RSaTas3PQcYYPGQJdusMTECqgun7OFL
-   0DKcYdR9CPQpYR8+s9ypB+5jqXk9vINiqcjG6cia5+ciIDvLYu4bHOruM
-   2DZAt/VTpW+R0zZYbxirz73O2l9foB2qdOBkMHYltcaZ1bzFsO/pXaTXn
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="111735865"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Sep 2022 05:19:56 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Thu, 1 Sep 2022 05:19:56 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Thu, 1 Sep 2022 05:19:54 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <linux@armlinux.org.uk>,
-        <UNGLinuxDriver@microchip.com>, <maxime.chevallier@bootlin.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next] net: lan966x: Extend lan966x with RGMII support
-Date:   Thu, 1 Sep 2022 14:23:46 +0200
-Message-ID: <20220901122346.245786-1-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
+        Thu, 1 Sep 2022 08:20:40 -0400
+Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D668B7E6;
+        Thu,  1 Sep 2022 05:20:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1662034824;
+  x=1693570824;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=5o5T+cNPjW0KviUEr8asDCjXy32h/49HXr3yNLpVmZ4=;
+  b=QIccnKipNbrTytGmuIOZUf7ywmR/gUpOvxBEpGtjjoit+A/bWo77uy13
+   twcwT0sh8LGlB+v0MfpMdbK/RBZUG1TBZTotwTZvKx2bjRvczapn/EVkQ
+   mErrB61kOdMdUyxwa/Z+LSev4chlROG5uYaObCDQsXcItZVK6++To3FoN
+   /77QF+or4T4h4wheKPxvvx9BkjYgOBLVr8SURdq02DSrAbmvHSKx4eFHi
+   18C7iDFmH4GzWOCNzi13liQeDi+MYcRiV4qkJmiDPNd3ArIZd+FYt99Qv
+   ezCW2f7lRQ5an8oIGWdEFbdcXpqMkRE0bcLzTPtjHNi2ynWaui9Z/STHM
+   w==;
+Date:   Thu, 1 Sep 2022 14:20:13 +0200
+From:   Jesper Nilsson <Jesper.Nilsson@axis.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+CC:     "dj76.yang@samsung.com" <dj76.yang@samsung.com>,
+        Jesper Nilsson <Jesper.Nilsson@axis.com>,
+        Lars Persson <Lars.Persson@axis.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+        "lee.jones@linaro.org" <lee.jones@linaro.org>,
+        "javierm@redhat.com" <javierm@redhat.com>,
+        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
+        linux-arm-kernel <linux-arm-kernel@axis.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Moon-Ki Jun <moonki.jun@samsung.com>,
+        Sang Min Kim <hypmean.kim@samsung.com>,
+        Wangseok Lee <wangseok.lee@samsung.com>
+Subject: Re: [PATCH 4/4] mfd: Samsung: Add Samsung sysmgr driver
+Message-ID: <20220901122013.GU22198@axis.com>
+References: <CGME20220713045746epcms1p302c6643d12ed505d24298e1edb5889ec@epcms1p3>
+ <20220713045746epcms1p302c6643d12ed505d24298e1edb5889ec@epcms1p3>
+ <f0ab0036-54eb-f0e4-3169-740e7fca9c65@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <f0ab0036-54eb-f0e4-3169-740e7fca9c65@linaro.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Extend lan966x with RGMII support. The MAC supports all RGMII_* modes.
+Hi,
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- drivers/net/ethernet/microchip/lan966x/lan966x_main.c    | 8 ++++++++
- drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c | 3 +++
- 2 files changed, 11 insertions(+)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index 1d6e3b641b2e..e2d250ed976b 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -772,6 +772,14 @@ static int lan966x_probe_port(struct lan966x *lan966x, u32 p,
- 
- 	__set_bit(PHY_INTERFACE_MODE_MII,
- 		  port->phylink_config.supported_interfaces);
-+	__set_bit(PHY_INTERFACE_MODE_RGMII,
-+		  port->phylink_config.supported_interfaces);
-+	__set_bit(PHY_INTERFACE_MODE_RGMII_ID,
-+		  port->phylink_config.supported_interfaces);
-+	__set_bit(PHY_INTERFACE_MODE_RGMII_RXID,
-+		  port->phylink_config.supported_interfaces);
-+	__set_bit(PHY_INTERFACE_MODE_RGMII_TXID,
-+		  port->phylink_config.supported_interfaces);
- 	__set_bit(PHY_INTERFACE_MODE_GMII,
- 		  port->phylink_config.supported_interfaces);
- 	__set_bit(PHY_INTERFACE_MODE_SGMII,
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c b/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c
-index 38a7e95d69b4..fb6aee509656 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c
-@@ -59,6 +59,9 @@ static void lan966x_phylink_mac_link_up(struct phylink_config *config,
- 	port_config->pause |= tx_pause ? MLO_PAUSE_TX : 0;
- 	port_config->pause |= rx_pause ? MLO_PAUSE_RX : 0;
- 
-+	if (phy_interface_mode_is_rgmii(interface))
-+		phy_set_speed(port->serdes, speed);
-+
- 	lan966x_port_config_up(port);
- }
- 
+Thanks for your comments Krzysztof and sorry for being late in replying, I'll
+try to fill in the blanks for some of the issues below.
+
+
+The ARTPEC-8 is derived from a Samsung design, but built to order for Axis, so
+long term responsibility will fall to Axis (me and Lars primarily).
+
+The ARTPEC-6 and ARTPEC-7 were built by an other vendor and are quite different
+not to mention that they are 32-bit ARMs, compared to ARM 64-bit for the ARTPEC-8.
+
+
+The driver in this patchset is derived from the drivers/mfd/altera-sysmgr.c and
+solves the same problem, in where the SoC system controller IP is a collection
+of registers that controls quite a lot of different peripheral functions (from
+PCIe and Ethernet to PWM) and is reachable only through SMC calls. I think the
+naming of the software was set as samsung-sysmgr since it is not Axis design at
+all, but (to my knowledge) only existing in ARTPEC-8 as yet. I can't recall why
+the mfd driver route was selected, but it could be that the earlier
+implementation was more complex and used both smc and direct mmio writes.
+
+The users of this system manager would initially be the ARTPEC-8 DWC EQoS and
+ARTPEC-8 DWC PCIe drivers sent in other patch-sets.
+
+
+I believe a possible alternative to solve the system manager problem is to open
+code the SMC calls directly from the drivers in question, quite a lot of
+drivers seem to do this, notably a specific altera driver
+(drivers/edac/altera_edac.c) even though it also has a reference to the above
+mentioned altera-sysmgr regmap... :-)
+
+Does that seem reasonable?
+
+Thanks for your patience and excuses for the top-posting.
+
+/Jesper
+
+On Wed, Jul 13, 2022 at 09:27:52AM +0200, Krzysztof Kozlowski wrote:
+> On 13/07/2022 06:57, Dongjin Yang wrote:
+[...]
+
+> Best regards,
+> Krzysztof
+
+/^JN - Jesper Nilsson
 -- 
-2.33.0
-
+               Jesper Nilsson -- jesper.nilsson@axis.com
