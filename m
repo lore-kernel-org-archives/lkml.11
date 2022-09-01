@@ -2,96 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF4B4ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 03:50:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0181ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 03:51:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232301AbiIADu2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 23:50:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48196 "EHLO
+        id S232329AbiIADvs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 23:51:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230045AbiIADuZ (ORCPT
+        with ESMTP id S229706AbiIADvl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 23:50:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E608A54645;
-        Wed, 31 Aug 2022 20:50:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 38DAE60FD2;
-        Thu,  1 Sep 2022 03:50:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C839FC433D6;
-        Thu,  1 Sep 2022 03:50:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662004222;
-        bh=NPbps7uPi2UsccwPgkn9NiGkpZleO4/g+eTbkUXig4s=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WRYNiJHkkijy4XhK08vHhmuHFAK6ZNTm8q/gu0t1Hl6+uNLCJXJmiqO6Ft1BUyhG2
-         tIousn1ukS0L3HRngmo9sLCUA2p60Wx3kJO529qJvkRQzxFsvzMMaNHAXL3NyelVlw
-         OUccvDPZssOUjvlpdzp8YF10FEf4Zs5CozJ90QbhceTTXfzDo6TghxeGhX/dpcaXD2
-         rwCDWVzXGfM33dxa8Ol6s+F3xs2S0ptnuZ/YOh5mW8YWm1t9EwWHWxbx0ryZCLH3dV
-         ySsOAVULIXjUbke2Q2CejP6PsL2OgdbhhZ5rYNgvMx3QFvebX8Kb8jGR5/wxFmHTWg
-         CaBeyl2igvcKA==
-Date:   Wed, 31 Aug 2022 20:50:20 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Alvin =?UTF-8?B?xaBpcHJhZ2E=?= <alsi@bang-olufsen.dk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>
-Subject: Re: [PATCH net-next 3/9] net: dsa: allow the DSA master to be seen
- and changed through rtnetlink
-Message-ID: <20220831205020.28fbfcc5@kernel.org>
-In-Reply-To: <20220830195932.683432-4-vladimir.oltean@nxp.com>
-References: <20220830195932.683432-1-vladimir.oltean@nxp.com>
-        <20220830195932.683432-4-vladimir.oltean@nxp.com>
+        Wed, 31 Aug 2022 23:51:41 -0400
+Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B1BD162161
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 20:51:39 -0700 (PDT)
+Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-11eab59db71so24932349fac.11
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 20:51:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=FMeFb1DKNrRW4XTw+2AUilPkuq6lPd1YD7bO8dxWl6s=;
+        b=ByOcugM+LZVu3LuzIKRmYBcj8KWgL4G7ve6wG4Vn0qoJvpyjNqGF0cyV+0oQVj7j58
+         WuNe3l77T9LEvgoTH+w7H1pVPIyGRZAaOiV1cWXfChXXsm1LZtefpsIDIE7RvVLSHA4f
+         Wwwtd1IJ+y9eB1DG61eaolq0kyWrCQv+OjXE96DdxLqMuGv+MTUo7sGPj2UM53rtrPNS
+         swQqutm5fJ2lxDJEiVMUsXVk4UPO0w2tb57hyw/N5GafGbIsLS1fSXSIkj0D9QWiPh1D
+         ESk93IMou7GCvFIDeupXNfI16QVMICInA28JP8OLxS4wdsluU5KnQDK0kBPi3XZxl4Zj
+         wCYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=FMeFb1DKNrRW4XTw+2AUilPkuq6lPd1YD7bO8dxWl6s=;
+        b=hU64d3bmvBH59hu4VyC2c/Add065FTFwLunzJ3Cpm98CzQ9rDdU6qUdz5NjrbjkOX4
+         V7uVAl4Xyva4t7dpNaW+hsH+rZDAP6FUYoRdWaByjYnW9iOJfsunkVsab+w7EbwdD++x
+         opXogJVR2uwH6r/xgYt1f3qn2qhTnCQRSxFO3BsLfTq0QE0MHaxr15VjQ+kwGbrt+e2J
+         Dxgr0By+Ka4ElyI6pcPYZeJ0TgeBMrNPXt8+LCni0Xa8UJ3S+8a8VFhX6u5AOW8iHRvW
+         OJtchm+/FIQa1kLeZONYl+hZlmKP/IFSTCrtYqEk+3ecuE1pR3XreWsaHJnS1hTKNKWn
+         03ZQ==
+X-Gm-Message-State: ACgBeo1jLp5QRtEZsHjmz/qSLSRj5sC57/vuifYN/5aeym0te4Ar/KBK
+        M7FLq0pHAPJiBsdSpb1fd+k=
+X-Google-Smtp-Source: AA6agR4p7F4GBqihoJuFKRYYOZ0Wb+JZLdStHGZEH7IwD5hH4fmexnWwUavQ8c9sZGSy6l7Zmza78A==
+X-Received: by 2002:a05:6870:3127:b0:11c:8c2c:9015 with SMTP id v39-20020a056870312700b0011c8c2c9015mr2880965oaa.31.1662004298634;
+        Wed, 31 Aug 2022 20:51:38 -0700 (PDT)
+Received: from localhost ([12.97.180.36])
+        by smtp.gmail.com with ESMTPSA id p5-20020a4a95c5000000b00448985f1f17sm9033176ooi.9.2022.08.31.20.51.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Aug 2022 20:51:37 -0700 (PDT)
+Date:   Wed, 31 Aug 2022 20:49:27 -0700
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, x86@kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, David Howells <dhowells@redhat.com>,
+        Jan Beulich <JBeulich@suse.com>,
+        Christophe Jaillet <christophe.jaillet@wanadoo.fr>,
+        Joe Perches <joe@perches.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>
+Subject: Re: [PATCH v6 0/2] x86/asm/bitops: optimize ff{s,z} functions for
+ constant expressions
+Message-ID: <YxArx4UGoSQXljQd@yury-laptop>
+References: <20220511160319.1045812-1-mailhol.vincent@wanadoo.fr>
+ <20220831075742.295-1-mailhol.vincent@wanadoo.fr>
+ <Yw8hJS9f6SofG4/6@yury-laptop>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yw8hJS9f6SofG4/6@yury-laptop>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 30 Aug 2022 22:59:26 +0300 Vladimir Oltean wrote:
-> Some DSA switches have multiple CPU ports, which can be used to improve
-> CPU termination throughput, but DSA, through dsa_tree_setup_cpu_ports(),
-> sets up only the first one, leading to suboptimal use of hardware.
->=20
-> The desire is to not change the default configuration but to permit the
-> user to create a dynamic mapping between individual user ports and the
-> CPU port that they are served by, configurable through rtnetlink. It is
-> also intended to permit load balancing between CPU ports, and in that
-> case, the foreseen model is for the DSA master to be a bonding interface
-> whose lowers are the physical DSA masters.
->=20
-> To that end, we create a struct rtnl_link_ops for DSA user ports with
-> the "dsa" kind. We expose the IFLA_DSA_MASTER link attribute that
-> contains the ifindex of the newly desired DSA master.
+On Wed, Aug 31, 2022 at 01:54:01AM -0700, Yury Norov wrote:
+> On Wed, Aug 31, 2022 at 04:57:40PM +0900, Vincent Mailhol wrote:
+> > The compilers provide some builtin expression equivalent to the ffs(),
+> > __ffs() and ffz() functions of the kernel. The kernel uses optimized
+> > assembly which produces better code than the builtin
+> > functions. However, such assembly code can not be folded when used
+> > with constant expressions.
+> > 
+> > This series relies on __builtin_constant_p to select the optimal solution:
+> > 
+> >   * use kernel assembly for non constant expressions
+> > 
+> >   * use compiler's __builtin function for constant expressions.
+> > 
+> > 
+> > ** Statistics **
+> > 
+> > Patch 1/2 optimizes 26.7% of ffs() calls and patch 2/2 optimizes 27.9%
+> > of __ffs() and ffz() calls (details of the calculation in each patch).
+> 
+> Hi Vincent,
+> 
+> Can you please add a test for this? We've recently added a very similar
+> test_bitmap_const_eval() in lib/test_bitmap.c.
+> 
+> dc34d5036692c ("lib: test_bitmap: add compile-time optimization/evaluations
+> assertions")
+> 
+> Would be nice to have something like this for ffs() and ffz() in
+> lib/test_bitops.c.
+> 
+> Please keep me in loop in case of new versions.
 
-net/dsa/port.c: In function =E2=80=98dsa_port_change_master=E2=80=99:
-net/dsa/port.c:1414:13: warning: unused variable =E2=80=98port=E2=80=99 [-W=
-unused-variable]
- 1414 |         int port =3D dp->index;
-      |             ^~~~
+Also, what about fls? Is there any difference with ffs/ffz wrt compile
+time optimizations? If not, would be great if the series will take
+care of it too.
 
-I presume you had a look around what side effects setting rtnl_link_ops
-will have? Should .netns_refund be true?
+Thanks,
+Yury
