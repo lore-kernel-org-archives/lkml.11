@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5F06ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 08:13:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C909ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 08:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234018AbiIAINC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 04:13:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45264 "EHLO
+        id S233907AbiIAINF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 04:13:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233595AbiIAIMp (ORCPT
+        with ESMTP id S233775AbiIAIMq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 04:12:45 -0400
+        Thu, 1 Sep 2022 04:12:46 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A680412BF5C;
-        Thu,  1 Sep 2022 01:12:42 -0700 (PDT)
-Date:   Thu, 01 Sep 2022 08:12:38 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04F9B1299E6;
+        Thu,  1 Sep 2022 01:12:45 -0700 (PDT)
+Date:   Thu, 01 Sep 2022 08:12:42 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1662019960;
+        s=2020; t=1662019963;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=SxJxNz1lQXPy2WrJVNDLf3/Fm15UeJg651+15oUsjK4=;
-        b=f4bsteX2zvlHzGJJpWwWsf9iMBRakQy0vGeJ6WTNkp+VczHp3TjbXSnQWQTlcvY1himsBV
-        yvpolV/K0GFDDJnTpnc37eiPBuUkAZwyWfCIHIrY7R+p0AkKLFzXIJV3cYdp+W5WR9wGqd
-        lxHz60WmvwNa9BbG+OXnDnBOzwh2tWBqOXo6zbQ+Sx80Sl+bxJ7Nr+wTuc8gAaDA06STZI
-        YbdozU9wJEqL2r4FGxAfivf5Slh+Q69+RtLaEX+jwuj7PXILRFo+6fwSsh1YiIh2IkXXBo
-        MFaJJWjCyV6hC0F8iNrgqa+r5d7w+kwe7Hzz4AZucXLySjinPCDv/R73DpZNsQ==
+        bh=5ep2/2GVbcTjT95gVbliM4ZBzWW96TkKTOFbBnvqq8E=;
+        b=yLuc7VnoqdDaE8/Vshpd6f+j39qsN3Qrhsr5GuFLIWES7N+mwI4+y94RP4/swQFI9r2k73
+        pDgwKTpGnQSTlElC63m1S81QpqBTiXy5K35KxvSH4VmZE/aCcRFg6YgPjRfbMR7Okxt3K1
+        XBpMeXo9oKoStQlYX5uscBufGMi4MU+GWFNKNajyX+BYT+W0QkV/c3otyVtA1fpOUdBtn1
+        mjp2XYHTIrk6cKwfM01UXXBTWOoN1Tdq/OtuT7NyrcLQEp/I0uH4KRO0ffW8Mj8ih+f6xz
+        5GpZiIeUvtrZG1MWNn2e0vjpkpCdgEpPh4btEeIPOyUvyFCKLHY4NVOTRwKpTw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1662019960;
+        s=2020e; t=1662019963;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=SxJxNz1lQXPy2WrJVNDLf3/Fm15UeJg651+15oUsjK4=;
-        b=1qZr+zpnq5excDqH5zMF+gVvtfiie2Dn5AdjEp5Rv/9uo91YwKOFHVVcWXAj4MMt9K1VEl
-        7T7v9SJnXymdfWAg==
+        bh=5ep2/2GVbcTjT95gVbliM4ZBzWW96TkKTOFbBnvqq8E=;
+        b=3ndnVqCTgKQgdbFgicJonj6KBO8LuEc6t/mrDOkWEXxY3dUAI6dXmzmdA7L+VlNCG1GvI0
+        sjXN+8W3VC3931CQ==
 From:   "tip-bot2 for Marco Elver" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: perf/core] perf/hw_breakpoint: Optimize toggle_bp_slot() for
- CPU-independent task targets
+Subject: [tip: perf/core] perf/hw_breakpoint: Reduce contention with large
+ number of tasks
 Cc:     Marco Elver <elver@google.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Dmitry Vyukov <dvyukov@google.com>,
         Ian Rogers <irogers@google.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220829124719.675715-15-elver@google.com>
-References: <20220829124719.675715-15-elver@google.com>
+In-Reply-To: <20220829124719.675715-12-elver@google.com>
+References: <20220829124719.675715-12-elver@google.com>
 MIME-Version: 1.0
-Message-ID: <166201995893.401.15548578752792395750.tip-bot2@tip-bot2>
+Message-ID: <166201996238.401.6409571475329516346.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -64,206 +64,298 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the perf/core branch of tip:
 
-Commit-ID:     ecdfb8896f2ad733097e6309d64f94db4cd1020c
-Gitweb:        https://git.kernel.org/tip/ecdfb8896f2ad733097e6309d64f94db4cd1020c
+Commit-ID:     0912037fec1136d4e4796a3481f4a4ee09a2c325
+Gitweb:        https://git.kernel.org/tip/0912037fec1136d4e4796a3481f4a4ee09a2c325
 Author:        Marco Elver <elver@google.com>
-AuthorDate:    Mon, 29 Aug 2022 14:47:19 +02:00
+AuthorDate:    Mon, 29 Aug 2022 14:47:16 +02:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
 CommitterDate: Tue, 30 Aug 2022 10:56:24 +02:00
 
-perf/hw_breakpoint: Optimize toggle_bp_slot() for CPU-independent task targets
+perf/hw_breakpoint: Reduce contention with large number of tasks
 
-We can still see that a majority of the time is spent hashing task pointers:
+While optimizing task_bp_pinned()'s runtime complexity to O(1) on
+average helps reduce time spent in the critical section, we still suffer
+due to serializing everything via 'nr_bp_mutex'. Indeed, a profile shows
+that now contention is the biggest issue:
 
-    ...
-    16.98%  [kernel]       [k] rhashtable_jhash2
-    ...
+    95.93%  [kernel]       [k] osq_lock
+     0.70%  [kernel]       [k] mutex_spin_on_owner
+     0.22%  [kernel]       [k] smp_cfm_core_cond
+     0.18%  [kernel]       [k] task_bp_pinned
+     0.18%  [kernel]       [k] rhashtable_jhash2
+     0.15%  [kernel]       [k] queued_spin_lock_slowpath
 
-Doing the bookkeeping in toggle_bp_slots() is currently O(#cpus),
-calling task_bp_pinned() for each CPU, even if task_bp_pinned() is
-CPU-independent. The reason for this is to update the per-CPU
-'tsk_pinned' histogram.
-
-To optimize the CPU-independent case to O(1), keep a separate
-CPU-independent 'tsk_pinned_all' histogram.
-
-The major source of complexity are transitions between "all
-CPU-independent task breakpoints" and "mixed CPU-independent and
-CPU-dependent task breakpoints". The code comments list all cases that
-require handling.
-
-After this optimization:
-
- | $> perf bench -r 100 breakpoint thread -b 4 -p 128 -t 512
- | # Running 'breakpoint/thread' benchmark:
- | # Created/joined 100 threads with 4 breakpoints and 128 parallelism
- |      Total time: 1.758 [sec]
- |
- |       34.336621 usecs/op
- |     4395.087500 usecs/op/cpu
-
-    38.08%  [kernel]       [k] queued_spin_lock_slowpath
-    10.81%  [kernel]       [k] smp_cfm_core_cond
-     3.01%  [kernel]       [k] update_sg_lb_stats
-     2.58%  [kernel]       [k] osq_lock
-     2.57%  [kernel]       [k] llist_reverse_order
-     1.45%  [kernel]       [k] find_next_bit
-     1.21%  [kernel]       [k] flush_tlb_func_common
-     1.01%  [kernel]       [k] arch_install_hw_breakpoint
-
-Showing that the time spent hashing keys has become insignificant.
-
-With the given benchmark parameters, that's an improvement of 12%
-compared with the old O(#cpus) version.
-
-And finally, using the less aggressive parameters from the preceding
-changes, we now observe:
+when running the breakpoint benchmark with (system with 256 CPUs):
 
  | $> perf bench -r 30 breakpoint thread -b 4 -p 64 -t 64
  | # Running 'breakpoint/thread' benchmark:
  | # Created/joined 30 threads with 4 breakpoints and 64 parallelism
+ |      Total time: 0.207 [sec]
+ |
+ |      108.267188 usecs/op
+ |     6929.100000 usecs/op/cpu
+
+The main concern for synchronizing the breakpoint constraints data is
+that a consistent snapshot of the per-CPU and per-task data is observed.
+
+The access pattern is as follows:
+
+ 1. If the target is a task: the task's pinned breakpoints are counted,
+    checked for space, and then appended to; only bp_cpuinfo::cpu_pinned
+    is used to check for conflicts with CPU-only breakpoints;
+    bp_cpuinfo::tsk_pinned are incremented/decremented, but otherwise
+    unused.
+
+ 2. If the target is a CPU: bp_cpuinfo::cpu_pinned are counted, along
+    with bp_cpuinfo::tsk_pinned; after a successful check, cpu_pinned is
+    incremented. No per-task breakpoints are checked.
+
+Since rhltable safely synchronizes insertions/deletions, we can allow
+concurrency as follows:
+
+ 1. If the target is a task: independent tasks may update and check the
+    constraints concurrently, but same-task target calls need to be
+    serialized; since bp_cpuinfo::tsk_pinned is only updated, but not
+    checked, these modifications can happen concurrently by switching
+    tsk_pinned to atomic_t.
+
+ 2. If the target is a CPU: access to the per-CPU constraints needs to
+    be serialized with other CPU-target and task-target callers (to
+    stabilize the bp_cpuinfo::tsk_pinned snapshot).
+
+We can allow the above concurrency by introducing a per-CPU constraints
+data reader-writer lock (bp_cpuinfo_sem), and per-task mutexes (reuses
+task_struct::perf_event_mutex):
+
+  1. If the target is a task: acquires perf_event_mutex, and acquires
+     bp_cpuinfo_sem as a reader. The choice of percpu-rwsem minimizes
+     contention in the presence of many read-lock but few write-lock
+     acquisitions: we assume many orders of magnitude more task target
+     breakpoints creations/destructions than CPU target breakpoints.
+
+  2. If the target is a CPU: acquires bp_cpuinfo_sem as a writer.
+
+With these changes, contention with thousands of tasks is reduced to the
+point where waiting on locking no longer dominates the profile:
+
+ | $> perf bench -r 30 breakpoint thread -b 4 -p 64 -t 64
+ | # Running 'breakpoint/thread' benchmark:
+ | # Created/joined 30 threads with 4 breakpoints and 64 parallelism
+ |      Total time: 0.077 [sec]
+ |
+ |       40.201563 usecs/op
+ |     2572.900000 usecs/op/cpu
+
+    21.54%  [kernel]       [k] task_bp_pinned
+    20.18%  [kernel]       [k] rhashtable_jhash2
+     6.81%  [kernel]       [k] toggle_bp_slot
+     5.47%  [kernel]       [k] queued_spin_lock_slowpath
+     3.75%  [kernel]       [k] smp_cfm_core_cond
+     3.48%  [kernel]       [k] bcmp
+
+On this particular setup that's a speedup of 2.7x.
+
+We're also getting closer to the theoretical ideal performance through
+optimizations in hw_breakpoint.c -- constraints accounting disabled:
+
+ | perf bench -r 30 breakpoint thread -b 4 -p 64 -t 64
+ | # Running 'breakpoint/thread' benchmark:
+ | # Created/joined 30 threads with 4 breakpoints and 64 parallelism
  |      Total time: 0.067 [sec]
  |
- |       35.292187 usecs/op
- |     2258.700000 usecs/op/cpu
+ |       35.286458 usecs/op
+ |     2258.333333 usecs/op/cpu
 
-Which is an improvement of 12% compared to without the histogram
-optimizations (baseline is 40 usecs/op). This is now on par with the
-theoretical ideal (constraints disabled), and only 12% slower than no
-breakpoints at all.
+Which means the current implementation is ~12% slower than the
+theoretical ideal.
+
+For reference, performance without any breakpoints:
+
+ | $> bench -r 30 breakpoint thread -b 0 -p 64 -t 64
+ | # Running 'breakpoint/thread' benchmark:
+ | # Created/joined 30 threads with 0 breakpoints and 64 parallelism
+ |      Total time: 0.060 [sec]
+ |
+ |       31.365625 usecs/op
+ |     2007.400000 usecs/op/cpu
+
+On a system with 256 CPUs, the theoretical ideal is only ~12% slower
+than no breakpoints at all; the current implementation is ~28% slower.
 
 Signed-off-by: Marco Elver <elver@google.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
 Acked-by: Ian Rogers <irogers@google.com>
-Link: https://lore.kernel.org/r/20220829124719.675715-15-elver@google.com
+Link: https://lore.kernel.org/r/20220829124719.675715-12-elver@google.com
 ---
- kernel/events/hw_breakpoint.c | 155 ++++++++++++++++++++++++++-------
- 1 file changed, 124 insertions(+), 31 deletions(-)
+ kernel/events/hw_breakpoint.c | 161 +++++++++++++++++++++++++++------
+ 1 file changed, 133 insertions(+), 28 deletions(-)
 
 diff --git a/kernel/events/hw_breakpoint.c b/kernel/events/hw_breakpoint.c
-index a489f31..7ef0e98 100644
+index 8b40fca..229c6f4 100644
 --- a/kernel/events/hw_breakpoint.c
 +++ b/kernel/events/hw_breakpoint.c
-@@ -66,6 +66,8 @@ static struct bp_cpuinfo *get_bp_info(int cpu, enum bp_type_idx type)
+@@ -19,6 +19,7 @@
  
- /* Number of pinned CPU breakpoints globally. */
- static struct bp_slots_histogram cpu_pinned[TYPE_MAX];
-+/* Number of pinned CPU-independent task breakpoints. */
-+static struct bp_slots_histogram tsk_pinned_all[TYPE_MAX];
+ #include <linux/hw_breakpoint.h>
  
- /* Keep track of the breakpoints attached to tasks */
- static struct rhltable task_bps_ht;
-@@ -200,6 +202,8 @@ static __init int init_breakpoint_slots(void)
- 	for (i = 0; i < TYPE_MAX; i++) {
- 		if (!bp_slots_histogram_alloc(&cpu_pinned[i], i))
- 			goto err;
-+		if (!bp_slots_histogram_alloc(&tsk_pinned_all[i], i))
-+			goto err;
- 	}
++#include <linux/atomic.h>
+ #include <linux/bug.h>
+ #include <linux/cpu.h>
+ #include <linux/export.h>
+@@ -28,6 +29,7 @@
+ #include <linux/kernel.h>
+ #include <linux/mutex.h>
+ #include <linux/notifier.h>
++#include <linux/percpu-rwsem.h>
+ #include <linux/percpu.h>
+ #include <linux/rhashtable.h>
+ #include <linux/sched.h>
+@@ -41,9 +43,9 @@ struct bp_cpuinfo {
+ 	unsigned int	cpu_pinned;
+ 	/* tsk_pinned[n] is the number of tasks having n+1 breakpoints */
+ #ifdef hw_breakpoint_slots
+-	unsigned int	tsk_pinned[hw_breakpoint_slots(0)];
++	atomic_t	tsk_pinned[hw_breakpoint_slots(0)];
+ #else
+-	unsigned int	*tsk_pinned;
++	atomic_t	*tsk_pinned;
+ #endif
+ };
  
- 	return 0;
-@@ -210,8 +214,10 @@ err:
- 		if (err_cpu == cpu)
- 			break;
- 	}
--	for (i = 0; i < TYPE_MAX; i++)
-+	for (i = 0; i < TYPE_MAX; i++) {
- 		bp_slots_histogram_free(&cpu_pinned[i]);
-+		bp_slots_histogram_free(&tsk_pinned_all[i]);
-+	}
+@@ -65,8 +67,79 @@ static const struct rhashtable_params task_bps_ht_params = {
  
- 	return -ENOMEM;
- }
-@@ -245,6 +251,26 @@ bp_slots_histogram_max(struct bp_slots_histogram *hist, enum bp_type_idx type)
- 	return 0;
- }
+ static bool constraints_initialized __ro_after_init;
  
-+static int
-+bp_slots_histogram_max_merge(struct bp_slots_histogram *hist1, struct bp_slots_histogram *hist2,
-+			     enum bp_type_idx type)
+-/* Serialize accesses to the above constraints */
+-static DEFINE_MUTEX(nr_bp_mutex);
++/*
++ * Synchronizes accesses to the per-CPU constraints; the locking rules are:
++ *
++ *  1. Atomic updates to bp_cpuinfo::tsk_pinned only require a held read-lock
++ *     (due to bp_slots_histogram::count being atomic, no update are lost).
++ *
++ *  2. Holding a write-lock is required for computations that require a
++ *     stable snapshot of all bp_cpuinfo::tsk_pinned.
++ *
++ *  3. In all other cases, non-atomic accesses require the appropriately held
++ *     lock (read-lock for read-only accesses; write-lock for reads/writes).
++ */
++DEFINE_STATIC_PERCPU_RWSEM(bp_cpuinfo_sem);
++
++/*
++ * Return mutex to serialize accesses to per-task lists in task_bps_ht. Since
++ * rhltable synchronizes concurrent insertions/deletions, independent tasks may
++ * insert/delete concurrently; therefore, a mutex per task is sufficient.
++ *
++ * Uses task_struct::perf_event_mutex, to avoid extending task_struct with a
++ * hw_breakpoint-only mutex, which may be infrequently used. The caveat here is
++ * that hw_breakpoint may contend with per-task perf event list management. The
++ * assumption is that perf usecases involving hw_breakpoints are very unlikely
++ * to result in unnecessary contention.
++ */
++static inline struct mutex *get_task_bps_mutex(struct perf_event *bp)
 +{
-+	for (int i = hw_breakpoint_slots_cached(type) - 1; i >= 0; i--) {
-+		const int count1 = atomic_read(&hist1->count[i]);
-+		const int count2 = atomic_read(&hist2->count[i]);
++	struct task_struct *tsk = bp->hw.target;
 +
-+		/* Catch unexpected writers; we want a stable snapshot. */
-+		ASSERT_EXCLUSIVE_WRITER(hist1->count[i]);
-+		ASSERT_EXCLUSIVE_WRITER(hist2->count[i]);
-+		if (count1 + count2 > 0)
-+			return i + 1;
-+		WARN(count1 < 0, "inconsistent breakpoint slots histogram");
-+		WARN(count2 < 0, "inconsistent breakpoint slots histogram");
-+	}
-+
-+	return 0;
++	return tsk ? &tsk->perf_event_mutex : NULL;
 +}
 +
- #ifndef hw_breakpoint_weight
- static inline int hw_breakpoint_weight(struct perf_event *bp)
- {
-@@ -273,7 +299,7 @@ static unsigned int max_task_bp_pinned(int cpu, enum bp_type_idx type)
- 	 * toggle_bp_task_slot() to tsk_pinned, and we get a stable snapshot.
- 	 */
- 	lockdep_assert_held_write(&bp_cpuinfo_sem);
--	return bp_slots_histogram_max(tsk_pinned, type);
-+	return bp_slots_histogram_max_merge(tsk_pinned, &tsk_pinned_all[type], type);
- }
++static struct mutex *bp_constraints_lock(struct perf_event *bp)
++{
++	struct mutex *tsk_mtx = get_task_bps_mutex(bp);
++
++	if (tsk_mtx) {
++		mutex_lock(tsk_mtx);
++		percpu_down_read(&bp_cpuinfo_sem);
++	} else {
++		percpu_down_write(&bp_cpuinfo_sem);
++	}
++
++	return tsk_mtx;
++}
++
++static void bp_constraints_unlock(struct mutex *tsk_mtx)
++{
++	if (tsk_mtx) {
++		percpu_up_read(&bp_cpuinfo_sem);
++		mutex_unlock(tsk_mtx);
++	} else {
++		percpu_up_write(&bp_cpuinfo_sem);
++	}
++}
++
++static bool bp_constraints_is_locked(struct perf_event *bp)
++{
++	struct mutex *tsk_mtx = get_task_bps_mutex(bp);
++
++	return percpu_is_write_locked(&bp_cpuinfo_sem) ||
++	       (tsk_mtx ? mutex_is_locked(tsk_mtx) :
++			  percpu_is_read_locked(&bp_cpuinfo_sem));
++}
++
++static inline void assert_bp_constraints_lock_held(struct perf_event *bp)
++{
++	struct mutex *tsk_mtx = get_task_bps_mutex(bp);
++
++	if (tsk_mtx)
++		lockdep_assert_held(tsk_mtx);
++	lockdep_assert_held(&bp_cpuinfo_sem);
++}
  
+ #ifdef hw_breakpoint_slots
  /*
-@@ -367,39 +393,21 @@ max_bp_pinned_slots(struct perf_event *bp, enum bp_type_idx type)
- }
+@@ -97,7 +170,7 @@ static __init int init_breakpoint_slots(void)
+ 		for (i = 0; i < TYPE_MAX; i++) {
+ 			struct bp_cpuinfo *info = get_bp_info(cpu, i);
  
- /*
-- * Add a pinned breakpoint for the given task in our constraint table
-- */
--static void toggle_bp_task_slot(struct perf_event *bp, int cpu,
--				enum bp_type_idx type, int weight)
--{
--	struct bp_slots_histogram *tsk_pinned = &get_bp_info(cpu, type)->tsk_pinned;
--
--	/*
--	 * If bp->hw.target, tsk_pinned is only modified, but not used
--	 * otherwise. We can permit concurrent updates as long as there are no
--	 * other uses: having acquired bp_cpuinfo_sem as a reader allows
--	 * concurrent updates here. Uses of tsk_pinned will require acquiring
--	 * bp_cpuinfo_sem as a writer to stabilize tsk_pinned's value.
--	 */
--	lockdep_assert_held_read(&bp_cpuinfo_sem);
--	bp_slots_histogram_add(tsk_pinned, task_bp_pinned(cpu, bp, type), weight);
--}
--
--/*
-  * Add/remove the given breakpoint in our constraint table
+-			info->tsk_pinned = kcalloc(__nr_bp_slots[i], sizeof(int), GFP_KERNEL);
++			info->tsk_pinned = kcalloc(__nr_bp_slots[i], sizeof(atomic_t), GFP_KERNEL);
+ 			if (!info->tsk_pinned)
+ 				goto err;
+ 		}
+@@ -137,11 +210,19 @@ static inline enum bp_type_idx find_slot_idx(u64 bp_type)
   */
- static int
--toggle_bp_slot(struct perf_event *bp, bool enable, enum bp_type_idx type,
--	       int weight)
-+toggle_bp_slot(struct perf_event *bp, bool enable, enum bp_type_idx type, int weight)
+ static unsigned int max_task_bp_pinned(int cpu, enum bp_type_idx type)
  {
--	const struct cpumask *cpumask = cpumask_of_bp(bp);
--	int cpu;
-+	int cpu, next_tsk_pinned;
+-	unsigned int *tsk_pinned = get_bp_info(cpu, type)->tsk_pinned;
++	atomic_t *tsk_pinned = get_bp_info(cpu, type)->tsk_pinned;
+ 	int i;
  
- 	if (!enable)
- 		weight = -weight;
- 
--	/* Pinned counter cpu profiling */
- 	if (!bp->hw.target) {
-+		/*
-+		 * Update the pinned CPU slots, in per-CPU bp_cpuinfo and in the
-+		 * global histogram.
-+		 */
- 		struct bp_cpuinfo *info = get_bp_info(bp->cpu, type);
- 
- 		lockdep_assert_held_write(&bp_cpuinfo_sem);
-@@ -408,9 +416,91 @@ toggle_bp_slot(struct perf_event *bp, bool enable, enum bp_type_idx type,
- 		return 0;
++	/*
++	 * At this point we want to have acquired the bp_cpuinfo_sem as a
++	 * writer to ensure that there are no concurrent writers in
++	 * toggle_bp_task_slot() to tsk_pinned, and we get a stable snapshot.
++	 */
++	lockdep_assert_held_write(&bp_cpuinfo_sem);
++
+ 	for (i = hw_breakpoint_slots_cached(type) - 1; i >= 0; i--) {
+-		if (tsk_pinned[i] > 0)
++		ASSERT_EXCLUSIVE_WRITER(tsk_pinned[i]); /* Catch unexpected writers. */
++		if (atomic_read(&tsk_pinned[i]) > 0)
+ 			return i + 1;
  	}
  
--	/* Pinned counter task profiling */
--	for_each_cpu(cpu, cpumask)
--		toggle_bp_task_slot(bp, cpu, type, weight);
+@@ -158,6 +239,11 @@ static int task_bp_pinned(int cpu, struct perf_event *bp, enum bp_type_idx type)
+ 	struct perf_event *iter;
+ 	int count = 0;
+ 
++	/*
++	 * We need a stable snapshot of the per-task breakpoint list.
++	 */
++	assert_bp_constraints_lock_held(bp);
++
+ 	rcu_read_lock();
+ 	head = rhltable_lookup(&task_bps_ht, &bp->hw.target, task_bps_ht_params);
+ 	if (!head)
+@@ -214,16 +300,25 @@ max_bp_pinned_slots(struct perf_event *bp, enum bp_type_idx type)
+ static void toggle_bp_task_slot(struct perf_event *bp, int cpu,
+ 				enum bp_type_idx type, int weight)
+ {
+-	unsigned int *tsk_pinned = get_bp_info(cpu, type)->tsk_pinned;
++	atomic_t *tsk_pinned = get_bp_info(cpu, type)->tsk_pinned;
+ 	int old_idx, new_idx;
+ 
 +	/*
 +	 * If bp->hw.target, tsk_pinned is only modified, but not used
 +	 * otherwise. We can permit concurrent updates as long as there are no
@@ -273,103 +365,124 @@ index a489f31..7ef0e98 100644
 +	 */
 +	lockdep_assert_held_read(&bp_cpuinfo_sem);
 +
-+	/*
-+	 * Update the pinned task slots, in per-CPU bp_cpuinfo and in the global
-+	 * histogram. We need to take care of 4 cases:
-+	 *
-+	 *  1. This breakpoint targets all CPUs (cpu < 0), and there may only
-+	 *     exist other task breakpoints targeting all CPUs. In this case we
-+	 *     can simply update the global slots histogram.
-+	 *
-+	 *  2. This breakpoint targets a specific CPU (cpu >= 0), but there may
-+	 *     only exist other task breakpoints targeting all CPUs.
-+	 *
-+	 *     a. On enable: remove the existing breakpoints from the global
-+	 *        slots histogram and use the per-CPU histogram.
-+	 *
-+	 *     b. On disable: re-insert the existing breakpoints into the global
-+	 *        slots histogram and remove from per-CPU histogram.
-+	 *
-+	 *  3. Some other existing task breakpoints target specific CPUs. Only
-+	 *     update the per-CPU slots histogram.
-+	 */
-+
-+	if (!enable) {
-+		/*
-+		 * Remove before updating histograms so we can determine if this
-+		 * was the last task breakpoint for a specific CPU.
-+		 */
-+		int ret = rhltable_remove(&task_bps_ht, &bp->hw.bp_list, task_bps_ht_params);
-+
-+		if (ret)
-+			return ret;
-+	}
-+	/*
-+	 * Note: If !enable, next_tsk_pinned will not count the to-be-removed breakpoint.
-+	 */
-+	next_tsk_pinned = task_bp_pinned(-1, bp, type);
-+
-+	if (next_tsk_pinned >= 0) {
-+		if (bp->cpu < 0) { /* Case 1: fast path */
-+			if (!enable)
-+				next_tsk_pinned += hw_breakpoint_weight(bp);
-+			bp_slots_histogram_add(&tsk_pinned_all[type], next_tsk_pinned, weight);
-+		} else if (enable) { /* Case 2.a: slow path */
-+			/* Add existing to per-CPU histograms. */
-+			for_each_possible_cpu(cpu) {
-+				bp_slots_histogram_add(&get_bp_info(cpu, type)->tsk_pinned,
-+						       0, next_tsk_pinned);
-+			}
-+			/* Add this first CPU-pinned task breakpoint. */
-+			bp_slots_histogram_add(&get_bp_info(bp->cpu, type)->tsk_pinned,
-+					       next_tsk_pinned, weight);
-+			/* Rebalance global task pinned histogram. */
-+			bp_slots_histogram_add(&tsk_pinned_all[type], next_tsk_pinned,
-+					       -next_tsk_pinned);
-+		} else { /* Case 2.b: slow path */
-+			/* Remove this last CPU-pinned task breakpoint. */
-+			bp_slots_histogram_add(&get_bp_info(bp->cpu, type)->tsk_pinned,
-+					       next_tsk_pinned + hw_breakpoint_weight(bp), weight);
-+			/* Remove all from per-CPU histograms. */
-+			for_each_possible_cpu(cpu) {
-+				bp_slots_histogram_add(&get_bp_info(cpu, type)->tsk_pinned,
-+						       next_tsk_pinned, -next_tsk_pinned);
-+			}
-+			/* Rebalance global task pinned histogram. */
-+			bp_slots_histogram_add(&tsk_pinned_all[type], 0, next_tsk_pinned);
-+		}
-+	} else { /* Case 3: slow path */
-+		const struct cpumask *cpumask = cpumask_of_bp(bp);
-+
-+		for_each_cpu(cpu, cpumask) {
-+			next_tsk_pinned = task_bp_pinned(cpu, bp, type);
-+			if (!enable)
-+				next_tsk_pinned += hw_breakpoint_weight(bp);
-+			bp_slots_histogram_add(&get_bp_info(cpu, type)->tsk_pinned,
-+					       next_tsk_pinned, weight);
-+		}
-+	}
+ 	old_idx = task_bp_pinned(cpu, bp, type) - 1;
+ 	new_idx = old_idx + weight;
  
- 	/*
- 	 * Readers want a stable snapshot of the per-task breakpoint list.
-@@ -419,8 +509,8 @@ toggle_bp_slot(struct perf_event *bp, bool enable, enum bp_type_idx type,
- 
- 	if (enable)
- 		return rhltable_insert(&task_bps_ht, &bp->hw.bp_list, task_bps_ht_params);
--	else
--		return rhltable_remove(&task_bps_ht, &bp->hw.bp_list, task_bps_ht_params);
-+
-+	return 0;
+ 	if (old_idx >= 0)
+-		tsk_pinned[old_idx]--;
++		atomic_dec(&tsk_pinned[old_idx]);
+ 	if (new_idx >= 0)
+-		tsk_pinned[new_idx]++;
++		atomic_inc(&tsk_pinned[new_idx]);
  }
  
- __weak int arch_reserve_bp_slot(struct perf_event *bp)
-@@ -850,6 +940,9 @@ bool hw_breakpoint_is_used(void)
- 			 */
- 			if (WARN_ON(atomic_read(&cpu_pinned[type].count[slot])))
- 				return true;
-+
-+			if (atomic_read(&tsk_pinned_all[type].count[slot]))
-+				return true;
- 		}
- 	}
+ /*
+@@ -241,6 +336,7 @@ toggle_bp_slot(struct perf_event *bp, bool enable, enum bp_type_idx type,
  
+ 	/* Pinned counter cpu profiling */
+ 	if (!bp->hw.target) {
++		lockdep_assert_held_write(&bp_cpuinfo_sem);
+ 		get_bp_info(bp->cpu, type)->cpu_pinned += weight;
+ 		return 0;
+ 	}
+@@ -249,6 +345,11 @@ toggle_bp_slot(struct perf_event *bp, bool enable, enum bp_type_idx type,
+ 	for_each_cpu(cpu, cpumask)
+ 		toggle_bp_task_slot(bp, cpu, type, weight);
+ 
++	/*
++	 * Readers want a stable snapshot of the per-task breakpoint list.
++	 */
++	assert_bp_constraints_lock_held(bp);
++
+ 	if (enable)
+ 		return rhltable_insert(&task_bps_ht, &bp->hw.bp_list, task_bps_ht_params);
+ 	else
+@@ -354,14 +455,10 @@ static int __reserve_bp_slot(struct perf_event *bp, u64 bp_type)
+ 
+ int reserve_bp_slot(struct perf_event *bp)
+ {
+-	int ret;
+-
+-	mutex_lock(&nr_bp_mutex);
+-
+-	ret = __reserve_bp_slot(bp, bp->attr.bp_type);
+-
+-	mutex_unlock(&nr_bp_mutex);
++	struct mutex *mtx = bp_constraints_lock(bp);
++	int ret = __reserve_bp_slot(bp, bp->attr.bp_type);
+ 
++	bp_constraints_unlock(mtx);
+ 	return ret;
+ }
+ 
+@@ -379,12 +476,11 @@ static void __release_bp_slot(struct perf_event *bp, u64 bp_type)
+ 
+ void release_bp_slot(struct perf_event *bp)
+ {
+-	mutex_lock(&nr_bp_mutex);
++	struct mutex *mtx = bp_constraints_lock(bp);
+ 
+ 	arch_unregister_hw_breakpoint(bp);
+ 	__release_bp_slot(bp, bp->attr.bp_type);
+-
+-	mutex_unlock(&nr_bp_mutex);
++	bp_constraints_unlock(mtx);
+ }
+ 
+ static int __modify_bp_slot(struct perf_event *bp, u64 old_type, u64 new_type)
+@@ -411,11 +507,10 @@ static int __modify_bp_slot(struct perf_event *bp, u64 old_type, u64 new_type)
+ 
+ static int modify_bp_slot(struct perf_event *bp, u64 old_type, u64 new_type)
+ {
+-	int ret;
++	struct mutex *mtx = bp_constraints_lock(bp);
++	int ret = __modify_bp_slot(bp, old_type, new_type);
+ 
+-	mutex_lock(&nr_bp_mutex);
+-	ret = __modify_bp_slot(bp, old_type, new_type);
+-	mutex_unlock(&nr_bp_mutex);
++	bp_constraints_unlock(mtx);
+ 	return ret;
+ }
+ 
+@@ -426,18 +521,28 @@ static int modify_bp_slot(struct perf_event *bp, u64 old_type, u64 new_type)
+  */
+ int dbg_reserve_bp_slot(struct perf_event *bp)
+ {
+-	if (mutex_is_locked(&nr_bp_mutex))
++	int ret;
++
++	if (bp_constraints_is_locked(bp))
+ 		return -1;
+ 
+-	return __reserve_bp_slot(bp, bp->attr.bp_type);
++	/* Locks aren't held; disable lockdep assert checking. */
++	lockdep_off();
++	ret = __reserve_bp_slot(bp, bp->attr.bp_type);
++	lockdep_on();
++
++	return ret;
+ }
+ 
+ int dbg_release_bp_slot(struct perf_event *bp)
+ {
+-	if (mutex_is_locked(&nr_bp_mutex))
++	if (bp_constraints_is_locked(bp))
+ 		return -1;
+ 
++	/* Locks aren't held; disable lockdep assert checking. */
++	lockdep_off();
+ 	__release_bp_slot(bp, bp->attr.bp_type);
++	lockdep_on();
+ 
+ 	return 0;
+ }
+@@ -663,7 +768,7 @@ bool hw_breakpoint_is_used(void)
+ 				return true;
+ 
+ 			for (int slot = 0; slot < hw_breakpoint_slots_cached(type); ++slot) {
+-				if (info->tsk_pinned[slot])
++				if (atomic_read(&info->tsk_pinned[slot]))
+ 					return true;
+ 			}
+ 		}
