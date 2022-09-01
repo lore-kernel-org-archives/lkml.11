@@ -2,90 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07D63ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 10:52:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3BFBECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 10:54:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234112AbiIAKwd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 06:52:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49858 "EHLO
+        id S234044AbiIAKya (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 06:54:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232830AbiIAKwb (ORCPT
+        with ESMTP id S233399AbiIAKy1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 06:52:31 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE198130ABB;
-        Thu,  1 Sep 2022 03:52:29 -0700 (PDT)
-Received: from fraeml713-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MJHpH5261z688nt;
-        Thu,  1 Sep 2022 18:48:39 +0800 (CST)
-Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
- fraeml713-chm.china.huawei.com (10.206.15.32) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 1 Sep 2022 12:52:26 +0200
-Received: from [10.48.151.166] (10.48.151.166) by
- lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 1 Sep 2022 11:52:26 +0100
-Message-ID: <12aedee1-9f13-266c-c398-2ec3d31212d1@huawei.com>
-Date:   Thu, 1 Sep 2022 11:52:23 +0100
+        Thu, 1 Sep 2022 06:54:27 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B9D6130A12;
+        Thu,  1 Sep 2022 03:54:27 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MJHrh6JYJz1N7k9;
+        Thu,  1 Sep 2022 18:50:44 +0800 (CST)
+Received: from huawei.com (10.175.103.91) by dggpemm500022.china.huawei.com
+ (7.185.36.162) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 1 Sep
+ 2022 18:54:25 +0800
+From:   Zeng Heng <zengheng4@huawei.com>
+To:     <djwong@kernel.org>
+CC:     <linux-xfs@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <zengheng4@huawei.com>
+Subject: [PATCH -next] xfs: missing space in xfs trace log
+Date:   Thu, 1 Sep 2022 19:02:05 +0800
+Message-ID: <20220901110205.565167-1-zengheng4@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH PoC 2/3] ACPI: platform: Refactor
- acpi_create_platform_device()
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-CC:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Len Brown <lenb@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        Linuxarm <linuxarm@huawei.com>
-References: <1660649244-146842-1-git-send-email-john.garry@huawei.com>
- <1660649244-146842-3-git-send-email-john.garry@huawei.com>
- <CAHp75VdhCovo1uT3oxQAymEO9X+29oDet7LjYkLvpmj+r15Tfg@mail.gmail.com>
- <dd41c5c3-ee16-821c-afd4-ddda4443bc78@huawei.com>
- <CAJZ5v0gR0mZBGiCLR6mxdbaNGebti54M-VvV=jT0310KioPD7g@mail.gmail.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <CAJZ5v0gR0mZBGiCLR6mxdbaNGebti54M-VvV=jT0310KioPD7g@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.48.151.166]
-X-ClientProxiedBy: lhrpeml500003.china.huawei.com (7.191.162.67) To
- lhrpeml500003.china.huawei.com (7.191.162.67)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500022.china.huawei.com (7.185.36.162)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/08/2022 17:42, Rafael J. Wysocki wrote:
->>>
->>>> +struct platform_device *acpi_create_platform_device_ops(
->>>> +                               struct acpi_device *adev,
->>>> +                               const char *name,
->>>> +                               const struct property_entry *properties,
->>>> +                               void *data, size_t size_data,
->>>> +                               int (*xlat)(struct acpi_device *adev,
->>>> +                                           struct resource *res,
->>>> +                                           void *data, size_t size_data),
->>>> +                               int id);
->>> ...because this looks  a bit too much from the amount of parameters
->>> point of view.
->>>
->> ok, agreed.
+Add space between arguments would help someone
+to locate the key words they want, so break
+quoted strings at a space character.
 
-Hi Rafael,
+Such as below:
+[Before]
+kworker/1:0-280     [001] .....   600.782135: xfs_bunmap:
+dev 7:0 ino 0x85 disize 0x0 fileoff 0x0 fsbcount 0x400000001fffffflags ATTRFORK ...
 
- >>
- >> But even if we improve this code, the hisi_lpc changes are quite large
- >> and unwieldly.
- > Well, they allow you to drop quite a few LOC ...
+[After]
+kworker/1:2-564     [001] ..... 23817.906160: xfs_bunmap:
+dev 7:0 ino 0x85 disize 0x0 fileoff 0x0 fsbcount 0x400000001fffff flags ATTRFORK ...
 
-Sure, but the ACPI platform device code here is growing by about the 
-same amount :) However maybe we can reduce that with Andy's idea to 
-create a struct of function args. But first I will go with using 
-platform_device_register_full() in hisi_lpc.
+Signed-off-by: Zeng Heng <zengheng4@huawei.com>
+---
+ fs/xfs/xfs_trace.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-And you please also check the PNP patch? I am not so keen on pushing for 
-that.
+diff --git a/fs/xfs/xfs_trace.h b/fs/xfs/xfs_trace.h
+index f9057af6e0c8..cb7c81ba7fa3 100644
+--- a/fs/xfs/xfs_trace.h
++++ b/fs/xfs/xfs_trace.h
+@@ -1170,7 +1170,7 @@ DECLARE_EVENT_CLASS(xfs_dqtrx_class,
+ 		__entry->ino_res_used = qtrx->qt_ino_res_used;
+ 		__entry->icount_delta = qtrx->qt_icount_delta;
+ 	),
+-	TP_printk("dev %d:%d dquot id 0x%x type %s flags %s"
++	TP_printk("dev %d:%d dquot id 0x%x type %s flags %s "
+ 		  "blk_res %llu bcount_delta %lld delbcnt_delta %lld "
+ 		  "rtblk_res %llu rtblk_res_used %llu rtbcount_delta %lld delrtb_delta %lld "
+ 		  "ino_res %llu ino_res_used %llu icount_delta %lld",
+@@ -1602,7 +1602,7 @@ TRACE_EVENT(xfs_bunmap,
+ 		__entry->caller_ip = caller_ip;
+ 		__entry->flags = flags;
+ 	),
+-	TP_printk("dev %d:%d ino 0x%llx disize 0x%llx fileoff 0x%llx fsbcount 0x%llx"
++	TP_printk("dev %d:%d ino 0x%llx disize 0x%llx fileoff 0x%llx fsbcount 0x%llx "
+ 		  "flags %s caller %pS",
+ 		  MAJOR(__entry->dev), MINOR(__entry->dev),
+ 		  __entry->ino,
+-- 
+2.25.1
 
-thanks,
-John
