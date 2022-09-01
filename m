@@ -2,154 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1EF6ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:46:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5294ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:47:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232807AbiIABqb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 21:46:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52090 "EHLO
+        id S232580AbiIABr0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 21:47:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232580AbiIABqZ (ORCPT
+        with ESMTP id S232771AbiIABrW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 21:46:25 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 981B595AE5
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:46:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661996784; x=1693532784;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=EtLlr9uQLdAAJ1CGO7bZKV+kms/6yIw0mQBR1SQ1PLo=;
-  b=PMs2NxoeNJRcSrsIzOQzFIvO9/mqFS/hpC+GNDiaCzI0XbBXUxkXXCoQ
-   AvoUCYRwcvOz7R7PHVFImmGTovf4n2GbtZkVLdHyh5/bl5iemWu+wU7Tw
-   TdQgMbt3Iz/zz1PBXumQ1ja/HGctAps6yjQq+GWZhg31JLre3jIkPmQ74
-   y0bViA0SLXJAIacD0LqETzJCYXjY7jvB5OkhOcd6vBBKCyjj+sPJ4lnZq
-   7P+Jzyp+GWlILwOv4D+V8YvWg6rqEkKtM1pON733dMfq9Ni7zgomFtWmK
-   pVHSrmI6n/c4/+IOMBqoWeSqXgujBuOJzeK41I6X2gv3FFzbUlhHZhb/H
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="275993675"
-X-IronPort-AV: E=Sophos;i="5.93,279,1654585200"; 
-   d="scan'208";a="275993675"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 18:46:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,279,1654585200"; 
-   d="scan'208";a="642115888"
-Received: from lkp-server02.sh.intel.com (HELO 811e2ceaf0e5) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 31 Aug 2022 18:46:22 -0700
-Received: from kbuild by 811e2ceaf0e5 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oTZHh-0000xC-1K;
-        Thu, 01 Sep 2022 01:46:21 +0000
-Date:   Thu, 01 Sep 2022 09:45:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [paulmck-rcu:dev.2022.08.31a] BUILD SUCCESS
- 09a840306da247329e005129aa64f5ecc0c2ded9
-Message-ID: <63100ec8.l1MMgIYJAn6B/db8%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Wed, 31 Aug 2022 21:47:22 -0400
+Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A585AA4C0
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:47:21 -0700 (PDT)
+Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-11f34610d4aso17562116fac.9
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:47:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=TlN3L7u+wXIinFsuYqdK27x2WtBpHcllYjmImCLuHAQ=;
+        b=K1OeB1YszbZTqWguTLKSaKYwSr3mt4ww03N3PZsfia1GxvfsN1Vr3pwWf8GoktXXX9
+         ozwgxAa2ZfMOrzcUVIVZhdGYMC5BPpCdf0WfGLz/ywPkLp7kp6goP7wt0TDbmv6L/Kka
+         L3+hS3CC6sEp3kgIonBvcts8dAPIWeJbM7fmr7qoxpUNeXcs03/ewiiWBknnzftkoHNZ
+         lAvbk/LdDbeP8Mm7B+F0SKaaYRE9cKWDdoXHcKhfvM7mmPF/BPyGa+o8SYQgqjf/hRpn
+         O2zu+/QyMKgNre9l59JqIxrboEDqP/k9kWl26cd4a8eTjU1tbRf953RGX9S9YViz+mmy
+         sN2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=TlN3L7u+wXIinFsuYqdK27x2WtBpHcllYjmImCLuHAQ=;
+        b=FWebCtZCjq/hiIwecK6wXAb3AJam0/RCY/lgw1+ngGB3y4mKhfHTtbJHxEwEfXfLBN
+         gS8N4oMbOFjX8r+dXNDcAjHIPkqTNxfmUQQa7PfHpDaXMtFxo/hhNnkSvycAZQSqPyCy
+         +4hrw/i8otOFvJgNR5wo5mlGNRY88qNo5WKlKgG2IeL2rCiz5Rgs4AHxdXmTgAD8W+nY
+         3hJ2Zck/Va0hY/WmvAqN/Ky2YdYpurahCK95N0euy+GKLyrs0yfu1o6Rqupcr6nxA3Mr
+         oEM53cgi1xStyEoI7rpkTh766HVJ++5zgrDoaxYUvTpw8x+/yjRCGNZ61oJulL9XduLi
+         jHLw==
+X-Gm-Message-State: ACgBeo1TQKDTzbZAmIJh6DEhZBK4vl0oo9vOqw9tBxxG01GAL8KfUvM8
+        51oIJT4ipU/Mh8AYlpTa/3x5KhhSCVpJOU386tXU
+X-Google-Smtp-Source: AA6agR5gFuM289TBrDS25LgdOwxYckt1TdnxQ0qi8OPF99N5aCotlFsRQ/Axj8r2vSdySNWWcR+s751K/eVL4geaf8s=
+X-Received: by 2002:a05:6871:796:b0:11e:b92e:731e with SMTP id
+ o22-20020a056871079600b0011eb92e731emr2981881oap.41.1661996840312; Wed, 31
+ Aug 2022 18:47:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+References: <cover.1659996830.git.rgb@redhat.com> <12063373.O9o76ZdvQC@x2>
+ <Yw/efLafvmimtCDq@madcap2.tricolour.ca> <5600292.DvuYhMxLoT@x2>
+In-Reply-To: <5600292.DvuYhMxLoT@x2>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Wed, 31 Aug 2022 21:47:09 -0400
+Message-ID: <CAHC9VhSPS7dRXLU9eV3Ne6Q7q=GPpak+=QRYLa_8Z4i-fESz8w@mail.gmail.com>
+Subject: Re: [PATCH v4 3/4] fanotify,audit: Allow audit to use the full
+ permission event response
+To:     Steve Grubb <sgrubb@redhat.com>
+Cc:     Richard Guy Briggs <rgb@redhat.com>,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
+        Jan Kara <jack@suse.cz>, Amir Goldstein <amir73il@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev.2022.08.31a
-branch HEAD: 09a840306da247329e005129aa64f5ecc0c2ded9  rcutorture: Avoid torture.sh compressing identical files
+On Wed, Aug 31, 2022 at 7:55 PM Steve Grubb <sgrubb@redhat.com> wrote:
+> On Wednesday, August 31, 2022 6:19:40 PM EDT Richard Guy Briggs wrote:
+> > On 2022-08-31 17:25, Steve Grubb wrote:
+> > > On Wednesday, August 31, 2022 5:07:25 PM EDT Richard Guy Briggs wrote:
+> > > > > > diff --git a/kernel/auditsc.c b/kernel/auditsc.c
+> > > > > > index 433418d73584..f000fec52360 100644
+> > > > > > --- a/kernel/auditsc.c
+> > > > > > +++ b/kernel/auditsc.c
+> > > > > > @@ -64,6 +64,7 @@
+> > > > > > #include <uapi/linux/limits.h>
+> > > > > > #include <uapi/linux/netfilter/nf_tables.h>
+> > > > > > #include <uapi/linux/openat2.h> // struct open_how
+> > > > > > +#include <uapi/linux/fanotify.h>
+> > > > > >
+> > > > > > #include "audit.h"
+> > > > > >
+> > > > > > @@ -2899,10 +2900,34 @@ void __audit_log_kern_module(char *name)
+> > > > > > context->type = AUDIT_KERN_MODULE;
+> > > > > > }
+> > > > > >
+> > > > > > -void __audit_fanotify(u32 response)
+> > > > > > +void __audit_fanotify(u32 response, size_t len, char *buf)
+> > > > > > {
+> > > > > > -       audit_log(audit_context(), GFP_KERNEL,
+> > > > > > -               AUDIT_FANOTIFY, "resp=%u", response);
+> > > > > > +       struct fanotify_response_info_audit_rule *friar;
+> > > > > > +       size_t c = len;
+> > > > > > +       char *ib = buf;
+> > > > > > +
+> > > > > > +       if (!(len && buf)) {
+> > > > > > +               audit_log(audit_context(), GFP_KERNEL,
+> > > > > > AUDIT_FANOTIFY,
+> > > > > > +                         "resp=%u fan_type=0 fan_info=?",
+> > > > > > response);
+> > > > > > +               return;
+> > > > > > +       }
+> > > > > > +       while (c >= sizeof(struct fanotify_response_info_header)) {
+> > > > > > +               friar = (struct fanotify_response_info_audit_rule
+> > > > > > *)buf;
+> > > > >
+> > > > > Since the only use of this at the moment is the
+> > > > > fanotify_response_info_rule, why not pass the
+> > > > > fanotify_response_info_rule struct directly into this function?  We
+> > > > > can always change it if we need to in the future without affecting
+> > > > > userspace, and it would simplify the code.
+> > > >
+> > > > Steve, would it make any sense for there to be more than one
+> > > > FAN_RESPONSE_INFO_AUDIT_RULE header in a message?  Could there be more
+> > > > than one rule that contributes to a notify reason?  If not, would it be
+> > > > reasonable to return -EINVAL if there is more than one?
+> > >
+> > > I don't see a reason for sending more than one header. What is more
+> > > probable is the need to send additional data in that header. I was
+> > > thinking of maybe bit mapping it in the rule number. But I'd suggest
+> > > padding the struct just in case it needs expanding some day.
+> >
+> > This doesn't exactly answer my question about multiple rules
+> > contributing to one decision.
+>
+> I don't forsee that.
+>
+> > The need for more as yet undefined information sounds like a good reason
+> > to define a new header if that happens.
+>
+> It's much better to pad the struct so that the size doesn't change.
+>
+> > At this point, is it reasonable to throw an error if more than one RULE
+> > header appears in a message?
+>
+> It is a write syscall. I'd silently discard everything else and document that
+> in the man pages. But the fanotify maintainers should really weigh in on
+> this.
+>
+> > The way I had coded this last patchset was to allow for more than one RULE
+> > header and each one would get its own record in the event.
+>
+> I do not forsee a need for this.
+>
+> > How many rules total are likely to exist?
+>
+> Could be a thousand. But I already know some missing information we'd like to
+> return to user space in an audit event, so the bit mapping on the rule number
+> might happen. I'd suggest padding one u32 for future use.
 
-elapsed time: 721m
+A better way to handle an expansion like that would be to have a
+length/version field at the top of the struct that could be used to
+determine the size and layout of the struct.
 
-configs tested: 78
-configs skipped: 2
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arc                  randconfig-r043-20220830
-powerpc                           allnoconfig
-um                             i386_defconfig
-um                           x86_64_defconfig
-sh                               allmodconfig
-i386                                defconfig
-x86_64                    rhel-8.3-kselftests
-x86_64                              defconfig
-x86_64                          rhel-8.3-func
-x86_64                         rhel-8.3-kunit
-x86_64                           rhel-8.3-syz
-x86_64                           rhel-8.3-kvm
-m68k                             allmodconfig
-x86_64                               rhel-8.3
-arc                              allyesconfig
-alpha                            allyesconfig
-x86_64                           allyesconfig
-arm                                 defconfig
-m68k                             allyesconfig
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-x86_64                        randconfig-a006
-i386                             allyesconfig
-arm64                            allyesconfig
-arc                  randconfig-r043-20220831
-i386                          randconfig-a014
-arm                              allyesconfig
-riscv                randconfig-r042-20220831
-s390                 randconfig-r044-20220831
-i386                          randconfig-a012
-i386                          randconfig-a016
-x86_64                        randconfig-a013
-x86_64                        randconfig-a011
-i386                          randconfig-a001
-i386                          randconfig-a003
-x86_64                        randconfig-a015
-i386                          randconfig-a005
-ia64                             allmodconfig
-mips                             allyesconfig
-powerpc                          allmodconfig
-sh                   sh7724_generic_defconfig
-sparc                       sparc32_defconfig
-arc                 nsimosci_hs_smp_defconfig
-sh                          rsk7203_defconfig
-sh                               alldefconfig
-arm                           imxrt_defconfig
-nios2                         10m50_defconfig
-arm                        spear6xx_defconfig
-parisc                              defconfig
-mips                    maltaup_xpa_defconfig
-csky                              allnoconfig
-alpha                             allnoconfig
-arc                               allnoconfig
-riscv                             allnoconfig
-i386                          randconfig-c001
-mips                      loongson3_defconfig
-sh                          r7780mp_defconfig
-parisc64                            defconfig
-sh                           se7705_defconfig
-sh                          lboxre2_defconfig
-
-clang tested configs:
-hexagon              randconfig-r045-20220830
-hexagon              randconfig-r041-20220830
-s390                 randconfig-r044-20220830
-riscv                randconfig-r042-20220830
-x86_64                        randconfig-a001
-x86_64                        randconfig-a003
-i386                          randconfig-a013
-x86_64                        randconfig-a005
-i386                          randconfig-a015
-hexagon              randconfig-r041-20220831
-hexagon              randconfig-r045-20220831
-i386                          randconfig-a011
-x86_64                        randconfig-a014
-x86_64                        randconfig-a012
-i386                          randconfig-a002
-i386                          randconfig-a004
-x86_64                        randconfig-a016
-i386                          randconfig-a006
+However, to be clear, my original suggestion of passing the
+fanotify_response_info_rule struct internally didn't require any
+additional future proofing as it is an internal implementation detail
+and not something that is exposed to userspace; the function arguments
+could be changed in the future and not break userspace.  I'm not quite
+sure how we ended up on this topic ...
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+paul-moore.com
