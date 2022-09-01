@@ -2,100 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07C5CECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 10:19:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40B43ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 10:20:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233870AbiIAKTa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 06:19:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39684 "EHLO
+        id S233291AbiIAKUN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 06:20:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233850AbiIAKTQ (ORCPT
+        with ESMTP id S232723AbiIAKUL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 06:19:16 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 103CB1341AC;
-        Thu,  1 Sep 2022 03:19:14 -0700 (PDT)
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2819cuC3029282;
-        Thu, 1 Sep 2022 10:19:05 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=qcppdkim1;
- bh=nl5+N5w0Gna+ISLk8Iq0ey7nUfQ71lyNsOwGjTLa1dg=;
- b=aTAv03bukRKYkpG5NxA0M5pBOA+EqDgr8/JiW/HbhiwM8UvVMnheoGgTXrGPsxKCmQHu
- 8LfOHaJngMwYvYpBcsIei6taH+etSRpPbBy8f1fzpD4ed22d4zUKvGakY+m6Y7lbPkWN
- T8eYZ+C7ztxQPTGYw7j7xLI0G4asKGUx7I73Gwt0LslElOm0MLsXfqQJBbSbswJjyelJ
- cre8kHNhGMG9OIiGDhE31H6eWNDR9MC1pIS7SmRhHBgVMxaviwKch+N2z6flryHx7QWG
- vIdrjJclxVhVXGIYAsArs9pLe87OOADlcT9EJhJXKyR7v44qNlPDar7Cde4y24jf9CRZ ow== 
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3jab5gk3qc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 10:19:04 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 281AJ4Ro028316
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 1 Sep 2022 10:19:04 GMT
-Received: from blr-ubuntu-173.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Thu, 1 Sep 2022 03:18:59 -0700
-From:   Rajendra Nayak <quic_rjendra@quicinc.com>
-To:     <andersson@kernel.org>, <agross@kernel.org>,
-        <konrad.dybcio@somainline.org>, <mturquette@baylibre.com>,
-        <sboyd@kernel.org>, <mka@chromium.org>
-CC:     <johan+linaro@kernel.org>, <quic_kriskura@quicinc.com>,
-        <dianders@chromium.org>, <linux-clk@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "Rajendra Nayak" <quic_rjendra@quicinc.com>
-Subject: [PATCH 3/3] clk: qcom: gcc-sc7280: Update the .pwrsts for usb gdsc
-Date:   Thu, 1 Sep 2022 15:47:56 +0530
-Message-ID: <20220901101756.28164-3-quic_rjendra@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220901101756.28164-1-quic_rjendra@quicinc.com>
-References: <20220901101756.28164-1-quic_rjendra@quicinc.com>
+        Thu, 1 Sep 2022 06:20:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 170D126ACB
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 03:20:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662027608;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DebMVALIie+lCOVcwWZ5+ynB1bwfkmkn/Tkn2tT6LHs=;
+        b=Gv2sqg+2CiyPml1Ks6pCh0ZAOhLTUY305F5lV75mKeDIw+WqfNxaONMBWQU1JndB1Pda99
+        kNMASD/1fpRBrvLFJB2fqt4lF1Ogd9jBIQORoCu9xGs5KHbFEnOIPsqLeBfTp1pKkL8U6e
+        CAUmuS6Ayf4b2QjybOqLHbAHKvx6ec8=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-473-UY98PbOhPb2Nb6wiWUq4rQ-1; Thu, 01 Sep 2022 06:20:05 -0400
+X-MC-Unique: UY98PbOhPb2Nb6wiWUq4rQ-1
+Received: by mail-ej1-f69.google.com with SMTP id sg35-20020a170907a42300b007414343814bso5809087ejc.18
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 03:20:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=DebMVALIie+lCOVcwWZ5+ynB1bwfkmkn/Tkn2tT6LHs=;
+        b=8DDvTwqivRNozZFX4cXp8ZsEu2+EDL6FqqPRgvK3hT/mIRVy4PYDIpiyQnW281LpoI
+         a3SDoGBtU5lWyr5iOvYEot1ZhBYbKn65mscJBhw4eNyhlteuQACdTWwHGqYXFdrkmWnF
+         dfJykWomNgVtvA/Id0GC2R3g0f8YUhX9bCX6qZhSx2aU5HUkdyc0wkj2TO0RlKAxg6+e
+         s1tsJrR8QbfLD6PJqaXxeazIe/457/0WX5e6xSNhQ4HJI2JDlpTm9Spjt0NpXESsnhKH
+         nGjd/753Ik03LeVGJByrUmcsK55o3gQ6fhhKlZvr8UiHuG+Y6mMwVzkAU8SHauTgumKw
+         uxwA==
+X-Gm-Message-State: ACgBeo3kx9JBUfrm2onCuc5Nu2jQvekxACAj1Si/0xtshcpeJ4NQFzlo
+        kaxhu9PckpKMdzWJpvTvpqxXqX3rZNQ6GgL+FKkngO4UdhGq2h1DFcFx6o9DUEwG5ROZrkmibV5
+        e4bgnG9Tat8G1xwBdw6hSxbPO
+X-Received: by 2002:a05:6402:254b:b0:448:92fa:3f69 with SMTP id l11-20020a056402254b00b0044892fa3f69mr13589574edb.316.1662027604270;
+        Thu, 01 Sep 2022 03:20:04 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5iGDmB+PXM0ZvxLRw4ghAFE8r1xf8m52BmyKvE+v4mCnXyISiBZRkduG8vvHntlxLifLts9Q==
+X-Received: by 2002:a05:6402:254b:b0:448:92fa:3f69 with SMTP id l11-20020a056402254b00b0044892fa3f69mr13589563edb.316.1662027604094;
+        Thu, 01 Sep 2022 03:20:04 -0700 (PDT)
+Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
+        by smtp.gmail.com with ESMTPSA id jz4-20020a170906bb0400b0073db54ee934sm8227207ejb.43.2022.09.01.03.20.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Sep 2022 03:20:03 -0700 (PDT)
+Message-ID: <172c819f-911f-245b-1f33-da34386f8872@redhat.com>
+Date:   Thu, 1 Sep 2022 12:20:03 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: Ezx6QdFwmhD9B6LfbBEweLcoczIxVoJo
-X-Proofpoint-GUID: Ezx6QdFwmhD9B6LfbBEweLcoczIxVoJo
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-09-01_07,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- lowpriorityscore=0 mlxlogscore=760 bulkscore=0 spamscore=0 mlxscore=0
- suspectscore=0 priorityscore=1501 clxscore=1015 adultscore=0 phishscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2209010046
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v2 1/2] virt: vbox: Add check for device_create_file
+Content-Language: en-US
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>, gregkh@linuxfoundation.org
+Cc:     arnd@arndb.de, linux-kernel@vger.kernel.org
+References: <20220901101649.3499848-1-jiasheng@iscas.ac.cn>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220901101649.3499848-1-jiasheng@iscas.ac.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-USB on sc7280 cannot support wakeups from low power states
-if the GDSC is turned OFF. Update the .pwrsts for usb GDSC so it
-only transitions to RET in low power.
+Hi,
 
-Signed-off-by: Rajendra Nayak <quic_rjendra@quicinc.com>
----
- drivers/clk/qcom/gcc-sc7280.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 9/1/22 12:16, Jiasheng Jiang wrote:
+> On Thu, Sep 01, 2022 at 05:39:46PM +0800, Greg KH wrote:
+>>> -	device_create_file(dev, &dev_attr_host_version);
+>>> -	device_create_file(dev, &dev_attr_host_features);
+>>> +
+>>> +	ret = device_create_file(gdev->dev, &dev_attr_host_features);
+>>> +	if (ret)
+>>> +		goto err_unregister_misc_device_user;
+>>> +	ret = device_create_file(gdev->dev, &dev_attr_host_version);
+>>> +	if (ret)
+>>> +		goto err_remove_file_features;
+>>>  
+>>>  	vbg_info("vboxguest: misc device minor %d, IRQ %d, I/O port %x, MMIO at %pap (size %pap)\n",
+>>>  		 gdev->misc_device.minor, pci->irq, gdev->io_port,
+>>> @@ -399,6 +404,8 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
+>>>  
+>>>  	return 0;
+>>>  
+>>> +err_remove_file_features:
+>>> +	device_remove_file(gdev->dev, &dev_attr_host_features);
+>> Please make a patch series that is linked together, the one you just did
+>> was not properly threaded at all (hint, use git send-email).
+>>
+>> And again, this is not the correct way to solve this issue, use a
+>> default attribute group for the driver instead.  No driver should ever
+>> be adding or removing files individually like this.
+> 
+> Need I use the group to replace the individually removal in
+> vbg_pci_remove() too?
 
-diff --git a/drivers/clk/qcom/gcc-sc7280.c b/drivers/clk/qcom/gcc-sc7280.c
-index 7ff64d4d5920..de29a034e725 100644
---- a/drivers/clk/qcom/gcc-sc7280.c
-+++ b/drivers/clk/qcom/gcc-sc7280.c
-@@ -3126,7 +3126,7 @@ static struct gdsc gcc_usb30_prim_gdsc = {
- 	.pd = {
- 		.name = "gcc_usb30_prim_gdsc",
- 	},
--	.pwrsts = PWRSTS_OFF_ON,
-+	.pwrsts = PWRSTS_RET_ON,
- 	.flags = VOTABLE,
- };
- 
--- 
-2.17.1
+The idea is to do a change similar to this one:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/commit/?id=4b0133533e82af25d6aaf9d0c7b2a5af388feb74
+
+Setting the driver's .dev_groups field will automatically
+add the attributes when probe() succeeds and they will
+also automatically be removed before the driver's remove()
+function gets called.
+
+So after this change you can remove both the manual add
+calls from probe() as well as remove the remove calls
+from vbg_pci_remove().
+
+Regards,
+
+Hans
 
