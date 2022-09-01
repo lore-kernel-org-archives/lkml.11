@@ -2,96 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09BB4ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:13:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E4EEC54EE9
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:13:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232578AbiIANNf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 09:13:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55716 "EHLO
+        id S234280AbiIANNm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 09:13:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233513AbiIANMZ (ORCPT
+        with ESMTP id S233055AbiIANM0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 09:12:25 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 346DC10F1
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 06:11:34 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id w88-20020a17090a6be100b001fbb0f0b013so2491425pjj.5
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 06:11:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=zDuc296oUyLkm2+WK0v0ZsSxZqcMqtpAHljnuoWPZ4o=;
-        b=Fq6DJ47R4GHej7ps6IcYw6+Yc5tbxEqldlwHumSb3bJNoJqqoB3xUPnxNxOZ2JPS/f
-         8I/ZMazCmftLVX+Radj8EKMmCdtI5ntRgY0cDcaPMg2KyvFAhKpDS+XPQPQoS4/k5MR4
-         ECAE1RmqDFadD5lhSyqqTWk222TZJusVmu+WnpaoI/4NWDuMXLFQIxDXfSojd9p/DO+D
-         pAVXBVi2Zz27vWffJdn9uoz/rBoi7Aq047tjpGvJdbpcXKc/34DzcBx8AHhPDoqdmhrs
-         Ua4Hgw51HLx7fom9cR9TJm44YPVvtaH3dLm/Lp9GCi+7dmpMMkj4h+wQtefkwu4oMYRM
-         XOyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=zDuc296oUyLkm2+WK0v0ZsSxZqcMqtpAHljnuoWPZ4o=;
-        b=zZZkugeggKHzOg9ZAmtpmwaTSsp/8okBixg9eSqZRbMATuusZNZEd139LmBNs3jQrz
-         qWtPrdk5G45ztZ9moCODTCloUkJl9+rOfbBaSRUXP6bkNQknsAVprE73DKSjwQa90qR5
-         0hlQiL5h2NZwWBpiLbDGsqP9WXC+LCU2rdKWbHSYwNMKc+he4+J3sPRHQWoX3Rlfi7As
-         FPpRgUPVL8LhRBf6etU0HThsbQ+tk07SKRYXuqpnT48H2l0/KRyRJd/7uJi9hGj/UwJa
-         t6W0zvaAMq7dJKhzc3F3np+IGa/ty1iOEicI1ody80k6IA6xCWvQZtCUgwVrnoKYgkZJ
-         ivrw==
-X-Gm-Message-State: ACgBeo3J3WznQAJ4gR2tb3eGp2pdzNpTY4BNJLgpQIOxVP4i+ddWJh+C
-        aDecgHl+nrdjP6NS/CJkX62bSw==
-X-Google-Smtp-Source: AA6agR5oK3YFVNiNSBrXbGWKPKraFcrmGQAv1VfRIpzfDpZwHHtJPoj/J/2LWkSVF4WgTOtY1oaIYA==
-X-Received: by 2002:a17:902:ea0e:b0:16f:11bf:efe5 with SMTP id s14-20020a170902ea0e00b0016f11bfefe5mr31220478plg.57.1662037893749;
-        Thu, 01 Sep 2022 06:11:33 -0700 (PDT)
-Received: from C02DV8HUMD6R.bytedance.net ([139.177.225.252])
-        by smtp.gmail.com with ESMTPSA id b4-20020a170902d50400b00175111a277dsm6221156plg.185.2022.09.01.06.11.29
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 01 Sep 2022 06:11:33 -0700 (PDT)
-From:   Abel Wu <wuyun.abel@bytedance.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-Cc:     Josh Don <joshdon@google.com>, Chen Yu <yu.c.chen@intel.com>,
-        Yicong Yang <yangyicong@huawei.com>,
-        linux-kernel@vger.kernel.org, Abel Wu <wuyun.abel@bytedance.com>,
-        Mel Gorman <mgorman@techsingularity.net>
-Subject: [PATCH v2 2/5] sched/fair: avoid double search on same cpu
-Date:   Thu,  1 Sep 2022 21:11:04 +0800
-Message-Id: <20220901131107.71785-2-wuyun.abel@bytedance.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220901131107.71785-1-wuyun.abel@bytedance.com>
-References: <20220901131107.71785-1-wuyun.abel@bytedance.com>
+        Thu, 1 Sep 2022 09:12:26 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A8B2F649
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 06:11:46 -0700 (PDT)
+Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MJLv738TNzkWj8;
+        Thu,  1 Sep 2022 21:08:03 +0800 (CST)
+Received: from dggpeml500002.china.huawei.com (7.185.36.158) by
+ dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 1 Sep 2022 21:11:44 +0800
+Received: from [10.67.101.90] (10.67.101.90) by dggpeml500002.china.huawei.com
+ (7.185.36.158) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 1 Sep
+ 2022 21:11:44 +0800
+Subject: Re: [PATCH v9 0/2] Add support for UltraSoc System Memory Buffer
+To:     <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
+        <mike.leach@linaro.org>, <leo.yan@linaro.org>
+References: <20220818132231.28240-1-hejunhao3@huawei.com>
+CC:     <coresight@lists.linaro.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linuxarm@huawei.com>,
+        <rdunlap@infradead.org>, <liuqi115@huawei.com>,
+        <f.fangjian@huawei.com>, <prime.zeng@hisilicon.com>
+From:   hejunhao <hejunhao3@huawei.com>
+Message-ID: <ab129d55-9b4f-1685-d102-fd963ed447bc@huawei.com>
+Date:   Thu, 1 Sep 2022 21:11:30 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220818132231.28240-1-hejunhao3@huawei.com>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.101.90]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml500002.china.huawei.com (7.185.36.158)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The prev cpu is checked at the beginning of SIS, and it's unlikely
-to be idle before the second check in select_idle_smt(). So we'd
-better focus on its SMT siblings.
+Gentle ping. Any comment or suggestion is appreciated.
 
-Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
-Reviewed-by: Josh Don <joshdon@google.com>
-Acked-by: Mel Gorman <mgorman@techsingularity.net>
----
- kernel/sched/fair.c | 2 ++
- 1 file changed, 2 insertions(+)
+thanks.
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 9657c7de5f57..1ad79aaaaf93 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -6355,6 +6355,8 @@ static int select_idle_smt(struct task_struct *p, int target)
- 	int cpu;
- 
- 	for_each_cpu_and(cpu, cpu_smt_mask(target), p->cpus_ptr) {
-+		if (cpu == target)
-+			continue;
- 		if (available_idle_cpu(cpu) || sched_idle_cpu(cpu))
- 			return cpu;
- 	}
--- 
-2.31.1
+On 2022/8/18 21:22, Junhao He wrote:
+> Add support for UltraSoc System Memory Buffer.
+>
+> Change since v8:
+> - Insert a blank line at the end of the config tag in Kconfig.
+> - Fix the "llseek" initialization.
+> - Link: https://lore.kernel.org/linux-arm-kernel/20220816131634.38195-1-hejunhao3@huawei.com/
+>
+> Change since v7:
+> - Use the macros for register bit flags and numbers of resource.
+> - Fix punctuation.
+> - Update the Date tag and the KernelVersion tag in the document.
+> - Link: https://lore.kernel.org/lkml/20220712091353.34540-1-hejunhao3@huawei.com/
+>
+> Change since v6:
+> - Modify the code style and driver description according to Suzuki's comment.
+> - Modify configuration of "drvdata->reading", to void problems in open/read
+>    concurrency scenario.
+> - Rename the macro of "SMB_FLOW_MASK".
+> - Use the "handle->head" to determine the page number and offset.
+> - Link: https://lore.kernel.org/linux-arm-kernel/20220606130223.57354-1-liuqi115@huawei.com/
+>
+> Change since v5:
+> - Address the comments from Suzuki, add some comments in SMB document, and modify
+>    configuration of "drvdata->reading", to void problems in multi-core concurrency scenario
+> - Link: https://lore.kernel.org/linux-arm-kernel/20220416083953.52610-1-liuqi115@huawei.com/
+>
+> Change since v4:
+> - Add a simple document of SMB driver according to Suzuki's comment.
+> - Address the comments from Suzuki.
+> - Link: https://lore.kernel.org/linux-arm-kernel/20220128061755.31909-1-liuqi115@huawei.com/
+>
+> Change since v3:
+> - Modify the file header according to community specifications.
+> - Address the comments from Mathieu.
+> - Link: https://lore.kernel.org/linux-arm-kernel/20211118110016.40398-1-liuqi115@huawei.com/
+>
+> Change since v2:
+> - Move ultrasoc driver to drivers/hwtracing/coresight.
+> - Link: https://lists.linaro.org/pipermail/coresight/2021-November/007310.html
+>
+> Change since v1:
+> - Drop the document of UltraSoc according to Mathieu's comment.
+> - Add comments to explain some private hardware settings.
+> - Address the comments from Mathieu.
+> - Link: https://lists.linaro.org/pipermail/coresight/2021-August/006842.html
+>
+> Change since RFC:
+> - Move driver to drivers/hwtracing/coresight/ultrasoc.
+> - Remove ultrasoc-axi-com.c, as AXI-COM doesn't need to be configured in
+>    basic tracing function.
+> - Remove ultrasoc.c as SMB does not need to register with the ultrasoc core.
+> - Address the comments from Mathieu and Suzuki.
+> - Link: https://lists.linaro.org/pipermail/coresight/2021-June/006535.html
+>
+> Qi Liu (2):
+>    drivers/coresight: Add UltraSoc System Memory Buffer driver
+>    Documentation: Add document for UltraSoc SMB drivers
+>
+>   .../sysfs-bus-coresight-devices-ultra_smb     |  31 +
+>   .../trace/coresight/ultrasoc-smb.rst          |  80 +++
+>   drivers/hwtracing/coresight/Kconfig           |  11 +
+>   drivers/hwtracing/coresight/Makefile          |   1 +
+>   drivers/hwtracing/coresight/ultrasoc-smb.c    | 636 ++++++++++++++++++
+>   drivers/hwtracing/coresight/ultrasoc-smb.h    | 115 ++++
+>   6 files changed, 874 insertions(+)
+>   create mode 100644 Documentation/ABI/testing/sysfs-bus-coresight-devices-ultra_smb
+>   create mode 100644 Documentation/trace/coresight/ultrasoc-smb.rst
+>   create mode 100644 drivers/hwtracing/coresight/ultrasoc-smb.c
+>   create mode 100644 drivers/hwtracing/coresight/ultrasoc-smb.h
+>
 
