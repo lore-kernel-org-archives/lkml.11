@@ -2,77 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D7F7ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:20:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42652ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 13:21:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234287AbiIANUb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 09:20:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48710 "EHLO
+        id S233346AbiIANU6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 09:20:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232537AbiIANTw (ORCPT
+        with ESMTP id S233285AbiIANT4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 09:19:52 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D38A0EAC
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 06:18:49 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="295718673"
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="295718673"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 06:18:49 -0700
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="563460497"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 06:18:47 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andy.shevchenko@gmail.com>)
-        id 1oTk3e-006tEK-2N;
-        Thu, 01 Sep 2022 16:16:34 +0300
-Date:   Thu, 1 Sep 2022 16:16:34 +0300
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-To:     Dmitry Rokosov <ddrokosov@sberdevices.ru>
-Cc:     "broonie@kernel.org" <broonie@kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "rafael@kernel.org" <rafael@kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1] regmap: introduce value tracing for regmap bulk
- operations
-Message-ID: <YxCwstzaKm7qhCWV@smile.fi.intel.com>
-References: <20220816181451.5628-1-ddrokosov@sberdevices.ru>
- <CAHp75VfSOL5R1JdH-RS4PEXT1dEwuFGsmUPfkAp7zdDEMGzzjw@mail.gmail.com>
- <20220831004530.zhvd7ehndqwmqgve@Rockosov-MBP>
+        Thu, 1 Sep 2022 09:19:56 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54E4CA457;
+        Thu,  1 Sep 2022 06:19:07 -0700 (PDT)
+Received: from canpemm500005.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MJM3c4bkfzkWK6;
+        Thu,  1 Sep 2022 21:15:24 +0800 (CST)
+Received: from [10.174.178.134] (10.174.178.134) by
+ canpemm500005.china.huawei.com (7.192.104.229) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 1 Sep 2022 21:19:05 +0800
+Subject: Re: [PATCH -next] ext4: ensure data forced to disk when rename
+To:     Jan Kara <jack@suse.cz>, Ye Bin <yebin10@huawei.com>
+CC:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
+        <linux-ext4@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20220901062657.1192732-1-yebin10@huawei.com>
+ <20220901083706.mjewb45dufzxcfdk@quack3>
+From:   Zhang Yi <yi.zhang@huawei.com>
+Message-ID: <ce8666e2-c224-79f9-7770-f87b31d122e3@huawei.com>
+Date:   Thu, 1 Sep 2022 21:19:04 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220831004530.zhvd7ehndqwmqgve@Rockosov-MBP>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220901083706.mjewb45dufzxcfdk@quack3>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.134]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500005.china.huawei.com (7.192.104.229)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 03:45:30AM +0300, Dmitry Rokosov wrote:
-
-...
-
-> > > +               if (val)
-> > > +                       memcpy(__get_dynamic_array(buf), val, val_len);
-> > 
-> > I'm probably missing something, but what this condition prevents from?
+On 2022/9/1 16:37, Jan Kara wrote:
+> On Thu 01-09-22 14:26:57, Ye Bin wrote:
+>> There is issue that data lost when rename new file. Reason is dioread_nolock is
+>> enabled default now, which map blocks will mark extent unwritten. But inode
+>> size is changed after submit io. Then read file will return zero if extent is
+>> unwritten.
+>> To solve above isuue, wait all data force to disk before rename when enable
+>> dioread_nolock and enable delay allocate.
+>>
+>> Signed-off-by: Ye Bin <yebin10@huawei.com>
 > 
-> In general, this condition prevents memcpy from being executed when
-> tracepoint is called with a null pointed buffer.
+> Well, but it was always like that. We do not guarantee that the data is
+> securely on disk before rename - userspace is responsible for that if it
+> needs this guarantee. We just want to make the time window shorter and so
+> start data writeback because lot of userspace is careless. But waiting for
+> data writeback before rename will significantly slow down some workloads
+> and IMHO without a good reason.
+> 
 
-If we got a NULL pointer here, we already in a lot of troubles.
-I believe the check is not needed.
+Hi, Jan
 
-Otherwise the function prints garbage.
+Our case is modifing a no-empty file names "data.conf" through vim, it will
+cp "data.conf" to ".data.conf.swp" firstly, overwrite rename ".data.conf.swp"
+back to "data.conf" and fsync after modifying. If we power down between rename
+and fsync, we may lose all data in the original "data.conf" and get a whole
+zero file. Before we enable dioread_nolock by defalut, the newly appending data
+may lost, but at least we will not lose the original data in the default
+data=ordered and auto_da_alloc mode. It seems that dioread_nolock breaks the
+guarantee provide by auto_da_alloc. Maybe we should add a fsync before rename
+in vim ?
 
-I will send a series to remove that and clean up the file.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Thanks,
+Yi.
