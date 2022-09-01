@@ -2,28 +2,28 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 342E8ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 04:29:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E071EECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 04:29:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232619AbiIAE3t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 00:29:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38504 "EHLO
+        id S232688AbiIAE3x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 00:29:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231531AbiIAE3p (ORCPT
+        with ESMTP id S232490AbiIAE3q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 00:29:45 -0400
+        Thu, 1 Sep 2022 00:29:46 -0400
 Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45649BAD9D;
-        Wed, 31 Aug 2022 21:20:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 622DF5B05E;
+        Wed, 31 Aug 2022 21:20:29 -0700 (PDT)
 Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 43CB51A4387;
-        Thu,  1 Sep 2022 06:20:30 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id B442E1A438E;
+        Thu,  1 Sep 2022 06:20:26 +0200 (CEST)
 Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 0DE261A4381;
-        Thu,  1 Sep 2022 06:20:30 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 7D4311A4387;
+        Thu,  1 Sep 2022 06:20:26 +0200 (CEST)
 Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id F053A1820F5A;
-        Thu,  1 Sep 2022 12:20:27 +0800 (+08)
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id DAE30181D0CA;
+        Thu,  1 Sep 2022 12:20:24 +0800 (+08)
 From:   Richard Zhu <hongxing.zhu@nxp.com>
 To:     p.zabel@pengutronix.de, l.stach@pengutronix.de,
         bhelgaas@google.com, lorenzo.pieralisi@arm.com, robh@kernel.org,
@@ -34,9 +34,9 @@ Cc:     linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
         linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org, kernel@pengutronix.de,
         linux-imx@nxp.com, Richard Zhu <hongxing.zhu@nxp.com>
-Subject: [PATCH v6 4/7] reset: imx7: Fix the iMX8MP PCIe PHY PERST support
-Date:   Thu,  1 Sep 2022 12:02:37 +0800
-Message-Id: <1662004960-14071-5-git-send-email-hongxing.zhu@nxp.com>
+Subject: [PATCH v6 2/7] arm64: dts: imx8mp: Add iMX8MP PCIe support
+Date:   Thu,  1 Sep 2022 12:02:35 +0800
+Message-Id: <1662004960-14071-3-git-send-email-hongxing.zhu@nxp.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1662004960-14071-1-git-send-email-hongxing.zhu@nxp.com>
 References: <1662004960-14071-1-git-send-email-hongxing.zhu@nxp.com>
@@ -45,35 +45,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On i.MX7/iMX8MM/iMX8MQ, the initialized default value of PERST bit(BIT3)
-of SRC_PCIEPHY_RCR is 1b'1.
-But i.MX8MP has one inversed default value 1b'0 of PERST bit.
+Add i.MX8MP PCIe support.
 
-And the PERST bit should be kept 1b'1 after power and clocks are stable.
-So fix the i.MX8MP PCIe PHY PERST support here.
-
-Fixes: e08672c03981 ("reset: imx7: Add support for i.MX8MP SoC")
 Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
-Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
 Tested-by: Marek Vasut <marex@denx.de>
 Tested-by: Richard Leitner <richard.leitner@skidata.com>
 Tested-by: Alexander Stein <alexander.stein@ew.tq-group.com>
 ---
- drivers/reset/reset-imx7.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/boot/dts/freescale/imx8mp.dtsi | 43 +++++++++++++++++++++++
+ 1 file changed, 43 insertions(+)
 
-diff --git a/drivers/reset/reset-imx7.c b/drivers/reset/reset-imx7.c
-index 185a333df66c..d2408725eb2c 100644
---- a/drivers/reset/reset-imx7.c
-+++ b/drivers/reset/reset-imx7.c
-@@ -329,6 +329,7 @@ static int imx8mp_reset_set(struct reset_controller_dev *rcdev,
- 		break;
+diff --git a/arch/arm64/boot/dts/freescale/imx8mp.dtsi b/arch/arm64/boot/dts/freescale/imx8mp.dtsi
+index fe178b7d063c..21a4cc417c81 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mp.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mp.dtsi
+@@ -5,6 +5,7 @@
  
- 	case IMX8MP_RESET_PCIE_CTRL_APPS_EN:
-+	case IMX8MP_RESET_PCIEPHY_PERST:
- 		value = assert ? 0 : bit;
- 		break;
- 	}
+ #include <dt-bindings/clock/imx8mp-clock.h>
+ #include <dt-bindings/power/imx8mp-power.h>
++#include <dt-bindings/reset/imx8mp-reset.h>
+ #include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/input/input.h>
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
+@@ -1084,6 +1085,17 @@ media_blk_ctrl: blk-ctrl@32ec0000 {
+ 				#power-domain-cells = <1>;
+ 			};
+ 
++			pcie_phy: pcie-phy@32f00000 {
++				compatible = "fsl,imx8mp-pcie-phy";
++				reg = <0x32f00000 0x10000>;
++				resets = <&src IMX8MP_RESET_PCIEPHY>,
++					 <&src IMX8MP_RESET_PCIEPHY_PERST>;
++				reset-names = "pciephy", "perst";
++				power-domains = <&hsio_blk_ctrl IMX8MP_HSIOBLK_PD_PCIE_PHY>;
++				#phy-cells = <0>;
++				status = "disabled";
++			};
++
+ 			hsio_blk_ctrl: blk-ctrl@32f10000 {
+ 				compatible = "fsl,imx8mp-hsio-blk-ctrl", "syscon";
+ 				reg = <0x32f10000 0x24>;
+@@ -1099,6 +1111,37 @@ hsio_blk_ctrl: blk-ctrl@32f10000 {
+ 			};
+ 		};
+ 
++		pcie: pcie@33800000 {
++			compatible = "fsl,imx8mp-pcie";
++			reg = <0x33800000 0x400000>, <0x1ff00000 0x80000>;
++			reg-names = "dbi", "config";
++			#address-cells = <3>;
++			#size-cells = <2>;
++			device_type = "pci";
++			bus-range = <0x00 0xff>;
++			ranges =  <0x81000000 0 0x00000000 0x1ff80000 0 0x00010000>, /* downstream I/O 64KB */
++				  <0x82000000 0 0x18000000 0x18000000 0 0x07f00000>; /* non-prefetchable memory */
++			num-lanes = <1>;
++			num-viewport = <4>;
++			interrupts = <GIC_SPI 140 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "msi";
++			#interrupt-cells = <1>;
++			interrupt-map-mask = <0 0 0 0x7>;
++			interrupt-map = <0 0 0 1 &gic GIC_SPI 126 IRQ_TYPE_LEVEL_HIGH>,
++					<0 0 0 2 &gic GIC_SPI 125 IRQ_TYPE_LEVEL_HIGH>,
++					<0 0 0 3 &gic GIC_SPI 124 IRQ_TYPE_LEVEL_HIGH>,
++					<0 0 0 4 &gic GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>;
++			fsl,max-link-speed = <3>;
++			linux,pci-domain = <0>;
++			power-domains = <&hsio_blk_ctrl IMX8MP_HSIOBLK_PD_PCIE>;
++			resets = <&src IMX8MP_RESET_PCIE_CTRL_APPS_EN>,
++				 <&src IMX8MP_RESET_PCIE_CTRL_APPS_TURNOFF>;
++			reset-names = "apps", "turnoff";
++			phys = <&pcie_phy>;
++			phy-names = "pcie-phy";
++			status = "disabled";
++		};
++
+ 		gpu3d: gpu@38000000 {
+ 			compatible = "vivante,gc";
+ 			reg = <0x38000000 0x8000>;
 -- 
 2.25.1
 
