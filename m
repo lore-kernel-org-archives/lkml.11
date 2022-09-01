@@ -2,97 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3648ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 15:38:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 602D2ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 15:38:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234228AbiIAPiD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 11:38:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57896 "EHLO
+        id S234049AbiIAPiR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 11:38:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233639AbiIAPh5 (ORCPT
+        with ESMTP id S234227AbiIAPiO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 11:37:57 -0400
-Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2AEB7B1F2;
-        Thu,  1 Sep 2022 08:37:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1662046678; x=1693582678;
-  h=message-id:date:mime-version:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:subject;
-  bh=PyurQaqCq9eoCeTsYctAKTgwQl7ucsbfOPj1kVaxsIU=;
-  b=oGo4iiHggPSXorbnmKDj0OlnkboBHQRPfvJr662V1DtB/L2Bvof8OQQk
-   5rw/amNyC6B2n8ItnFc/aCxKybye1XooFkGaqPgaXi56UcZDc4uEN/91j
-   5ZkX+GL8LYYX4w9rMVgQlLFOEA71RAxecdpLbdZz3UQSuROCFoFrC1HFo
-   A=;
-X-IronPort-AV: E=Sophos;i="5.93,281,1654560000"; 
-   d="scan'208";a="125723485"
-Subject: Re: [PATCH v3 19/19] hwmon: (mr75203) fix coding style space errors
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-828bd003.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 15:31:48 +0000
-Received: from EX13D28EUC003.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1a-828bd003.us-east-1.amazon.com (Postfix) with ESMTPS id 397B4803F9;
-        Thu,  1 Sep 2022 15:31:44 +0000 (UTC)
-Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
- EX13D28EUC003.ant.amazon.com (10.43.164.43) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Thu, 1 Sep 2022 15:31:43 +0000
-Received: from [192.168.93.228] (10.85.143.172) by mail-relay.amazon.com
- (10.43.60.234) with Microsoft SMTP Server id 15.0.1497.38 via Frontend
- Transport; Thu, 1 Sep 2022 15:31:39 +0000
-Message-ID: <2d907196-02c5-ea25-4438-04de77282e75@amazon.com>
-Date:   Thu, 1 Sep 2022 18:31:38 +0300
+        Thu, 1 Sep 2022 11:38:14 -0400
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B7887AC34;
+        Thu,  1 Sep 2022 08:38:10 -0700 (PDT)
+Received: (Authenticated sender: maxime.chevallier@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 5B4136000C;
+        Thu,  1 Sep 2022 15:38:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1662046689;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=o0DY5K2tOv8e0L2U0j2bDRtdMUYfu9YOVYg6PMh7/YM=;
+        b=HR+WbvK59Zo16aCJfnTS4MAgS6YyKOdg5H7R5CHTmrWCJlbegHj25cxRfDpzu5CD/L0C/E
+        IkZ1UrSDrDViRtDjnOLxHX02TJ4LgKl8sEp2pbJ+DPWh7LFTpLjoU1KCI02ijvXGRGSfnX
+        QxxiT/hpn7cnWI8pNRNn2Ozw5djDHZfrSOPfZU/E8VlB/srUIfNicdKWrPy7qBN+rYEb52
+        Ke/411iZfoDLzAxYufTmEEnou8RITgQhHFm6kSfqUeVQJmjy6fafYO/fiaijH+KMkc327/
+        SuDpezv9RJps58PJCaogJ/VMcwbX+763jnc+/e7sphfb0yx0mPz/3YPHx2L7TQ==
+Date:   Thu, 1 Sep 2022 17:38:07 +0200
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <linux@armlinux.org.uk>,
+        <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH net-next] net: lan966x: Extend lan966x with RGMII
+ support
+Message-ID: <20220901173807.79c2e996@pc-10.home>
+In-Reply-To: <20220901122346.245786-1-horatiu.vultur@microchip.com>
+References: <20220901122346.245786-1-horatiu.vultur@microchip.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Content-Language: en-US
-To:     Guenter Roeck <linux@roeck-us.net>
-CC:     Andy Shevchenko <andriy.shevchenko@intel.com>, <jdelvare@suse.com>,
-        <robh+dt@kernel.org>, <p.zabel@pengutronix.de>,
-        <rtanwar@maxlinear.com>, <linux-hwmon@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <talel@amazon.com>, <hhhawa@amazon.com>, <jonnyc@amazon.com>,
-        <hanochu@amazon.com>, <ronenk@amazon.com>, <itamark@amazon.com>,
-        <shellykz@amazon.com>, <shorer@amazon.com>, <amitlavi@amazon.com>,
-        <almogbs@amazon.com>, <dkl@amazon.com>,
-        "Farber, Eliav" <farbere@amazon.com>
-References: <20220830192212.28570-1-farbere@amazon.com>
- <20220830192212.28570-20-farbere@amazon.com>
- <Yw9Q5krebHnb73vC@smile.fi.intel.com>
- <0074475d-04bc-153a-2df8-dd5f7d014c97@amazon.com>
- <20220901144633.GC3477025@roeck-us.net>
-From:   "Farber, Eliav" <farbere@amazon.com>
-In-Reply-To: <20220901144633.GC3477025@roeck-us.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 9/1/2022 5:46 PM, Guenter Roeck wrote:
-> On Thu, Sep 01, 2022 at 05:21:43PM +0300, Farber, Eliav wrote:
->> On 8/31/2022 3:15 PM, Andy Shevchenko wrote:
->> > On Tue, Aug 30, 2022 at 07:22:12PM +0000, Eliav Farber wrote:
->> > > Fix: "ERROR: space required before the open parenthesis '('"
->> >
->> > This patch may have other fixes like adding new blank lines (noted 
->> in one
->> > of the patches in the series), etc.
->> This patch fixed a specific space error which existed before my changes
->> and repeated many time.
->> I fixed the blank line I added a previous patch (but is it isn’t an 
->> error
->> reported by checkpatch).
->
-> That should really be fixed where it was introduced, not be introduced
-> and fixed here.
+Hello Horatiu,
 
+On Thu, 1 Sep 2022 14:23:46 +0200
+Horatiu Vultur <horatiu.vultur@microchip.com> wrote:
 
-So what do you suggest?
-I can drop the patch from this series and ignore it or move it to be the
-first patch in the series, or publish it separately later on.
-I had it because it was annoying seeing existing checkpatch errors when
-I came to check my change.
+> Extend lan966x with RGMII support. The MAC supports all RGMII_* modes.
+> 
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> ---
+>  drivers/net/ethernet/microchip/lan966x/lan966x_main.c    | 8 ++++++++
+>  drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c | 3 +++
+>  2 files changed, 11 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+> b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c index
+> 1d6e3b641b2e..e2d250ed976b 100644 ---
+> a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c +++
+> b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c @@ -772,6
+> +772,14 @@ static int lan966x_probe_port(struct lan966x *lan966x, u32
+> p, __set_bit(PHY_INTERFACE_MODE_MII,
+>  		  port->phylink_config.supported_interfaces);
+> +	__set_bit(PHY_INTERFACE_MODE_RGMII,
+> +		  port->phylink_config.supported_interfaces);
+> +	__set_bit(PHY_INTERFACE_MODE_RGMII_ID,
+> +		  port->phylink_config.supported_interfaces);
+> +	__set_bit(PHY_INTERFACE_MODE_RGMII_RXID,
+> +		  port->phylink_config.supported_interfaces);
+> +	__set_bit(PHY_INTERFACE_MODE_RGMII_TXID,
+> +		  port->phylink_config.supported_interfaces);
 
---
-Thanks, Eliav
+Instead of defining each individual variant, you can use :
 
+	phy_interface_set_rgmii(port->phylink_config.supported_interfaces);
+
+>  	__set_bit(PHY_INTERFACE_MODE_GMII,
+>  		  port->phylink_config.supported_interfaces);
+>  	__set_bit(PHY_INTERFACE_MODE_SGMII,
+> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c
+> b/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c index
+> 38a7e95d69b4..fb6aee509656 100644 ---
+> a/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c +++
+> b/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c @@ -59,6
+> +59,9 @@ static void lan966x_phylink_mac_link_up(struct
+> phylink_config *config, port_config->pause |= tx_pause ? MLO_PAUSE_TX
+> : 0; port_config->pause |= rx_pause ? MLO_PAUSE_RX : 0; 
+> +	if (phy_interface_mode_is_rgmii(interface))
+> +		phy_set_speed(port->serdes, speed);
+> +
+>  	lan966x_port_config_up(port);
+>  }
+>  
+
+Best regards,
+
+Maxime
