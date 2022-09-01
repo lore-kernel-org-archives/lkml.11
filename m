@@ -2,100 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DBB0ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 18:44:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76DFBECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 18:44:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233598AbiIASoO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 14:44:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59872 "EHLO
+        id S234274AbiIASoS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 14:44:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234299AbiIASnj (ORCPT
+        with ESMTP id S234304AbiIASnj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 1 Sep 2022 14:43:39 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21F4052807;
-        Thu,  1 Sep 2022 11:43:39 -0700 (PDT)
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 281G33gR004160;
-        Thu, 1 Sep 2022 18:43:28 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=qcppdkim1;
- bh=eUyzNrUe7h8wrZuH7Gy5duX/6zvORw6oWfUVvm+hwKw=;
- b=Vly5QlKqv6mHfsaAoXwsaieoNYyxu6QRDQud0rJirWWR4wO6vE6M9VqudcQEY1CYEsBW
- kBNeCMb8KLuCHM8k9EJxvA4g1vlJA+1JPlmMFxDncW000yuM+m5J13ZXnEyqU0+GtfKw
- 0IwSAINsk8p4x/4lMuf2Oie1TEBK4u7h2L4YvsX+Eo42LN4EsSdvdpaokGCkapS+lD/P
- tLottxqy9UEcUDu5DmIJLi0dMjlc7t1hSoxGSj5l+6uPp4PJSWLKW6dKOyaap+wbYo0u
- JP2b4x1IInbhobb7TqHRCqXvu6APbNcoW0KODmFtV6e8RUI02bLsRZpFO7FJe07/E/PG 2w== 
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3jabgcvq30-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 18:43:28 +0000
-Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-        by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 281IhRR6006372
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 1 Sep 2022 18:43:27 GMT
-Received: from hu-wcheng-lv.qualcomm.com (10.49.16.6) by
- nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Thu, 1 Sep 2022 11:43:27 -0700
-From:   Wesley Cheng <quic_wcheng@quicinc.com>
-To:     <balbi@kernel.org>, <gregkh@linuxfoundation.org>,
-        <Thinh.Nguyen@synopsys.com>
-CC:     <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <quic_jackp@quicinc.com>, Wesley Cheng <quic_wcheng@quicinc.com>
-Subject: [PATCH v6 4/5] usb: dwc3: gadget: Skip waiting for CMDACT cleared during endxfer
-Date:   Thu, 1 Sep 2022 11:43:13 -0700
-Message-ID: <20220901184314.30481-5-quic_wcheng@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220901184314.30481-1-quic_wcheng@quicinc.com>
-References: <20220901184314.30481-1-quic_wcheng@quicinc.com>
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 075DE57577;
+        Thu,  1 Sep 2022 11:43:38 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id u18so10840628wrq.10;
+        Thu, 01 Sep 2022 11:43:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:sender:from:to:cc:subject:date;
+        bh=tDY9KLkecT8kusGcpl2bZ2yreiehkuHM3UUVtCjmsPU=;
+        b=cRpiB7VJPxof+TbCRpjBn2kZebccN+Y20+JcQ/ZDCHdNYW7XWtmQOElqX308u2e6WH
+         zdH+XfgNLPKk67s6Y8V8mzI9SF7rK2O1zlfbQR41yTKwv2KEqMOWVshHvV0XHS4UVLdv
+         6sHO45KmtXRcimrGN5IXFt9mQ8QsPsalQVNBTdYJbofz69jxK10K3M8M72Hekz9rs/WZ
+         vWsqpnFD//u7x0mujoeNY8WKjZY90XmAISxuuY6OA1IkqGqUm/JfV06I5XKS8FyaFtBF
+         wJGhJe3dlr5Oq9720Y6HEyOUefG/GAlrmSCCb27F/yz5WFa1Fti3ScGVqh4RhhgwUDIT
+         I46w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:sender:x-gm-message-state:from:to:cc:subject:date;
+        bh=tDY9KLkecT8kusGcpl2bZ2yreiehkuHM3UUVtCjmsPU=;
+        b=kVzeLf4xMjP3LwNjsZin5RxPx4+/RmmHEBLmBj0wugBIQr2mKG58NYocbvdGyYpm2U
+         7IMtEaTr07roh9/Npei0lQLM3EUoJhs+qlHxzS22jOWQSIZCdPLLev5sURCIp4Ww8Aq7
+         olb69YxqRiDgBC7yIvFQ9lkibp80weLDwjzkOha9vPkTVsplOE0/D6g60X4kLevFCcbK
+         SrEB0EXpiFiV/3kday/I9zpOqWfrA9Xt08/cZvsotPi/7zl/uKjQaETr0jHJnGtW3jnn
+         cZaUBwovuwTsN2eWGDl5Uv5y5Kalw8d8v6F/iBW887qO3qQHNf+aMVs2AlmukDU/IAsW
+         oJig==
+X-Gm-Message-State: ACgBeo2NWGrbvtgO3sXe/X8WQP1+Rl3qK0Bw/PdavtfkoC/RQZuGWZBj
+        Y9tblE+MMZwEmMpgQVlQDN4=
+X-Google-Smtp-Source: AA6agR5xxGKb3IZESDBG+vlIDLuSiBO/5TT+x5KouHhG1Bx8oYWCNN6xIZr/GYugI7Vr3PvRCrEw5g==
+X-Received: by 2002:adf:df84:0:b0:226:db0a:d8e5 with SMTP id z4-20020adfdf84000000b00226db0ad8e5mr11728021wrl.21.1662057816040;
+        Thu, 01 Sep 2022 11:43:36 -0700 (PDT)
+Received: from elende (elende.valinor.li. [2a01:4f9:6a:1c47::2])
+        by smtp.gmail.com with ESMTPSA id n5-20020a05600c3b8500b003a319b67f64sm13103849wms.0.2022.09.01.11.43.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Sep 2022 11:43:34 -0700 (PDT)
+Sender: Salvatore Bonaccorso <salvatore.bonaccorso@gmail.com>
+From:   Salvatore Bonaccorso <carnil@debian.org>
+To:     Jonathan Corbet <corbet@lwn.net>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Salvatore Bonaccorso <carnil@debian.org>
+Subject: [PATCH v3] Documentation: stable: Document alternative for referring upstream commit hash
+Date:   Thu,  1 Sep 2022 20:43:28 +0200
+Message-Id: <20220901184328.4075701-1-carnil@debian.org>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.49.16.6]
-X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: CMSsy1W_Wdbl6NmfraDuv3QHzhzkunom
-X-Proofpoint-GUID: CMSsy1W_Wdbl6NmfraDuv3QHzhzkunom
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-09-01_12,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 mlxscore=0
- lowpriorityscore=0 adultscore=0 clxscore=1015 phishscore=0 bulkscore=0
- priorityscore=1501 mlxlogscore=458 spamscore=0 malwarescore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2209010080
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For endxfer commands that do not require an endpoint complete interrupt,
-avoid having to wait for the command active bit to clear.  This allows for
-EP0 events to continue to be handled, which allows for the controller to
-complete it.  Otherwise, it is known that the endxfer command will fail if
-there is a pending SETUP token that needs to be read.
+Additionally to the "commit <sha1> upstream." variant, "[ Upstream
+commit <sha1> ]" is used as well as alternative to refer to the upstream
+commit hash.
 
-Suggested-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-Reviewed-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-Signed-off-by: Wesley Cheng <quic_wcheng@quicinc.com>
+Signed-off-by: Salvatore Bonaccorso <carnil@debian.org>
 ---
- drivers/usb/dwc3/gadget.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Changes in v3:
+ - Revert to initial version as not adding the code-block:: none will
+   reformat the block differently than the first variant.
 
-diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
-index c9310645701d..4721561e4ba5 100644
---- a/drivers/usb/dwc3/gadget.c
-+++ b/drivers/usb/dwc3/gadget.c
-@@ -366,7 +366,9 @@ int dwc3_send_gadget_ep_cmd(struct dwc3_ep *dep, unsigned int cmd,
+Changes in v2:
+ - Drop extra RST markup which just only clutters things without any
+   advantage.
+
+ Documentation/process/stable-kernel-rules.rst | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/Documentation/process/stable-kernel-rules.rst b/Documentation/process/stable-kernel-rules.rst
+index c61865e91f52..2fd8aa593a28 100644
+--- a/Documentation/process/stable-kernel-rules.rst
++++ b/Documentation/process/stable-kernel-rules.rst
+@@ -97,6 +97,12 @@ text, like this:
  
- 	dwc3_writel(dep->regs, DWC3_DEPCMD, cmd);
+     commit <sha1> upstream.
  
--	if (!(cmd & DWC3_DEPCMD_CMDACT)) {
-+	if (!(cmd & DWC3_DEPCMD_CMDACT) ||
-+		(DWC3_DEPCMD_CMD(cmd) == DWC3_DEPCMD_ENDTRANSFER &&
-+		!(cmd & DWC3_DEPCMD_CMDIOC))) {
- 		ret = 0;
- 		goto skip_status;
- 	}
++or alternatively:
++
++.. code-block:: none
++
++    [ Upstream commit <sha1> ]
++
+ Additionally, some patches submitted via :ref:`option_1` may have additional
+ patch prerequisites which can be cherry-picked. This can be specified in the
+ following format in the sign-off area:
+-- 
+2.37.2
+
