@@ -2,145 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE4E2ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 08:56:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65022ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 08:56:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234216AbiIAI4i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 04:56:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35634 "EHLO
+        id S234354AbiIAI4p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 04:56:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234297AbiIAI4U (ORCPT
+        with ESMTP id S234300AbiIAI4U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 1 Sep 2022 04:56:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 814111314FE
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 01:56:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662022576;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Wlt+f7gBjVGkc0zcQ2pNtyBrX9IrrQuzBjMRXWCKVdg=;
-        b=Cmpm/rfqf5o2169JdnYIidR7jNgbYmful1YbSCZFNtAFM+/8otHwfwJGWGaupARiD+6oyt
-        qXmBobrMWIZ4uXYb49VEK5dfJJ+mtShowzcJEZDMBh8HR/J/cNC7I5hK0nyKxs0CdKfP/l
-        nvUnuViQ2pMejaRJYMLZedVuUjMC3sQ=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-637-v8dowpQhPbyC-lw3LcZ-XQ-1; Thu, 01 Sep 2022 04:56:15 -0400
-X-MC-Unique: v8dowpQhPbyC-lw3LcZ-XQ-1
-Received: by mail-qk1-f198.google.com with SMTP id u15-20020a05620a0c4f00b006b8b3f41303so13651583qki.8
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 01:56:15 -0700 (PDT)
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 821501348B5
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 01:56:16 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id k22so17152610ljg.2
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 01:56:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=Jy+Nx5e1wupR0KzXVzggqv8qHhtxj0ywC7sePqykO6s=;
+        b=cpJLrjHLKTid6qkNL+p/FQKdSQ6xfVk28iz7axyGk8I9DbR7rqm4XUBl4sGWTK36mG
+         v1LlB6E6BcMDdmrIypMdIZ9vxbcPq0whVOSG+519HQRRjeHI/VLMivWQ1l6PPGyS9WH9
+         TFQpLsAkhUwN2P58dCXeUjh9yxMeXyYdNMB7/cDHqtLgMFsvOUNMtWhzZoEumHlqAo7k
+         PiiWag83yNGYIE07Xr/eEplE94+KAFcLPn2fGFDXA86KzgVH9+T+Yc8SFzzYMxGwBRJL
+         LydO4IPTkWn4wHMc0dGbc9gyKZ9mH1E6ugqusW2r85MVxn6bZBF2OZwqaTaGWVLhgFsg
+         E8ug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=Wlt+f7gBjVGkc0zcQ2pNtyBrX9IrrQuzBjMRXWCKVdg=;
-        b=B09EiJ0W1JAuFkCqCzHHH4BlQQV1etEvG2dqKD3J+jJt72X3N+K9ypAtRoyEuzbydD
-         XJKX1AWnMsqkvmPRT1JHV7uSTLT+jtgTO0p/jdWP3AEDg9iaUfTJwDHicSW+CyPAXy3I
-         BcjZefTg+7W5HD3ClVLu38+JLVmKEVKdkRe32+QTeMhOToc6MRSCOfA/DgnTnxuUooWI
-         HLbPwxlHKzExkso4/ULpClW4FWd+ViXFmrOPmE/laBDLOoQu6sfXncXEfUGGWTbGRuxs
-         G9LD5XjV9RiZMDoKt7IaB2kStHqmYKuEQY4v6E5QQPXxV61mjf8fFJrvq8jIGLAFkozH
-         khSg==
-X-Gm-Message-State: ACgBeo2JioAagegSZYtdOCv+NC9gMHmwOFO87aXQcU805qFa6gYayzTr
-        YoGKK/CwPkmYtwlcKHs2WNN48xXd8feIe79LtGd2DWA30/UfT3POGTLzH7VrBU9yBp3xCQNFELz
-        FjOw0RnStRwMPFdPPoE5HWgECca8U/8Z1X/rNoeWC
-X-Received: by 2002:a05:622a:4204:b0:344:e16c:e597 with SMTP id cp4-20020a05622a420400b00344e16ce597mr22689196qtb.592.1662022574904;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=Jy+Nx5e1wupR0KzXVzggqv8qHhtxj0ywC7sePqykO6s=;
+        b=7kcI5cVmk9a29XV1+yMFPU0HRyRjOuPp6Yy5ckRwg85f9nwnExENqyXjZ1QJp+Tn/W
+         uPnQKYcPiy5VFow3/UoAQxjNhVIXweUN+eHU5t7IhD9jJLFco1GvBu/+50JfbWbedAG8
+         w0amfi4pJs+/v0ZXScTksXtMEA9/aOJCrYa5v7BQEG4gOZWyhKDbAK5nyu69276vZ5OD
+         8R6J18wou5GNHiG6jcZ0+60/svb2IRSqL9rbSpNtbC/pYa7AO79RBsMJNaDJkh8xUCQw
+         vWzrNnEAj5o5F3ln1n2mG8tKQmYEF5CvLzBVWDgl+O4FKgta7/P9tswrqAfdAjbEkysZ
+         J1mg==
+X-Gm-Message-State: ACgBeo0T3GSYzELNWMX5DN+zY9bgqPhGQmCv2zrg17fsjoxodreJnPLE
+        UpQSr7C889EgBlDJpdmCYwbU4Q==
+X-Google-Smtp-Source: AA6agR4SzbwimpRvnEDcVRpNXMzxY+xQNigfkYzUlA95yqrR9gR/a2LSxZyVtcanXaMR5LdXdpioMw==
+X-Received: by 2002:a2e:9d8b:0:b0:265:b87d:b43b with SMTP id c11-20020a2e9d8b000000b00265b87db43bmr5196954ljj.531.1662022574317;
         Thu, 01 Sep 2022 01:56:14 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5u2YDUEtCaIjrrUX8nL8zujU37Phr2hYBocVlhEmZWrU4E4NS/pqAa1UdI+qmflN4UtxuwF42IFeJEHEE3Luc=
-X-Received: by 2002:a05:622a:4204:b0:344:e16c:e597 with SMTP id
- cp4-20020a05622a420400b00344e16ce597mr22689189qtb.592.1662022574715; Thu, 01
- Sep 2022 01:56:14 -0700 (PDT)
+Received: from krzk-bin.. (balticom-73-99-134.balticom.lv. [109.73.99.134])
+        by smtp.gmail.com with ESMTPSA id c20-20020a056512075400b004947984bc78sm883856lfs.188.2022.09.01.01.56.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Sep 2022 01:56:13 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH RFT 3/3] ARM: dts: qcom: align RPM regulators node name with bindings
+Date:   Thu,  1 Sep 2022 11:56:09 +0300
+Message-Id: <20220901085609.95624-3-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220901085609.95624-1-krzysztof.kozlowski@linaro.org>
+References: <20220901085609.95624-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-References: <20220901055434.824-1-qtxuning1999@sjtu.edu.cn> <20220901055434.824-2-qtxuning1999@sjtu.edu.cn>
-In-Reply-To: <20220901055434.824-2-qtxuning1999@sjtu.edu.cn>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Thu, 1 Sep 2022 10:55:38 +0200
-Message-ID: <CAJaqyWchvGKvtjFg_YkioGYtxSp6MmNVdhPvyRLHuz1aWrtgGA@mail.gmail.com>
-Subject: Re: [RFC v3 1/7] vhost: expose used buffers
-To:     Guo Zhi <qtxuning1999@sjtu.edu.cn>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Michael Tsirkin <mst@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        kvm list <kvm@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 1, 2022 at 7:55 AM Guo Zhi <qtxuning1999@sjtu.edu.cn> wrote:
->
-> Follow VIRTIO 1.1 spec, only writing out a single used ring for a batch
-> of descriptors.
->
-> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
-> ---
->  drivers/vhost/vhost.c | 16 +++++++++++++---
->  1 file changed, 13 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> index 40097826cff0..26862c8bf751 100644
-> --- a/drivers/vhost/vhost.c
-> +++ b/drivers/vhost/vhost.c
-> @@ -2376,10 +2376,20 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
->         vring_used_elem_t __user *used;
->         u16 old, new;
->         int start;
-> +       int copy_n = count;
->
-> +       /**
-> +        * If in order feature negotiated, devices can notify the use of a batch of buffers to
-> +        * the driver by only writing out a single used ring entry with the id corresponding
-> +        * to the head entry of the descriptor chain describing the last buffer in the batch.
-> +        */
-> +       if (vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
-> +               copy_n = 1;
-> +               heads = &heads[count - 1];
-> +       }
->         start = vq->last_used_idx & (vq->num - 1);
->         used = vq->used->ring + start;
-> -       if (vhost_put_used(vq, heads, start, count)) {
-> +       if (vhost_put_used(vq, heads, start, copy_n)) {
->                 vq_err(vq, "Failed to write used");
->                 return -EFAULT;
->         }
-> @@ -2388,7 +2398,7 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
->                 smp_wmb();
->                 /* Log used ring entry write. */
->                 log_used(vq, ((void __user *)used - (void __user *)vq->used),
-> -                        count * sizeof *used);
-> +                        copy_n * sizeof(*used));
+Node names should be generic and new DT schema expects RPM regulators
+node to be just "regulators".
 
-log_used reports to the VMM the modified memory by the device. It
-iterates over used descriptors translating them to do so.
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-We need to either report here all the descriptors or to modify
-log_used so it reports all the batch with in_order feature. The latter
-has an extra advantage: no need to report these non-existent writes to
-the used ring of the skipped buffers. Although it probably does not
-make a difference in performance.
+---
 
-With the current code, we could iterate the heads[] array too, calling
-. However, I think it would be a waste. More on that later.
+Not tested on hardware, but I do not expect functional impact.
+---
+ arch/arm/boot/dts/qcom-apq8026-asus-sparrow.dts               | 2 +-
+ arch/arm/boot/dts/qcom-apq8026-lg-lenok.dts                   | 2 +-
+ arch/arm/boot/dts/qcom-apq8074-dragonboard.dts                | 4 ++--
+ arch/arm/boot/dts/qcom-apq8084.dtsi                           | 2 +-
+ arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts      | 4 ++--
+ arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi         | 4 ++--
+ arch/arm/boot/dts/qcom-msm8974pro-fairphone-fp2.dts           | 4 ++--
+ arch/arm/boot/dts/qcom-msm8974pro-samsung-klte.dts            | 2 +-
+ .../boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts   | 2 +-
+ 9 files changed, 13 insertions(+), 13 deletions(-)
 
-Thanks!
-
->         }
->         old = vq->last_used_idx;
->         new = (vq->last_used_idx += count);
-> @@ -2410,7 +2420,7 @@ int vhost_add_used_n(struct vhost_virtqueue *vq, struct vring_used_elem *heads,
->
->         start = vq->last_used_idx & (vq->num - 1);
->         n = vq->num - start;
-> -       if (n < count) {
-> +       if (n < count && !vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
->                 r = __vhost_add_used_n(vq, heads, n);
->                 if (r < 0)
->                         return r;
-> --
-> 2.17.1
->
+diff --git a/arch/arm/boot/dts/qcom-apq8026-asus-sparrow.dts b/arch/arm/boot/dts/qcom-apq8026-asus-sparrow.dts
+index ace8cea27949..2908a8a8a3d0 100644
+--- a/arch/arm/boot/dts/qcom-apq8026-asus-sparrow.dts
++++ b/arch/arm/boot/dts/qcom-apq8026-asus-sparrow.dts
+@@ -81,7 +81,7 @@ &pm8226_vib {
+ };
+ 
+ &rpm_requests {
+-	pm8226-regulators {
++	regulators {
+ 		compatible = "qcom,rpm-pm8226-regulators";
+ 
+ 		pm8226_s3: s3 {
+diff --git a/arch/arm/boot/dts/qcom-apq8026-lg-lenok.dts b/arch/arm/boot/dts/qcom-apq8026-lg-lenok.dts
+index 2b7e52fda6a7..e5bdc12123ce 100644
+--- a/arch/arm/boot/dts/qcom-apq8026-lg-lenok.dts
++++ b/arch/arm/boot/dts/qcom-apq8026-lg-lenok.dts
+@@ -102,7 +102,7 @@ bluetooth {
+ };
+ 
+ &rpm_requests {
+-	pm8226-regulators {
++	regulators {
+ 		compatible = "qcom,rpm-pm8226-regulators";
+ 
+ 		pm8226_s3: s3 {
+diff --git a/arch/arm/boot/dts/qcom-apq8074-dragonboard.dts b/arch/arm/boot/dts/qcom-apq8074-dragonboard.dts
+index 3051a861ff0c..86ba9165c2b3 100644
+--- a/arch/arm/boot/dts/qcom-apq8074-dragonboard.dts
++++ b/arch/arm/boot/dts/qcom-apq8074-dragonboard.dts
+@@ -57,7 +57,7 @@ phy@b {
+ };
+ 
+ &rpm_requests {
+-	pm8841-regulators {
++	regulators-0 {
+ 		compatible = "qcom,rpm-pm8841-regulators";
+ 
+ 		pm8841_s1: s1 {
+@@ -81,7 +81,7 @@ pm8841_s4: s4 {
+ 		};
+ 	};
+ 
+-	pm8941-regulators {
++	regulators-1 {
+ 		compatible = "qcom,rpm-pm8941-regulators";
+ 
+ 		vdd_l1_l3-supply = <&pm8941_s1>;
+diff --git a/arch/arm/boot/dts/qcom-apq8084.dtsi b/arch/arm/boot/dts/qcom-apq8084.dtsi
+index c2e22bf3260d..2f4e4ac686a5 100644
+--- a/arch/arm/boot/dts/qcom-apq8084.dtsi
++++ b/arch/arm/boot/dts/qcom-apq8084.dtsi
+@@ -479,7 +479,7 @@ rpm-requests {
+ 				compatible = "qcom,rpm-apq8084";
+ 				qcom,smd-channels = "rpm_requests";
+ 
+-				pma8084-regulators {
++				regulators-0 {
+ 					compatible = "qcom,rpm-pma8084-regulators";
+ 
+ 					pma8084_s1: s1 {};
+diff --git a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
+index ec5d340562b6..8a3761ed9655 100644
+--- a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
++++ b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
+@@ -344,7 +344,7 @@ led@5 {
+ };
+ 
+ &rpm_requests {
+-	pm8841-regulators {
++	regulators-0 {
+ 		compatible = "qcom,rpm-pm8841-regulators";
+ 
+ 		pm8841_s1: s1 {
+@@ -368,7 +368,7 @@ pm8841_s4: s4 {
+ 		};
+ 	};
+ 
+-	pm8941-regulators {
++	regulators-1 {
+ 		compatible = "qcom,rpm-pm8941-regulators";
+ 
+ 		vdd_l1_l3-supply = <&pm8941_s1>;
+diff --git a/arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi b/arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi
+index 5a70683d9103..320c9bf397f8 100644
+--- a/arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi
++++ b/arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi
+@@ -214,7 +214,7 @@ &pm8941_wled {
+ };
+ 
+ &rpm_requests {
+-	pm8841-regulators {
++	regulators-0 {
+ 		compatible = "qcom,rpm-pm8841-regulators";
+ 
+ 		pm8841_s1: s1 {
+@@ -238,7 +238,7 @@ pm8841_s4: s4 {
+ 		};
+ 	};
+ 
+-	pm8941-regulators {
++	regulators-1 {
+ 		compatible = "qcom,rpm-pm8941-regulators";
+ 
+ 		vdd_l1_l3-supply = <&pm8941_s1>;
+diff --git a/arch/arm/boot/dts/qcom-msm8974pro-fairphone-fp2.dts b/arch/arm/boot/dts/qcom-msm8974pro-fairphone-fp2.dts
+index ff6e0066768b..9107bc6f24db 100644
+--- a/arch/arm/boot/dts/qcom-msm8974pro-fairphone-fp2.dts
++++ b/arch/arm/boot/dts/qcom-msm8974pro-fairphone-fp2.dts
+@@ -190,7 +190,7 @@ &remoteproc_mss {
+ };
+ 
+ &rpm_requests {
+-	pm8841-regulators {
++	regulators-0 {
+ 		compatible = "qcom,rpm-pm8841-regulators";
+ 
+ 		pm8841_s1: s1 {
+@@ -209,7 +209,7 @@ pm8841_s3: s3 {
+ 		};
+ 	};
+ 
+-	pm8941-regulators {
++	regulators-1 {
+ 		compatible = "qcom,rpm-pm8941-regulators";
+ 
+ 		vdd_l1_l3-supply = <&pm8941_s1>;
+diff --git a/arch/arm/boot/dts/qcom-msm8974pro-samsung-klte.dts b/arch/arm/boot/dts/qcom-msm8974pro-samsung-klte.dts
+index 983e10c3d863..156023204c1e 100644
+--- a/arch/arm/boot/dts/qcom-msm8974pro-samsung-klte.dts
++++ b/arch/arm/boot/dts/qcom-msm8974pro-samsung-klte.dts
+@@ -470,7 +470,7 @@ &remoteproc_mss {
+ };
+ 
+ &rpm_requests {
+-	pma8084-regulators {
++	regulators-0 {
+ 		compatible = "qcom,rpm-pma8084-regulators";
+ 
+ 		pma8084_s1: s1 {
+diff --git a/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts b/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts
+index 3f45f5c5d37b..e4580ed996e6 100644
+--- a/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts
++++ b/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts
+@@ -319,7 +319,7 @@ led@7 {
+ };
+ 
+ &rpm_requests {
+-	pm8941-regulators {
++	regulators-0 {
+ 		compatible = "qcom,rpm-pm8941-regulators";
+ 
+ 		vdd_l1_l3-supply = <&pm8941_s1>;
+-- 
+2.34.1
 
