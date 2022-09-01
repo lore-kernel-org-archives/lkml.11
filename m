@@ -2,104 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B98AECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:50:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C978FECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:50:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233973AbiIAHuB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 03:50:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35948 "EHLO
+        id S234117AbiIAHuO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 03:50:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234128AbiIAHsJ (ORCPT
+        with ESMTP id S234316AbiIAHtL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 03:48:09 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED73912D50E
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 00:46:48 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id x80so12054679pgx.0
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 00:46:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=v+aLW6XSZxp9QimTfsr5QzeEYxLaT3pFWzo7n2FYHsg=;
-        b=Sjc4P9vtTICGifkH/YlHUrvW6OqfseM+FUoA8uWncagd1YTJp0Kgr4uTUIbN9ylss7
-         eQXw9QMRS0E2AWBdLonQ9moT7U9gFzLZBm++KmQZ37P904d7Sp+eQVaVaFQ8BZRNBaDT
-         krAmrWoTEI0qUA5b/WAN9ijYM1xXjw7uDvrlP+PGqJ9cRZ7X1IWM6K3dtNuWFRs2AThH
-         MNu0s2f3t2XwprPZcROE56ggj7q3uSI2f2rjvBVmc5Xs8234YsqLnV+9y9yun4j3bklv
-         e2zygYkUqqE9JmxutNE0rTL5r8/HzvRl0CELOu2JKlWBskZIydTaXZ6rGaUxpEWTilHo
-         b6Rw==
+        Thu, 1 Sep 2022 03:49:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F9E311EB70
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 00:48:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662018518;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5jcSdT0P6afRsEiScMWA2XdjMc9EYOIodZqy6Femx3w=;
+        b=CppT8B1MzTDYlVvM+ARFHoHjcEI3YKVvFUEhqszYUxs3d2IjOu9wLl8OuwJoLrmhbPlBB4
+        1TsWqzFuWOdWflaJAZBzwfLlsoJ0eTYaWSAZZbRlIUpR3q+CNZu1Q0Us+yByXr5WrR6n4x
+        w/J1v+cYJp7K4BNywfygfipJZDqX8g0=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-65-OfrdmBsQMIOK9HdKa_IndQ-1; Thu, 01 Sep 2022 03:48:37 -0400
+X-MC-Unique: OfrdmBsQMIOK9HdKa_IndQ-1
+Received: by mail-wr1-f72.google.com with SMTP id j4-20020adfa544000000b002255264474bso2851507wrb.17
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 00:48:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=v+aLW6XSZxp9QimTfsr5QzeEYxLaT3pFWzo7n2FYHsg=;
-        b=QJJss8JwlKjEhI8mUQjLl6tciJOLfZDXElamBY6gTfyBowbngmySDb+sdqJH/OkgUT
-         cQtstXW2KsAZlAY1y3IehirUZ38dggNbyQ6mG2JsPxJhQRVA4K5OaXmMqJ08RZm4JH8B
-         sT+7u0pHoKgNUmo3qxsmUUletCLTUw9EJeGbIcG1ML868ssAeYutqG6pjDnLBx5fO6IB
-         85hYInYdiD8kL7CTqzBeJTnYvueG6A6tSJgsPaGIsmGdjni0zSXiArsHSa1IMnZf+ZXu
-         UUPanDn27e1mLY55cHpgilSq5oxaHuWkaYuCGkfEtuiZu35CffApPliAI7/oMLq9gsZp
-         RrUg==
-X-Gm-Message-State: ACgBeo1FTrzpTL6qmK2hcJ5ibC9pCGMlopnxEEPNUSHEzK4i/mJAeWjx
-        wUBrAtf7WBAxxxj4Fob6Xi8=
-X-Google-Smtp-Source: AA6agR610XS+pdZVYOD8grBauRiJL+ULVLoy8BvDYGZJcvsyMHlC68ot6TWwzHzgvhHPp0QvhAfWFw==
-X-Received: by 2002:a65:6bc4:0:b0:3c2:2f7c:cc74 with SMTP id e4-20020a656bc4000000b003c22f7ccc74mr24864261pgw.307.1662018408485;
-        Thu, 01 Sep 2022 00:46:48 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id w18-20020a1709027b9200b001728ac8af94sm12920079pll.248.2022.09.01.00.46.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 00:46:48 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: ye.xingchen@zte.com.cn
-To:     maz@kernel.org
-Cc:     james.morse@arm.com, alexandru.elisei@arm.com,
-        suzuki.poulose@arm.com, oliver.upton@linux.dev,
-        catalin.marinas@arm.com, will@kernel.org, qperret@google.com,
-        gankulkarni@os.amperecomputing.com,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-kernel@vger.kernel.org, ye xingchen <ye.xingchen@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] KVM: arm64: Remove the unneeded result variable
-Date:   Thu,  1 Sep 2022 07:46:43 +0000
-Message-Id: <20220901074643.313329-1-ye.xingchen@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        h=content-transfer-encoding:in-reply-to:subject:organization:from
+         :references:cc:to:content-language:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc;
+        bh=5jcSdT0P6afRsEiScMWA2XdjMc9EYOIodZqy6Femx3w=;
+        b=7R++6IGmZikWfGg4LmkrJ4+pb+5C6OveyFAzypTxyMnxK3dje80QyN+GCs/luL76Lu
+         4ino1v9cXLOL9sbMx6ArGJh4aaXo31cB4DNefVqACcA9F8BcyAsNqIW2XS1t/R58GeLE
+         e+rkMb5DR+i/hwxyQlRxEgTt0g/uGIl1mj/FpuejBaKE/AQiL2GX3jEscrBxB6INZnrw
+         TzwySX9mjzV6MhClyrwckbde0p6r3j8Dr1dTOPbPFJDo79exbJ654RJMnUhpfz4nLadl
+         Kd42h8UfVi/nflvBWg/ZfR8uevofp50OEkJJLzKSZAq4lGKaEPxHC/JlIPD95Wt8TPu7
+         P4qQ==
+X-Gm-Message-State: ACgBeo0tah4K2Q4Na9E0k/sauvogdElu2OPIVQk/Ep74GaT9PqWZOMQu
+        NuWQMgj4z1qot7ch9vGzyBJy4TWY0wYHusq/s92KC6FjqwP/QQtku3/CkzkiEc3ZTOtF4IkKBE3
+        fAlexph0JdCMs4NkmdxlnMpfj
+X-Received: by 2002:adf:e10c:0:b0:225:3168:c261 with SMTP id t12-20020adfe10c000000b002253168c261mr13639582wrz.159.1662018515966;
+        Thu, 01 Sep 2022 00:48:35 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7R1Nq9kE4sH+4OKj+aaG4a+EvhvYKEWfGMfPstByKgi89eFpj8PgtRAOeRshfA8K3CoZWEQw==
+X-Received: by 2002:adf:e10c:0:b0:225:3168:c261 with SMTP id t12-20020adfe10c000000b002253168c261mr13639568wrz.159.1662018515709;
+        Thu, 01 Sep 2022 00:48:35 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c707:9e00:fec0:7e96:15cb:742? (p200300cbc7079e00fec07e9615cb0742.dip0.t-ipconnect.de. [2003:cb:c707:9e00:fec0:7e96:15cb:742])
+        by smtp.gmail.com with ESMTPSA id b11-20020a05600c4e0b00b003a50924f1c0sm5271109wmq.18.2022.09.01.00.48.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Sep 2022 00:48:35 -0700 (PDT)
+Message-ID: <df6f3926-da31-9361-b19e-e19ac3937ebf@redhat.com>
+Date:   Thu, 1 Sep 2022 09:48:34 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Content-Language: en-US
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Yuan Can <yuancan@huawei.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220901063725.24220-1-yuancan@huawei.com>
+ <0e2ea2d8-5b0b-107a-c679-7d5a7e37718f@csgroup.eu>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH] mm: remove extra empty line
+In-Reply-To: <0e2ea2d8-5b0b-107a-c679-7d5a7e37718f@csgroup.eu>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ye xingchen <ye.xingchen@zte.com.cn>
+On 01.09.22 09:37, Christophe Leroy wrote:
+> 
+> 
+> Le 01/09/2022 à 08:37, Yuan Can a écrit :
+>> [Vous ne recevez pas souvent de courriers de yuancan@huawei.com. Découvrez pourquoi ceci est important à https://aka.ms/LearnAboutSenderIdentification ]
+>>
+>> Remove extra empty line.
+> 
+> Don't you have anything more exciting and usefull to do in your life ?
+> 
+> This kind of standalone patch is a waste of time for both you and the 
+> reviewers/maintainers.
 
-Return the value kvm_pgtable_walk() directly instead of storing it in
-another redundant variable.
+While I agree with the general idea of that message, we could phrase
+that a little differently I think, after seeing:
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
----
- arch/arm64/kvm/hyp/pgtable.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ $ git shortlog -s --author "Yuan Can <yuancan@huawei.com>"
+     2  Yuan Can
 
-diff --git a/arch/arm64/kvm/hyp/pgtable.c b/arch/arm64/kvm/hyp/pgtable.c
-index 2cb3867eb7c2..a5fa05e34de9 100644
---- a/arch/arm64/kvm/hyp/pgtable.c
-+++ b/arch/arm64/kvm/hyp/pgtable.c
-@@ -925,7 +925,6 @@ int kvm_pgtable_stage2_map(struct kvm_pgtable *pgt, u64 addr, u64 size,
- int kvm_pgtable_stage2_set_owner(struct kvm_pgtable *pgt, u64 addr, u64 size,
- 				 void *mc, u8 owner_id)
- {
--	int ret;
- 	struct stage2_map_data map_data = {
- 		.phys		= KVM_PHYS_INVALID,
- 		.mmu		= pgt->mmu,
-@@ -945,8 +944,7 @@ int kvm_pgtable_stage2_set_owner(struct kvm_pgtable *pgt, u64 addr, u64 size,
- 	if (owner_id > KVM_MAX_OWNER_ID)
- 		return -EINVAL;
- 
--	ret = kvm_pgtable_walk(pgt, addr, size, &walker);
--	return ret;
-+	return kvm_pgtable_walk(pgt, addr, size, &walker);
- }
- 
- static int stage2_unmap_walker(u64 addr, u64 end, u32 level, kvm_pte_t *ptep,
+
+The linux-mm list is currently fairly overloaded (lots of new material,
+reviewers/maintainers having a hard time to catch up), which is why such
+simple cleanups that could essentially be done semi-automatically by
+tooling (coccinelle scripts ?) are not of general interest and rather an
+unpleasant distraction for reviewers/maintainers.
+
 -- 
-2.25.1
+Thanks,
+
+David / dhildenb
+
