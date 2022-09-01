@@ -2,82 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF37AECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 08:40:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ABC5ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 08:41:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231754AbiIAIkr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 04:40:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39312 "EHLO
+        id S233431AbiIAIl3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 04:41:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233358AbiIAIki (ORCPT
+        with ESMTP id S232804AbiIAIlT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 04:40:38 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA44397507
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 01:40:35 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 8BA8D223D9;
-        Thu,  1 Sep 2022 08:40:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1662021633; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=H0QScilVtxiO5bJJE8A1A5ERc/PXpP1x62UG82vw6oY=;
-        b=elM7XrD+NVr/NX9LcMpu4X/xIi1D14H9qc0yzMM+6FqSt1YY7kDszRK+rk2Wpglrc+T93D
-        H6nKlMvrbkFP+U3hZKAw8hKrboKXzLwYR6xFPWRyl81CsgPMoQqUQFVi+RcoVRj5h7DQQw
-        keeCdEZcOG6w2lIMz9NPXjGpkGZiPPY=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6831A13A79;
-        Thu,  1 Sep 2022 08:40:33 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id q2MHFwFwEGMSOQAAMHmgww
-        (envelope-from <mhocko@suse.com>); Thu, 01 Sep 2022 08:40:33 +0000
-Date:   Thu, 1 Sep 2022 10:40:32 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Oscar Salvador <osalvador@suse.de>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Eric Dumazet <edumazet@google.com>,
-        Waiman Long <longman@redhat.com>,
-        Suren Baghdasaryan <surenb@google.com>
-Subject: Re: [PATCH 3/3] mm,page_owner: Filter out stacks by a threshold
- counter
-Message-ID: <YxBwAANmAAivHYA5@dhcp22.suse.cz>
-References: <20220901044249.4624-1-osalvador@suse.de>
- <20220901044249.4624-4-osalvador@suse.de>
+        Thu, 1 Sep 2022 04:41:19 -0400
+Received: from mail-m11878.qiye.163.com (mail-m11878.qiye.163.com [115.236.118.78])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36DC9110882
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 01:41:18 -0700 (PDT)
+Received: from rockchip.. (unknown [58.22.7.114])
+        by mail-m11878.qiye.163.com (Hmail) with ESMTPA id 0ECB87407D8;
+        Thu,  1 Sep 2022 16:34:48 +0800 (CST)
+From:   William Wu <william.wu@rock-chips.com>
+To:     balbi@kernel.org, gregkh@linuxfoundation.org
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        william.wu@rock-chips.com, fabioaiuto83@gmail.com,
+        sven@svenpeter.dev, frank.wang@rock-chips.com,
+        jianwei.zheng@rock-chips.com
+Subject: [PATCH] usb: dwc3: core: leave default DMA if the controller does not support 64-bit DMA
+Date:   Thu,  1 Sep 2022 16:34:46 +0800
+Message-Id: <20220901083446.3799754-1-william.wu@rock-chips.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220901044249.4624-4-osalvador@suse.de>
+Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+        tZV1koWUFJSktLSjdXWS1ZQUlXWQ8JGhUIEh9ZQVkZGEJJVhlCHUJJTEMYS0hLQ1UTARMWGhIXJB
+        QOD1lXWRgSC1lBWU5DVUlJVUxVSkpPWVdZFhoPEhUdFFlBWU9LSFVKSktITkhVSktLWQY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Nhw6HDo4Gj01AUwyTjIMMkxO
+        MDAKCyxVSlVKTU1JS0lKSUNDTE9PVTMWGhIXVQwSFxcSGhZVDA47CRQYEFYYExILCFUYFBZFWVdZ
+        EgtZQVlOQ1VJSVVMVUpKT1lXWQgBWUFJTE9INwY+
+X-HM-Tid: 0a82f83041912eb4kusn0ecb87407d8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 01-09-22 06:42:49, Oscar Salvador wrote:
-[...]
-> +static ssize_t read_page_owner_threshold(struct file *file, char __user *buf,
-> +					 size_t count, loff_t *pos)
-> +{
-> +	char *kbuf;
-> +	int ret = 0;
-> +
-> +	count = min_t(size_t, count, PAGE_SIZE);
-> +
-> +	if (*pos >= count)
-> +		return 0;
-> +
-> +	kbuf = kmalloc(count, GFP_KERNEL);
+On some DWC3 controllers (e.g. Rockchip SoCs), the DWC3 core
+doesn't support 64-bit DMA address width. In this case, this
+driver should use the default 32-bit mask. Otherwise, the DWC3
+controller will break if it runs on above 4GB physical memory
+environment.
 
-No, you do not want to trigger user defined allocation like that. I
-would use seq_file.
+This patch reads the DWC_USB3_AWIDTH bits of GHWPARAMS0 which
+used for the DMA address width, and only configure 64-bit DMA
+mask if the DWC_USB3_AWIDTH is 64.
+
+Fixes: 45d39448b4d0 ("usb: dwc3: support 64 bit DMA in platform driver")
+Signed-off-by: William Wu <william.wu@rock-chips.com>
+---
+ drivers/usb/dwc3/core.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+index c5c238ab3083..2fcbd05b2af1 100644
+--- a/drivers/usb/dwc3/core.c
++++ b/drivers/usb/dwc3/core.c
+@@ -1751,12 +1751,6 @@ static int dwc3_probe(struct platform_device *pdev)
+ 
+ 	dwc3_get_properties(dwc);
+ 
+-	if (!dwc->sysdev_is_parent) {
+-		ret = dma_set_mask_and_coherent(dwc->sysdev, DMA_BIT_MASK(64));
+-		if (ret)
+-			return ret;
+-	}
+-
+ 	dwc->reset = devm_reset_control_array_get_optional_shared(dev);
+ 	if (IS_ERR(dwc->reset))
+ 		return PTR_ERR(dwc->reset);
+@@ -1823,6 +1817,13 @@ static int dwc3_probe(struct platform_device *pdev)
+ 	dwc3_cache_hwparams(dwc);
+ 	device_init_wakeup(&pdev->dev, of_property_read_bool(dev->of_node, "wakeup-source"));
+ 
++	if (!dwc->sysdev_is_parent &&
++	    DWC3_GHWPARAMS0_AWIDTH(dwc->hwparams.hwparams0) == 64) {
++		ret = dma_set_mask_and_coherent(dwc->sysdev, DMA_BIT_MASK(64));
++		if (ret)
++			goto disable_clks;
++	}
++
+ 	spin_lock_init(&dwc->lock);
+ 	mutex_init(&dwc->mutex);
+ 
 -- 
-Michal Hocko
-SUSE Labs
+2.34.1
+
