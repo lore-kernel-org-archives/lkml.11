@@ -2,333 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24628ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:29:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7264ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:33:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232628AbiIAB3b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 21:29:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45882 "EHLO
+        id S232374AbiIABc7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 21:32:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230045AbiIAB3A (ORCPT
+        with ESMTP id S230101AbiIABc4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 21:29:00 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 526D1155D42;
-        Wed, 31 Aug 2022 18:28:56 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id u9-20020a17090a1f0900b001fde6477464so963782pja.4;
-        Wed, 31 Aug 2022 18:28:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=Ku+oDe019jQV+bvEaEkfd4frzVRnrZ2aNZC2IczdqoE=;
-        b=Hx6ZYs4+0dpZaVEYgMldoagI3dzhcW5Loqv9r9bGZHf25n1tI6e6nRzrblQHBsTR3i
-         0MzRxIFaO9C5imLAfShWGpje3WbJEOaMRTGMfMA1YGi1f/DYsgJclf+2+RFd5Mt22j+5
-         whLZOV0LrjhKFF8P1ednR4LMmDBkktyEGvFfmbyAuDzEP8MQR0le+AG3wtNcZmf7t2w2
-         MoxiGOr1Og5W5yUqZRQDg1xDs0c4Zl6RQg9fmV+YglXfElNokw37ltw2fu7y5HPjO+Ny
-         CC/1bmSX87LRQFv4DDLKtTfQjawKsgkZ07G/JxZ+H+yTA2Q2coEHyPaLLT3wVz1bA22t
-         io9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=Ku+oDe019jQV+bvEaEkfd4frzVRnrZ2aNZC2IczdqoE=;
-        b=7jeyP6HhEGzKlzzBiRdXiriRfGDimGkKUExAj8U8tBt8aWvCV1IzSsaBiIx15RwPuf
-         aA5iUA+44+OMqPl6fMahnpal+MXRwQFm1ggHYkBsFUburiIr0t+BsOj9wv4LjUflgXbs
-         gDq4OsiJY0nYQwywt8mM0b/KWRQQcycr10syyICzo2NhqRg/mJ3qaW1hZv2MipBifu8j
-         F2hkUREkXvEHzTH2EY0lzD9XELcziaS26qW6c1+FPHTTkkMZc9xkvLeLbGT9oJEhCmKG
-         UVm8K1yeqw4PQDFKgTPBmiUagJuLAqR01Yj9M/6z7p+HF3SDvIUl56et3bClufFJ9NBt
-         yflQ==
-X-Gm-Message-State: ACgBeo3agjZFbhUQoJuHN7V29WjwHDsLzt77Kpt6t8MmEtzoOSSFLhU7
-        JuvK08Qzk2rkOxj7c0qRw0Q=
-X-Google-Smtp-Source: AA6agR6nLBFy943t35VbsHgT2fsKgoqBPdGZO7H/AqXnvw4bFq3mlKL2u/jpEg3UBub5TZ6Y8jO6Lw==
-X-Received: by 2002:a17:903:22cf:b0:174:a5cd:31e0 with SMTP id y15-20020a17090322cf00b00174a5cd31e0mr18001431plg.23.1661995735628;
-        Wed, 31 Aug 2022 18:28:55 -0700 (PDT)
-Received: from localhost ([192.55.55.51])
-        by smtp.gmail.com with ESMTPSA id w13-20020a6556cd000000b0042ba1a95235sm3981596pgs.86.2022.08.31.18.28.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Aug 2022 18:28:55 -0700 (PDT)
-Date:   Wed, 31 Aug 2022 18:28:53 -0700
-From:   Isaku Yamahata <isaku.yamahata@gmail.com>
-To:     Sagi Shahar <sagis@google.com>
-Cc:     linux-kselftest@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Isaku Yamahata <isaku.yamahata@intel.com>,
-        Erdem Aktas <erdemaktas@google.com>,
-        Ryan Afranji <afranji@google.com>,
-        Roger Wang <runanwang@google.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Andrew Jones <drjones@redhat.com>,
-        Marc Zyngier <maz@kernel.org>, Ben Gardon <bgardon@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Peter Xu <peterx@redhat.com>, Oliver Upton <oupton@google.com>,
-        Ricardo Koller <ricarkol@google.com>,
-        Yang Zhong <yang.zhong@intel.com>,
-        Wei Wang <wei.w.wang@intel.com>,
-        Xiaoyao Li <xiaoyao.li@intel.com>,
-        Peter Gonda <pgonda@google.com>, Marc Orr <marcorr@google.com>,
-        Emanuele Giuseppe Esposito <eesposit@redhat.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Yanan Wang <wangyanan55@huawei.com>,
-        Aaron Lewis <aaronlewis@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Peter Shier <pshier@google.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Zhenzhong Duan <zhenzhong.duan@intel.com>,
-        "Maciej S . Szmigiero" <maciej.szmigiero@oracle.com>,
-        Like Xu <like.xu@linux.intel.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        isaku.yamahata@gmail.com
-Subject: Re: [RFC PATCH v2 00/17] TDX KVM selftests
-Message-ID: <20220901012853.GF2711697@ls.amr.corp.intel.com>
-References: <20220830222000.709028-1-sagis@google.com>
+        Wed, 31 Aug 2022 21:32:56 -0400
+X-Greylist: delayed 450 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 31 Aug 2022 18:32:54 PDT
+Received: from soltyk.jannau.net (soltyk.jannau.net [144.76.91.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35352155A59
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:32:53 -0700 (PDT)
+Received: from coburn.home.jannau.net (p54acc2ba.dip0.t-ipconnect.de [84.172.194.186])
+        by soltyk.jannau.net (Postfix) with ESMTPSA id 4832426EF51;
+        Thu,  1 Sep 2022 03:25:23 +0200 (CEST)
+From:   Janne Grunau <j@jannau.net>
+To:     iommu@lists.linux.dev
+Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
+        asahi@lists.linux.dev, Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Hector Martin <marcan@marcan.st>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        iommu@lists.linux-foundation.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 5/5] iommu: dart: Support t6000 variant
+Date:   Thu,  1 Sep 2022 03:25:19 +0200
+Message-Id: <20220901012519.7167-6-j@jannau.net>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220901012519.7167-1-j@jannau.net>
+References: <20220901012519.7167-1-j@jannau.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220830222000.709028-1-sagis@google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Here is one more test to exercise KVM_TDX_CAPABILITIES on top of this patch
-series.
+From: Sven Peter <sven@svenpeter.dev>
 
-From f9c4c9013040ce7dee84e1d3370875e5158900bf Mon Sep 17 00:00:00 2001
-Message-Id: <f9c4c9013040ce7dee84e1d3370875e5158900bf.1661995648.git.isaku.yamahata@intel.com>
-In-Reply-To: <6ce32225079b83991b9f170730a8810005a079b0.1661995647.git.isaku.yamahata@intel.com>
-References: <6ce32225079b83991b9f170730a8810005a079b0.1661995647.git.isaku.yamahata@intel.com>
-From: Isaku Yamahata <isaku.yamahata@intel.com>
-Date: Wed, 16 Mar 2022 09:15:40 -0700
-Subject: [PATCH] KVM: selftest: tdx: call KVM_TDX_CAPABILITIES for
- test
+The M1 Pro/Max/Ultra SoCs come with a new variant of DART which
+supports a larger physical address space with a different PTE format.
+Pass through the correct paddr address space size and the PTE format
+to the io-pgtable code which will take care of the rest.
 
-Add exercise of KVM_TDX_CAPABILITIES.  The result isn't used.
+Signed-off-by: Sven Peter <sven@svenpeter.dev>
+Co-developed-by: Janne Grunau <j@jannau.net>
+Signed-off-by: Janne Grunau <j@jannau.net>
 
-Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- tools/testing/selftests/kvm/lib/x86_64/tdx.h  |  1 +
- .../selftests/kvm/lib/x86_64/tdx_lib.c        | 52 +++++++++++++++++--
- .../selftests/kvm/x86_64/tdx_vm_tests.c       |  3 ++
- 3 files changed, 53 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/lib/x86_64/tdx.h b/tools/testing/selftests/kvm/lib/x86_64/tdx.h
-index be8564f4672d..bfa3709a76e5 100644
---- a/tools/testing/selftests/kvm/lib/x86_64/tdx.h
-+++ b/tools/testing/selftests/kvm/lib/x86_64/tdx.h
-@@ -119,6 +119,7 @@ struct page_table {
- void add_td_memory(struct kvm_vm *vm, void *source_page,
- 		   uint64_t gpa, int size);
- void finalize_td_memory(struct kvm_vm *vm);
-+void get_tdx_capabilities(struct kvm_vm *vm);
- void initialize_td(struct kvm_vm *vm);
- void initialize_td_with_attributes(struct kvm_vm *vm, uint64_t attributes);
- void initialize_td_vcpu(struct kvm_vcpu *vcpu);
-diff --git a/tools/testing/selftests/kvm/lib/x86_64/tdx_lib.c b/tools/testing/selftests/kvm/lib/x86_64/tdx_lib.c
-index 23893949c3a1..b07af314737a 100644
---- a/tools/testing/selftests/kvm/lib/x86_64/tdx_lib.c
-+++ b/tools/testing/selftests/kvm/lib/x86_64/tdx_lib.c
-@@ -27,10 +27,9 @@ char *tdx_cmd_str[] = {
- #define XFEATURE_MASK_XTILE	(XFEATURE_MASK_XTILECFG | XFEATURE_MASK_XTILEDATA)
+(no changes since v3)
+
+Changes in v3:
+- apply change to io-pgtable-dart.c
+
+Changes in v2:
+- use APPLE_DART2 PTE format for dart-t6000
+
+ drivers/iommu/apple-dart.c | 24 +++++++++++++++++++++---
+ 1 file changed, 21 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+index 8af0242a90d9..e5793c0d08b4 100644
+--- a/drivers/iommu/apple-dart.c
++++ b/drivers/iommu/apple-dart.c
+@@ -81,10 +81,16 @@
+ #define DART_TTBR_VALID BIT(31)
+ #define DART_TTBR_SHIFT 12
  
- 
--static void tdx_ioctl(int fd, int ioctl_no, uint32_t flags, void *data)
-+static int __tdx_ioctl(int fd, int ioctl_no, uint32_t flags, void *data)
- {
- 	struct kvm_tdx_cmd tdx_cmd;
--	int r;
- 
- 	TEST_ASSERT(ioctl_no < TDX_MAX_CMD_STR, "Unknown TDX CMD : %d\n",
- 		    ioctl_no);
-@@ -39,7 +38,15 @@ static void tdx_ioctl(int fd, int ioctl_no, uint32_t flags, void *data)
- 	tdx_cmd.id = ioctl_no;
- 	tdx_cmd.flags = flags;
- 	tdx_cmd.data = (uint64_t)data;
--	r = ioctl(fd, KVM_MEMORY_ENCRYPT_OP, &tdx_cmd);
-+	return ioctl(fd, KVM_MEMORY_ENCRYPT_OP, &tdx_cmd);
-+}
-+
-+
-+static void tdx_ioctl(int fd, int ioctl_no, uint32_t flags, void *data)
-+{
-+	int r;
-+
-+	r = __tdx_ioctl(fd, ioctl_no, flags, data);
- 	TEST_ASSERT(r == 0, "%s failed: %d  %d", tdx_cmd_str[ioctl_no], r,
- 		    errno);
- }
-@@ -77,6 +84,45 @@ static struct tdx_cpuid_data get_tdx_cpuid_data(struct kvm_vm *vm)
- 	return cpuid_data;
- }
- 
-+/* Call KVM_TDX_CAPABILITIES for API test. The result isn't used. */
-+void get_tdx_capabilities(struct kvm_vm *vm)
-+{
-+	int i;
-+	int rc;
-+	int nr_cpuid_configs = 8;
-+	struct kvm_tdx_capabilities *tdx_cap = NULL;
-+
-+	while (true) {
-+		tdx_cap = realloc(
-+			tdx_cap, sizeof(*tdx_cap) +
-+			nr_cpuid_configs * sizeof(*tdx_cap->cpuid_configs));
-+		tdx_cap->nr_cpuid_configs = nr_cpuid_configs;
-+		TEST_ASSERT(tdx_cap != NULL,
-+			"Could not allocate memory for tdx capability "
-+			"nr_cpuid_configs %d\n", nr_cpuid_configs);
-+		rc = __tdx_ioctl(vm->fd, KVM_TDX_CAPABILITIES, 0, tdx_cap);
-+		if (rc < 0 && errno == E2BIG) {
-+			nr_cpuid_configs *= 2;
-+			continue;
-+		}
-+		TEST_ASSERT(rc == 0, "%s failed: %d %d",
-+			tdx_cmd_str[KVM_TDX_CAPABILITIES], rc, errno);
-+		break;
-+	}
-+	pr_debug("tdx_cap: attrs: fixed0 0x%016llx fixed1 0x%016llx\n"
-+		"tdx_cap: xfam fixed0 0x%016llx fixed1 0x%016llx\n",
-+		tdx_cap->attrs_fixed0, tdx_cap->attrs_fixed1,
-+		tdx_cap->xfam_fixed0, tdx_cap->xfam_fixed1);
-+	for (i = 0; i < tdx_cap->nr_cpuid_configs; i++) {
-+		const struct kvm_tdx_cpuid_config *config =
-+			&tdx_cap->cpuid_configs[i];
-+		pr_debug("cpuid config[%d]: leaf 0x%x sub_leaf 0x%x "
-+			"eax 0x%08x ebx 0x%08x ecx 0x%08x edx 0x%08x\n",
-+			i, config->leaf, config->sub_leaf,
-+			config->eax, config->ebx, config->ecx, config->edx);
-+	}
-+}
++struct apple_dart_hw {
++	u32 oas;
++	enum io_pgtable_fmt fmt;
++};
 +
  /*
-  * Initialize a VM as a TD with attributes.
+  * Private structure associated with each DART device.
   *
-diff --git a/tools/testing/selftests/kvm/x86_64/tdx_vm_tests.c b/tools/testing/selftests/kvm/x86_64/tdx_vm_tests.c
-index a96abada54b6..b3f9e3fa41f4 100644
---- a/tools/testing/selftests/kvm/x86_64/tdx_vm_tests.c
-+++ b/tools/testing/selftests/kvm/x86_64/tdx_vm_tests.c
-@@ -197,6 +197,9 @@ void verify_td_lifecycle(void)
- 	/* Create a TD VM with no memory.*/
- 	vm = vm_create_tdx();
+  * @dev: device struct
++ * @hw: SoC-specific hardware data
+  * @regs: mapped MMIO region
+  * @irq: interrupt number, can be shared with other DARTs
+  * @clks: clocks associated with this DART
+@@ -98,6 +104,7 @@
+  */
+ struct apple_dart {
+ 	struct device *dev;
++	const struct apple_dart_hw *hw;
  
-+	/* Get TDX capabilities */
-+	get_tdx_capabilities(vm);
+ 	void __iomem *regs;
+ 
+@@ -421,13 +428,13 @@ static int apple_dart_finalize_domain(struct iommu_domain *domain,
+ 	pgtbl_cfg = (struct io_pgtable_cfg){
+ 		.pgsize_bitmap = dart->pgsize,
+ 		.ias = 32,
+-		.oas = 36,
++		.oas = dart->hw->oas,
+ 		.coherent_walk = 1,
+ 		.iommu_dev = dart->dev,
+ 	};
+ 
+ 	dart_domain->pgtbl_ops =
+-		alloc_io_pgtable_ops(APPLE_DART, &pgtbl_cfg, domain);
++		alloc_io_pgtable_ops(dart->hw->fmt, &pgtbl_cfg, domain);
+ 	if (!dart_domain->pgtbl_ops) {
+ 		ret = -ENOMEM;
+ 		goto done;
+@@ -858,6 +865,7 @@ static int apple_dart_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	dart->dev = dev;
++	dart->hw = of_device_get_match_data(dev);
+ 	spin_lock_init(&dart->lock);
+ 
+ 	dart->regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+@@ -946,8 +954,18 @@ static int apple_dart_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++static const struct apple_dart_hw apple_dart_hw_t8103 = {
++	.oas = 36,
++	.fmt = APPLE_DART,
++};
++static const struct apple_dart_hw apple_dart_hw_t6000 = {
++	.oas = 42,
++	.fmt = APPLE_DART2,
++};
 +
- 	/* Allocate TD guest memory and initialize the TD.*/
- 	initialize_td(vm);
- 
+ static const struct of_device_id apple_dart_of_match[] = {
+-	{ .compatible = "apple,t8103-dart", .data = NULL },
++	{ .compatible = "apple,t8103-dart", .data = &apple_dart_hw_t8103 },
++	{ .compatible = "apple,t6000-dart", .data = &apple_dart_hw_t6000 },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, apple_dart_of_match);
 -- 
-2.25.1
+2.35.1
 
-On Tue, Aug 30, 2022 at 10:19:43PM +0000,
-Sagi Shahar <sagis@google.com> wrote:
-
-> Hello,
-> 
-> This is v2 of the patch series for TDX selftests.
-> 
-> It is based on v5.19-rc8 and Intel's V8 of the TDX host patches which
-> was proposed in https://lkml.org/lkml/2022/8/8/877
-> 
-> The tree can be found at
-> https://github.com/googleprodkernel/linux-cc/tree/selftests
-> 
-> Major changes vrom v1:
-> - rebased to v5.19
-> - added helpers for success and failure reporting
-> - added additional test cases
-> 
-> ---
-> TDX stands for Trust Domain Extensions which isolates VMs from the
-> virtual-machine manager (VMM)/hypervisor and any other software on the
-> platform.
-> 
-> Intel has recently submitted a set of RFC patches for KVM support for
-> TDX and more information can be found on the latest TDX Support
-> Patches: https://lkml.org/lkml/2022/8/8/877
-> 
-> Due to the nature of the confidential computing environment that TDX
-> provides, it is very difficult to verify/test the KVM support. TDX
-> requires UEFI and the guest kernel to be enlightened which are all under
-> development.
-> 
-> We are working on a set of selftests to close this gap and be able to
-> verify the KVM functionality to support TDX lifecycle and GHCI [1]
-> interface.
-> 
-> We are looking for any feedback on:
-> - Patch series itself
-> - Any suggestion on how we should approach testing TDX functionality.
-> Does selftests seems reasonable or should we switch to using KVM
-> unit tests. I would be happy to get some perspective on how KVM unit
-> tests can help us more.
-> - Any test case or scenario that we should add.
-> - Anything else I have not thought of yet.
-> 
-> Current patch series provide the following capabilities:
-> 
-> - Provide helper functions to create a TD (Trusted Domain) using the KVM
->   ioctls
-> - Provide helper functions to create a guest image that can include any
->   testing code
-> - Provide helper functions and wrapper functions to write testing code
->   using GHCI interface
-> - Add a test case that verifies TDX life cycle
-> - Add a test case that verifies TDX GHCI port IO
-> 
-> TODOs:
-> - Use existing function to create page tables dynamically
->   (ie __virt_pg_map())
-> - Remove arbitrary defined magic numbers for data structure offsets
-> - Add TDVMCALL for error reporting
-> - Add additional test cases as some listed below
-> - Add #VE handlers to help testing more complicated test cases
-> 
-> ---
-> Erdem Aktas (4):
->   KVM: selftests: Add support for creating non-default type VMs
->   KVM: selftest: Add helper functions to create TDX VMs
->   KVM: selftest: Adding TDX life cycle test.
->   KVM: selftest: Adding test case for TDX port IO
-> 
-> Roger Wang (1):
->   KVM: selftest: TDX: Add TDG.VP.INFO test
-> 
-> Ryan Afranji (2):
->   KVM: selftest: TDX: Verify the behavior when host consumes a TD
->     private memory
->   KVM: selftest: TDX: Add shared memory test
-> 
-> Sagi Shahar (10):
->   KVM: selftest: TDX: Add report_fatal_error test
->   KVM: selftest: TDX: Add basic TDX CPUID test
->   KVM: selftest: TDX: Add basic get_td_vmcall_info test
->   KVM: selftest: TDX: Add TDX IO writes test
->   KVM: selftest: TDX: Add TDX IO reads test
->   KVM: selftest: TDX: Add TDX MSR read/write tests
->   KVM: selftest: TDX: Add TDX HLT exit test
->   KVM: selftest: TDX: Add TDX MMIO reads test
->   KVM: selftest: TDX: Add TDX MMIO writes test
->   KVM: selftest: TDX: Add TDX CPUID TDVMCALL test
-> 
->  tools/testing/selftests/kvm/Makefile          |    2 +
->  .../selftests/kvm/include/kvm_util_base.h     |   12 +-
->  .../selftests/kvm/include/x86_64/processor.h  |    1 +
->  tools/testing/selftests/kvm/lib/kvm_util.c    |    6 +-
->  .../selftests/kvm/lib/x86_64/processor.c      |   27 +
->  tools/testing/selftests/kvm/lib/x86_64/tdx.h  |  495 +++++
->  .../selftests/kvm/lib/x86_64/tdx_lib.c        |  373 ++++
->  .../selftests/kvm/x86_64/tdx_vm_tests.c       | 1666 +++++++++++++++++
->  8 files changed, 2577 insertions(+), 5 deletions(-)
->  create mode 100644 tools/testing/selftests/kvm/lib/x86_64/tdx.h
->  create mode 100644 tools/testing/selftests/kvm/lib/x86_64/tdx_lib.c
->  create mode 100644 tools/testing/selftests/kvm/x86_64/tdx_vm_tests.c
-> 
-> -- 
-> 2.37.2.789.g6183377224-goog
-> 
-
--- 
-Isaku Yamahata <isaku.yamahata@gmail.com>
