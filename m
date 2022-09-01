@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB5F8ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 22:18:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9924ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 22:18:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233374AbiIAWSd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 18:18:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45784 "EHLO
+        id S234916AbiIAWSl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 18:18:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234469AbiIAWSC (ORCPT
+        with ESMTP id S234587AbiIAWSD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 18:18:02 -0400
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4074F58091
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 15:18:01 -0700 (PDT)
-Received: by mail-qt1-x82a.google.com with SMTP id l5so238841qtv.4
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 15:18:01 -0700 (PDT)
+        Thu, 1 Sep 2022 18:18:03 -0400
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB987580B6
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 15:18:02 -0700 (PDT)
+Received: by mail-qv1-xf31.google.com with SMTP id y17so171048qvr.5
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 15:18:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=joelfernandes.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=8tBDdZaeoT3b5CBzqvW/ZB2aZTVcUlmvdmlRm1sAyM4=;
-        b=QBkSAea3WwRWmhiRWRuvpOfEw+FTTLufqMSEdc1gAtyAq+xBunox+Nuh8C6IUqQDo1
-         +LxFhVcyiQIx4jvB2azfPR7AmGcN5zZvubRtp5adhPS46cT5+VACoX35Em9rNj9ukK+M
-         L11Wz8mOl+0mNcbPFv1bMoPDD7RhIAz59Gntw=
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=5Y5kbAl2ZL0hvyMP3+b8/GM5tIuNKa2oHKBHOOJke14=;
+        b=DLk0B/+Kjl2sEDnaJ5HNoOkF5QFsAHl3d/WO0kQdWt7MwUX6E9cr00jSheEW6r0ohh
+         eKqnQ2mBJFjJ3kK0CphbuerOCVjht107mlZlGLAxmmWEJQT3dq2Zm0nFUcX0KPUZ68Qt
+         UbZiWOQ9CWe4p662dEMWk9EB4AQrJh0Qr8MdY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=8tBDdZaeoT3b5CBzqvW/ZB2aZTVcUlmvdmlRm1sAyM4=;
-        b=tibIpqqbxmT2x6BuQQK1w54RI93xQjWD/EZSBoX8EmbEOVeRyVMzZkBMQSNbBrZeg5
-         dGhdZTPk+TkUs/5tlw4iK33GxQXGFegz4DSiGoI9bisVixAZt12K95i07qiynJmG4L/I
-         2BX1IIbPwmy6YpnLPCMH68iHAJrEWrbR9dZeWhycD9EYWabK5ua6knEHSP58QbFiyIf+
-         8AJkf2TeKEMou9jhCpZi4ZTflvLGhDy2PmjgHv6lpGBUZD9S1s9Yvnw4wxmGp/RiRiRV
-         y34tPepGSiyKafsRByvk6SzI2Hut8wrDG7UxILxARb7UTkT0Cj061UGznewUp1DzOmXi
-         /xrg==
-X-Gm-Message-State: ACgBeo2fNhQ2262CYFWGr9CNO6+7iPNXh9x4B0fGOc6WgUXwiz3Ex3Cd
-        bhmx5PZ0M70XD79uhgOmzNELI+M9Ma1oFw==
-X-Google-Smtp-Source: AA6agR4RLjnlk0HhdTMZyE6uJDeBeCmArIKBraVqa1sV/k/4xV1xpnGzfyzL2EqEG8NqbDqWrq33bg==
-X-Received: by 2002:a05:622a:649:b0:343:7b74:5cd1 with SMTP id a9-20020a05622a064900b003437b745cd1mr26095535qtb.407.1662070680221;
-        Thu, 01 Sep 2022 15:18:00 -0700 (PDT)
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=5Y5kbAl2ZL0hvyMP3+b8/GM5tIuNKa2oHKBHOOJke14=;
+        b=vsdCds4KjKjgaxmU56IoN113fLi8jlVQnywXEG3e/fpeb1rSIabf/n3S3SNcSKFVE0
+         e5FpdSZaPpB7gaqigU2pnIVnlyBJnAfTm74aF7g1dk9Wb3WENwGuekMV/DoZ/+ikg2xM
+         Zp0Yv6ClLlmJhL/R18xeEAugCmoQUaodgviizowNrySOEzdi28NrLnPIf/KFh+bRmjLG
+         VoH0AVHT7FZG4dVuDCDmmG55+WgtOfviBd8y0V6NULKbj4XjoqwwV9QsTIkk0fjnE+19
+         e9aG5wEsnl5PCCx88HQ2sj0KuyQKgstB7pf9ZowHblD4Dhb9T87U2oZQ3eCp4pJcGHk4
+         2KIw==
+X-Gm-Message-State: ACgBeo05EFOFiG/riAM3MtXsHq5YXYfc24GGv4yGlTEb9EZGAt++cAwn
+        zWBzsJK0wnC60kmnuohrQFFeQg==
+X-Google-Smtp-Source: AA6agR5SVRH/RM5xAYfxYhk8E1h0qVAjY9FUK/2Tu/dAn793HN5Tons0Nj46w1jA+Idc8q2jHDCtow==
+X-Received: by 2002:ad4:5bc2:0:b0:499:2c2c:1b0b with SMTP id t2-20020ad45bc2000000b004992c2c1b0bmr4677172qvt.115.1662070682335;
+        Thu, 01 Sep 2022 15:18:02 -0700 (PDT)
 Received: from joelboxx.c.googlers.com.com (228.221.150.34.bc.googleusercontent.com. [34.150.221.228])
-        by smtp.gmail.com with ESMTPSA id s16-20020ac85290000000b0034305a91aaesm11060794qtn.83.2022.09.01.15.17.59
+        by smtp.gmail.com with ESMTPSA id s16-20020ac85290000000b0034305a91aaesm11060794qtn.83.2022.09.01.15.18.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 15:17:59 -0700 (PDT)
+        Thu, 01 Sep 2022 15:18:01 -0700 (PDT)
 From:   "Joel Fernandes (Google)" <joel@joelfernandes.org>
 To:     rcu@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, rushikesh.s.kadam@intel.com,
         urezki@gmail.com, neeraj.iitr10@gmail.com, frederic@kernel.org,
         paulmck@kernel.org, rostedt@goodmis.org, vineeth@bitbyteword.org,
-        boqun.feng@gmail.com,
-        "Joel Fernandes (Google)" <joel@joelfernandes.org>
-Subject: [PATCH v5 04/18] rcu: Fix late wakeup when flush of bypass cblist happens
-Date:   Thu,  1 Sep 2022 22:17:06 +0000
-Message-Id: <20220901221720.1105021-5-joel@joelfernandes.org>
+        boqun.feng@gmail.com, Joel Fernandes <joel@joelfernandes.org>
+Subject: [PATCH v5 07/18] rcu: shrinker for lazy rcu
+Date:   Thu,  1 Sep 2022 22:17:09 +0000
+Message-Id: <20220901221720.1105021-8-joel@joelfernandes.org>
 X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
 In-Reply-To: <20220901221720.1105021-1-joel@joelfernandes.org>
 References: <20220901221720.1105021-1-joel@joelfernandes.org>
@@ -64,45 +64,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the bypass cblist gets too big or its timeout has occurred, it is
-flushed into the main cblist. However, the bypass timer is still running
-and the behavior is that it would eventually expire and wake the GP
-thread.
+From: Vineeth Pillai <vineeth@bitbyteword.org>
 
-Since we are going to use the bypass cblist for lazy CBs, do the wakeup
-soon as the flush happens. Otherwise, the lazy-timer will go off much
-later and the now-non-lazy cblist CBs can get stranded for the duration
-of the timer.
+The shrinker is used to speed up the free'ing of memory potentially held
+by RCU lazy callbacks. RCU kernel module test cases show this to be
+effective. Test is introduced in a later patch.
 
-This is a good thing to do anyway (regardless of this series), since it
-makes the behavior consistent with behavior of other code paths where queueing
-something into the ->cblist makes the GP kthread in a non-sleeping state
-quickly.
-
+Signed-off-by: Vineeth Pillai <vineeth@bitbyteword.org>
 Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
 ---
- kernel/rcu/tree_nocb.h | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ kernel/rcu/tree_nocb.h | 52 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 52 insertions(+)
 
 diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
-index 0a5f0ef41484..31068dd31315 100644
+index 7e97a7b6e046..560ba87911c5 100644
 --- a/kernel/rcu/tree_nocb.h
 +++ b/kernel/rcu/tree_nocb.h
-@@ -447,7 +447,13 @@ static bool rcu_nocb_try_bypass(struct rcu_data *rdp, struct rcu_head *rhp,
- 			rcu_advance_cbs_nowake(rdp->mynode, rdp);
- 			rdp->nocb_gp_adv_time = j;
- 		}
--		rcu_nocb_unlock_irqrestore(rdp, flags);
-+
-+		// The flush succeeded and we moved CBs into the ->cblist.
-+		// However, the bypass timer might still be running. Wakeup the
-+		// GP thread by calling a helper with was_all_done set so that
-+		// wake up happens (needed if main CB list was empty before).
-+		__call_rcu_nocb_wake(rdp, true, flags)
-+
- 		return true; // Callback already enqueued.
- 	}
+@@ -1333,6 +1333,55 @@ int rcu_nocb_cpu_offload(int cpu)
+ }
+ EXPORT_SYMBOL_GPL(rcu_nocb_cpu_offload);
  
++static unsigned long
++lazy_rcu_shrink_count(struct shrinker *shrink, struct shrink_control *sc)
++{
++	int cpu;
++	unsigned long count = 0;
++
++	/* Snapshot count of all CPUs */
++	for_each_possible_cpu(cpu) {
++		struct rcu_data *rdp = per_cpu_ptr(&rcu_data, cpu);
++
++		count +=  READ_ONCE(rdp->lazy_len);
++	}
++
++	return count ? count : SHRINK_EMPTY;
++}
++
++static unsigned long
++lazy_rcu_shrink_scan(struct shrinker *shrink, struct shrink_control *sc)
++{
++	int cpu;
++	unsigned long flags;
++	unsigned long count = 0;
++
++	/* Snapshot count of all CPUs */
++	for_each_possible_cpu(cpu) {
++		struct rcu_data *rdp = per_cpu_ptr(&rcu_data, cpu);
++		int _count = READ_ONCE(rdp->lazy_len);
++
++		if (_count == 0)
++			continue;
++		rcu_nocb_lock_irqsave(rdp, flags);
++		WRITE_ONCE(rdp->lazy_len, 0);
++		rcu_nocb_unlock_irqrestore(rdp, flags);
++		wake_nocb_gp(rdp, false);
++		sc->nr_to_scan -= _count;
++		count += _count;
++		if (sc->nr_to_scan <= 0)
++			break;
++	}
++	return count ? count : SHRINK_STOP;
++}
++
++static struct shrinker lazy_rcu_shrinker = {
++	.count_objects = lazy_rcu_shrink_count,
++	.scan_objects = lazy_rcu_shrink_scan,
++	.batch = 0,
++	.seeks = DEFAULT_SEEKS,
++};
++
+ void __init rcu_init_nohz(void)
+ {
+ 	int cpu;
+@@ -1367,6 +1416,9 @@ void __init rcu_init_nohz(void)
+ 	if (!rcu_state.nocb_is_setup)
+ 		return;
+ 
++	if (register_shrinker(&lazy_rcu_shrinker, "rcu-lazy"))
++		pr_err("Failed to register lazy_rcu shrinker!\n");
++
+ #if defined(CONFIG_NO_HZ_FULL)
+ 	if (tick_nohz_full_running)
+ 		cpumask_or(rcu_nocb_mask, rcu_nocb_mask, tick_nohz_full_mask);
 -- 
 2.37.2.789.g6183377224-goog
 
