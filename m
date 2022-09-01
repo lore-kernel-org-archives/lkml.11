@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D22CCECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 18:44:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DBB0ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 18:44:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234496AbiIASn6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 14:43:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59850 "EHLO
+        id S233598AbiIASoO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 14:44:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234212AbiIASni (ORCPT
+        with ESMTP id S234299AbiIASnj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 14:43:38 -0400
+        Thu, 1 Sep 2022 14:43:39 -0400
 Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F4DE57541;
-        Thu,  1 Sep 2022 11:43:37 -0700 (PDT)
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 281G38R3000878;
-        Thu, 1 Sep 2022 18:43:27 GMT
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21F4052807;
+        Thu,  1 Sep 2022 11:43:39 -0700 (PDT)
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 281G33gR004160;
+        Thu, 1 Sep 2022 18:43:28 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-type; s=qcppdkim1;
- bh=yAIx0mlqGTKqxSJ+aVC5puIWgTyoKizN1OLwjGayuRA=;
- b=JQ3xH4BtZHEdtVJFU2ERuR6CwcPKVih8EgFZL94toyK8IT6qX3NkO0fMBzrBvdv1oZ5m
- wcDg05WYGSuf2UQrEu2Tcd4jBCzDNpNmtH0oOT1M7DcvEOiEYo0HrduxaEriwatQD5wc
- 6UL0UtE3QAbZH89GzVemOW2+qbV6XZ1qrfW0KtrthKsBsamwh9aayZ3zW2E8LM3G5isK
- g3ps+iwm9bT29yQ+zjk3+tXeq5gYEVBU43ulLNtB3PPeyglTn8iDgnQtjygd6QXbZ9FQ
- nwKRFp198yHtJ2Qo5evBqFdwsZuqwTnVjabzzipJR6HtdrHeWi2f7WieeR0ObugH7qSQ GA== 
+ bh=eUyzNrUe7h8wrZuH7Gy5duX/6zvORw6oWfUVvm+hwKw=;
+ b=Vly5QlKqv6mHfsaAoXwsaieoNYyxu6QRDQud0rJirWWR4wO6vE6M9VqudcQEY1CYEsBW
+ kBNeCMb8KLuCHM8k9EJxvA4g1vlJA+1JPlmMFxDncW000yuM+m5J13ZXnEyqU0+GtfKw
+ 0IwSAINsk8p4x/4lMuf2Oie1TEBK4u7h2L4YvsX+Eo42LN4EsSdvdpaokGCkapS+lD/P
+ tLottxqy9UEcUDu5DmIJLi0dMjlc7t1hSoxGSj5l+6uPp4PJSWLKW6dKOyaap+wbYo0u
+ JP2b4x1IInbhobb7TqHRCqXvu6APbNcoW0KODmFtV6e8RUI02bLsRZpFO7FJe07/E/PG 2w== 
 Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3jafkx3jau-1
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3jabgcvq30-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 18:43:27 +0000
+        Thu, 01 Sep 2022 18:43:28 +0000
 Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-        by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 281IhQqC006368
+        by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 281IhRR6006372
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 1 Sep 2022 18:43:26 GMT
+        Thu, 1 Sep 2022 18:43:27 GMT
 Received: from hu-wcheng-lv.qualcomm.com (10.49.16.6) by
  nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Thu, 1 Sep 2022 11:43:26 -0700
+ 15.2.986.29; Thu, 1 Sep 2022 11:43:27 -0700
 From:   Wesley Cheng <quic_wcheng@quicinc.com>
 To:     <balbi@kernel.org>, <gregkh@linuxfoundation.org>,
         <Thinh.Nguyen@synopsys.com>
 CC:     <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
         <quic_jackp@quicinc.com>, Wesley Cheng <quic_wcheng@quicinc.com>
-Subject: [PATCH v6 2/5] usb: dwc3: Remove DWC3 locking during gadget suspend/resume
-Date:   Thu, 1 Sep 2022 11:43:11 -0700
-Message-ID: <20220901184314.30481-3-quic_wcheng@quicinc.com>
+Subject: [PATCH v6 4/5] usb: dwc3: gadget: Skip waiting for CMDACT cleared during endxfer
+Date:   Thu, 1 Sep 2022 11:43:13 -0700
+Message-ID: <20220901184314.30481-5-quic_wcheng@quicinc.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220901184314.30481-1-quic_wcheng@quicinc.com>
 References: <20220901184314.30481-1-quic_wcheng@quicinc.com>
@@ -57,73 +57,45 @@ X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
  nalasex01b.na.qualcomm.com (10.47.209.197)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: 3h9tYwBc5rCD-qkBhMT-Tml0LMEIX8n_
-X-Proofpoint-GUID: 3h9tYwBc5rCD-qkBhMT-Tml0LMEIX8n_
+X-Proofpoint-ORIG-GUID: CMSsy1W_Wdbl6NmfraDuv3QHzhzkunom
+X-Proofpoint-GUID: CMSsy1W_Wdbl6NmfraDuv3QHzhzkunom
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-09-01_12,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 phishscore=0
- clxscore=1015 spamscore=0 mlxlogscore=652 malwarescore=0 impostorscore=0
- priorityscore=1501 adultscore=0 lowpriorityscore=0 mlxscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2209010080
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 mlxscore=0
+ lowpriorityscore=0 adultscore=0 clxscore=1015 phishscore=0 bulkscore=0
+ priorityscore=1501 mlxlogscore=458 spamscore=0 malwarescore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2209010080
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the need for making dwc3_gadget_suspend() and dwc3_gadget_resume()
-to be called in a spinlock, as dwc3_gadget_run_stop() could potentially
-take some time to complete.
+For endxfer commands that do not require an endpoint complete interrupt,
+avoid having to wait for the command active bit to clear.  This allows for
+EP0 events to continue to be handled, which allows for the controller to
+complete it.  Otherwise, it is known that the endxfer command will fail if
+there is a pending SETUP token that needs to be read.
 
+Suggested-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Reviewed-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
 Signed-off-by: Wesley Cheng <quic_wcheng@quicinc.com>
 ---
- drivers/usb/dwc3/core.c   | 4 ----
- drivers/usb/dwc3/gadget.c | 5 +++++
- 2 files changed, 5 insertions(+), 4 deletions(-)
+ drivers/usb/dwc3/gadget.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
-index c5c238ab3083..23e123a1ab5f 100644
---- a/drivers/usb/dwc3/core.c
-+++ b/drivers/usb/dwc3/core.c
-@@ -1976,9 +1976,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
- 	case DWC3_GCTL_PRTCAP_DEVICE:
- 		if (pm_runtime_suspended(dwc->dev))
- 			break;
--		spin_lock_irqsave(&dwc->lock, flags);
- 		dwc3_gadget_suspend(dwc);
--		spin_unlock_irqrestore(&dwc->lock, flags);
- 		synchronize_irq(dwc->irq_gadget);
- 		dwc3_core_exit(dwc);
- 		break;
-@@ -2039,9 +2037,7 @@ static int dwc3_resume_common(struct dwc3 *dwc, pm_message_t msg)
- 			return ret;
- 
- 		dwc3_set_prtcap(dwc, DWC3_GCTL_PRTCAP_DEVICE);
--		spin_lock_irqsave(&dwc->lock, flags);
- 		dwc3_gadget_resume(dwc);
--		spin_unlock_irqrestore(&dwc->lock, flags);
- 		break;
- 	case DWC3_GCTL_PRTCAP_HOST:
- 		if (!PMSG_IS_AUTO(msg) && !device_can_wakeup(dwc->dev)) {
 diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
-index 6f2491fc109e..08281c4f47e6 100644
+index c9310645701d..4721561e4ba5 100644
 --- a/drivers/usb/dwc3/gadget.c
 +++ b/drivers/usb/dwc3/gadget.c
-@@ -4520,12 +4520,17 @@ void dwc3_gadget_exit(struct dwc3 *dwc)
+@@ -366,7 +366,9 @@ int dwc3_send_gadget_ep_cmd(struct dwc3_ep *dep, unsigned int cmd,
  
- int dwc3_gadget_suspend(struct dwc3 *dwc)
- {
-+	unsigned long flags;
-+
- 	if (!dwc->gadget_driver)
- 		return 0;
+ 	dwc3_writel(dep->regs, DWC3_DEPCMD, cmd);
  
- 	dwc3_gadget_run_stop(dwc, false, false);
-+
-+	spin_lock_irqsave(&dwc->lock, flags);
- 	dwc3_disconnect_gadget(dwc);
- 	__dwc3_gadget_stop(dwc);
-+	spin_unlock_irqrestore(&dwc->lock, flags);
- 
- 	return 0;
- }
+-	if (!(cmd & DWC3_DEPCMD_CMDACT)) {
++	if (!(cmd & DWC3_DEPCMD_CMDACT) ||
++		(DWC3_DEPCMD_CMD(cmd) == DWC3_DEPCMD_ENDTRANSFER &&
++		!(cmd & DWC3_DEPCMD_CMDIOC))) {
+ 		ret = 0;
+ 		goto skip_status;
+ 	}
