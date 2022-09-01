@@ -2,130 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1900DECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:33:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9875ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 07:33:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232702AbiIAHdO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 03:33:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33458 "EHLO
+        id S233754AbiIAHdV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 03:33:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233875AbiIAHcv (ORCPT
+        with ESMTP id S233556AbiIAHc4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 03:32:51 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2041.outbound.protection.outlook.com [40.107.94.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EC4275385;
-        Thu,  1 Sep 2022 00:30:08 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DxaRjPXrlovx3HUJrbsBsRSbLi/PsgQJJPrFZCiWLx0PLCi+anLGkFgz0/OFNTDdQbmw747OjiCLRzgmFAElk8yYm8iWQn0oqwvDXAD839zqkZPyrAtJmlaKDKkshu5ZfDLvJhQYsDWiIjnumc9MdsEMFSYnQXLsTzot2G6mLG5y1m8fPZhcpxzIg4R/ARX/Z8PFgqqgDVzY39rpPl3+eT+XFggY1XcfOnro/yBPdnGdp8GYadrZ/kMA9ossyp0ias+dqQBSZkRXPg/pwZBkFSIPPv55G/iMqeQXpl9WBoqFo4z8mS1BgVraq38K86fxkrD1XJ7fXnAGoAwvfOpPMA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Kx8kUA9NwQ0apaSQPrbjUFtSy6LFo5vERAMcEpnOd00=;
- b=RxlqnDh1c7uRCIw5woHrnyko3wM5gaJn5gZ0YFZv8MeDtozz/et1eDdlM95BqAlIjEpZjPyQiX3tk++BFU+AKOb98p5rcJW9AknaDzfEsj/SRaqRgwQVYN2vDX98VEk2uLvVdcg4Ez0b52rr/Lbi9MncrDs2btPhZECQVM5SjTeSH6F+wfmLT0yMt70TuNZnjL0KcSb9LgC6qoroLx1jC198IQMrNK1F1TM/LovQofrLZRwH0L4C2mUiZWgo+Z6g/3G5ymE2ROuMXRlHcoBafTXh//y4AgBvT6JHEPVnPEbVuXskQ2aGUgG2KbuuN3wgGo2KESlaD9hi2Z8DXXJ1/w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=microchip.com smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Kx8kUA9NwQ0apaSQPrbjUFtSy6LFo5vERAMcEpnOd00=;
- b=gRhwVvzzBE/1LYooq63j+sv1uo7XPzvMhlB2MnMnrSjVS+N1GMbhoM03vhiH2kHoxnCDxMQbC1iu69J27hXPJAlywYz2BxkRUxbzyUjFb0fBHsU7TocUqvrK99gOg9kbbhcidJ5h9E2wUAJkTFVwk7/si+OmrqRHyMjTbLh47W8=
-Received: from MW4PR04CA0067.namprd04.prod.outlook.com (2603:10b6:303:6b::12)
- by SA1PR12MB7037.namprd12.prod.outlook.com (2603:10b6:806:24c::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.14; Thu, 1 Sep
- 2022 07:30:06 +0000
-Received: from CO1NAM11FT096.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:6b:cafe::7b) by MW4PR04CA0067.outlook.office365.com
- (2603:10b6:303:6b::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10 via Frontend
- Transport; Thu, 1 Sep 2022 07:30:06 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT096.mail.protection.outlook.com (10.13.175.84) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5588.10 via Frontend Transport; Thu, 1 Sep 2022 07:30:06 +0000
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 1 Sep
- 2022 02:30:02 -0500
-Received: from xhdlakshmis40.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
- Transport; Thu, 1 Sep 2022 02:29:58 -0500
-From:   Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <pratyush@kernel.org>,
-        Michael Walle <michael@walle.cc>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        "Vignesh Raghavendra" <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>
-CC:     <devicetree@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <saikrishna12468@gmail.com>,
-        <git@amd.com>, Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
-Subject: [PATCH v2 1/2] dt-bindings: mtd: spi-nor: Add reset-gpios property
-Date:   Thu, 1 Sep 2022 12:59:13 +0530
-Message-ID: <20220901072914.30205-2-sai.krishna.potthuri@amd.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220901072914.30205-1-sai.krishna.potthuri@amd.com>
-References: <20220901072914.30205-1-sai.krishna.potthuri@amd.com>
+        Thu, 1 Sep 2022 03:32:56 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F6C8AA3D1
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 00:30:28 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id g7so6208464lfe.11
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 00:30:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=Yq1f5sXSl9dJBBsa4JJtzhgEzf3Vcbcgdkoadank0UY=;
+        b=djMelikWbC/lJ29b+RcknkU1Y10YBy9OxcmWeKREbcDJZ7sIMbL7ZYDHEtfg7WWj/e
+         C3PYlYa3kq3VB8KYoyf9BFYkRuA92YeiaVrBAE7jPxx90EZaorcQn4NE7uKUwV+x87ci
+         4+EE7VD/aU1mjDn5J4ZjZoDb/drWpjXr0y9Dgnbpz124meHVprM6tAfv3z3P4IxXIwQi
+         H8mZ/M9p+vrlDwmZNgDeZGS9rYUMB98eJP+9QXE25bCbHVOziulP5lvdpsZhI/6WnGDa
+         k6SrtklCLROaDxYaqRxIe/BfgB96gPTfuLve0ZIP1B4LRFM95B5IDAbwI+SXdvVZY+Rd
+         uDxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=Yq1f5sXSl9dJBBsa4JJtzhgEzf3Vcbcgdkoadank0UY=;
+        b=IzrocllCujDcvYWbMGtux+7R9gWeJ79cvuDAvB4LrtlC8StIGiHjUJCltCRmBv5GJL
+         RbDsUcR13GwG7T2vztWsy2wRw+OT4lIPLmA8kiSeVClVY9SF+Su+NyiRES3B2dLuyLxR
+         SCiNrLCpNeyqBQWfF3a3pacG0QSFosp6ugtmH6gvzu+sPMNupMjlrFQWS0Ct6jCUlOXV
+         UPrFg9mCYjBN8UMDLFRT7RaJcIUZss3AQAL6eYlUtFdVLBZo5ZwsfR4bNiYiXGh85FwG
+         uOhXFX8ubYA/nzNUVuZaG6YaXdJYQgzdqq4xLpHs5L0iwpyhnqeknpycywyGtUvfGaHg
+         Rnog==
+X-Gm-Message-State: ACgBeo26JO8shpFFDRaOzYWYZ28s+figzrjBlh3zb9sGSHp/ryKF0ZUu
+        3SxOAV9EOmuiD1hetIvUQrju3A==
+X-Google-Smtp-Source: AA6agR7yPEX4lBca6MaRVV7FLC8JsJi9f1Qnc5BJpKL2yg/lvtRzib/see+UUQqoafpytn52CBFq6A==
+X-Received: by 2002:a05:6512:1395:b0:48d:81c:5159 with SMTP id p21-20020a056512139500b0048d081c5159mr11687844lfa.375.1662017426392;
+        Thu, 01 Sep 2022 00:30:26 -0700 (PDT)
+Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
+        by smtp.gmail.com with ESMTPSA id h6-20020a2ea486000000b00268bc2c1ed0sm151744lji.22.2022.09.01.00.30.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Sep 2022 00:30:25 -0700 (PDT)
+Message-ID: <aac3942d-bc0b-7763-0d12-f5d6c585cc97@linaro.org>
+Date:   Thu, 1 Sep 2022 10:30:24 +0300
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 04794441-b0c1-479d-788d-08da8bebcade
-X-MS-TrafficTypeDiagnostic: SA1PR12MB7037:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: i1c38dn6Ywr4Fd8rKbu/VbyUpVXO5mVfn5n4D9zbXQc2RCSHuxP6FdChk4EO0dWuxS7kRS5+950G23YXBKou+RrZJpB4JDiPaEU8Vp7LM5TMI8XRLJiwqt8HmOjDXDRQEPhokwU07Y0PpW2chbJbGMfjqxDsut2XGhlm8nSdcQlYlKGNMwW4IyeeCfUuMkI88buaHgagKOHfNHItwY9Rtzg+j+7BUH0yjvJi+w1P7QYAvKU5+ThndMKK+fT8Bd7l0i06yacXf0cPz3DCaeTcBgff3WYmQqsJAZogYXaPPtDcQi+niMhTM88NdrecZiLmNDKU8jGALbvPCB4SQJ1R1OFzuqd5wPnNwWMRnaXX0S7xhampVu46/uryMuggEunk4yFe5euNxuSvZ9Z4R4287hJfFlkmIS1ryMGNsdYeCy7vpAcCby7NPQ9Hpux6E47pakUvhk6oBY5nDBk35tjZIFMWoH5FsVoi/cqsTOX0AKMp6+Vn750F8tNa1id4P3+B6qy3wYhLCVT4v8Ie+OBnMkwgoOgfrNlluJjm8GI+WvTbE1DNsSChs34PE94C85lR3RkPjiGEtyYgO4QLyWKp3lFcnCYl4yTLyBAMwn+WjpKcf6qTjSV5dGJeYzkriLt+/sx8t3CDiPFzcr5dVO2KwYlPyZx4bm13MpJ9i2lkMRRF8/ZqlcQOhIwbw5hNaPYAZSBEM7jw6bXrS5VjJE4jO0bmbZ7yrZS9pepTsSJ/1+Ai4zfDGgzlJCAVJkTSDyEmlIT7GMvqSuNPVoLATRT1pP9o/UwUnwZgT4ZAYhBm8ppSCbnJ/Iw6iv+QsExrXwxg
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(376002)(136003)(39860400002)(396003)(346002)(40470700004)(36840700001)(46966006)(4326008)(356005)(2616005)(478600001)(36860700001)(336012)(47076005)(8936002)(1076003)(186003)(82740400003)(40460700003)(426003)(5660300002)(70586007)(81166007)(8676002)(36756003)(7416002)(41300700001)(2906002)(316002)(70206006)(40480700001)(26005)(54906003)(82310400005)(103116003)(4744005)(110136005)(6666004)(86362001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2022 07:30:06.1780
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 04794441-b0c1-479d-788d-08da8bebcade
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT096.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB7037
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH 6/6] ASoC: codecs: tx-macro: add support for sm8450 and
+ sc8280xp
+Content-Language: en-US
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        broonie@kernel.org
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        perex@perex.cz, tiwai@suse.com,
+        pierre-louis.bossart@linux.intel.com,
+        linux-arm-msm@vger.kernel.org, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220818134619.3432-1-srinivas.kandagatla@linaro.org>
+ <20220818134619.3432-7-srinivas.kandagatla@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220818134619.3432-7-srinivas.kandagatla@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SPI-NOR flashes have RESET pin which can be toggled using GPIO
-controller, for those platforms reset-gpios property can be used to
-reset the flash device.
+On 18/08/2022 16:46, Srinivas Kandagatla wrote:
+> LPASS VA Macro now has soundwire master to deal with access to
+> analog mic in low power island use cases.
+> 
+> This is added after sc8280xp, add support for this.
+> Along with this also add compatibles for sm8450 and sc8280xp.
+> 
+> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> ---
+>  sound/soc/codecs/lpass-va-macro.c | 64 ++++++++++++++++++++++++++++++-
+>  1 file changed, 62 insertions(+), 2 deletions(-)
+> 
+> diff --git a/sound/soc/codecs/lpass-va-macro.c b/sound/soc/codecs/lpass-va-macro.c
+> index a35f684053d2..f8b0c8caa1db 100644
+> --- a/sound/soc/codecs/lpass-va-macro.c
+> +++ b/sound/soc/codecs/lpass-va-macro.c
+> @@ -25,6 +25,10 @@
+>  #define CDC_VA_FS_CONTROL_EN			BIT(0)
+>  #define CDC_VA_FS_COUNTER_CLR			BIT(1)
+>  #define CDC_VA_CLK_RST_CTRL_SWR_CONTROL		(0x0008)
+> +#define CDC_VA_SWR_RESET_MASK		BIT(1)
+> +#define CDC_VA_SWR_RESET_ENABLE		BIT(1)
+> +#define CDC_VA_SWR_CLK_EN_MASK		BIT(0)
+> +#define CDC_VA_SWR_CLK_ENABLE		BIT(0)
+>  #define CDC_VA_TOP_CSR_TOP_CFG0			(0x0080)
+>  #define CDC_VA_FS_BROADCAST_EN			BIT(1)
+>  #define CDC_VA_TOP_CSR_DMIC0_CTL		(0x0084)
+> @@ -66,6 +70,8 @@
+>  #define CDC_VA_TOP_CSR_SWR_MIC_CTL0		(0x00D0)
+>  #define CDC_VA_TOP_CSR_SWR_MIC_CTL1		(0x00D4)
+>  #define CDC_VA_TOP_CSR_SWR_MIC_CTL2		(0x00D8)
+> +#define CDC_VA_SWR_MIC_CLK_SEL_0_1_MASK		(0xEE)
+> +#define CDC_VA_SWR_MIC_CLK_SEL_0_1_DIV1		(0xCC)
+>  #define CDC_VA_TOP_CSR_SWR_CTRL			(0x00DC)
+>  #define CDC_VA_INP_MUX_ADC_MUX0_CFG0		(0x0100)
+>  #define CDC_VA_INP_MUX_ADC_MUX0_CFG1		(0x0104)
+> @@ -194,6 +200,8 @@ struct va_macro {
+>  	unsigned long active_ch_mask[VA_MACRO_MAX_DAIS];
+>  	unsigned long active_ch_cnt[VA_MACRO_MAX_DAIS];
+>  	u16 dmic_clk_div;
+> +	bool has_swr_master;
+> +	bool reset_swr;
+>  
+>  	int dec_mode[VA_MACRO_NUM_DECIMATORS];
+>  	struct regmap *regmap;
+> @@ -325,6 +333,9 @@ static bool va_is_rw_register(struct device *dev, unsigned int reg)
+>  	case CDC_VA_TOP_CSR_DMIC2_CTL:
+>  	case CDC_VA_TOP_CSR_DMIC3_CTL:
+>  	case CDC_VA_TOP_CSR_DMIC_CFG:
+> +	case CDC_VA_TOP_CSR_SWR_MIC_CTL0:
+> +	case CDC_VA_TOP_CSR_SWR_MIC_CTL1:
+> +	case CDC_VA_TOP_CSR_SWR_MIC_CTL2:
+>  	case CDC_VA_TOP_CSR_DEBUG_BUS:
+>  	case CDC_VA_TOP_CSR_DEBUG_EN:
+>  	case CDC_VA_TOP_CSR_TX_I2S_CTL:
+> @@ -1306,12 +1317,40 @@ static const struct snd_soc_component_driver va_macro_component_drv = {
+>  
+>  static int fsgen_gate_enable(struct clk_hw *hw)
+>  {
+> -	return va_macro_mclk_enable(to_va_macro(hw), true);
+> +	struct va_macro *va = to_va_macro(hw);
+> +	struct regmap *regmap = va->regmap;
+> +	int ret;
+> +
+> +	ret = va_macro_mclk_enable(va, true);
+> +	if (!va->has_swr_master)
+> +		return ret;
+> +
+> +	if (va->reset_swr)
+> +		regmap_update_bits(regmap, CDC_VA_CLK_RST_CTRL_SWR_CONTROL,
+> +				   CDC_VA_SWR_RESET_MASK,
+> +				   CDC_VA_SWR_RESET_ENABLE);
+> +
+> +	regmap_update_bits(regmap, CDC_VA_CLK_RST_CTRL_SWR_CONTROL,
+> +			   CDC_VA_SWR_CLK_EN_MASK,
+> +			   CDC_VA_SWR_CLK_ENABLE);
+> +	if (va->reset_swr)
+> +		regmap_update_bits(regmap, CDC_VA_CLK_RST_CTRL_SWR_CONTROL,
+> +				   CDC_VA_SWR_RESET_MASK, 0x0);
+> +	va->reset_swr = false;
+> +
+> +	return ret;
+>  }
+>  
+>  static void fsgen_gate_disable(struct clk_hw *hw)
+>  {
+> -	va_macro_mclk_enable(to_va_macro(hw), false);
+> +	struct va_macro *va = to_va_macro(hw);
+> +	struct regmap *regmap = va->regmap;
+> +
+> +	if (va->has_swr_master)
+> +		regmap_update_bits(regmap, CDC_VA_CLK_RST_CTRL_SWR_CONTROL,
+> +			   CDC_VA_SWR_CLK_EN_MASK, 0x0);
+> +
+> +	va_macro_mclk_enable(va, false);
+>  }
+>  
+>  static int fsgen_gate_is_enabled(struct clk_hw *hw)
+> @@ -1459,6 +1498,11 @@ static int va_macro_probe(struct platform_device *pdev)
+>  
+>  	dev_set_drvdata(dev, va);
+>  
+> +	if (of_device_is_compatible(dev->of_node, "qcom,sm8450-lpass-va-macro") ||
+> +		of_device_is_compatible(dev->of_node, "qcom,sc8280xp-lpass-va-macro")) {
+> +		va->has_swr_master = true;
+> +		va->reset_swr = true;
 
-Signed-off-by: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
----
- Documentation/devicetree/bindings/mtd/jedec,spi-nor.yaml | 6 ++++++
- 1 file changed, 6 insertions(+)
+This should go to driver_data. Either via quirks/flags or device type
+(enum for each device). Usually the first (flags) is more flexible if
+you want to support many devices.
 
-diff --git a/Documentation/devicetree/bindings/mtd/jedec,spi-nor.yaml b/Documentation/devicetree/bindings/mtd/jedec,spi-nor.yaml
-index 7149784a36ac..4e98f78be750 100644
---- a/Documentation/devicetree/bindings/mtd/jedec,spi-nor.yaml
-+++ b/Documentation/devicetree/bindings/mtd/jedec,spi-nor.yaml
-@@ -70,6 +70,12 @@ properties:
-       be used on such systems, to denote the absence of a reliable reset
-       mechanism.
- 
-+  reset-gpios:
-+    description:
-+      A GPIO line connected to the RESET (active low) signal of the device.
-+      If "broken-flash-reset" is present then having this property does not
-+      make any difference.
-+
-   partitions:
-     type: object
- 
--- 
-2.17.1
+This also explains Rob's concerns about unneeded entries in of_device_id
+table.
 
+
+Best regards,
+Krzysztof
