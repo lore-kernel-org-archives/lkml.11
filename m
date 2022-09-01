@@ -2,72 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26E47ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 19:39:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98621ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 19:39:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234435AbiIATjO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 15:39:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42888 "EHLO
+        id S234626AbiIATjV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 15:39:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234349AbiIATjM (ORCPT
+        with ESMTP id S234628AbiIATjS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 15:39:12 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 312C97C773
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 12:39:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=7PMktsvCeflqHXpmx1pY0BaMo+yb9eJasUdA0eZTbwU=; b=KvmI+7mukKhHzNfPM57th60Ylm
-        aggKXxgw2lh3nJzK4r+PSS3jQHAhAQ9DNT0+H7GT5jRIZN/J/gpExo3Dwi1sZP3KhBigQ7D/qoKA+
-        ZC94DLwMLjw2KFbT2g7VknZPCRLJimzESg854oPAvyQwAPZT0lroxc0HhKnveo56gkLawS920ec6z
-        i5hqjDrlyzue2Rs8Eir0IDyzD6iYxCJK/+Jow/BXuDfqxtWYnbxhHEJ9x66wMduOmf8U/jxgOFo9V
-        3rHL6A/7lnHXqzsFjVANbZht+CbgV4XJ4IzQUa2LKS37ibN5sZxaydcsR10j63gvb+dvReEhpc70P
-        eP+fXgGw==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oTq19-008TS4-U8; Thu, 01 Sep 2022 19:38:24 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id E77BA300230;
-        Thu,  1 Sep 2022 21:38:21 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id C968E2B8D59A4; Thu,  1 Sep 2022 21:38:21 +0200 (CEST)
-Date:   Thu, 1 Sep 2022 21:38:21 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>, sv@linux.ibm.com,
-        bgray@linux.ibm.com, agust@denx.de, jpoimboe@kernel.org,
-        jbaron@akamai.com, rostedt@goodmis.org, ardb@kernel.org,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, hpa@zytor.com,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        x86@kernel.org, chenzhongjin@huawei.com
-Subject: Re: [PATCH v3 2/6] objtool: Add architecture specific R_REL32 macro
-Message-ID: <YxEKLSpNlUTvj4yt@hirez.programming.kicks-ass.net>
-References: <cover.1662032631.git.christophe.leroy@csgroup.eu>
- <1cfa46b215a2f39c7f8040ca5447113ff9eb7dd6.1662032631.git.christophe.leroy@csgroup.eu>
+        Thu, 1 Sep 2022 15:39:18 -0400
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FF769A9B4
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 12:39:17 -0700 (PDT)
+Received: by mail-qt1-x836.google.com with SMTP id h22so14309064qtu.2
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 12:39:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=caA/FC3GwEIv5k9saHBJim4xjLc8yHfbXgArB9Vpu9o=;
+        b=KOA+pEkUTKh6NEiZvW0bhOuMsKMrHRq0GZiZppZfrIzhJJlf/cNhMT5nKA3TMNP8r3
+         Wo6rhkS0WvSoCvTy65pQrh2rO+8OEqebCcaPd40uEpi3IO0luDF8LcQ9/0tQ2BqMelYi
+         7KKGmUWZbiv3yUcuuoNFr+RhkGCla80rI/V6FLXc2KuqKCeGFT7WsqixGlO6IdDJJCeE
+         hPRCBX5Tc3zbkoRnFBueyUKt3BDNeSo7y5IZFPkqhhUWlTe0EZKfzobTpmLOrXExn8Mk
+         zK0oQRfAldkCNbAo9cRUG2hIAUFxJRbNQ4uCNeDc6iwrGB7z55hO5EJKxzJF4X8ZJCWO
+         kTRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=caA/FC3GwEIv5k9saHBJim4xjLc8yHfbXgArB9Vpu9o=;
+        b=eaghx7NbJaN+V0w0oD6nNTAsK5SU2R5M43SgDlxvTui3LZnKV0TGmBNhPtWjtrpOP+
+         BMwD/WDuxSRcfqdaGozHWfH0l4waGG7zee6a/9/5c+IW9oXb4tqsSy1aXqJhnm4D5m22
+         6cg8uopMbtPpYkNf9szNw/wd8997plAcT0Wy7E/n52lNiMpUgLZCHBCS70p74Hk0Nd9o
+         gTEySiisn0W+zsVJ/Aosw+YzLj467yomaoduFFDP+203zOBiI25Dmbc5jBu/O8SElu9X
+         thVgjaAGmf0mq94TY/JRAg/KypnO6q4ft/15m8v/c+SWQlMQgeW1WR/qJtcpsXm6yKoG
+         c1fA==
+X-Gm-Message-State: ACgBeo0uc2K3SbGF7i8nu4/QAx65caiyK1QegEKxpXQ0TjWxrWRU9OLv
+        53zdbpNHEBWPomFM6ta2tLDrpY6MhbnSpB0Ikso=
+X-Google-Smtp-Source: AA6agR7ycdrj03TpdN1pNIKGGZ9QWs6zk+zelMKiqHJgiCa6yv0iI9OO+AGRoQEK0SvmHRtqi1edNJROMh8PLIAu4EE=
+X-Received: by 2002:ac8:5786:0:b0:343:3051:170d with SMTP id
+ v6-20020ac85786000000b003433051170dmr25052426qta.429.1662061156594; Thu, 01
+ Sep 2022 12:39:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1cfa46b215a2f39c7f8040ca5447113ff9eb7dd6.1662032631.git.christophe.leroy@csgroup.eu>
+References: <20220901175022.334824-1-cezary.rojewski@intel.com> <20220901175022.334824-3-cezary.rojewski@intel.com>
+In-Reply-To: <20220901175022.334824-3-cezary.rojewski@intel.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 1 Sep 2022 22:38:40 +0300
+Message-ID: <CAHp75VdVqRyA=J0-HsHtgiAZhd8XxqxmMddTyV2u29TxvV9=Cw@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] ASoC: SOF: Remove strsplit_u32() and tokenize_input()
+To:     Cezary Rojewski <cezary.rojewski@intel.com>
+Cc:     ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        amadeuszx.slawinski@linux.intel.com,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        =?UTF-8?Q?P=C3=A9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Matthew Wilcox <willy@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 01, 2022 at 01:48:21PM +0200, Christophe Leroy wrote:
-> In order to allow other architectures than x86 to use 32 bits
-> PC relative relocations (S+A-P), define a R_REL32 macro that each
-> architecture will define, in the same way as already done for
-> R_NONE, R_ABS32 and R_ABS64.
-> 
-> For x86 that corresponds to R_X86_64_PC32.
-> For powerpc it is R_PPC_REL32/R_PPC64_REL32.
-> 
-> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+On Thu, Sep 1, 2022 at 8:40 PM Cezary Rojewski
+<cezary.rojewski@intel.com> wrote:
+>
+> Make use of global user input tokenization helper instead of the
+> internal one as both serve same purpose. With that, both strsplit_u32()
 
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+the same
+
+> and tokenize_input() become unused so remove them.
+
+...
+
+>  #include <linux/debugfs.h>
+>  #include <linux/module.h>
+>  #include <linux/pm_runtime.h>
+> +#include <linux/string_helpers.h>
+
+I believe either blank line needs to be here (to split the sound / SOF
+group of headers) or this should be put after 'so*'-ones
+
+>  #include <sound/soc.h>
+>  #include <sound/sof/header.h>
+>  #include "sof-client.h"
+
+...
+
+>         struct sof_probes_priv *priv = cdev->data;
+>         struct device *dev = &cdev->auxdev.dev;
+>         struct sof_probe_point_desc *desc;
+> -       size_t num_tkns, bytes;
+> -       u32 *tkns;
+> +       size_t bytes;
+> +       u32 num_tkns, *tkns;
+
+I would expect a longer line first.
+
+>         int ret, err;
+
+...
+
+With the above addressed
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+
+-- 
+With Best Regards,
+Andy Shevchenko
