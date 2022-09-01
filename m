@@ -2,764 +2,299 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EFF9ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:14:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D116ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231530AbiIAOOn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 10:14:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57390 "EHLO
+        id S233851AbiIAOPR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 10:15:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234555AbiIAOOP (ORCPT
+        with ESMTP id S234645AbiIAOOz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 10:14:15 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BA4769F50;
-        Thu,  1 Sep 2022 07:14:12 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 281EE1ii115209;
-        Thu, 1 Sep 2022 09:14:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1662041641;
-        bh=YQr+xxVngI4dL7Fy8whEXoqrtUv0O1Hpq44r2fIvM8M=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=Q6zL8orW9+QL0NK9YP2wEtQysroHeYfQf3bGkuP15ghyc3EvcGJEDNc4jJJv/xiu+
-         e9IoTBWR2gzIY/jgV3my34dBpVJpZcMOayqXhWP+a/1zocUOX+h8q0Si+cvvDfS/tu
-         8M8Bh5tAuY8J7kinhS3t0yUfThHNqraJ6e4hc9U4=
-Received: from DFLE103.ent.ti.com (dfle103.ent.ti.com [10.64.6.24])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 281EE1Kd016213
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 1 Sep 2022 09:14:01 -0500
-Received: from DFLE102.ent.ti.com (10.64.6.23) by DFLE103.ent.ti.com
- (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Thu, 1 Sep
- 2022 09:14:01 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE102.ent.ti.com
- (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
- Frontend Transport; Thu, 1 Sep 2022 09:14:01 -0500
-Received: from uda0132425.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 281EDhdV015476;
-        Thu, 1 Sep 2022 09:13:58 -0500
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-To:     Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-gpio@vger.kernel.org>, Bryan Brattlof <bb@ti.com>
-Subject: [PATCH v2 4/5] arm64: dts: ti: Introduce AM62A7 family of SoCs
-Date:   Thu, 1 Sep 2022 19:43:27 +0530
-Message-ID: <20220901141328.899100-5-vigneshr@ti.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220901141328.899100-1-vigneshr@ti.com>
-References: <20220901141328.899100-1-vigneshr@ti.com>
+        Thu, 1 Sep 2022 10:14:55 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BC4A696FC
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 07:14:41 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 31114200FC;
+        Thu,  1 Sep 2022 14:14:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1662041680; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6aHbU7uRbj4BxHL9STRmI+GKXLKBtY/Mix8pYPh/Y38=;
+        b=Ft8wEwGVFlP2WWfIqn21mcgtVZjmR/HJRxO2kfx55x7W1LXapaaOFwB1NGbXwMnc9+5Fuk
+        dWBUA0aoIrhwH3t5zVc1a8Zz/bdejSnVvpdwJjLH+XHtPGIjJyKY73aq1eNhinFQmDcGTa
+        MVvVpg8qb8SFIzfDRfzadDYihfSrXws=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1662041680;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6aHbU7uRbj4BxHL9STRmI+GKXLKBtY/Mix8pYPh/Y38=;
+        b=F+2K1qG/1WCPl7EcNxJYEeIWFAcVCo4TmRxvZtTldiPidZhoKJwxETdt2TjsOEUuS4pzxO
+        c2XkZu/w5XRfOhAA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0C4C913A79;
+        Thu,  1 Sep 2022 14:14:40 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id +uq2AVC+EGMBVwAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Thu, 01 Sep 2022 14:14:40 +0000
+Message-ID: <efa7bebf-b977-dea1-de1a-cbdaffaa165b@suse.cz>
+Date:   Thu, 1 Sep 2022 16:14:39 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [RFC PATCH] mm: reduce noise in show_mem for lowmem allocations
+Content-Language: en-US
+To:     Michal Hocko <mhocko@suse.com>, linux-mm@kvack.org
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <YwScVmVofIZkopkF@dhcp22.suse.cz>
+ <Yw29bmJTIkKogTiW@dhcp22.suse.cz>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <Yw29bmJTIkKogTiW@dhcp22.suse.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The AM62A SoC belongs to the K3 Multicore SoC architecture platform that
-can run edge AI applications with Video/Vision processing. This provides
-advanced system integration with high security support to enable a broad
-set of applications in industrial/automotive markets such as, driver
-monitoring, machine vision, smart camera, eMirror, front camera,
-robotics, and building automation.
+On 8/30/22 09:34, Michal Hocko wrote:
+> [Cc Dan]
+> Dan has brought up[1] that the use of gfp mask has confused his static
+> analyzer which assumes that GFP_HIGHUSER_MOVABLE implies a sleeping
+> allocation and that wouldn't be a great idea from the panic path. I
+> would add that most callers of this function would be really bad to
+> allocate.
+> 
+> The report itself is a false positive but it made me think a bit about
+> this. Even if the check is too simplistic I guess it resembles how many
+> developers are thinking (including me). If I see GFP_HIGHUSER_MOVABLE or
+> GF_KERNEL I automatically assume a sleeping allocation down the road.
+> And who know somebody might add one in the future even into show_mem
+> because the gfp parameter would be too tempting to not (ab)use.
+> 
+> My original intention was to use a natural allocation speak but this can
+> backfire so maybe it would be better to give the argument its real
+> meaning and that is the high_zone_idx. This is cryptic for code outside
+> of MM but that is not all that many callers and we can hide this fact
+> from them. In other words does the thing below looks better (incremental
+> for illustration, I will make it a proper patch if yes)?
 
-Some highlights of AM62A SoC are:
-* Quad-Cortex-A53s (running up to 1.4GHz) in a single cluster. Dual/Single
-  core variants are provided in the same package to allow HW compatible
-  designs.
-* One Device manager Cortex-R5F for system power and resource management, and
-  one Cortex-R5F for Functional Safety or general-purpose usage.
-* One AI accelerator (up to 2 TOPS), using one C7x256V DSP w/Matrix Multiplier
-  accelerator (MMA) for Deep Learning usage.
-* VPAC3L(Vision Pre-processing Accelerator), providing 12-bit ISP up to
-  315MPixel/s RGB+IR support, and Noise Filter for improved integrated imaging
-  and vision image processing.
-* H.264/H.265 Video Encode/Decode. + Motion JPEG encode
-* Display support, providing 24-bit RBG parallel interface up to 200MHz pixel
-  clock support for 2K display resolution.
-* Integrated Giga-bit Ethernet switch supporting up to a total of two external
-  ports (TSN capable).
-* 9xUARTs, 5xSPI, 6xI2C, 2xUSB2, 3xCAN-FD, 3x eMMC and SD, GPMC for NAND/FPGA
-  connection, OSPI memory controller, 3x McASP for audio, 1x CSI-RX-4L for
-  Camera, eCAP/eQEP, ePWM, among other peripherals.
-* Dedicated Centralized Hardware Security Module with support for secure boot,
-  debug security and crypto acceleration and trusted execution environment
-* One 32 bit DDR Subsystem that supports LPDDR4, DDR4 memory types.
-* Multiple low power modes support, ex: Deep sleep, Standby, MCU-only, enabling
-  battery powered system design.
+Yeah, looks better to me this way. Thanks!
 
-More details about the SoCs can be found in the Technical Reference Manual:
-https://www.ti.com/lit/zip/spruj16
-
-Co-developed-by: Bryan Brattlof <bb@ti.com>
-Signed-off-by: Bryan Brattlof <bb@ti.com>
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
----
- arch/arm64/boot/dts/ti/k3-am62a-main.dtsi   | 298 ++++++++++++++++++++
- arch/arm64/boot/dts/ti/k3-am62a-mcu.dtsi    |  39 +++
- arch/arm64/boot/dts/ti/k3-am62a-wakeup.dtsi |  54 ++++
- arch/arm64/boot/dts/ti/k3-am62a.dtsi        | 122 ++++++++
- arch/arm64/boot/dts/ti/k3-am62a7.dtsi       | 103 +++++++
- 5 files changed, 616 insertions(+)
- create mode 100644 arch/arm64/boot/dts/ti/k3-am62a-main.dtsi
- create mode 100644 arch/arm64/boot/dts/ti/k3-am62a-mcu.dtsi
- create mode 100644 arch/arm64/boot/dts/ti/k3-am62a-wakeup.dtsi
- create mode 100644 arch/arm64/boot/dts/ti/k3-am62a.dtsi
- create mode 100644 arch/arm64/boot/dts/ti/k3-am62a7.dtsi
-
-diff --git a/arch/arm64/boot/dts/ti/k3-am62a-main.dtsi b/arch/arm64/boot/dts/ti/k3-am62a-main.dtsi
-new file mode 100644
-index 000000000000..bc4b50bcd177
---- /dev/null
-+++ b/arch/arm64/boot/dts/ti/k3-am62a-main.dtsi
-@@ -0,0 +1,298 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Device Tree Source for AM62A SoC Family Main Domain peripherals
-+ *
-+ * Copyright (C) 2022 Texas Instruments Incorporated - https://www.ti.com/
-+ */
-+
-+&cbass_main {
-+	oc_sram: sram@70000000 {
-+		compatible = "mmio-sram";
-+		reg = <0x00 0x70000000 0x00 0x10000>;
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		ranges = <0x0 0x00 0x70000000 0x10000>;
-+	};
-+
-+	gic500: interrupt-controller@1800000 {
-+		compatible = "arm,gic-v3";
-+		reg = <0x00 0x01800000 0x00 0x10000>,	/* GICD */
-+		      <0x00 0x01880000 0x00 0xc0000>,	/* GICR */
-+		      <0x00 0x01880000 0x00 0xc0000>,   /* GICR */
-+		      <0x01 0x00000000 0x00 0x2000>,    /* GICC */
-+		      <0x01 0x00010000 0x00 0x1000>,    /* GICH */
-+		      <0x01 0x00020000 0x00 0x2000>;    /* GICV */
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		ranges;
-+		#interrupt-cells = <3>;
-+		interrupt-controller;
-+		/*
-+		 * vcpumntirq:
-+		 * virtual CPU interface maintenance interrupt
-+		 */
-+		interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
-+
-+		gic_its: msi-controller@1820000 {
-+			compatible = "arm,gic-v3-its";
-+			reg = <0x00 0x01820000 0x00 0x10000>;
-+			socionext,synquacer-pre-its = <0x1000000 0x400000>;
-+			msi-controller;
-+			#msi-cells = <1>;
-+		};
-+	};
-+
-+	main_conf: syscon@100000 {
-+		compatible = "ti,j721e-system-controller", "syscon", "simple-mfd";
-+		reg = <0x00 0x00100000 0x00 0x20000>;
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		ranges = <0x00 0x00 0x00100000 0x20000>;
-+	};
-+
-+	dmss: bus@48000000 {
-+		compatible = "simple-bus";
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		dma-ranges;
-+		ranges = <0x00 0x48000000 0x00 0x48000000 0x00 0x06000000>;
-+
-+		ti,sci-dev-id = <25>;
-+
-+		secure_proxy_main: mailbox@4d000000 {
-+			compatible = "ti,am654-secure-proxy";
-+			reg = <0x00 0x4d000000 0x00 0x80000>,
-+			      <0x00 0x4a600000 0x00 0x80000>,
-+			      <0x00 0x4a400000 0x00 0x80000>;
-+			reg-names = "target_data", "rt", "scfg";
-+			#mbox-cells = <1>;
-+			interrupt-names = "rx_012";
-+			interrupts = <GIC_SPI 34 IRQ_TYPE_LEVEL_HIGH>;
-+		};
-+	};
-+
-+	dmsc: system-controller@44043000 {
-+		compatible = "ti,k2g-sci";
-+		reg = <0x00 0x44043000 0x00 0xfe0>;
-+		reg-names = "debug_messages";
-+		ti,host-id = <12>;
-+		mbox-names = "rx", "tx";
-+		mboxes= <&secure_proxy_main 12>,
-+			<&secure_proxy_main 13>;
-+
-+		k3_pds: power-controller {
-+			compatible = "ti,sci-pm-domain";
-+			#power-domain-cells = <2>;
-+		};
-+
-+		k3_clks: clock-controller {
-+			compatible = "ti,k2g-sci-clk";
-+			#clock-cells = <2>;
-+		};
-+
-+		k3_reset: reset-controller {
-+			compatible = "ti,sci-reset";
-+			#reset-cells = <2>;
-+		};
-+	};
-+
-+	main_pmx0: pinctrl@f4000 {
-+		compatible = "pinctrl-single";
-+		reg = <0x00 0xf4000 0x00 0x2ac>;
-+		#pinctrl-cells = <1>;
-+		pinctrl-single,register-width = <32>;
-+		pinctrl-single,function-mask = <0xffffffff>;
-+	};
-+
-+	main_uart0: serial@2800000 {
-+		compatible = "ti,am64-uart", "ti,am654-uart";
-+		reg = <0x00 0x02800000 0x00 0x100>;
-+		interrupts = <GIC_SPI 178 IRQ_TYPE_LEVEL_HIGH>;
-+		power-domains = <&k3_pds 146 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 146 0>;
-+		clock-names = "fclk";
-+		status = "disabled";
-+	};
-+
-+	main_uart1: serial@2810000 {
-+		compatible = "ti,am64-uart", "ti,am654-uart";
-+		reg = <0x00 0x02810000 0x00 0x100>;
-+		interrupts = <GIC_SPI 179 IRQ_TYPE_LEVEL_HIGH>;
-+		power-domains = <&k3_pds 152 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 152 0>;
-+		clock-names = "fclk";
-+		status = "disabled";
-+	};
-+
-+	main_uart2: serial@2820000 {
-+		compatible = "ti,am64-uart", "ti,am654-uart";
-+		reg = <0x00 0x02820000 0x00 0x100>;
-+		interrupts = <GIC_SPI 180 IRQ_TYPE_LEVEL_HIGH>;
-+		power-domains = <&k3_pds 153 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 153 0>;
-+		clock-names = "fclk";
-+		status = "disabled";
-+	};
-+
-+	main_uart3: serial@2830000 {
-+		compatible = "ti,am64-uart", "ti,am654-uart";
-+		reg = <0x00 0x02830000 0x00 0x100>;
-+		interrupts = <GIC_SPI 181 IRQ_TYPE_LEVEL_HIGH>;
-+		power-domains = <&k3_pds 154 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 154 0>;
-+		clock-names = "fclk";
-+		status = "disabled";
-+	};
-+
-+	main_uart4: serial@2840000 {
-+		compatible = "ti,am64-uart", "ti,am654-uart";
-+		reg = <0x00 0x02840000 0x00 0x100>;
-+		interrupts = <GIC_SPI 182 IRQ_TYPE_LEVEL_HIGH>;
-+		power-domains = <&k3_pds 155 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 155 0>;
-+		clock-names = "fclk";
-+		status = "disabled";
-+	};
-+
-+	main_uart5: serial@2850000 {
-+		compatible = "ti,am64-uart", "ti,am654-uart";
-+		reg = <0x00 0x02850000 0x00 0x100>;
-+		interrupts = <GIC_SPI 183 IRQ_TYPE_LEVEL_HIGH>;
-+		power-domains = <&k3_pds 156 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 156 0>;
-+		clock-names = "fclk";
-+		status = "disabled";
-+	};
-+
-+	main_uart6: serial@2860000 {
-+		compatible = "ti,am64-uart", "ti,am654-uart";
-+		reg = <0x00 0x02860000 0x00 0x100>;
-+		interrupts = <GIC_SPI 184 IRQ_TYPE_LEVEL_HIGH>;
-+		power-domains = <&k3_pds 158 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 158 0>;
-+		clock-names = "fclk";
-+		status = "disabled";
-+	};
-+
-+	main_i2c0: i2c@20000000 {
-+		compatible = "ti,am64-i2c", "ti,omap4-i2c";
-+		reg = <0x00 0x20000000 0x00 0x100>;
-+		interrupts = <GIC_SPI 161 IRQ_TYPE_LEVEL_HIGH>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		power-domains = <&k3_pds 102 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 102 2>;
-+		clock-names = "fck";
-+		status = "disabled";
-+	};
-+
-+	main_i2c1: i2c@20010000 {
-+		compatible = "ti,am64-i2c", "ti,omap4-i2c";
-+		reg = <0x00 0x20010000 0x00 0x100>;
-+		interrupts = <GIC_SPI 162 IRQ_TYPE_LEVEL_HIGH>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		power-domains = <&k3_pds 103 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 103 2>;
-+		clock-names = "fck";
-+		status = "disabled";
-+	};
-+
-+	main_i2c2: i2c@20020000 {
-+		compatible = "ti,am64-i2c", "ti,omap4-i2c";
-+		reg = <0x00 0x20020000 0x00 0x100>;
-+		interrupts = <GIC_SPI 163 IRQ_TYPE_LEVEL_HIGH>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		power-domains = <&k3_pds 104 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 104 2>;
-+		clock-names = "fck";
-+		status = "disabled";
-+	};
-+
-+	main_i2c3: i2c@20030000 {
-+		compatible = "ti,am64-i2c", "ti,omap4-i2c";
-+		reg = <0x00 0x20030000 0x00 0x100>;
-+		interrupts = <GIC_SPI 164 IRQ_TYPE_LEVEL_HIGH>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		power-domains = <&k3_pds 105 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 105 2>;
-+		clock-names = "fck";
-+		status = "disabled";
-+	};
-+
-+	main_gpio_intr: interrupt-controller@a00000 {
-+		compatible = "ti,sci-intr";
-+		reg = <0x00 0x00a00000 0x00 0x800>;
-+		ti,intr-trigger-type = <1>;
-+		interrupt-controller;
-+		interrupt-parent = <&gic500>;
-+		#interrupt-cells = <1>;
-+		ti,sci = <&dmsc>;
-+		ti,sci-dev-id = <3>;
-+		ti,interrupt-ranges = <0 32 16>;
-+		status = "disabled";
-+	};
-+
-+	main_gpio0: gpio@600000 {
-+		compatible = "ti,am64-gpio", "ti,keystone-gpio";
-+		reg = <0x00 0x00600000 0x0 0x100>;
-+		gpio-controller;
-+		#gpio-cells = <2>;
-+		interrupt-parent = <&main_gpio_intr>;
-+		interrupts = <190>, <191>, <192>,
-+			     <193>, <194>, <195>;
-+		interrupt-controller;
-+		#interrupt-cells = <2>;
-+		ti,ngpio = <87>;
-+		ti,davinci-gpio-unbanked = <0>;
-+		power-domains = <&k3_pds 77 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 77 0>;
-+		clock-names = "gpio";
-+		status = "disabled";
-+	};
-+
-+	main_gpio1: gpio@601000 {
-+		compatible = "ti,am64-gpio", "ti,keystone-gpio";
-+		reg = <0x00 0x00601000 0x0 0x100>;
-+		gpio-controller;
-+		#gpio-cells = <2>;
-+		interrupt-parent = <&main_gpio_intr>;
-+		interrupts = <180>, <181>, <182>,
-+			     <183>, <184>, <185>;
-+		interrupt-controller;
-+		#interrupt-cells = <2>;
-+		ti,ngpio = <88>;
-+		ti,davinci-gpio-unbanked = <0>;
-+		power-domains = <&k3_pds 78 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 78 0>;
-+		clock-names = "gpio";
-+		status = "disabled";
-+	};
-+
-+	sdhci1: mmc@fa00000 {
-+		compatible = "ti,am62-sdhci";
-+		reg = <0x00 0xfa00000 0x00 0x260>, <0x00 0xfa08000 0x00 0x134>;
-+		interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
-+		power-domains = <&k3_pds 58 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 58 5>, <&k3_clks 58 6>;
-+		clock-names = "clk_ahb", "clk_xin";
-+		ti,trm-icp = <0x2>;
-+		ti,otap-del-sel-legacy = <0x0>;
-+		ti,otap-del-sel-sd-hs = <0x0>;
-+		ti,otap-del-sel-sdr12 = <0xf>;
-+		ti,otap-del-sel-sdr25 = <0xf>;
-+		ti,otap-del-sel-sdr50 = <0xc>;
-+		ti,otap-del-sel-sdr104 = <0x6>;
-+		ti,otap-del-sel-ddr50 = <0x9>;
-+		ti,itap-del-sel-legacy = <0x0>;
-+		ti,itap-del-sel-sd-hs = <0x0>;
-+		ti,itap-del-sel-sdr12 = <0x0>;
-+		ti,itap-del-sel-sdr25 = <0x0>;
-+		ti,clkbuf-sel = <0x7>;
-+		bus-width = <4>;
-+		no-1-8-v;
-+		status = "disabled";
-+	};
-+};
-diff --git a/arch/arm64/boot/dts/ti/k3-am62a-mcu.dtsi b/arch/arm64/boot/dts/ti/k3-am62a-mcu.dtsi
-new file mode 100644
-index 000000000000..6d1e501b94ab
---- /dev/null
-+++ b/arch/arm64/boot/dts/ti/k3-am62a-mcu.dtsi
-@@ -0,0 +1,39 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Device Tree Source for AM625 SoC Family MCU Domain peripherals
-+ *
-+ * Copyright (C) 2020-2022 Texas Instruments Incorporated - https://www.ti.com/
-+ */
-+
-+&cbass_mcu {
-+	mcu_pmx0: pinctrl@4084000 {
-+		compatible = "pinctrl-single";
-+		reg = <0x00 0x04084000 0x00 0x88>;
-+		#pinctrl-cells = <1>;
-+		pinctrl-single,register-width = <32>;
-+		pinctrl-single,function-mask = <0xffffffff>;
-+		status = "disabled";
-+	};
-+
-+	mcu_uart0: serial@4a00000 {
-+		compatible = "ti,am64-uart", "ti,am654-uart";
-+		reg = <0x00 0x04a00000 0x00 0x100>;
-+		interrupts = <GIC_SPI 185 IRQ_TYPE_LEVEL_HIGH>;
-+		power-domains = <&k3_pds 149 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 149 0>;
-+		clock-names = "fclk";
-+		status = "disabled";
-+	};
-+
-+	mcu_i2c0: i2c@4900000 {
-+		compatible = "ti,am64-i2c", "ti,omap4-i2c";
-+		reg = <0x00 0x04900000 0x00 0x100>;
-+		interrupts = <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		power-domains = <&k3_pds 106 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 106 2>;
-+		clock-names = "fck";
-+		status = "disabled";
-+	};
-+};
-diff --git a/arch/arm64/boot/dts/ti/k3-am62a-wakeup.dtsi b/arch/arm64/boot/dts/ti/k3-am62a-wakeup.dtsi
-new file mode 100644
-index 000000000000..99afac40e8d4
---- /dev/null
-+++ b/arch/arm64/boot/dts/ti/k3-am62a-wakeup.dtsi
-@@ -0,0 +1,54 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Device Tree Source for AM62A SoC Family Wakeup Domain peripherals
-+ *
-+ * Copyright (C) 2022 Texas Instruments Incorporated - https://www.ti.com/
-+ */
-+
-+&cbass_wakeup {
-+	wkup_conf: syscon@43000000 {
-+		compatible = "ti,j721e-system-controller", "syscon", "simple-mfd";
-+		reg = <0x00 0x43000000 0x00 0x20000>;
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		ranges = <0x00 0x00 0x43000000 0x20000>;
-+
-+		chipid: chipid@14 {
-+			compatible = "ti,am654-chipid";
-+			reg = <0x14 0x4>;
-+		};
-+	};
-+
-+	wkup_uart0: serial@2b300000 {
-+		compatible = "ti,am64-uart", "ti,am654-uart";
-+		reg = <0x00 0x2b300000 0x00 0x100>;
-+		interrupts = <GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH>;
-+		power-domains = <&k3_pds 114 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 114 0>;
-+		clock-names = "fclk";
-+		status = "disabled";
-+	};
-+
-+	wkup_i2c0: i2c@2b200000 {
-+		compatible = "ti,am64-i2c", "ti,omap4-i2c";
-+		reg = <0x00 0x02b200000 0x00 0x100>;
-+		interrupts = <GIC_SPI 165 IRQ_TYPE_LEVEL_HIGH>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		power-domains = <&k3_pds 107 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 107 4>;
-+		clock-names = "fck";
-+		status = "disabled";
-+	};
-+
-+	wkup_rtc0: rtc@2b1f0000 {
-+		compatible = "ti,am62-rtc";
-+		reg = <0x00 0x2b1f0000 0x00 0x100>;
-+		interrupts = <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>;
-+		clocks = <&k3_clks 117 6> , <&k3_clks 117 0>;
-+		clock-names = "vbus", "osc32k";
-+		power-domains = <&k3_pds 117 TI_SCI_PD_EXCLUSIVE>;
-+		wakeup-source;
-+		status = "disabled";
-+	};
-+};
-diff --git a/arch/arm64/boot/dts/ti/k3-am62a.dtsi b/arch/arm64/boot/dts/ti/k3-am62a.dtsi
-new file mode 100644
-index 000000000000..6eb87c3f9f3c
---- /dev/null
-+++ b/arch/arm64/boot/dts/ti/k3-am62a.dtsi
-@@ -0,0 +1,122 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Device Tree Source for AM62A SoC Family
-+ *
-+ * Copyright (C) 2022 Texas Instruments Incorporated - https://www.ti.com/
-+ */
-+
-+#include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/interrupt-controller/irq.h>
-+#include <dt-bindings/interrupt-controller/arm-gic.h>
-+#include <dt-bindings/pinctrl/k3.h>
-+#include <dt-bindings/soc/ti,sci_pm_domain.h>
-+
-+/ {
-+	model = "Texas Instruments K3 AM62A SoC";
-+	compatible = "ti,am62a7";
-+	interrupt-parent = <&gic500>;
-+	#address-cells = <2>;
-+	#size-cells = <2>;
-+
-+	chosen { };
-+
-+	firmware {
-+		optee {
-+			compatible = "linaro,optee-tz";
-+			method = "smc";
-+		};
-+
-+		psci: psci {
-+			compatible = "arm,psci-1.0";
-+			method = "smc";
-+		};
-+	};
-+
-+	a53_timer0: timer-cl0-cpu0 {
-+		compatible = "arm,armv8-timer";
-+		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_LOW>, /* cntpsirq */
-+			     <GIC_PPI 14 IRQ_TYPE_LEVEL_LOW>, /* cntpnsirq */
-+			     <GIC_PPI 11 IRQ_TYPE_LEVEL_LOW>, /* cntvirq */
-+			     <GIC_PPI 10 IRQ_TYPE_LEVEL_LOW>; /* cnthpirq */
-+	};
-+
-+	pmu: pmu {
-+		compatible = "arm,cortex-a53-pmu";
-+		interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_HIGH>;
-+	};
-+
-+	cbass_main: bus@f0000 {
-+		compatible = "simple-bus";
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+
-+		ranges = <0x00 0x000f0000 0x00 0x000f0000 0x00 0x00030000>, /* Main MMRs */
-+			 <0x00 0x00420000 0x00 0x00420000 0x00 0x00001000>, /* ESM0 */
-+			 <0x00 0x00600000 0x00 0x00600000 0x00 0x00001100>, /* GPIO */
-+			 <0x00 0x00703000 0x00 0x00703000 0x00 0x00000200>, /* USB0 debug trace */
-+			 <0x00 0x0070c000 0x00 0x0070c000 0x00 0x00000200>, /* USB1 debug trace */
-+			 <0x00 0x00a40000 0x00 0x00a40000 0x00 0x00000800>, /* Timesync router */
-+			 <0x00 0x01000000 0x00 0x01000000 0x00 0x01b28400>, /* First peripheral window */
-+			 <0x00 0x08000000 0x00 0x08000000 0x00 0x00200000>, /* Main CPSW */
-+			 <0x00 0x0e000000 0x00 0x0e000000 0x00 0x01d20000>, /* Second peripheral window */
-+			 <0x00 0x0fd00000 0x00 0x0fd00000 0x00 0x00020000>, /* GPU */
-+			 <0x00 0x20000000 0x00 0x20000000 0x00 0x0a008000>, /* Third peripheral window */
-+			 <0x00 0x30040000 0x00 0x30040000 0x00 0x00080000>, /* PRUSS-M */
-+			 <0x00 0x30101000 0x00 0x30101000 0x00 0x00010100>, /* CSI window */
-+			 <0x00 0x30200000 0x00 0x30200000 0x00 0x00010000>, /* DSS */
-+			 <0x00 0x30210000 0x00 0x30210000 0x00 0x00010000>, /* VPU */
-+			 <0x00 0x31000000 0x00 0x31000000 0x00 0x00050000>, /* USB0 DWC3 Core window */
-+			 <0x00 0x31100000 0x00 0x31100000 0x00 0x00050000>, /* USB1 DWC3 Core window */
-+			 <0x00 0x40900000 0x00 0x40900000 0x00 0x00030000>, /* SA3UL */
-+			 <0x00 0x43600000 0x00 0x43600000 0x00 0x00010000>, /* SA3 sproxy data */
-+			 <0x00 0x44043000 0x00 0x44043000 0x00 0x00000fe0>, /* TI SCI DEBUG */
-+			 <0x00 0x44860000 0x00 0x44860000 0x00 0x00040000>, /* SA3 sproxy config */
-+			 <0x00 0x48000000 0x00 0x48000000 0x00 0x06400000>, /* DMSS */
-+			 <0x00 0x60000000 0x00 0x60000000 0x00 0x08000000>, /* FSS0 DAT1 */
-+			 <0x00 0x70000000 0x00 0x70000000 0x00 0x00010000>, /* OCSRAM */
-+			 <0x00 0x7e000000 0x00 0x7e000000 0x00 0x00100000>, /* C7x_0 */
-+			 <0x01 0x00000000 0x01 0x00000000 0x00 0x00310000>, /* A53 PERIPHBASE */
-+			 <0x05 0x00000000 0x05 0x00000000 0x01 0x00000000>, /* FSS0 DAT3 */
-+
-+			 /* MCU Domain Range */
-+			 <0x00 0x04000000 0x00 0x04000000 0x00 0x01ff1400>,
-+			 <0x00 0x79000000 0x00 0x79000000 0x00 0x00008000>, /* MCU R5 ATCM */
-+			 <0x00 0x79020000 0x00 0x79020000 0x00 0x00008000>, /* MCU R5 BTCM */
-+			 <0x00 0x79100000 0x00 0x79100000 0x00 0x00040000>, /* MCU R5 IRAM0 */
-+			 <0x00 0x79140000 0x00 0x79140000 0x00 0x00040000>, /* MCU R5 IRAM1 */
-+
-+			 /* Wakeup Domain Range */
-+			 <0x00 0x00b00000 0x00 0x00b00000 0x00 0x00002400>,
-+			 <0x00 0x2b000000 0x00 0x2b000000 0x00 0x00300400>,
-+			 <0x00 0x43000000 0x00 0x43000000 0x00 0x00020000>,
-+			 <0x00 0x78000000 0x00 0x78000000 0x00 0x00008000>, /* DM R5 ATCM */
-+			 <0x00 0x78100000 0x00 0x78100000 0x00 0x00008000>; /* DM R5 BTCM */
-+
-+		cbass_mcu: bus@4000000 {
-+			compatible = "simple-bus";
-+			#address-cells = <2>;
-+			#size-cells = <2>;
-+			ranges = <0x00 0x04000000 0x00 0x04000000 0x00 0x01ff1400>, /* Peripheral window */
-+				 <0x00 0x79000000 0x00 0x79000000 0x00 0x00008000>, /* MCU R5 ATCM */
-+				 <0x00 0x79020000 0x00 0x79020000 0x00 0x00008000>, /* MCU R5 BTCM */
-+				 <0x00 0x79100000 0x00 0x79100000 0x00 0x00040000>, /* MCU IRAM0 */
-+				 <0x00 0x79140000 0x00 0x79140000 0x00 0x00040000>; /* MCU IRAM1 */
-+		};
-+
-+		cbass_wakeup: bus@b00000 {
-+			compatible = "simple-bus";
-+			#address-cells = <2>;
-+			#size-cells = <2>;
-+			ranges = <0x00 0x00b00000 0x00 0x00b00000 0x00 0x00002400>, /* VTM */
-+				 <0x00 0x2b000000 0x00 0x2b000000 0x00 0x00300400>, /* Peripheral Window */
-+				 <0x00 0x43000000 0x00 0x43000000 0x00 0x00020000>, /* WKUP CTRL MMR */
-+				 <0x00 0x78000000 0x00 0x78000000 0x00 0x00008000>, /* DM R5 ATCM*/
-+				 <0x00 0x78100000 0x00 0x78100000 0x00 0x00008000>; /* DM R5 BTCM*/
-+		};
-+	};
-+};
-+
-+/* Now include the peripherals for each bus segments */
-+#include "k3-am62a-main.dtsi"
-+#include "k3-am62a-mcu.dtsi"
-+#include "k3-am62a-wakeup.dtsi"
-diff --git a/arch/arm64/boot/dts/ti/k3-am62a7.dtsi b/arch/arm64/boot/dts/ti/k3-am62a7.dtsi
-new file mode 100644
-index 000000000000..331d89fda29d
---- /dev/null
-+++ b/arch/arm64/boot/dts/ti/k3-am62a7.dtsi
-@@ -0,0 +1,103 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Device Tree Source for AM62A7 SoC family in Quad core configuration
-+ *
-+ * TRM: https://www.ti.com/lit/zip/spruj16
-+ *
-+ * Copyright (C) 2020-2022 Texas Instruments Incorporated - https://www.ti.com/
-+ */
-+
-+/dts-v1/;
-+
-+#include "k3-am62a.dtsi"
-+
-+/ {
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		cpu-map {
-+			cluster0: cluster0 {
-+				core0 {
-+					cpu = <&cpu0>;
-+				};
-+
-+				core1 {
-+					cpu = <&cpu1>;
-+				};
-+
-+				core2 {
-+					cpu = <&cpu2>;
-+				};
-+
-+				core3 {
-+					cpu = <&cpu3>;
-+				};
-+			};
-+		};
-+
-+		cpu0: cpu@0 {
-+			compatible = "arm,cortex-a53";
-+			reg = <0x000>;
-+			device_type = "cpu";
-+			enable-method = "psci";
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>;
-+			next-level-cache = <&L2_0>;
-+		};
-+
-+		cpu1: cpu@1 {
-+			compatible = "arm,cortex-a53";
-+			reg = <0x001>;
-+			device_type = "cpu";
-+			enable-method = "psci";
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>;
-+			next-level-cache = <&L2_0>;
-+		};
-+
-+		cpu2: cpu@2 {
-+			compatible = "arm,cortex-a53";
-+			reg = <0x002>;
-+			device_type = "cpu";
-+			enable-method = "psci";
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>;
-+			next-level-cache = <&L2_0>;
-+		};
-+
-+		cpu3: cpu@3 {
-+			compatible = "arm,cortex-a53";
-+			reg = <0x003>;
-+			device_type = "cpu";
-+			enable-method = "psci";
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>;
-+			next-level-cache = <&L2_0>;
-+		};
-+	};
-+
-+	L2_0: l2-cache0 {
-+		compatible = "cache";
-+		cache-level = <2>;
-+		cache-size = <0x40000>;
-+		cache-line-size = <64>;
-+		cache-sets = <512>;
-+	};
-+};
--- 
-2.37.2
+> 
+> [1] https://lore.kernel.org/all/Yw2ugrlZ8bwE5/hh@kili/?q=http%3A%2F%2Flkml.kernel.org%2Fr%2FYw2ugrlZ8bwE5%2Fhh%40kili
+> 
+> --- 
+> diff --git a/arch/powerpc/xmon/xmon.c b/arch/powerpc/xmon/xmon.c
+> index 19b1a94b0c00..3d9782ea3fa7 100644
+> --- a/arch/powerpc/xmon/xmon.c
+> +++ b/arch/powerpc/xmon/xmon.c
+> @@ -1086,7 +1086,7 @@ cmds(struct pt_regs *excp)
+>  				memzcan();
+>  				break;
+>  			case 'i':
+> -				show_mem(0, NULL, GFP_HIGHUSER_MOVABLE);
+> +				show_mem(0, NULL);
+>  				break;
+>  			default:
+>  				termch = cmd;
+> diff --git a/arch/sparc/kernel/setup_32.c b/arch/sparc/kernel/setup_32.c
+> index 2a1e5641a7cc..c8e0dd99f370 100644
+> --- a/arch/sparc/kernel/setup_32.c
+> +++ b/arch/sparc/kernel/setup_32.c
+> @@ -83,7 +83,7 @@ static void prom_sync_me(void)
+>  			     "nop\n\t" : : "r" (&trapbase));
+>  
+>  	prom_printf("PROM SYNC COMMAND...\n");
+> -	show_free_areas(0, NULL, GFP_HIGHUSER_MOVABLE);
+> +	show_free_areas(0, NULL);
+>  	if (!is_idle_task(current)) {
+>  		local_irq_enable();
+>  		ksys_sync();
+> diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
+> index c6b2b42d2367..d2b2720db6ca 100644
+> --- a/drivers/tty/sysrq.c
+> +++ b/drivers/tty/sysrq.c
+> @@ -342,7 +342,7 @@ static const struct sysrq_key_op sysrq_ftrace_dump_op = {
+>  
+>  static void sysrq_handle_showmem(int key)
+>  {
+> -	show_mem(0, NULL, GFP_HIGHUSER_MOVABLE);
+> +	show_mem(0, NULL);
+>  }
+>  static const struct sysrq_key_op sysrq_showmem_op = {
+>  	.handler	= sysrq_handle_showmem,
+> diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
+> index 9ceeea531cf6..be8313cdbac3 100644
+> --- a/drivers/tty/vt/keyboard.c
+> +++ b/drivers/tty/vt/keyboard.c
+> @@ -606,7 +606,7 @@ static void fn_scroll_back(struct vc_data *vc)
+>  
+>  static void fn_show_mem(struct vc_data *vc)
+>  {
+> -	show_mem(0, NULL, GFP_HIGHUSER_MOVABLE);
+> +	show_mem(0, NULL);
+>  }
+>  
+>  static void fn_show_state(struct vc_data *vc)
+> diff --git a/include/linux/mm.h b/include/linux/mm.h
+> index e0d0ac52770c..0756798feaff 100644
+> --- a/include/linux/mm.h
+> +++ b/include/linux/mm.h
+> @@ -1827,7 +1827,11 @@ extern void pagefault_out_of_memory(void);
+>   */
+>  #define SHOW_MEM_FILTER_NODES		(0x0001u)	/* disallowed nodes */
+>  
+> -extern void show_free_areas(unsigned int flags, nodemask_t *nodemask, gfp_t gfp_mask);
+> +extern void __show_free_areas(unsigned int flags, nodemask_t *nodemask, int max_zone_idx);
+> +static void __maybe_unused show_free_areas(unsigned int flags, nodemask_t *nodemask)
+> +{
+> +	__show_free_areas(flags, nodemask, MAX_NR_ZONES - 1);
+> +}
+>  
+>  #ifdef CONFIG_MMU
+>  extern bool can_do_mlock(void);
+> @@ -2563,7 +2567,12 @@ extern void calculate_min_free_kbytes(void);
+>  extern int __meminit init_per_zone_wmark_min(void);
+>  extern void mem_init(void);
+>  extern void __init mmap_init(void);
+> -extern void show_mem(unsigned int flags, nodemask_t *nodemask, gfp_t gfp_mask);
+> +
+> +extern void __show_mem(unsigned int flags, nodemask_t *nodemask, int max_zone_idx);
+> +static inline void show_mem(unsigned int flags, nodemask_t *nodemask)
+> +{
+> +	__show_mem(flags, nodemask, MAX_NR_ZONES - 1);
+> +}
+>  extern long si_mem_available(void);
+>  extern void si_meminfo(struct sysinfo * val);
+>  extern void si_meminfo_node(struct sysinfo *val, int nid);
+> diff --git a/init/initramfs.c b/init/initramfs.c
+> index ec966cb78363..18229cfe8906 100644
+> --- a/init/initramfs.c
+> +++ b/init/initramfs.c
+> @@ -63,7 +63,7 @@ static void panic_show_mem(const char *fmt, ...)
+>  {
+>  	va_list args;
+>  
+> -	show_mem(0, NULL, GFP_HIGHUSER_MOVABLE);
+> +	show_mem(0, NULL);
+>  	va_start(args, fmt);
+>  	panic(fmt, args);
+>  	va_end(args);
+> diff --git a/kernel/panic.c b/kernel/panic.c
+> index ba5f7691d15c..a3308af28a21 100644
+> --- a/kernel/panic.c
+> +++ b/kernel/panic.c
+> @@ -187,7 +187,7 @@ static void panic_print_sys_info(bool console_flush)
+>  		show_state();
+>  
+>  	if (panic_print & PANIC_PRINT_MEM_INFO)
+> -		show_mem(0, NULL, GFP_HIGHUSER_MOVABLE);
+> +		show_mem(0, NULL);
+>  
+>  	if (panic_print & PANIC_PRINT_TIMER_INFO)
+>  		sysrq_timer_list_show();
+> diff --git a/lib/show_mem.c b/lib/show_mem.c
+> index b97461a6c4bb..ade71096e241 100644
+> --- a/lib/show_mem.c
+> +++ b/lib/show_mem.c
+> @@ -8,13 +8,13 @@
+>  #include <linux/mm.h>
+>  #include <linux/cma.h>
+>  
+> -void show_mem(unsigned int filter, nodemask_t *nodemask, gfp_t gfp_mask)
+> +void __show_mem(unsigned int filter, nodemask_t *nodemask, int max_zone_idx)
+>  {
+>  	pg_data_t *pgdat;
+>  	unsigned long total = 0, reserved = 0, highmem = 0;
+>  
+>  	printk("Mem-Info:\n");
+> -	show_free_areas(filter, nodemask, gfp_mask);
+> +	show_free_areas(filter, nodemask, max_zone_idx);
+>  
+>  	for_each_online_pgdat(pgdat) {
+>  		int zoneid;
+> diff --git a/mm/nommu.c b/mm/nommu.c
+> index 46cff4a51fa0..9d7afc2d959e 100644
+> --- a/mm/nommu.c
+> +++ b/mm/nommu.c
+> @@ -1047,7 +1047,7 @@ static int do_mmap_private(struct vm_area_struct *vma,
+>  enomem:
+>  	pr_err("Allocation of length %lu from process %d (%s) failed\n",
+>  	       len, current->pid, current->comm);
+> -	show_free_areas(0, NULL, GFP_KERNEL);
+> +	show_free_areas(0, NULL);
+>  	return -ENOMEM;
+>  }
+>  
+> @@ -1270,13 +1270,13 @@ unsigned long do_mmap(struct file *file,
+>  	kmem_cache_free(vm_region_jar, region);
+>  	pr_warn("Allocation of vma for %lu byte allocation from process %d failed\n",
+>  			len, current->pid);
+> -	show_free_areas(0, NULL, GFP_KERNEL);
+> +	show_free_areas(0, NULL);
+>  	return -ENOMEM;
+>  
+>  error_getting_region:
+>  	pr_warn("Allocation of vm region for %lu byte allocation from process %d failed\n",
+>  			len, current->pid);
+> -	show_free_areas(0, NULL, GFP_KERNEL);
+> +	show_free_areas(0, NULL);
+>  	return -ENOMEM;
+>  }
+>  
+> diff --git a/mm/oom_kill.c b/mm/oom_kill.c
+> index ffeaad3b348d..94804504be9c 100644
+> --- a/mm/oom_kill.c
+> +++ b/mm/oom_kill.c
+> @@ -461,7 +461,7 @@ static void dump_header(struct oom_control *oc, struct task_struct *p)
+>  	if (is_memcg_oom(oc))
+>  		mem_cgroup_print_oom_meminfo(oc->memcg);
+>  	else {
+> -		show_mem(SHOW_MEM_FILTER_NODES, oc->nodemask, oc->gfp_mask);
+> +		__show_mem(SHOW_MEM_FILTER_NODES, oc->nodemask, gfp_zone(oc->gfp_mask));
+>  		if (should_dump_unreclaim_slab())
+>  			dump_unreclaimable_slab();
+>  	}
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index 208e3f8b38f8..110a16ea848a 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -4248,7 +4248,7 @@ static void warn_alloc_show_mem(gfp_t gfp_mask, nodemask_t *nodemask)
+>  	if (!in_task() || !(gfp_mask & __GFP_DIRECT_RECLAIM))
+>  		filter &= ~SHOW_MEM_FILTER_NODES;
+>  
+> -	show_mem(filter, nodemask, gfp_mask);
+> +	__show_mem(filter, nodemask, gfp_zone(gfp_mask));
+>  }
+>  
+>  void warn_alloc(gfp_t gfp_mask, nodemask_t *nodemask, const char *fmt, ...)
+> @@ -5944,10 +5944,9 @@ static bool node_has_managed_zones(pg_data_t *pgdat, int max_zone_idx)
+>   * SHOW_MEM_FILTER_NODES: suppress nodes that are not allowed by current's
+>   *   cpuset.
+>   */
+> -void show_free_areas(unsigned int filter, nodemask_t *nodemask, gfp_t gfp_mask)
+> +void __show_free_areas(unsigned int filter, nodemask_t *nodemask, int max_zone_idx)
+>  {
+>  	unsigned long free_pcp = 0;
+> -	int max_zone_idx = gfp_zone(gfp_mask);
+>  	int cpu;
+>  	struct zone *zone;
+>  	pg_data_t *pgdat;
 
