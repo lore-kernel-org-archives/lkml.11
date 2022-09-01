@@ -2,121 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20435ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 15:44:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84FC8ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 15:45:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234660AbiIAPok (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 11:44:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41762 "EHLO
+        id S234406AbiIAPpj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 11:45:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234406AbiIAPo1 (ORCPT
+        with ESMTP id S233445AbiIAPp1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 11:44:27 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 924D78B2C1
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 08:44:19 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id qh18so15290948ejb.7
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 08:44:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=sm81rFnMC95UT/sLYUuNGPmK2vB2Ge/WfYCIgeR1caI=;
-        b=ZYilaImcLXiDpt5s0mImwJWlARkse5J910Tiofph6MltZYXKQN+QY5OWEAsC9WnOQx
-         IOoU5OHcy8IC2Lk+jlGxguZCXy3mfuc61+dekre9oc0ZN+IBf1WTqLcoH3ceNiQB9VWA
-         WqTqjz7HdtHkOIDrtlmnmcmEToZh+aMxB/3iT5wuzhPn+jiq238dTs797RjbgHmz2aJN
-         BQndNJsOK+FEQMQQSxAK8x6AiJR6lG2wHyZzJedKE+vTh8nlQzU8UUbcvJoGJPvQguiD
-         m7FQpPE7Ua+WtHbr8Y+sVX1bob9c2JBnOc4Mr4AkVuC3k7pq5bR4/abFDmZh97uWgxZm
-         bL+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=sm81rFnMC95UT/sLYUuNGPmK2vB2Ge/WfYCIgeR1caI=;
-        b=DdXIhdvd9qC3M/+WNlaM8JdI9xiGh4nistk7TavYnkWdwUnLgIyfQnU7cdDPJ2yqeA
-         rY9f6+MPPq9Tq8yiLXDc2xT8zWOMOZ8/avRMinq7RP4ENwlZ5cxq17EBIornR/dQ+75w
-         t7eCELIOl9p4Sq+bXBsPecrv8xvgMeZe/CLh65oRHMwFGpj5kAwkX3DU55tMMUfEJ57N
-         7yMRMY29w/bsgUjZ0ewas5GDjfp9bsJS2vPRb2vWDDDY/p/i/odoLSMmKSVYoHZLS9Hi
-         oNi+LN03hveJnhvj7dKnNtHdcgvuI5ky3C7/vR12d/PvQSctoEmM6N9gnqsflDmR0sv/
-         mpYw==
-X-Gm-Message-State: ACgBeo0aPRQfVvLbeKt4pnMiFClxq6lQJRyxv1mDbCgw5XpouGLb9Q5C
-        I651PC5/QTFpXq76G6Gy1jE=
-X-Google-Smtp-Source: AA6agR5HRM91GDph9126hEGDoQoFaqeifP7y1mhv3MDQkVYYSuLpvCyiqZdmsxzGln87BGqXoj289A==
-X-Received: by 2002:a17:907:7283:b0:731:60a5:5fc9 with SMTP id dt3-20020a170907728300b0073160a55fc9mr23798439ejc.51.1662047058085;
-        Thu, 01 Sep 2022 08:44:18 -0700 (PDT)
-Received: from localhost.localdomain (host-87-1-103-238.retail.telecomitalia.it. [87.1.103.238])
-        by smtp.gmail.com with ESMTPSA id g6-20020a170906198600b0073dc6def190sm8576682ejd.158.2022.09.01.08.44.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 08:44:16 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Derek Kiernan <derek.kiernan@xilinx.com>,
-        Dragan Cvetic <dragan.cvetic@xilinx.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        "Venkataramanan, Anirudh" <anirudh.venkataramanan@intel.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Subject: [PATCH 2/2] misc/xilinx_sdfec: Replace kmap() with kmap_local_page()
-Date:   Thu,  1 Sep 2022 17:44:08 +0200
-Message-Id: <20220901154408.23984-3-fmdefrancesco@gmail.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220901154408.23984-1-fmdefrancesco@gmail.com>
-References: <20220901154408.23984-1-fmdefrancesco@gmail.com>
+        Thu, 1 Sep 2022 11:45:27 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B67DE8A;
+        Thu,  1 Sep 2022 08:45:24 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 2F778201C0;
+        Thu,  1 Sep 2022 15:45:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1662047123; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ooz3dCva7w6jx/i3dpZqqR47QA7PhzwOtiLya/TEJY0=;
+        b=C6Lpcd7xASxf1cssBBMPcpooT8fI7+WWu1lp17jzmswseiWsUsSDpVLmYp+aytuaVPKGJV
+        zBlbet/HYxzWqJ8islEoE8uoBdB495OdcWxvOjdBA6guagzH/ONpmsCfdImj7QjwvhJIfa
+        1Y3W/9Mtiot7rG2cI1eGzxQO9qbz5QQ=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1662047123;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ooz3dCva7w6jx/i3dpZqqR47QA7PhzwOtiLya/TEJY0=;
+        b=UERgtbcz5w5Rq640BVo73B/v9AGy87UcJRye91hKPcs95E0D5kauEfPg5cnHzSGsCqQu3Y
+        nYEW6NAJM4kNLLCA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1CFDB13A89;
+        Thu,  1 Sep 2022 15:45:23 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id /ocSB5PTEGOyAQAAMHmgww
+        (envelope-from <jack@suse.cz>); Thu, 01 Sep 2022 15:45:23 +0000
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 4C82EA067C; Thu,  1 Sep 2022 17:45:22 +0200 (CEST)
+Date:   Thu, 1 Sep 2022 17:45:22 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Zhang Yi <yi.zhang@huawei.com>
+Cc:     linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, cluster-devel@redhat.com,
+        ntfs3@lists.linux.dev, ocfs2-devel@oss.oracle.com,
+        reiserfs-devel@vger.kernel.org, jack@suse.cz, tytso@mit.edu,
+        akpm@linux-foundation.org, axboe@kernel.dk,
+        viro@zeniv.linux.org.uk, rpeterso@redhat.com, agruenba@redhat.com,
+        almaz.alexandrovich@paragon-software.com, mark@fasheh.com,
+        dushistov@mail.ru, hch@infradead.org, chengzhihao1@huawei.com,
+        yukuai3@huawei.com
+Subject: Re: [PATCH v2 03/14] fs/buffer: replace ll_rw_block()
+Message-ID: <20220901154522.r37xszonxutm6bsk@quack3>
+References: <20220901133505.2510834-1-yi.zhang@huawei.com>
+ <20220901133505.2510834-4-yi.zhang@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220901133505.2510834-4-yi.zhang@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kmap() is being deprecated in favor of kmap_local_page().
+On Thu 01-09-22 21:34:54, Zhang Yi wrote:
+> ll_rw_block() is not safe for the sync IO path because it skip buffers
+> which has been locked by others, it could lead to false positive EIO
+> when submitting read IO. So stop using ll_rw_block(), switch to use new
+> helpers which could guarantee buffer locked and submit IO if needed.
+> 
+> Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
 
-There are two main problems with kmap(): (1) It comes with an overhead as
-the mapping space is restricted and protected by a global lock for
-synchronization and (2) it also requires global TLB invalidation when the
-kmap’s pool wraps and it might block when the mapping space is fully
-utilized until a slot becomes available.
+Looks good. Feel free to add:
 
-With kmap_local_page() the mappings are per thread, CPU local, can take
-page faults, and can be called from any context (including interrupts).
-It is faster than kmap() in kernels with HIGHMEM enabled. Furthermore,
-the tasks can be preempted and, when they are scheduled to run again, the
-kernel virtual addresses are restored and still valid.
+Reviewed-by: Jan Kara <jack@suse.cz>
 
-Since its use in xilinx_sdfec.c is safe, replace kmap()i / kunmap() with
-kmap_local_page() / kunmap_local().
+								Honza
 
-Cc: "Venkataramanan, Anirudh" <anirudh.venkataramanan@intel.com>
-Suggested-by: Ira Weiny <ira.weiny@intel.com>
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
----
- drivers/misc/xilinx_sdfec.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/misc/xilinx_sdfec.c b/drivers/misc/xilinx_sdfec.c
-index 4b1d82ae7312..cb9506f9cbd0 100644
---- a/drivers/misc/xilinx_sdfec.c
-+++ b/drivers/misc/xilinx_sdfec.c
-@@ -636,7 +636,7 @@ static int xsdfec_table_write(struct xsdfec_dev *xsdfec, u32 offset,
- 	}
- 
- 	for (i = 0; i < nr_pages; i++) {
--		addr = kmap(pages[i]);
-+		addr = kmap_local_page(pages[i]);
- 		do {
- 			xsdfec_regwrite(xsdfec,
- 					base_addr + ((offset + reg) *
-@@ -645,7 +645,7 @@ static int xsdfec_table_write(struct xsdfec_dev *xsdfec, u32 offset,
- 			reg++;
- 		} while ((reg < len) &&
- 			 ((reg * XSDFEC_REG_WIDTH_JUMP) % PAGE_SIZE));
--		kunmap(pages[i]);
-+		kunmap_local(addr);
- 		unpin_user_page(pages[i]);
- 	}
- 	return 0;
+> ---
+>  fs/buffer.c | 12 +++++-------
+>  1 file changed, 5 insertions(+), 7 deletions(-)
+> 
+> diff --git a/fs/buffer.c b/fs/buffer.c
+> index a6bc769e665d..aec568b3ae52 100644
+> --- a/fs/buffer.c
+> +++ b/fs/buffer.c
+> @@ -562,7 +562,7 @@ void write_boundary_block(struct block_device *bdev,
+>  	struct buffer_head *bh = __find_get_block(bdev, bblock + 1, blocksize);
+>  	if (bh) {
+>  		if (buffer_dirty(bh))
+> -			ll_rw_block(REQ_OP_WRITE, 1, &bh);
+> +			write_dirty_buffer(bh, 0);
+>  		put_bh(bh);
+>  	}
+>  }
+> @@ -1342,7 +1342,7 @@ void __breadahead(struct block_device *bdev, sector_t block, unsigned size)
+>  {
+>  	struct buffer_head *bh = __getblk(bdev, block, size);
+>  	if (likely(bh)) {
+> -		ll_rw_block(REQ_OP_READ | REQ_RAHEAD, 1, &bh);
+> +		bh_readahead(bh, REQ_RAHEAD);
+>  		brelse(bh);
+>  	}
+>  }
+> @@ -2022,7 +2022,7 @@ int __block_write_begin_int(struct folio *folio, loff_t pos, unsigned len,
+>  		if (!buffer_uptodate(bh) && !buffer_delay(bh) &&
+>  		    !buffer_unwritten(bh) &&
+>  		     (block_start < from || block_end > to)) {
+> -			ll_rw_block(REQ_OP_READ, 1, &bh);
+> +			bh_read_nowait(bh, 0);
+>  			*wait_bh++=bh;
+>  		}
+>  	}
+> @@ -2582,11 +2582,9 @@ int block_truncate_page(struct address_space *mapping,
+>  		set_buffer_uptodate(bh);
+>  
+>  	if (!buffer_uptodate(bh) && !buffer_delay(bh) && !buffer_unwritten(bh)) {
+> -		err = -EIO;
+> -		ll_rw_block(REQ_OP_READ, 1, &bh);
+> -		wait_on_buffer(bh);
+> +		err = bh_read(bh, 0);
+>  		/* Uhhuh. Read error. Complain and punt. */
+> -		if (!buffer_uptodate(bh))
+> +		if (err < 0)
+>  			goto unlock;
+>  	}
+>  
+> -- 
+> 2.31.1
+> 
 -- 
-2.37.2
-
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
