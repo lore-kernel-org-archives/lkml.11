@@ -2,89 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 934EAECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 16:10:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8759ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 16:10:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234925AbiIAQKq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 12:10:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41420 "EHLO
+        id S234920AbiIAQKy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 12:10:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234898AbiIAQKj (ORCPT
+        with ESMTP id S234907AbiIAQKo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 12:10:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A7DE2F66F
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 09:10:35 -0700 (PDT)
+        Thu, 1 Sep 2022 12:10:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DE2B33E0A
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 09:10:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA72261F5F
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 16:10:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2427C433C1;
-        Thu,  1 Sep 2022 16:10:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662048634;
-        bh=DCp5squR5m5NwHxUhWVUSu23csTamGHJnCEZsRIaMts=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CPJyeSVZ16sd9K2jtcTBLh6HDPGoj5yZeCTs5fPgdR9nAjlCBqaILmfkj6nNc3u3X
-         iMWF8IfNYJpkC+prjLbYYUKTA4AySigkS1XCyL2xfJiClVEExVcO1CRFhstrfV78My
-         cU2mdzEa84OjAJOtXYSDma4JNQKNFpuTv9kIqnhY=
-Date:   Thu, 1 Sep 2022 18:10:31 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jim Cromie <jim.cromie@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, jbaron@akamai.com
-Subject: Re: [PATCH 00/11] DYNAMIC_DEBUG for this cycle
-Message-ID: <YxDZd8MQtrTLLNmC@kroah.com>
-References: <20220811173541.2901122-1-jim.cromie@gmail.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 801F2B82868
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 16:10:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC415C433D6;
+        Thu,  1 Sep 2022 16:10:38 +0000 (UTC)
+Date:   Thu, 1 Sep 2022 12:11:09 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Brian Norris <briannorris@chromium.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] debugfs: Only clobber mode/uid/gid on remount if
+ asked
+Message-ID: <20220901121109.2a71d779@gandalf.local.home>
+In-Reply-To: <YxDWlgulBijTzj3y@kroah.com>
+References: <20220826174353.1.Icbd40fce59f55ad74b80e5d435ea233579348a78@changeid>
+        <YxDWlgulBijTzj3y@kroah.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220811173541.2901122-1-jim.cromie@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 11, 2022 at 11:35:30AM -0600, Jim Cromie wrote:
-> Hi Greg, Jason,
-> 
-> Please consider these for this rc-cycle.
->   - 1-9 have Jason's Ack,
->   - 9th removes unused EXPORTed fn.
->   - 10 is simple var cleanup
->   - 11 is a partial decoupling of dyndbg from kernel/module
-> 
-> Jim Cromie (11):
->   dyndbg: fix static_branch manipulation
->   dyndbg: fix module.dyndbg handling
->   dyndbg: show both old and new in change-info
->   dyndbg: reverse module walk in cat control
->   dyndbg: reverse module.callsite walk in cat control
->   dyndbg: use ESCAPE_SPACE for cat control
->   dyndbg: let query-modname override actual module name
->   dyndbg: add test_dynamic_debug module
->   dyndbg: drop EXPORTed dynamic_debug_exec_queries
->   dyndbg: cleanup auto vars in dynamic_debug_init
->   dyndbg: create and use struct _ddebug_info
-> 
->  MAINTAINERS                   |   2 +
->  include/linux/dynamic_debug.h |  22 ++----
->  kernel/module/internal.h      |   4 +-
->  kernel/module/main.c          |  18 ++---
->  lib/Kconfig.debug             |  10 +++
->  lib/Makefile                  |   1 +
->  lib/dynamic_debug.c           | 141 +++++++++++++++++-----------------
->  lib/test_dynamic_debug.c      |  70 +++++++++++++++++
->  8 files changed, 172 insertions(+), 96 deletions(-)
->  create mode 100644 lib/test_dynamic_debug.c
-> 
-> -- 
-> 2.37.1
-> 
+On Thu, 1 Sep 2022 17:58:14 +0200
+Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
 
-Is this still ok for linux-next now to go into 6.1-rc1?
+> On Fri, Aug 26, 2022 at 05:44:16PM -0700, Brian Norris wrote:
+> > Users may have explicitly configured their debugfs permissions; we
+> > shouldn't overwrite those just because a second mount appeared.  
+> 
+> What userspace mounts debugfs twice?
+> 
+> > Only clobber if the options were provided at mount time.
+> > 
+> >   # Don't change /sys/kernel/debug/ permissions.
+> >   mount -t debugfs none /mnt/foo
+> > 
+> >   # Change /sys/kernel/debug/ mode and uid, but not gid.
+> >   mount -t debugfs -o uid=bar,mode=0750 none /mnt/baz  
+> 
+> So what happens today with this change?  Without it?
+> 
+> > 
+> > Signed-off-by: Brian Norris <briannorris@chromium.org>
+> > ---
+> > I'm open to writing an LTP test case for this, if that seems like a good
+> > idea.  
+> 
+> If it's really needed, again, why would debugfs be ever mounted more
+> than once?
+>
 
-Or does it need to be rebased?
+The real issue is with tracefs, and I think the debugfs patch is just for
+consistency. But I (and others) do have debugfs mounted more that once. ;-)
 
-thanks,
+  # mount |grep debugfs
+  debugfs on /sys/kernel/debug type debugfs (rw,nosuid,nodev,noexec,relatime)
+  debugfs on /debug type debugfs (rw,relatime)
 
-greg k-h
+I added /debug (and I know others that just add /d) for shortcuts to get to
+the debugfs directory easier.
+
+This patch series came about because ideally tracefs should be mounted in
+/sys/kernel/tracing. But because a lot of scripts use the old path of
+/sys/kernel/debug/tracing, I have tracefs mounted there automatically
+when debugfs is mounted. This is so that scripts do not break.
+
+I would love to deprecate the /sys/kernel/debug/tracing automatic mounting,
+but I do not know what user space will break if that happens. libtracefs
+handles finding where tracefs is, so anything that uses that is fine.
+
+But anyway, because tracefs is mounted more than once, if someone has
+tracefs mounted in the correct location "/sys/kernel/tracing" and updates
+the permissions to the files, but then mounts debugfs, due to the automatic
+mounting, all their changes go away.
+
+Perhaps we only need the second patch because of the automatic mounting.
+Maybe people do not care if things get reset if they manually mount debugfs
+more than once. I (and others) have it in my fstab, so it's done at boot up
+and any changes should affect both.
+
+-- Steve
