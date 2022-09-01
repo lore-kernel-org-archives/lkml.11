@@ -2,70 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBBE3ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:14:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49EA4ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:14:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232286AbiIABOB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 21:14:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47120 "EHLO
+        id S232341AbiIABOa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 21:14:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232007AbiIABN4 (ORCPT
+        with ESMTP id S232291AbiIABOO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 21:13:56 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 806C612EC6C;
-        Wed, 31 Aug 2022 18:13:55 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MJ2ys3kPhz1N7jG;
-        Thu,  1 Sep 2022 09:10:13 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 1 Sep
- 2022 09:13:52 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <jhs@mojatatu.com>,
-        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>
-CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
-        <shaozhengchao@huawei.com>
-Subject: [PATCH net-next,v2] net/sched: cls_api: remove redundant 0 check in tcf_qevent_init()
-Date:   Thu, 1 Sep 2022 09:16:17 +0800
-Message-ID: <20220901011617.14105-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 31 Aug 2022 21:14:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBD1412E4D0;
+        Wed, 31 Aug 2022 18:14:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46DECB823CB;
+        Thu,  1 Sep 2022 01:14:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED2C4C433D6;
+        Thu,  1 Sep 2022 01:14:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661994851;
+        bh=R/76vyDw5YFQkK7f+C2znxTwONiXMNY233XPvV8eTj4=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=V55x74P73lLpqSgoCdJUPauFg/fACr3iPqob7PaHI0UEP7KbgEsGdRoIRM3AJVrvW
+         00vmDXDnuFXSdf2PA8QX8efseS8pvqcI2qVpnyIJTaHpuc8E0JSzBCcK1SDPYJBQ9F
+         taHdWOiH8KSC5iqoffjy9XKFbkQY08wcWGeWML7H/q+7BkjoEEzn8C4j1I2Qv6a+18
+         itkOAsuwz87zSSnWNK1eUgkmiqPtsGpj/8pZpP5FmubrAWWS3rWvnPXelyab1uCQPp
+         lfE9+90YFtB9TbTo7UoJboBMvk0YvU4bkU2+/4ipOrEm0kWYMrkODdgiduGEpqTb5M
+         DfE2u4AjK84sQ==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220629105205.173471-2-angelogioacchino.delregno@collabora.com>
+References: <20220629105205.173471-1-angelogioacchino.delregno@collabora.com> <20220629105205.173471-2-angelogioacchino.delregno@collabora.com>
+Subject: Re: [PATCH 1/2] dt-bindings: reset: mt8195: Add resets for PCIE controllers
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     matthias.bgg@gmail.com, p.zabel@pengutronix.de, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        angelogioacchino.delregno@collabora.com, wenst@chromium.org,
+        chun-jie.chen@mediatek.com, miles.chen@mediatek.com,
+        rex-bc.chen@mediatek.com, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, mturquette@baylibre.com
+Date:   Wed, 31 Aug 2022 18:14:09 -0700
+User-Agent: alot/0.10
+Message-Id: <20220901011410.ED2C4C433D6@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tcf_qevent_parse_block_index() never returns a zero block_index.
-Therefore, it is unnecessary to check the value of block_index in
-tcf_qevent_init().
+Quoting AngeloGioacchino Del Regno (2022-06-29 03:52:04)
+> Add the reset index for PCIe P0 and P1 (PCIe0, PCIe1) on MT8195.
+>=20
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@coll=
+abora.com>
+> ---
 
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
- net/sched/cls_api.c | 3 ---
- 1 file changed, 3 deletions(-)
-
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 1ebab4b11262..5d0d57dc5cb7 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -3629,9 +3629,6 @@ int tcf_qevent_init(struct tcf_qevent *qe, struct Qdisc *sch,
- 	if (err)
- 		return err;
- 
--	if (!block_index)
--		return 0;
--
- 	qe->info.binder_type = binder_type;
- 	qe->info.chain_head_change = tcf_chain_head_change_dflt;
- 	qe->info.chain_head_change_priv = &qe->filter_chain;
--- 
-2.17.1
-
+Applied to clk-next
