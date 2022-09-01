@@ -2,131 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F9B1ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 06:54:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D886ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 06:55:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231650AbiIAGyz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 02:54:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38598 "EHLO
+        id S232946AbiIAGzZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 02:55:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233003AbiIAGyv (ORCPT
+        with ESMTP id S231969AbiIAGzU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 02:54:51 -0400
-Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF514FDB;
-        Wed, 31 Aug 2022 23:54:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1662015288; x=1693551288;
-  h=message-id:date:mime-version:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:subject;
-  bh=1SVd+phahoUIGBOGlWxPC1ufcvnAsdeeOKE5nHDZHUE=;
-  b=WRCVwYpybIuTmwNE6Lpa4cV3qpzRNKGAVc94zTDIg+KxDvleXxlZ6GUl
-   rAPUfVt9M5CW5aV/NB8OsMGOrX1/Y0wNY/UUUVBDltUnJsWVswpRzVjV8
-   ehqhMHZIFhUe/PbgFFb4VFtyvoojTwAJP/ju/Fogs/vw6Ozq554iQIXo7
-   4=;
-X-IronPort-AV: E=Sophos;i="5.93,280,1654560000"; 
-   d="scan'208";a="222563956"
-Subject: Re: [PATCH v3 18/19] hwmon: (mr75203) add debugfs to read and write
- temperature coefficients
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-828bd003.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 06:54:32 +0000
-Received: from EX13D40EUB003.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1a-828bd003.us-east-1.amazon.com (Postfix) with ESMTPS id 9F02E80BA7;
-        Thu,  1 Sep 2022 06:54:28 +0000 (UTC)
-Received: from EX13MTAUEE002.ant.amazon.com (10.43.62.24) by
- EX13D40EUB003.ant.amazon.com (10.43.166.128) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Thu, 1 Sep 2022 06:54:27 +0000
-Received: from [192.168.93.228] (10.85.143.172) by mail-relay.amazon.com
- (10.43.62.224) with Microsoft SMTP Server id 15.0.1497.38 via Frontend
- Transport; Thu, 1 Sep 2022 06:54:22 +0000
-Message-ID: <646af681-38b0-1268-3798-c5434ca30bee@amazon.com>
-Date:   Thu, 1 Sep 2022 09:54:21 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-To:     Andy Shevchenko <andriy.shevchenko@intel.com>
-CC:     <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
-        <p.zabel@pengutronix.de>, <rtanwar@maxlinear.com>,
-        <linux-hwmon@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <talel@amazon.com>,
-        <hhhawa@amazon.com>, <jonnyc@amazon.com>, <hanochu@amazon.com>,
-        <ronenk@amazon.com>, <itamark@amazon.com>, <shellykz@amazon.com>,
-        <shorer@amazon.com>, <amitlavi@amazon.com>, <almogbs@amazon.com>,
-        <dkl@amazon.com>, "Farber, Eliav" <farbere@amazon.com>
-References: <20220830192212.28570-1-farbere@amazon.com>
- <20220830192212.28570-19-farbere@amazon.com>
- <Yw9Qq+PIfxgXRIK2@smile.fi.intel.com>
+        Thu, 1 Sep 2022 02:55:20 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2081.outbound.protection.outlook.com [40.107.223.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 279634CA0E;
+        Wed, 31 Aug 2022 23:55:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=neBzB0/O4hnlq3ymTWFbFsEgcMXcPV+f7tXm5XvXctAY2+zrKSqnpxZjd3Bq/WLIwnIgFmJmrR0aVTaZLvLEi3PGm/yzVTp4A+wqWEQ6sPlE5lt2+5F7rLLjNd88XMue81+WwW5qaXLr8ZDirfz6PC5wnLHGl94oVMZKnHsokZF7OdOwcpNYT0Nsg7TUBVqZFLbgEVXbVHlmLUw3vhIWRNfby/CTK4BiP7QdMfziqePE1VxQk95fZKUMYzwW0AwY+akJ4pZGxWUSjlbFXrduKUdNCwWnxb3WKQxNXGri3K9pnYR/Ji7CB7vdM84YcOQCZcIUHRGBwVyR0fdVP06W7g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=akN2a1Wgmqf1q4N6+stU9PFi00lxSLd6MVgNGbipNas=;
+ b=iGfykgLkTjZ9Gd6WJHt62zVq7CqqcfW2Uys7ueQDg6J52Tg7jU2KS+Ax80C+AE1z2eUDDhvEUzue0YKspY32Q2NFHfhg8ufpA99y9gsRsGsb7cTN+ujnJ3mu1oGtX+VjTzwGLj34+FH/yjIIbkVYfe/e7JUhjqxoV92bfH4S5aD1C2SZbvsDL/bdUaeBGxI3AecvAL8Ms7H6J23aFGiUXuhIt4aNkDqg9NnF1LB/o0jFNIx5CBpaBrM+nLmQxAuEspfqln5Jqnj7lxgSHx3RMjUyKNQqT37qZumx3gvfZ4nCw2HTi+wV0Jw9WXOuq0+mfij3UXzw0uyY9gq0DCjfzw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=akN2a1Wgmqf1q4N6+stU9PFi00lxSLd6MVgNGbipNas=;
+ b=JOsa0PLZMZgez0uuEzWIw1IpWh/JAekz/rllcbVfNs4f1vVMrL+LAX3Br8pUo9So1KF/rqkkhqFh2mCk3kcbDZnszgGbUbxt84l3YvB4guInZLmEBArRPqPxTMbYGksnBWBLD/Jyec7fw/H7wUQo20JAo+E9HwOUmcwuC2/0eUo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com (2603:10b6:408:43::13)
+ by DM4PR12MB6039.namprd12.prod.outlook.com (2603:10b6:8:aa::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Thu, 1 Sep
+ 2022 06:55:17 +0000
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::4524:eda6:873a:8f94]) by BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::4524:eda6:873a:8f94%7]) with mapi id 15.20.5588.011; Thu, 1 Sep 2022
+ 06:55:16 +0000
+Message-ID: <ad72df13-920e-6b22-80ae-ecf2e6bc5b55@amd.com>
+Date:   Thu, 1 Sep 2022 08:55:04 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v4 11/21] misc: fastrpc: Prepare to dynamic dma-buf
+ locking specification
 Content-Language: en-US
-From:   "Farber, Eliav" <farbere@amazon.com>
-In-Reply-To: <Yw9Qq+PIfxgXRIK2@smile.fi.intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        David Airlie <airlied@linux.ie>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Daniel Almeida <daniel.almeida@collabora.com>,
+        Gert Wollny <gert.wollny@collabora.com>,
+        Gustavo Padovan <gustavo.padovan@collabora.com>,
+        Daniel Stone <daniel@fooishbar.org>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Rob Clark <robdclark@gmail.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        =?UTF-8?Q?Thomas_Hellstr=c3=b6m?= <thomas_os@shipmail.org>,
+        Qiang Yu <yuq825@gmail.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Amol Maheshwari <amahesh@qti.qualcomm.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        Tomi Valkeinen <tomba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Dmitry Osipenko <digetx@gmail.com>,
+        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+        amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        kernel@collabora.com, virtualization@lists.linux-foundation.org,
+        linux-rdma@vger.kernel.org, linux-arm-msm@vger.kernel.org
+References: <20220831153757.97381-1-dmitry.osipenko@collabora.com>
+ <20220831153757.97381-12-dmitry.osipenko@collabora.com>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+In-Reply-To: <20220831153757.97381-12-dmitry.osipenko@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: AS8P251CA0005.EURP251.PROD.OUTLOOK.COM
+ (2603:10a6:20b:2f2::10) To BN8PR12MB3587.namprd12.prod.outlook.com
+ (2603:10b6:408:43::13)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 23112121-b4a2-47fe-3dc5-08da8be6ecd6
+X-MS-TrafficTypeDiagnostic: DM4PR12MB6039:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 9HRW5bqonJ5VobVy0GTfxPygJxSFhNLJHVvnhRc7TuhcMW+9cnhuBZ7TS3ikydx6eNTo6jMI54qtUTz1qb5sUykQ5uJj9xoKqaEQ3WtYJAaYhs3a6Xmll38shJ886vhH2x8reCYDPFu0cw6IQsDijSXq2TK9dm/RYTaOP3Zmha5NlYw5XS3MiaroNqPzYlIZXaoRrAZWfPOZYaoU5O8GF3BtMULgihu+mLlHQq9k+DlgJh9Ro3V9ikSl7xncvoP3VAzut1p21WXK9RpKZwTOEsixsrRECCIq9y2g5gQs5pcqTGVG5h6tD+EtZMzmIu9F/ajRZTX9FM5yZIDvfnCYFSTuCjIhDMm7nPTkk7RcreFw9n8xg3t+oqkexfeoUXDT0YRQuyY8dBdo+NPgqRldR/RcxLaZ+uIJ4OljE9I8OqLjvPz238RVoywTQoGQctP7GaFDrMdApkpQT+HS+PQ6YrmtlHobzHnZovye1ubGxwbbCBXHqHCtTQnoxrSJwpCnXj5f06JsT0w45XqFeolbbGsUamvpwmDeJVXyDLb/XOvnYGO/kIxg1FU8BaUkwxbon5UtMrmqOuxHek7VStq/cHcySl3Q6zuyXwv9qwX9nk/VzB6k4W0I6nYzCHC2bcoiX+vXYwQWTATefvDW6tnAD+DZ+VVHv7Ivnt1hc+QfNRmIMzYuxJ0Z1lUwqv0Qg4x4ElmSJtNhEZhaapxeO3CjhXfMSO4zWWrdBtdPY7HhUaScDFTj5fyjy3K2xr1mguwnvu+GEijS3vqm+yI9+rHFeo2+xpzXrqS4rmGchkjOyZkN1JKCZGUM+rZ38qwueBPE
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3587.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(376002)(346002)(396003)(366004)(136003)(2906002)(6506007)(6666004)(8676002)(66476007)(4326008)(66556008)(66946007)(316002)(478600001)(36756003)(6486002)(2616005)(41300700001)(6512007)(110136005)(26005)(31696002)(921005)(86362001)(186003)(66574015)(83380400001)(7406005)(8936002)(5660300002)(31686004)(7416002)(38100700002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cTJWcENQdG9QeU1sLzVONlFiTTY1WUs4dGNKQTR3dDRCcy9Ic2Vnd1I1NmY2?=
+ =?utf-8?B?bXR6U2hsbVpQU1JRTVE0d01Nbjk1cTQ4OGNCeVUrSHJrb1NoNzZsSzJ1eFVo?=
+ =?utf-8?B?ODRzaWhCK1F2UlVwSGhDYlZZaUJhZFFmaDJkT2U4MXJNWW9yeWFPVDcxS1Rx?=
+ =?utf-8?B?TzBIUTZXNEVpbXQxcHBkVHVXYmVqUXpGcFkwQWRaenlYaTBmYkk2L2pXOWdk?=
+ =?utf-8?B?d2tHVUVlQzRFRjU5ZUpJZGZadEpEMnYzUzM5WjJONFNKVXRTdzNjVi91VWNP?=
+ =?utf-8?B?NlUzVjNUZ096aENxbHVqRGxqZzE0cEdEUzczcVlqMWpDaFUxYmk2c0labnox?=
+ =?utf-8?B?ajlPb2RKRnV1LzZkN1VvQTNxeUpkU1lZRDRTR1l3YjVnMnNCazduNTlvZFhE?=
+ =?utf-8?B?YUNxWjR4VDVkTXhaMnBkbERhQ1crSXZOSHdxdGJML2V3UUxOS3FORmVzRHQ0?=
+ =?utf-8?B?VnFmbDd3WUIxUTJ2ZkMzY01Jck4rY05YTGFrMFVkcFF4UG1QTi84cG5jSTRm?=
+ =?utf-8?B?NWJSVEpKT2RXdjExc2JKTGhOKzZxSWIvQU9WUHYwazhCSUNqZW9aOVZrSndm?=
+ =?utf-8?B?MjdXbEdwSW91eGRRUU5UaGVTV0FjZnc5RnFvSWZzTmpyVmdpQ0xLdkpMNGdw?=
+ =?utf-8?B?OE40SUVBSGRwOGZyVFdTc1NnQVA1T1pRWmU3SFc0bWVFaHFFakxGOTIwMmky?=
+ =?utf-8?B?TWJ2MlowVXY3VXM4TGdSclNKSzRQendRMGF4TWtJMnNTUXljNnJNTkwraXFj?=
+ =?utf-8?B?NTZUMmF1UmpIR1NyZ25ObXFUTE1vYUYzN1NIWHlOVzFpTTR1dUZHc3Y3b1li?=
+ =?utf-8?B?dW01Y0Myd3l1SmJtcFZ5VHlkWkdmY3pYUERsTVdyUlRVS2JFeDUzS21CRVE0?=
+ =?utf-8?B?bWtIT2QyTWJOdCtRdnljclY1ZSsreHJiRXBSdXZ6Zy81dEhBZHBxWXFyNWEw?=
+ =?utf-8?B?L0VMdld2T0o2MjRHNjV2NVJhUW1SVldKS2xhY1MzK3hrV2dpcC9DK2xCTFRl?=
+ =?utf-8?B?NHhYRmMvcmJ5Q2lDVHk5Y2tQNlRxaFBhVEtwVENxbTFmaVNBOVg2NTVWb0hY?=
+ =?utf-8?B?Z2ptWVpaN1lrQ2RGc1ZvTUVJTDBRelB2R2h2S1pHQXU3a0ZRRStkV2k5b2Vw?=
+ =?utf-8?B?Y2FHUURDd1NqbTdHcWdvd01PMy9NTmlXMDJWUnJDcGNnRk9vTEV0eFdxaWtW?=
+ =?utf-8?B?RWwvdU5jVk11Skp0aXYrc3BKcFN0ZWcrQkFwc3NEU0hLdFlJUWRBNHROcVJw?=
+ =?utf-8?B?UGpVVWR2VVpydVFmUVZtdVcyWUNXQWh5RG4vK3F1WG1mVHVMZ2E2S1grRWZM?=
+ =?utf-8?B?Qk1WRndhOGkyKzlmQ2xUQzZaekZWVXZRb1NMT0s4a2JuYWt4SlJwVk05anZ5?=
+ =?utf-8?B?ek9jUGtLWUk5aE9BQmRUcmJVTVFzZlBuRnYvUFR5eEFnODY3dUlrZFQvNnFr?=
+ =?utf-8?B?SmhzNlRwQ2VvT2xHbzJvenF0NjBiYXJMcjJuTnpiRVYvT3JQZWIraGh6RWVP?=
+ =?utf-8?B?N0xjZ0VyUlNOSnZ1NkYrUWpRcytad1NNc3VEeWx3UGFGNzNvWWdBMXhqbEkr?=
+ =?utf-8?B?a0pwdzl0MjZqQW0zUFlwTXFsc3hLSmlOWXo5VVRXZkUwSEZkdkwvTVJuYjFp?=
+ =?utf-8?B?S2hUSDJjN21kOXFqeVVlcUltZ3QzQUxzL2FNY25FdTJIQUdNRkFXejJ3clhS?=
+ =?utf-8?B?cHhHeE9JVytsNmRMSUFKejJlMHRDMDV3OXJERDdlTDZtK2ZVM3k4MXk0Z0pB?=
+ =?utf-8?B?eUNFdlhGSlpQaTc3MjNzbUZ3cmJNLzR5K0RNZGpsWG9HSmRmSmJ2UzI0VDVa?=
+ =?utf-8?B?aW1HYWdibHdkVDFDZXRTTEhobFdhS1l6ZWpaa0pTWWNuVHdrb0FNR21QTzJE?=
+ =?utf-8?B?OHQyOEFCOE1WU3Vmc0xTV2o1UWM4dFI1ODdVRnFiUHdqcEdoZTlIN21Zd011?=
+ =?utf-8?B?SU1JK1dpRGVEODRYUGFpZVdOdzVVazdLTmlDMS9RUE4zUmptbXJER2hCTW9J?=
+ =?utf-8?B?R2NkQkF3eGF1TVBFVTA3cUZJbTk1amtaRncwY0xoZ0wwWUpuNDY4WGN1dkJi?=
+ =?utf-8?B?VmJzVjZZOGZlTUI3SXUxRHFTTlFDQ1dWVFNMYWdpUjJMVEdNUE9Lcm9GTUh2?=
+ =?utf-8?Q?oEoievHDTiOq5zZuuIUPVMSsz?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 23112121-b4a2-47fe-3dc5-08da8be6ecd6
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3587.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2022 06:55:16.0892
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: tQumFulxCHigYDaK47wSc4r97LXHDMk3BbjcwK0KyL9avvdD90aj3cnvKX+tKRNr
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6039
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/31/2022 3:14 PM, Andy Shevchenko wrote:
-> On Tue, Aug 30, 2022 at 07:22:11PM +0000, Eliav Farber wrote:
->> This change adds debugfs to read and write temperature sensor 
->> coefficients
->> - g, h, j and cal5.
->>
->> The coefficients can vary between product and product, so it can be very
->> useful to be able to modify them on the fly during the calibration
->> process.
->>
->> e.g.:
->>
->> cat /sys/kernel/debug/940f23d0000.pvt/ts_coeff_cal5
->> 4096
->>
->> echo 83000 > sys/kernel/debug/940f23d0000.pvt/ts_coeff_g
+Am 31.08.22 um 17:37 schrieb Dmitry Osipenko:
+> Prepare fastrpc to the common dynamic dma-buf locking convention by
+> starting to use the unlocked versions of dma-buf API functions.
 >
-> ...
->
->> +     pvt->dbgfs_dir = debugfs_create_dir(dev_name(dev), NULL);
->
->> +     if (!pvt->dbgfs_dir) {
->> +             dev_err(dev, "Failed to create dbgfs_dir\n");
->> +             return -EINVAL;
->> +     }
->
-> No, just don't check the return value of debugfs API calls.
->
-Do you mean that I should just do:
-debugfs_create_dir(dev_name(dev), NULL);
-Can you please explain why it's OK to ignore the return value?
+> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
 
->> +     debugfs_create_file("ts_coeff_h", 0644, pvt->dbgfs_dir, pvt,
->> +                         &pvt_ts_coeff_h_fops);
->> +     debugfs_create_file("ts_coeff_g", 0644, pvt->dbgfs_dir, pvt,
->> +                         &pvt_ts_coeff_g_fops);
->> +     debugfs_create_file("ts_coeff_j", 0644, pvt->dbgfs_dir, pvt,
->> +                         &pvt_ts_coeff_j_fops);
->> +     debugfs_create_file("ts_coeff_cal5", 0644, pvt->dbgfs_dir,  pvt,
->> +                         &pvt_ts_coeff_cal5_fops);
->
-> debugfs has helpers for POD types, use them and shrink your code by ~80%.
->
-Fixed for v4.
-I used debugfs_create_u32() for ts_coeff_h, ts_coeff_g and ts_coeff_j.
-For ts_coeff_cal5 I still use debugfs_create_file() because I must make
-sure it is not set to 0.
+Acked-by: Christian König <christian.koenig@amd.com>
 
->> +     ret = devm_add_action_or_reset(dev, devm_pvt_ts_dbgfs_remove, 
->> pvt);
->> +     if (ret) {
->> +             dev_err(dev, "failed to add action to remove pvt dbgfs 
->> (%d)\n",
->> +                     ret);
->> +             return ret;
->> +     }
->> +
->> +     return 0;
+> ---
+>   drivers/misc/fastrpc.c | 6 +++---
+>   1 file changed, 3 insertions(+), 3 deletions(-)
 >
-> return devm_add_...
-Fixed for v4.
+> diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
+> index 93ebd174d848..6fcfb2e9f7a7 100644
+> --- a/drivers/misc/fastrpc.c
+> +++ b/drivers/misc/fastrpc.c
+> @@ -310,8 +310,8 @@ static void fastrpc_free_map(struct kref *ref)
+>   				return;
+>   			}
+>   		}
+> -		dma_buf_unmap_attachment(map->attach, map->table,
+> -					 DMA_BIDIRECTIONAL);
+> +		dma_buf_unmap_attachment_unlocked(map->attach, map->table,
+> +						  DMA_BIDIRECTIONAL);
+>   		dma_buf_detach(map->buf, map->attach);
+>   		dma_buf_put(map->buf);
+>   	}
+> @@ -726,7 +726,7 @@ static int fastrpc_map_create(struct fastrpc_user *fl, int fd,
+>   		goto attach_err;
+>   	}
+>   
+> -	map->table = dma_buf_map_attachment(map->attach, DMA_BIDIRECTIONAL);
+> +	map->table = dma_buf_map_attachment_unlocked(map->attach, DMA_BIDIRECTIONAL);
+>   	if (IS_ERR(map->table)) {
+>   		err = PTR_ERR(map->table);
+>   		goto map_err;
 
---
-Thanks, Eliav
