@@ -2,65 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1771CECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 10:10:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECAEBECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 10:10:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233298AbiIAKKh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 06:10:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52460 "EHLO
+        id S233518AbiIAKKw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 06:10:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232082AbiIAKKc (ORCPT
+        with ESMTP id S233326AbiIAKKq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 06:10:32 -0400
+        Thu, 1 Sep 2022 06:10:46 -0400
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4231A6F570;
-        Thu,  1 Sep 2022 03:10:29 -0700 (PDT)
-Received: from fraeml739-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MJGsr46wNz6813w;
-        Thu,  1 Sep 2022 18:06:40 +0800 (CST)
-Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
- fraeml739-chm.china.huawei.com (10.206.15.220) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 1 Sep 2022 12:10:27 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 1 Sep 2022 11:10:25 +0100
-From:   John Garry <john.garry@huawei.com>
-To:     <rafael@kernel.org>, <lenb@kernel.org>
-CC:     <linux-acpi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <andy.shevchenko@gmail.com>, John Garry <john.garry@huawei.com>
-Subject: [PATCH] ACPI: platform: Use PLATFORM_DEVID_NONE in acpi_create_platform_device()
-Date:   Thu, 1 Sep 2022 18:04:11 +0800
-Message-ID: <1662026651-172787-1-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCBAAAA3FF;
+        Thu,  1 Sep 2022 03:10:42 -0700 (PDT)
+Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MJGxg5Qz1z67xt4;
+        Thu,  1 Sep 2022 18:09:59 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.31; Thu, 1 Sep 2022 12:10:40 +0200
+Received: from localhost (10.202.226.42) by lhrpeml500005.china.huawei.com
+ (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 1 Sep
+ 2022 11:10:40 +0100
+Date:   Thu, 1 Sep 2022 11:10:38 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To:     Robert Richter <rrichter@amd.com>
+CC:     Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Ben Widawsky <bwidawsk@kernel.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        <linux-cxl@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>
+Subject: Re: [PATCH 05/15] cxl/acpi: Add probe function to detect restricted
+ CXL hosts in RCD mode
+Message-ID: <20220901111038.00002e00@huawei.com>
+In-Reply-To: <YxBKoT2zlUVgXIry@rric.localdomain>
+References: <20220831081603.3415-1-rrichter@amd.com>
+        <20220831081603.3415-6-rrichter@amd.com>
+        <20220831110804.00003812@huawei.com>
+        <YxBKoT2zlUVgXIry@rric.localdomain>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- lhrpeml500003.china.huawei.com (7.191.162.67)
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.42]
+X-ClientProxiedBy: lhrpeml500006.china.huawei.com (7.191.161.198) To
+ lhrpeml500005.china.huawei.com (7.191.163.240)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of hardcoding the value for the id, use PLATFORM_DEVID_NONE.
+On Thu, 1 Sep 2022 08:01:05 +0200
+Robert Richter <rrichter@amd.com> wrote:
 
-Signed-off-by: John Garry <john.garry@huawei.com>
+> On 31.08.22 11:08:04, Jonathan Cameron wrote:
+> > On Wed, 31 Aug 2022 10:15:53 +0200  
+> 
+> > Robert Richter <rrichter@amd.com> wrote:
+> >   
+> > > Restricted CXL device (RCD) mode (formerly CXL 1.1) uses a different
+> > > enumeration scheme other than CXL VH (formerly CXL 2.0). In RCD mode a
+> > > host/device (RCH-RCD) pair shows up as a legal PCIe hierarchy with an
+> > > ACPI host bridge ("PNP0A08" or "ACPI0016" HID) and RCiEP connected to
+> > > it with a description of the CXL device.
+> > > 
+> > > Add function cxl_restricted_host_probe() to probe RCD enumerated
+> > > devices. The function implements a loop that detects all CXL capable
+> > > ACPI PCI root bridges in the system (RCD mode only). The iterator
+> > > function cxl_find_next_rch() is introduced to walk through all of the
+> > > CXL hosts. The loop will then enable all CXL devices connected to the
+> > > host. For now, only implement an empty loop with an iterator that
+> > > returns all pci host bridges in the system.
+> > > 
+> > > The probe function is triggered by adding an own root device for RCHs.
+> > > This is different to CXL VH where an ACPI "ACPI0017" root device
+> > > exists. Its detection starts the CXL host detection. In RCD mode such
+> > > a device does not necessarily exists, so solve this by creating a
+> > > plain platform device that is not an ACPI device and is root only for
+> > > RCHs.  
+> > 
+> > If I read this correctly that platform device is created whether or not
+> > there are any cxl devices in the system?
+> > 
+> > Can we create it only if we find some devices that will be placed
+> > under it later?  
+> 
+> This would move the host detection from probe to init which I wanted
+> to avoid to better control driver init order dependencies.
 
-diff --git a/drivers/acpi/acpi_platform.c b/drivers/acpi/acpi_platform.c
-index de3cbf152dee..d33334c9b8e5 100644
---- a/drivers/acpi/acpi_platform.c
-+++ b/drivers/acpi/acpi_platform.c
-@@ -140,7 +140,7 @@ struct platform_device *acpi_create_platform_device(struct acpi_device *adev,
- 	pdevinfo.parent = adev->parent ?
- 		acpi_get_first_physical_node(adev->parent) : NULL;
- 	pdevinfo.name = dev_name(&adev->dev);
--	pdevinfo.id = -1;
-+	pdevinfo.id = PLATFORM_DEVID_NONE;
- 	pdevinfo.res = resources;
- 	pdevinfo.num_res = count;
- 	pdevinfo.fwnode = acpi_fwnode_handle(adev);
--- 
-2.35.3
+It's a bit nasty either way.  I can see your reasoning, but
+definitely not keen on it if there is a plausible way to avoid.
+> 
+> I could add a put_device() at the end of a probe so that it will be
+> released in case no other references use it. This implies the refcount
+> is maintained for parent devices. Or this needs to be added to. So if
+> there are no children (hosts) attached to the root device after probe,
+> it will disappear.
+
+Unless there is precedence for that, it'll be weird enough to be
+hard to maintain.  I guess I can live with the ugliness if we can't
+add something new to ACPI to base this off.
+
+> 
+> > > @@ -531,7 +566,41 @@ static struct platform_driver cxl_acpi_driver = {
+> > >  	.id_table = cxl_test_ids,
+> > >  };
+> > >  
+> > > -module_platform_driver(cxl_acpi_driver);
+> > > +static void cxl_acpi_device_release(struct device *dev) { }  
+> > 
+> > Why the empty release?  Perhaps introduce this only when it
+> > does something.  
+> 
+> The core device driver requires this in device_release() to be setup.
+> 
+> There is nothing to do as the device is kept in a static struct.
+> That's why it's empty.
+Ah got it. I'd failed to register the static structure.
+
+> 
+> -Robert
 
