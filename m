@@ -2,122 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B36FCECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 09:20:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50A83ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 09:23:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232448AbiIAJUF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 05:20:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52106 "EHLO
+        id S232599AbiIAJXt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 05:23:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232107AbiIAJUA (ORCPT
+        with ESMTP id S234171AbiIAJXp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 05:20:00 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 515E41839C;
-        Thu,  1 Sep 2022 02:19:59 -0700 (PDT)
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28194Q5D023183;
-        Thu, 1 Sep 2022 09:19:45 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=FAV0K99sOO+vFi8gDLIlrXCyZVBT3gh3GSY44qD7inw=;
- b=C2UZK0PDFJO1341d6syy4pBy5hGCdEAvVP5GnExk38GP5UC+1VYPm798y1aicfXfzMlv
- hALW9znlamyQngTaJ8kNkElsbepCB/2eHMcwgmyRqQrQyDT7nyJh65ETqzXtwyljQc0n
- YO7Pvt49Nj+o2t75p0fBm4zbDVx9Tz2FsttGEf3Qkk5SmlAPD2OOb5sOeAiG+jNpSz4r
- OsyI2J0wTuCOB7ui1TCedhjuwXNatxiiTJ4H7MQVA0wN3hwwBPvJVlOf2VLeKWG11xBI
- 7kogv70DWL1DI2wql3bGCrYAsQ4FYEDGRaFBGg1NxMtHtn9AMy6oyibXm4qn1aG9Y4sc og== 
-Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3jaeb4sy5g-1
+        Thu, 1 Sep 2022 05:23:45 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCA6612D532;
+        Thu,  1 Sep 2022 02:23:41 -0700 (PDT)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2818oTDk007722;
+        Thu, 1 Sep 2022 09:23:31 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=oSpC5mfTK/eTWZhpCaXSlm6QucnN1qjlhlAhzjYSCDA=;
+ b=lkPKs22EYOgbXnJIrshh6Ab9d8Ui1y5c5rtXlhCY4lXzlb6H7cTAGeVyd2Ew2/8LHrGe
+ 08XkvABk1MyZplmP1F7aa2nb4Y5tfD3lQL0ryBaNorLVp9PSEXARUTlTm7uBDQwfra/x
+ RHRF3icGVmWL9BS1jFqTsSQzT0bUAcjduUdtG2/JG+otLAxA+thRYMABIh+niskWrTs5
+ Jx+dmW5vi083Y5iPXoovqq4xvPyz2L1zWOaAxgoVrtQEBDCjnunIPnjSHFultP+4OIDQ
+ En3z8zE36x/fTL7+1xeK7EfbtcTISXp4Imrm9YN11HM6BKXgSupMEycCoEDOP6VgMrnZ +w== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jask195en-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 09:19:45 +0000
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
-        by NASANPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 2819Eii8010871
+        Thu, 01 Sep 2022 09:23:31 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 28190mY8022084;
+        Thu, 1 Sep 2022 09:23:31 GMT
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jask195dj-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 1 Sep 2022 09:14:44 GMT
-Received: from [10.216.21.166] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Thu, 1 Sep 2022
- 02:14:40 -0700
-Message-ID: <7dad556c-f806-01e7-79c1-3841574669c3@quicinc.com>
-Date:   Thu, 1 Sep 2022 14:44:35 +0530
+        Thu, 01 Sep 2022 09:23:31 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2819MLJa017370;
+        Thu, 1 Sep 2022 09:23:28 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma06fra.de.ibm.com with ESMTP id 3j7ahhvrsu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 01 Sep 2022 09:23:28 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2819NPSi32244048
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 1 Sep 2022 09:23:25 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5A78AA404D;
+        Thu,  1 Sep 2022 09:23:25 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A31BAA4053;
+        Thu,  1 Sep 2022 09:23:22 +0000 (GMT)
+Received: from tarunpc.ibmuc.com (unknown [9.43.6.31])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu,  1 Sep 2022 09:23:22 +0000 (GMT)
+From:   Tarun Sahu <tsahu@linux.ibm.com>
+To:     akpm@linux-foundation.org, shuah@kernel.org,
+        axelrasmussen@google.com
+Cc:     linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, aneesh.kumar@linux.ibm.com,
+        Tarun Sahu <tsahu@linux.ibm.com>
+Subject: [PATCH] selftest: vm: remove deleted local_config.* from .gitignore
+Date:   Thu,  1 Sep 2022 14:53:15 +0530
+Message-Id: <20220901092315.33619-1-tsahu@linux.ibm.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v4] arm64: defconfig: Config that had RPMSG_CHAR now gets
- RPMSG_CTRL
-Content-Language: en-US
-To:     Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     <linux-kernel@vger.kernel.org>, <linux-remoteproc@vger.kernel.org>
-References: <20220826125400.2199429-1-arnaud.pouliquen@foss.st.com>
-From:   Mukesh Ojha <quic_mojha@quicinc.com>
-In-Reply-To: <20220826125400.2199429-1-arnaud.pouliquen@foss.st.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01c.na.qualcomm.com (10.45.79.139)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: VFWxxMCFFJNTanGnpbJx5ReSYCFlEB1r
-X-Proofpoint-ORIG-GUID: VFWxxMCFFJNTanGnpbJx5ReSYCFlEB1r
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: rsrvjOzlMhuFJjMrWE2gRcX6unwHEljk
+X-Proofpoint-GUID: CjDuGkUjmAorZRs14t50ojyzlRmXt3kg
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-09-01_06,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxlogscore=545
- impostorscore=0 suspectscore=0 priorityscore=1501 mlxscore=0 bulkscore=0
- malwarescore=0 clxscore=1011 phishscore=0 lowpriorityscore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2209010041
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 suspectscore=0
+ spamscore=0 phishscore=0 bulkscore=0 mlxlogscore=762 mlxscore=0
+ impostorscore=0 lowpriorityscore=0 priorityscore=1501 malwarescore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2209010040
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Commit d2d6cba5d6623245a80cc151008cce825c8b6248 ("selftest: vm: remove
+orphaned references to local_config.{h,mk}") took care of removing
+orphaned references. This commit remove local_config from .gitignore.
 
-On 8/26/2022 6:24 PM, Arnaud Pouliquen wrote:
-> In the commit 617d32938d1b ("rpmsg: Move the rpmsg control device
-> from rpmsg_char to rpmsg_ctrl"), we split the rpmsg_char driver in two.
-> By default give everyone who had the old driver enabled the rpmsg_ctrl
-> driver too.
-> 
-> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-> Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
-> ---
-> This patch is extracted from the series [1] that has been partially
-> integrated in the Linux Kernel 5.18-rc1.
-> 
-> update from v3 [2]
-> - resent after rebase on Linux kernel v6.0-rc2.
-> 
-> [1]https://lore.kernel.org/lkml/15be2f08-ba03-2b80-6f53-2056359d5c41@gmail.com/T/
-> [2]https://lore.kernel.org/linux-arm-kernel/YpdutV3%2FjOsfPb5c@arm.com/t/
-> ---
->   arch/arm64/configs/defconfig | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-> index d5b2d2dd4904..b9e6b17305f6 100644
-> --- a/arch/arm64/configs/defconfig
-> +++ b/arch/arm64/configs/defconfig
-> @@ -1093,6 +1093,7 @@ CONFIG_QCOM_Q6V5_PAS=m
->   CONFIG_QCOM_SYSMON=m
->   CONFIG_QCOM_WCNSS_PIL=m
->   CONFIG_RPMSG_CHAR=m
-> +CONFIG_RPMSG_CTRL=m
->   CONFIG_RPMSG_QCOM_GLINK_RPM=y
->   CONFIG_RPMSG_QCOM_GLINK_SMEM=m
->   CONFIG_RPMSG_QCOM_SMD=y
+Parent Patch
+Commit 69007f156ba7aead6c75b0046958ad3396f5aed1 ("Kselftests: remove
+support of libhugetlbfs from kselftests")
 
 
-LGTM.
+Signed-off-by: Tarun Sahu <tsahu@linux.ibm.com>
+---
+ tools/testing/selftests/vm/.gitignore | 1 -
+ 1 file changed, 1 deletion(-)
 
-Reviewed-by: Mukesh Ojha <quic_mojha@quicinc.com>
+diff --git a/tools/testing/selftests/vm/.gitignore b/tools/testing/selftests/vm/.gitignore
+index 31e5eea2a9b9..7b9dc2426f18 100644
+--- a/tools/testing/selftests/vm/.gitignore
++++ b/tools/testing/selftests/vm/.gitignore
+@@ -30,7 +30,6 @@ map_fixed_noreplace
+ write_to_hugetlbfs
+ hmm-tests
+ memfd_secret
+-local_config.*
+ soft-dirty
+ split_huge_page_test
+ ksm_tests
+-- 
+2.31.1
 
--Mukesh
