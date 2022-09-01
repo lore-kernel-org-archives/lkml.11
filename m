@@ -2,120 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B71C2ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:46:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 467D5ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:46:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234529AbiIAOqi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 10:46:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50036 "EHLO
+        id S233448AbiIAOqm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 10:46:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232590AbiIAOq2 (ORCPT
+        with ESMTP id S233572AbiIAOqg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 10:46:28 -0400
-Received: from cstnet.cn (smtp21.cstnet.cn [159.226.251.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AC25E659C3
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 07:46:24 -0700 (PDT)
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-01 (Coremail) with SMTP id qwCowAAnL8ezxRBjz7QgAA--.1056S2;
-        Thu, 01 Sep 2022 22:46:12 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     gregkh@linuxfoundation.org
-Cc:     hdegoede@redhat.com, arnd@arndb.de, linux-kernel@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH v3 1/2] virt: vbox: convert to use dev_groups
-Date:   Thu,  1 Sep 2022 22:46:10 +0800
-Message-Id: <20220901144610.3550300-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 1 Sep 2022 10:46:36 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 669107B2A0;
+        Thu,  1 Sep 2022 07:46:35 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id z3-20020a17090abd8300b001fd803e34f1so2660369pjr.1;
+        Thu, 01 Sep 2022 07:46:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:sender
+         :from:to:cc:subject:date;
+        bh=Aj4r5E6rkm0XNz95hikZXTW9i8eRGWs/XyBJ9bH2gRE=;
+        b=fXWZWsKC852E/3aiFapF8mjBc5SqOCZ8CmgT6DhOxlVE+CcWavYkfVy/z+IqpZOZ84
+         O5ZGA1F4Lyo9lwPTltndZHjr4b7HCm0xeCZvUWDsA+3xJgQf+WyttX+ODIf96ItpGRa4
+         231L3faWieAFU5sfNrrm2mhDwfCEYKr37nyd+9wIgMmEU7XyqsgXpEFHyuNR8vZAaUfZ
+         lcekvGmOLfQhRKBJc+2Beu+Nwkh+OYauTQxI4CkAaY0lMNVW88M4hwXS2nDD/Za36FCr
+         dz3+vgDeDOkqPVHy2TeMh7jGdJPWhSrjhCWp4dSIFg/Zf8rqkNlKhnTIJtKIdKnyP3Rk
+         B/EQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:sender
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=Aj4r5E6rkm0XNz95hikZXTW9i8eRGWs/XyBJ9bH2gRE=;
+        b=fkKPSWbaZczxOw1HewlcA8w/PgZeqBdQehlroNbvdOsTa61Te5kiouIEt22UYQqKq6
+         IEGUAeqGlCcDJzeJRVzDb4X4VjGdLp8MupQGmGx4C/UT0oBmuuL/9zuQlawdbuFTeSmm
+         AbblvRiTFziUePoruuzWnQv6e9F9ulbm16Zej40jpMjt38JDwqq2w95xrqn6yJpxdMEh
+         PmL/EuvpODGCB25n54BM7NG/TrvGsZSbzsrw3sCjEdz88PNEhtLlGcecXfLhdy73/RHN
+         ksHNdpVLbAY0pEg6+CM21IG7XX2YML+FrK2kCGNy4v9qV9E/Jpch+0z2pDyvHxmXb4IE
+         9N4Q==
+X-Gm-Message-State: ACgBeo3XJ4QReEQ1jmIThMD+zmnI8vtsLR/MDsvK8fPmO9r28SJZ7lcU
+        dSbdhWo2s6sLaR8dTA8A7HM=
+X-Google-Smtp-Source: AA6agR5WP8KTJjNBu/m+BXw9amb36hWxEejlt5C+y0bEvXRgn1+Wqz7BqmwKKE2N2h4TrbLmOPz64w==
+X-Received: by 2002:a17:90a:6783:b0:1fd:ab56:5af7 with SMTP id o3-20020a17090a678300b001fdab565af7mr9268903pjj.39.1662043594779;
+        Thu, 01 Sep 2022 07:46:34 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id jf9-20020a170903268900b00174f43129fbsm7565777plb.47.2022.09.01.07.46.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Sep 2022 07:46:34 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Thu, 1 Sep 2022 07:46:33 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     "Farber, Eliav" <farbere@amazon.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>, jdelvare@suse.com,
+        robh+dt@kernel.org, p.zabel@pengutronix.de, rtanwar@maxlinear.com,
+        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, talel@amazon.com, hhhawa@amazon.com,
+        jonnyc@amazon.com, hanochu@amazon.com, ronenk@amazon.com,
+        itamark@amazon.com, shellykz@amazon.com, shorer@amazon.com,
+        amitlavi@amazon.com, almogbs@amazon.com, dkl@amazon.com
+Subject: Re: [PATCH v3 19/19] hwmon: (mr75203) fix coding style space errors
+Message-ID: <20220901144633.GC3477025@roeck-us.net>
+References: <20220830192212.28570-1-farbere@amazon.com>
+ <20220830192212.28570-20-farbere@amazon.com>
+ <Yw9Q5krebHnb73vC@smile.fi.intel.com>
+ <0074475d-04bc-153a-2df8-dd5f7d014c97@amazon.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: qwCowAAnL8ezxRBjz7QgAA--.1056S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Zr4xAF4kJr43GFW5WFWxJFb_yoW8KrWDpa
-        yfJa4SvF4fGa1UWw47Aa4jga45W34rG3yxZrZxGw4Fgr9xA392vFZrCFWUAF98GFZ5XF4F
-        qr18t3s5CFWUuF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUyl14x267AKxVWUJVW8JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26r1j6r1xM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-        6F4UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
-        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
-        jxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr
-        1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxAIw28IcxkI7VAKI48J
-        MxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwV
-        AFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6xIIjxv2
-        0xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4
-        v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVW8JVWxJwCI42IY6I8E87Iv6xkF7I0E
-        14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfU0iiSUUUUU
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+In-Reply-To: <0074475d-04bc-153a-2df8-dd5f7d014c97@amazon.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver core supports the ability to handle the creation and removal
-of device-specific sysfs files in a race-free manner. Moreover, it can
-guarantee the success of creation. Therefore, it should be better to
-convert to use dev_groups.
+On Thu, Sep 01, 2022 at 05:21:43PM +0300, Farber, Eliav wrote:
+> On 8/31/2022 3:15 PM, Andy Shevchenko wrote:
+> > On Tue, Aug 30, 2022 at 07:22:12PM +0000, Eliav Farber wrote:
+> > > Fix: "ERROR: space required before the open parenthesis '('"
+> > 
+> > This patch may have other fixes like adding new blank lines (noted in one
+> > of the patches in the series), etc.
+> This patch fixed a specific space error which existed before my changes
+> and repeated many time.
+> I fixed the blank line I added a previous patch (but is it isn’t an error
+> reported by checkpatch).
 
-Fixes: 0ba002bc4393 ("virt: Add vboxguest driver for Virtual Box Guest integration")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
-Change log:
+That should really be fixed where it was introduced, not be introduced
+and fixed here.
 
-v2-> v3:
-
-1. Switch to use an attribute group.
-
-v1 -> v2:
-
-1. Use gdev->dev instead of dev.
-2. Remove file when creation failed.
----
- drivers/virt/vboxguest/vboxguest_linux.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/virt/vboxguest/vboxguest_linux.c b/drivers/virt/vboxguest/vboxguest_linux.c
-index 4ccfd30c2a30..6fc81347ae72 100644
---- a/drivers/virt/vboxguest/vboxguest_linux.c
-+++ b/drivers/virt/vboxguest/vboxguest_linux.c
-@@ -270,6 +270,13 @@ static ssize_t host_features_show(struct device *dev,
- static DEVICE_ATTR_RO(host_version);
- static DEVICE_ATTR_RO(host_features);
- 
-+static struct attribute *vbg_pci_attrs[] = {
-+	&dev_attr_host_version.attr,
-+	&dev_attr_host_features.attr,
-+	NULL,
-+};
-+ATTRIBUTE_GROUPS(vbg_pci);
-+
- /**
-  * Does the PCI detection and init of the device.
-  *
-@@ -390,8 +397,6 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 	}
- 
- 	pci_set_drvdata(pci, gdev);
--	device_create_file(dev, &dev_attr_host_version);
--	device_create_file(dev, &dev_attr_host_features);
- 
- 	vbg_info("vboxguest: misc device minor %d, IRQ %d, I/O port %x, MMIO at %pap (size %pap)\n",
- 		 gdev->misc_device.minor, pci->irq, gdev->io_port,
-@@ -422,8 +427,6 @@ static void vbg_pci_remove(struct pci_dev *pci)
- 	mutex_unlock(&vbg_gdev_mutex);
- 
- 	free_irq(pci->irq, gdev);
--	device_remove_file(gdev->dev, &dev_attr_host_features);
--	device_remove_file(gdev->dev, &dev_attr_host_version);
- 	misc_deregister(&gdev->misc_device_user);
- 	misc_deregister(&gdev->misc_device);
- 	vbg_core_exit(gdev);
-@@ -488,6 +491,7 @@ MODULE_DEVICE_TABLE(pci,  vbg_pci_ids);
- 
- static struct pci_driver vbg_pci_driver = {
- 	.name		= DEVICE_NAME,
-+	.dev_groups	= vbg_pci_groups,
- 	.id_table	= vbg_pci_ids,
- 	.probe		= vbg_pci_probe,
- 	.remove		= vbg_pci_remove,
--- 
-2.25.1
-
+Guenter
