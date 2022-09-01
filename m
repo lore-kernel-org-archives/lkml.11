@@ -2,67 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A520ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 05:28:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6336ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 05:31:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233052AbiIAF2s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 01:28:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38090 "EHLO
+        id S232892AbiIAFbV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 01:31:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233003AbiIAF2r (ORCPT
+        with ESMTP id S233025AbiIAFbN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 01:28:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D895DF666;
-        Wed, 31 Aug 2022 22:28:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A4CAEB81619;
-        Thu,  1 Sep 2022 05:28:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCBB0C433C1;
-        Thu,  1 Sep 2022 05:28:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662010123;
-        bh=0e3zj4uy1iVmgegJwpAbXPvOJ9xzYtDAws9Y1UFGV+A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Ws9qL7Cdx72e0H/U5M7wVdw+RWUJM1gZZrdWFzBeOsX42IiOqzcN41d5y/9Wr6zQn
-         I3CqPtrJtbSEyhU4QUTGMFBjF3mTtCvH28rGJbEoEBRd+kwi6qG9WN0gWFFHdMxW1t
-         Bkb8ytx6T88AEB7v20TVcyue8h464F5WF+T+jqz0=
-Date:   Thu, 1 Sep 2022 07:28:59 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     "Isaac J. Manjarres" <isaacmanjarres@google.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        stable@vger.kernel.org, Saravana Kannan <saravanak@google.com>,
-        Guenter Roeck <linux@roeck-us.net>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] driver core: Don't probe devices after
- bus_type.match() probe deferral
-Message-ID: <YxBDG9ebNDwEni2j@kroah.com>
-References: <20220817184026.3468620-1-isaacmanjarres@google.com>
- <Yw/CyRFr1bYNlNGh@shell.armlinux.org.uk>
+        Thu, 1 Sep 2022 01:31:13 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E355E4B4A1;
+        Wed, 31 Aug 2022 22:30:34 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2815UQii026785;
+        Thu, 1 Sep 2022 00:30:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1662010226;
+        bh=NqwbWXA2C23+c+6x6OFGJWJve438k2+PUlczUT3em5E=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=pdwP0a/X+u0NsWPBZiuSC8jJludGAIYVH3b1Ae2pz+V/hTh5tbAk3g2eHMUnSSRTc
+         63qFiZmgK4PSNpRqb3bZw1epAKM8pVxYEEUsvRdwrFuZWifNmbjUFjOvyFs6n3n9O5
+         8TcUI7igX/fA10dod0LHGuz79Fy5Yyr/M3DQCtc0=
+Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2815UQlk013688
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 1 Sep 2022 00:30:26 -0500
+Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Thu, 1 Sep
+ 2022 00:30:25 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Thu, 1 Sep 2022 00:30:25 -0500
+Received: from [172.24.145.182] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2815ULEL018341;
+        Thu, 1 Sep 2022 00:30:22 -0500
+Message-ID: <8c5f6921-62c9-29d2-5c13-ce1932e1715c@ti.com>
+Date:   Thu, 1 Sep 2022 11:00:21 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yw/CyRFr1bYNlNGh@shell.armlinux.org.uk>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH 1/4] dt-bindings: arm: ti: Add bindings for AM62A7 SoC
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Nishanth Menon <nm@ti.com>, Tero Kristo <kristo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-gpio@vger.kernel.org>, Bryan Brattlof <bb@ti.com>
+References: <20220829082200.241653-1-vigneshr@ti.com>
+ <20220829082200.241653-2-vigneshr@ti.com>
+ <d7303503-70ef-7307-8cc0-1bc334c9e6af@linaro.org>
+From:   Vignesh Raghavendra <vigneshr@ti.com>
+In-Reply-To: <d7303503-70ef-7307-8cc0-1bc334c9e6af@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 09:21:29PM +0100, Russell King (Oracle) wrote:
-> Greg,
-> 
-> Are you happy for me to pick up this patch as part of the fixes for the
-> AMBA changes? The original patch that it is fixing is a patch that was
-> part of a series that was merged through my tree.
-> 
-> It's fixing a problem that has been noticed by several people and the
-> fix is now a few weeks old.
 
-Sorry, I'm behind in driver core stuff.  I'll pick it up later today.
 
-greg k-h
+On 30/08/22 15:22, Krzysztof Kozlowski wrote:
+> On 29/08/2022 11:21, Vignesh Raghavendra wrote:
+>> This adds bindings for TI's AM62A7 family of devices.
+>>
+>> Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+>> ---
+>>  Documentation/devicetree/bindings/arm/ti/k3.yaml | 6 ++++++
+>>  1 file changed, 6 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/arm/ti/k3.yaml b/Documentation/devicetree/bindings/arm/ti/k3.yaml
+>> index 61c6ab4f52e2..28f6ea4c007e 100644
+>> --- a/Documentation/devicetree/bindings/arm/ti/k3.yaml
+>> +++ b/Documentation/devicetree/bindings/arm/ti/k3.yaml
+>> @@ -65,6 +65,12 @@ properties:
+>>                - ti,j721s2-evm
+>>            - const: ti,j721s2
+>>  
+>> +      - description: K3 AM62A7 SoC
+>> +        items:
+>> +          - enum:
+>> +              - ti,am62a7-sk
+>> +          - const: ti,am62a7
+> 
+> Is it possible to have some order in the file?
+
+Nishanth has posted [1] for the same. Will rebase on top of that series.
+
+[1] https://lore.kernel.org/all/20220830160507.7726-3-nm@ti.com/
+
+-- 
+Regards
+Vignesh
