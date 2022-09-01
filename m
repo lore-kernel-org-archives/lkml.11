@@ -2,104 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD074ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 18:43:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F39D1C6FA81
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 18:43:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233925AbiIASnf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 14:43:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59718 "EHLO
+        id S233501AbiIASnz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 14:43:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229720AbiIASnd (ORCPT
+        with ESMTP id S234216AbiIASni (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 14:43:33 -0400
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A76B558F3
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 11:43:31 -0700 (PDT)
-Received: by mail-il1-f197.google.com with SMTP id z9-20020a056e02088900b002e35dba878cso13649422ils.10
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 11:43:31 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=tSm8RJxZnQES9hrhXTPiqnJb2qljBW6PGF4rDckYcBU=;
-        b=KW7fDfak49USHHrUu4I6jsucFeIHli07s21oYdsgD9K3p0j7ijvXEQTwNA9lt1amfJ
-         WieymR8ATqahckJo3XXg7/ydGHVBztRuQ1rKl0iQXrRyI5vDixntFsUAX/GiyoyCbMSA
-         Jh/O09y3AQP7C8ZyHDTvX++lIrnCnstVqBsVsxquJO3hsrzaaGCEsQVeq0uyiJF8iuzK
-         mAEPto8f+dEToDCvJlgFIIyvc21pjPMcgWFsXX9xoARf0wVD61iefu0QkhE+YbFzk3nr
-         +7jsmJmoU5gWlOq2V6Rq5MBexYdEJvlCUMmvaIUwueG7zm6nNl+M1rb6TbDwz4JUlQuf
-         FA9A==
-X-Gm-Message-State: ACgBeo3JQNQ16sstA58YO7u7vEj7VGkOZJPJd6+Fwp7oQeI1bsO7wcV2
-        sesvMlFT8Csu2kNg5ChXI8vFJ2fm1rEmhl3kh+U6AiQFzLvN
-X-Google-Smtp-Source: AA6agR6ql9AjVH9LUPRZ2P8yA8RUqQd1MM1pz0LeQkxKH9hEtNfnFWcqV2+JI9Nodvy0fRGhQbv0Qt5qi/CHOPcXa90sPkYqb7VE
+        Thu, 1 Sep 2022 14:43:38 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3A0657571;
+        Thu,  1 Sep 2022 11:43:37 -0700 (PDT)
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 281G4TOJ023386;
+        Thu, 1 Sep 2022 18:43:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=qcppdkim1;
+ bh=gp/T7TTkgcWqynczYADUodBy760l62/++KKW+CN21Fo=;
+ b=MErEtr+lrkMTOD90YOXHVrkiXGZtRjBlju7efIOQJ/wEMbxBzZaQg8quOF1ONpnpUkCM
+ rEFv6w4TRfjP1g8fxwm4GTnSUokvOIe/Fjcjtd0qQxYV4f5HJ1SNo/DegDXnyId+bjH9
+ UdChQOI+kTTILC1jdn8e0IWyk6GrXSLVV9UTd042wbLcpsUQ0/f7Lf4y1r4AwpSiq1If
+ WdlSEjpn92y3qBrBZJOomCARgxziufc183p/7EasbZDAOZgcoXpia5DP0SxvcHKBtvD/
+ Y88w7b9YiQHgYD3+nkskpmz2LMHXQHrJH7dSLO8eosthQeaZfK1iwbqatZNdloB+0hO3 jQ== 
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3jab5gmvqu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 01 Sep 2022 18:43:27 +0000
+Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
+        by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 281IhQqV019930
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 1 Sep 2022 18:43:26 GMT
+Received: from hu-wcheng-lv.qualcomm.com (10.49.16.6) by
+ nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.29; Thu, 1 Sep 2022 11:43:26 -0700
+From:   Wesley Cheng <quic_wcheng@quicinc.com>
+To:     <balbi@kernel.org>, <gregkh@linuxfoundation.org>,
+        <Thinh.Nguyen@synopsys.com>
+CC:     <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <quic_jackp@quicinc.com>, Wesley Cheng <quic_wcheng@quicinc.com>
+Subject: [PATCH v6 1/5] usb: dwc3: Avoid unmapping USB requests if endxfer is not complete
+Date:   Thu, 1 Sep 2022 11:43:10 -0700
+Message-ID: <20220901184314.30481-2-quic_wcheng@quicinc.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220901184314.30481-1-quic_wcheng@quicinc.com>
+References: <20220901184314.30481-1-quic_wcheng@quicinc.com>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:580e:0:b0:689:af21:6f3f with SMTP id
- m14-20020a6b580e000000b00689af216f3fmr16490897iob.116.1662057810886; Thu, 01
- Sep 2022 11:43:30 -0700 (PDT)
-Date:   Thu, 01 Sep 2022 11:43:30 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000006a06a005e7a1fd95@google.com>
-Subject: [syzbot] WARNING in floppy_shutdown
-From:   syzbot <syzbot+046fef2eab0d7c657ca0@syzkaller.appspotmail.com>
-To:     axboe@kernel.dk, efremov@linux.com, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.49.16.6]
+X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: aUQGL2_sAn208r1H_5M6HIprpyGDD4UZ
+X-Proofpoint-GUID: aUQGL2_sAn208r1H_5M6HIprpyGDD4UZ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-09-01_12,2022-08-31_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ lowpriorityscore=0 mlxlogscore=887 bulkscore=0 spamscore=0 mlxscore=0
+ suspectscore=0 priorityscore=1501 clxscore=1015 adultscore=0 phishscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2209010080
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+If DWC3_EP_DELAYED_STOP is set during stop active transfers, then do not
+continue attempting to unmap request buffers during dwc3_remove_requests().
+This can lead to SMMU faults, as the controller has not stopped the
+processing of the TRB.  Defer this sequence to the EP0 out start, which
+ensures that there are no pending SETUP transactions before issuing the
+endxfer.
 
-syzbot found the following issue on:
-
-HEAD commit:    10d4879f9ef0 Merge tag 'thermal-6.0-rc3' of git://git.kern..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=13ba5d33080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=312be25752c7fe30
-dashboard link: https://syzkaller.appspot.com/bug?extid=046fef2eab0d7c657ca0
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+046fef2eab0d7c657ca0@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-WARNING: CPU: 2 PID: 3723 at drivers/block/floppy.c:999 schedule_bh drivers/block/floppy.c:999 [inline]
-WARNING: CPU: 2 PID: 3723 at drivers/block/floppy.c:999 process_fd_request drivers/block/floppy.c:2847 [inline]
-WARNING: CPU: 2 PID: 3723 at drivers/block/floppy.c:999 floppy_shutdown.cold+0x7b/0xaa drivers/block/floppy.c:1892
-Modules linked in:
-CPU: 2 PID: 3723 Comm: kworker/u16:3 Not tainted 6.0.0-rc2-syzkaller-00283-g10d4879f9ef0 #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-Workqueue: floppy floppy_shutdown
-RIP: 0010:schedule_bh drivers/block/floppy.c:999 [inline]
-RIP: 0010:process_fd_request drivers/block/floppy.c:2847 [inline]
-RIP: 0010:floppy_shutdown.cold+0x7b/0xaa drivers/block/floppy.c:1892
-Code: 05 7e 95 f9 07 20 66 63 8a e8 99 37 77 f8 48 8b 1d 72 43 60 03 31 ff 83 e3 01 89 de e8 16 8b 2b f8 84 db 74 07 e8 8d 8e 2b f8 <0f> 0b e8 86 8e 2b f8 48 8b 35 0f 94 f9 07 bf 08 00 00 00 48 c7 c2
-RSP: 0018:ffffc90003147d00 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
-RDX: ffff888014c16080 RSI: ffffffff894fab83 RDI: 0000000000000001
-RBP: 0000000000000282 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000001 R12: 0000000000000001
-R13: ffffc90003147da8 R14: ffff888014efd100 R15: ffff888011875800
-FS:  0000000000000000(0000) GS:ffff88802c800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000563743531680 CR3: 000000001a5d6000 CR4: 0000000000150ef0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- process_one_work+0x991/0x1610 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e4/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
- </TASK>
-
-
+Reviewed-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Signed-off-by: Wesley Cheng <quic_wcheng@quicinc.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/usb/dwc3/core.h   | 3 +++
+ drivers/usb/dwc3/ep0.c    | 5 ++++-
+ drivers/usb/dwc3/gadget.c | 6 +++++-
+ 3 files changed, 12 insertions(+), 2 deletions(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+diff --git a/drivers/usb/dwc3/core.h b/drivers/usb/dwc3/core.h
+index 4fe4287dc934..7d5d2507244b 100644
+--- a/drivers/usb/dwc3/core.h
++++ b/drivers/usb/dwc3/core.h
+@@ -1560,6 +1560,7 @@ int dwc3_send_gadget_ep_cmd(struct dwc3_ep *dep, unsigned int cmd,
+ int dwc3_send_gadget_generic_command(struct dwc3 *dwc, unsigned int cmd,
+ 		u32 param);
+ void dwc3_gadget_clear_tx_fifos(struct dwc3 *dwc);
++void dwc3_remove_requests(struct dwc3 *dwc, struct dwc3_ep *dep, int status);
+ #else
+ static inline int dwc3_gadget_init(struct dwc3 *dwc)
+ { return 0; }
+@@ -1581,6 +1582,8 @@ static inline int dwc3_send_gadget_generic_command(struct dwc3 *dwc,
+ { return 0; }
+ static inline void dwc3_gadget_clear_tx_fifos(struct dwc3 *dwc)
+ { }
++static inline void dwc3_remove_requests(struct dwc3 *dwc, struct dwc3_ep *dep)
++{ }
+ #endif
+ 
+ #if IS_ENABLED(CONFIG_USB_DWC3_DUAL_ROLE)
+diff --git a/drivers/usb/dwc3/ep0.c b/drivers/usb/dwc3/ep0.c
+index 33cee0089609..61de693461da 100644
+--- a/drivers/usb/dwc3/ep0.c
++++ b/drivers/usb/dwc3/ep0.c
+@@ -293,7 +293,10 @@ void dwc3_ep0_out_start(struct dwc3 *dwc)
+ 			continue;
+ 
+ 		dwc3_ep->flags &= ~DWC3_EP_DELAY_STOP;
+-		dwc3_stop_active_transfer(dwc3_ep, true, true);
++		if (dwc->connected)
++			dwc3_stop_active_transfer(dwc3_ep, true, true);
++		else
++			dwc3_remove_requests(dwc, dwc3_ep, -ESHUTDOWN);
+ 	}
+ }
+ 
+diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
+index d6c0cb79ace3..6f2491fc109e 100644
+--- a/drivers/usb/dwc3/gadget.c
++++ b/drivers/usb/dwc3/gadget.c
+@@ -965,12 +965,16 @@ static int __dwc3_gadget_ep_enable(struct dwc3_ep *dep, unsigned int action)
+ 	return 0;
+ }
+ 
+-static void dwc3_remove_requests(struct dwc3 *dwc, struct dwc3_ep *dep, int status)
++void dwc3_remove_requests(struct dwc3 *dwc, struct dwc3_ep *dep, int status)
+ {
+ 	struct dwc3_request		*req;
+ 
+ 	dwc3_stop_active_transfer(dep, true, false);
+ 
++	/* If endxfer is delayed, avoid unmapping requests */
++	if (dep->flags & DWC3_EP_DELAY_STOP)
++		return;
++
+ 	/* - giveback all requests to gadget driver */
+ 	while (!list_empty(&dep->started_list)) {
+ 		req = next_request(&dep->started_list);
