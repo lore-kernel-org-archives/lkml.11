@@ -2,357 +2,512 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E83A5ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 08:05:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B1B9ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 08:05:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232726AbiIAIFK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 04:05:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54568 "EHLO
+        id S233686AbiIAIFm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 04:05:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233278AbiIAIFD (ORCPT
+        with ESMTP id S233619AbiIAIFU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 04:05:03 -0400
-Received: from mx0b-00128a01.pphosted.com (mx0b-00128a01.pphosted.com [148.163.139.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C216CBF69;
-        Thu,  1 Sep 2022 01:04:53 -0700 (PDT)
-Received: from pps.filterd (m0167091.ppops.net [127.0.0.1])
-        by mx0b-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2815UpiW013136;
-        Thu, 1 Sep 2022 04:04:49 -0400
-Received: from nam02-bn1-obe.outbound.protection.outlook.com (mail-bn1nam07lp2040.outbound.protection.outlook.com [104.47.51.40])
-        by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 3j7d1bwyw4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 04:04:49 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZPtgdVHzeHqPJ8Vs88rcZgVn5xtOI3RBkHtcPGvR36xahXv/xgXxKek85XTz/g5PDDS4usJf9gK5NMs9pfNMt+6Ggk5pYz1DQ4rdQvFgfOk3ua9OOVv55cbLjLlEahppSMkgAbCm92gxb+oitcem1kUCyqniNK0BbIx1QSQZPhDq1mRC4ub7B0dQxFURX7KDRaw9X1aPCvwKVuasx39VLjnk1KBxwcS6U5nMmN4v/0z+20QGFRAsL+wEhde5/XoZyObgJtLBgygkbSkcV6U17xRUFcBaPkEfj1FuV/XKsUdB9P+u67yiqIoqsoxyJLPJYZo1SHZ4MHriY/K8QBFi5A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=k6+z1sCMo0EnBtcE26n5B5KoDXYNEumj7vnPXXrOF2c=;
- b=Wl/GeNhgfSDlEoryPxoC/YEJc31m0i2/LmsquwEk/ywUJeZ8OBRq61C1OVKIqUXvh7t+J0uNol/LHF8vaFfF0VRiWmN5FamVKAXFL+0eZI9JvgGYGqC6MyMqa6wDJix1gAvuu9p6Y1kWf4hqvSQs3vFMNcXE4qGzRNFg47sRyBd6eRB+CR2VIU6dy2yu19SicdKRwNVHwAbd/bmDHDslndalrmPNO/8msFjTSmCh7ujg64ZL2Of3eyFH5n3dUSxpJkP1XTNFqcm8eOQVvcj+qfBsk6KwzHyokpXu3FQxw6FghfBHykw7Z6tPVSCamK3l45co0Ohyag5QY1LNEM0g6A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
- dkim=pass header.d=analog.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=k6+z1sCMo0EnBtcE26n5B5KoDXYNEumj7vnPXXrOF2c=;
- b=6IUfTlWCaiVHKO36/ZeKD/nGsZFHCO3hLZH/J0WbOiVAXz1DX5fao/RcKztJ7oiC1vF13A0g2FcJj9vDgapYfu+i4oLavCNMQBBUB5XmOT9A4bG8W2x17rpcT8Yr1esSFkVJV0VQZwWSQKLaNPwzgZ7bWcPPq+F6lbU4mD6ucKY=
-Received: from BL1PR03MB5992.namprd03.prod.outlook.com (2603:10b6:208:30a::20)
- by MW4PR03MB6348.namprd03.prod.outlook.com (2603:10b6:303:11f::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Thu, 1 Sep
- 2022 08:04:45 +0000
-Received: from BL1PR03MB5992.namprd03.prod.outlook.com
- ([fe80::3c41:4d71:d2f8:e085]) by BL1PR03MB5992.namprd03.prod.outlook.com
- ([fe80::3c41:4d71:d2f8:e085%5]) with mapi id 15.20.5588.010; Thu, 1 Sep 2022
- 08:04:45 +0000
-From:   "Bolboaca, Ramona" <Ramona.Bolboaca@analog.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-CC:     Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2 2/2] iio: adc: add max11205 adc driver
-Thread-Topic: [PATCH v2 2/2] iio: adc: add max11205 adc driver
-Thread-Index: AQHYvT3lVxhWQ0WsQEKw0Ah+171bxa3Jc7MAgAC/pKA=
-Date:   Thu, 1 Sep 2022 08:04:45 +0000
-Message-ID: <BL1PR03MB59923C7F3907FA7A71CBA623807B9@BL1PR03MB5992.namprd03.prod.outlook.com>
-References: <20220831133021.215625-1-ramona.bolboaca@analog.com>
- <20220831133021.215625-2-ramona.bolboaca@analog.com>
- <CAHp75Vco8ftAkjVEmKGKKYHS-1mnZzLuPA+N98giqi17mqQnRw@mail.gmail.com>
-In-Reply-To: <CAHp75Vco8ftAkjVEmKGKKYHS-1mnZzLuPA+N98giqi17mqQnRw@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-dg-rorf: true
-x-dg-ref: =?utf-8?B?UEcxbGRHRStQR0YwSUc1dFBTSmliMlI1TG5SNGRDSWdjRDBpWXpwY2RYTmxj?=
- =?utf-8?B?bk5jY21KdmJHSnZZV05jWVhCd1pHRjBZVnh5YjJGdGFXNW5YREE1WkRnME9X?=
- =?utf-8?B?STJMVE15WkRNdE5HRTBNQzA0TldWbExUWmlPRFJpWVRJNVpUTTFZbHh0YzJk?=
- =?utf-8?B?elhHMXpaeTFpWW1FNFpUQm1NeTB5T1dOakxURXhaV1F0WWpjMU1pMDBNVFUy?=
- =?utf-8?B?TkRVd01EQXdNekJjWVcxbExYUmxjM1JjWW1KaE9HVXdaalF0TWpsall5MHhN?=
- =?utf-8?B?V1ZrTFdJM05USXROREUxTmpRMU1EQXdNRE13WW05a2VTNTBlSFFpSUhONlBT?=
- =?utf-8?B?SXhNRE01TUNJZ2REMGlNVE16TURZME9UTXdPREk0TVRZMU1EVTNJaUJvUFNK?=
- =?utf-8?B?aVJFVXZhVWh5ZDJ4WVZqbG5Tek5PVFc5WkszWlVaSEJ1YjBVOUlpQnBaRDBp?=
- =?utf-8?B?SWlCaWJEMGlNQ0lnWW04OUlqRWlJR05wUFNKalFVRkJRVVZTU0ZVeFVsTlNW?=
- =?utf-8?B?VVpPUTJkVlFVRkZiME5CUVVSQ1NIaE9LekppTTFsQlVrVXlPVWd3Yms5aVdH?=
- =?utf-8?B?NUZWR0l3WmxOak5YUmxZMFJCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVG?=
- =?utf-8?B?QlFVRkJTRUZCUVVGRVlVRlJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZC?=
- =?utf-8?B?UVVGQlJVRkJVVUZDUVVGQlFWZzFiREpMZDBGQlFVRkJRVUZCUVVGQlFVRkJR?=
- =?utf-8?B?VW8wUVVGQlFtaEJSMUZCWVZGQ1prRklUVUZhVVVKcVFVaFZRV05uUW14QlJq?=
- =?utf-8?B?aEJZMEZDZVVGSE9FRmhaMEpzUVVkTlFXUkJRbnBCUmpoQldtZENhRUZIZDBG?=
- =?utf-8?B?amQwSnNRVVk0UVZwblFuWkJTRTFCWVZGQ01FRkhhMEZrWjBKc1FVRkJRVUZC?=
- =?utf-8?B?UVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJR?=
- =?utf-8?B?VUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFV?=
- =?utf-8?B?RkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGRlFVRkJRVUZCUVVG?=
- =?utf-8?B?QlFXZEJRVUZCUVVGdVowRkJRVWRGUVZwQlFuQkJSamhCWTNkQ2JFRkhUVUZr?=
- =?utf-8?B?VVVKNVFVZFZRVmgzUW5kQlNFbEJZbmRDY1VGSFZVRlpkMEl3UVVoTlFWaDNR?=
- =?utf-8?B?akJCUjJ0QldsRkNlVUZFUlVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFV?=
- =?utf-8?B?RkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVG?=
- =?utf-8?B?QlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZC?=
- =?utf-8?B?UVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJV?=
- =?utf-8?B?VUZCUVVGQlFVRkJRVU5CUVVGQlFVRkRaVUZCUVVGWlVVSnJRVWRyUVZoM1Fu?=
- =?utf-8?B?cEJSMVZCV1hkQ01VRklTVUZhVVVKbVFVaEJRV05uUW5aQlIyOUJXbEZDYWtG?=
- =?utf-8?B?SVVVRmpkMEptUVVoUlFXRlJRbXhCU0VsQlRXZEJRVUZCUVVGQlFVRkJRVUZC?=
- =?utf-8?B?UVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJR?=
- =?utf-8?B?VUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFV?=
- =?utf-8?B?RkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVG?=
- =?utf-8?B?QlFVRkJRVUZCUWtGQlFVRkJRVUZCUVVGSlFVRkJRVUZCUVQwOUlpOCtQQzl0?=
- =?utf-8?B?WlhSaFBnPT0=?=
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 719ca903-2399-4b80-ff6e-08da8bf0a204
-x-ms-traffictypediagnostic: MW4PR03MB6348:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: vla1H4P6I4RjxgxWRnA1Qasoz+OrxAfFhT/qVQ/C5q2BKhkEE7hRMHwQoCQIFUAFZUGxo1Y2CrLnQsyBp9xWCTHm17ce75N93wq8G8a7pEShmGVeRhD+n+wpIhSX9y5vPBj2w2sRgiXAv5F0keP7//6lLQXb5Rj1uUHiQ9ljQHXTO/v1wKrLyVREHIePiMxbtfN3+fY6KPrNot74f812I1TM9jrAhV87Xb7jw9yhxThhzbGqN3UTpR0ekR30VbtyjY/29wX9HSs1bcqbGBS38/fqrIjqLwXlak2k6DZ4noza5bypyUJ/+MdAEa9rTKiZWlWuN+NOsdQ+jA58GePtv/qI/cIIcQLWlRCYpMrIv19o9vO2RQCNCXLsDXMZZ1V//Rq6Wp3/BGI9sgjTV/Ty019HjhgPd+2ymr5K66rHaJAZtet6xEQ26Xcc21SJqsfszXSvkXVNSpZKzUKuzOsTI4fvHt/L52kK0qXmAWZOwHELm7EnoddpzkyrTuE3twIadx4S8vXq4CrIkyTeSDCf16xMqXdNne+FU+e7TcdOsu5ohda+nBXaknjm2QZQf/S0dnN3sbXMOG+nCdwUt7EEn2O8IdUsjQAk5dcG6uykM6K5HNQXERLhxEIL/RZYBL4p3i2/r+YQTJLOPMDNiCzmw51NZUHt/2rDQo01Otd+ntDS+gnv2NteQlZrUFm1U24ojI0x+oZIfY8tqYqvc5rkTk3QMDZncPsX7StpoBoYDNHRckAWpUlY4zsdELi/eIOTq/OGdSae9yqdBZfWajF80sizE4U+ZQG2ok1qFzwn42ws7Av15HlLR/vExnioQ76HpXw47n3XIh4SZmsjoiXK6g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR03MB5992.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(376002)(366004)(396003)(136003)(71200400001)(8936002)(38100700002)(478600001)(52536014)(966005)(54906003)(53546011)(6506007)(316002)(7696005)(41300700001)(33656002)(5660300002)(6916009)(9686003)(66446008)(26005)(86362001)(64756008)(55016003)(83380400001)(2906002)(66946007)(66476007)(122000001)(76116006)(8676002)(186003)(66556008)(4326008)(38070700005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?VWhMUDlLMUI2aXcyRzlobGcyK3cya0Y1bXU0OEtYQjBLaThNL3JLeDR1Tk5y?=
- =?utf-8?B?bnlzdnVhbG1qUXp4QUppNVB6S2NJcVBTTTl1elN2NlVENEVVYy9TVHRWbytE?=
- =?utf-8?B?M3dOWXhYaUM5Y2ZnMitHZm1UdS9mcldnWTBFSzV1cDBEMDBDK2s2VXhMUTBi?=
- =?utf-8?B?NzVRZk55OVc1b0JoK3NwYlA5SnF1QVpZZG5aVE9xN1E0bjhhaHpDOUg2WFVX?=
- =?utf-8?B?d1BIV3lGTUI5V2FQM0F6T2tkUlNFTHdWaGNLV3hWWFgyRVQxYzM3Y2twOXFp?=
- =?utf-8?B?NjU1c0RFVzd6VnVzK2x3dzV3V0pEL3FVYzBCb21hS2tWQ3JLVXgzVG9YdFpZ?=
- =?utf-8?B?RlhQVHJWMllwZFJnWGVsdms1OEFxV1V4Y1puZ2JGY1FQdEl3UW5tZFdEVWtH?=
- =?utf-8?B?eUZZQzFuSU0vdWkyVHRLU3FoUGh2WWlDem9VRkZJdHdzUDRPd2lDVnc4RTJW?=
- =?utf-8?B?T0VOa0V3SktZQmhwbFljSnVnYTRVMWZkSXpZSkNTSXYvb1libmdTMHFhN0Q0?=
- =?utf-8?B?aDJtVTB0WWdVa2ZuenVndXh5eGlVd3o2ZGxYM0hpNGErcGlDdnVHa1NJWVF5?=
- =?utf-8?B?S3lEZTRpTno1bTZCOFJzc3hTNE0vbGJURXA1R1BNRmpYOUIyWnRLbnRkYzlm?=
- =?utf-8?B?UW5RU3VRVGlJcWVSdWtYYmY1U0k5TWhFeVBKRlpISXhBQ3dGaEhla2NKbEpm?=
- =?utf-8?B?WlJ2NVdXOU9QMHcyK3NOT0RuQW1ubTNTS2dKdVl1ZG8yUncvVHdFdGkybHFB?=
- =?utf-8?B?YlJrYzhWZGQ2MEN3SkM2NWVYQXZIYjhZNWJWVDZxbjFZdzAvem9pUFVOU2ZT?=
- =?utf-8?B?WXZZYlFKY1EzbVNaRGFPQ0krVWxEK2g5dVRoR0pnUFhsalhWb1lGTEZqYk9G?=
- =?utf-8?B?WDBKQy92ZWNPdi9tYXZUbmd2Sk9EcGtUMWZkaXBvR1B3YStURUp1ZVZWdGln?=
- =?utf-8?B?cnJTNk85ZmQ1K1B5TVdRUVI1OExmdEZ3aVRCeFVNWkFkZG1iWTdzMklLaUo5?=
- =?utf-8?B?N1JWSTNXVm41c0NPNC96ZWxaSHNzdlVkSi84MzVOaW8yMFRyOUFLYytVWDh0?=
- =?utf-8?B?SzhBR3VMVFEwc3JqUW1uUDZmTDlKOUlhOHJpWEpRcGNqaG1uWEx3dFhiMDFr?=
- =?utf-8?B?UFV3SmtSczNNWllwQ2NiekVHRENNNW1GVjVtdEE4Uy9Qb1ptVVJtTUpsNkdt?=
- =?utf-8?B?Mk03bUMvQlZpQURLVG1nZnpYdWIwRHNaNC9rZkFkTUVhQldPZ0VCUWo0VHds?=
- =?utf-8?B?MlBKQ3Jja202WGN3WitiYmxQUHRxdEE3dEo4by9FOW0wbHNNa1dGdnNpVUts?=
- =?utf-8?B?WE9YajNqNWpKN3RnZHlwZno0K29Dd29TNEpyRXRmTnRiek5oMkJrZGs2LzJa?=
- =?utf-8?B?VTA5WlYxbHRUcGt6b1VOTlo0TTN0aVhqcGR4K1l2ajhSWWJVaWhibkVPV2NR?=
- =?utf-8?B?cWNobDE2Z2tISUFEK1I1RndyS3NsTUJmV3BFdkx6eHBwWitpN2FYd3k2R09C?=
- =?utf-8?B?WDd6ZWY4Z2tUK3RoYVh3RlViYWo3L2t5RHU4ZFk1WndEVjNuMGM5SHhBZXM4?=
- =?utf-8?B?VncyWVRTR0ZnWW9EbjBNOWlQbFhTZnFleWVhODhOQ25QSGFMQVJKQ1pjaENj?=
- =?utf-8?B?Z29PZEJTT1p3aVlLOXNCa1pPQ05HMzBOTjZzTUdjckpIZXVqZUNmc1U3ZTBT?=
- =?utf-8?B?RG1MMDZacm9kWUJPeGV2L0U2Y0FmQjlxbmNxRVRESEtJOS8zRk1kSS9XZmVz?=
- =?utf-8?B?TlFDY3I5cGxtN0FPYys0NVp1a1U2ZmNGR0huSGR5K0x6U0Y2NDhFV0RXcTdF?=
- =?utf-8?B?YVBMRkQ3R241dDRmRlc4THV2VElOQ0xEQnY5UFZwc0ZmOG9jUHlSUDBtaklx?=
- =?utf-8?B?S01FdFU0RFgzVmVyNjAvZ21UVGZHa2hjbjhoVko1TWo4MmNRb09kTklEb0VX?=
- =?utf-8?B?TjMxdHZlWUJVbXpzQ2hRazBoUVBicW9DZXhRTVh5SFhGeUczN04xOXYxazBP?=
- =?utf-8?B?Y0g2bXVLRk5rcVJkRUNwcUI2VWdOajBYdTNFK2xTQUdRYWZrRnl6OEg2cWUz?=
- =?utf-8?B?Vm01SXJRdG8xNVRRcHJVbXNpRlFmOFhTU1dqbWxrM2FYanRGdFFjRGtJWFVU?=
- =?utf-8?B?bHlVNWZvK0FzTmFYQk4vNHd5WUNJdlp3dmtsQ0E1N0tldDlpWlM4MzBQelho?=
- =?utf-8?B?NUE9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Thu, 1 Sep 2022 04:05:20 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC6EBF69;
+        Thu,  1 Sep 2022 01:05:05 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id A08F56601DF7;
+        Thu,  1 Sep 2022 09:05:03 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1662019504;
+        bh=Rviw2cwlCbnMamvge2w+lu9CT7JwpJ7O/j9ctvOZMbk=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=MebE3h/P7pQAnr5WvHNga++kDzZcT8mNZQIIXOzdJrWyf5crf0xDgnVWRkN9ZBmpl
+         OZsuar8vvA6mvzgIEFWWcopqOmUyrWl/JIvoOrHLoimY7p55KFV14r38ljYQt/H/f9
+         oQOuTT0nzffmGfsxXA6kdRoq9DI4v1Zg2ARx0jtX15solBN4Mxd46W36wsPBmNGtEm
+         AvFWv4HDz9wD/qkZlTsqFaAU2sV0AnaXDH29DVXrvagmfQc5rDIH1AMqDmZ41xjK5t
+         wezGUz7+YGzgqnLoxiEiCyGnYNhVSJytlWuGTgzuEflyGqM9AEzVPPiPD9/NAYvkF1
+         yyw6SrpafHnQQ==
+Message-ID: <d2abe2d3-f17c-6c22-ccae-514fe196441e@collabora.com>
+Date:   Thu, 1 Sep 2022 10:05:00 +0200
 MIME-Version: 1.0
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BL1PR03MB5992.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 719ca903-2399-4b80-ff6e-08da8bf0a204
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Sep 2022 08:04:45.2370
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: l0LQ3xC3JDaKlR3LMT5bIk9Q1fHJIhPWFCL8gUAqnXklrFGTFOdS8F2ZEEzMMD+ggOARmPngKu1gyyob0z6VlOY4aoyDhmC64I8jAnogyuc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR03MB6348
-X-Proofpoint-GUID: a9jsAiWVZg-tVuEz63oNCK9cyriLSgkO
-X-Proofpoint-ORIG-GUID: a9jsAiWVZg-tVuEz63oNCK9cyriLSgkO
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-09-01_05,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 bulkscore=0
- spamscore=0 mlxscore=0 lowpriorityscore=0 adultscore=0 mlxlogscore=999
- impostorscore=0 suspectscore=0 phishscore=0 priorityscore=1501
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2209010035
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH 3/4] clk: mediatek: Add new clock driver to handle FHCTL
+ hardware
+To:     Johnson Wang <johnson.wang@mediatek.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, sboyd@kernel.org
+Cc:     linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        Edward-JW Yang <edward-jw.yang@mediatek.com>
+References: <20220831124850.7748-1-johnson.wang@mediatek.com>
+ <20220831124850.7748-4-johnson.wang@mediatek.com>
+Content-Language: en-US
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220831124850.7748-4-johnson.wang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiBPbiBXZWQsIEF1ZyAzMSwgMjAyMiBhdCA0OjM2IFBNIFJhbW9uYSBCb2xib2FjYQ0KPiA8cmFt
-b25hLmJvbGJvYWNhQGFuYWxvZy5jb20+IHdyb3RlOg0KPiA+DQo+ID4gQWRkaW5nIHN1cHBvcnQg
-Zm9yIG1heDExMjA1IDE2LWJpdCBzaW5nbGUtY2hhbm5lbCB1bHRyYS1sb3cgcG93ZXINCj4gPiBk
-ZWx0YS1zaWdtYSBhZGMuDQo+ID4gVGhlIE1BWDExMjA1IGlzIGNvbXBhdGlibGUgd2l0aCB0aGUg
-Mi13aXJlIGludGVyZmFjZSBhbmQgdXNlcw0KPiA+IFNDTEsgYW5kIFJEWS9ET1VUIGZvciBzZXJp
-YWwgY29tbXVuaWNhdGlvbnMuIEluIHRoaXMgbW9kZSwgYWxsDQo+ID4gY29udHJvbHMgYXJlIGlt
-cGxlbWVudGVkIGJ5IHRpbWluZyB0aGUgaGlnaCBvciBsb3cgcGhhc2Ugb2YgdGhlIFNDTEsuDQo+
-ID4gVGhlIDItd2lyZSBzZXJpYWwgaW50ZXJmYWNlIG9ubHkgYWxsb3dzIGZvciBkYXRhIHRvIGJl
-IHJlYWQgb3V0IHRocm91Z2gNCj4gPiB0aGUgUkRZL0RPVVQgb3V0cHV0Lg0KPiANCj4gQ291cGxl
-IG9mIG1pbm9yIGNvbW1lbnRzLCBpZiB5b3UgYXJlIGdvaW5nIHRvIGFkZHJlc3MgdGhlbSwNCj4g
-UmV2aWV3ZWQtYnk6IEFuZHkgU2hldmNoZW5rbyA8YW5keS5zaGV2Y2hlbmtvQGdtYWlsLmNvbT4N
-Cj4gDQo+ID4gRGF0YXNoZWV0OiBodHRwczovL2RhdGFzaGVldHMubWF4aW1pbnRlZ3JhdGVkLmNv
-bS9lbi9kcy9NQVgxMTIwNS5wZGYNCj4gPiBTaWduZWQtb2ZmLWJ5OiBSYW1vbmEgQm9sYm9hY2Eg
-PHJhbW9uYS5ib2xib2FjYUBhbmFsb2cuY29tPg0KPiA+IC0tLQ0KPiA+IGNoYW5nZXMgaW4gdjI6
-DQo+ID4gIC0gYWRkIGNoaXBfaW5mbyBudWxsIHBvaW50ZXIgY2hlY2sNCj4gPiAgLSBhZGQgc3Vw
-cG9ydCBmb3IgcHJvYmluZyB3aXRoIEFDUEkgdGFibGUNCj4gPiAgLSByZW1vdmUgZnVuY3Rpb24g
-Zm9yIG1vZHVsZSByZW1vdmFsDQo+ID4gIC0gcmVtb3ZlIGlycSBmbGFnIGZyb20gbWF4MTEyMDVf
-c2lnbWFfZGVsdGFfaW5mbw0KPiA+ICAtIGFkZCBtaXNzaW5nIGNvbW1hcyBhbmQgbWlzc2luZyBz
-cGFjZXMNCj4gPiAgLSByZW1vdmUgcmVkdW5kYW50IGJsYW5rIGxpbmUNCj4gPiAgLSB3cmFwIHRl
-eHQgdG8gNzUtODAgY2hhcnMNCj4gPiAgLSByZW1vdmVkIHR5cG9zIGluIGNvbW1pdCBtZXNzYWdl
-DQo+ID4gIGRyaXZlcnMvaWlvL2FkYy9LY29uZmlnICAgIHwgIDE0ICsrKw0KPiA+ICBkcml2ZXJz
-L2lpby9hZGMvTWFrZWZpbGUgICB8ICAgMSArDQo+ID4gIGRyaXZlcnMvaWlvL2FkYy9tYXgxMTIw
-NS5jIHwgMTgzICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysNCj4gPiAgMyBm
-aWxlcyBjaGFuZ2VkLCAxOTggaW5zZXJ0aW9ucygrKQ0KPiA+ICBjcmVhdGUgbW9kZSAxMDA2NDQg
-ZHJpdmVycy9paW8vYWRjL21heDExMjA1LmMNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJz
-L2lpby9hZGMvS2NvbmZpZyBiL2RyaXZlcnMvaWlvL2FkYy9LY29uZmlnDQo+ID4gaW5kZXggN2Zl
-NTkzMDg5MWUwLi4wYzhmMzc2YjY1ZDggMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9paW8vYWRj
-L0tjb25maWcNCj4gPiArKysgYi9kcml2ZXJzL2lpby9hZGMvS2NvbmZpZw0KPiA+IEBAIC02NTMs
-NiArNjUzLDIwIEBAIGNvbmZpZyBNQVgxMTE4DQo+ID4gICAgICAgICAgIFRvIGNvbXBpbGUgdGhp
-cyBkcml2ZXIgYXMgYSBtb2R1bGUsIGNob29zZSBNIGhlcmU6IHRoZSBtb2R1bGUgd2lsbCBiZQ0K
-PiA+ICAgICAgICAgICBjYWxsZWQgbWF4MTExOC4NCj4gPg0KPiA+ICtjb25maWcgTUFYMTEyMDUN
-Cj4gPiArICAgICAgIHRyaXN0YXRlICJNYXhpbSBtYXgxMTIwNSBBREMgZHJpdmVyIg0KPiA+ICsg
-ICAgICAgZGVwZW5kcyBvbiBTUEkNCj4gPiArICAgICAgIHNlbGVjdCBBRF9TSUdNQV9ERUxUQQ0K
-PiA+ICsgICAgICAgc2VsZWN0IElJT19CVUZGRVINCj4gPiArICAgICAgIHNlbGVjdCBJSU9fVFJJ
-R0dFUkVEX0JVRkZFUg0KPiA+ICsNCj4gPiArICAgICAgIGhlbHANCj4gPiArICAgICAgICAgU2F5
-IHllcyBoZXJlIHRvIGJ1aWxkIHN1cHBvcnQgZm9yIE1heGltIG1heDExMjA1IDE2LWJpdCwgc2lu
-Z2xlLWNoYW5uZWwNCj4gPiArICAgICAgICAgdWx0cmEtbG93IHBvd2VyIGRlbHRhLXNpZ21hIEFE
-Qy4NCj4gPiArDQo+ID4gKyAgICAgICAgIFRvIGNvbXBpbGUgdGhpcyBkcml2ZXIgYXMgYSBtb2R1
-bGUsIGNob29zZSBNIGhlcmU6IHRoZSBtb2R1bGUgd2lsbCBiZQ0KPiA+ICsgICAgICAgICBjYWxs
-ZWQgbWF4MTEyMDUuDQo+ID4gKw0KPiA+ICBjb25maWcgTUFYMTI0MQ0KPiA+ICAgICAgICAgdHJp
-c3RhdGUgIk1heGltIG1heDEyNDEgQURDIGRyaXZlciINCj4gPiAgICAgICAgIGRlcGVuZHMgb24g
-U1BJX01BU1RFUg0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lpby9hZGMvTWFrZWZpbGUgYi9k
-cml2ZXJzL2lpby9hZGMvTWFrZWZpbGUNCj4gPiBpbmRleCAxNzcyYTU0OWEzYzguLmJiNjgxODQ0
-ZTQ5NyAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL2lpby9hZGMvTWFrZWZpbGUNCj4gPiArKysg
-Yi9kcml2ZXJzL2lpby9hZGMvTWFrZWZpbGUNCj4gPiBAQCAtNjEsNiArNjEsNyBAQCBvYmotJChD
-T05GSUdfTFRDMjQ5NykgKz0gbHRjMjQ5Ny5vIGx0YzI0OTctY29yZS5vDQo+ID4gIG9iai0kKENP
-TkZJR19NQVgxMDI3KSArPSBtYXgxMDI3Lm8NCj4gPiAgb2JqLSQoQ09ORklHX01BWDExMTAwKSAr
-PSBtYXgxMTEwMC5vDQo+ID4gIG9iai0kKENPTkZJR19NQVgxMTE4KSArPSBtYXgxMTE4Lm8NCj4g
-PiArb2JqLSQoQ09ORklHX01BWDExMjA1KSArPSBtYXgxMTIwNS5vDQo+ID4gIG9iai0kKENPTkZJ
-R19NQVgxMjQxKSArPSBtYXgxMjQxLm8NCj4gPiAgb2JqLSQoQ09ORklHX01BWDEzNjMpICs9IG1h
-eDEzNjMubw0KPiA+ICBvYmotJChDT05GSUdfTUFYOTYxMSkgKz0gbWF4OTYxMS5vDQo+ID4gZGlm
-ZiAtLWdpdCBhL2RyaXZlcnMvaWlvL2FkYy9tYXgxMTIwNS5jIGIvZHJpdmVycy9paW8vYWRjL21h
-eDExMjA1LmMNCj4gPiBuZXcgZmlsZSBtb2RlIDEwMDY0NA0KPiA+IGluZGV4IDAwMDAwMDAwMDAw
-MC4uNjhlNjA4MmU3MGU1DQo+ID4gLS0tIC9kZXYvbnVsbA0KPiA+ICsrKyBiL2RyaXZlcnMvaWlv
-L2FkYy9tYXgxMTIwNS5jDQo+ID4gQEAgLTAsMCArMSwxODMgQEANCj4gPiArLy8gU1BEWC1MaWNl
-bnNlLUlkZW50aWZpZXI6IEdQTC0yLjANCj4gPiArLyoNCj4gPiArICogbWF4MTEyMDUgMTYtQml0
-IERlbHRhLVNpZ21hIEFEQw0KPiANCj4gQ2FuIHlvdSBzcGVsbCB0aGUgdmVuZG9yIGFuZCBwYXJ0
-IG51bWJlciB2ZXJib3NlbHk/DQo+IFNvbWV0aGluZyBsaWtlICJNYXhpbSBNQVgxMTIwNSIgb3Ig
-c2ltaWxhci4NCj4gDQo+ID4gKyAqDQo+ID4gKyAqIERhdGFzaGVldDogaHR0cHM6Ly9kYXRhc2hl
-ZXRzLm1heGltaW50ZWdyYXRlZC5jb20vZW4vZHMvTUFYMTI0MC1tYXgxMTIwNS5wZGYNCj4gPiAr
-ICogQ29weXJpZ2h0IChDKSAyMDIyIEFuYWxvZyBEZXZpY2VzLCBJbmMuDQo+ID4gKyAqIEF1dGhv
-cjogUmFtb25hIEJvbGJvYWNhIDxyYW1vbmEuYm9sYm9hY2FAYW5hbG9nLmNvbT4NCj4gPiArICov
-DQo+ID4gKw0KPiA+ICsjaW5jbHVkZSA8bGludXgvZGV2aWNlLmg+DQo+ID4gKyNpbmNsdWRlIDxs
-aW51eC9tb2R1bGUuaD4NCj4gPiArI2luY2x1ZGUgPGxpbnV4L3JlZ3VsYXRvci9jb25zdW1lci5o
-Pg0KPiA+ICsjaW5jbHVkZSA8bGludXgvc3BpL3NwaS5oPg0KPiA+ICsNCj4gPiArI2luY2x1ZGUg
-PGxpbnV4L2lpby9paW8uaD4NCj4gPiArI2luY2x1ZGUgPGxpbnV4L2lpby9hZGMvYWRfc2lnbWFf
-ZGVsdGEuaD4NCj4gPiArDQo+ID4gKyNkZWZpbmUgTUFYMTEyMDVfQklUX1NDQUxFICAgICAxNQ0K
-PiA+ICsjZGVmaW5lIE1BWDExMjA1QV9PVVRfREFUQV9SQVRFICAgICAgICAxMTYNCj4gPiArI2Rl
-ZmluZSBNQVgxMTIwNUJfT1VUX0RBVEFfUkFURSAgICAgICAgMTMNCj4gPiArDQo+ID4gK2VudW0g
-Y2hpcF90eXBlIHsNCj4gPiArICAgICAgIFRZUEVfTUFYMTEyMDVBLA0KPiA+ICsgICAgICAgVFlQ
-RV9NQVgxMTIwNUIsDQo+ID4gK307DQo+ID4gKw0KPiA+ICtzdHJ1Y3QgY2hpcF9pbmZvIHsNCj4g
-PiArICAgICAgIHVuc2lnbmVkIGludCAgICBvdXRfZGF0YV9yYXRlOw0KPiA+ICsgICAgICAgY29u
-c3QgY2hhciAgICAgICpuYW1lOw0KPiA+ICt9Ow0KPiA+ICsNCj4gPiArc3RydWN0IG1heDExMjA1
-X3N0YXRlIHsNCj4gPiArICAgICAgIGNvbnN0IHN0cnVjdCBjaGlwX2luZm8gICpjaGlwX2luZm87
-DQo+ID4gKyAgICAgICBzdHJ1Y3QgcmVndWxhdG9yICAgICAgICAqdnJlZjsNCj4gPiArICAgICAg
-IHN0cnVjdCBhZF9zaWdtYV9kZWx0YSAgIHNkOw0KPiA+ICt9Ow0KPiA+ICsNCj4gPiArc3RhdGlj
-IGNvbnN0IHN0cnVjdCBhZF9zaWdtYV9kZWx0YV9pbmZvIG1heDExMjA1X3NpZ21hX2RlbHRhX2lu
-Zm8gPSB7DQo+ID4gKyAgICAgICAuaGFzX3JlZ2lzdGVycyA9IGZhbHNlLA0KPiA+ICt9Ow0KPiA+
-ICsNCj4gPiArc3RhdGljIGludCBtYXgxMTIwNV9yZWFkX3JhdyhzdHJ1Y3QgaWlvX2RldiAqaW5k
-aW9fZGV2LA0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgc3RydWN0IGlpb19jaGFu
-X3NwZWMgY29uc3QgKmNoYW4sDQo+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICBpbnQg
-KnZhbCwgaW50ICp2YWwyLCBsb25nIG1hc2spDQo+ID4gK3sNCj4gPiArICAgICAgIHN0cnVjdCBt
-YXgxMTIwNV9zdGF0ZSAqc3QgPSBpaW9fcHJpdihpbmRpb19kZXYpOw0KPiA+ICsgICAgICAgaW50
-IHJlZ19tdjsNCj4gPiArDQo+ID4gKyAgICAgICBzd2l0Y2ggKG1hc2spIHsNCj4gPiArICAgICAg
-IGNhc2UgSUlPX0NIQU5fSU5GT19SQVc6DQo+ID4gKyAgICAgICAgICAgICAgIHJldHVybiBhZF9z
-aWdtYV9kZWx0YV9zaW5nbGVfY29udmVyc2lvbihpbmRpb19kZXYsIGNoYW4sIHZhbCk7DQo+ID4g
-KyAgICAgICBjYXNlIElJT19DSEFOX0lORk9fU0NBTEU6DQo+ID4gKyAgICAgICAgICAgICAgIHJl
-Z19tdiA9IHJlZ3VsYXRvcl9nZXRfdm9sdGFnZShzdC0+dnJlZik7DQo+ID4gKyAgICAgICAgICAg
-ICAgIGlmIChyZWdfbXYgPCAwKQ0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgIHJldHVybiBy
-ZWdfbXY7DQo+ID4gKyAgICAgICAgICAgICAgIHJlZ19tdiAvPSAxMDAwOw0KPiA+ICsgICAgICAg
-ICAgICAgICAqdmFsID0gcmVnX212Ow0KPiA+ICsgICAgICAgICAgICAgICAqdmFsMiA9IE1BWDEx
-MjA1X0JJVF9TQ0FMRTsNCj4gPiArICAgICAgICAgICAgICAgcmV0dXJuIElJT19WQUxfRlJBQ1RJ
-T05BTF9MT0cyOw0KPiA+ICsgICAgICAgY2FzZSBJSU9fQ0hBTl9JTkZPX1NBTVBfRlJFUToNCj4g
-PiArICAgICAgICAgICAgICAgKnZhbCA9IHN0LT5jaGlwX2luZm8tPm91dF9kYXRhX3JhdGU7DQo+
-ID4gKyAgICAgICAgICAgICAgIHJldHVybiBJSU9fVkFMX0lOVDsNCj4gPiArICAgICAgIGRlZmF1
-bHQ6DQo+ID4gKyAgICAgICAgICAgICAgIHJldHVybiAtRUlOVkFMOw0KPiA+ICsgICAgICAgfQ0K
-PiA+ICt9DQo+ID4gKw0KPiA+ICtzdGF0aWMgY29uc3Qgc3RydWN0IGlpb19pbmZvIG1heDExMjA1
-X2lpb19pbmZvID0gew0KPiA+ICsgICAgICAgLnJlYWRfcmF3ID0gbWF4MTEyMDVfcmVhZF9yYXcs
-DQo+ID4gKyAgICAgICAudmFsaWRhdGVfdHJpZ2dlciA9IGFkX3NkX3ZhbGlkYXRlX3RyaWdnZXIs
-DQo+ID4gK307DQo+ID4gKw0KPiA+ICtzdGF0aWMgY29uc3Qgc3RydWN0IGlpb19jaGFuX3NwZWMg
-bWF4MTEyMDVfY2hhbm5lbHNbXSA9IHsNCj4gPiArICAgICAgIHsNCj4gPiArICAgICAgICAgICAg
-ICAgLnR5cGUgPSBJSU9fVk9MVEFHRSwNCj4gPiArICAgICAgICAgICAgICAgLmluZGV4ZWQgPSAx
-LA0KPiA+ICsgICAgICAgICAgICAgICAuc2Nhbl90eXBlID0gew0KPiA+ICsgICAgICAgICAgICAg
-ICAgICAgICAgIC5zaWduID0gJ3MnLA0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgIC5yZWFs
-Yml0cyA9IDE2LA0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgIC5zdG9yYWdlYml0cyA9IDE2
-LA0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgIC5lbmRpYW5uZXNzID0gSUlPX0JFDQo+ID4g
-KyAgICAgICAgICAgICAgIH0sDQo+ID4gKyAgICAgICAgICAgICAgIC5pbmZvX21hc2tfc2VwYXJh
-dGUgPSBCSVQoSUlPX0NIQU5fSU5GT19SQVcpIHwNCj4gPiArICAgICAgICAgICAgICAgQklUKElJ
-T19DSEFOX0lORk9fU0FNUF9GUkVRKSB8DQo+ID4gKyAgICAgICAgICAgICAgIEJJVChJSU9fQ0hB
-Tl9JTkZPX1NDQUxFKSwNCj4gPiArICAgICAgIH0sDQo+ID4gK307DQo+ID4gKw0KPiA+ICtzdGF0
-aWMgY29uc3Qgc3RydWN0IGNoaXBfaW5mbyBtYXgxMTIwNV9jaGlwX2luZm9bXSA9IHsNCj4gPiAr
-ICAgICAgIFtUWVBFX01BWDExMjA1QV0gPSB7DQo+ID4gKyAgICAgICAgICAgICAgIC5vdXRfZGF0
-YV9yYXRlID0gTUFYMTEyMDVBX09VVF9EQVRBX1JBVEUsDQo+ID4gKyAgICAgICAgICAgICAgIC5u
-YW1lID0gIm1heDExMjA1YSIsDQo+ID4gKyAgICAgICB9LA0KPiA+ICsgICAgICAgW1RZUEVfTUFY
-MTEyMDVCXSA9IHsNCj4gPiArICAgICAgICAgICAgICAgLm91dF9kYXRhX3JhdGUgPSBNQVgxMTIw
-NUJfT1VUX0RBVEFfUkFURSwNCj4gPiArICAgICAgICAgICAgICAgLm5hbWUgPSAibWF4MTEyMDVi
-IiwNCj4gPiArICAgICAgIH0sDQo+ID4gK307DQo+ID4gKw0KPiA+ICtzdGF0aWMgdm9pZCBtYXgx
-MTIwNV9yZWdfZGlzYWJsZSh2b2lkICpyZWcpDQo+ID4gK3sNCj4gPiArICAgICAgIHJlZ3VsYXRv
-cl9kaXNhYmxlKHJlZyk7DQo+ID4gK30NCj4gPiArDQo+ID4gK3N0YXRpYyBpbnQgbWF4MTEyMDVf
-cHJvYmUoc3RydWN0IHNwaV9kZXZpY2UgKnNwaSkNCj4gPiArew0KPiA+ICsgICAgICAgc3RydWN0
-IG1heDExMjA1X3N0YXRlICpzdDsNCj4gPiArICAgICAgIHN0cnVjdCBpaW9fZGV2ICppbmRpb19k
-ZXY7DQo+ID4gKyAgICAgICBpbnQgcmV0Ow0KPiA+ICsNCj4gPiArICAgICAgIGluZGlvX2RldiA9
-IGRldm1faWlvX2RldmljZV9hbGxvYygmc3BpLT5kZXYsIHNpemVvZigqc3QpKTsNCj4gPiArICAg
-ICAgIGlmICghaW5kaW9fZGV2KQ0KPiA+ICsgICAgICAgICAgICAgICByZXR1cm4gLUVOT01FTTsN
-Cj4gPiArDQo+ID4gKyAgICAgICBzdCA9IGlpb19wcml2KGluZGlvX2Rldik7DQo+ID4gKw0KPiA+
-ICsgICAgICAgYWRfc2RfaW5pdCgmc3QtPnNkLCBpbmRpb19kZXYsIHNwaSwgJm1heDExMjA1X3Np
-Z21hX2RlbHRhX2luZm8pOw0KPiANCj4gPiArICAgICAgIHN0LT5jaGlwX2luZm8gPSBkZXZpY2Vf
-Z2V0X21hdGNoX2RhdGEoJnNwaS0+ZGV2KTsNCj4gDQo+ID4gKw0KPiANCj4gVW5uZWVkZWQgYmxh
-bmsgbGluZS4NCj4gDQo+ID4gKyAgICAgICBpZiAoIXN0LT5jaGlwX2luZm8pDQo+ID4gKyAgICAg
-ICAgICAgICAgIHN0LT5jaGlwX2luZm8gPSAoY29uc3Qgc3RydWN0IGNoaXBfaW5mbyAqKXNwaV9n
-ZXRfZGV2aWNlX2lkKHNwaSktPmRyaXZlcl9kYXRhOw0KPiA+ICsNCj4gPiArICAgICAgIGluZGlv
-X2Rldi0+bmFtZSA9IHN0LT5jaGlwX2luZm8tPm5hbWU7DQo+ID4gKyAgICAgICBpbmRpb19kZXYt
-Pm1vZGVzID0gSU5ESU9fRElSRUNUX01PREU7DQo+ID4gKyAgICAgICBpbmRpb19kZXYtPmNoYW5u
-ZWxzID0gbWF4MTEyMDVfY2hhbm5lbHM7DQo+ID4gKyAgICAgICBpbmRpb19kZXYtPm51bV9jaGFu
-bmVscyA9IDE7DQo+ID4gKyAgICAgICBpbmRpb19kZXYtPmluZm8gPSAmbWF4MTEyMDVfaWlvX2lu
-Zm87DQo+ID4gKw0KPiA+ICsgICAgICAgc3QtPnZyZWYgPSBkZXZtX3JlZ3VsYXRvcl9nZXQoJnNw
-aS0+ZGV2LCAidnJlZiIpOw0KPiANCj4gZGV2bV9yZWd1bGF0b3JfZ2V0X2VuYWJsZSgpID8NCkkg
-Zm91bmQgdGhlIHBhdGNoZXMgd2hpY2ggaW1wbGVtZW50IGRldm1fcmVndWxhdG9yX2dldF9lbmFi
-bGUuIEhvd2V2ZXIsIEkgbmVlZCB0byBnZXQgdGhlIHZvbHRhZ2Ugb2YgdGhlIHJlZ3VsYXRvciB1
-c2luZyByZWd1bGF0b3JfZ2V0X3ZvbHRhZ2Uoc3RydWN0IHJlZ3VsYXRvciAqcmVndWxhdG9yKSBh
-bmQgaWYgSSB1c2UgZGV2bV9yZWd1bGF0b3JfZ2V0X2VuYWJsZSBJIGRvIG5vdCBoYXZlIGFjY2Vz
-cyB0byB0aGUgcmVndWxhdG9yIHBvaW50ZXIuIFdoYXQgc2hvdWxkIEkgZG8gaW4gdGhpcyBjYXNl
-PyBJcyB0aGVyZSBhbiBBUEkgd2hpY2ggd29ya3MgbGlrZSBkZXZtX3JlZ3VsYXRvcl9nZXRfZW5h
-YmxlIGJ1dCBhbHNvIGdpdmVzIGFjY2VzcyB0byB0aGUgcmVndWxhdG9yJ3MgcG9pbnRlcj8NClRo
-YW5rIHlvdSBmb3IgeW91IHJldmlldyENCktpbmQgUmVnYXJkcywNClJhbW9uYSBCb2xib2FjYQ0K
-PiANCj4gPiArICAgICAgIGlmIChJU19FUlIoc3QtPnZyZWYpKQ0KPiA+ICsgICAgICAgICAgICAg
-ICByZXR1cm4gZGV2X2Vycl9wcm9iZSgmc3BpLT5kZXYsIFBUUl9FUlIoc3QtPnZyZWYpLA0KPiA+
-ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAiRmFpbGVkIHRvIGdldCB2cmVm
-IHJlZ3VsYXRvclxuIik7DQo+ID4gKw0KPiA+ICsgICAgICAgcmV0ID0gcmVndWxhdG9yX2VuYWJs
-ZShzdC0+dnJlZik7DQo+ID4gKyAgICAgICBpZiAocmV0KQ0KPiA+ICsgICAgICAgICAgICAgICBy
-ZXR1cm4gcmV0Ow0KPiA+ICsNCj4gPiArICAgICAgIHJldCA9IGRldm1fYWRkX2FjdGlvbl9vcl9y
-ZXNldCgmc3BpLT5kZXYsIG1heDExMjA1X3JlZ19kaXNhYmxlLCBzdC0+dnJlZik7DQo+ID4gKyAg
-ICAgICBpZiAocmV0KQ0KPiA+ICsgICAgICAgICAgICAgICByZXR1cm4gcmV0Ow0KPiA+ICsNCj4g
-PiArICAgICAgIHJldCA9IGRldm1fYWRfc2Rfc2V0dXBfYnVmZmVyX2FuZF90cmlnZ2VyKCZzcGkt
-PmRldiwgaW5kaW9fZGV2KTsNCj4gPiArICAgICAgIGlmIChyZXQpDQo+ID4gKyAgICAgICAgICAg
-ICAgIHJldHVybiByZXQ7DQo+ID4gKw0KPiA+ICsgICAgICAgcmV0dXJuIGRldm1faWlvX2Rldmlj
-ZV9yZWdpc3Rlcigmc3BpLT5kZXYsIGluZGlvX2Rldik7DQo+ID4gK30NCj4gPiArDQo+ID4gK3N0
-YXRpYyBjb25zdCBzdHJ1Y3Qgc3BpX2RldmljZV9pZCBtYXgxMTIwNV9zcGlfaWRzW10gPSB7DQo+
-ID4gKyAgICAgICB7ICJtYXgxMTIwNWEiLCAoa2VybmVsX3Vsb25nX3QpJm1heDExMjA1X2NoaXBf
-aW5mb1tUWVBFX01BWDExMjA1QV0gfSwNCj4gPiArICAgICAgIHsgIm1heDExMjA1YiIsIChrZXJu
-ZWxfdWxvbmdfdCkmbWF4MTEyMDVfY2hpcF9pbmZvW1RZUEVfTUFYMTEyMDVCXSB9LA0KPiA+ICsg
-ICAgICAgeyB9DQo+ID4gK307DQo+ID4gK01PRFVMRV9ERVZJQ0VfVEFCTEUoc3BpLCBtYXgxMTIw
-NV9zcGlfaWRzKTsNCj4gPiArDQo+ID4gK3N0YXRpYyBjb25zdCBzdHJ1Y3Qgb2ZfZGV2aWNlX2lk
-IG1heDExMjA1X2R0X2lkc1tdID0gew0KPiA+ICsgICAgICAgew0KPiA+ICsgICAgICAgICAgICAg
-ICAuY29tcGF0aWJsZSA9ICJtYXhpbSxtYXgxMTIwNWEiLA0KPiA+ICsgICAgICAgICAgICAgICAu
-ZGF0YSA9ICZtYXgxMTIwNV9jaGlwX2luZm9bVFlQRV9NQVgxMTIwNUFdLA0KPiA+ICsgICAgICAg
-fSwNCj4gPiArICAgICAgIHsNCj4gPiArICAgICAgICAgICAgICAgLmNvbXBhdGlibGUgPSAibWF4
-aW0sbWF4MTEyMDViIiwNCj4gPiArICAgICAgICAgICAgICAgLmRhdGEgPSAmbWF4MTEyMDVfY2hp
-cF9pbmZvW1RZUEVfTUFYMTEyMDVCXSwNCj4gPiArICAgICAgIH0sDQo+ID4gKyAgICAgICB7IH0N
-Cj4gPiArfTsNCj4gPiArTU9EVUxFX0RFVklDRV9UQUJMRShvZiwgbWF4MTEyMDVfZHRfaWRzKTsN
-Cj4gPiArDQo+ID4gK3N0YXRpYyBzdHJ1Y3Qgc3BpX2RyaXZlciBtYXgxMTIwNV9zcGlfZHJpdmVy
-ID0gew0KPiA+ICsgICAgICAgLmRyaXZlciA9IHsNCj4gPiArICAgICAgICAgICAgICAgLm5hbWUg
-PSAibWF4MTEyMDUiLA0KPiA+ICsgICAgICAgICAgICAgICAub2ZfbWF0Y2hfdGFibGUgPSBtYXgx
-MTIwNV9kdF9pZHMsDQo+ID4gKyAgICAgICB9LA0KPiA+ICsgICAgICAgLnByb2JlID0gbWF4MTEy
-MDVfcHJvYmUsDQo+ID4gKyAgICAgICAuaWRfdGFibGUgPSBtYXgxMTIwNV9zcGlfaWRzLA0KPiA+
-ICt9Ow0KPiA+ICttb2R1bGVfc3BpX2RyaXZlcihtYXgxMTIwNV9zcGlfZHJpdmVyKTsNCj4gPiAr
-DQo+ID4gK01PRFVMRV9BVVRIT1IoIlJhbW9uYSBCb2xib2FjYSA8cmFtb25hLmJvbGJvYWNhQGFu
-YWxvZy5jb20+Iik7DQo+ID4gK01PRFVMRV9ERVNDUklQVElPTigiTUFYMTEyMDUgQURDIGRyaXZl
-ciIpOw0KPiA+ICtNT0RVTEVfTElDRU5TRSgiR1BMIHYyIik7DQo+ID4gK01PRFVMRV9JTVBPUlRf
-TlMoSUlPX0FEX1NJR01BX0RFTFRBKTsNCj4gPiAtLQ0KPiA+IDIuMjUuMQ0KPiA+DQo+IA0KPiAN
-Cj4gLS0NCj4gV2l0aCBCZXN0IFJlZ2FyZHMsDQo+IEFuZHkgU2hldmNoZW5rbw0K
+Il 31/08/22 14:48, Johnson Wang ha scritto:
+> To implement frequency hopping and spread spectrum clocking
+> function, we introduce new clock type and APIs to handle
+> FHCTL hardware.
+> 
+> Co-developed-by: Edward-JW Yang <edward-jw.yang@mediatek.com>
+> Signed-off-by: Edward-JW Yang <edward-jw.yang@mediatek.com>
+> Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
+> ---
+>   drivers/clk/mediatek/Makefile    |   2 +-
+>   drivers/clk/mediatek/clk-fhctl.c | 258 +++++++++++++++++++++++++++++
+>   drivers/clk/mediatek/clk-fhctl.h |  27 +++
+>   drivers/clk/mediatek/clk-pllfh.c | 271 +++++++++++++++++++++++++++++++
+>   drivers/clk/mediatek/clk-pllfh.h |  81 +++++++++
+>   5 files changed, 638 insertions(+), 1 deletion(-)
+>   create mode 100644 drivers/clk/mediatek/clk-fhctl.c
+>   create mode 100644 drivers/clk/mediatek/clk-fhctl.h
+>   create mode 100644 drivers/clk/mediatek/clk-pllfh.c
+>   create mode 100644 drivers/clk/mediatek/clk-pllfh.h
+> 
+> diff --git a/drivers/clk/mediatek/Makefile b/drivers/clk/mediatek/Makefile
+> index caf2ce93d666..0e674a55e51e 100644
+> --- a/drivers/clk/mediatek/Makefile
+> +++ b/drivers/clk/mediatek/Makefile
+> @@ -1,5 +1,5 @@
+>   # SPDX-License-Identifier: GPL-2.0
+> -obj-$(CONFIG_COMMON_CLK_MEDIATEK) += clk-mtk.o clk-pll.o clk-gate.o clk-apmixed.o clk-cpumux.o reset.o clk-mux.o
+> +obj-$(CONFIG_COMMON_CLK_MEDIATEK) += clk-mtk.o clk-pll.o clk-gate.o clk-apmixed.o clk-cpumux.o reset.o clk-mux.o clk-fhctl.o clk-pllfh.o
+>   
+>   obj-$(CONFIG_COMMON_CLK_MT6765) += clk-mt6765.o
+>   obj-$(CONFIG_COMMON_CLK_MT6765_AUDIOSYS) += clk-mt6765-audio.o
+> diff --git a/drivers/clk/mediatek/clk-fhctl.c b/drivers/clk/mediatek/clk-fhctl.c
+> new file mode 100644
+> index 000000000000..69bd4ce2bc72
+> --- /dev/null
+> +++ b/drivers/clk/mediatek/clk-fhctl.c
+> @@ -0,0 +1,258 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright (c) 2022 MediaTek Inc.
+> + * Author: Edward-JW Yang <edward-jw.yang@mediatek.com>
+> + */
+> +
+
+#include <linux/io.h>
+
+Please don't rely on implicit header inclusion.
+
+> +#include <linux/iopoll.h>
+> +
+> +#include "clk-mtk.h"
+> +#include "clk-pllfh.h"
+> +#include "clk-fhctl.h"
+> +
+> +#define PERCENT_TO_DDSLMT(dds, percent_m10) \
+> +	((((dds) * (percent_m10)) >> 5) / 100)
+> +
+> +static const struct fhctl_offset fhctl_offset = {
+> +	.offset_hp_en = 0x0,
+> +	.offset_clk_con = 0x8,
+> +	.offset_rst_con = 0xc,
+> +	.offset_slope0 = 0x10,
+> +	.offset_slope1 = 0x14,
+> +	.offset_cfg = 0x0,
+> +	.offset_updnlmt = 0x4,
+> +	.offset_dds = 0x8,
+> +	.offset_dvfs = 0xc,
+> +	.offset_mon = 0x10,
+> +};
+> +
+> +const struct fhctl_offset *fhctl_get_offset_table(void)
+> +{
+> +	return &fhctl_offset;
+> +}
+> +
+> +static void dump_hw(struct mtk_clk_pll *pll, struct fh_pll_regs *regs,
+> +		    const struct fh_pll_data *data)
+> +{
+> +	pr_info("hp_en<%x>,clk_con<%x>,slope0<%x>,slope1<%x>\n",
+> +		readl(regs->reg_hp_en), readl(regs->reg_clk_con),
+> +		readl(regs->reg_slope0), readl(regs->reg_slope1));
+> +	pr_info("cfg<%x>,lmt<%x>,dds<%x>,dvfs<%x>,mon<%x>\n",
+> +		readl(regs->reg_cfg), readl(regs->reg_updnlmt),
+> +		readl(regs->reg_dds), readl(regs->reg_dvfs),
+> +		readl(regs->reg_mon));
+> +	pr_info("pcw<%x>\n", readl(pll->pcw_addr));
+> +}
+> +
+> +static int fhctl_set_ssc_regs(struct mtk_clk_pll *pll, struct fh_pll_regs *regs,
+> +			      const struct fh_pll_data *data, u32 rate)
+> +{
+> +	u32 updnlmt_val, r;
+> +
+> +	writel((readl(regs->reg_cfg) & ~(data->frddsx_en)), regs->reg_cfg);
+> +	writel((readl(regs->reg_cfg) & ~(data->sfstrx_en)), regs->reg_cfg);
+> +	writel((readl(regs->reg_cfg) & ~(data->fhctlx_en)), regs->reg_cfg);
+> +
+> +	if (rate > 0) {
+> +		/* Set the relative parameter registers (dt/df/upbnd/downbnd) */
+> +		r = readl(regs->reg_cfg);
+> +		r &= ~(data->msk_frddsx_dys);
+> +		r |= (data->df_val << (ffs(data->msk_frddsx_dys) - 1));
+> +		writel(r, regs->reg_cfg);
+> +
+> +		r = readl(regs->reg_cfg);
+> +		r &= ~(data->msk_frddsx_dts);
+> +		r |= (data->dt_val << (ffs(data->msk_frddsx_dts) - 1));
+> +		writel(r, regs->reg_cfg);
+> +
+> +		writel((readl(pll->pcw_addr) & data->dds_mask) | data->tgl_org,
+> +			regs->reg_dds);
+> +
+> +		/* Calculate UPDNLMT */
+> +		updnlmt_val = PERCENT_TO_DDSLMT((readl(regs->reg_dds) &
+> +						 data->dds_mask), rate) <<
+> +						 data->updnlmt_shft;
+> +
+> +		writel(updnlmt_val, regs->reg_updnlmt);
+> +		writel(readl(regs->reg_hp_en) | BIT(data->fh_id),
+> +		       regs->reg_hp_en);
+> +		/* Enable SSC */
+> +		writel(readl(regs->reg_cfg) | data->frddsx_en, regs->reg_cfg);
+> +		/* Enable Hopping control */
+> +		writel(readl(regs->reg_cfg) | data->fhctlx_en, regs->reg_cfg);
+> +
+> +	} else {
+> +		/* Switch to APMIXEDSYS control */
+> +		writel(readl(regs->reg_hp_en) & ~BIT(data->fh_id),
+> +		       regs->reg_hp_en);
+> +		/* Wait for DDS to be stable */
+> +		udelay(30);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int hopping_hw_flow(struct mtk_clk_pll *pll, struct fh_pll_regs *regs,
+> +			   const struct fh_pll_data *data,
+> +			   struct fh_pll_state *state, unsigned int new_dds)
+> +{
+> +	u32 dds_mask = data->dds_mask;
+> +	u32 mon_dds = 0;
+> +	u32 con_pcw_tmp;
+> +	int ret;
+> +
+> +	if (state->ssc_rate)
+> +		fhctl_set_ssc_regs(pll, regs, data, 0);
+> +
+> +	writel((readl(pll->pcw_addr) & dds_mask) | data->tgl_org,
+> +		regs->reg_dds);
+> +
+> +	writel(readl(regs->reg_cfg) | data->sfstrx_en, regs->reg_cfg);
+> +	writel(readl(regs->reg_cfg) | data->fhctlx_en, regs->reg_cfg);
+> +	writel(data->slope0_value, regs->reg_slope0);
+> +	writel(data->slope1_value, regs->reg_slope1);
+> +
+> +	writel(readl(regs->reg_hp_en) | BIT(data->fh_id), regs->reg_hp_en);
+> +	writel((new_dds) | (data->dvfs_tri), regs->reg_dvfs);
+> +
+> +	/* Wait 1000 us until DDS stable */
+> +	ret = readl_poll_timeout_atomic(regs->reg_mon, mon_dds,
+> +				       (mon_dds & dds_mask) == new_dds,
+> +					10, 1000);
+> +	if (ret) {
+> +		pr_warn("%s: FHCTL hopping timeout\n", pll->data->name);
+> +		dump_hw(pll, regs, data);
+> +	}
+> +
+> +	con_pcw_tmp = readl(pll->pcw_addr) & (~dds_mask);
+> +	con_pcw_tmp = (con_pcw_tmp | (readl(regs->reg_mon) & dds_mask) |
+> +		       data->pcwchg);
+> +
+> +	writel(con_pcw_tmp, pll->pcw_addr);
+> +	writel(readl(regs->reg_hp_en) & ~BIT(data->fh_id), regs->reg_hp_en);
+> +
+> +	if (state->ssc_rate)
+> +		fhctl_set_ssc_regs(pll, regs, data, state->ssc_rate);
+
+Does it really make sense to set the SSC registers if the FH operation times out?
+
+> +
+> +	return ret;
+> +}
+> +
+> +static unsigned int __get_postdiv(struct mtk_clk_pll *pll,
+> +				  struct fh_pll_regs *regs,
+> +				  const struct fh_pll_data *fh_data)
+
+You don't need regs, nor fh_data, so this can be as simple as
+
+static unsigned int __get_postdiv(struct mtk_clk_pll *pll)
+
+> +{
+> +	unsigned int regval;
+> +
+> +	regval = readl(pll->pd_addr) >> pll->data->pd_shift;
+> +	regval &= POSTDIV_MASK;
+> +
+
+	return BIT(regval);
+
+> +	return (1 << regval);
+> +}
+> +
+> +static void __set_postdiv(struct mtk_clk_pll *pll, struct fh_pll_regs *regs,
+> +			  const struct fh_pll_data *data, int postdiv)
+
+static void __set_postdiv(struct mtk_clk_pll *pll, unsigned int val)
+
+> +{
+> +	unsigned int regval;
+> +
+> +	regval = readl(pll->pd_addr);
+> +	regval &= ~(POSTDIV_MASK << pll->data->pd_shift);
+> +	regval |= (ffs(postdiv) - 1) << pll->data->pd_shift;
+> +	writel(regval, pll->pd_addr);
+> +}
+> +
+> +static int fhctl_hopping(struct mtk_fh *fh, unsigned int new_dds, int postdiv)
+
+The postdiv cannot ever be negative, so you can change it to an unsigned type...
+
+static int fhctl_hopping(struct mtk_fh *fh, unsigned int new_dds,
+			 unsigned int postdiv)
+
+> +{
+> +	const struct fh_pll_data *data = &fh->pllfh_data->data;
+> +	struct fh_pll_state *state = &fh->pllfh_data->state;
+> +	struct fh_pll_regs *regs = &fh->regs;
+> +	struct mtk_clk_pll *pll = &fh->clk_pll;
+> +	spinlock_t *lock = fh->lock;
+> +	unsigned int pll_postdiv;
+> +	unsigned long flags = 0;
+> +	int ret;
+> +
+
+...so since postdiv is unsigned, we can write this conditional as
+
+	if (postdiv)
+
+> +	if (postdiv > 0) {
+> +		pll_postdiv = __get_postdiv(pll, regs, data);
+> +
+> +		if (postdiv > pll_postdiv)
+> +			__set_postdiv(pll, regs, data, postdiv);
+> +	}
+> +
+> +	spin_lock_irqsave(lock, flags);
+> +
+> +	ret = hopping_hw_flow(pll, regs, data, state, new_dds);
+> +
+> +	spin_unlock_irqrestore(lock, flags);
+> +
+> +	if (postdiv > 0) {
+> +		if (postdiv < pll_postdiv)
+
+...and this one as
+
+if (postdiv && postdiv < pll_postdiv)
+
+> +			__set_postdiv(pll, regs, data, postdiv);
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static int __fhctl_ssc_enable(struct mtk_fh *fh, u32 rate)
+> +{
+> +	const struct fh_pll_data *data = &fh->pllfh_data->data;
+> +	struct fh_pll_state *state = &fh->pllfh_data->state;
+> +	struct fh_pll_regs *regs = &fh->regs;
+> +	struct mtk_clk_pll *pll = &fh->clk_pll;
+> +	spinlock_t *lock = fh->lock;
+> +	unsigned long flags = 0;
+> +
+> +	spin_lock_irqsave(lock, flags);
+> +
+> +	fhctl_set_ssc_regs(pll, regs, data, rate);
+> +	state->ssc_rate = rate;
+> +
+> +	spin_unlock_irqrestore(lock, flags);
+> +
+> +	return 0;
+> +}
+> +
+> +static int fhctl_ssc_enable(struct mtk_fh *fh, u32 rate)
+> +{
+> +	return __fhctl_ssc_enable(fh, rate);
+> +}
+> +
+> +static int fhctl_ssc_disable(struct mtk_fh *fh)
+> +{
+> +	return __fhctl_ssc_enable(fh, 0);
+> +}
+> +
+> +static const struct fh_operation fhctl_ops = {
+> +	.hopping = fhctl_hopping,
+> +	.ssc_enable = fhctl_ssc_enable,
+
+Just one callback for ssc_enable is enough, it's fine to keep the logic as
+ssc_enable(fh, >0) to enable and ssc_enable(fh <=0) to disable.
+
+> +	.ssc_disable = fhctl_ssc_disable,
+> +};
+> +
+> +const struct fh_operation *fhctl_get_ops(void)
+> +{
+> +	return &fhctl_ops;
+> +}
+> +
+> +void fhctl_hw_init(struct mtk_fh *fh)
+> +{
+> +	const struct fh_pll_data data = fh->pllfh_data->data;
+> +	struct fh_pll_state state = fh->pllfh_data->state;
+> +	struct fh_pll_regs regs = fh->regs;
+> +	u32 val;
+> +
+> +	/* initial hw register */
+> +	val = readl(regs.reg_clk_con) | BIT(data.fh_id);
+> +	writel(val, regs.reg_clk_con);
+> +
+> +	val = readl(regs.reg_rst_con) & ~BIT(data.fh_id);
+> +	writel(val, regs.reg_rst_con);
+> +	val = readl(regs.reg_rst_con) | BIT(data.fh_id);
+> +	writel(val, regs.reg_rst_con);
+> +
+> +	writel(0x0, regs.reg_cfg);
+> +	writel(0x0, regs.reg_updnlmt);
+> +	writel(0x0, regs.reg_dds);
+> +
+> +	/* enable ssc if needed */
+> +	if (state.ssc_rate)
+> +		fh->ops->ssc_enable(fh, state.ssc_rate);
+> +}
+> diff --git a/drivers/clk/mediatek/clk-fhctl.h b/drivers/clk/mediatek/clk-fhctl.h
+> new file mode 100644
+> index 000000000000..3cd4921c39e9
+> --- /dev/null
+> +++ b/drivers/clk/mediatek/clk-fhctl.h
+> @@ -0,0 +1,27 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/*
+> + * Copyright (c) 2022 MediaTek Inc.
+> + * Author: Edward-JW Yang <edward-jw.yang@mediatek.com>
+> + */
+> +
+> +#ifndef __CLK_FHCTL_H
+> +#define __CLK_FHCTL_H
+> +
+
+One blank line is enough.
+
+> +
+> +struct fhctl_offset {
+> +	u32 offset_hp_en;
+> +	u32 offset_clk_con;
+> +	u32 offset_rst_con;
+> +	u32 offset_slope0;
+> +	u32 offset_slope1;
+> +	u32 offset_cfg;
+> +	u32 offset_updnlmt;
+> +	u32 offset_dds;
+> +	u32 offset_dvfs;
+> +	u32 offset_mon;
+> +};
+> +const struct fhctl_offset *fhctl_get_offset_table(void);
+> +const struct fh_operation *fhctl_get_ops(void);
+> +void fhctl_hw_init(struct mtk_fh *fh);
+> +
+> +#endif
+> diff --git a/drivers/clk/mediatek/clk-pllfh.c b/drivers/clk/mediatek/clk-pllfh.c
+> new file mode 100644
+> index 000000000000..71b35323b526
+> --- /dev/null
+> +++ b/drivers/clk/mediatek/clk-pllfh.c
+> @@ -0,0 +1,271 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright (c) 2022 MediaTek Inc.
+> + * Author: Edward-JW Yang <edward-jw.yang@mediatek.com>
+> + */
+> +
+> +#include <linux/of.h>
+> +#include <linux/of_address.h>
+> +#include <linux/io.h>
+> +#include <linux/slab.h>
+> +#include <linux/clkdev.h>
+> +#include <linux/delay.h>
+> +
+> +#include "clk-mtk.h"
+> +#include "clk-pllfh.h"
+> +#include "clk-fhctl.h"
+> +
+> +static DEFINE_SPINLOCK(pllfh_lock);
+> +
+> +inline struct mtk_fh *to_mtk_fh(struct clk_hw *hw)
+> +{
+> +	struct mtk_clk_pll *pll = to_mtk_clk_pll(hw);
+> +
+> +	return container_of(pll, struct mtk_fh, clk_pll);
+> +}
+> +
+> +static int mtk_fhctl_set_rate(struct clk_hw *hw, unsigned long rate,
+> +			      unsigned long parent_rate)
+> +{
+> +	struct mtk_clk_pll *pll = to_mtk_clk_pll(hw);
+> +	struct mtk_fh *fh = to_mtk_fh(hw);
+> +	u32 pcw = 0;
+> +	u32 postdiv;
+> +
+> +	mtk_pll_calc_values(pll, &pcw, &postdiv, rate, parent_rate);
+> +	fh->ops->hopping(fh, pcw, postdiv);
+
+return fh->ops->hopping(....);
+
+> +
+> +	return 0;
+> +}
+> +
+
+..snip..
+
+> diff --git a/drivers/clk/mediatek/clk-pllfh.h b/drivers/clk/mediatek/clk-pllfh.h
+> new file mode 100644
+> index 000000000000..d9f7c8527548
+> --- /dev/null
+> +++ b/drivers/clk/mediatek/clk-pllfh.h
+> @@ -0,0 +1,81 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/*
+> + * Copyright (c) 2022 MediaTek Inc.
+> + * Author: Edward-JW Yang <edward-jw.yang@mediatek.com>
+> + */
+> +
+> +#ifndef __DRV_CLKFH_H
+> +#define __DRV_CLKFH_H
+> +
+> +#include "clk-pll.h"
+> +
+> +struct fh_pll_state {
+
+Please, base as first member.
+
+> +	u32 fh_enable;
+> +	u32 ssc_rate;
+> +	void __iomem *base;
+> +};
+> +
+
+Regards,
+Angelo
+
+
