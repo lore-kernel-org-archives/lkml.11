@@ -2,107 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15001ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 20:21:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 182BBECAAD2
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 20:21:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234904AbiIAUVG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 16:21:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59088 "EHLO
+        id S234898AbiIAUVU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 16:21:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234885AbiIAUU7 (ORCPT
+        with ESMTP id S234885AbiIAUVH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 16:20:59 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 199635A899
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 13:20:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662063658; x=1693599658;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=eqgR6mBDJvknmAziS504tuv7HvznGcW0L/v53TAjfQo=;
-  b=O/tNry8VhzJ0PNA7ks8Wg2Td+LBN9EdD7H+6/zese8cvgPZ1lDuNKAxp
-   9c/1re4FW/t6ZULlk4GZVHbVkQKaM0802pFWbCYlYYwsakIxzMRPh+IKo
-   FZNB0+0zV7wbA+EGvNIf6dS5jKGJOSIVLaOMh+OrGt+z4qze/HhdITGmM
-   THGOYy/0elsQX4fSne6oNfa10I/yew4QGyaGkwfynXIaWqzCsETG/jr/1
-   25t1LTdsr7AaJ79NgiDRzrSw0blXzGWCTKskMOkgrve4nBse1opJONS18
-   GOJPIHfBTfhyhINqOa4WF5ZtALPm1NM+zWDWDDdTO9h9h5gJg6mu48odq
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="357536890"
-X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
-   d="scan'208";a="357536890"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 13:20:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
-   d="scan'208";a="563607469"
-Received: from lkp-server02.sh.intel.com (HELO b138c9e8658c) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 01 Sep 2022 13:20:54 -0700
-Received: from kbuild by b138c9e8658c with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oTqgI-0000jr-0l;
-        Thu, 01 Sep 2022 20:20:54 +0000
-Date:   Fri, 2 Sep 2022 04:20:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Janne Grunau <j@jannau.net>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [asahilinux:pr/49 2/11] drivers/iommu/io-pgtable-dart.c:176:24:
- sparse: sparse: Using plain integer as NULL pointer
-Message-ID: <202209020428.kbFTcWgT-lkp@intel.com>
+        Thu, 1 Sep 2022 16:21:07 -0400
+Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B93065FAF7
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 13:21:05 -0700 (PDT)
+Date:   Thu, 1 Sep 2022 16:20:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1662063664;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=59N4cXDrrx4pvcgXkof/n8IFhKqV2Yv9jG1OYeuE1s4=;
+        b=dXIMcpOFv3ETRiKCxyi6yjMteTgi6ggGBp7Fdyb2codMRsgCLJp7x2x4nLvG1IWvASiMF0
+        hESvF7xeaq0Q8V1p+DUAYmtNi3gteD6Owm4NzOM5fELcAqZMBiNPRvXj18LmToocre3m2H
+        ZW+O5s0hMKJyEFO4DjHZjZ1sua9VkBw=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Kent Overstreet <kent.overstreet@linux.dev>
+To:     Suren Baghdasaryan <surenb@google.com>
+Cc:     akpm@linux-foundation.org, michel@lespinasse.org,
+        jglisse@google.com, mhocko@suse.com, vbabka@suse.cz,
+        hannes@cmpxchg.org, mgorman@suse.de, dave@stgolabs.net,
+        willy@infradead.org, liam.howlett@oracle.com, peterz@infradead.org,
+        ldufour@linux.ibm.com, laurent.dufour@fr.ibm.com,
+        paulmck@kernel.org, luto@kernel.org, songliubraving@fb.com,
+        peterx@redhat.com, david@redhat.com, dhowells@redhat.com,
+        hughd@google.com, bigeasy@linutronix.de, rientjes@google.com,
+        axelrasmussen@google.com, joelaf@google.com, minchan@google.com,
+        kernel-team@android.com, linux-mm@kvack.org,
+        linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH RESEND 23/28] x86/mm: define
+ ARCH_SUPPORTS_PER_VMA_LOCK
+Message-ID: <20220901202052.xfaeuhmosheml2gz@moria.home.lan>
+References: <20220901173516.702122-1-surenb@google.com>
+ <20220901173516.702122-24-surenb@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220901173516.702122-24-surenb@google.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/AsahiLinux/linux pr/49
-head:   db5fe20b7f88a8443b0a3dd88bcfb35f1639624f
-commit: d37982729eab5e80525ade0e5859409c284a8283 [2/11] iommu/io-pgtable: Move Apple DART support to its own file
-config: alpha-randconfig-s042-20220901 (https://download.01.org/0day-ci/archive/20220902/202209020428.kbFTcWgT-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 12.1.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://github.com/AsahiLinux/linux/commit/d37982729eab5e80525ade0e5859409c284a8283
-        git remote add asahilinux https://github.com/AsahiLinux/linux
-        git fetch --no-tags asahilinux pr/49
-        git checkout d37982729eab5e80525ade0e5859409c284a8283
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=alpha SHELL=/bin/bash drivers/iommu/
+On Thu, Sep 01, 2022 at 10:35:11AM -0700, Suren Baghdasaryan wrote:
+> Set ARCH_SUPPORTS_PER_VMA_LOCK so that the per-VMA lock support can be
+> compiled on this architecture.
+> 
+> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> ---
+>  arch/x86/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+> index f9920f1341c8..ee19de020b27 100644
+> --- a/arch/x86/Kconfig
+> +++ b/arch/x86/Kconfig
+> @@ -27,6 +27,7 @@ config X86_64
+>  	# Options that are inherently 64-bit kernel only:
+>  	select ARCH_HAS_GIGANTIC_PAGE
+>  	select ARCH_SUPPORTS_INT128 if CC_HAS_INT128
+> +	select ARCH_SUPPORTS_PER_VMA_LOCK
+>  	select ARCH_USE_CMPXCHG_LOCKREF
+>  	select HAVE_ARCH_SOFT_DIRTY
+>  	select MODULES_USE_ELF_RELA
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-sparse warnings: (new ones prefixed by >>)
->> drivers/iommu/io-pgtable-dart.c:176:24: sparse: sparse: Using plain integer as NULL pointer
-
-vim +176 drivers/iommu/io-pgtable-dart.c
-
-   161	
-   162	static  dart_iopte *dart_get_l2(struct dart_io_pgtable *data, unsigned long iova)
-   163	{
-   164		dart_iopte pte, *ptep;
-   165		int tbl = dart_get_table(data, iova);
-   166	
-   167		ptep = data->pgd[tbl];
-   168		if (!ptep)
-   169			return NULL;
-   170	
-   171		ptep += dart_get_l1_index(data, iova);
-   172		pte = READ_ONCE(*ptep);
-   173	
-   174		/* Valid entry? */
-   175		if (!pte)
- > 176			return 0;
-   177	
-   178		/* Deref to get level 2 table */
-   179		return iopte_deref(pte, data);
-   180	}
-   181	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+I think you could combine this with the previous path (and similarly on other
+architectures) - they logically go together.
