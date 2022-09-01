@@ -2,98 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C61EDECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 18:17:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECED5ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 18:17:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233795AbiIASQ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 14:16:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41140 "EHLO
+        id S233919AbiIASRQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 14:17:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232490AbiIASQ4 (ORCPT
+        with ESMTP id S234131AbiIASRJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 14:16:56 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E1AA754BC
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 11:16:54 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id jm11so17792402plb.13
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 11:16:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=UHJ+wNg6rHSLjNi/6t6DVtAkUVcspchblfn/eFkKqsw=;
-        b=HrJjbOMAscprcYO5PohMvHxByNRc1LKXTo6sQZuSzgC2XApf6bfM9LFErgYqRzoCgj
-         dxDAMu9X4lyR7NRhOF5reb+70GOQgQhspYNlzgiePz3BU2vBiOTc/wCgQOTBX1nvY3rl
-         gRAOXKbMZo6iWwdxi5XCFMyWAK0sm8241MmfzJSwrIHCME8q/lKFVw54cv+mMAQPeY+I
-         CceuLNc7YMKHS9J6H0rqi3cuooZ6w2KLQeRcyB+ueRMsAHpJMRLidojb13a8cxBWurte
-         4EKxdLd+1K5ihRfvnqll1rCH5Gk6uP70mqHUGIq9SNVjwOl+S/rBWIvlyRybEnmgp4Fk
-         MA/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=UHJ+wNg6rHSLjNi/6t6DVtAkUVcspchblfn/eFkKqsw=;
-        b=oSexxFURDGhnGeY5DHlW1cGKzyDWBV4apOdxDJ21a/gON/EJ08nQ3jCEGXzWzKPRoa
-         dBQxWSTDA9YWkhTvfhOhNgWrF5fVFdMlDxf9InlBpcm6H0wELapE29eGb35MhNOgS/q8
-         RRxaLDRqgDdKsQ+IUpFy+fc+z1Y4Pfo5wmKeT4Lt8xWnZYeJ+kLG4uO7KR4PIFqAaYVC
-         pKLj16+eNY2IpxUaM5+8+UsiE8A7vXB54Qt8a5kC+JrW3foDtKB5qPs9zdLq6KvrmRUQ
-         KiXDMFms6m2fKgTFMKnK/svGpoToMeHtusZ+xz4jTUIkSUnjxyEf0jtI1gdjTdDKVdsu
-         BQpw==
-X-Gm-Message-State: ACgBeo1tArQZUpe2xEo2xIWEzzr+AgNYHQdOGtbuPi/NBn+AXP+XgtnM
-        3P5B9jzux5gTRsBWGg1cFfG6BZOUuHIIWQ==
-X-Google-Smtp-Source: AA6agR6b8r7oRaI6ROi7pyqAyUtxNINQwKB8079M56A+1+FEt2RYm/zemPHbg56SBzgLUP1mE90YiA==
-X-Received: by 2002:a17:903:22c7:b0:175:3682:9cf5 with SMTP id y7-20020a17090322c700b0017536829cf5mr11191184plg.150.1662056214062;
-        Thu, 01 Sep 2022 11:16:54 -0700 (PDT)
-Received: from C02F63J9MD6R.bytedance.net ([61.120.150.77])
-        by smtp.gmail.com with ESMTPSA id b13-20020a170903228d00b0017519b86996sm6320538plh.218.2022.09.01.11.16.47
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 01 Sep 2022 11:16:53 -0700 (PDT)
-From:   Zhuo Chen <chenzhuo.1@bytedance.com>
-To:     fancer.lancer@gmail.com, jdmason@kudzu.us, dave.jiang@intel.com,
-        allenbh@gmail.com, bhelgaas@google.com, ruscur@russell.cc,
-        oohall@gmail.com, james.smart@broadcom.com,
-        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com
-Cc:     chenzhuo.1@bytedance.com, ntb@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-scsi@vger.kernel.org
-Subject: [PATCH 0/3] PCI/AER: Fix and optimize usage of status clear api
-Date:   Fri,  2 Sep 2022 02:16:31 +0800
-Message-Id: <20220901181634.99591-1-chenzhuo.1@bytedance.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+        Thu, 1 Sep 2022 14:17:09 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21CDD7A755;
+        Thu,  1 Sep 2022 11:17:07 -0700 (PDT)
+Date:   Thu, 01 Sep 2022 18:17:03 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1662056225;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Y9GQDEkFf5qaOjyHLJiXUYg9GaIW5Sg6K87UHYjPCYo=;
+        b=dU7MnFyPjGmuH8zo3HO4uLOjZpg5QHuPgGQeO+TjYgu/NPvQepxw5SywqtmGHDyIN+SmIT
+        G6i2QMV7nCoh4MBgWb4QMQQwD4gsnDdh7LNpHt1yPhbk5/RVvxfNpg6G6QZEruYtIoKsC4
+        TpkF5waVFVAH8chrE/WulUjaFdqSsD3weKmVGtyC06MVXMfvWlpJ38tDgb2xjHeiovX473
+        k1LWykNKkMUwnVYvUkUGLGvPEB3EwdL9Quv8NIl1YyPydg7BPKZTgYwrVuXxQL5jW5Sbb0
+        35Gcc+G5JhZWHcbVLJ+d79ReFzKk5PHyr6zY730X15F9QImGtgtvhQOY/jQyKA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1662056225;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Y9GQDEkFf5qaOjyHLJiXUYg9GaIW5Sg6K87UHYjPCYo=;
+        b=3mF8+8JENQFaB6yxPlV94/J/n7fhTNj5SKVcOnznecH4Fd8Slk6T6bdwuZ9Y7IvdoS2OA/
+        mMaCtVHtRs33NzAw==
+From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/mm] x86/mm: Refuse W^X violations
+Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <YwySW3ROc21hN7g9@hirez.programming.kicks-ass.net>
+References: <YwySW3ROc21hN7g9@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <166205622353.401.14415663682148720649.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+The following commit has been merged into the x86/mm branch of tip:
 
-This series contains some fixes and optimizations of aer api usage.
-We add some process to clear uncorrectable error status, then add
-distinction between fatal and nonfatal situations in pcie_do_recovery()
-and reduce some redundant code. The series involves pci driver and
-vendor driver.
+Commit-ID:     652c5bf380ad018e15006a7f8349800245ddbbad
+Gitweb:        https://git.kernel.org/tip/652c5bf380ad018e15006a7f8349800245ddbbad
+Author:        Peter Zijlstra <peterz@infradead.org>
+AuthorDate:    Mon, 29 Aug 2022 12:18:03 +02:00
+Committer:     Dave Hansen <dave.hansen@linux.intel.com>
+CommitterDate: Thu, 01 Sep 2022 11:10:19 -07:00
 
-Thanks,
-Zhuo Chen
+x86/mm: Refuse W^X violations
 
-Zhuo Chen (3):
-  PCI/AER: Use pci_aer_clear_uncorrect_error_status() to clear
-    uncorrectable error status
-  PCI/ERR: Clear fatal status in pcie_do_recovery()
-  PCI/AER: Use pci_aer_raw_clear_status() to clear root port's AER error
-    status
+x86 has STRICT_*_RWX, but not even a warning when someone violates it.
 
- drivers/ntb/hw/idt/ntb_hw_idt.c |  4 ++--
- drivers/pci/pci.h               |  2 ++
- drivers/pci/pcie/aer.c          | 30 +++++++++++++++++++-----------
- drivers/pci/pcie/dpc.c          |  3 +--
- drivers/pci/pcie/err.c          |  8 ++++++--
- drivers/scsi/lpfc/lpfc_attr.c   |  4 ++--
- include/linux/aer.h             |  4 ++--
- 7 files changed, 34 insertions(+), 21 deletions(-)
+Add this warning and fully refuse the transition.
 
--- 
-2.30.1 (Apple Git-130)
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Link: https://lkml.kernel.org/r/YwySW3ROc21hN7g9@hirez.programming.kicks-ass.net
+---
+ arch/x86/mm/pat/set_memory.c | 32 ++++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
+diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+index 6a9043b..1a2d637 100644
+--- a/arch/x86/mm/pat/set_memory.c
++++ b/arch/x86/mm/pat/set_memory.c
+@@ -580,6 +580,33 @@ static inline pgprot_t static_protections(pgprot_t prot, unsigned long start,
+ }
+ 
+ /*
++ * Validate and enforce strict W^X semantics.
++ */
++static inline pgprot_t verify_rwx(pgprot_t old, pgprot_t new, unsigned long start,
++				  unsigned long pfn, unsigned long npg)
++{
++	unsigned long end;
++
++	if (!cpu_feature_enabled(X86_FEATURE_NX))
++		return new;
++
++	if (!((pgprot_val(old) ^ pgprot_val(new)) & (_PAGE_RW | _PAGE_NX)))
++		return new;
++
++	if ((pgprot_val(new) & (_PAGE_RW | _PAGE_NX)) != _PAGE_RW)
++		return new;
++
++	end = start + npg * PAGE_SIZE - 1;
++	WARN_ONCE(1, "CPA refuse W^X violation: %016llx -> %016llx range: 0x%016lx - 0x%016lx PFN %lx\n",
++		  (unsigned long long)pgprot_val(old),
++		  (unsigned long long)pgprot_val(new),
++		  start, end, pfn);
++
++	/* refuse the transition into WX */
++	return old;
++}
++
++/*
+  * Lookup the page table entry for a virtual address in a specific pgd.
+  * Return a pointer to the entry and the level of the mapping.
+  */
+@@ -885,6 +912,8 @@ static int __should_split_large_page(pte_t *kpte, unsigned long address,
+ 	new_prot = static_protections(req_prot, lpaddr, old_pfn, numpages,
+ 				      psize, CPA_DETECT);
+ 
++	new_prot = verify_rwx(old_prot, new_prot, lpaddr, old_pfn, numpages);
++
+ 	/*
+ 	 * If there is a conflict, split the large page.
+ 	 *
+@@ -1525,6 +1554,7 @@ repeat:
+ 
+ 	if (level == PG_LEVEL_4K) {
+ 		pte_t new_pte;
++		pgprot_t old_prot = pte_pgprot(old_pte);
+ 		pgprot_t new_prot = pte_pgprot(old_pte);
+ 		unsigned long pfn = pte_pfn(old_pte);
+ 
+@@ -1536,6 +1566,8 @@ repeat:
+ 		new_prot = static_protections(new_prot, address, pfn, 1, 0,
+ 					      CPA_PROTECT);
+ 
++		new_prot = verify_rwx(old_prot, new_prot, address, pfn, 1);
++
+ 		new_prot = pgprot_clear_protnone_bits(new_prot);
+ 
+ 		/*
