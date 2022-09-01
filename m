@@ -2,118 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C52C0ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:29:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 195AEECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 14:29:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234018AbiIAO3J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 10:29:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36950 "EHLO
+        id S234765AbiIAO3f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 10:29:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234868AbiIAO2s (ORCPT
+        with ESMTP id S234821AbiIAO3Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 10:28:48 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAEC66B154;
-        Thu,  1 Sep 2022 07:28:44 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id bh13so16542565pgb.4;
-        Thu, 01 Sep 2022 07:28:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:sender
-         :from:to:cc:subject:date;
-        bh=eFXvBBMNEEghXLQat18msWPtHrh19tRiTeT65ddGseE=;
-        b=eOzHQG4b4dp+fdDR3chQsix8YHi0GhSy0VJxAZyOXW5iv4W+uW7IMvCRBnEpGiLKAR
-         TrV8/7LFKaL1iIW3CxLpt6mBTdagjJqnJguOh/Uo4uA5vCQCn8p1uhNzB8oyJjXziK9a
-         OQBSuJJCUzR1RnD1esKAYNaH/NvtFJ/jnxwooOiXHZ2LfzD8mYoC4ddQTDQMUVcGxVyp
-         CMiCec+Fq4B6Y2a18jwc27sFPXi0PwMmzLW/KtjTFICr6rq7p6oAj1O9U0UginPDysKF
-         Az1OiFGOWV7jOPMC7H6jwLWBHgF19r8XOwmDrPJs+FvFC0pXxCkYvaYTAp6XccLkySA3
-         Mtyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:sender
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=eFXvBBMNEEghXLQat18msWPtHrh19tRiTeT65ddGseE=;
-        b=NWbM8P+dBsnElBqcDPdvYGqvvhmbnEFkNzbVU/A52WSikTqTKWQ57o3dH+cIvOGhCa
-         nDb84OK9MK3AnCzdj9Iz11/uW0CSxDBqlx55uFITwFCzYuHdwL0vNrzf26PbVZZVwFmz
-         NOa6AOSzhPWro3qaxL7HGf4Rm03pK4F6k+4K80m7oENixXQYW4EoeF7+P+OIPl0arv91
-         Zm7pnPdJlZXAWFRB2G6qdWJTJMpewTOOcODxZnwBZEwhKanXUf8NycnyFpJwEpV/sBge
-         ObSr7JUZvRvUGAVBJEd6+/Hd8FA+KnCyxZBv9vZnayBMxKGhFBsjS1EPI18TOdGbhGnL
-         /DCQ==
-X-Gm-Message-State: ACgBeo12cAwvuz4zL2xdD4S4qm2gbFxPk/bXssR686F8jmEq1TNN1KNe
-        oBepjXF8M/OhOKm+DnOcL8Y=
-X-Google-Smtp-Source: AA6agR5cl32IkcvGmqpXATSTiFcQrDFUiGCHgqw8oVwL+FoZSwm0VTq36xbA4W+UENHXrDNgFmBlRQ==
-X-Received: by 2002:a63:fc11:0:b0:430:41b4:acf5 with SMTP id j17-20020a63fc11000000b0043041b4acf5mr5826867pgi.408.1662042523411;
-        Thu, 01 Sep 2022 07:28:43 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id i72-20020a62874b000000b0052e987c64efsm13849428pfe.174.2022.09.01.07.28.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 07:28:41 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Thu, 1 Sep 2022 07:28:39 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     "Farber, Eliav" <farbere@amazon.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>, jdelvare@suse.com,
-        robh+dt@kernel.org, p.zabel@pengutronix.de, rtanwar@maxlinear.com,
-        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, talel@amazon.com, hhhawa@amazon.com,
-        jonnyc@amazon.com, hanochu@amazon.com, ronenk@amazon.com,
-        itamark@amazon.com, shellykz@amazon.com, shorer@amazon.com,
-        amitlavi@amazon.com, almogbs@amazon.com, dkl@amazon.com
-Subject: Re: [PATCH v3 18/19] hwmon: (mr75203) add debugfs to read and write
- temperature coefficients
-Message-ID: <20220901142839.GA3477025@roeck-us.net>
-References: <20220830192212.28570-1-farbere@amazon.com>
- <20220830192212.28570-19-farbere@amazon.com>
- <Yw9Qq+PIfxgXRIK2@smile.fi.intel.com>
- <646af681-38b0-1268-3798-c5434ca30bee@amazon.com>
+        Thu, 1 Sep 2022 10:29:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89FC76C138
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 07:29:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B27D61D13
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 14:29:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 488FFC433C1;
+        Thu,  1 Sep 2022 14:29:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662042559;
+        bh=jFE2xM5WLXWebAiP4GZXPcQbfdEnIL2CMtGp9xZiGUU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OO2lNa3jeF4nJVKeq4IPO0QlDFMlwDcFT9hM5Puy2CWXpAPCfx8cJ/HUISxb37uww
+         WGplzQe3lGb/tDVST8jVWCgDnND5rqSLAK7g96oON5MEM5Cw+xKEczRyscFvPyv+qg
+         wb41AmTzwsU5CjrVoJnpe0RJfa/18dDkAvcMFb/w=
+Date:   Thu, 1 Sep 2022 16:29:16 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Petr Vorel <pvorel@suse.cz>
+Cc:     linux-kernel@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        David Sterba <dsterba@suse.com>
+Subject: Re: [PATCH v2 1/1] drivers/base/cpu: Print kernel arch
+Message-ID: <YxDBvD5XrbLApWMy@kroah.com>
+References: <20220729125141.12786-1-pvorel@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <646af681-38b0-1268-3798-c5434ca30bee@amazon.com>
+In-Reply-To: <20220729125141.12786-1-pvorel@suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 01, 2022 at 09:54:21AM +0300, Farber, Eliav wrote:
-> On 8/31/2022 3:14 PM, Andy Shevchenko wrote:
-> > On Tue, Aug 30, 2022 at 07:22:11PM +0000, Eliav Farber wrote:
-> > > This change adds debugfs to read and write temperature sensor
-> > > coefficients
-> > > - g, h, j and cal5.
-> > > 
-> > > The coefficients can vary between product and product, so it can be very
-> > > useful to be able to modify them on the fly during the calibration
-> > > process.
-> > > 
-> > > e.g.:
-> > > 
-> > > cat /sys/kernel/debug/940f23d0000.pvt/ts_coeff_cal5
-> > > 4096
-> > > 
-> > > echo 83000 > sys/kernel/debug/940f23d0000.pvt/ts_coeff_g
-> > 
-> > ...
-> > 
-> > > +     pvt->dbgfs_dir = debugfs_create_dir(dev_name(dev), NULL);
-> > 
-> > > +     if (!pvt->dbgfs_dir) {
-> > > +             dev_err(dev, "Failed to create dbgfs_dir\n");
-> > > +             return -EINVAL;
-> > > +     }
-> > 
-> > No, just don't check the return value of debugfs API calls.
-> > 
-> Do you mean that I should just do:
-> debugfs_create_dir(dev_name(dev), NULL);
-> Can you please explain why it's OK to ignore the return value?
+On Fri, Jul 29, 2022 at 02:51:41PM +0200, Petr Vorel wrote:
+> Print the machine hardware name (UTS_MACHINE) in /proc/sys/kernel/arch.
 > 
+> This helps people who debug kernel with initramfs with minimal
+> environment (i.e. without coreutils or even busybox) or allow to open
+> sysfs file instead of run 'uname -m' in high level languages.
+> 
+> Signed-off-by: Petr Vorel <pvorel@suse.cz>
+> ---
+>  Documentation/admin-guide/sysctl/kernel.rst | 5 +++++
+>  kernel/utsname_sysctl.c                     | 7 +++++++
+>  2 files changed, 12 insertions(+)
 
-Because that is how debugfs code is supposed to be implemented.
-Other debugfs code checks if the dir parameter passed to it is NULL
-and do nothing if it is. This reduces code size overall by avoiding
-unnecessary error checks.
+Wait, why does the subject line say "drivers/base/cpu"?  That's not a
+file being touched in this commit at all, so this isn't for me to take
+:(
 
-Guenter
+thanks,
+
+greg k-h
