@@ -2,109 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C16DECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 09:19:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B36FCECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 09:20:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234017AbiIAJTC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 05:19:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50264 "EHLO
+        id S232448AbiIAJUF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 05:20:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233998AbiIAJS7 (ORCPT
+        with ESMTP id S232107AbiIAJUA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 05:18:59 -0400
-Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2BBD11EB43
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 02:18:56 -0700 (PDT)
-Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-3378303138bso330615577b3.9
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 02:18:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=ofyTx4HKrXBAG7we5X7Qai/eK2K43C5jxgUz5nh/Yro=;
-        b=DNWL+HfERAfAtjtdicaVsZrEdzV4N3Vw5nQ7XoQB5JVkpg5p8Lsx+iFTSKvtyCFj5u
-         BAfxBIvqMTTrW79mMYA44nyO0vqrbHf0Mc0d6NIllyaZ+83qZ0DGOTlWDkqrmDfiFUBg
-         Uarv4p7UHZor3SU51nWN/bvVjMMHzk7sZhJB6O0Y6OqzyJhhnhBEpTygZ6N+7k/hbIST
-         vZ2QhDDBCROSeFX8TMsw8gkqJpObIOjwYdFIC5Hx0mayX6/hIUz5nT4hj1yABlepUqM4
-         1PjoU84RkgqZApPhBtpAkTXjpToOqeRjtEv9GgqlCBJXqeaEu4nsMq3SJXKWs4bw2g9v
-         EQZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=ofyTx4HKrXBAG7we5X7Qai/eK2K43C5jxgUz5nh/Yro=;
-        b=JoGgnMUWSjyFTgqljphc/jVSa7ZW9IoYF25ZoPLk/gkbgnYzCGFQyD8/1RDffef3nx
-         utqof6gUckCW50xN1RfaPVIQBivlPjD0iWIySGFHK7J59ljnYOkzTW3I3Vcs27ipJMhW
-         376HxrxyPml3+90Bx8vnIKGJ34w5EYJRZ5Z4s9wy2B6XF3k/OGXLmWPZLbGfnI+pmkjK
-         y8GEtL3XL5Yv8mX7IrudioN4ftV1bhRIGEYRQBCn1A219K8RPhHCrmP3yDe/oejSrX+R
-         AJwh60mfnXPcX+bT/120Gcg7lDO4KLZuJH0FKlbqUznzRRNJxFPAYEtjvk7qlsMdaGx+
-         N+hA==
-X-Gm-Message-State: ACgBeo1vtP9rKoSz/kd9D1Ir4/OXyWB9YSUCodjYsQEGj57inEGZQaej
-        x90akL9A1FNx9xlWmTKb8TBr7MXVTbWgqCPJtu0VFMgw0Kxmzw==
-X-Google-Smtp-Source: AA6agR4YzkMcE//RozLPe3AlZMR1RsPsbQRd1aguh7fbGIubS9uQzS9d0L0VXutUFfemJr0JfjfopiWBTfT/BVDRmY8=
-X-Received: by 2002:a0d:ea49:0:b0:33d:bce7:25c2 with SMTP id
- t70-20020a0dea49000000b0033dbce725c2mr21912903ywe.267.1662023935298; Thu, 01
- Sep 2022 02:18:55 -0700 (PDT)
+        Thu, 1 Sep 2022 05:20:00 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 515E41839C;
+        Thu,  1 Sep 2022 02:19:59 -0700 (PDT)
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28194Q5D023183;
+        Thu, 1 Sep 2022 09:19:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=FAV0K99sOO+vFi8gDLIlrXCyZVBT3gh3GSY44qD7inw=;
+ b=C2UZK0PDFJO1341d6syy4pBy5hGCdEAvVP5GnExk38GP5UC+1VYPm798y1aicfXfzMlv
+ hALW9znlamyQngTaJ8kNkElsbepCB/2eHMcwgmyRqQrQyDT7nyJh65ETqzXtwyljQc0n
+ YO7Pvt49Nj+o2t75p0fBm4zbDVx9Tz2FsttGEf3Qkk5SmlAPD2OOb5sOeAiG+jNpSz4r
+ OsyI2J0wTuCOB7ui1TCedhjuwXNatxiiTJ4H7MQVA0wN3hwwBPvJVlOf2VLeKWG11xBI
+ 7kogv70DWL1DI2wql3bGCrYAsQ4FYEDGRaFBGg1NxMtHtn9AMy6oyibXm4qn1aG9Y4sc og== 
+Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3jaeb4sy5g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 01 Sep 2022 09:19:45 +0000
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
+        by NASANPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 2819Eii8010871
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 1 Sep 2022 09:14:44 GMT
+Received: from [10.216.21.166] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Thu, 1 Sep 2022
+ 02:14:40 -0700
+Message-ID: <7dad556c-f806-01e7-79c1-3841574669c3@quicinc.com>
+Date:   Thu, 1 Sep 2022 14:44:35 +0530
 MIME-Version: 1.0
-References: <20220901044249.4624-1-osalvador@suse.de> <20220901044249.4624-2-osalvador@suse.de>
- <YxBsWu36eqUw03Dy@elver.google.com> <YxBvcDFSsLqn3i87@dhcp22.suse.cz>
-In-Reply-To: <YxBvcDFSsLqn3i87@dhcp22.suse.cz>
-From:   Marco Elver <elver@google.com>
-Date:   Thu, 1 Sep 2022 11:18:19 +0200
-Message-ID: <CANpmjNNjkgibnBcp7ZOWGC5CcBJ=acgrRKo0cwZG0xOB5OCpLw@mail.gmail.com>
-Subject: Re: [PATCH 1/3] lib/stackdepot: Add a refcount field in stack_record
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Oscar Salvador <osalvador@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Eric Dumazet <edumazet@google.com>,
-        Waiman Long <longman@redhat.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>, kasan-dev@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v4] arm64: defconfig: Config that had RPMSG_CHAR now gets
+ RPMSG_CTRL
+Content-Language: en-US
+To:     Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     <linux-kernel@vger.kernel.org>, <linux-remoteproc@vger.kernel.org>
+References: <20220826125400.2199429-1-arnaud.pouliquen@foss.st.com>
+From:   Mukesh Ojha <quic_mojha@quicinc.com>
+In-Reply-To: <20220826125400.2199429-1-arnaud.pouliquen@foss.st.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01c.na.qualcomm.com (10.45.79.139)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: VFWxxMCFFJNTanGnpbJx5ReSYCFlEB1r
+X-Proofpoint-ORIG-GUID: VFWxxMCFFJNTanGnpbJx5ReSYCFlEB1r
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-09-01_06,2022-08-31_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxlogscore=545
+ impostorscore=0 suspectscore=0 priorityscore=1501 mlxscore=0 bulkscore=0
+ malwarescore=0 clxscore=1011 phishscore=0 lowpriorityscore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
+ definitions=main-2209010041
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 1 Sept 2022 at 10:38, Michal Hocko <mhocko@suse.com> wrote:
->
-> On Thu 01-09-22 10:24:58, Marco Elver wrote:
-> > On Thu, Sep 01, 2022 at 06:42AM +0200, Oscar Salvador wrote:
-> [...]
-> > > diff --git a/lib/stackdepot.c b/lib/stackdepot.c
-> > > index 5ca0d086ef4a..aeb59d3557e2 100644
-> > > --- a/lib/stackdepot.c
-> > > +++ b/lib/stackdepot.c
-> > > @@ -63,6 +63,7 @@ struct stack_record {
-> > >     u32 hash;                       /* Hash in the hastable */
-> > >     u32 size;                       /* Number of frames in the stack */
-> > >     union handle_parts handle;
-> > > +   refcount_t count;               /* Number of the same repeated stacks */
-> >
-> > This will increase stack_record size for every user, even if they don't
-> > care about the count.
->
-> Couldn't this be used for garbage collection?
+Hi,
 
-Only if we can precisely figure out at which point a stack is no
-longer going to be needed.
+On 8/26/2022 6:24 PM, Arnaud Pouliquen wrote:
+> In the commit 617d32938d1b ("rpmsg: Move the rpmsg control device
+> from rpmsg_char to rpmsg_ctrl"), we split the rpmsg_char driver in two.
+> By default give everyone who had the old driver enabled the rpmsg_ctrl
+> driver too.
+> 
+> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+> Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+> ---
+> This patch is extracted from the series [1] that has been partially
+> integrated in the Linux Kernel 5.18-rc1.
+> 
+> update from v3 [2]
+> - resent after rebase on Linux kernel v6.0-rc2.
+> 
+> [1]https://lore.kernel.org/lkml/15be2f08-ba03-2b80-6f53-2056359d5c41@gmail.com/T/
+> [2]https://lore.kernel.org/linux-arm-kernel/YpdutV3%2FjOsfPb5c@arm.com/t/
+> ---
+>   arch/arm64/configs/defconfig | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+> index d5b2d2dd4904..b9e6b17305f6 100644
+> --- a/arch/arm64/configs/defconfig
+> +++ b/arch/arm64/configs/defconfig
+> @@ -1093,6 +1093,7 @@ CONFIG_QCOM_Q6V5_PAS=m
+>   CONFIG_QCOM_SYSMON=m
+>   CONFIG_QCOM_WCNSS_PIL=m
+>   CONFIG_RPMSG_CHAR=m
+> +CONFIG_RPMSG_CTRL=m
+>   CONFIG_RPMSG_QCOM_GLINK_RPM=y
+>   CONFIG_RPMSG_QCOM_GLINK_SMEM=m
+>   CONFIG_RPMSG_QCOM_SMD=y
 
-But more realistically, stack depot was designed to be simple. Right
-now it can allocate new stacks (from an internal pool), but giving the
-memory back to that pool isn't supported. Doing garbage collection
-would effectively be a redesign of stack depot. And for the purpose
-for which stack depot was designed (debugging tools), memory has never
-been an issue (note that stack depot also has a fixed upper bound on
-memory usage).
 
-We had talked (in the context of KASAN) about bounded stack storage,
-but the preferred solution is usually a cache-based design which
-allows evictions (in the simplest case a ring buffer), because
-figuring out (and relying on) where precisely a stack will
-definitively no longer be required in bug reports is complex and does
-not guarantee the required bound on memory usage. Andrey has done the
-work on this for tag-based KASAN modes:
-https://lore.kernel.org/all/cover.1658189199.git.andreyknvl@google.com/
+LGTM.
+
+Reviewed-by: Mukesh Ojha <quic_mojha@quicinc.com>
+
+-Mukesh
