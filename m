@@ -2,280 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53E67ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 09:12:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3756EC6FA83
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 09:13:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235552AbiIBJMF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 05:12:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58686 "EHLO
+        id S235544AbiIBJNv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 05:13:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234836AbiIBJMC (ORCPT
+        with ESMTP id S229602AbiIBJNs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 05:12:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17D47A1A7D
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 02:11:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63BC6B82A3C
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 09:11:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69B3AC433D6;
-        Fri,  2 Sep 2022 09:11:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662109917;
-        bh=iqF5qVkaDvUMb/LbRgoSyAtRf8NkCHROfMrBIjCBInk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YZJBu1h2UvTxCavaVjGeY+3gBKuIXcS57/1TW0o/bVZN8kaueW1d8sRT1g+c+fFiN
-         Rfz5LzN4LORZ7EFsG40qSTjgXWymUSirnVHOclKvnqz8GO7uNTiaUcm7IqDhLWFKZ/
-         Iz2sWAaSHeM/wg385vQUGwMeZXzZZLfuTD1hmyfs=
-Date:   Fri, 2 Sep 2022 11:11:54 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Kuyo Chang <kuyo.chang@mediatek.com>
-Cc:     major.chen@samsung.com, Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        wsd_upstream@mediatek.com, hongfei.tang@samsung.com,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH 1/1] sched/debug: fix dentry leak in
- update_sched_domain_debugfs
-Message-ID: <YxHI2sRgF2gqYcHk@kroah.com>
-References: <20220902031518.1116-1-kuyo.chang@mediatek.com>
- <YxGUBzp9C7kcNgps@kroah.com>
- <5ce45c874d6a05ca69abed3961d413c4a4360e79.camel@mediatek.com>
- <YxGpp/+lWSzwpVLZ@kroah.com>
- <f14e71182ebf1520aeede06afb44af49ec6128a0.camel@mediatek.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f14e71182ebf1520aeede06afb44af49ec6128a0.camel@mediatek.com>
+        Fri, 2 Sep 2022 05:13:48 -0400
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E32A59BE;
+        Fri,  2 Sep 2022 02:13:47 -0700 (PDT)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id AD3D12006A5;
+        Fri,  2 Sep 2022 11:13:45 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 71CFD200697;
+        Fri,  2 Sep 2022 11:13:45 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 858E5181D0CA;
+        Fri,  2 Sep 2022 17:13:43 +0800 (+08)
+From:   Richard Zhu <hongxing.zhu@nxp.com>
+To:     p.zabel@pengutronix.de, l.stach@pengutronix.de,
+        bhelgaas@google.com, lorenzo.pieralisi@arm.com, robh@kernel.org,
+        shawnguo@kernel.org, vkoul@kernel.org,
+        alexander.stein@ew.tq-group.com, marex@denx.de,
+        richard.leitner@linux.dev
+Cc:     linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        linux-imx@nxp.com
+Subject: [PATCH v7 0/7] Add the iMX8MP PCIe support
+Date:   Fri,  2 Sep 2022 16:55:51 +0800
+Message-Id: <1662108958-15800-1-git-send-email-hongxing.zhu@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Sep 02, 2022 at 03:36:08PM +0800, Kuyo Chang wrote:
-> On Fri, 2022-09-02 at 08:58 +0200, Greg Kroah-Hartman wrote:
-> > On Fri, Sep 02, 2022 at 02:40:59PM +0800, Kuyo Chang wrote:
-> > > On Fri, 2022-09-02 at 07:26 +0200, Greg Kroah-Hartman wrote:
-> > > > On Fri, Sep 02, 2022 at 11:15:15AM +0800, Kuyo Chang wrote:
-> > > > > From: kuyo chang <kuyo.chang@mediatek.com>
-> > > > > 
-> > > > > [Syndrome]
-> > > > > Lowmemorykiller triggered while doing hotplug stress test as
-> > > > > below
-> > > > > cmd:
-> > > > > echo [0/1] > /sys/devices/system/cpu/cpu${index}/online
-> > > > > 
-> > > > > Rootcause:
-> > > > > Call trace of the slab owner & usage as below after hotplug
-> > > > > stress
-> > > > > test(4hr).
-> > > > > There exists dentry leak at update_sched_domain_debugfs.
-> > > > > 
-> > > > > Total size : 322000KB
-> > > > > <prep_new_page+44>:
-> > > > > <get_page_from_freelist+672>:
-> > > > > <__alloc_pages+304>:
-> > > > > <allocate_slab+144>:
-> > > > > <___slab_alloc+404>:
-> > > > > <__slab_alloc+60>:
-> > > > > <kmem_cache_alloc+1204>:
-> > > > > <alloc_inode+100>:
-> > > > > <new_inode+40>:
-> > > > > <__debugfs_create_file+172>:
-> > > > > <update_sched_domain_debugfs+824>:
-> > > > > <partition_sched_domains_locked+1292>:
-> > > > > <rebuild_sched_domains_locked+576>:
-> > > > > <cpuset_hotplug_workfn+1052>:
-> > > > > <process_one_work+584>:
-> > > > > <worker_thread+1008>:
-> > > > > 
-> > > > > [Solution]
-> > > > > Provided by Major Chen <major.chen@samsung.com> as below link.
-> > > > > 
-> > > 
-> > > 
-> https://lore.kernel.org/lkml/20220711030341epcms5p173848e98b13c09eb2fcdf2fd7287526a@epcms5p1/
-> > > > > update_sched_domain_debugfs() uses debugfs_lookup() to find
-> > > > > wanted
-> > > > > dentry(which has
-> > > > > been created by debugfs_create_dir() before), but not call
-> > > > > dput()
-> > > > > to return this dentry
-> > > > > back. This result in dentry leak even debugfs_remove() is
-> > > > > called.
-> > > > > 
-> > > > > [Test result]
-> > > > > Using below commands to check inode_cache & dentry leak.
-> > > > > cat /proc/slabinfo | grep -w inode_cache
-> > > > > cat /proc/slabinfo | grep -w dentry
-> > > > > 
-> > > > > With the patch, the inode_cache & dentry stays consistent
-> > > > > so the lowmemorykiller will not triggered anymore.
-> > > > > 
-> > > > > Fixes: 8a99b6833c88 ("sched: Move SCHED_DEBUG sysctl to
-> > > > > debugfs")
-> > > > > 
-> > > > > Signed-off-by: Major Chen <major.chen@samsung.com>
-> > > > > Signed-off-by: kuyo chang <kuyo.chang@mediatek.com>
-> > > > > Tested-by: kuyo chang <kuyo.chang@mediatek.com>
-> > > > > 
-> > > > > ---
-> > > > >  kernel/sched/debug.c | 7 +++++--
-> > > > >  1 file changed, 5 insertions(+), 2 deletions(-)
-> > > > > 
-> > > > > diff --git a/kernel/sched/debug.c b/kernel/sched/debug.c
-> > > > > index bb3d63bdf4ae..4ffea2dc01da 100644
-> > > > > --- a/kernel/sched/debug.c
-> > > > > +++ b/kernel/sched/debug.c
-> > > > > @@ -412,11 +412,14 @@ void update_sched_domain_debugfs(void)
-> > > > >  
-> > > > >  	for_each_cpu(cpu, sd_sysctl_cpus) {
-> > > > >  		struct sched_domain *sd;
-> > > > > -		struct dentry *d_cpu;
-> > > > > +		struct dentry *d_cpu, *d_lookup;
-> > > > >  		char buf[32];
-> > > > >  
-> > > > >  		snprintf(buf, sizeof(buf), "cpu%d", cpu);
-> > > > > -		debugfs_remove(debugfs_lookup(buf, sd_dentry));
-> > > > > +		d_lookup = debugfs_lookup(buf, sd_dentry);
-> > > > > +		debugfs_remove(d_lookup);
-> > > > > +		if (!IS_ERR_OR_NULL(d_lookup))
-> > > > > +			dput(d_lookup);
-> > > > 
-> > > > That's odd, and means that something else is removing this file
-> > > > right
-> > > > after we looked it up?  Is there a missing lock here that should
-> > > > be
-> > > > used
-> > > > instead?
-> > > > 
-> > > > thanks,
-> > > > 
-> > > > greg k-h
-> > > 
-> > > 
-> > > While doing cpu hotlug, the cpu_active_mask is changed, 
-> > > so it need to update_sched_domain_debugfs.
-> > > 
-> > > The original design is to recreate sd_dentry, so it doing
-> > > debugfs_remove and then debugfs_create_dir.
-> > > However, by debugfs_lookup function usage.
-> > > The returned dentry must be passed to dput() when it is no longer
-> > > needed to avoid dentry leak.
-> > 
-> > Eeeek, nice find!  I've been adding this pattern:
-> > 	debugfs_remove(debugfs_lookup(...));
-> > all over the place, and as you point out, that's wrong!
-> > 
-> > It's as if I didn't even read the documentation I wrote.
-> > 
-> > {sigh}
-> > 
-> > Ok, as this is going to be a very common pattern, how about we
-> > create:
-> > 	debugfs_lookup_and_remove()
-> > function that does the above logic all in one place and then we don't
-> > have to put that logic everywhere in the kernel.  My goal is for
-> > users
-> > of debugfs to never have to worry about anything about 'struct
-> > dentry'
-> > at all, and I really failed that goal here in a major way.
-> > 
-> > I can work on that this afternoon after I get some other things done,
-> > unless you want to do it now?
-> > 
-> > Again, very nice find, thank you for this.
-> > 
-> 
-> Thanks for your kindly support !
-> Please help to add debugfs_lookup_and_remove() and then we can use
-> this api to fix this denrty leak issue.
+Based on the 6.0-rc1 of the pci/next branch. 
+This series adds the i.MX8MP PCIe support and tested on i.MX8MP
+EVK board when one PCIe NVME device is used.
 
-Ok, can you test the patch below with your reproducer to see if it is
-fixed or not?  If this resolves the issue, I'll split it up into the
-proper set of patches and sweep the whole tree as every user of
-debugfs_lookup() that I've found so far got it wrong :(
+- i.MX8MP PCIe has reversed initial PERST bit value refer to i.MX8MQ/i.MX8MM.
+  Add the PHY PERST explicitly for i.MX8MP PCIe PHY.
+- Add the i.MX8MP PCIe PHY support in the i.MX8M PCIe PHY driver.
+  And share as much as possible codes with i.MX8MM PCIe PHY.
+- Add the i.MX8MP PCIe support in binding document, DTS files, and PCIe
+  driver.
 
-thanks again!
+Main changes v6-->v7:
+- Add "Reviewed-by: Lucas Stach <l.stach@pengutronix.de>" into first three
+  patches.
+- Use "const *char" to replace the static allocation.
 
-greg k-h
+Main changes v5-->v6:
+- To avoid code duplication when find the gpr syscon regmap, add the
+  gpr compatible into the drvdata.
+- Add one missing space before one curly brace in 3/7 of v5 series.
+- 4/7 of v5 had been applied by Phillipp, thanks. For ease of tests, still
+  keep it in v6.
 
-diff --git a/fs/debugfs/inode.c b/fs/debugfs/inode.c
-index 3dcf0b8b4e93..87ccd6280a9b 100644
---- a/fs/debugfs/inode.c
-+++ b/fs/debugfs/inode.c
-@@ -744,6 +744,28 @@ void debugfs_remove(struct dentry *dentry)
- }
- EXPORT_SYMBOL_GPL(debugfs_remove);
- 
-+/**
-+ * debugfs_lookup_and_remove - lookup a directory or file and recursively remove it
-+ * @name: a pointer to a string containing the name of the item to look up.
-+ * @parent: a pointer to the parent dentry of the item.
-+ *
-+ * This is the equlivant of doing something like
-+ * debugfs_remove(debugfs_lookup(..)) but with the proper reference counting
-+ * handled for the directory being looked up.
-+ */
-+void debugfs_lookup_and_remove(const char *name, struct dentry *parent)
-+{
-+	struct dentry *dentry;
-+
-+	dentry = debugfs_lookup(name, parent);
-+	if (IS_ERR_OR_NULL(dentry))
-+		return;
-+
-+	debugfs_remove(dentry);
-+	dput(dentry);
-+}
-+EXPORT_SYMBOL_GPL(debugfs_lookup_and_remove);
-+
- /**
-  * debugfs_rename - rename a file/directory in the debugfs filesystem
-  * @old_dir: a pointer to the parent dentry for the renamed object. This
-diff --git a/include/linux/debugfs.h b/include/linux/debugfs.h
-index c869f1e73d75..f60674692d36 100644
---- a/include/linux/debugfs.h
-+++ b/include/linux/debugfs.h
-@@ -91,6 +91,8 @@ struct dentry *debugfs_create_automount(const char *name,
- void debugfs_remove(struct dentry *dentry);
- #define debugfs_remove_recursive debugfs_remove
- 
-+void debugfs_lookup_and_remove(const char *name, struct dentry *parent);
-+
- const struct file_operations *debugfs_real_fops(const struct file *filp);
- 
- int debugfs_file_get(struct dentry *dentry);
-@@ -225,6 +227,10 @@ static inline void debugfs_remove(struct dentry *dentry)
- static inline void debugfs_remove_recursive(struct dentry *dentry)
- { }
- 
-+static inline void debugfs_lookup_and_remove(const char *name,
-+					     struct dentry *parent)
-+{ }
-+
- const struct file_operations *debugfs_real_fops(const struct file *filp);
- 
- static inline int debugfs_file_get(struct dentry *dentry)
-diff --git a/kernel/sched/debug.c b/kernel/sched/debug.c
-index bb3d63bdf4ae..667876da8382 100644
---- a/kernel/sched/debug.c
-+++ b/kernel/sched/debug.c
-@@ -416,7 +416,7 @@ void update_sched_domain_debugfs(void)
- 		char buf[32];
- 
- 		snprintf(buf, sizeof(buf), "cpu%d", cpu);
--		debugfs_remove(debugfs_lookup(buf, sd_dentry));
-+		debugfs_lookup_and_remove(buf, sd_dentry);
- 		d_cpu = debugfs_create_dir(buf, sd_dentry);
- 
- 		i = 0;
+Main changes v4-->v5:
+- Use Lucas' approach, let blk-ctrl driver do the hsio-mix resets.
+- Fetch the iomuxc-gpr regmap by the different phandles.
+
+Main changes v3-->v4:
+- Regarding Phillipp's suggestions, add fix tag into the first commit.
+- Add Reviewed and Tested tags.
+
+Main changes v2-->v3:
+- Fix the schema checking error in the PHY dt-binding patch.
+- Inspired by Lucas, the PLL configurations might not required when
+  external OSC is used as PCIe referrence clock. It's true. Remove all
+  the HSIO PLL bit manipulations, and PCIe works fine on i.MX8MP EVK board
+  with one NVME device is used.
+- Drop the #4 patch of v2, since it had been applied by Rob.
+
+Main changes v1-->v2:
+- It's my fault forget including Vinod, re-send v2 after include Vinod
+  and linux-phy@lists.infradead.org.
+- List the basements of this patch-set. The branch, codes changes and so on.
+- Clean up some useless register and bit definitions in #3 patch.
+
+Documentation/devicetree/bindings/phy/fsl,imx8-pcie-phy.yaml |  16 ++++++++--
+arch/arm64/boot/dts/freescale/imx8mp-evk.dts                 |  53 ++++++++++++++++++++++++++++++
+arch/arm64/boot/dts/freescale/imx8mp.dtsi                    |  43 +++++++++++++++++++++++++
+drivers/pci/controller/dwc/pci-imx6.c                        |  27 ++++++++++++++--
+drivers/phy/freescale/phy-fsl-imx8m-pcie.c                   | 144 +++++++++++++++++++++++++++++++++++++++++++++++++++++++---------------------------
+drivers/reset/reset-imx7.c                                   |   1 +
+drivers/soc/imx/imx8mp-blk-ctrl.c                            |  10 ++++++
+7 files changed, 242 insertions(+), 52 deletions(-)
+
+[PATCH v6 1/7] dt-binding: phy: Add iMX8MP PCIe PHY binding
+[PATCH v6 2/7] arm64: dts: imx8mp: Add iMX8MP PCIe support
+[PATCH v6 3/7] arm64: dts: imx8mp-evk: Add PCIe support
+[PATCH v6 4/7] reset: imx7: Fix the iMX8MP PCIe PHY PERST support
+[PATCH v6 5/7] soc: imx: imx8mp-blk-ctrl: handle PCIe PHY resets
+[PATCH v6 6/7] phy: freescale: imx8m-pcie: Add i.MX8MP PCIe PHY
+[PATCH v6 7/7] PCI: imx6: Add i.MX8MP PCIe support
