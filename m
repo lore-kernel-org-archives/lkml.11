@@ -2,91 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E846ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 02:40:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 648F3ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 02:41:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235196AbiIBCky (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 22:40:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48796 "EHLO
+        id S235331AbiIBClO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 22:41:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232705AbiIBCki (ORCPT
+        with ESMTP id S234836AbiIBCk6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 22:40:38 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06D2343E53
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 19:40:36 -0700 (PDT)
+        Thu, 1 Sep 2022 22:40:58 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9E6278BE1;
+        Thu,  1 Sep 2022 19:40:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662086436; x=1693622436;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=daaV3WZWukjbgGvbQ73mOCe8nI4eaN3LDyARuyKPkhs=;
-  b=VHQJD0Tz2pLMubfFsHuVAmrpIk+oMH+hLcnmpeGrH6C2SsNjEzV1cpxt
-   Ly7gi+6WSI8D+0HetcFAhv1PfDFcT8jWm8Gw6UEGoYm4ie2fep9Xph431
-   yKDgcv4CCM9OIeYP/jmSdJawHuWeHohfWtcC7BqUAy78PU5QwDUcx3KWn
-   KmdSVJ7m0JH69vp5ZvOR9J82r3nwj5PR4WmP6IwQSUPbW2i1Ja1ih7XHe
-   3cUfFgvyk26ZKKaEyVTMwP9ilTjLoTPFQfFbbUGZr9PihAnFxh2EA17Ns
-   z5EOWXpbuNiC9NAnPM8MCDHF19U00O08z/eFR6jHcR1CWA6xg3bzuUHg7
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="359835286"
+  t=1662086455; x=1693622455;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=PjoNQgEOAKhe4BaRmT8CU4V28Ymn0nWV4aYU8zY1myk=;
+  b=IkfgfOjAVpaM+aEL+1iEhDS6jYHW6XDTJMwf4zM0KAjuwoHpjv/x2Srs
+   CKB2YRgyh6U732+NMmk/MsWklUlCh8RolLYJU7IsQbY8YKBS9AXofbQGz
+   cuBy8+imPQZtLAOB5s6MUHex+wevQYNvzrVFQmPhkBxcFcePiqPLvtaxs
+   CbP9pdxidcsTodTGUtFdRjZgmSiakjkBwTrDYNzOAHvH5bL5sZSsYzE/Y
+   LT00cNf63pem6u6WXEgVryg7/8TBy8nhLeC0gmwCSAMTr800gLOnrVb9G
+   afMgxVGqDyaN2+CLImMtKtpdId+9Jpo7Hdl5jZp+nf2bJBR5x8G2XOBPa
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="322032248"
 X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
-   d="scan'208";a="359835286"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 19:40:36 -0700
+   d="scan'208";a="322032248"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 19:40:55 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
-   d="scan'208";a="589841478"
-Received: from q.bj.intel.com ([10.238.154.102])
-  by orsmga006.jf.intel.com with ESMTP; 01 Sep 2022 19:40:35 -0700
-From:   shaoqin.huang@intel.com
-To:     rppt@kernel.org
-Cc:     Shaoqin Huang <shaoqin.huang@intel.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/3] memblock test: Update TODO list
-Date:   Fri,  2 Sep 2022 10:40:01 +0800
-Message-Id: <20220902024007.58041-4-shaoqin.huang@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220902024007.58041-1-shaoqin.huang@intel.com>
-References: <20220902024007.58041-1-shaoqin.huang@intel.com>
+   d="scan'208";a="755092656"
+Received: from lkp-server02.sh.intel.com (HELO fccc941c3034) ([10.239.97.151])
+  by fmsmga001.fm.intel.com with ESMTP; 01 Sep 2022 19:40:52 -0700
+Received: from kbuild by fccc941c3034 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oTwbv-00001h-0c;
+        Fri, 02 Sep 2022 02:40:47 +0000
+Date:   Fri, 2 Sep 2022 10:39:59 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     kbuild-all@lists.01.org, Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, Like Xu <like.xu.linux@gmail.com>
+Subject: Re: [PATCH v4 1/5] perf/x86/core: Remove unnecessary stubs provided
+ for KVM-only helpers
+Message-ID: <202209021042.UcDPO3lL-lkp@intel.com>
+References: <20220901173258.925729-2-seanjc@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220901173258.925729-2-seanjc@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shaoqin Huang <shaoqin.huang@intel.com>
+Hi Sean,
 
-Remove the completed items from TODO list.
+I love your patch! Perhaps something to improve:
 
-Signed-off-by: Shaoqin Huang <shaoqin.huang@intel.com>
----
- tools/testing/memblock/TODO | 11 ++---------
- 1 file changed, 2 insertions(+), 9 deletions(-)
+[auto build test WARNING on 372d07084593dc7a399bf9bee815711b1fb1bcf2]
 
-diff --git a/tools/testing/memblock/TODO b/tools/testing/memblock/TODO
-index 33044c634ea7..503cc96fcdc3 100644
---- a/tools/testing/memblock/TODO
-+++ b/tools/testing/memblock/TODO
-@@ -1,17 +1,10 @@
- TODO
- =====
- 
--1. Add tests trying to memblock_add() or memblock_reserve() 129th region.
--   This will trigger memblock_double_array(), make sure it succeeds.
--   *Important:* These tests require valid memory ranges, use dummy physical
--                memory block from common.c to implement them. It is also very
--                likely that the current MEM_SIZE won't be enough for these
--                test cases. Use realloc to adjust the size accordingly.
--
--2. Add test cases using this functions (implement them for both directions):
-+1. Add test cases using this functions (implement them for both directions):
-    + memblock_alloc_raw()
-    + memblock_alloc_exact_nid_raw()
-    + memblock_alloc_try_nid_raw()
- 
--3. Add tests for memblock_alloc_node() to check if the correct NUMA node is set
-+2. Add tests for memblock_alloc_node() to check if the correct NUMA node is set
-    for the new region
+url:    https://github.com/intel-lab-lkp/linux/commits/Sean-Christopherson/KVM-x86-Intel-LBR-related-perf-cleanups/20220902-013352
+base:   372d07084593dc7a399bf9bee815711b1fb1bcf2
+config: i386-randconfig-m021 (https://download.01.org/0day-ci/archive/20220902/202209021042.UcDPO3lL-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/b1f1d2f5eb44253f5d059757c03e7fd413b2e306
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Sean-Christopherson/KVM-x86-Intel-LBR-related-perf-cleanups/20220902-013352
+        git checkout b1f1d2f5eb44253f5d059757c03e7fd413b2e306
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash arch/x86/events/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> arch/x86/events/core.c:696:31: warning: no previous prototype for 'perf_guest_get_msrs' [-Wmissing-prototypes]
+     696 | struct perf_guest_switch_msr *perf_guest_get_msrs(int *nr, void *data)
+         |                               ^~~~~~~~~~~~~~~~~~~
+
+
+vim +/perf_guest_get_msrs +696 arch/x86/events/core.c
+
+f87ad35d37fa54 arch/x86/kernel/cpu/perf_counter.c Jaswinder Singh Rajput 2009-02-27  695  
+39a4d779546a99 arch/x86/events/core.c             Like Xu                2022-04-11 @696  struct perf_guest_switch_msr *perf_guest_get_msrs(int *nr, void *data)
+abd562df94d19d arch/x86/events/core.c             Like Xu                2021-01-25  697  {
+39a4d779546a99 arch/x86/events/core.c             Like Xu                2022-04-11  698  	return static_call(x86_pmu_guest_get_msrs)(nr, data);
+abd562df94d19d arch/x86/events/core.c             Like Xu                2021-01-25  699  }
+abd562df94d19d arch/x86/events/core.c             Like Xu                2021-01-25  700  EXPORT_SYMBOL_GPL(perf_guest_get_msrs);
+abd562df94d19d arch/x86/events/core.c             Like Xu                2021-01-25  701  
+
 -- 
-2.34.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
