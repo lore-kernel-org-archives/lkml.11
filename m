@@ -2,105 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DE18ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 09:27:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F410ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 09:27:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235565AbiIBJ1g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 05:27:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36382 "EHLO
+        id S235256AbiIBJ1l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 05:27:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232705AbiIBJ1d (ORCPT
+        with ESMTP id S233383AbiIBJ1d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 05:27:33 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ABCDBFA97;
-        Fri,  2 Sep 2022 02:27:32 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id x1-20020a17090ab00100b001fda21bbc90so4938014pjq.3;
-        Fri, 02 Sep 2022 02:27:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=pWy2kwNqBvwcyw3fBPdY/JfajG8Vs72kY13dOodD5tQ=;
-        b=hG+sHGkjpI8EnZ0YS8lhCTS0vbXfiYfns2SbT+EcMHIJ2o1c8YBE6A3snWTGoljJ3V
-         zSh+tpSxLWOKnxnXAtFtzdH2g3GGOkXKXMadTiTN1vHTCWKdSVDcRLvCL0tdFyPmrxt7
-         jPs9q6Hsn/+TLWlHjsY4uKZptNsy462NFhU18Mm2fco4j2CRwbAp2QO5GM3DzvNIdmPO
-         EsNst7yz5Vm0iL6aQo8PR+zAggIOSTU21O4LlLua4lq+kIcOZ5PEQnmtmDszPLWihx7K
-         XqDpv/dLRGGtoKQJLqeTbAQHMoro8PgZ8wbJOL8XzqmRdi4qLGj68iYolMNqIDPvCoRy
-         5JTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=pWy2kwNqBvwcyw3fBPdY/JfajG8Vs72kY13dOodD5tQ=;
-        b=y9BfduC4P6AAXigdpfz10nwbvZJH3VrwEH4C7dMxxPJ9kaReRbgFoOk7AJ8z3LtOQ1
-         kRbduiescIReBcpKUQVAOIScH13IFXOHsQH81M5dJSp4df66GxsMXLJTNJkIqwcTK7Oi
-         fiDJYRR0RKWFap2IOC4qGjECtuRRcXGaxTfnfZWXCc3G2/rVjxx28mJaTM/oW5tmGyge
-         vnFU3xywhPPdOdYUBPlcDgTn4cA+aiPcHK3L55XldxPQzGLkUusyzcQPZ2muoehVGSVu
-         340s2muZ9Hgw5Wg/td/ZZZ65vIIEZwCBmotTQWDYjck3uCDbN4a8I6FaW4zIQKEQUtxp
-         n4gg==
-X-Gm-Message-State: ACgBeo3p+13yZF+JWAAtnxJlwBZloomiRnqQx4iIc/MXP8wa4sVO48rS
-        XUEoQjl5c+S3oHd55m0Muj/ViHuTudhigw==
-X-Google-Smtp-Source: AA6agR6vw56oJH0NMXCoOMzY/8aFlYkyziOZAMyASf3qy0cwfesRkYKFXmP+o0W6dit5vKyUYi3YKw==
-X-Received: by 2002:a17:90a:d150:b0:1fd:9336:5db3 with SMTP id t16-20020a17090ad15000b001fd93365db3mr3851008pjw.242.1662110851662;
-        Fri, 02 Sep 2022 02:27:31 -0700 (PDT)
-Received: from hcdev-d520mt2.. (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id s62-20020a625e41000000b005350ea966c7sm1169315pfb.154.2022.09.02.02.27.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 02:27:30 -0700 (PDT)
-From:   Marvin Lin <milkfafa@gmail.com>
-To:     linux-edac@vger.kernel.org, rric@kernel.org, james.morse@arm.com,
-        tony.luck@intel.com, mchehab@kernel.org, bp@alien8.de,
-        robh+dt@kernel.org, linux-kernel@vger.kernel.org
-Cc:     devicetree@vger.kernel.org, openbmc@lists.ozlabs.org,
-        benjaminfair@google.com, yuenn@google.com, venture@google.com,
-        KWLIU@nuvoton.com, YSCHU@nuvoton.com, JJLIU0@nuvoton.com,
-        KFTING@nuvoton.com, avifishman70@gmail.com, tmaimon77@gmail.com,
-        tali.perry1@gmail.com, ctcchien@nuvoton.com, kflin@nuvoton.com,
-        Marvin Lin <milkfafa@gmail.com>
-Subject: [PATCH v15 0/3] EDAC/nuvoton: Add NPCM memory controller driver
-Date:   Fri,  2 Sep 2022 17:27:11 +0800
-Message-Id: <20220902092714.3683980-1-milkfafa@gmail.com>
-X-Mailer: git-send-email 2.34.1
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 725D4B8A48
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 02:27:32 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4MJsyB5RCnz9sr2;
+        Fri,  2 Sep 2022 11:27:30 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Y83utV56QTUQ; Fri,  2 Sep 2022 11:27:30 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4MJsyB4cJtz9sqv;
+        Fri,  2 Sep 2022 11:27:30 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 8BF798B787;
+        Fri,  2 Sep 2022 11:27:30 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id nXs_opux1EBn; Fri,  2 Sep 2022 11:27:30 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.232.39])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 53CF98B786;
+        Fri,  2 Sep 2022 11:27:30 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2829RGfP2117057
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Fri, 2 Sep 2022 11:27:16 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2829RE0D2117053;
+        Fri, 2 Sep 2022 11:27:14 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        kernel test robot <lkp@intel.com>,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH 1/2] powerpc/math_emu/efp: Include module.h
+Date:   Fri,  2 Sep 2022 11:27:05 +0200
+Message-Id: <a7384eafc6a27aea15bdc9e8f9a12aac593fccb7.1662110814.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1662110825; l=1490; i=christophe.leroy@csgroup.eu; s=20211009; h=from:subject:message-id; bh=OKSJgYFuo/pdrg21F1+qHF8xOtYyQ469CIxgwgwXZmQ=; b=kovH1niVYGVKgB5SHt79lFOeoOHQs81xWbCQmZJ3+YVwDHycHcXKMbfMGz2w6qdhal3idQehLJV7 xn4MZVPgBHELhp1Hil6RqGY4ul45bLnNsLGTUkpJewYYG4HOq7zV
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series add DTS node, dt-bindings document and driver for memory
-controller present on Nuvoton NPCM SoCs.
+From: Nathan Chancellor <nathan@kernel.org>
 
-The memory controller supports single bit error correction and double bit
-error detection (in-line ECC in which a section 1/8th of the memory device
-used to store data is used for ECC storage).
+When building with a recent version of clang, there are a couple of
+errors around the call to module_init():
 
-v15:
-  - Move dt-bindings document to memory-controllers directory and remove
-    superfluous string in content title
+  arch/powerpc/math-emu/math_efp.c:927:1: error: type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int [-Wimplicit-int]
+  module_init(spe_mathemu_init);
+  ^
+  int
+  arch/powerpc/math-emu/math_efp.c:927:13: error: a parameter list without types is only allowed in a function definition
+  module_init(spe_mathemu_init);
+              ^
+  2 errors generated.
 
-v14:
-  - Fix compile warnings
+module_init() is a macro, which is not getting expanded because module.h
+is not included in this file. Add the include so that the macro can
+expand properly, clearing up the build failure.
 
-v13:
-  - Support error injection via debugfs
-  - Fix coding style issues
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Fixes: ac6f120369ff ("powerpc/85xx: Workaroudn e500 CPU erratum A005")
+[chleroy: added fixes tag]
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ arch/powerpc/math-emu/math_efp.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Marvin Lin (3):
-  arm: dts: nuvoton: Add node for NPCM memory controller
-  dt-bindings: edac: nuvoton: Add document for NPCM memory controller
-  EDAC/nuvoton: Add NPCM memory controller driver
-
- .../memory-controllers/nuvoton,npcm-mc.yaml   |  54 ++
- MAINTAINERS                                   |   7 +
- arch/arm/boot/dts/nuvoton-common-npcm7xx.dtsi |   7 +
- drivers/edac/Kconfig                          |  11 +
- drivers/edac/Makefile                         |   1 +
- drivers/edac/npcm_edac.c                      | 516 ++++++++++++++++++
- 6 files changed, 596 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/memory-controllers/nuvoton,npcm-mc.yaml
- create mode 100644 drivers/edac/npcm_edac.c
-
+diff --git a/arch/powerpc/math-emu/math_efp.c b/arch/powerpc/math-emu/math_efp.c
+index 39b84e7452e1..aa3bb8da1cb9 100644
+--- a/arch/powerpc/math-emu/math_efp.c
++++ b/arch/powerpc/math-emu/math_efp.c
+@@ -17,6 +17,7 @@
+ 
+ #include <linux/types.h>
+ #include <linux/prctl.h>
++#include <linux/module.h>
+ 
+ #include <linux/uaccess.h>
+ #include <asm/reg.h>
 -- 
-2.34.1
+2.37.1
 
