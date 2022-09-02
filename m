@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3120ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:37:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2E8FC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:37:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236975AbiIBMhN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:37:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36780 "EHLO
+        id S236638AbiIBMhP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:37:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237034AbiIBMgd (ORCPT
+        with ESMTP id S236973AbiIBMgf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:36:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86259D5E90;
-        Fri,  2 Sep 2022 05:29:07 -0700 (PDT)
+        Fri, 2 Sep 2022 08:36:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E138B5FFA;
+        Fri,  2 Sep 2022 05:29:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB13AB82A71;
-        Fri,  2 Sep 2022 12:29:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37A54C433D6;
-        Fri,  2 Sep 2022 12:29:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 36E2DB82A98;
+        Fri,  2 Sep 2022 12:27:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F4E9C433D6;
+        Fri,  2 Sep 2022 12:27:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121741;
-        bh=8pl/xxUZx0RNJID+u/1oHv09CR39OevBrabcZIHbLFw=;
+        s=korg; t=1662121653;
+        bh=90j0F/FrWOEKi/n+s4lG8xuIPvMDJtcHV/oVOc7vAuU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AJiyt8Jwo5ZLS6UPftya8VAP69JmVU9c0mlTK2hkdyP+BWd6bBiI7ePp3cWFKli8v
-         B0GZ0XttE2BJzmlEHdftNjrvsd2x2ITwVrB0H3P4usPsP4N3dCzzZf+AYA2TnFEq6W
-         VqJP1BmBZHe3rMz0Rzq47/zYOghZkzzhNPPqNTL4=
+        b=Y23ir6DufrQjqosvKLkCP7976hzZCqmR8Nxysd8znSMqj/8C9JbcnYjFxakBKPqfM
+         4YfTpBi2fi0CB6BCJbYAxJftRyIkftpGIK6j+vr6xEhHKjAOedHstKFFCit1LXQMYr
+         AvDrx5AKuXiTYef1U/+8pMmCANG3iFiacs+TSYzw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Hildenbrand <david@redhat.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-Subject: [PATCH 5.4 50/77] s390/mm: do not trigger write fault when vma does not allow VM_WRITE
-Date:   Fri,  2 Sep 2022 14:18:59 +0200
-Message-Id: <20220902121405.298833488@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.4 03/77] kernel/sys_ni: add compat entry for fadvise64_64
+Date:   Fri,  2 Sep 2022 14:18:12 +0200
+Message-Id: <20220902121403.712211412@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
 References: <20220902121403.569927325@linuxfoundation.org>
@@ -50,50 +53,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit 41ac42f137080bc230b5882e3c88c392ab7f2d32 upstream.
+commit a8faed3a02eeb75857a3b5d660fa80fe79db77a3 upstream.
 
-For non-protection pXd_none() page faults in do_dat_exception(), we
-call do_exception() with access == (VM_READ | VM_WRITE | VM_EXEC).
-In do_exception(), vma->vm_flags is checked against that before
-calling handle_mm_fault().
+When CONFIG_ADVISE_SYSCALLS is not set/enabled and CONFIG_COMPAT is
+set/enabled, the riscv compat_syscall_table references
+'compat_sys_fadvise64_64', which is not defined:
 
-Since commit 92f842eac7ee3 ("[S390] store indication fault optimization"),
-we call handle_mm_fault() with FAULT_FLAG_WRITE, when recognizing that
-it was a write access. However, the vma flags check is still only
-checking against (VM_READ | VM_WRITE | VM_EXEC), and therefore also
-calling handle_mm_fault() with FAULT_FLAG_WRITE in cases where the vma
-does not allow VM_WRITE.
+riscv64-linux-ld: arch/riscv/kernel/compat_syscall_table.o:(.rodata+0x6f8):
+undefined reference to `compat_sys_fadvise64_64'
 
-Fix this by changing access check in do_exception() to VM_WRITE only,
-when recognizing write access.
+Add 'fadvise64_64' to kernel/sys_ni.c as a conditional COMPAT function so
+that when CONFIG_ADVISE_SYSCALLS is not set, there is a fallback function
+available.
 
-Link: https://lkml.kernel.org/r/20220811103435.188481-3-david@redhat.com
-Fixes: 92f842eac7ee3 ("[S390] store indication fault optimization")
+Link: https://lkml.kernel.org/r/20220807220934.5689-1-rdunlap@infradead.org
+Fixes: d3ac21cacc24 ("mm: Support compiling out madvise and fadvise")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Suggested-by: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Cc: Josh Triplett <josh@joshtriplett.org>
+Cc: Paul Walmsley <paul.walmsley@sifive.com>
+Cc: Palmer Dabbelt <palmer@dabbelt.com>
+Cc: Albert Ou <aou@eecs.berkeley.edu>
 Cc: <stable@vger.kernel.org>
-Reported-by: David Hildenbrand <david@redhat.com>
-Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
-Signed-off-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
-Signed-off-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/mm/fault.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ kernel/sys_ni.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/s390/mm/fault.c
-+++ b/arch/s390/mm/fault.c
-@@ -432,7 +432,9 @@ static inline vm_fault_t do_exception(st
- 	flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
- 	if (user_mode(regs))
- 		flags |= FAULT_FLAG_USER;
--	if (access == VM_WRITE || (trans_exc_code & store_indication) == 0x400)
-+	if ((trans_exc_code & store_indication) == 0x400)
-+		access = VM_WRITE;
-+	if (access == VM_WRITE)
- 		flags |= FAULT_FLAG_WRITE;
- 	down_read(&mm->mmap_sem);
+--- a/kernel/sys_ni.c
++++ b/kernel/sys_ni.c
+@@ -268,6 +268,7 @@ COND_SYSCALL_COMPAT(keyctl);
  
+ /* mm/fadvise.c */
+ COND_SYSCALL(fadvise64_64);
++COND_SYSCALL_COMPAT(fadvise64_64);
+ 
+ /* mm/, CONFIG_MMU only */
+ COND_SYSCALL(swapon);
 
 
