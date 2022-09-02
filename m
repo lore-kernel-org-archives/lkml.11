@@ -2,82 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB916ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:49:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FFEEC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:49:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236114AbiIBOt1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:49:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58514 "EHLO
+        id S237124AbiIBOtc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:49:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237264AbiIBOst (ORCPT
+        with ESMTP id S236330AbiIBOtD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:48:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D793B4A4;
-        Fri,  2 Sep 2022 07:10:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 35743B82AA5;
-        Fri,  2 Sep 2022 12:34:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A252BC433B5;
-        Fri,  2 Sep 2022 12:34:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122069;
-        bh=ngG15JejDqqcJ9SlXbwYiQ/bNv4YoNx9fC8TWrz6c3Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vmKG1FhpJKcIEeHXo1UP2m8abQwI2tqs0qKXLVuNL5MNY806AZU0ecoZWpIPaW74j
-         QJACl700Hmc2vSOhooyu30tUKnon+gnxJp/W79rpeV7CbpXtgnoh4Zg4lliI8GSYuF
-         0Kggt4tomIO9VLJIMy1QdQ02qlMie9W1ETrjLz40=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
-        Florian Westphal <fw@strlen.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 64/73] netfilter: conntrack: NF_CONNTRACK_PROCFS should no longer default to y
-Date:   Fri,  2 Sep 2022 14:19:28 +0200
-Message-Id: <20220902121406.522493900@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
-References: <20220902121404.435662285@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Fri, 2 Sep 2022 10:49:03 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C25B5BD12D;
+        Fri,  2 Sep 2022 07:10:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1662127821;
+        bh=m7Q0zcOItCT94vu8JeFVa1fFU59kIyLleT8Zywu1zB0=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
+        b=BBd+FUSuXtrbDztDgNub/Gr+r2YBWRg2JpbvUoLsjclpP0Kgm19+aFv2kzXmEWEds
+         d35xBO4ywqx2d5pxiVMf/4rWzBaDEDp2VuYm7YntVf5pjgL6X2KmrV39UcZU3v0Udr
+         tPi7QjPvyxquBfsLqGwhjs+fHCFCKY6b69V3pyrk=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.100.20] ([46.142.35.106]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MQvD5-1oiDqk1AXv-00Nw5I; Fri, 02
+ Sep 2022 16:10:21 +0200
+Message-ID: <ebc00135-ddad-53a8-6952-59d436fdbcde@gmx.de>
+Date:   Fri, 2 Sep 2022 16:10:20 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+From:   Ronald Warsow <rwarsow@gmx.de>
+To:     linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org
+Content-Language: de-DE, en-US
+Subject: Re: [PATCH 5.19 00/72] 5.19.7-rc1 review
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:ijNeQBw1EWtDrbcxnCLPaAzSoiVmqT1o3nhWk6QPfJn2OHmwguC
+ 1/1KiyP9Uq616gThdHilWb+pnRyOhB1ZpPC5qQ6RwwlzM+qAXZpKIcHyXlae768J5hHQL9F
+ yci8148WdKcaTc0xd1LJAJ9KnlLH4aEyYOhM/nW0cCg5NNpJEUxxlaDP/J4hpCySFO8/44Z
+ sSX9DjvT1KPoOF37fgtxQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:yXtkfLrVieg=:UFEiqoOBogHK68TpANNhXQ
+ lZ2KU4bH96tu1m8gpELYiFCLUi56vXtnrCaav3SzBrB6iuGYR82CRy0SECfl8622QUcVDEZNU
+ iSFvdXwsTh42Mscg7N6znzTeweyXVXjT2VR+O+U5viQuZXExjkJo8qm1A4M2jl/+M7mtku8Mp
+ Cj6dce/ELOvZitf4q/hlrFVZ4M8lxi0TV+3/x7J2DWi+PueL3uAZyrpWwsIVYjNlVhlVAg7pH
+ azaYp4LW6ik8EdU1cPSVXcPCei9z8HblVpsjZfM0UoX+XZDnfqp/jwG2rftLllQ1pR0EWG24a
+ E5JgqnB2tWMC9HMYh9sqdu2u09Ug7xPpNeGigiZTvnE4RCS+U9aM/hrCuJQ0tv5mqwoWiV6FJ
+ iR4VufFAszwf5d2wwM9GHVp8nCvzdtE/qCANqqhFDlNrcx0dSezb3Op01HZo1xnQzDmqRVB0t
+ TcZS8p9jKL02lfljRERTxEp6ttvzKEeDcNH7qauOtFiNQ9+H4qT2evnV/Rj/MRTexkgahys5z
+ UFWhYXKjQDgSynuH3bgzCROpxT+Z8kowQcW8KR80vXmoZy5pq3+D5WlTPNtOH4TW+ihBKzoHU
+ 12rJI/Me2ApjtgJCyUZJn4+dolTu/fi3xWwRhR9rqYWpeTnyfoDQEyDlO8KMyyGM6OV+OpBfJ
+ kHneX8sM1sj63xItZrBw2FMMH/suNlk524X93MCifmcYoD5PX65ivMOIZjuTdyD7+OWpJC25G
+ FjkMYJh2a5aMBoIXemFdlkSvmyBss/yr5ePKsMIhlXP9Nfj9NXiNTAYgA1LnE0xjvM4BTvv3Q
+ 6t01MpTtcx2r78QMZee8mPVbH2ITgQprb9GqZ/oM9AS+MRDFOu66fK6RzhR26HTgqiz4N239m
+ qFdpFqEyVGb4m/NOql/6MNTMsl1OtD3r4to85wNKCRzPiji8u1VyObbXYB93ROXioIrRzaMBx
+ AZzfXGPnOhr9sU8BxVYc8F0R4XclgDESyZd2n6ScOZyKvWYJZdWTBZUI5rCLRfWjbUe6kzHs7
+ 9MpPGi7tLkZvFN0XlsHRiSxGGtfMTxd70CxygDXiOlYa6ESBAJAq8i6uVdM7lJvBItIJ5HkjF
+ k49Bvi0Phe1zHcHMbHrNRywTItONfTE/0TGnYI+9ebSZROEcUaIj6gigOsvlegWwdkSkjthvZ
+ KyWVw=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert@linux-m68k.org>
+hallo Greg
 
-[ Upstream commit aa5762c34213aba7a72dc58e70601370805fa794 ]
+5.19.7-rc1
 
-NF_CONNTRACK_PROCFS was marked obsolete in commit 54b07dca68557b09
-("netfilter: provide config option to disable ancient procfs parts") in
-v3.3.
+compiles, boots and runs here on x86_64
+(Intel i5-11400, Fedora 36)
 
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/netfilter/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+Thanks
 
-diff --git a/net/netfilter/Kconfig b/net/netfilter/Kconfig
-index 92a747896f808..4f645d51c2573 100644
---- a/net/netfilter/Kconfig
-+++ b/net/netfilter/Kconfig
-@@ -133,7 +133,6 @@ config NF_CONNTRACK_ZONES
- 
- config NF_CONNTRACK_PROCFS
- 	bool "Supply CT list in procfs (OBSOLETE)"
--	default y
- 	depends on PROC_FS
- 	help
- 	This option enables for the list of known conntrack entries
--- 
-2.35.1
-
-
+Tested-by: Ronald Warsow <rwarsow@gmx.de>
 
