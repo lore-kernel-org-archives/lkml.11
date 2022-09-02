@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DCD9C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:22:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBFFFECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:22:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236120AbiIBMWR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:22:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47874 "EHLO
+        id S236059AbiIBMWW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:22:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235811AbiIBMVP (ORCPT
+        with ESMTP id S235907AbiIBMVP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 08:21:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A851E5F126;
-        Fri,  2 Sep 2022 05:20:43 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEBE77F0A1;
+        Fri,  2 Sep 2022 05:20:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4006E620E6;
-        Fri,  2 Sep 2022 12:20:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DF5EC433C1;
-        Fri,  2 Sep 2022 12:20:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DCD4620EB;
+        Fri,  2 Sep 2022 12:20:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5316DC433D6;
+        Fri,  2 Sep 2022 12:20:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121242;
-        bh=yjFbBlaMaiW1xyHU4qJxXDx2fbTonaU5u23wM7iThqU=;
+        s=korg; t=1662121254;
+        bh=0VtpXqFvjdzolSkUYnkn3ks1g0xBS+pk9oJcQgLaFCA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1QO10Ysz98stHZCAWoFD9yL01dBiz8wHxBu/cdrCwpnJQRCAxR/NPzuXfqHjrAQuv
-         +rfB/0F9bTaxzSeDN75VRIyRiO8b/5Uhz4+Zb/BdPW3ybE/lzJWys8mBIntjKdj0wu
-         gqBi65WytJoDm1IPc6AfZi3Q4VRpP2nxyU10DnoU=
+        b=GqJeItBXxICCJSz05bSCTGN3UmI1WLKK5BCscS6z7VoIeX9BfJiwCMFOqBbdwErHr
+         7jQ9DQZu+BQA7hIzEIt9v0vOLWpHR0wwdtYMyRSeB4Xf+RrypMAUc0ThXo5dB6BEL2
+         iQ67h3caXtZNjjvqWsOy1JHSJFi26CvX6CiGwY6Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abhishek Shah <abhishek.shah@columbia.edu>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 03/31] af_key: Do not call xfrm_probe_algs in parallel
-Date:   Fri,  2 Sep 2022 14:18:29 +0200
-Message-Id: <20220902121356.874120507@linuxfoundation.org>
+Subject: [PATCH 4.9 07/31] ratelimit: Fix data-races in ___ratelimit().
+Date:   Fri,  2 Sep 2022 14:18:33 +0200
+Message-Id: <20220902121357.020913818@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121356.732130937@linuxfoundation.org>
 References: <20220902121356.732130937@linuxfoundation.org>
@@ -50,40 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Herbert Xu <herbert@gondor.apana.org.au>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit ba953a9d89a00c078b85f4b190bc1dde66fe16b5 ]
+[ Upstream commit 6bae8ceb90ba76cdba39496db936164fa672b9be ]
 
-When namespace support was added to xfrm/afkey, it caused the
-previously single-threaded call to xfrm_probe_algs to become
-multi-threaded.  This is buggy and needs to be fixed with a mutex.
+While reading rs->interval and rs->burst, they can be changed
+concurrently via sysctl (e.g. net_ratelimit_state).  Thus, we
+need to add READ_ONCE() to their readers.
 
-Reported-by: Abhishek Shah <abhishek.shah@columbia.edu>
-Fixes: 283bc9f35bbb ("xfrm: Namespacify xfrm state/policy locks")
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/key/af_key.c | 3 +++
- 1 file changed, 3 insertions(+)
+ lib/ratelimit.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index 0737fc7b7ebdb..88d4a3a02ab72 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -1724,9 +1724,12 @@ static int pfkey_register(struct sock *sk, struct sk_buff *skb, const struct sad
- 		pfk->registered |= (1<<hdr->sadb_msg_satype);
+diff --git a/lib/ratelimit.c b/lib/ratelimit.c
+index d01f471352390..b805702de84dd 100644
+--- a/lib/ratelimit.c
++++ b/lib/ratelimit.c
+@@ -27,10 +27,16 @@
+  */
+ int ___ratelimit(struct ratelimit_state *rs, const char *func)
+ {
++	/* Paired with WRITE_ONCE() in .proc_handler().
++	 * Changing two values seperately could be inconsistent
++	 * and some message could be lost.  (See: net_ratelimit_state).
++	 */
++	int interval = READ_ONCE(rs->interval);
++	int burst = READ_ONCE(rs->burst);
+ 	unsigned long flags;
+ 	int ret;
+ 
+-	if (!rs->interval)
++	if (!interval)
+ 		return 1;
+ 
+ 	/*
+@@ -45,7 +51,7 @@ int ___ratelimit(struct ratelimit_state *rs, const char *func)
+ 	if (!rs->begin)
+ 		rs->begin = jiffies;
+ 
+-	if (time_is_before_jiffies(rs->begin + rs->interval)) {
++	if (time_is_before_jiffies(rs->begin + interval)) {
+ 		if (rs->missed) {
+ 			if (!(rs->flags & RATELIMIT_MSG_ON_RELEASE)) {
+ 				printk_deferred(KERN_WARNING
+@@ -57,7 +63,7 @@ int ___ratelimit(struct ratelimit_state *rs, const char *func)
+ 		rs->begin   = jiffies;
+ 		rs->printed = 0;
  	}
- 
-+	mutex_lock(&pfkey_mutex);
- 	xfrm_probe_algs();
- 
- 	supp_skb = compose_sadb_supported(hdr, GFP_KERNEL | __GFP_ZERO);
-+	mutex_unlock(&pfkey_mutex);
-+
- 	if (!supp_skb) {
- 		if (hdr->sadb_msg_satype != SADB_SATYPE_UNSPEC)
- 			pfk->registered &= ~(1<<hdr->sadb_msg_satype);
+-	if (rs->burst && rs->burst > rs->printed) {
++	if (burst && burst > rs->printed) {
+ 		rs->printed++;
+ 		ret = 1;
+ 	} else {
 -- 
 2.35.1
 
