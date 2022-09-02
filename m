@@ -2,125 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AED50C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:36:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90259C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:36:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236673AbiIBNgR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:36:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52558 "EHLO
+        id S236587AbiIBNgY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:36:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237164AbiIBNfp (ORCPT
+        with ESMTP id S236712AbiIBNfz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:35:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E48E72B273;
-        Fri,  2 Sep 2022 06:15:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 436C8621D6;
-        Fri,  2 Sep 2022 12:34:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4169CC433D7;
-        Fri,  2 Sep 2022 12:34:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122087;
-        bh=Tkld2hdUhq4Rk9Ykapn2qM+q61m0Rq78GrQiEInBD68=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SY5pNXNMoT93dqK98Pw7wywaYCPIctvJXDAyw8bYLzJ9MjR2zPrKVlk0wRvjK/Un6
-         WYiri5yENeZnAX8tMCFsWbmRlUjtd/rqp07Ot+ebpxVMiZB3EFSLE8lz28RTdXKC1Q
-         6vZXY9hhaYAdrlSGVja9CmkslQKQli6stp6pHIlA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 5.19 01/72] drm/vc4: hdmi: Rework power up
-Date:   Fri,  2 Sep 2022 14:18:37 +0200
-Message-Id: <20220902121404.816237715@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
-References: <20220902121404.772492078@linuxfoundation.org>
-User-Agent: quilt/0.67
-X-stable: review
-X-Patchwork-Hint: ignore
+        Fri, 2 Sep 2022 09:35:55 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DFBE52DE7
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:15:15 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id lx1so3750678ejb.12
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 06:15:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=melexis.com; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=zz4sNoMS97lmRdGv4iOWUprIP1Nj2KXZnhQThJIzUvQ=;
+        b=IKn3bzQ6mCrmI5JYBH7OCs8QzZtwc2yQtUC9qDaVzlIPmhTxOcbqQqF/KsWVxnVng4
+         Uy7Qi1U7UWbeFS2S+z391yCXmIsHd4YXRGyzEGnsijY+bhdd9ncRopXQZ6VQE3bP/Juv
+         SmIL9tJpapqtJkx75KhRvxUo/kRGJgTjeEfdWO/MQUnOY38BBs08tUjvsiOz4aoCLiSY
+         nFzy1WmBM9orVNECaGJLgD/MSUzwakg0bcrCceufpRgFBGcOshcRRoHxiHg69Dvj2FQt
+         KsEvpkl78lpWstRgXuQYTXi/UfYnoGeXacwTAqnDACiPHTnd2iFgSZYMI0ro3ZWx2NuA
+         WBAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=zz4sNoMS97lmRdGv4iOWUprIP1Nj2KXZnhQThJIzUvQ=;
+        b=qY+YV2FYUXqOF+8IpkK3CsTG2D9TehE7EqzvD0mTgrfJRIz/kPlU6KlMUNpMOxPgxP
+         rclLirqlZhksvhAxzVuOLUprxnRkwsaD4lqk2jsn8oMBiywjIYcHnO1Q880Zcs75+WjR
+         tber8wgPNVbak/nfqlqNHJfy8PHalhkMgZYjdkZRorkRtCXNaczMTHTFJ5GdkhZtqWlv
+         R2PR+N3lHy3zeyYok7pOzN+OnZ2qFDEEIRRS8q9viwWQ1d7+hoFF1PWDzhEB9A5gQ28q
+         bXHm0SvGp+KdHU9YmEgb/SzdNGajKp3rDDoN/iRDEVB9UYITaSQTFdQAH4dUcgvQQFGg
+         8DDQ==
+X-Gm-Message-State: ACgBeo2NFNT/nbxzTaRvVYyvi7ZFj2v98JiPzkGakp5kpqfrVkO/KnPd
+        pHAJvaF2kZAE0EOGYv4lcMJ/mw==
+X-Google-Smtp-Source: AA6agR4EGVo4h+PgI/jqb8iUfMuqcHI09FJLTpCi3OTYu7NkT4PBtllx5VKDjfKxbtFIx49XP8bTTg==
+X-Received: by 2002:a17:907:a40f:b0:730:c4ce:631c with SMTP id sg15-20020a170907a40f00b00730c4ce631cmr26229483ejc.362.1662124425294;
+        Fri, 02 Sep 2022 06:13:45 -0700 (PDT)
+Received: from cmo-ThinkPad-T495.telenet.be ([194.150.35.21])
+        by smtp.gmail.com with ESMTPSA id u9-20020a1709061da900b007477ee86946sm1239119ejh.87.2022.09.02.06.13.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 06:13:44 -0700 (PDT)
+From:   cmo@melexis.com
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Crt Mori <cmo@melexis.com>
+Subject: [PATCH 3/3] iio: temperature: mlx90632 Change return value of sensor measurement channel
+Date:   Fri,  2 Sep 2022 15:13:40 +0200
+Message-Id: <20220902131340.3316479-1-cmo@melexis.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Crt Mori <cmo@melexis.com>
 
-commit 258e483a4d5e97a6a8caa74381ddc1f395ac1c71 upstream.
+The current EINVAL value is more applicable to embedded library, where
+user can actually put the fixed value to the sensor. In case of the
+driver if the value of the channel is invalid it is better in inform
+userspace that Channel was out of range as that implies more to internal
+driver error than invalid input. It also makes for easier debugging of
+where the error comes from during the development.
 
-The current code tries to handle the case where CONFIG_PM isn't selected
-by first calling our runtime_resume implementation and then properly
-report the power state to the runtime_pm core.
-
-This allows to have a functionning device even if pm_runtime_get_*
-functions are nops.
-
-However, the device power state if CONFIG_PM is enabled is
-RPM_SUSPENDED, and thus our vc4_hdmi_write() and vc4_hdmi_read() calls
-in the runtime_pm hooks will now report a warning since the device might
-not be properly powered.
-
-Even more so, we need CONFIG_PM enabled since the previous RaspberryPi
-have a power domain that needs to be powered up for the HDMI controller
-to be usable.
-
-The previous patch has created a dependency on CONFIG_PM, now we can
-just assume it's there and only call pm_runtime_resume_and_get() to make
-sure our device is powered in bind.
-
-Link: https://lore.kernel.org/r/20220629123510.1915022-39-maxime@cerno.tech
-Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
-Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-(cherry picked from commit 53565c28e6af2cef6bbf438c34250135e3564459)
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Cc: "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Crt Mori <cmo@melexis.com>
 ---
- drivers/gpu/drm/vc4/vc4_hdmi.c |   15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+ drivers/iio/temperature/mlx90632.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -2992,17 +2992,15 @@ static int vc4_hdmi_bind(struct device *
- 			vc4_hdmi->disable_4kp60 = true;
+diff --git a/drivers/iio/temperature/mlx90632.c b/drivers/iio/temperature/mlx90632.c
+index 63b19ac1484c..031aaa5493e8 100644
+--- a/drivers/iio/temperature/mlx90632.c
++++ b/drivers/iio/temperature/mlx90632.c
+@@ -439,7 +439,7 @@ static int mlx90632_channel_new_select(int perform_ret, uint8_t *channel_new,
+ 		*channel_old = 1;
+ 		break;
+ 	default:
+-		return -EINVAL;
++		return -ECHRNG;
  	}
  
-+	pm_runtime_enable(dev);
-+
- 	/*
--	 * We need to have the device powered up at this point to call
--	 * our reset hook and for the CEC init.
-+	 *  We need to have the device powered up at this point to call
-+	 *  our reset hook and for the CEC init.
- 	 */
--	ret = vc4_hdmi_runtime_resume(dev);
-+	ret = pm_runtime_resume_and_get(dev);
- 	if (ret)
--		goto err_put_ddc;
--
--	pm_runtime_get_noresume(dev);
--	pm_runtime_set_active(dev);
--	pm_runtime_enable(dev);
-+		goto err_disable_runtime_pm;
- 
- 	if ((of_device_is_compatible(dev->of_node, "brcm,bcm2711-hdmi0") ||
- 	     of_device_is_compatible(dev->of_node, "brcm,bcm2711-hdmi1")) &&
-@@ -3048,6 +3046,7 @@ err_destroy_conn:
- err_destroy_encoder:
- 	drm_encoder_cleanup(encoder);
- 	pm_runtime_put_sync(dev);
-+err_disable_runtime_pm:
- 	pm_runtime_disable(dev);
- err_put_ddc:
- 	put_device(&vc4_hdmi->ddc->dev);
-
+ 	return 0;
+-- 
+2.34.1
 
