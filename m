@@ -2,237 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29DEAC001B5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:58:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7D42C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:59:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237574AbiIBP6V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 11:58:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40294 "EHLO
+        id S237809AbiIBP7g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 11:59:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237625AbiIBP4J (ORCPT
+        with ESMTP id S237151AbiIBP7Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 11:56:09 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6314C643D
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 08:49:49 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 504B11650;
-        Fri,  2 Sep 2022 08:49:55 -0700 (PDT)
-Received: from merodach.members.linode.com (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BF9193F766;
-        Fri,  2 Sep 2022 08:49:46 -0700 (PDT)
-From:   James Morse <james.morse@arm.com>
-To:     x86@kernel.org, linux-kernel@vger.kernel.org
-Cc:     Fenghua Yu <fenghua.yu@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        H Peter Anvin <hpa@zytor.com>,
-        Babu Moger <Babu.Moger@amd.com>,
-        James Morse <james.morse@arm.com>,
-        shameerali.kolothum.thodi@huawei.com,
-        D Scott Phillips OS <scott@os.amperecomputing.com>,
-        lcherian@marvell.com, bobo.shaobowang@huawei.com,
-        tan.shaopeng@fujitsu.com, Jamie Iles <quic_jiles@quicinc.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
-        baolin.wang@linux.alibaba.com
-Subject: [PATCH v6 21/21] x86/resctrl: Make resctrl_arch_rmid_read() return values in bytes
-Date:   Fri,  2 Sep 2022 15:48:29 +0000
-Message-Id: <20220902154829.30399-22-james.morse@arm.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220902154829.30399-1-james.morse@arm.com>
-References: <20220902154829.30399-1-james.morse@arm.com>
+        Fri, 2 Sep 2022 11:59:16 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61FF411C09
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 08:53:28 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id f24so2285726plr.1
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 08:53:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=/QliZci/Yv3dbt36ac0sj/yt67X1UaTSV3tHUt63RBM=;
+        b=huz6PcDnccQbcVS630YKDIT6IxzA0gWuTAi9ig7vk0KqsKjSlidtTFxEuSVQlzEKGR
+         HYykfb+C6dER/6nSd/vhRL/i2Il9N9wM3V5cmRmArfZmBqrVXEgjLBDjgFDH2JdQFdCS
+         TUMv1Eg3Y7DygaigE80CUeq6eBqj9cVpprgNddmro7AS16OZTY9h03bUOVuZXrECO6AH
+         tCXCNce8EVh/GmfTPF000gG0X371BeMRsypC0DZEbvGhLrg39rfI6kY36fRctir7b/uh
+         0Low2fAf67DDjgmYbZtDk1KOmqmo3V/gnSgYwPmNjhJGpShyJqRt5BWPFcPr/jf8eJaC
+         p4BQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=/QliZci/Yv3dbt36ac0sj/yt67X1UaTSV3tHUt63RBM=;
+        b=jDR/58JWgbOtYVzg9Fcy/nb49T9HagHOUJRsfNLDFeDlICJ1atSomEKu3vLOvrAtfs
+         6FySXbJ82EjTiW06dPwFYuRUdHVtv2hY5mHeQN9B6s68r8dY8VhHlr0JzdRJOFy9/0bo
+         JjjyjYygwfeKh9vu/dmqeqeOls2T48fZMxhl5D0Pn0MNvAI7afbjQWmX63aaLAMebFMR
+         311fmQuwumRu0p186b2NYD8Kk22/OOkyF4Hi5rGFItoype+36htZel2RyP7k659S3U3V
+         nhj8NPYQhY71+Z6EWgm+yqMwhOwMhzEGhqSiMgNe6pHZiCbxVQLZyCwEAI2EJGtrDxV1
+         Uh2Q==
+X-Gm-Message-State: ACgBeo0b8dG18qLSPIcnLVZhb5Ec3VJ2nhU6kvqDJ3VpMfJdjPEO2O9M
+        X4bP9Z0nIj6NtQ9VBQJTw7oZpg==
+X-Google-Smtp-Source: AA6agR50IxnaizMYRUKtXRO74U3zxi4E+hmDnxttksiCeYywY3l6F6o1UYIVKRNexhSe5EdTlWWTww==
+X-Received: by 2002:a17:902:9b98:b0:176:70e1:1f86 with SMTP id y24-20020a1709029b9800b0017670e11f86mr1791835plp.60.1662134007715;
+        Fri, 02 Sep 2022 08:53:27 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id g10-20020aa796aa000000b00537f029c94bsm1962428pfk.183.2022.09.02.08.53.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 08:53:26 -0700 (PDT)
+Date:   Fri, 2 Sep 2022 15:53:23 +0000
+From:   Carlos Llamas <cmllamas@google.com>
+To:     syzbot <syzbot+ff47834028a51cf6f857@syzkaller.appspotmail.com>
+Cc:     akpm@linux-foundation.org, arve@android.com, brauner@kernel.org,
+        gregkh@linuxfoundation.org, joel@joelfernandes.org,
+        liam.howlett@oracle.com, linux-kernel@vger.kernel.org,
+        maco@android.com, omosnace@redhat.com, surenb@google.com,
+        syzkaller-bugs@googlegroups.com, tkjos@android.com
+Subject: Re: [syzbot] general protection fault in binder_alloc_new_buf_locked
+Message-ID: <YxIm8/d293sSuECc@google.com>
+References: <000000000000ae694805e7b2bda3@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <000000000000ae694805e7b2bda3@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-resctrl_arch_rmid_read() returns a value in chunks, as read from the
-hardware. This needs scaling to bytes by mon_scale, as provided by
-the architecture code.
+On Fri, Sep 02, 2022 at 07:42:36AM -0700, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    b90cb1053190 Linux 6.0-rc3
+> git tree:       upstream
+> console+strace: https://syzkaller.appspot.com/x/log.txt?x=1719e383080000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=9c5c41fc03fda66f
+> dashboard link: https://syzkaller.appspot.com/bug?extid=ff47834028a51cf6f857
+> compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11794975080000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1445c063080000
+> 
+> The issue was bisected to:
+> 
+> commit 44e602b4e52f70f04620bbbf4fe46ecb40170bde
+> Author: Liam Howlett <liam.howlett@oracle.com>
+> Date:   Wed Aug 10 16:02:25 2022 +0000
+> 
+>     binder_alloc: add missing mmap_lock calls when using the VMA
+> 
 
-Now that resctrl_arch_rmid_read() performs the overflow and corrections
-itself, it may as well return a value in bytes directly. This allows
-the accesses to the architecture specific 'hw' structure to be removed.
+Duplicate report, this time bisection worked though.
 
-Move the mon_scale conversion into resctrl_arch_rmid_read().
-mbm_bw_count() is updated to calculate bandwidth from bytes.
-
-Reviewed-by: Jamie Iles <quic_jiles@quicinc.com>
-Tested-by: Xin Hao <xhao@linux.alibaba.com>
-Reviewed-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
-Tested-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
-Tested-by: Cristian Marussi <cristian.marussi@arm.com>
-Reviewed-by: Reinette Chatre <reinette.chatre@intel.com>
-Signed-off-by: James Morse <james.morse@arm.com>
----
-Changes since v3:
- * Only set val in one place in restrl_arch_rmid_read()
- * Use SZ_1M to improve readability
----
- arch/x86/kernel/cpu/resctrl/ctrlmondata.c |  6 ++----
- arch/x86/kernel/cpu/resctrl/internal.h    |  4 ++--
- arch/x86/kernel/cpu/resctrl/monitor.c     | 24 +++++++++++------------
- include/linux/resctrl.h                   |  2 +-
- 4 files changed, 16 insertions(+), 20 deletions(-)
-
-diff --git a/arch/x86/kernel/cpu/resctrl/ctrlmondata.c b/arch/x86/kernel/cpu/resctrl/ctrlmondata.c
-index d3f7eb2ac14b..03fc91d8bc9f 100644
---- a/arch/x86/kernel/cpu/resctrl/ctrlmondata.c
-+++ b/arch/x86/kernel/cpu/resctrl/ctrlmondata.c
-@@ -549,7 +549,6 @@ void mon_event_read(struct rmid_read *rr, struct rdt_resource *r,
- int rdtgroup_mondata_show(struct seq_file *m, void *arg)
- {
- 	struct kernfs_open_file *of = m->private;
--	struct rdt_hw_resource *hw_res;
- 	u32 resid, evtid, domid;
- 	struct rdtgroup *rdtgrp;
- 	struct rdt_resource *r;
-@@ -569,8 +568,7 @@ int rdtgroup_mondata_show(struct seq_file *m, void *arg)
- 	domid = md.u.domid;
- 	evtid = md.u.evtid;
- 
--	hw_res = &rdt_resources_all[resid];
--	r = &hw_res->r_resctrl;
-+	r = &rdt_resources_all[resid].r_resctrl;
- 	d = rdt_find_domain(r, domid, NULL);
- 	if (IS_ERR_OR_NULL(d)) {
- 		ret = -ENOENT;
-@@ -584,7 +582,7 @@ int rdtgroup_mondata_show(struct seq_file *m, void *arg)
- 	else if (rr.err == -EINVAL)
- 		seq_puts(m, "Unavailable\n");
- 	else
--		seq_printf(m, "%llu\n", rr.val * hw_res->mon_scale);
-+		seq_printf(m, "%llu\n", rr.val);
- 
- out:
- 	rdtgroup_kn_unlock(of->kn);
-diff --git a/arch/x86/kernel/cpu/resctrl/internal.h b/arch/x86/kernel/cpu/resctrl/internal.h
-index c05e9b7cf77a..5f7128686cfd 100644
---- a/arch/x86/kernel/cpu/resctrl/internal.h
-+++ b/arch/x86/kernel/cpu/resctrl/internal.h
-@@ -279,13 +279,13 @@ struct rftype {
- 
- /**
-  * struct mbm_state - status for each MBM counter in each domain
-- * @prev_bw_chunks: Previous chunks value read for bandwidth calculation
-+ * @prev_bw_bytes: Previous bytes value read for bandwidth calculation
-  * @prev_bw:	The most recent bandwidth in MBps
-  * @delta_bw:	Difference between the current and previous bandwidth
-  * @delta_comp:	Indicates whether to compute the delta_bw
-  */
- struct mbm_state {
--	u64	prev_bw_chunks;
-+	u64	prev_bw_bytes;
- 	u32	prev_bw;
- 	u32	delta_bw;
- 	bool	delta_comp;
-diff --git a/arch/x86/kernel/cpu/resctrl/monitor.c b/arch/x86/kernel/cpu/resctrl/monitor.c
-index 8d15568d7121..efe0c30d3a12 100644
---- a/arch/x86/kernel/cpu/resctrl/monitor.c
-+++ b/arch/x86/kernel/cpu/resctrl/monitor.c
-@@ -16,6 +16,7 @@
-  */
- 
- #include <linux/module.h>
-+#include <linux/sizes.h>
- #include <linux/slab.h>
- 
- #include <asm/cpu_device_id.h>
-@@ -189,7 +190,7 @@ int resctrl_arch_rmid_read(struct rdt_resource *r, struct rdt_domain *d,
- 	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
- 	struct rdt_hw_domain *hw_dom = resctrl_to_arch_dom(d);
- 	struct arch_mbm_state *am;
--	u64 msr_val;
-+	u64 msr_val, chunks;
- 
- 	if (!cpumask_test_cpu(smp_processor_id(), &d->cpu_mask))
- 		return -EINVAL;
-@@ -214,12 +215,14 @@ int resctrl_arch_rmid_read(struct rdt_resource *r, struct rdt_domain *d,
- 	if (am) {
- 		am->chunks += mbm_overflow_count(am->prev_msr, msr_val,
- 						 hw_res->mbm_width);
--		*val = get_corrected_mbm_count(rmid, am->chunks);
-+		chunks = get_corrected_mbm_count(rmid, am->chunks);
- 		am->prev_msr = msr_val;
- 	} else {
--		*val = msr_val;
-+		chunks = msr_val;
- 	}
- 
-+	*val = chunks * hw_res->mon_scale;
-+
- 	return 0;
- }
- 
-@@ -232,7 +235,6 @@ int resctrl_arch_rmid_read(struct rdt_resource *r, struct rdt_domain *d,
- void __check_limbo(struct rdt_domain *d, bool force_free)
- {
- 	struct rdt_resource *r = &rdt_resources_all[RDT_RESOURCE_L3].r_resctrl;
--	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
- 	struct rmid_entry *entry;
- 	u32 crmid = 1, nrmid;
- 	bool rmid_dirty;
-@@ -255,7 +257,6 @@ void __check_limbo(struct rdt_domain *d, bool force_free)
- 					   QOS_L3_OCCUP_EVENT_ID, &val)) {
- 			rmid_dirty = true;
- 		} else {
--			val *= hw_res->mon_scale;
- 			rmid_dirty = (val >= resctrl_rmid_realloc_threshold);
- 		}
- 
-@@ -299,7 +300,6 @@ int alloc_rmid(void)
- static void add_rmid_to_limbo(struct rmid_entry *entry)
- {
- 	struct rdt_resource *r = &rdt_resources_all[RDT_RESOURCE_L3].r_resctrl;
--	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
- 	struct rdt_domain *d;
- 	int cpu, err;
- 	u64 val = 0;
-@@ -311,7 +311,6 @@ static void add_rmid_to_limbo(struct rmid_entry *entry)
- 			err = resctrl_arch_rmid_read(r, d, entry->rmid,
- 						     QOS_L3_OCCUP_EVENT_ID,
- 						     &val);
--			val *= hw_res->mon_scale;
- 			if (err || val <= resctrl_rmid_realloc_threshold)
- 				continue;
- 		}
-@@ -403,15 +402,14 @@ static int __mon_event_count(u32 rmid, struct rmid_read *rr)
-  */
- static void mbm_bw_count(u32 rmid, struct rmid_read *rr)
- {
--	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(rr->r);
- 	struct mbm_state *m = &rr->d->mbm_local[rmid];
--	u64 cur_bw, chunks, cur_chunks;
-+	u64 cur_bw, bytes, cur_bytes;
- 
--	cur_chunks = rr->val;
--	chunks = cur_chunks - m->prev_bw_chunks;
--	m->prev_bw_chunks = cur_chunks;
-+	cur_bytes = rr->val;
-+	bytes = cur_bytes - m->prev_bw_bytes;
-+	m->prev_bw_bytes = cur_bytes;
- 
--	cur_bw = (chunks * hw_res->mon_scale) >> 20;
-+	cur_bw = bytes / SZ_1M;
- 
- 	if (m->delta_comp)
- 		m->delta_bw = abs(cur_bw - m->prev_bw);
-diff --git a/include/linux/resctrl.h b/include/linux/resctrl.h
-index cb857f753322..0cf5b20c6ddf 100644
---- a/include/linux/resctrl.h
-+++ b/include/linux/resctrl.h
-@@ -227,7 +227,7 @@ void resctrl_offline_domain(struct rdt_resource *r, struct rdt_domain *d);
-  * @d:			domain that the counter should be read from.
-  * @rmid:		rmid of the counter to read.
-  * @eventid:		eventid to read, e.g. L3 occupancy.
-- * @val:		result of the counter read in chunks.
-+ * @val:		result of the counter read in bytes.
-  *
-  * Call from process context on a CPU that belongs to domain @d.
-  *
--- 
-2.30.2
-
+#syz dup: general protection fault in binder_alloc_new_buf
