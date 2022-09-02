@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 104F9C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:41:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B84C9C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:41:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237303AbiIBMlT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:41:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41708 "EHLO
+        id S237308AbiIBMlY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:41:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237254AbiIBMiz (ORCPT
+        with ESMTP id S237268AbiIBMi5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:38:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0DD444566;
-        Fri,  2 Sep 2022 05:30:26 -0700 (PDT)
+        Fri, 2 Sep 2022 08:38:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBDAE6B8D1;
+        Fri,  2 Sep 2022 05:30:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E41326215A;
-        Fri,  2 Sep 2022 12:30:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB809C433D6;
-        Fri,  2 Sep 2022 12:30:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 04097B82AA1;
+        Fri,  2 Sep 2022 12:30:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E261C433C1;
+        Fri,  2 Sep 2022 12:30:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121820;
-        bh=jg21/zAcWtXDnw6C4rfwOyVUqIjJj4LhRlaz0D8/GT0=;
+        s=korg; t=1662121826;
+        bh=qJtlZbyOTsV51PIP1uTB7gctPH/B6Gl+DB+pExHFlyw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f/w6eqSiR1xA9GRJ2pYbx0/Ukp0CYoOEvDXUKtBjoBI13knHP5B+l1l/6CZHWcr/I
-         QBNel3q/nIDlZVhUBZueyyQnEglhaM8cDbAXAP1EeFVOwPbtn90WOoWH6XtUycPp7M
-         lUQZnhEtyLJfoaw8d3zeywTK/9L6qBeSyOGzeQ+k=
+        b=ZiO9ex39oc/ykwU/40wU9xIchlcVqZJ5hq2rap+/VPWjNkwzdTbb4jh02PHv3FX8/
+         4KUeUvdRoOYmBCgX4WqZpJqO41rQuQsW4p5ypAP1gfmov3wkrMy6ntD/kPFYziUjpY
+         1OfA/5JWAlSgbJRhIxH7IlA3scl4qLthJccsCQhY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH 5.4 75/77] io_uring: disable polling pollfree files
-Date:   Fri,  2 Sep 2022 14:19:24 +0200
-Message-Id: <20220902121406.177903979@linuxfoundation.org>
+        stable@vger.kernel.org, "Denis V. Lunev" <den@openvz.org>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.4 77/77] net: neigh: dont call kfree_skb() under spin_lock_irqsave()
+Date:   Fri,  2 Sep 2022 14:19:26 +0200
+Message-Id: <20220902121406.246311198@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
 References: <20220902121403.569927325@linuxfoundation.org>
@@ -47,63 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Begunkov <asml.silence@gmail.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-Older kernels lack io_uring POLLFREE handling. As only affected files
-are signalfd and android binder the safest option would be to disable
-polling those files via io_uring and hope there are no users.
+commit d5485d9dd24e1d04e5509916515260186eb1455c upstream.
 
-Fixes: 221c5eb233823 ("io_uring: add support for IORING_OP_POLL")
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+It is not allowed to call kfree_skb() from hardware interrupt
+context or with interrupts being disabled. So add all skb to
+a tmp list, then free them after spin_unlock_irqrestore() at
+once.
+
+Fixes: 66ba215cb513 ("neigh: fix possible DoS due to net iface start/stop loop")
+Suggested-by: Denis V. Lunev <den@openvz.org>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/android/binder.c |    1 +
- fs/io_uring.c            |    3 +++
- fs/signalfd.c            |    1 +
- include/linux/fs.h       |    1 +
- 4 files changed, 6 insertions(+)
+ net/core/neighbour.c |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/drivers/android/binder.c
-+++ b/drivers/android/binder.c
-@@ -6083,6 +6083,7 @@ const struct file_operations binder_fops
- 	.open = binder_open,
- 	.flush = binder_flush,
- 	.release = binder_release,
-+	.may_pollfree = true,
- };
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -282,21 +282,27 @@ static int neigh_del_timer(struct neighb
  
- static int __init init_binder_device(const char *name)
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -1908,6 +1908,9 @@ static int io_poll_add(struct io_kiocb *
- 	__poll_t mask;
- 	u16 events;
+ static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
+ {
++	struct sk_buff_head tmp;
+ 	unsigned long flags;
+ 	struct sk_buff *skb;
  
-+	if (req->file->f_op->may_pollfree)
-+		return -EOPNOTSUPP;
++	skb_queue_head_init(&tmp);
+ 	spin_lock_irqsave(&list->lock, flags);
+ 	skb = skb_peek(list);
+ 	while (skb != NULL) {
+ 		struct sk_buff *skb_next = skb_peek_next(skb, list);
+ 		if (net == NULL || net_eq(dev_net(skb->dev), net)) {
+ 			__skb_unlink(skb, list);
+-			dev_put(skb->dev);
+-			kfree_skb(skb);
++			__skb_queue_tail(&tmp, skb);
+ 		}
+ 		skb = skb_next;
+ 	}
+ 	spin_unlock_irqrestore(&list->lock, flags);
 +
- 	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
- 		return -EINVAL;
- 	if (sqe->addr || sqe->ioprio || sqe->off || sqe->len || sqe->buf_index)
---- a/fs/signalfd.c
-+++ b/fs/signalfd.c
-@@ -248,6 +248,7 @@ static const struct file_operations sign
- 	.poll		= signalfd_poll,
- 	.read		= signalfd_read,
- 	.llseek		= noop_llseek,
-+	.may_pollfree	= true,
- };
++	while ((skb = __skb_dequeue(&tmp))) {
++		dev_put(skb->dev);
++		kfree_skb(skb);
++	}
+ }
  
- static int do_signalfd4(int ufd, sigset_t *mask, int flags)
---- a/include/linux/fs.h
-+++ b/include/linux/fs.h
-@@ -1859,6 +1859,7 @@ struct file_operations {
- 				   struct file *file_out, loff_t pos_out,
- 				   loff_t len, unsigned int remap_flags);
- 	int (*fadvise)(struct file *, loff_t, loff_t, int);
-+	bool may_pollfree;
- } __randomize_layout;
- 
- struct inode_operations {
+ static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev,
 
 
