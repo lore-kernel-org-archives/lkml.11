@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B23C7C54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:36:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 179DDC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:36:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236840AbiIBMgD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:36:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53860 "EHLO
+        id S236894AbiIBMgI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:36:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236759AbiIBMeO (ORCPT
+        with ESMTP id S236761AbiIBMeO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 08:34:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1814BD9EBC;
-        Fri,  2 Sep 2022 05:28:32 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF9F6E39A5;
+        Fri,  2 Sep 2022 05:28:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 12CDE6218D;
-        Fri,  2 Sep 2022 12:28:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2216BC433C1;
-        Fri,  2 Sep 2022 12:28:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7644862180;
+        Fri,  2 Sep 2022 12:28:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75B49C433D6;
+        Fri,  2 Sep 2022 12:28:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121711;
-        bh=02dvi00mHdGtZ2LxDeSycdfEgjyDOflIKnkQinHHrZg=;
+        s=korg; t=1662121689;
+        bh=bHz25WY47fF99xCkNTtdyucgM4/0bYVDXbB1OFIFlLA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dR4Rmkpb08hi1RGDUD+h74aG4YJnY18mAvMxq9DdDZOHvIVq3ZILSG310NSWGu0uR
-         BdBHthNR3R+b9Iex724MztBnxQHcXzYIe+kTPLza2LKJBrHDXBaSeYJPysd56UGsuo
-         eJijuq8jCq/rWA6HG73pHQSEcbjxkA2++Jiq3hNg=
+        b=EwKObwL7PUvgGbf9YX+KI6IQmfPT1UOP91LRS7v6vckWxiWfhazxdw8jeVEgcYkSf
+         SUKU7XVdpgieoQR5LRvWFT6oflDRMKd0ggOjmOdoewJcAIEBRRWwgkaEYAZRyvR0lA
+         xyRUyUy+/cYgBQ9oUZ9nyrwmOpI9tWKvAJ2ohLBY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 23/77] netfilter: nft_payload: do not truncate csum_offset and csum_type
-Date:   Fri,  2 Sep 2022 14:18:32 +0200
-Message-Id: <20220902121404.420648109@linuxfoundation.org>
+Subject: [PATCH 5.4 34/77] net: Fix a data-race around sysctl_somaxconn.
+Date:   Fri,  2 Sep 2022 14:18:43 +0200
+Message-Id: <20220902121404.772034607@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
 References: <20220902121403.569927325@linuxfoundation.org>
@@ -48,70 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 7044ab281febae9e2fa9b0b247693d6026166293 ]
+[ Upstream commit 3c9ba81d72047f2e81bb535d42856517b613aba7 ]
 
-Instead report ERANGE if csum_offset is too long, and EOPNOTSUPP if type
-is not support.
+While reading sysctl_somaxconn, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: 7ec3f7b47b8d ("netfilter: nft_payload: add packet mangling support")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nft_payload.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
+ net/socket.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/netfilter/nft_payload.c b/net/netfilter/nft_payload.c
-index 7520ec17cabb7..6ed6ccef5e1ad 100644
---- a/net/netfilter/nft_payload.c
-+++ b/net/netfilter/nft_payload.c
-@@ -558,6 +558,8 @@ static int nft_payload_set_init(const struct nft_ctx *ctx,
- 				const struct nlattr * const tb[])
- {
- 	struct nft_payload_set *priv = nft_expr_priv(expr);
-+	u32 csum_offset, csum_type = NFT_PAYLOAD_CSUM_NONE;
-+	int err;
+diff --git a/net/socket.c b/net/socket.c
+index 94358566c9d10..02feaf5bd84a3 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -1661,7 +1661,7 @@ int __sys_listen(int fd, int backlog)
  
- 	priv->base        = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_BASE]));
- 	priv->offset      = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_OFFSET]));
-@@ -565,11 +567,15 @@ static int nft_payload_set_init(const struct nft_ctx *ctx,
- 	priv->sreg        = nft_parse_register(tb[NFTA_PAYLOAD_SREG]);
+ 	sock = sockfd_lookup_light(fd, &err, &fput_needed);
+ 	if (sock) {
+-		somaxconn = sock_net(sock->sk)->core.sysctl_somaxconn;
++		somaxconn = READ_ONCE(sock_net(sock->sk)->core.sysctl_somaxconn);
+ 		if ((unsigned int)backlog > somaxconn)
+ 			backlog = somaxconn;
  
- 	if (tb[NFTA_PAYLOAD_CSUM_TYPE])
--		priv->csum_type =
--			ntohl(nla_get_be32(tb[NFTA_PAYLOAD_CSUM_TYPE]));
--	if (tb[NFTA_PAYLOAD_CSUM_OFFSET])
--		priv->csum_offset =
--			ntohl(nla_get_be32(tb[NFTA_PAYLOAD_CSUM_OFFSET]));
-+		csum_type = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_CSUM_TYPE]));
-+	if (tb[NFTA_PAYLOAD_CSUM_OFFSET]) {
-+		err = nft_parse_u32_check(tb[NFTA_PAYLOAD_CSUM_OFFSET], U8_MAX,
-+					  &csum_offset);
-+		if (err < 0)
-+			return err;
-+
-+		priv->csum_offset = csum_offset;
-+	}
- 	if (tb[NFTA_PAYLOAD_CSUM_FLAGS]) {
- 		u32 flags;
- 
-@@ -580,13 +586,14 @@ static int nft_payload_set_init(const struct nft_ctx *ctx,
- 		priv->csum_flags = flags;
- 	}
- 
--	switch (priv->csum_type) {
-+	switch (csum_type) {
- 	case NFT_PAYLOAD_CSUM_NONE:
- 	case NFT_PAYLOAD_CSUM_INET:
- 		break;
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-+	priv->csum_type = csum_type;
- 
- 	return nft_validate_register_load(priv->sreg, priv->len);
- }
 -- 
 2.35.1
 
