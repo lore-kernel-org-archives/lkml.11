@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F297ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:55:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2567ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:55:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238313AbiIBMzs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:55:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32946 "EHLO
+        id S238089AbiIBMzw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:55:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238100AbiIBMxs (ORCPT
+        with ESMTP id S238116AbiIBMxv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:53:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 562C93B973;
-        Fri,  2 Sep 2022 05:38:08 -0700 (PDT)
+        Fri, 2 Sep 2022 08:53:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB4C5FAC75;
+        Fri,  2 Sep 2022 05:38:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 600EBB829E5;
-        Fri,  2 Sep 2022 12:33:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6DEAC433D7;
-        Fri,  2 Sep 2022 12:33:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 865B9B82AD7;
+        Fri,  2 Sep 2022 12:37:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2DF8C433D6;
+        Fri,  2 Sep 2022 12:37:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122034;
-        bh=PLtZJf+Wm46YI8pm5QFdb+mj1OBebtzjoLY6V0ztVpc=;
+        s=korg; t=1662122255;
+        bh=offp41GCZkSMjK/menYUEckaRbWIdkOoLjZE3dJk2QQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZNdXZ6OCqz9NqiJSyzc0VeC465JPsaXshBiEnybNbKs4oSO/71q+eQEsxGih0iLAH
-         NPh+HoF3lHI75WAOzgykpgKHcA7sZhPqhW75GWtlfWeVa93zP/cj9MdVHyChNYA/LU
-         jpcegdPnsgj3E9aevQ92i43e821lqKgHfVYM4ykc=
+        b=D969sbdjz2kYDxvB78BoiiwBGhe4q4ksIE9136v9PIqb6XAA6kXSVT8CHXA7KcrXq
+         parCqHpHi9ft8VqA4ScCHAnMOx+CHM1Oih6PsrLwZvMjd7KAB6OXxCH3qWlO7PqSu8
+         MX6rgB9EC3hoD1Ws9hBsWaSCWujpyUbtA9RT/MUQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com,
-        Zhengchao Shao <shaozhengchao@huawei.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.15 34/73] bpf: Dont redirect packets with invalid pkt_len
-Date:   Fri,  2 Sep 2022 14:18:58 +0200
-Message-Id: <20220902121405.571447887@linuxfoundation.org>
+        stable@vger.kernel.org, David Woods <davwoods@nvidia.com>,
+        Liming Sun <limings@nvidia.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 31/72] mmc: sdhci-of-dwcmshc: Re-enable support for the BlueField-3 SoC
+Date:   Fri,  2 Sep 2022 14:19:07 +0200
+Message-Id: <20220902121405.816702291@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
-References: <20220902121404.435662285@linuxfoundation.org>
+In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
+References: <20220902121404.772492078@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,70 +51,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhengchao Shao <shaozhengchao@huawei.com>
+From: Liming Sun <limings@nvidia.com>
 
-commit fd1894224407c484f652ad456e1ce423e89bb3eb upstream.
+[ Upstream commit a0753ef66c34c1739580219dca664eda648164b7 ]
 
-Syzbot found an issue [1]: fq_codel_drop() try to drop a flow whitout any
-skbs, that is, the flow->head is null.
-The root cause, as the [2] says, is because that bpf_prog_test_run_skb()
-run a bpf prog which redirects empty skbs.
-So we should determine whether the length of the packet modified by bpf
-prog or others like bpf_prog_test is valid before forwarding it directly.
+The commit 08f3dff799d4 (mmc: sdhci-of-dwcmshc: add rockchip platform
+support") introduces the use of_device_get_match_data() to check for some
+chips. Unfortunately, it also breaks the BlueField-3 FW, which uses ACPI.
 
-LINK: [1] https://syzkaller.appspot.com/bug?id=0b84da80c2917757915afa89f7738a9d16ec96c5
-LINK: [2] https://www.spinics.net/lists/netdev/msg777503.html
+To fix the problem, let's add the ACPI match data and the corresponding
+quirks to re-enable the support for the BlueField-3 SoC.
 
-Reported-by: syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-Reviewed-by: Stanislav Fomichev <sdf@google.com>
-Link: https://lore.kernel.org/r/20220715115559.139691-1-shaozhengchao@huawei.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: David Woods <davwoods@nvidia.com>
+Signed-off-by: Liming Sun <limings@nvidia.com>
+Acked-by: Adrian Hunter <adrian.hunter@intel.com>
+Fixes: 08f3dff799d4 ("mmc: sdhci-of-dwcmshc: add rockchip platform support")
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220809173742.178440-1-limings@nvidia.com
+[Ulf: Clarified the commit message a bit]
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/skbuff.h |    8 ++++++++
- net/bpf/test_run.c     |    3 +++
- net/core/dev.c         |    1 +
- 3 files changed, 12 insertions(+)
+ drivers/mmc/host/sdhci-of-dwcmshc.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -2328,6 +2328,14 @@ static inline void skb_set_tail_pointer(
+diff --git a/drivers/mmc/host/sdhci-of-dwcmshc.c b/drivers/mmc/host/sdhci-of-dwcmshc.c
+index f5fd88c7adef1..335c88fd849c4 100644
+--- a/drivers/mmc/host/sdhci-of-dwcmshc.c
++++ b/drivers/mmc/host/sdhci-of-dwcmshc.c
+@@ -296,6 +296,15 @@ static const struct sdhci_pltfm_data sdhci_dwcmshc_pdata = {
+ 	.quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN,
+ };
  
- #endif /* NET_SKBUFF_DATA_USES_OFFSET */
- 
-+static inline void skb_assert_len(struct sk_buff *skb)
-+{
-+#ifdef CONFIG_DEBUG_NET
-+	if (WARN_ONCE(!skb->len, "%s\n", __func__))
-+		DO_ONCE_LITE(skb_dump, KERN_ERR, skb, false);
-+#endif /* CONFIG_DEBUG_NET */
-+}
++#ifdef CONFIG_ACPI
++static const struct sdhci_pltfm_data sdhci_dwcmshc_bf3_pdata = {
++	.ops = &sdhci_dwcmshc_ops,
++	.quirks = SDHCI_QUIRK_CAP_CLOCK_BASE_BROKEN,
++	.quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN |
++		   SDHCI_QUIRK2_ACMD23_BROKEN,
++};
++#endif
 +
- /*
-  *	Add data to an sk_buff
-  */
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -469,6 +469,9 @@ static int convert___skb_to_skb(struct s
- {
- 	struct qdisc_skb_cb *cb = (struct qdisc_skb_cb *)skb->cb;
+ static const struct sdhci_pltfm_data sdhci_dwcmshc_rk35xx_pdata = {
+ 	.ops = &sdhci_dwcmshc_rk35xx_ops,
+ 	.quirks = SDHCI_QUIRK_CAP_CLOCK_BASE_BROKEN |
+@@ -360,7 +369,10 @@ MODULE_DEVICE_TABLE(of, sdhci_dwcmshc_dt_ids);
  
-+	if (!skb->len)
-+		return -EINVAL;
-+
- 	if (!__skb)
- 		return 0;
+ #ifdef CONFIG_ACPI
+ static const struct acpi_device_id sdhci_dwcmshc_acpi_ids[] = {
+-	{ .id = "MLNXBF30" },
++	{
++		.id = "MLNXBF30",
++		.driver_data = (kernel_ulong_t)&sdhci_dwcmshc_bf3_pdata,
++	},
+ 	{}
+ };
+ #endif
+@@ -376,7 +388,7 @@ static int dwcmshc_probe(struct platform_device *pdev)
+ 	int err;
+ 	u32 extra;
  
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4147,6 +4147,7 @@ static int __dev_queue_xmit(struct sk_bu
- 	bool again = false;
- 
- 	skb_reset_mac_header(skb);
-+	skb_assert_len(skb);
- 
- 	if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_SCHED_TSTAMP))
- 		__skb_tstamp_tx(skb, NULL, NULL, skb->sk, SCM_TSTAMP_SCHED);
+-	pltfm_data = of_device_get_match_data(&pdev->dev);
++	pltfm_data = device_get_match_data(&pdev->dev);
+ 	if (!pltfm_data) {
+ 		dev_err(&pdev->dev, "Error: No device match data found\n");
+ 		return -ENODEV;
+-- 
+2.35.1
+
 
 
