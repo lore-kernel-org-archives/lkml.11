@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DFBCECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:24:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D15C7ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:25:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236354AbiIBMYp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:24:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48428 "EHLO
+        id S236288AbiIBMZG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:25:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236259AbiIBMYO (ORCPT
+        with ESMTP id S236281AbiIBMYW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:24:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 149D9D347F;
-        Fri,  2 Sep 2022 05:22:24 -0700 (PDT)
+        Fri, 2 Sep 2022 08:24:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58EB2D418A;
+        Fri,  2 Sep 2022 05:22:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F25B1620FB;
-        Fri,  2 Sep 2022 12:21:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08801C433C1;
-        Fri,  2 Sep 2022 12:21:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 34886B82A90;
+        Fri,  2 Sep 2022 12:22:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 977A5C433D7;
+        Fri,  2 Sep 2022 12:22:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121312;
-        bh=TpU6l5g02zbis8XEGsCk0XSgQ9cTnQU9Y4JX6Odi2S8=;
+        s=korg; t=1662121352;
+        bh=FXyEu8HN2IyznEME5orkFpYzDlXIChtKtF2NvCi/nnc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k8nmXvNzo91jPdgmdZIHw9f6fnZ+j/gnIaBVnoo5IWg6s0zbdfpsPAp9TNSQwYoV4
-         2o1czqfNytCwtWii9EG24QtcapwxUjAYE47/7pj0WQzkVSkp/5xV/PbjdSPZETGUYj
-         JOxtq2a8y4M5gh+hwTzCz6g2H0ZjqnjqO9mS/4W8=
+        b=SikpsFpo9mCYuYkgpUiPm0MAJoTWAmhbYhGVwuQkVJtTlLl+YmNvL8qsHnP4XIbKe
+         WUFv82G86tAZB0afagBcHY8GC4oS0TK7Ku57vAigua5o2LSXZSbt10lUQY+mhLipeR
+         iv32Q/sL6876UjVF8nRtuxxEqnLbjT6FRbnxwbcE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gaosheng Cui <cuigaosheng1@huawei.com>,
-        Jan Kara <jack@suse.cz>, Paul Moore <paul@paul-moore.com>
-Subject: [PATCH 4.14 01/42] audit: fix potential double free on error path from fsnotify_add_inode_mark
-Date:   Fri,  2 Sep 2022 14:18:25 +0200
-Message-Id: <20220902121358.823143232@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Siddh Raman Pant <code@siddh.me>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
+        syzbot+a8e049cd3abd342936b6@syzkaller.appspotmail.com
+Subject: [PATCH 4.14 22/42] loop: Check for overflow while configuring loop
+Date:   Fri,  2 Sep 2022 14:18:46 +0200
+Message-Id: <20220902121359.572611898@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121358.773776406@linuxfoundation.org>
 References: <20220902121358.773776406@linuxfoundation.org>
 User-Agent: quilt/0.67
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,37 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gaosheng Cui <cuigaosheng1@huawei.com>
+From: Siddh Raman Pant <code@siddh.me>
 
-commit ad982c3be4e60c7d39c03f782733503cbd88fd2a upstream.
+commit c490a0b5a4f36da3918181a8acdc6991d967c5f3 upstream.
 
-Audit_alloc_mark() assign pathname to audit_mark->path, on error path
-from fsnotify_add_inode_mark(), fsnotify_put_mark will free memory
-of audit_mark->path, but the caller of audit_alloc_mark will free
-the pathname again, so there will be double free problem.
+The userspace can configure a loop using an ioctl call, wherein
+a configuration of type loop_config is passed (see lo_ioctl()'s
+case on line 1550 of drivers/block/loop.c). This proceeds to call
+loop_configure() which in turn calls loop_set_status_from_info()
+(see line 1050 of loop.c), passing &config->info which is of type
+loop_info64*. This function then sets the appropriate values, like
+the offset.
 
-Fix this by resetting audit_mark->path to NULL pointer on error path
-from fsnotify_add_inode_mark().
+loop_device has lo_offset of type loff_t (see line 52 of loop.c),
+which is typdef-chained to long long, whereas loop_info64 has
+lo_offset of type __u64 (see line 56 of include/uapi/linux/loop.h).
 
+The function directly copies offset from info to the device as
+follows (See line 980 of loop.c):
+	lo->lo_offset = info->lo_offset;
+
+This results in an overflow, which triggers a warning in iomap_iter()
+due to a call to iomap_iter_done() which has:
+	WARN_ON_ONCE(iter->iomap.offset > iter->pos);
+
+Thus, check for negative value during loop_set_status_from_info().
+
+Bug report: https://syzkaller.appspot.com/bug?id=c620fe14aac810396d3c3edc9ad73848bf69a29e
+
+Reported-and-tested-by: syzbot+a8e049cd3abd342936b6@syzkaller.appspotmail.com
 Cc: stable@vger.kernel.org
-Fixes: 7b1293234084d ("fsnotify: Add group pointer in fsnotify_init_mark()")
-Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Signed-off-by: Siddh Raman Pant <code@siddh.me>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220823160810.181275-1-code@siddh.me
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/audit_fsnotify.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/block/loop.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/kernel/audit_fsnotify.c
-+++ b/kernel/audit_fsnotify.c
-@@ -111,6 +111,7 @@ struct audit_fsnotify_mark *audit_alloc_
- 
- 	ret = fsnotify_add_mark(&audit_mark->mark, inode, NULL, true);
- 	if (ret < 0) {
-+		audit_mark->path = NULL;
- 		fsnotify_put_mark(&audit_mark->mark);
- 		audit_mark = ERR_PTR(ret);
- 	}
+--- a/drivers/block/loop.c
++++ b/drivers/block/loop.c
+@@ -1212,6 +1212,11 @@ loop_get_status(struct loop_device *lo,
+ 	info->lo_number = lo->lo_number;
+ 	info->lo_offset = lo->lo_offset;
+ 	info->lo_sizelimit = lo->lo_sizelimit;
++
++	/* loff_t vars have been assigned __u64 */
++	if (lo->lo_offset < 0 || lo->lo_sizelimit < 0)
++		return -EOVERFLOW;
++
+ 	info->lo_flags = lo->lo_flags;
+ 	memcpy(info->lo_file_name, lo->lo_file_name, LO_NAME_SIZE);
+ 	memcpy(info->lo_crypt_name, lo->lo_crypt_name, LO_NAME_SIZE);
 
 
