@@ -2,162 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C82ABC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:29:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 685D6C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:29:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236545AbiIBM3i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:29:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36092 "EHLO
+        id S236561AbiIBM3n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:29:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236081AbiIBM2G (ORCPT
+        with ESMTP id S236515AbiIBM2V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:28:06 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04714DA3E1
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 05:24:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662121469; x=1693657469;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=6uviH47qBS+1ubtoWU7lHAlPaOBxaxFqehrVN7z4xgk=;
-  b=jX4HtrV6KrEBaG1rq2UzLB8qHFpredMxu6Utc6fcORhLh9Bj1d78/K5A
-   CbbFXGwZjhNgEGmDUKN4q/86oiyZtyjUW8HeF7mlddz5A1jMbq6mJJVnM
-   lsIsogtUQz6Li1YQTTk/LA7BceGb4iKW/Ok2lgYd+k3ewGYBT+O78BPf0
-   ZhqgsuLgOE4jbb/O68ycehS2G2bMsolwjTVqmxBN90tpyPrCh+nasVvnU
-   m5peqqW5l8+0JlwjOe29ctjvwv+dujDfpUT7WZwH0RhaPwRi4woey1Ypa
-   uo76qjt7xDhgdDHOlzzC2fcEa1M8/QiEaQUF015uqyjtF5U1Y0vW02dF6
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="293546063"
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="293546063"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 05:23:18 -0700
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="941272739"
-Received: from aslawinx-mobl.ger.corp.intel.com (HELO [10.99.241.248]) ([10.99.241.248])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 05:23:12 -0700
-Message-ID: <e48ffb56-f220-adf5-87ca-1826397f2e7f@linux.intel.com>
-Date:   Fri, 2 Sep 2022 14:23:10 +0200
+        Fri, 2 Sep 2022 08:28:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E88CBD8E33;
+        Fri,  2 Sep 2022 05:24:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F9F0B82A9E;
+        Fri,  2 Sep 2022 12:24:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CC87C433C1;
+        Fri,  2 Sep 2022 12:24:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662121475;
+        bh=GRY44WcHqY/SgymLIc9wHIjeXiuJ7rxdOZn+fozOfg8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HV2bL/CoKqKFL/f0QUPQjKRNxBdz76le4erdchl5u8oKYuFbBIDCmCuNkmZo3zzBp
+         LaJ6TDsECzSRlEYMyh74CIr1WNcZLsEC/DOsQZAdtfZa5k3gw7TUNh80b26Zp1oSvr
+         CGObnOK9b9EYSPfvu/5uPxpzVGPCwshUp4Jy767E=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
+Subject: [PATCH 4.19 02/56] parisc: Fix exception handler for fldw and fstw instructions
+Date:   Fri,  2 Sep 2022 14:18:22 +0200
+Message-Id: <20220902121400.299316707@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
+References: <20220902121400.219861128@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v4 1/2] lib/string_helpers: Introduce
- parse_int_array_user()
-Content-Language: en-US
-To:     Cezary Rojewski <cezary.rojewski@intel.com>,
-        alsa-devel@alsa-project.org, broonie@kernel.org
-Cc:     tiwai@suse.com, perex@perex.cz,
-        pierre-louis.bossart@linux.intel.com, hdegoede@redhat.com,
-        lgirdwood@gmail.com, kai.vehmanen@linux.intel.com,
-        peter.ujfalusi@linux.intel.com, ranjani.sridharan@linux.intel.com,
-        yung-chuan.liao@linux.intel.com, willy@infradead.org,
-        linux-kernel@vger.kernel.org, andy@kernel.org,
-        intel-poland@eclists.intel.com, andy.shevchenko@gmail.com
-References: <20220902122928.632602-1-cezary.rojewski@intel.com>
- <20220902122928.632602-2-cezary.rojewski@intel.com>
-From:   =?UTF-8?Q?Amadeusz_S=c5=82awi=c5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>
-In-Reply-To: <20220902122928.632602-2-cezary.rojewski@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 9/2/2022 2:29 PM, Cezary Rojewski wrote:
-> Add new helper function to allow for splitting specified user string
-> into a sequence of integers. Internally it makes use of get_options() so
-> the returned sequence contains the integers extracted plus an additional
-> element that begins the sequence and specifies the integers count.
-> 
-> Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> Signed-off-by: Cezary Rojewski <cezary.rojewski@intel.com>
-> ---
->   include/linux/string_helpers.h |  2 ++
->   lib/string_helpers.c           | 45 ++++++++++++++++++++++++++++++++++
->   2 files changed, 47 insertions(+)
-> 
-> diff --git a/include/linux/string_helpers.h b/include/linux/string_helpers.h
-> index 4d72258d42fd..dc2e726fd820 100644
-> --- a/include/linux/string_helpers.h
-> +++ b/include/linux/string_helpers.h
-> @@ -21,6 +21,8 @@ enum string_size_units {
->   void string_get_size(u64 size, u64 blk_size, enum string_size_units units,
->   		     char *buf, int len);
->   
-> +int parse_int_array_user(const char __user *from, size_t count, int **array);
-> +
->   #define UNESCAPE_SPACE		BIT(0)
->   #define UNESCAPE_OCTAL		BIT(1)
->   #define UNESCAPE_HEX		BIT(2)
-> diff --git a/lib/string_helpers.c b/lib/string_helpers.c
-> index 5ed3beb066e6..d0c8f6ecf84c 100644
-> --- a/lib/string_helpers.c
-> +++ b/lib/string_helpers.c
-> @@ -131,6 +131,51 @@ void string_get_size(u64 size, u64 blk_size, const enum string_size_units units,
->   }
->   EXPORT_SYMBOL(string_get_size);
->   
-> +/**
-> + * parse_int_array_user - Split string into a sequence of integers
-> + * @from:	The user space buffer to read from
-> + * @ppos:	The current position in the buffer
+From: Helge Deller <deller@gmx.de>
 
-There is no such parameter?
+commit 7ae1f5508d9a33fd58ed3059bd2d569961e3b8bd upstream.
 
-> + * @count:	The maximum number of bytes to read
-> + * @tkns:	Returned pointer to sequence of integers
+The exception handler is broken for unaligned memory acceses with fldw
+and fstw instructions, because it trashes or uses randomly some other
+floating point register than the one specified in the instruction word
+on loads and stores.
 
-s/tkns/array/ ?
+The instruction "fldw 0(addr),%fr22L" (and the other fldw/fstw
+instructions) encode the target register (%fr22) in the rightmost 5 bits
+of the instruction word. The 7th rightmost bit of the instruction word
+defines if the left or right half of %fr22 should be used.
 
-> + *
-> + * On success @tkns is allocated and initialized with a sequence of
+While processing unaligned address accesses, the FR3() define is used to
+extract the offset into the local floating-point register set.  But the
+calculation in FR3() was buggy, so that for example instead of %fr22,
+register %fr12 [((22 * 2) & 0x1f) = 12] was used.
 
-ditto
+This bug has been since forever in the parisc kernel and I wonder why it
+wasn't detected earlier. Interestingly I noticed this bug just because
+the libime debian package failed to build on *native* hardware, while it
+successfully built in qemu.
 
-> + * integers extracted from the @from plus an additional element that
-> + * begins the sequence and specifies the integers count.
-> + *
-> + * Caller takes responsibility for freeing @tkns when it is no longer
+This patch corrects the bitshift and masking calculation in FR3().
 
-ditto
+Signed-off-by: Helge Deller <deller@gmx.de>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/parisc/kernel/unaligned.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> + * needed.
-> + */
-> +int parse_int_array_user(const char __user *from, size_t count, int **array)
-> +{
-> +	int *ints, nints;
-> +	char *buf;
-> +	int ret = 0;
-> +
-> +	buf = memdup_user_nul(from, count);
-> +	if (IS_ERR(buf))
-> +		return PTR_ERR(buf);
-> +
-> +	get_options(buf, 0, &nints);
-> +	if (!nints) {
-> +		ret = -ENOENT;
-> +		goto free_buf;
-> +	}
-> +
-> +	ints = kcalloc(nints + 1, sizeof(*ints), GFP_KERNEL);
-> +	if (!ints) {
-> +		ret = -ENOMEM;
-> +		goto free_buf;
-> +	}
-> +
-> +	get_options(buf, nints + 1, ints);
-> +	*array = ints;
-> +
-> +free_buf:
-> +	kfree(buf);
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL(parse_int_array_user);
-> +
->   static bool unescape_space(char **src, char **dst)
->   {
->   	char *p = *dst, *q = *src;
+--- a/arch/parisc/kernel/unaligned.c
++++ b/arch/parisc/kernel/unaligned.c
+@@ -121,7 +121,7 @@
+ #define R1(i) (((i)>>21)&0x1f)
+ #define R2(i) (((i)>>16)&0x1f)
+ #define R3(i) ((i)&0x1f)
+-#define FR3(i) ((((i)<<1)&0x1f)|(((i)>>6)&1))
++#define FR3(i) ((((i)&0x1f)<<1)|(((i)>>6)&1))
+ #define IM(i,n) (((i)>>1&((1<<(n-1))-1))|((i)&1?((0-1L)<<(n-1)):0))
+ #define IM5_2(i) IM((i)>>16,5)
+ #define IM5_3(i) IM((i),5)
+
 
