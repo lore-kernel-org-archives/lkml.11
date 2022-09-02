@@ -2,188 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49389ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:30:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56DDCC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:33:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236173AbiIBNau (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:30:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47602 "EHLO
+        id S237032AbiIBNdF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:33:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236343AbiIBNaT (ORCPT
+        with ESMTP id S236576AbiIBNch (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:30:19 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 980B213FE37
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:09:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662124177; x=1693660177;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version:content-transfer-encoding;
-  bh=Dmk810uUIC5pea3YjGIuO/qqCH1zu8nwNivf+g80rEo=;
-  b=W3Nhijf0bcPDKYW4OrTUHTmo8rMbNJCLLK7b4Jgz740b23QCXBfPpX3D
-   jfCYF0VqI6lQXTbt1VsAhDAM9RB8G70qNpqYgKkdXgczhlublEa2JULt1
-   IJLBkpTjqxjiRwAecjj/SHCmwwlxDH0fe2L+eASSFNGh8L4ZZRkQdtVDC
-   +dc4LSt4VByHKf96pj9zrHRP0H7R5Vqd0Zyfnj3w5ELUm0P36rt3O7Z9F
-   MuFblM7zDEIb2DyAIUT3N8g4Rpfoj4f0nHLLW7DG3arGorVFRi9Q3MlDf
-   9S+AcS//Qu6q/SIPXaGgzLpF10roG2aHAVCHzDC6F+NooOy5gtMz85vir
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="282960735"
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="282960735"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 06:03:36 -0700
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="674347042"
-Received: from svandene-mobl.ger.corp.intel.com (HELO localhost) ([10.252.55.245])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 06:03:31 -0700
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Maxime Ripard <maxime@cerno.tech>
-Cc:     =?utf-8?Q?Ma=C3=ADra?= Canal <mairacanal@riseup.net>,
-        Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
-        tales.aparecida@gmail.com, mwen@igalia.com, andrealmeid@riseup.net,
-        siqueirajordao@riseup.net, Trevor Woerner <twoerner@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        David Gow <davidgow@google.com>, brendanhiggins@google.com,
-        Arthur Grillo <arthur.grillo@usp.br>,
-        michal.winiarski@intel.com,
-        =?utf-8?Q?Jos=C3=A9_Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        kunit-dev@googlegroups.com
-Subject: Re: [PATCH v2 2/2] drm/tests: Change "igt_" prefix to "test_drm_"
-In-Reply-To: <20220902123400.5ljgc7z6zw34d64m@houat>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20220901124210.591994-1-mairacanal@riseup.net>
- <20220901124210.591994-2-mairacanal@riseup.net>
- <20220901125530.b56s4zisnkfuigvc@houat>
- <04aeba53-793c-3196-3137-915f0640dc2a@riseup.net>
- <87h71qfbi9.fsf@intel.com> <20220902123400.5ljgc7z6zw34d64m@houat>
-Date:   Fri, 02 Sep 2022 16:03:20 +0300
-Message-ID: <87mtbidj3b.fsf@intel.com>
+        Fri, 2 Sep 2022 09:32:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF4111B605;
+        Fri,  2 Sep 2022 06:11:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 98AFBB82AD5;
+        Fri,  2 Sep 2022 12:35:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECC67C433D6;
+        Fri,  2 Sep 2022 12:35:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662122113;
+        bh=aPKFJmxk4ZvRsdW5e6kiQ6asp9b+m3LYnX4sZA3272A=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=cfrewgwXtMq0o23Wb+i4ypYR+zN40xyrrbSSCjBL7NQsm1BLvtVRj8rshRk9gWnzm
+         wpdwHHcUB+hQqORDPmT3ddQg30nsXYPQMXmuVPx5fzDy+EUPRhU57lS+BKKuFYIXYD
+         7RyJmObJ7JfuqH5pSkW+vi5eYxD+M91uIdmnTXWw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com,
+        Zhengchao Shao <shaozhengchao@huawei.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.19 17/72] bpf: Dont redirect packets with invalid pkt_len
+Date:   Fri,  2 Sep 2022 14:18:53 +0200
+Message-Id: <20220902121405.351517438@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
+References: <20220902121404.772492078@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 02 Sep 2022, Maxime Ripard <maxime@cerno.tech> wrote:
-> On Fri, Sep 02, 2022 at 11:04:14AM +0300, Jani Nikula wrote:
->> On Thu, 01 Sep 2022, Ma=C3=ADra Canal <mairacanal@riseup.net> wrote:
->> > Hi Maxime,
->> >
->> > On 9/1/22 09:55, Maxime Ripard wrote:
->> >> Hi,
->> >>=20
->> >> On Thu, Sep 01, 2022 at 09:42:10AM -0300, Ma=C3=ADra Canal wrote:
->> >>> With the introduction of KUnit, IGT is no longer the only option to =
-run
->> >>> the DRM unit tests, as the tests can be run through kunit-tool or on
->> >>> real hardware with CONFIG_KUNIT.
->> >>>
->> >>> Therefore, remove the "igt_" prefix from the tests and replace it wi=
-th
->> >>> the "test_drm_" prefix, making the tests' names independent from the=
- tool
->> >>> used.
->> >>>
->> >>> Signed-off-by: Ma=C3=ADra Canal <mairacanal@riseup.net>
->> >>>
->> >>> ---
->> >>> v1 -> v2: https://lore.kernel.org/dri-devel/20220830211603.191734-1-=
-mairacanal@riseup.net/
->> >>> - Change "drm_" prefix to "test_drm_", as "drm_" can be a bit confus=
-ing (Jani Nikula).
->> >>=20
->> >> I appreciate it's a bit of a bikeshed but I disagree with this. The
->> >> majority of the kunit tests already out there start with the framework
->> >> name, including *all* the examples in the kunit doc. Plus, it's fairly
->> >> obvious that it's a test, kunit is only about running tests in the fi=
-rst
->> >> place.
->> >
->> > Would it be better to keep it as "drm_"?
->>=20
->> That's not "keeping". That's renaming igt to drm.
->
-> Well, there's like half the tests that are prefixed with drm, the other
-> with igt, so it's both really
->
->> > Currently, I don't think it is appropriate to hold the "igt_" prefix, =
-as
->> > the tests are not IGT exclusive, but I don't have a strong opinion on
->> > using the "drm_" or the "test_drm" prefixes.
->>=20
->> I repeat my stance that "drm_" alone is confusing.
->
-> What are you confusing it with?
->
->> For the reason alone that it pollutes the code tagging tools, mixing
->> actual drm_ types and functions with unit test functions.
->
-> I don't get it, I'm sorry. All these functions are static and not part
-> of any API, so I can't see how it would pollute a code tagging tool. Or
-> at least, not more than any driver does.
->
-> And we're part of a larger project here, it's about consistency with the
-> rest of the ecosystem.
+From: Zhengchao Shao <shaozhengchao@huawei.com>
 
-Okay, so I'm just going to explain what I mean, but say "whatever" right
-after and move on.
+commit fd1894224407c484f652ad456e1ce423e89bb3eb upstream.
 
-For example, drm_buddy_test.c includes drm_buddy.h so with the igt_ ->
-drm_ rename none of the test functions may clash with the drm_buddy_
-prefixed existing functions. Ditto for all tests similarly.
+Syzbot found an issue [1]: fq_codel_drop() try to drop a flow whitout any
+skbs, that is, the flow->head is null.
+The root cause, as the [2] says, is because that bpf_prog_test_run_skb()
+run a bpf prog which redirects empty skbs.
+So we should determine whether the length of the packet modified by bpf
+prog or others like bpf_prog_test is valid before forwarding it directly.
 
-For example drm_buddy_alloc_range() as a name sounds like something that
-allocs a range, not something that tests range allocation. On the other
-hand, you have drm_buddy_alloc_blocks() which is actually a real
-drm_buddy function, not a test. What would you call a test that tests
-that? Here, we end up with names that are all prefixed drm_buddy and you
-won't know what's the actual function and what's the test unless you
-look it up.
+LINK: [1] https://syzkaller.appspot.com/bug?id=0b84da80c2917757915afa89f7738a9d16ec96c5
+LINK: [2] https://www.spinics.net/lists/netdev/msg777503.html
 
-I use code tagging that I can use for finding and completing
-e.g. functions. Currently I have the following completions, for
-igt_buddy_ and drm_buddy_, respectively:
+Reported-by: syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+Reviewed-by: Stanislav Fomichev <sdf@google.com>
+Link: https://lore.kernel.org/r/20220715115559.139691-1-shaozhengchao@huawei.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/linux/skbuff.h |    8 ++++++++
+ net/bpf/test_run.c     |    3 +++
+ net/core/dev.c         |    1 +
+ 3 files changed, 12 insertions(+)
 
-Possible completions are:
-igt_buddy_alloc_limit 	igt_buddy_alloc_optimistic 	igt_buddy_alloc_patholog=
-ical
-igt_buddy_alloc_pessimistic 	igt_buddy_alloc_range 	igt_buddy_alloc_smoke
-
-Possible completions are:
-drm_buddy_alloc_blocks 	drm_buddy_block 	drm_buddy_block_is_allocated 	drm_=
-buddy_block_is_free
-drm_buddy_block_is_split 	drm_buddy_block_offset 	drm_buddy_block_order 	dr=
-m_buddy_block_print
-drm_buddy_block_size 	drm_buddy_block_state 	drm_buddy_block_trim 	drm_budd=
-y_fini
-drm_buddy_free_block 	drm_buddy_free_list 	drm_buddy_init 	drm_buddy_init_t=
-est
-drm_buddy_module_exit 	drm_buddy_module_init 	drm_buddy_print
-
-With the patch at hand, they'll all be lumped under drm_buddy_
-completions, and some of them will be actual drm buddy functions and
-some not.
-
-I just find it a very odd convention to name the tests in a way that's
-indistinguishable from the real things. Even *within* drm_buddy_test.c
-where you read the test code. Because currently you do have calls to
-igt_buddy_ prefixed functions from other igt_buddy_ prefixed functions,
-along with the drm_buddy_ prefixed calls. I think it's just going to be
-a mess.
-
-/rant
-
-Whatever. Moving on.
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -2624,6 +2624,14 @@ static inline void skb_set_tail_pointer(
+ 
+ #endif /* NET_SKBUFF_DATA_USES_OFFSET */
+ 
++static inline void skb_assert_len(struct sk_buff *skb)
++{
++#ifdef CONFIG_DEBUG_NET
++	if (WARN_ONCE(!skb->len, "%s\n", __func__))
++		DO_ONCE_LITE(skb_dump, KERN_ERR, skb, false);
++#endif /* CONFIG_DEBUG_NET */
++}
++
+ /*
+  *	Add data to an sk_buff
+  */
+--- a/net/bpf/test_run.c
++++ b/net/bpf/test_run.c
+@@ -955,6 +955,9 @@ static int convert___skb_to_skb(struct s
+ {
+ 	struct qdisc_skb_cb *cb = (struct qdisc_skb_cb *)skb->cb;
+ 
++	if (!skb->len)
++		return -EINVAL;
++
+ 	if (!__skb)
+ 		return 0;
+ 
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4168,6 +4168,7 @@ int __dev_queue_xmit(struct sk_buff *skb
+ 	bool again = false;
+ 
+ 	skb_reset_mac_header(skb);
++	skb_assert_len(skb);
+ 
+ 	if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_SCHED_TSTAMP))
+ 		__skb_tstamp_tx(skb, NULL, NULL, skb->sk, SCM_TSTAMP_SCHED);
 
 
-BR,
-Jani.
-
-
---=20
-Jani Nikula, Intel Open Source Graphics Center
