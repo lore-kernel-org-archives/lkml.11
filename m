@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA5FAC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:41:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 104F9C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:41:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237297AbiIBMlO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:41:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40276 "EHLO
+        id S237303AbiIBMlT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:41:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237246AbiIBMix (ORCPT
+        with ESMTP id S237254AbiIBMiz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:38:53 -0400
+        Fri, 2 Sep 2022 08:38:55 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7872B52E73;
-        Fri,  2 Sep 2022 05:30:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0DD444566;
+        Fri,  2 Sep 2022 05:30:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 759FC620DD;
-        Fri,  2 Sep 2022 12:30:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 838F8C433C1;
-        Fri,  2 Sep 2022 12:30:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E41326215A;
+        Fri,  2 Sep 2022 12:30:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB809C433D6;
+        Fri,  2 Sep 2022 12:30:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121804;
-        bh=WElrGm0ivZCuPHTPNPzioR0z3KnhJG8+yewOgMjfT0c=;
+        s=korg; t=1662121820;
+        bh=jg21/zAcWtXDnw6C4rfwOyVUqIjJj4LhRlaz0D8/GT0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kRZybh5D8+oJSJzXJ7cyg086lyGqiQpSzwnG5Pk+MBZ+MVHOwUqRpcSLB9KPy7pSS
-         +I9959QDDsi8h4z/QM99cBcjGVnSvIIbNGdHG65uR/iRjoYIKN5MuaXhJhcSifJDYU
-         VVd4lb24YsXyXqO5lKBhL+Cgz2SLCENJ2fT0JSP0=
+        b=f/w6eqSiR1xA9GRJ2pYbx0/Ukp0CYoOEvDXUKtBjoBI13knHP5B+l1l/6CZHWcr/I
+         QBNel3q/nIDlZVhUBZueyyQnEglhaM8cDbAXAP1EeFVOwPbtn90WOoWH6XtUycPp7M
+         lUQZnhEtyLJfoaw8d3zeywTK/9L6qBeSyOGzeQ+k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 71/77] btrfs: tree-checker: check for overlapping extent items
-Date:   Fri,  2 Sep 2022 14:19:20 +0200
-Message-Id: <20220902121406.042078995@linuxfoundation.org>
+        Pavel Begunkov <asml.silence@gmail.com>
+Subject: [PATCH 5.4 75/77] io_uring: disable polling pollfree files
+Date:   Fri,  2 Sep 2022 14:19:24 +0200
+Message-Id: <20220902121406.177903979@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
 References: <20220902121403.569927325@linuxfoundation.org>
@@ -50,77 +47,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Pavel Begunkov <asml.silence@gmail.com>
 
-[ Upstream commit 899b7f69f244e539ea5df1b4d756046337de44a5 ]
+Older kernels lack io_uring POLLFREE handling. As only affected files
+are signalfd and android binder the safest option would be to disable
+polling those files via io_uring and hope there are no users.
 
-We're seeing a weird problem in production where we have overlapping
-extent items in the extent tree.  It's unclear where these are coming
-from, and in debugging we realized there's no check in the tree checker
-for this sort of problem.  Add a check to the tree-checker to make sure
-that the extents do not overlap each other.
-
-Reviewed-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 221c5eb233823 ("io_uring: add support for IORING_OP_POLL")
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/tree-checker.c | 25 +++++++++++++++++++++++--
- 1 file changed, 23 insertions(+), 2 deletions(-)
+ drivers/android/binder.c |    1 +
+ fs/io_uring.c            |    3 +++
+ fs/signalfd.c            |    1 +
+ include/linux/fs.h       |    1 +
+ 4 files changed, 6 insertions(+)
 
-diff --git a/fs/btrfs/tree-checker.c b/fs/btrfs/tree-checker.c
-index 368c43c6cbd08..d15de5abb562d 100644
---- a/fs/btrfs/tree-checker.c
-+++ b/fs/btrfs/tree-checker.c
-@@ -1019,7 +1019,8 @@ static void extent_err(const struct extent_buffer *eb, int slot,
- }
+--- a/drivers/android/binder.c
++++ b/drivers/android/binder.c
+@@ -6083,6 +6083,7 @@ const struct file_operations binder_fops
+ 	.open = binder_open,
+ 	.flush = binder_flush,
+ 	.release = binder_release,
++	.may_pollfree = true,
+ };
  
- static int check_extent_item(struct extent_buffer *leaf,
--			     struct btrfs_key *key, int slot)
-+			     struct btrfs_key *key, int slot,
-+			     struct btrfs_key *prev_key)
- {
- 	struct btrfs_fs_info *fs_info = leaf->fs_info;
- 	struct btrfs_extent_item *ei;
-@@ -1230,6 +1231,26 @@ static int check_extent_item(struct extent_buffer *leaf,
- 			   total_refs, inline_refs);
- 		return -EUCLEAN;
- 	}
-+
-+	if ((prev_key->type == BTRFS_EXTENT_ITEM_KEY) ||
-+	    (prev_key->type == BTRFS_METADATA_ITEM_KEY)) {
-+		u64 prev_end = prev_key->objectid;
-+
-+		if (prev_key->type == BTRFS_METADATA_ITEM_KEY)
-+			prev_end += fs_info->nodesize;
-+		else
-+			prev_end += prev_key->offset;
-+
-+		if (unlikely(prev_end > key->objectid)) {
-+			extent_err(leaf, slot,
-+	"previous extent [%llu %u %llu] overlaps current extent [%llu %u %llu]",
-+				   prev_key->objectid, prev_key->type,
-+				   prev_key->offset, key->objectid, key->type,
-+				   key->offset);
-+			return -EUCLEAN;
-+		}
-+	}
-+
- 	return 0;
- }
+ static int __init init_binder_device(const char *name)
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -1908,6 +1908,9 @@ static int io_poll_add(struct io_kiocb *
+ 	__poll_t mask;
+ 	u16 events;
  
-@@ -1343,7 +1364,7 @@ static int check_leaf_item(struct extent_buffer *leaf,
- 		break;
- 	case BTRFS_EXTENT_ITEM_KEY:
- 	case BTRFS_METADATA_ITEM_KEY:
--		ret = check_extent_item(leaf, key, slot);
-+		ret = check_extent_item(leaf, key, slot, prev_key);
- 		break;
- 	case BTRFS_TREE_BLOCK_REF_KEY:
- 	case BTRFS_SHARED_DATA_REF_KEY:
--- 
-2.35.1
-
++	if (req->file->f_op->may_pollfree)
++		return -EOPNOTSUPP;
++
+ 	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
+ 		return -EINVAL;
+ 	if (sqe->addr || sqe->ioprio || sqe->off || sqe->len || sqe->buf_index)
+--- a/fs/signalfd.c
++++ b/fs/signalfd.c
+@@ -248,6 +248,7 @@ static const struct file_operations sign
+ 	.poll		= signalfd_poll,
+ 	.read		= signalfd_read,
+ 	.llseek		= noop_llseek,
++	.may_pollfree	= true,
+ };
+ 
+ static int do_signalfd4(int ufd, sigset_t *mask, int flags)
+--- a/include/linux/fs.h
++++ b/include/linux/fs.h
+@@ -1859,6 +1859,7 @@ struct file_operations {
+ 				   struct file *file_out, loff_t pos_out,
+ 				   loff_t len, unsigned int remap_flags);
+ 	int (*fadvise)(struct file *, loff_t, loff_t, int);
++	bool may_pollfree;
+ } __randomize_layout;
+ 
+ struct inode_operations {
 
 
