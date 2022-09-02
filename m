@@ -2,166 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2892C54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 07:27:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B9B9ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 07:31:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229621AbiIBH1n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 03:27:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55260 "EHLO
+        id S234101AbiIBHbE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 03:31:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235270AbiIBH1k (ORCPT
+        with ESMTP id S229514AbiIBHbC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 03:27:40 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CDF6B95A3;
-        Fri,  2 Sep 2022 00:27:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662103658; x=1693639658;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=U+HT5o9SlPMn4FnNK6nCqWhX5dI+fXK9tMACw5jLoXI=;
-  b=NxU7DF1gvjd/GA2PZcPbCxbWbdZWFN+1Rr91oKfFgl8G4f1Wg0QQXUbg
-   +bx8mGbzOLJu+jNrxsjoCQAZOdtTXrtoFmfNEi9KmlT897JMxvMJqZSn7
-   4bn0NjIVdu3W8WgSNCWRSXY943MoGx+zAp5zpjEM7h74SjzcfP037NV5K
-   UU1YnNjJ87MhSzJOktm8FME5wSCufQwY+zdt6Jjz4b09Gu359mmry5po3
-   Mfg65xqRbNr8l/74rpUY0z036g4/vRvB7AIYDCS+KQEjw3aD0+1NU1AVM
-   /SxhTtmduX2vCx+t4wbF4XnDePmhakfNZkjvSu//E1prJs3nLLPscRkIZ
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="322075160"
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="322075160"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 00:27:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="608898752"
-Received: from yy-desk-7060.sh.intel.com (HELO localhost) ([10.239.159.76])
-  by orsmga007.jf.intel.com with ESMTP; 02 Sep 2022 00:27:15 -0700
-Date:   Fri, 2 Sep 2022 15:27:14 +0800
-From:   Yuan Yao <yuan.yao@linux.intel.com>
-To:     isaku.yamahata@intel.com
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>,
-        erdemaktas@google.com, Sean Christopherson <seanjc@google.com>,
-        Sagi Shahar <sagis@google.com>
-Subject: Re: [PATCH v8 050/103] KVM: TDX: Add load_mmu_pgd method for TDX
-Message-ID: <20220902072714.polp6y56tgreg4ib@yy-desk-7060>
-References: <cover.1659854790.git.isaku.yamahata@intel.com>
- <7586ef03744bdf529532e1dd1bff59ef8939dc23.1659854790.git.isaku.yamahata@intel.com>
+        Fri, 2 Sep 2022 03:31:02 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E39829AFB2;
+        Fri,  2 Sep 2022 00:31:00 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id u9-20020a17090a1f0900b001fde6477464so4699663pja.4;
+        Fri, 02 Sep 2022 00:31:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=otQ8hHJCbd4mIOyYrBE6xrrNXinh9eOjKzRA60c/oYE=;
+        b=XN0dQyhR+ApCIk1hP+qHX//4vn/ePtcWzh5jgq81LbY1nrxTyKx1ksEnAkk9oe14sA
+         R+NNsU/hGHKPLDCQ+02ymsuA4+MFfY2OKNO5Tde8QTSM4Hpm5gorpDko5WoF+JsgeauD
+         nsq2mw8zbLfHCsJr0C8iqhgLAq1DVb1KzPLs4cv4rilR9FUfYBXrqRtZXYriu/O3N+eC
+         VvhmpP0SuHGlcKdld7SV5DRUA5M0ot5oacWqwoVvFFFg5Gi3qlG8Y01RNk7XTOlD0S7s
+         /Vm0+zBpHQx9WiK7MMNbQQDF92640tMS7emfaKGVHfBpDKT9n1fKIcuiT8+LxndQVL9j
+         qf3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=otQ8hHJCbd4mIOyYrBE6xrrNXinh9eOjKzRA60c/oYE=;
+        b=qROBGhpsXGGzc38wvzlNOvBopgYwol1HUdml6v2AFdJXVelCSCasMqF8kJD//FXhDW
+         z3zl2ZhXJhDZNQZ9PeGgQR+yOVwmn6Uy5NhQQHwA8eqxbHxH9gneHD36feAZkRyJmY/L
+         Ehlfjf0VffQv/HBgFlgYqpHvZGD3tnFCsaUBd+dDuocUARxLwEyXSzfZlzQ60CbAbcxU
+         u4zQ9yasizJK32vcOTRMTydpPiH2uavYPFLsO/hmMfOv5yKUnB+hYy+D2ZW2jIA43KaN
+         l59DLqTRj80TMVI7RAV5tYD7LSCk8YA2O+EUFVuLN1SDn0Bc9/toc+5VRh7SEGtPh1Bn
+         +xgw==
+X-Gm-Message-State: ACgBeo2DhItmt7VicnGGdjLkheAqPQpcDd20+6leqxa6HuQ+XntmwnkW
+        VRuCBT99Hoe49JqkiHewdv8=
+X-Google-Smtp-Source: AA6agR7frwvs4z2Xkd/cDUv8GhGmoyWx3SbAYicBTSYaAPmO5qpNaPu0PYo4CMFbrUNVJaCX/fDt6w==
+X-Received: by 2002:a17:902:ef50:b0:170:9f15:b998 with SMTP id e16-20020a170902ef5000b001709f15b998mr34703564plx.102.1662103860438;
+        Fri, 02 Sep 2022 00:31:00 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id n13-20020a170903110d00b0016d72804664sm862528plh.205.2022.09.02.00.30.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 00:31:00 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: ye.xingchen@zte.com.cn
+To:     herbert@gondor.apana.org.au
+Cc:     leitao@debian.org, nayna@linux.ibm.com, pfsmorigo@gmail.com,
+        mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu,
+        davem@davemloft.net, linux-crypto@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        ye xingchen <ye.xingchen@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next] crypto: nx - Remove the unneeded result variable
+Date:   Fri,  2 Sep 2022 07:30:55 +0000
+Message-Id: <20220902073055.319464-1-ye.xingchen@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7586ef03744bdf529532e1dd1bff59ef8939dc23.1659854790.git.isaku.yamahata@intel.com>
-User-Agent: NeoMutt/20171215
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 07, 2022 at 03:01:35PM -0700, isaku.yamahata@intel.com wrote:
-> From: Sean Christopherson <sean.j.christopherson@intel.com>
->
-> For virtual IO, the guest TD shares guest pages with VMM without
-> encryption.  Shared EPT is used to map guest pages in unprotected way.
->
-> Add the VMCS field encoding for the shared EPTP, which will be used by
-> TDX to have separate EPT walks for private GPAs (existing EPTP) versus
-> shared GPAs (new shared EPTP).
->
-> Set shared EPT pointer value for the TDX guest to initialize TDX MMU.
->
-> Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
-> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
-> Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
+From: ye xingchen <ye.xingchen@zte.com.cn>
 
-Reviewed-by: Yuan Yao <yuan.yao@intel.com>
+Return the value set_msg_len() directly instead of storing it in another
+redundant variable.
 
-> ---
->  arch/x86/include/asm/vmx.h |  1 +
->  arch/x86/kvm/vmx/main.c    | 11 ++++++++++-
->  arch/x86/kvm/vmx/tdx.c     |  5 +++++
->  arch/x86/kvm/vmx/x86_ops.h |  4 ++++
->  4 files changed, 20 insertions(+), 1 deletion(-)
->
-> diff --git a/arch/x86/include/asm/vmx.h b/arch/x86/include/asm/vmx.h
-> index f0f8eecf55ac..e169ace97e83 100644
-> --- a/arch/x86/include/asm/vmx.h
-> +++ b/arch/x86/include/asm/vmx.h
-> @@ -234,6 +234,7 @@ enum vmcs_field {
->  	TSC_MULTIPLIER_HIGH             = 0x00002033,
->  	TERTIARY_VM_EXEC_CONTROL	= 0x00002034,
->  	TERTIARY_VM_EXEC_CONTROL_HIGH	= 0x00002035,
-> +	SHARED_EPT_POINTER		= 0x0000203C,
->  	PID_POINTER_TABLE		= 0x00002042,
->  	PID_POINTER_TABLE_HIGH		= 0x00002043,
->  	GUEST_PHYSICAL_ADDRESS          = 0x00002400,
-> diff --git a/arch/x86/kvm/vmx/main.c b/arch/x86/kvm/vmx/main.c
-> index 9f4c3a0bcc12..252b7298b230 100644
-> --- a/arch/x86/kvm/vmx/main.c
-> +++ b/arch/x86/kvm/vmx/main.c
-> @@ -110,6 +110,15 @@ static void vt_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
->  	return vmx_vcpu_reset(vcpu, init_event);
->  }
->
-> +static void vt_load_mmu_pgd(struct kvm_vcpu *vcpu, hpa_t root_hpa,
-> +			int pgd_level)
-> +{
-> +	if (is_td_vcpu(vcpu))
-> +		return tdx_load_mmu_pgd(vcpu, root_hpa, pgd_level);
-> +
-> +	vmx_load_mmu_pgd(vcpu, root_hpa, pgd_level);
-> +}
-> +
->  static int vt_mem_enc_ioctl(struct kvm *kvm, void __user *argp)
->  {
->  	if (!is_td(kvm))
-> @@ -228,7 +237,7 @@ struct kvm_x86_ops vt_x86_ops __initdata = {
->  	.write_tsc_offset = vmx_write_tsc_offset,
->  	.write_tsc_multiplier = vmx_write_tsc_multiplier,
->
-> -	.load_mmu_pgd = vmx_load_mmu_pgd,
-> +	.load_mmu_pgd = vt_load_mmu_pgd,
->
->  	.check_intercept = vmx_check_intercept,
->  	.handle_exit_irqoff = vmx_handle_exit_irqoff,
-> diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-> index 36d2127cb7b7..7a631ae78e59 100644
-> --- a/arch/x86/kvm/vmx/tdx.c
-> +++ b/arch/x86/kvm/vmx/tdx.c
-> @@ -518,6 +518,11 @@ void tdx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
->  	vcpu->kvm->vm_bugged = true;
->  }
->
-> +void tdx_load_mmu_pgd(struct kvm_vcpu *vcpu, hpa_t root_hpa, int pgd_level)
-> +{
-> +	td_vmcs_write64(to_tdx(vcpu), SHARED_EPT_POINTER, root_hpa & PAGE_MASK);
-> +}
-> +
->  int tdx_dev_ioctl(void __user *argp)
->  {
->  	struct kvm_tdx_capabilities __user *user_caps;
-> diff --git a/arch/x86/kvm/vmx/x86_ops.h b/arch/x86/kvm/vmx/x86_ops.h
-> index 62f1d1cdd44b..185481ee5f2f 100644
-> --- a/arch/x86/kvm/vmx/x86_ops.h
-> +++ b/arch/x86/kvm/vmx/x86_ops.h
-> @@ -145,6 +145,8 @@ void tdx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event);
->
->  int tdx_vm_ioctl(struct kvm *kvm, void __user *argp);
->  int tdx_vcpu_ioctl(struct kvm_vcpu *vcpu, void __user *argp);
-> +
-> +void tdx_load_mmu_pgd(struct kvm_vcpu *vcpu, hpa_t root_hpa, int root_level);
->  #else
->  static inline int tdx_hardware_setup(struct kvm_x86_ops *x86_ops) { return 0; }
->  static inline bool tdx_is_vm_type_supported(unsigned long type) { return false; }
-> @@ -162,6 +164,8 @@ static inline void tdx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event) {}
->
->  static inline int tdx_vm_ioctl(struct kvm *kvm, void __user *argp) { return -EOPNOTSUPP; }
->  static inline int tdx_vcpu_ioctl(struct kvm_vcpu *vcpu, void __user *argp) { return -EOPNOTSUPP; }
-> +
-> +static inline void tdx_load_mmu_pgd(struct kvm_vcpu *vcpu, hpa_t root_hpa, int root_level) {}
->  #endif
->
->  #endif /* __KVM_X86_VMX_X86_OPS_H */
-> --
-> 2.25.1
->
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
+---
+ drivers/crypto/nx/nx-aes-ccm.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/drivers/crypto/nx/nx-aes-ccm.c b/drivers/crypto/nx/nx-aes-ccm.c
+index 3793885f928d..c843f4c6f684 100644
+--- a/drivers/crypto/nx/nx-aes-ccm.c
++++ b/drivers/crypto/nx/nx-aes-ccm.c
+@@ -134,7 +134,6 @@ static int generate_b0(u8 *iv, unsigned int assoclen, unsigned int authsize,
+ 		       unsigned int cryptlen, u8 *b0)
+ {
+ 	unsigned int l, lp, m = authsize;
+-	int rc;
+ 
+ 	memcpy(b0, iv, 16);
+ 
+@@ -148,9 +147,7 @@ static int generate_b0(u8 *iv, unsigned int assoclen, unsigned int authsize,
+ 	if (assoclen)
+ 		*b0 |= 64;
+ 
+-	rc = set_msg_len(b0 + 16 - l, cryptlen, l);
+-
+-	return rc;
++	return set_msg_len(b0 + 16 - l, cryptlen, l);
+ }
+ 
+ static int generate_pat(u8                   *iv,
+-- 
+2.25.1
