@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE245C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:04:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FFB0C54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:04:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238695AbiIBNDl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:03:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39092 "EHLO
+        id S238421AbiIBNEo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:04:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236362AbiIBNDE (ORCPT
+        with ESMTP id S238369AbiIBNDH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:03:04 -0400
+        Fri, 2 Sep 2022 09:03:07 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FEDC10DE72;
-        Fri,  2 Sep 2022 05:41:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB041090B4;
+        Fri,  2 Sep 2022 05:41:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 58C6462162;
-        Fri,  2 Sep 2022 12:27:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CA3EC433D6;
-        Fri,  2 Sep 2022 12:27:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 93C19621EF;
+        Fri,  2 Sep 2022 12:40:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88F46C433C1;
+        Fri,  2 Sep 2022 12:40:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121625;
-        bh=ApNfnb3FFa3CMZAD9qK8lMfCD5QMDVBULyhY9SBxFn0=;
+        s=korg; t=1662122420;
+        bh=xIwGVScQaB9wNQuwUy6UEhNULReYG68Iz9QNMVFlI5Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lai89Atjv8L3hmrlkt463ckhLCklHyoJwpR1imTccwhf4hUED02pF/0HpAi4hsaCw
-         JzBR6LSKR/xiI+KptCSOieQpeimx8KiA/mVKN+ESDbPu6dY0piLeOzVyLmPEFnS8WS
-         PfbogGrk8I536HGUHu4jNUq/RZkvEFE4ALoFin2E=
+        b=GVsKqBsjMooRinMJvX/Jf/HVpKcRnlxx2bsWlu8ma0WlM0I8pFHoPxouOOF5wlQDo
+         NK2HJSmg+IVr4lG5NBi7q3bA6cqxkBkePKpL4oQslE/4f7yvIp6y81SGUDOLE9YpLU
+         LUjK/9k2Y6+TNyT2gk8OeB9gSoXSnYYV/Pw6PH1Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abhishek Shah <abhishek.shah@columbia.edu>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 13/77] af_key: Do not call xfrm_probe_algs in parallel
-Date:   Fri,  2 Sep 2022 14:18:22 +0200
-Message-Id: <20220902121404.080846598@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+77b432d57c4791183ed4@syzkaller.appspotmail.com,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH 5.10 11/37] media: pvrusb2: fix memory leak in pvr_probe
+Date:   Fri,  2 Sep 2022 14:19:33 +0200
+Message-Id: <20220902121359.524649515@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
-References: <20220902121403.569927325@linuxfoundation.org>
+In-Reply-To: <20220902121359.177846782@linuxfoundation.org>
+References: <20220902121359.177846782@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,42 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Herbert Xu <herbert@gondor.apana.org.au>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit ba953a9d89a00c078b85f4b190bc1dde66fe16b5 ]
+commit 945a9a8e448b65bec055d37eba58f711b39f66f0 upstream.
 
-When namespace support was added to xfrm/afkey, it caused the
-previously single-threaded call to xfrm_probe_algs to become
-multi-threaded.  This is buggy and needs to be fixed with a mutex.
+The error handling code in pvr2_hdw_create forgets to unregister the
+v4l2 device. When pvr2_hdw_create returns back to pvr2_context_create,
+it calls pvr2_context_destroy to destroy context, but mp->hdw is NULL,
+which leads to that pvr2_hdw_destroy directly returns.
 
-Reported-by: Abhishek Shah <abhishek.shah@columbia.edu>
-Fixes: 283bc9f35bbb ("xfrm: Namespacify xfrm state/policy locks")
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fix this by adding v4l2_device_unregister to decrease the refcount of
+usb interface.
+
+Reported-by: syzbot+77b432d57c4791183ed4@syzkaller.appspotmail.com
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/key/af_key.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/media/usb/pvrusb2/pvrusb2-hdw.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index 32fe99cd01fc8..c06cc48c68c90 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -1701,9 +1701,12 @@ static int pfkey_register(struct sock *sk, struct sk_buff *skb, const struct sad
- 		pfk->registered |= (1<<hdr->sadb_msg_satype);
- 	}
- 
-+	mutex_lock(&pfkey_mutex);
- 	xfrm_probe_algs();
- 
- 	supp_skb = compose_sadb_supported(hdr, GFP_KERNEL | __GFP_ZERO);
-+	mutex_unlock(&pfkey_mutex);
-+
- 	if (!supp_skb) {
- 		if (hdr->sadb_msg_satype != SADB_SATYPE_UNSPEC)
- 			pfk->registered &= ~(1<<hdr->sadb_msg_satype);
--- 
-2.35.1
-
+--- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
++++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
+@@ -2610,6 +2610,7 @@ struct pvr2_hdw *pvr2_hdw_create(struct
+ 		del_timer_sync(&hdw->encoder_run_timer);
+ 		del_timer_sync(&hdw->encoder_wait_timer);
+ 		flush_work(&hdw->workpoll);
++		v4l2_device_unregister(&hdw->v4l2_dev);
+ 		usb_free_urb(hdw->ctl_read_urb);
+ 		usb_free_urb(hdw->ctl_write_urb);
+ 		kfree(hdw->ctl_read_buffer);
 
 
