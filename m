@@ -2,77 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92E3FC54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 16:17:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBA89ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 16:18:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235920AbiIBQRt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 12:17:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52946 "EHLO
+        id S236510AbiIBQSb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 12:18:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237055AbiIBQRQ (ORCPT
+        with ESMTP id S236820AbiIBQSJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 12:17:16 -0400
-Received: from m12-11.163.com (m12-11.163.com [220.181.12.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1BAD32CC9B
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 09:15:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=TEjnZ
-        6xt2wlLT8EUIt9/RhmVBAzoRToS1Rn3ukjQe90=; b=XmYAQSNxPRIwo3y9TMEkh
-        7YS3HEqS7+NAUd5590uGeDowzqSWwRtCbgR5mFyUfUF+zIpVBopglFQ0fcwswmhm
-        LtSW5avMuxtUTXmUb2OgaXkzp7PBpoKHQFfQJaRtyI998rSanVyOXN37BX8UkBO5
-        2vthxVp47ByIo1ZBD8XfQg=
-Received: from ubuntu.localdomain (unknown [183.159.78.175])
-        by smtp7 (Coremail) with SMTP id C8CowAA3sgwdKBJj3tXsCw--.41444S4;
-        Fri, 02 Sep 2022 23:58:22 +0800 (CST)
-From:   Li Qiang <liq3ea@163.com>
-To:     naveen.n.rao@linux.ibm.com, anil.s.keshavamurthy@intel.com,
-        davem@davemloft.net, mhiramat@kernel.org
-Cc:     linux-kernel@vger.kernel.org, liq3ea@gmail.com,
-        Li Qiang <liq3ea@163.com>
-Subject: [PATCH] kprobe: reverse kp->flags when arm_kprobe failed
-Date:   Fri,  2 Sep 2022 08:58:20 -0700
-Message-Id: <20220902155820.34755-1-liq3ea@163.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: C8CowAA3sgwdKBJj3tXsCw--.41444S4
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtF17KF4UWrWkWF4UtFyUtrb_yoW3ZFX_Aa
-        4vqrZ09r4YyFsxZr4YyrW5urs2grsa9FWfCFy0qFW5Ka17GrnIgan5uFy5Aa4Fga4DXF9x
-        Arn8Zrs0vFyYqjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRA0eQ3UUUUU==
-X-Originating-IP: [183.159.78.175]
-X-CM-SenderInfo: 5oltjvrd6rljoofrz/
+        Fri, 2 Sep 2022 12:18:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C725AAC277
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 09:17:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CEDB6212E
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 16:17:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9350BC433C1;
+        Fri,  2 Sep 2022 16:17:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1662135424;
+        bh=Yl0CvY2cQDQb6yeL6TcfJK7/w0lVfZxtsJZIiQXq0fo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LmBARlASMMFNtLL56hHrW9qMXLJF2LTMfWDy72+nXemQGz0G7X3gflzIbt4/coFwk
+         M57KPCk2OcuCRqSRXzza5lgPJmFkzXKe1MnJ/KpfFpbSSwlcK8DtXpjNNc7nYQuz/i
+         j5PJHfilgicicwOjdVQnRgtmolPdsnAa0xKYK8MY=
+Date:   Fri, 2 Sep 2022 09:17:03 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     SeongJae Park <sj@kernel.org>, linux-kernel@vger.kernel.org,
+        damon@lists.linux.dev, linux-mm@kvack.org,
+        stable <stable@kernel.org>
+Subject: Re: [PATCH] mm/damon/dbgfs: fix memory leak when using
+ debugfs_lookup()
+Message-Id: <20220902091703.dcee7737e7ce8857e3235fa7@linux-foundation.org>
+In-Reply-To: <20220902125631.128329-1-gregkh@linuxfoundation.org>
+References: <20220902125631.128329-1-gregkh@linuxfoundation.org>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In aggregate kprobe case, when arm_kprobe failed,
-we need set the kp->flags with KPROBE_FLAG_DISABLED again.
-If not, the 'kp' kprobe will been considered as enabled
-but it actually not enabled.
+On Fri,  2 Sep 2022 14:56:31 +0200 Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
 
-Signed-off-by: Li Qiang <liq3ea@163.com>
----
- kernel/kprobes.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+> When calling debugfs_lookup() the result must have dput() called on it,
+> otherwise the memory will leak over time.  Fix this up by properly
+> calling dput().
+> 
+> ...
+>
 
-diff --git a/kernel/kprobes.c b/kernel/kprobes.c
-index 08350e35a..333454df5 100644
---- a/kernel/kprobes.c
-+++ b/kernel/kprobes.c
-@@ -2424,8 +2424,11 @@ int enable_kprobe(struct kprobe *kp)
- 	if (!kprobes_all_disarmed && kprobe_disabled(p)) {
- 		p->flags &= ~KPROBE_FLAG_DISABLED;
- 		ret = arm_kprobe(p);
--		if (ret)
-+		if (ret) {
- 			p->flags |= KPROBE_FLAG_DISABLED;
-+			if (p != kp)
-+				kp->flags |= KPROBE_FLAG_DISABLED;
-+		}
- 	}
- out:
- 	mutex_unlock(&kprobe_mutex);
--- 
-2.25.1
+Fixes: 75c1c2b53c78b, I assume.
+
+> --- a/mm/damon/dbgfs.c
+> +++ b/mm/damon/dbgfs.c
+> @@ -915,6 +915,7 @@ static int dbgfs_rm_context(char *name)
+>  		new_ctxs[j++] = dbgfs_ctxs[i];
+>  	}
+>  
+> +	dput(dir);
+>  	kfree(dbgfs_dirs);
+>  	kfree(dbgfs_ctxs);
+>  
+
+dput() is also needed if either of the kmalloc_array() calls fail?
+Maybe something like
+
+--- a/mm/damon/dbgfs.c~a
++++ a/mm/damon/dbgfs.c
+@@ -884,6 +884,7 @@ static int dbgfs_rm_context(char *name)
+ 	struct dentry *root, *dir, **new_dirs;
+ 	struct damon_ctx **new_ctxs;
+ 	int i, j;
++	int ret = 0;
+ 
+ 	if (damon_nr_running_ctxs())
+ 		return -EBUSY;
+@@ -899,14 +900,12 @@ static int dbgfs_rm_context(char *name)
+ 	new_dirs = kmalloc_array(dbgfs_nr_ctxs - 1, sizeof(*dbgfs_dirs),
+ 			GFP_KERNEL);
+ 	if (!new_dirs)
+-		return -ENOMEM;
++		goto out_dput;
+ 
+ 	new_ctxs = kmalloc_array(dbgfs_nr_ctxs - 1, sizeof(*dbgfs_ctxs),
+ 			GFP_KERNEL);
+-	if (!new_ctxs) {
+-		kfree(new_dirs);
+-		return -ENOMEM;
+-	}
++	if (!new_ctxs)
++		goto out_new_dirs;
+ 
+ 	for (i = 0, j = 0; i < dbgfs_nr_ctxs; i++) {
+ 		if (dbgfs_dirs[i] == dir) {
+@@ -925,7 +924,13 @@ static int dbgfs_rm_context(char *name)
+ 	dbgfs_ctxs = new_ctxs;
+ 	dbgfs_nr_ctxs--;
+ 
+-	return 0;
++	goto out_dput;
++
++out_new_dirs:
++	kfree(new_dirs);
++out_dput:
++	dput(dir);
++	return ret;
+ }
+ 
+ static ssize_t dbgfs_rm_context_write(struct file *file,
+_
 
