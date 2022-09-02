@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2E8FC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:37:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12707C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:37:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236638AbiIBMhP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:37:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36884 "EHLO
+        id S237043AbiIBMhU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:37:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236973AbiIBMgf (ORCPT
+        with ESMTP id S236502AbiIBMgi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:36:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E138B5FFA;
-        Fri,  2 Sep 2022 05:29:08 -0700 (PDT)
+        Fri, 2 Sep 2022 08:36:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A84C1E42C7;
+        Fri,  2 Sep 2022 05:29:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36E2DB82A98;
-        Fri,  2 Sep 2022 12:27:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F4E9C433D6;
-        Fri,  2 Sep 2022 12:27:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB718B82A9B;
+        Fri,  2 Sep 2022 12:29:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2AE2C433B5;
+        Fri,  2 Sep 2022 12:29:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121653;
-        bh=90j0F/FrWOEKi/n+s4lG8xuIPvMDJtcHV/oVOc7vAuU=;
+        s=korg; t=1662121757;
+        bh=Bs2CQBsnUjpIZ+XxHHFSiRhfkB928kkGSKMck2e8gws=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y23ir6DufrQjqosvKLkCP7976hzZCqmR8Nxysd8znSMqj/8C9JbcnYjFxakBKPqfM
-         4YfTpBi2fi0CB6BCJbYAxJftRyIkftpGIK6j+vr6xEhHKjAOedHstKFFCit1LXQMYr
-         AvDrx5AKuXiTYef1U/+8pMmCANG3iFiacs+TSYzw=
+        b=K3j3IgD1kKVWm2WE1xMlpJp7t/UoCnTyVE3LyLmUtYIImTcovHGhQKRWAFFKze3Jl
+         PQ3qrbKeUGVelThdnauWqVr7EDhsheRiASKpDjCFZucGhP2n5LOO8cgqA9SqDheazO
+         9TZVPmQu2N60ADZdJOfXPLFBM+H913ssFSuLtZMU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.4 03/77] kernel/sys_ni: add compat entry for fadvise64_64
-Date:   Fri,  2 Sep 2022 14:18:12 +0200
-Message-Id: <20220902121403.712211412@linuxfoundation.org>
+        stable@vger.kernel.org, Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        linux-input@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.4 54/77] HID: steam: Prevent NULL pointer dereference in steam_{recv,send}_report
+Date:   Fri,  2 Sep 2022 14:19:03 +0200
+Message-Id: <20220902121405.472911966@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
 References: <20220902121403.569927325@linuxfoundation.org>
@@ -53,46 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Lee Jones <lee.jones@linaro.org>
 
-commit a8faed3a02eeb75857a3b5d660fa80fe79db77a3 upstream.
+commit cd11d1a6114bd4bc6450ae59f6e110ec47362126 upstream.
 
-When CONFIG_ADVISE_SYSCALLS is not set/enabled and CONFIG_COMPAT is
-set/enabled, the riscv compat_syscall_table references
-'compat_sys_fadvise64_64', which is not defined:
+It is possible for a malicious device to forgo submitting a Feature
+Report.  The HID Steam driver presently makes no prevision for this
+and de-references the 'struct hid_report' pointer obtained from the
+HID devices without first checking its validity.  Let's change that.
 
-riscv64-linux-ld: arch/riscv/kernel/compat_syscall_table.o:(.rodata+0x6f8):
-undefined reference to `compat_sys_fadvise64_64'
-
-Add 'fadvise64_64' to kernel/sys_ni.c as a conditional COMPAT function so
-that when CONFIG_ADVISE_SYSCALLS is not set, there is a fallback function
-available.
-
-Link: https://lkml.kernel.org/r/20220807220934.5689-1-rdunlap@infradead.org
-Fixes: d3ac21cacc24 ("mm: Support compiling out madvise and fadvise")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Suggested-by: Arnd Bergmann <arnd@arndb.de>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Cc: Josh Triplett <josh@joshtriplett.org>
-Cc: Paul Walmsley <paul.walmsley@sifive.com>
-Cc: Palmer Dabbelt <palmer@dabbelt.com>
-Cc: Albert Ou <aou@eecs.berkeley.edu>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Cc: Jiri Kosina <jikos@kernel.org>
+Cc: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc: linux-input@vger.kernel.org
+Fixes: c164d6abf3841 ("HID: add driver for Valve Steam Controller")
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/sys_ni.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/hid/hid-steam.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/kernel/sys_ni.c
-+++ b/kernel/sys_ni.c
-@@ -268,6 +268,7 @@ COND_SYSCALL_COMPAT(keyctl);
+--- a/drivers/hid/hid-steam.c
++++ b/drivers/hid/hid-steam.c
+@@ -134,6 +134,11 @@ static int steam_recv_report(struct stea
+ 	int ret;
  
- /* mm/fadvise.c */
- COND_SYSCALL(fadvise64_64);
-+COND_SYSCALL_COMPAT(fadvise64_64);
+ 	r = steam->hdev->report_enum[HID_FEATURE_REPORT].report_id_hash[0];
++	if (!r) {
++		hid_err(steam->hdev, "No HID_FEATURE_REPORT submitted -  nothing to read\n");
++		return -EINVAL;
++	}
++
+ 	if (hid_report_len(r) < 64)
+ 		return -EINVAL;
  
- /* mm/, CONFIG_MMU only */
- COND_SYSCALL(swapon);
+@@ -165,6 +170,11 @@ static int steam_send_report(struct stea
+ 	int ret;
+ 
+ 	r = steam->hdev->report_enum[HID_FEATURE_REPORT].report_id_hash[0];
++	if (!r) {
++		hid_err(steam->hdev, "No HID_FEATURE_REPORT submitted -  nothing to read\n");
++		return -EINVAL;
++	}
++
+ 	if (hid_report_len(r) < 64)
+ 		return -EINVAL;
+ 
 
 
