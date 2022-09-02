@@ -2,107 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFBCFECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:58:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5371CC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:59:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237194AbiIBO6h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:58:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50966 "EHLO
+        id S236564AbiIBO7I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:59:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236835AbiIBO6L (ORCPT
+        with ESMTP id S237224AbiIBO6j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:58:11 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E0F51C9
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 07:23:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662128633; x=1693664633;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=8rPf23hyyD1KcvMCjUWBcV4HJfUbaMGNgSAFaMNAq/I=;
-  b=SxZG541fpMD7rqXeqQqYAfWTNruETtJDaOnkGp4H/ak43r95UcAoaTb7
-   w4H6PjtwPTXM5AytiwvzzytUp454b1XmaT9lm21NV2RG2J5Wfqq46IB7k
-   JG8JU933utL9RXIx3dF33YYPdYc+RtjJGzgM+pSDOcoxAPWxVq1hLNh4X
-   B+Qhc0P7NfBljpenWNeX7V0hvc+Uj7SdJ+ZZp8BHjB7XPbyYABIs+KGqI
-   5FpQuaA61E0CrS8Wgk20nCPSpf8LYmzvkT2bxDMbHyrvfOhotE9Xfd8jM
-   KjuK+hOcAHyesH71d1+gQXVVR9Wp/05R0Vd3AeKDmn1E/YldUWQ1695bK
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="382289230"
+        Fri, 2 Sep 2022 10:58:39 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6065552838
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 07:25:16 -0700 (PDT)
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="297277175"
 X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="382289230"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 07:23:51 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="297277175"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 07:25:16 -0700
 X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="941304688"
-Received: from lkp-server02.sh.intel.com (HELO 95dfd251caa2) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 02 Sep 2022 07:23:49 -0700
-Received: from kbuild by 95dfd251caa2 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oU7aH-0000BD-0J;
-        Fri, 02 Sep 2022 14:23:49 +0000
-Date:   Fri, 2 Sep 2022 22:23:47 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Qi Zheng <zhengqi.arch@bytedance.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        0day robot <lkp@intel.com>
-Subject: mm/khugepaged.c:2046:56: warning: 'struct khugepaged_mm_slot'
- declared inside parameter list will not be visible outside of this
- definition or declaration
-Message-ID: <202209022248.TEjW4Cld-lkp@intel.com>
+   d="scan'208";a="681300258"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 07:25:12 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andy.shevchenko@gmail.com>)
+        id 1oU7bY-007QK2-2q;
+        Fri, 02 Sep 2022 17:25:08 +0300
+Date:   Fri, 2 Sep 2022 17:25:08 +0300
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+To:     Cezary Rojewski <cezary.rojewski@intel.com>
+Cc:     alsa-devel@alsa-project.org, broonie@kernel.org, tiwai@suse.com,
+        perex@perex.cz, amadeuszx.slawinski@linux.intel.com,
+        pierre-louis.bossart@linux.intel.com, hdegoede@redhat.com,
+        lgirdwood@gmail.com, kai.vehmanen@linux.intel.com,
+        peter.ujfalusi@linux.intel.com, ranjani.sridharan@linux.intel.com,
+        yung-chuan.liao@linux.intel.com, willy@infradead.org,
+        linux-kernel@vger.kernel.org, andy@kernel.org,
+        intel-poland@eclists.intel.com
+Subject: Re: [PATCH v5 2/2] ASoC: SOF: Remove strsplit_u32() and
+ tokenize_input()
+Message-ID: <YxISRG13SGScC5Fn@smile.fi.intel.com>
+References: <20220902133256.789165-1-cezary.rojewski@intel.com>
+ <20220902133256.789165-3-cezary.rojewski@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220902133256.789165-3-cezary.rojewski@intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/intel-lab-lkp/linux/commits/UPDATE-20220901-154717/Qi-Zheng/add-common-struct-mm_slot-and-use-it-in-THP-and-KSM/20220831-112149
-head:   32b787e37af17f7fe75f9b9c9bb22bf044722229
-commit: 7ad02cf1645071c2bf1ed6ae0e48907aa0a3119e mm: thp: fix build error with CONFIG_SHMEM disabled
-date:   30 hours ago
-config: sparc-randconfig-r023-20220901 (https://download.01.org/0day-ci/archive/20220902/202209022248.TEjW4Cld-lkp@intel.com/config)
-compiler: sparc64-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/7ad02cf1645071c2bf1ed6ae0e48907aa0a3119e
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review UPDATE-20220901-154717/Qi-Zheng/add-common-struct-mm_slot-and-use-it-in-THP-and-KSM/20220831-112149
-        git checkout 7ad02cf1645071c2bf1ed6ae0e48907aa0a3119e
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sparc SHELL=/bin/bash
+On Fri, Sep 02, 2022 at 03:32:56PM +0200, Cezary Rojewski wrote:
+> Make use of global integer-array parsing helper instead of the internal
+> one as both serve same purpose. With that, both strsplit_u32() and
+> tokenize_input() become unused so remove them.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+More minor comments...
 
-All warnings (new ones prefixed by >>):
+...
 
->> mm/khugepaged.c:2046:56: warning: 'struct khugepaged_mm_slot' declared inside parameter list will not be visible outside of this definition or declaration
-    2046 | static void khugepaged_collapse_pte_mapped_thps(struct khugepaged_mm_slot *mm_slot)
-         |                                                        ^~~~~~~~~~~~~~~~~~
-   mm/khugepaged.c: In function 'khugepaged_scan_mm_slot':
-   mm/khugepaged.c:2076:45: error: passing argument 1 of 'khugepaged_collapse_pte_mapped_thps' from incompatible pointer type [-Werror=incompatible-pointer-types]
-    2076 |         khugepaged_collapse_pte_mapped_thps(mm_slot);
-         |                                             ^~~~~~~
-         |                                             |
-         |                                             struct mm_slot *
-   mm/khugepaged.c:2046:76: note: expected 'struct khugepaged_mm_slot *' but argument is of type 'struct mm_slot *'
-    2046 | static void khugepaged_collapse_pte_mapped_thps(struct khugepaged_mm_slot *mm_slot)
-         |                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
-   cc1: some warnings being treated as errors
+> +	ret = parse_int_array_user(from, count, (int **)&array);
+>  	if (ret < 0)
+>  		return ret;
 
+> +	num_elems = *array;
+> +	bytes = sizeof(*array) * num_elems;
+> +	if (!num_elems || (bytes % sizeof(*desc))) {
 
-vim +2046 mm/khugepaged.c
+!num_elems is a dup since previous already does this check.
 
-  2045	
-> 2046	static void khugepaged_collapse_pte_mapped_thps(struct khugepaged_mm_slot *mm_slot)
-  2047	{
-  2048	}
-  2049	#endif
-  2050	
+...
+
+> +	ret = parse_int_array_user(from, count, (int **)&array);
+>  	if (ret < 0)
+>  		return ret;
+> +
+> +	num_elems = *array;
+
+> +	if (!num_elems) {
+>  		ret = -EINVAL;
+>  		goto exit;
+>  	}
+
+Ditto.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+With Best Regards,
+Andy Shevchenko
+
+
