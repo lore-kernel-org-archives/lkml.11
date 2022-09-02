@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8FD6C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:55:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6038AECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:55:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238171AbiIBMzl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:55:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56960 "EHLO
+        id S238272AbiIBMzp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:55:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238096AbiIBMxr (ORCPT
+        with ESMTP id S238091AbiIBMxq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:53:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5D23186C8;
-        Fri,  2 Sep 2022 05:38:18 -0700 (PDT)
+        Fri, 2 Sep 2022 08:53:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18B3DFB0DB;
+        Fri,  2 Sep 2022 05:38:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB85662119;
-        Fri,  2 Sep 2022 12:35:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06163C433D6;
-        Fri,  2 Sep 2022 12:35:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8CB7CB82A8B;
+        Fri,  2 Sep 2022 12:38:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D408CC433D6;
+        Fri,  2 Sep 2022 12:38:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122142;
-        bh=cYJwQ0rMnudUe3akeqw33dycPQO7EW+u8IdVBhMnKpA=;
+        s=korg; t=1662122306;
+        bh=RlZ5FPFv5IbMf0mM3m5Z3NtWzd57r4FRDuduFHlwqak=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ivK0/j47KAj/T0VZIQ+ObgNoFa9i9mXtidbid7KxGZy6eFE11Wr6yPIOY37Eweqj5
-         PcoXNyIN+xOpNh+csEvyzTzFwHWe/7HSrS/8xnM9QRrLuMmBkHsxXFvQ0WqoqqRLdp
-         NYayqFZ/HXx5g0wXYJWmeKWk//3ErPG5YuONodMA=
+        b=Ms5zarkrITIFBOjE+86+cURiphemL66Ez/7/2k2caAWDm6Is/L4TJR1AEWWcyW/Q9
+         ZU/q8Xshfi7/44Y07fiOHzJDzPXIs/ySnsYnwlWeJ5UqCXEAM1WPgAgYDMRewDkuUG
+         83jcCV0pTWHYyJdq93O5vIGNIdJh3xf9e4WhC10c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Morse <james.morse@arm.com>,
-        Will Deacon <will@kernel.org>, Lucas Wei <lucaswei@google.com>
-Subject: [PATCH 5.19 06/72] arm64: errata: Add Cortex-A510 to the repeat tlbi list
-Date:   Fri,  2 Sep 2022 14:18:42 +0200
-Message-Id: <20220902121404.999570603@linuxfoundation.org>
+        stable@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
+        Florian Westphal <fw@strlen.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 62/72] netfilter: conntrack: NF_CONNTRACK_PROCFS should no longer default to y
+Date:   Fri,  2 Sep 2022 14:19:38 +0200
+Message-Id: <20220902121406.814363122@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
 References: <20220902121404.772492078@linuxfoundation.org>
@@ -48,89 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
 
-commit 39fdb65f52e9a53d32a6ba719f96669fd300ae78 upstream.
+[ Upstream commit aa5762c34213aba7a72dc58e70601370805fa794 ]
 
-Cortex-A510 is affected by an erratum where in rare circumstances the
-CPUs may not handle a race between a break-before-make sequence on one
-CPU, and another CPU accessing the same page. This could allow a store
-to a page that has been unmapped.
+NF_CONNTRACK_PROCFS was marked obsolete in commit 54b07dca68557b09
+("netfilter: provide config option to disable ancient procfs parts") in
+v3.3.
 
-Work around this by adding the affected CPUs to the list that needs
-TLB sequences to be done twice.
-
-Signed-off-by: James Morse <james.morse@arm.com>
-Link: https://lore.kernel.org/r/20220704155732.21216-1-james.morse@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
-Cc: Lucas Wei <lucaswei@google.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/arm64/silicon-errata.rst |    2 ++
- arch/arm64/Kconfig                     |   17 +++++++++++++++++
- arch/arm64/kernel/cpu_errata.c         |    8 +++++++-
- 3 files changed, 26 insertions(+), 1 deletion(-)
+ net/netfilter/Kconfig | 1 -
+ 1 file changed, 1 deletion(-)
 
---- a/Documentation/arm64/silicon-errata.rst
-+++ b/Documentation/arm64/silicon-errata.rst
-@@ -106,6 +106,8 @@ stable kernels.
- +----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Cortex-A510     | #2077057        | ARM64_ERRATUM_2077057       |
- +----------------+-----------------+-----------------+-----------------------------+
-+| ARM            | Cortex-A510     | #2441009        | ARM64_ERRATUM_2441009       |
-++----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Cortex-A710     | #2119858        | ARM64_ERRATUM_2119858       |
- +----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Cortex-A710     | #2054223        | ARM64_ERRATUM_2054223       |
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -838,6 +838,23 @@ config ARM64_ERRATUM_2224489
+diff --git a/net/netfilter/Kconfig b/net/netfilter/Kconfig
+index ddc54b6d18ee4..8c0fea1bdc8d6 100644
+--- a/net/netfilter/Kconfig
++++ b/net/netfilter/Kconfig
+@@ -144,7 +144,6 @@ config NF_CONNTRACK_ZONES
  
- 	  If unsure, say Y.
- 
-+config ARM64_ERRATUM_2441009
-+	bool "Cortex-A510: Completion of affected memory accesses might not be guaranteed by completion of a TLBI"
-+	default y
-+	select ARM64_WORKAROUND_REPEAT_TLBI
-+	help
-+	  This option adds a workaround for ARM Cortex-A510 erratum #2441009.
-+
-+	  Under very rare circumstances, affected Cortex-A510 CPUs
-+	  may not handle a race between a break-before-make sequence on one
-+	  CPU, and another CPU accessing the same page. This could allow a
-+	  store to a page that has been unmapped.
-+
-+	  Work around this by adding the affected CPUs to the list that needs
-+	  TLB sequences to be done twice.
-+
-+	  If unsure, say Y.
-+
- config ARM64_ERRATUM_2064142
- 	bool "Cortex-A510: 2064142: workaround TRBE register writes while disabled"
- 	depends on CORESIGHT_TRBE
---- a/arch/arm64/kernel/cpu_errata.c
-+++ b/arch/arm64/kernel/cpu_errata.c
-@@ -214,6 +214,12 @@ static const struct arm64_cpu_capabiliti
- 		ERRATA_MIDR_RANGE(MIDR_QCOM_KRYO_4XX_GOLD, 0xc, 0xe, 0xf, 0xe),
- 	},
- #endif
-+#ifdef CONFIG_ARM64_ERRATUM_2441009
-+	{
-+		/* Cortex-A510 r0p0 -> r1p1. Fixed in r1p2 */
-+		ERRATA_MIDR_RANGE(MIDR_CORTEX_A510, 0, 0, 1, 1),
-+	},
-+#endif
- 	{},
- };
- #endif
-@@ -490,7 +496,7 @@ const struct arm64_cpu_capabilities arm6
- #endif
- #ifdef CONFIG_ARM64_WORKAROUND_REPEAT_TLBI
- 	{
--		.desc = "Qualcomm erratum 1009, or ARM erratum 1286807",
-+		.desc = "Qualcomm erratum 1009, or ARM erratum 1286807, 2441009",
- 		.capability = ARM64_WORKAROUND_REPEAT_TLBI,
- 		.type = ARM64_CPUCAP_LOCAL_CPU_ERRATUM,
- 		.matches = cpucap_multi_entry_cap_matches,
+ config NF_CONNTRACK_PROCFS
+ 	bool "Supply CT list in procfs (OBSOLETE)"
+-	default y
+ 	depends on PROC_FS
+ 	help
+ 	This option enables for the list of known conntrack entries
+-- 
+2.35.1
+
 
 
