@@ -2,234 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 657E3C54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:45:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD507ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:46:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237319AbiIBNpy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:45:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44878 "EHLO
+        id S237998AbiIBNp7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:45:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236986AbiIBNpS (ORCPT
+        with ESMTP id S237330AbiIBNpS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 09:45:18 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 566C612D515;
-        Fri,  2 Sep 2022 06:21:19 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4MJyHb0wlzz9slp;
-        Fri,  2 Sep 2022 14:42:51 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id t6fBFsb4UbyX; Fri,  2 Sep 2022 14:42:51 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4MJyHS0zPBz9sls;
-        Fri,  2 Sep 2022 14:42:44 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 0C99A8B78C;
-        Fri,  2 Sep 2022 14:42:44 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id TIqipSHIuhEZ; Fri,  2 Sep 2022 14:42:43 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.232.39])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id CDF5D8B78D;
-        Fri,  2 Sep 2022 14:42:42 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 282CgYdb2141515
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Fri, 2 Sep 2022 14:42:34 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 282CgY0K2141514;
-        Fri, 2 Sep 2022 14:42:34 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Keerthy <j-keerthy@ti.com>, Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Davide Ciminaghi <ciminaghi@gnudd.com>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-arch@vger.kernel.org,
-        linux-doc@vger.kernel.org, x86@kernel.org
-Subject: [PATCH v2 5/9] gpiolib: Get rid of ARCH_NR_GPIOS
-Date:   Fri,  2 Sep 2022 14:42:05 +0200
-Message-Id: <97011204619556ecb3d8c9aaff2b58c28790fe8a.1662116601.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <cover.1662116601.git.christophe.leroy@csgroup.eu>
-References: <cover.1662116601.git.christophe.leroy@csgroup.eu>
+Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D862912EC60;
+        Fri,  2 Sep 2022 06:21:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1662124883; x=1693660883;
+  h=message-id:date:mime-version:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:subject;
+  bh=nzPUc9EDrOhRtDNeKPMRzpudxcLrf0JAPFl0JHh3d9o=;
+  b=DZ2Sxio5il+oQReWjRJLz0mEL7NTc3FEzLKuoGfHG+NNTHSmzgEOS7DZ
+   xcKu9A6lXnc5joQlxm4W3hy8meJCNbRoBzYWkDgjWJkG20XucwkYeOlFS
+   S20HOBJfv/Ndg+MqjWPoSrx1u3YchQD5IkWjXdKn9L67gV/9Ww8J2EKaK
+   c=;
+X-IronPort-AV: E=Sophos;i="5.93,283,1654560000"; 
+   d="scan'208";a="255577710"
+Subject: Re: [PATCH v3 14/19] dt-bindings: hwmon: (mr75203) add "moortec,
+ ts-series" property
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-388992e0.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 13:18:10 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-2c-388992e0.us-west-2.amazon.com (Postfix) with ESMTPS id C2D51E48AB;
+        Fri,  2 Sep 2022 13:18:09 +0000 (UTC)
+Received: from EX19D013UWB004.ant.amazon.com (10.13.138.62) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Fri, 2 Sep 2022 13:18:09 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (10.43.161.207) by
+ EX19D013UWB004.ant.amazon.com (10.13.138.62) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.1118.12; Fri, 2 Sep 2022 13:18:09 +0000
+Received: from [192.168.149.164] (10.85.143.177) by mail-relay.amazon.com
+ (10.43.161.249) with Microsoft SMTP Server id 15.0.1497.38 via Frontend
+ Transport; Fri, 2 Sep 2022 13:18:03 +0000
+Message-ID: <52e48e0a-1369-2c8f-b3e8-c854365384d4@amazon.com>
+Date:   Fri, 2 Sep 2022 16:18:02 +0300
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1662122527; l=5608; s=20211009; h=from:subject:message-id; bh=627tvaA946/n4BKkAs3Ap6n2Spr0bzlnkVDrEw1Weh4=; b=oK8L6x4YO0/Tfv1rrveqxWyPzUigpLkkcs3kpG/V0GCD1hH9rQwWg26uIXH5pm4hEOPy17HUWSCs RlrtLGZNAGwtNu+GH+gFces0cecHaH5Rk0+Fg/FbRiFpz6clOxDG
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+To:     Philipp Zabel <p.zabel@pengutronix.de>, <jdelvare@suse.com>,
+        <linux@roeck-us.net>, <robh+dt@kernel.org>,
+        <rtanwar@maxlinear.com>, <linux-hwmon@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <talel@amazon.com>, <hhhawa@amazon.com>, <jonnyc@amazon.com>,
+        <hanochu@amazon.com>, <ronenk@amazon.com>, <itamark@amazon.com>,
+        <shellykz@amazon.com>, <shorer@amazon.com>, <amitlavi@amazon.com>,
+        <almogbs@amazon.com>, <dkl@amazon.com>,
+        <andriy.shevchenko@intel.com>, "Farber, Eliav" <farbere@amazon.com>
+References: <20220830192212.28570-1-farbere@amazon.com>
+ <20220830192212.28570-15-farbere@amazon.com>
+ <89806ee9a80652d5877ef5c4a86574e82af48da4.camel@pengutronix.de>
+ <f49558fa-e987-145c-425e-0e8a7a9fba5f@amazon.com>
+ <4ab6f79f54ad975d7c21c86c57fa2defbb8c98c0.camel@pengutronix.de>
+Content-Language: en-US
+From:   "Farber, Eliav" <farbere@amazon.com>
+In-Reply-To: <4ab6f79f54ad975d7c21c86c57fa2defbb8c98c0.camel@pengutronix.de>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit 14e85c0e69d5 ("gpio: remove gpio_descs global array")
-there is no limitation on the number of GPIOs that can be allocated
-in the system since the allocation is fully dynamic.
+On 8/31/2022 12:42 PM, Philipp Zabel wrote:
+> On Mi, 2022-08-31 at 12:23 +0300, Farber, Eliav wrote:
+>> On 8/31/2022 11:23 AM, Philipp Zabel wrote:
+>> > On Di, 2022-08-30 at 19:22 +0000, Eliav Farber wrote:
+>> > > Add optional "moortec,ts-series" property to define the temperature
+>> > > equation and coefficients that shall be used to convert the digital
+>> > > output to value in milli-Celsius.
+>> > > Supported series: 5 (default) and 6.
+>> >
+>> > Is this the difference between mr75xxx and mr76xxx series?
+>> > If so, should be a compatible "moortec,mr76006" instead?
+>> > If the temperature equation could be derived from the compatible, this
+>> > property would not be necessary.
+>> The PVT (Process, Voltage, Temperature) monitoring logic can be
+>> constructed from many different sub-blocks:
+>> *) CONTROLLER (mr75203) - controlling TS, PD and VM.
+>> *) TS (mr74137) - for measuring temperature in ring.
+>> *) PD (mr74139) - for measuring IO based transistors.
+>> *) VM (mr74138) - for measuring voltage rails across the SoC.
+>> *) Ring oscillators (mr76007/mr76008)
+>> *) Pre-scalers (mr76006)
+>>
+>> Besides mr75203 which is digital all other IPs are analog.
+>> There is a single mr75203 and there can be several or none of the other
+>> units.
+>
+> Thank you for the explanation, I think this information would be nice
+> to have in a description in moortec,mr75203.yaml. 
 
-ARCH_NR_GPIOS is today only used in order to provide downwards
-gpiobase allocation from that value, while static allocation is
-performed upwards from 0. However that has the disadvantage of
-limiting the number of GPIOs that can be registered in the system.
+For v4 I added a new patch which adds this description in
+moortec,mr75203.yaml:
 
-To overcome this limitation without requiring each and every
-platform to provide its 'best-guess' maximum number, rework the
-allocation to allocate upwards, allowing approx 2 millions of
-GPIOs.
+description: |
+   A Moortec PVT (Process, Voltage, Temperature) monitoring logic design can
+   include many different units.
+   Such a design will usually consists of several Moortec's embedded 
+analog IPs,
+   and a single Moortec controller to configure and control the IPs.
 
-In order to still allow static allocation for legacy drivers, define
-GPIO_DYNAMIC_BASE with the value 512 as the start for dynamic
-allocation. The 512 value is chosen because it is the end of
-the current default range so all current static allocations are
-expected to be below that value. Of course that's just a rough
-estimate based on the default value, but assuming static
-allocations come first, even if there are more static allocations
-it should fit under the 512 value.
+   Some of the Moortec's analog hard IPs that can be used in a design:
+   *) Temperature Sensor (TS) - used to monitor core temperature (e.g. 
+mr74137).
+   *) Voltage Monitor (VM) - used to monitor voltage levels (e.g. mr74138).
+   *) Process Detector (PD) - used to assess silicon speed (e.g. mr74139).
+   *) Delay Chain - ring oscillator connected to the PD, used to measure IO
+      based transistors (e.g. mr76008 ring oscillator at 1.1V, mr76007 ring
+      oscillator at 1.8V).
+   *) Pre Scaler - provides divide-by-X scaling of input voltage, which 
+can then
+      be presented for VM for measurement within its range (e.g. mr76006 -
+      divide by 2 pre-scaler).
 
-In the future, it is expected that all static allocations go away
-and then dynamic allocation will be patched to start at 0.
+   TS, VM & PD also include a digital interface, which consists of 
+configuration
+   inputs and measurement outputs.
+   The mr75203 binding describes configuration for the controller unit, 
+but also
+   for some of the analog IPs.
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
-v2: Enhanced commit description and change from 256 to 512.
----
- arch/arm/include/asm/gpio.h |  1 -
- drivers/gpio/gpiolib.c      | 10 +++----
- include/asm-generic/gpio.h  | 55 ++++++++++++++-----------------------
- 3 files changed, 26 insertions(+), 40 deletions(-)
-
-diff --git a/arch/arm/include/asm/gpio.h b/arch/arm/include/asm/gpio.h
-index f3bb8a2bf788..4ebbb58f06ea 100644
---- a/arch/arm/include/asm/gpio.h
-+++ b/arch/arm/include/asm/gpio.h
-@@ -2,7 +2,6 @@
- #ifndef _ARCH_ARM_GPIO_H
- #define _ARCH_ARM_GPIO_H
- 
--/* Note: this may rely upon the value of ARCH_NR_GPIOS set in mach/gpio.h */
- #include <asm-generic/gpio.h>
- 
- /* The trivial gpiolib dispatchers */
-diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
-index 4e2fcb7b0a01..1846f24971e3 100644
---- a/drivers/gpio/gpiolib.c
-+++ b/drivers/gpio/gpiolib.c
-@@ -183,14 +183,14 @@ EXPORT_SYMBOL_GPL(gpiod_to_chip);
- static int gpiochip_find_base(int ngpio)
- {
- 	struct gpio_device *gdev;
--	int base = ARCH_NR_GPIOS - ngpio;
-+	int base = GPIO_DYNAMIC_BASE;
- 
--	list_for_each_entry_reverse(gdev, &gpio_devices, list) {
-+	list_for_each_entry(gdev, &gpio_devices, list) {
- 		/* found a free space? */
--		if (gdev->base + gdev->ngpio <= base)
-+		if (gdev->base >= base + ngpio)
- 			break;
--		/* nope, check the space right before the chip */
--		base = gdev->base - ngpio;
-+		/* nope, check the space right after the chip */
-+		base = gdev->base + gdev->ngpio;
- 	}
- 
- 	if (gpio_is_valid(base)) {
-diff --git a/include/asm-generic/gpio.h b/include/asm-generic/gpio.h
-index aea9aee1f3e9..a7752cf152ce 100644
---- a/include/asm-generic/gpio.h
-+++ b/include/asm-generic/gpio.h
-@@ -11,40 +11,18 @@
- #include <linux/gpio/driver.h>
- #include <linux/gpio/consumer.h>
- 
--/* Platforms may implement their GPIO interface with library code,
-+/*
-+ * Platforms may implement their GPIO interface with library code,
-  * at a small performance cost for non-inlined operations and some
-  * extra memory (for code and for per-GPIO table entries).
-- *
-- * While the GPIO programming interface defines valid GPIO numbers
-- * to be in the range 0..MAX_INT, this library restricts them to the
-- * smaller range 0..ARCH_NR_GPIOS-1.
-- *
-- * ARCH_NR_GPIOS is somewhat arbitrary; it usually reflects the sum of
-- * builtin/SoC GPIOs plus a number of GPIOs on expanders; the latter is
-- * actually an estimate of a board-specific value.
-  */
- 
--#ifndef ARCH_NR_GPIOS
--#if defined(CONFIG_ARCH_NR_GPIO) && CONFIG_ARCH_NR_GPIO > 0
--#define ARCH_NR_GPIOS CONFIG_ARCH_NR_GPIO
--#else
--#define ARCH_NR_GPIOS		512
--#endif
--#endif
--
- /*
-- * "valid" GPIO numbers are nonnegative and may be passed to
-- * setup routines like gpio_request().  only some valid numbers
-- * can successfully be requested and used.
-- *
-- * Invalid GPIO numbers are useful for indicating no-such-GPIO in
-- * platform data and other tables.
-+ * At the end we want all GPIOs to be dynamically allocated from 0.
-+ * However, some legacy drivers still perform fixed allocation.
-+ * Until they are all fixed, leave 0-512 space for them.
-  */
--
--static inline bool gpio_is_valid(int number)
--{
--	return number >= 0 && number < ARCH_NR_GPIOS;
--}
-+#define GPIO_DYNAMIC_BASE	512
- 
- struct device;
- struct gpio;
-@@ -140,12 +118,6 @@ static inline void gpio_unexport(unsigned gpio)
- 
- #include <linux/kernel.h>
- 
--static inline bool gpio_is_valid(int number)
--{
--	/* only non-negative numbers are valid */
--	return number >= 0;
--}
--
- /* platforms that don't directly support access to GPIOs through I2C, SPI,
-  * or other blocking infrastructure can use these wrappers.
-  */
-@@ -169,4 +141,19 @@ static inline void gpio_set_value_cansleep(unsigned gpio, int value)
- 
- #endif /* !CONFIG_GPIOLIB */
- 
-+/*
-+ * "valid" GPIO numbers are nonnegative and may be passed to
-+ * setup routines like gpio_request().  only some valid numbers
-+ * can successfully be requested and used.
-+ *
-+ * Invalid GPIO numbers are useful for indicating no-such-GPIO in
-+ * platform data and other tables.
-+ */
-+
-+static inline bool gpio_is_valid(int number)
-+{
-+	/* only non-negative numbers are valid */
-+	return number >= 0;
-+}
-+
- #endif /* _ASM_GENERIC_GPIO_H */
--- 
-2.37.1
-
+--
+Regards, Eliav
