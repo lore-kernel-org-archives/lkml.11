@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77E82ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:47:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ACB9C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:48:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237684AbiIBMrz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:47:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54192 "EHLO
+        id S237296AbiIBMsJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:48:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237614AbiIBMrU (ORCPT
+        with ESMTP id S237572AbiIBMrY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:47:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33C7FF1B68;
-        Fri,  2 Sep 2022 05:34:22 -0700 (PDT)
+        Fri, 2 Sep 2022 08:47:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 765AEF14FF;
+        Fri,  2 Sep 2022 05:34:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D9640621C5;
-        Fri,  2 Sep 2022 12:32:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4B9CC433D6;
-        Fri,  2 Sep 2022 12:32:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F2E0621C1;
+        Fri,  2 Sep 2022 12:34:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A769C433B5;
+        Fri,  2 Sep 2022 12:34:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121968;
-        bh=Bs2CQBsnUjpIZ+XxHHFSiRhfkB928kkGSKMck2e8gws=;
+        s=korg; t=1662122056;
+        bh=AcWu4cgXKwS3nNRbSLJnvoB8c05TCYcRjmk6dXBJUw4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2S7f3DLAcGIv/TbAkH8hmjUJtkK4Db4EdFarO78GYsnrHDzOoQ+0t54Lfv1TAnY5h
-         m7DoUKjgHtFy36be93UiiEMqmd2ljIG5e7fB6hNPqLvIgEPWnkZnPi5mc4Dbm9nmRz
-         TnfkRiEBxoeEY5OadduRKnL1YcUz8oZYffTYCDPs=
+        b=PPMSMxp97rEw55wLOCXqeaxJHjnhvoDeq7cT+A1j4oE0muxG/JAZ1goC3DTh/m6bZ
+         r7qfqI/uFZ1DZOEBUnXjlfqX3NRT6V8xVtddV0FKKjfFsuDdG7yM8RfZ6QQtbJwYKe
+         +obsXfq9/G/qGqnStM0uT8ZuwVB7XmQ+EW2jq3iY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        linux-input@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.15 27/73] HID: steam: Prevent NULL pointer dereference in steam_{recv,send}_report
-Date:   Fri,  2 Sep 2022 14:18:51 +0200
-Message-Id: <20220902121405.336885912@linuxfoundation.org>
+        stable@vger.kernel.org, "Denis V. Lunev" <den@openvz.org>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 73/73] net: neigh: dont call kfree_skb() under spin_lock_irqsave()
+Date:   Fri,  2 Sep 2022 14:19:37 +0200
+Message-Id: <20220902121406.818357232@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
 References: <20220902121404.435662285@linuxfoundation.org>
@@ -50,51 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lee Jones <lee.jones@linaro.org>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-commit cd11d1a6114bd4bc6450ae59f6e110ec47362126 upstream.
+commit d5485d9dd24e1d04e5509916515260186eb1455c upstream.
 
-It is possible for a malicious device to forgo submitting a Feature
-Report.  The HID Steam driver presently makes no prevision for this
-and de-references the 'struct hid_report' pointer obtained from the
-HID devices without first checking its validity.  Let's change that.
+It is not allowed to call kfree_skb() from hardware interrupt
+context or with interrupts being disabled. So add all skb to
+a tmp list, then free them after spin_unlock_irqrestore() at
+once.
 
-Cc: Jiri Kosina <jikos@kernel.org>
-Cc: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc: linux-input@vger.kernel.org
-Fixes: c164d6abf3841 ("HID: add driver for Valve Steam Controller")
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Fixes: 66ba215cb513 ("neigh: fix possible DoS due to net iface start/stop loop")
+Suggested-by: Denis V. Lunev <den@openvz.org>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/hid-steam.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ net/core/neighbour.c |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/drivers/hid/hid-steam.c
-+++ b/drivers/hid/hid-steam.c
-@@ -134,6 +134,11 @@ static int steam_recv_report(struct stea
- 	int ret;
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -281,21 +281,27 @@ static int neigh_del_timer(struct neighb
  
- 	r = steam->hdev->report_enum[HID_FEATURE_REPORT].report_id_hash[0];
-+	if (!r) {
-+		hid_err(steam->hdev, "No HID_FEATURE_REPORT submitted -  nothing to read\n");
-+		return -EINVAL;
-+	}
+ static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
+ {
++	struct sk_buff_head tmp;
+ 	unsigned long flags;
+ 	struct sk_buff *skb;
+ 
++	skb_queue_head_init(&tmp);
+ 	spin_lock_irqsave(&list->lock, flags);
+ 	skb = skb_peek(list);
+ 	while (skb != NULL) {
+ 		struct sk_buff *skb_next = skb_peek_next(skb, list);
+ 		if (net == NULL || net_eq(dev_net(skb->dev), net)) {
+ 			__skb_unlink(skb, list);
+-			dev_put(skb->dev);
+-			kfree_skb(skb);
++			__skb_queue_tail(&tmp, skb);
+ 		}
+ 		skb = skb_next;
+ 	}
+ 	spin_unlock_irqrestore(&list->lock, flags);
 +
- 	if (hid_report_len(r) < 64)
- 		return -EINVAL;
- 
-@@ -165,6 +170,11 @@ static int steam_send_report(struct stea
- 	int ret;
- 
- 	r = steam->hdev->report_enum[HID_FEATURE_REPORT].report_id_hash[0];
-+	if (!r) {
-+		hid_err(steam->hdev, "No HID_FEATURE_REPORT submitted -  nothing to read\n");
-+		return -EINVAL;
++	while ((skb = __skb_dequeue(&tmp))) {
++		dev_put(skb->dev);
++		kfree_skb(skb);
 +	}
-+
- 	if (hid_report_len(r) < 64)
- 		return -EINVAL;
+ }
  
+ static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev,
 
 
