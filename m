@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC43FECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:02:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BD6FC54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:02:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238630AbiIBNCW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:02:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50346 "EHLO
+        id S238636AbiIBNCh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:02:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238532AbiIBNAh (ORCPT
+        with ESMTP id S238584AbiIBNBR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:00:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84402E833C;
-        Fri,  2 Sep 2022 05:41:04 -0700 (PDT)
+        Fri, 2 Sep 2022 09:01:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B53F01090A1;
+        Fri,  2 Sep 2022 05:41:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 86A76B82A99;
-        Fri,  2 Sep 2022 12:40:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9CD5C433D7;
-        Fri,  2 Sep 2022 12:40:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D1D506215D;
+        Fri,  2 Sep 2022 12:39:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2E54C433C1;
+        Fri,  2 Sep 2022 12:39:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122429;
-        bh=4xJJOHqLzP7spsbVN3XdLsPg6PaX12EVx7PC1XKrqDs=;
+        s=korg; t=1662122370;
+        bh=I48YNY8iGTo0l+25pl0NUHm3d2fzxBhUGKALZNO7RzY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mzejSoSoLvQ8Pg5L+PbiR89fQcLrTv0OOM78iudqg+FobLZqXriZCQlugtw/HxGos
-         3FnfhuWYFq6CGHsQyTsHyhTpR5FacN962Qt0DTQA/1roxOq60nYbGya9WE+uLLD5Od
-         /KBvqsWL94glaakksTjbqWxSD3L8tVf3E3h4e+uU=
+        b=T5VS9g8Gu3cHdA2d91bTxqvuizPUdVvWCjWZN7VOMlWaNws/1sZojXuZ9Cw8wsAt8
+         xN6BqtU3fOW53jnjwnUpcVDmz4MuRvUv2urGs67ZTaL5wZ323UA8T446/DqgJQxgrd
+         2ri9kC4ljF3yi/jKk6EY6G+bLQe7U7rT6zfk3DDI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Letu Ren <fantasquex@gmail.com>, Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.10 14/37] fbdev: fb_pm2fb: Avoid potential divide by zero error
-Date:   Fri,  2 Sep 2022 14:19:36 +0200
-Message-Id: <20220902121359.612473653@linuxfoundation.org>
+        stable@vger.kernel.org, Aric Cyr <Aric.Cyr@amd.com>,
+        Brian Chang <Brian.Chang@amd.com>,
+        Ilya Bakoulin <Ilya.Bakoulin@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 25/37] drm/amd/display: Fix pixel clock programming
+Date:   Fri,  2 Sep 2022 14:19:47 +0200
+Message-Id: <20220902121359.959351226@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121359.177846782@linuxfoundation.org>
 References: <20220902121359.177846782@linuxfoundation.org>
@@ -48,47 +52,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Letu Ren <fantasquex@gmail.com>
+From: Ilya Bakoulin <Ilya.Bakoulin@amd.com>
 
-commit 19f953e7435644b81332dd632ba1b2d80b1e37af upstream.
+[ Upstream commit 04fb918bf421b299feaee1006e82921d7d381f18 ]
 
-In `do_fb_ioctl()` of fbmem.c, if cmd is FBIOPUT_VSCREENINFO, var will be
-copied from user, then go through `fb_set_var()` and
-`info->fbops->fb_check_var()` which could may be `pm2fb_check_var()`.
-Along the path, `var->pixclock` won't be modified. This function checks
-whether reciprocal of `var->pixclock` is too high. If `var->pixclock` is
-zero, there will be a divide by zero error. So, it is necessary to check
-whether denominator is zero to avoid crash. As this bug is found by
-Syzkaller, logs are listed below.
+[Why]
+Some pixel clock values could cause HDMI TMDS SSCPs to be misaligned
+between different HDMI lanes when using YCbCr420 10-bit pixel format.
 
-divide error in pm2fb_check_var
-Call Trace:
- <TASK>
- fb_set_var+0x367/0xeb0 drivers/video/fbdev/core/fbmem.c:1015
- do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1110
- fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1189
+BIOS functions for transmitter/encoder control take pixel clock in kHz
+increments, whereas the function for setting the pixel clock is in 100Hz
+increments. Setting pixel clock to a value that is not on a kHz boundary
+will cause the issue.
 
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Letu Ren <fantasquex@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[How]
+Round pixel clock down to nearest kHz in 10/12-bpc cases.
+
+Reviewed-by: Aric Cyr <Aric.Cyr@amd.com>
+Acked-by: Brian Chang <Brian.Chang@amd.com>
+Signed-off-by: Ilya Bakoulin <Ilya.Bakoulin@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/pm2fb.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/video/fbdev/pm2fb.c
-+++ b/drivers/video/fbdev/pm2fb.c
-@@ -616,6 +616,11 @@ static int pm2fb_check_var(struct fb_var
- 		return -EINVAL;
- 	}
- 
-+	if (!var->pixclock) {
-+		DPRINTK("pixclock is zero\n");
-+		return -EINVAL;
-+	}
-+
- 	if (PICOS2KHZ(var->pixclock) > PM2_MAX_PIXCLOCK) {
- 		DPRINTK("pixclock too high (%ldKHz)\n",
- 			PICOS2KHZ(var->pixclock));
+diff --git a/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c b/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c
+index bae3a146b2cc2..89cc852cb27c5 100644
+--- a/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c
++++ b/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c
+@@ -546,9 +546,11 @@ static void dce112_get_pix_clk_dividers_helper (
+ 		switch (pix_clk_params->color_depth) {
+ 		case COLOR_DEPTH_101010:
+ 			actual_pixel_clock_100hz = (actual_pixel_clock_100hz * 5) >> 2;
++			actual_pixel_clock_100hz -= actual_pixel_clock_100hz % 10;
+ 			break;
+ 		case COLOR_DEPTH_121212:
+ 			actual_pixel_clock_100hz = (actual_pixel_clock_100hz * 6) >> 2;
++			actual_pixel_clock_100hz -= actual_pixel_clock_100hz % 10;
+ 			break;
+ 		case COLOR_DEPTH_161616:
+ 			actual_pixel_clock_100hz = actual_pixel_clock_100hz * 2;
+-- 
+2.35.1
+
 
 
