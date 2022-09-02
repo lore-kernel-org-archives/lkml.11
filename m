@@ -2,141 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49373C6FA87
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:02:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B25EC54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:02:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235730AbiIBMCZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:02:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43194 "EHLO
+        id S235774AbiIBMC2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:02:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235679AbiIBMCU (ORCPT
+        with ESMTP id S235637AbiIBMCW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:02:20 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98634C0B4D
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 05:02:18 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id c66so1649648pfc.10
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 05:02:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=W8RjYI+n37ofAo9LBQEiCCEo6ndS1LkvyfXGybqsT9Q=;
-        b=KJAXAw3+eV100jVcXnx/LqY4g085qYcLfMEFb+CqK4NNPBI9F8q01WkRiTpC9xcqhF
-         /4FkKnilu36QUVvPSMq5xoJPqh+oM/ajx5O1Ooz3frF0it9D7UMt8os//kh3KVKuZVb/
-         DPPYiXpugkbyENhGTY+/WPxqKyt1jcv2zujzHIJxdB0ew1X0zrJZfMTGT15i+87M0po6
-         0/QMZTGU+ePDJ2R+Ec9/I+/IE6Qsct4tdfUfCSODRxCfpDSAWo9ais93dWCx9G+uqlln
-         0sE9qiRD9Lz9bZ0YZbv1M1UDvvLW735W+u2JopGKR2Y65g0jVSPYyBMRqlC2d3FYstWU
-         49Eg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=W8RjYI+n37ofAo9LBQEiCCEo6ndS1LkvyfXGybqsT9Q=;
-        b=GFH05FlccnKen59bGxBUh3Kg2iCvEBacKg7VP9MgeSLBYon9PoYNSaUz9BHHKFw4Bk
-         khWGoc7+pEaT+RXEGVIx9IStYY3cxodIW8EptKDLGU40/RWHdtFPQYlUMQAUy46SAXef
-         NbNGJ1nrZJWWw64h4Jsbe11u2KhuL/OgFqzAgJJiBg01iFi8ygEOc+MNw7ckCpHpYzo7
-         KTZaVxkuYNgeNdaqAmXAZamAlViD3V5MDADYPzm6bLBT9vZYinXiHDnlLuWY3CVQCGMt
-         op2Q4T1SUMty2fQ/WTtwJcVWaTlY3q/39O6lAAj9Ce9tznjZO0Y8v6phk9we5c//WUrI
-         Nv/Q==
-X-Gm-Message-State: ACgBeo0fdSkQkTk78Aeiz3PJ8UQxta2E3MzaCuhGOOTh5wYbgngYwDPz
-        OkC1un0f/LHPdU1WyZcSizIZ1Q==
-X-Google-Smtp-Source: AA6agR6oz8BXj0U20tJpMgDuL2EJ/favK/h81yeCR3znK+DwDUa+f211F9QgLE7hKWaq2wOql0pxmg==
-X-Received: by 2002:aa7:92d8:0:b0:537:acbf:5e85 with SMTP id k24-20020aa792d8000000b00537acbf5e85mr35570681pfa.61.1662120138036;
-        Fri, 02 Sep 2022 05:02:18 -0700 (PDT)
-Received: from [192.168.1.136] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id v65-20020a622f44000000b00539aa7f0b53sm1557339pfv.104.2022.09.02.05.02.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Sep 2022 05:02:17 -0700 (PDT)
-Message-ID: <3a41b9fc-05f1-3f56-ecd0-70b9a2912a31@kernel.dk>
-Date:   Fri, 2 Sep 2022 06:02:12 -0600
+        Fri, 2 Sep 2022 08:02:22 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74462C0B4D;
+        Fri,  2 Sep 2022 05:02:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Nz8Tz1uBfArPzrTbA5QgwTqK/y15M7AwWAm6DXoAXqU=; b=dzVLQ+ITUI1Ov9D5o9xTJSFt4p
+        mOLLn0YcKkRuViRI7VyEeyozgdZF/Ar3cklopmx5UjHmQN06fE1jcQrHLEj3c6IkgcR0zXMSe7pTT
+        MVVH6hjfs6xWx2kY+E/QnrRFhgdovhsxlKSW7Et1l3omPAhJ1aPenTCMV046kwQdRio4GiRZgrQTV
+        JKc8liKe3U90Li+tPS589EaZAnOaYeVpOZkYZml5FHMw8HFf0Z0v1qQFLJNzZXy9EdDHVwAL2+wxi
+        HRThC6s5E5XUhR2/bKLs9DtLgLqBoxRDwBF1yHVuPxoX67ocDXH+fFRogakH6JGm0TB1w0KNPbo7x
+        Yd2EBW6Q==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oU5Mz-008evC-BL; Fri, 02 Sep 2022 12:01:57 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 84B75300413;
+        Fri,  2 Sep 2022 14:01:55 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 63AD520853050; Fri,  2 Sep 2022 14:01:55 +0200 (CEST)
+Date:   Fri, 2 Sep 2022 14:01:55 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Yang Jihong <yangjihong1@huawei.com>
+Cc:     rostedt@goodmis.org, mingo@redhat.com, acme@kernel.org,
+        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        jolsa@kernel.org, namhyung@kernel.org,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
+Subject: Re: [PATCH RESEND v4] perf/core: Fix reentry problem in
+ perf_output_read_group
+Message-ID: <YxHws5sL16hz4ZKc@hirez.programming.kicks-ass.net>
+References: <20220902082918.179248-1-yangjihong1@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
-Content-Language: en-US
-To:     Roman Gushchin <roman.gushchin@linux.dev>,
-        Kent Overstreet <kent.overstreet@linux.dev>
-Cc:     Yosry Ahmed <yosryahmed@google.com>,
-        Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@suse.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Johannes Weiner <hannes@cmpxchg.org>, dave@stgolabs.net,
-        Matthew Wilcox <willy@infradead.org>, liam.howlett@oracle.com,
-        void@manifault.com, juri.lelli@redhat.com, ldufour@linux.ibm.com,
-        Peter Xu <peterx@redhat.com>,
-        David Hildenbrand <david@redhat.com>, mcgrof@kernel.org,
-        masahiroy@kernel.org, nathan@kernel.org, changbin.du@intel.com,
-        ytcoode@gmail.com, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, Steven Rostedt <rostedt@goodmis.org>,
-        bsegall@google.com, bristot@redhat.com, vschneid@redhat.com,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>, 42.hyeyoo@gmail.com,
-        glider@google.com, elver@google.com, dvyukov@google.com,
-        Shakeel Butt <shakeelb@google.com>,
-        Muchun Song <songmuchun@bytedance.com>, arnd@arndb.de,
-        jbaron@akamai.com, David Rientjes <rientjes@google.com>,
-        minchan@google.com, kaleshsingh@google.com,
-        kernel-team@android.com, Linux-MM <linux-mm@kvack.org>,
-        iommu@lists.linux.dev, kasan-dev@googlegroups.com,
-        io-uring@vger.kernel.org, linux-arch@vger.kernel.org,
-        xen-devel@lists.xenproject.org, linux-bcache@vger.kernel.org,
-        linux-modules@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <Yw8P8xZ4zqu121xL@hirez.programming.kicks-ass.net>
- <20220831084230.3ti3vitrzhzsu3fs@moria.home.lan>
- <20220831101948.f3etturccmp5ovkl@suse.de> <Yw88RFuBgc7yFYxA@dhcp22.suse.cz>
- <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
- <CAJD7tkaev9B=UDYj2RL6pz-1454J8tv4gEr9y-2dnCksoLK0bw@mail.gmail.com>
- <YxExz+c1k3nbQMh4@P9FQF9L96D.corp.robot.car>
- <20220901223720.e4gudprscjtwltif@moria.home.lan>
- <YxE4BXw5i+BkxxD8@P9FQF9L96D.corp.robot.car>
- <20220902001747.qqsv2lzkuycffuqe@moria.home.lan>
- <YxFWrka+Wx0FfLXU@P9FQF9L96D.lan>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <YxFWrka+Wx0FfLXU@P9FQF9L96D.lan>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220902082918.179248-1-yangjihong1@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 9/1/22 7:04 PM, Roman Gushchin wrote:
-> On Thu, Sep 01, 2022 at 08:17:47PM -0400, Kent Overstreet wrote:
->> On Thu, Sep 01, 2022 at 03:53:57PM -0700, Roman Gushchin wrote:
->>> I'd suggest to run something like iperf on a fast hardware. And maybe some
->>> io_uring stuff too. These are two places which were historically most sensitive
->>> to the (kernel) memory accounting speed.
->>
->> I'm getting wildly inconsistent results with iperf.
->>
->> io_uring-echo-server and rust_echo_bench gets me:
->> Benchmarking: 127.0.0.1:12345
->> 50 clients, running 512 bytes, 60 sec.
->>
->> Without alloc tagging:	120547 request/sec
->> With:			116748 request/sec
->>
->> https://github.com/frevib/io_uring-echo-server
->> https://github.com/haraldh/rust_echo_bench
->>
->> How's that look to you? Close enough? :)
+On Fri, Sep 02, 2022 at 04:29:18PM +0800, Yang Jihong wrote:
+> perf_output_read_group may respond to IPI request of other cores and invoke
+> __perf_install_in_context function. As a result, hwc configuration is modified.
+> causing inconsistency and unexpected consequences.
 > 
-> Yes, this looks good (a bit too good).
+> Interrupts are not disabled when perf_output_read_group reads PMU counter.
+> In this case, IPI request may be received from other cores.
+> As a result, PMU configuration is modified and an error occurs when
+> reading PMU counter:
 > 
-> I'm not that familiar with io_uring, Jens and Pavel should have a better idea
-> what and how to run (I know they've workarounded the kernel memory accounting
-> because of the performance in the past, this is why I suspect it might be an
-> issue here as well).
+>                    CPU0                                         CPU1
+>                                                     __se_sys_perf_event_open
+>                                                       perf_install_in_context
+> perf_output_read_group                                  smp_call_function_single
+>   for_each_sibling_event(sub, leader) {                   generic_exec_single
+>     if ((sub != event) &&                                   remote_function
+>         (sub->state == PERF_EVENT_STATE_ACTIVE))                    |
+> <enter IPI handler: __perf_install_in_context>   <----RAISE IPI-----+
+> __perf_install_in_context
+>   ctx_resched
+>     event_sched_out
+>       armpmu_del
+>         ...
+>         hwc->idx = -1; // event->hwc.idx is set to -1
+> ...
+> <exit IPI>
+>             sub->pmu->read(sub);
+>               armpmu_read
+>                 armv8pmu_read_counter
+>                   armv8pmu_read_hw_counter
+>                     int idx = event->hw.idx; // idx = -1
+>                     u64 val = armv8pmu_read_evcntr(idx);
+>                       u32 counter = ARMV8_IDX_TO_COUNTER(idx); // invalid counter = 30
+>                       read_pmevcntrn(counter) // undefined instruction
+> 
+> Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
+> ---
 
-io_uring isn't alloc+free intensive on a per request basis anymore, it
-would not be a good benchmark if the goal is to check for regressions in
-that area.
-
--- 
-Jens Axboe
+Right; thanks for reminding me. I had hoped you'd pick up and test the
+extra assertion some, but I'll just do that on top.
