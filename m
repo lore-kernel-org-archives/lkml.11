@@ -2,195 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D577ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 03:19:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51C2DC6FA89
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 03:20:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235110AbiIBDTe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 23:19:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50644 "EHLO
+        id S235080AbiIBDUv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 23:20:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232670AbiIBDTF (ORCPT
+        with ESMTP id S234641AbiIBDU3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 23:19:05 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D3B9FAAF;
-        Thu,  1 Sep 2022 20:19:01 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MJjhj41Z1zkWvc;
-        Fri,  2 Sep 2022 11:15:17 +0800 (CST)
-Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
- dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 2 Sep 2022 11:18:59 +0800
-Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
- (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 2 Sep
- 2022 11:18:59 +0800
-From:   Kai Ye <yekai13@huawei.com>
-To:     <gregkh@linuxfoundation.org>, <herbert@gondor.apana.org.au>
-CC:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <wangzhou1@hisilicon.com>, <liulongfang@huawei.com>,
-        <yekai13@huawei.com>
-Subject: [PATCH v8 1/3] uacce: supports device isolation feature
-Date:   Fri, 2 Sep 2022 03:13:02 +0000
-Message-ID: <20220902031304.37516-2-yekai13@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220902031304.37516-1-yekai13@huawei.com>
-References: <20220902031304.37516-1-yekai13@huawei.com>
+        Thu, 1 Sep 2022 23:20:29 -0400
+Received: from cstnet.cn (smtp23.cstnet.cn [159.226.251.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 13B9313F91
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 20:20:06 -0700 (PDT)
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-03 (Coremail) with SMTP id rQCowABXX0tjdhFjm_xwAA--.15986S2;
+        Fri, 02 Sep 2022 11:20:04 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     johan@kernel.org, gregkh@linuxfoundation.org
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH] USB: serial: ftdi_sio: Add check for create_sysfs_attrs
+Date:   Fri,  2 Sep 2022 11:20:02 +0800
+Message-Id: <20220902032002.3859368-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml100012.china.huawei.com (7.185.36.121)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: rQCowABXX0tjdhFjm_xwAA--.15986S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7GFy5GrW3JFWkurWUur48JFb_yoWfCFXE9w
+        1UWFsxXryYkFyfJwn2k3yrArWYgws5ZF48uF12gFyfta4DJFZxXrs2v39xGr4UXr4kAr9x
+        Cwn8ua4xAay0gjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUb4kFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
+        6F4UJwA2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87Iv6xkF7I0E14v26F
+        4UJVW0owAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
+        7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCjc4AY6r
+        1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_
+        Gr4l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxV
+        WUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI
+        7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r
+        1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVW8JVWx
+        JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUjhL8DU
+        UUU
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-UACCE adds the hardware error isolation API. Users can configure
-the isolation frequency by this sysfs node. UACCE reports the device
-isolate state to the user space. If the AER error frequency exceeds
-the value of setting for a certain period of time, the device will be
-isolated.
+As create_sysfs_attrs() can return error number,
+it should be better to check the return value and
+deal with the exception.
 
-Signed-off-by: Kai Ye <yekai13@huawei.com>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 ---
- drivers/misc/uacce/uacce.c | 58 ++++++++++++++++++++++++++++++++++++++
- include/linux/uacce.h      | 11 ++++++++
- 2 files changed, 69 insertions(+)
+ drivers/usb/serial/ftdi_sio.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/misc/uacce/uacce.c b/drivers/misc/uacce/uacce.c
-index 281c54003edc..41f454c89cd1 100644
---- a/drivers/misc/uacce/uacce.c
-+++ b/drivers/misc/uacce/uacce.c
-@@ -7,6 +7,8 @@
- #include <linux/slab.h>
- #include <linux/uacce.h>
+diff --git a/drivers/usb/serial/ftdi_sio.c b/drivers/usb/serial/ftdi_sio.c
+index d5a3986dfee7..c28f894430a5 100644
+--- a/drivers/usb/serial/ftdi_sio.c
++++ b/drivers/usb/serial/ftdi_sio.c
+@@ -2251,7 +2251,11 @@ static int ftdi_sio_port_probe(struct usb_serial_port *port)
+ 	if (read_latency_timer(port) < 0)
+ 		priv->latency = 16;
+ 	write_latency_timer(port);
+-	create_sysfs_attrs(port);
++	result = create_sysfs_attrs(port);
++	if (result) {
++		remove_sysfs_attrs(port);
++		return result;
++	}
  
-+#define MAX_ERR_ISOLATE_COUNT		65535
-+
- static struct class *uacce_class;
- static dev_t uacce_devt;
- static DEFINE_MUTEX(uacce_mutex);
-@@ -339,12 +341,57 @@ static ssize_t region_dus_size_show(struct device *dev,
- 		       uacce->qf_pg_num[UACCE_QFRT_DUS] << PAGE_SHIFT);
- }
- 
-+static ssize_t isolate_show(struct device *dev,
-+			    struct device_attribute *attr, char *buf)
-+{
-+	struct uacce_device *uacce = to_uacce_device(dev);
-+
-+	if (!uacce->ops->get_isolate_state)
-+		return -ENODEV;
-+
-+	return sysfs_emit(buf, "%d\n", uacce->ops->get_isolate_state(uacce));
-+}
-+
-+static ssize_t isolate_strategy_show(struct device *dev,
-+				     struct device_attribute *attr, char *buf)
-+{
-+	struct uacce_device *uacce = to_uacce_device(dev);
-+	u32 val;
-+
-+	val = uacce->ops->isolate_strategy_read(uacce);
-+	if (val > MAX_ERR_ISOLATE_COUNT)
-+		return -EINVAL;
-+
-+	return sysfs_emit(buf, "%u\n", val);
-+}
-+
-+static ssize_t isolate_strategy_store(struct device *dev,
-+				      struct device_attribute *attr,
-+				      const char *buf, size_t count)
-+{
-+	struct uacce_device *uacce = to_uacce_device(dev);
-+	unsigned long val;
-+	int ret;
-+
-+	if (kstrtoul(buf, 0, &val) < 0)
-+		return -EINVAL;
-+
-+	if (val > MAX_ERR_ISOLATE_COUNT)
-+		return -EINVAL;
-+
-+	ret = uacce->ops->isolate_strategy_write(uacce, val);
-+
-+	return ret ? ret : count;
-+}
-+
- static DEVICE_ATTR_RO(api);
- static DEVICE_ATTR_RO(flags);
- static DEVICE_ATTR_RO(available_instances);
- static DEVICE_ATTR_RO(algorithms);
- static DEVICE_ATTR_RO(region_mmio_size);
- static DEVICE_ATTR_RO(region_dus_size);
-+static DEVICE_ATTR_RO(isolate);
-+static DEVICE_ATTR_RW(isolate_strategy);
- 
- static struct attribute *uacce_dev_attrs[] = {
- 	&dev_attr_api.attr,
-@@ -353,6 +400,8 @@ static struct attribute *uacce_dev_attrs[] = {
- 	&dev_attr_algorithms.attr,
- 	&dev_attr_region_mmio_size.attr,
- 	&dev_attr_region_dus_size.attr,
-+	&dev_attr_isolate.attr,
-+	&dev_attr_isolate_strategy.attr,
- 	NULL,
- };
- 
-@@ -368,6 +417,15 @@ static umode_t uacce_dev_is_visible(struct kobject *kobj,
- 	    (!uacce->qf_pg_num[UACCE_QFRT_DUS])))
- 		return 0;
- 
-+	if (attr == &dev_attr_isolate_strategy.attr &&
-+	    (!uacce->ops->isolate_strategy_read ||
-+	     !uacce->ops->isolate_strategy_write))
-+		return 0;
-+
-+	if (attr == &dev_attr_isolate.attr &&
-+	    !uacce->ops->get_isolate_state)
-+		return 0;
-+
- 	return attr->mode;
- }
- 
-diff --git a/include/linux/uacce.h b/include/linux/uacce.h
-index 48e319f40275..69e8f238d80c 100644
---- a/include/linux/uacce.h
-+++ b/include/linux/uacce.h
-@@ -30,6 +30,9 @@ struct uacce_qfile_region {
-  * @is_q_updated: check whether the task is finished
-  * @mmap: mmap addresses of queue to user space
-  * @ioctl: ioctl for user space users of the queue
-+ * @get_isolate_state: get the device state after set the isolate strategy
-+ * @isolate_strategy_write: stored the isolate strategy to the device
-+ * @isolate_strategy_read: read the isolate strategy value from the device
-  */
- struct uacce_ops {
- 	int (*get_available_instances)(struct uacce_device *uacce);
-@@ -43,6 +46,9 @@ struct uacce_ops {
- 		    struct uacce_qfile_region *qfr);
- 	long (*ioctl)(struct uacce_queue *q, unsigned int cmd,
- 		      unsigned long arg);
-+	enum uacce_dev_state (*get_isolate_state)(struct uacce_device *uacce);
-+	int (*isolate_strategy_write)(struct uacce_device *uacce, u32 freq);
-+	u32 (*isolate_strategy_read)(struct uacce_device *uacce);
- };
- 
- /**
-@@ -57,6 +63,11 @@ struct uacce_interface {
- 	const struct uacce_ops *ops;
- };
- 
-+enum uacce_dev_state {
-+	UACCE_DEV_NORMAL,
-+	UACCE_DEV_ISOLATE,
-+};
-+
- enum uacce_q_state {
- 	UACCE_Q_ZOMBIE = 0,
- 	UACCE_Q_INIT,
+ 	result = ftdi_gpio_init(port);
+ 	if (result < 0) {
 -- 
-2.17.1
+2.25.1
 
