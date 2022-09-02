@@ -2,123 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0675ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:02:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE1F0ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:03:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238647AbiIBNCw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:02:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51760 "EHLO
+        id S238584AbiIBNDJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:03:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238601AbiIBNB6 (ORCPT
+        with ESMTP id S238632AbiIBNCg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:01:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA8CA104027
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 05:41:11 -0700 (PDT)
+        Fri, 2 Sep 2022 09:02:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8DEE10D4F8;
+        Fri,  2 Sep 2022 05:41:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20573B82A91
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 12:40:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ADB6C433D6;
-        Fri,  2 Sep 2022 12:40:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D79DC620C5;
+        Fri,  2 Sep 2022 12:39:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF78AC433B5;
+        Fri,  2 Sep 2022 12:39:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122438;
-        bh=A2Z5hlr5zPyl5jXDn7iq6yX1GykxvGvwElUodK4rM74=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ar8YkYokNLtnccj4Hn+FuicqnVIjdSapI63XpX7OpxKcJAsRHQL1fVt+wZYKwPfOF
-         qyAGAs+ISByrgHHqvgUho5p/oyErRa8pD115EPK8z6pJUoKEaPeyHAEYlmMTO2SBNv
-         oNAFXiG7NOZQIcvm8M3L+XwuLf8qd88CXhJZ4vcA=
+        s=korg; t=1662122398;
+        bh=WYQUAaHzuh1gTk7tpo20isuFPFLINoLlLgreSnsWMtI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=BGqdMLdbkFsAp2lNQEY4ppD/yNkcllquA0qNw4FdF5wZG4141toZxiJvD24hWOjFb
+         yauxSz0xbq2vtxouYDx4L9taZXCMRRwbJqUUaRt3njJsW8FrtDuD/mWkXr1obPYdpx
+         PEM2DYu//VlLyAyfw1ynFGGRQktIjsM+fIaxa+T0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kuyo Chang <kuyo.chang@mediatek.com>,
-        stable <stable@kernel.org>
-Subject: [PATCH 1/2] debugfs: add debugfs_lookup_and_remove()
-Date:   Fri,  2 Sep 2022 14:31:06 +0200
-Message-Id: <20220902123107.109274-1-gregkh@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Foster <bfoster@redhat.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Dave Chinner <david@fromorbit.com>,
+        Amir Goldstein <amir73il@gmail.com>
+Subject: [PATCH 5.10 34/37] xfs: fix soft lockup via spinning in filestream ag selection loop
+Date:   Fri,  2 Sep 2022 14:19:56 +0200
+Message-Id: <20220902121400.239846375@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220902121359.177846782@linuxfoundation.org>
+References: <20220902121359.177846782@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2759; i=gregkh@linuxfoundation.org; h=from:subject; bh=A2Z5hlr5zPyl5jXDn7iq6yX1GykxvGvwElUodK4rM74=; b=owGbwMvMwCRo6H6F97bub03G02pJDMmC39vePdxQ+P7U/eMJF6Q6s36W/K2beozt9qxZ7M96ksp6 dvirdMSyMAgyMciKKbJ82cZzdH/FIUUvQ9vTMHNYmUCGMHBxCsBE5sYxLJi772ddWeTtwjV3L2m9a3 Kf/mytTBXDfOd7ZZ4vuY7tWlV4QHDjFlfHeaHPJgIA
-X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a very common pattern of using
-debugfs_remove(debufs_lookup(..)) which results in a dentry leak of the
-dentry that was looked up.  Instead of having to open-code the correct
-pattern of calling dput() on the dentry, create
-debugfs_lookup_and_remove() to handle this pattern automatically and
-properly without any memory leaks.
+From: Brian Foster <bfoster@redhat.com>
 
-Reported-by: Kuyo Chang <kuyo.chang@mediatek.com>
-Tested-by: Kuyo Chang <kuyo.chang@mediatek.com>
-Cc: stable <stable@kernel.org>
+commit f650df7171b882dca737ddbbeb414100b31f16af upstream.
+
+The filestream AG selection loop uses pagf data to aid in AG
+selection, which depends on pagf initialization. If the in-core
+structure is not initialized, the caller invokes the AGF read path
+to do so and carries on. If another task enters the loop and finds
+a pagf init already in progress, the AGF read returns -EAGAIN and
+the task continues the loop. This does not increment the current ag
+index, however, which means the task spins on the current AGF buffer
+until unlocked.
+
+If the AGF read I/O submitted by the initial task happens to be
+delayed for whatever reason, this results in soft lockup warnings
+via the spinning task. This is reproduced by xfs/170. To avoid this
+problem, fix the AGF trylock failure path to properly iterate to the
+next AG. If a task iterates all AGs without making progress, the
+trylock behavior is dropped in favor of blocking locks and thus a
+soft lockup is no longer possible.
+
+Fixes: f48e2df8a877ca1c ("xfs: make xfs_*read_agf return EAGAIN to ALLOC_FLAG_TRYLOCK callers")
+Signed-off-by: Brian Foster <bfoster@redhat.com>
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Dave Chinner <david@fromorbit.com>
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Acked-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/debugfs/inode.c      | 22 ++++++++++++++++++++++
- include/linux/debugfs.h |  6 ++++++
- 2 files changed, 28 insertions(+)
+ fs/xfs/xfs_filestream.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/fs/debugfs/inode.c b/fs/debugfs/inode.c
-index 3dcf0b8b4e93..87ccd6280a9b 100644
---- a/fs/debugfs/inode.c
-+++ b/fs/debugfs/inode.c
-@@ -744,6 +744,28 @@ void debugfs_remove(struct dentry *dentry)
- }
- EXPORT_SYMBOL_GPL(debugfs_remove);
+--- a/fs/xfs/xfs_filestream.c
++++ b/fs/xfs/xfs_filestream.c
+@@ -128,11 +128,12 @@ xfs_filestream_pick_ag(
+ 		if (!pag->pagf_init) {
+ 			err = xfs_alloc_pagf_init(mp, NULL, ag, trylock);
+ 			if (err) {
+-				xfs_perag_put(pag);
+-				if (err != -EAGAIN)
++				if (err != -EAGAIN) {
++					xfs_perag_put(pag);
+ 					return err;
++				}
+ 				/* Couldn't lock the AGF, skip this AG. */
+-				continue;
++				goto next_ag;
+ 			}
+ 		}
  
-+/**
-+ * debugfs_lookup_and_remove - lookup a directory or file and recursively remove it
-+ * @name: a pointer to a string containing the name of the item to look up.
-+ * @parent: a pointer to the parent dentry of the item.
-+ *
-+ * This is the equlivant of doing something like
-+ * debugfs_remove(debugfs_lookup(..)) but with the proper reference counting
-+ * handled for the directory being looked up.
-+ */
-+void debugfs_lookup_and_remove(const char *name, struct dentry *parent)
-+{
-+	struct dentry *dentry;
-+
-+	dentry = debugfs_lookup(name, parent);
-+	if (IS_ERR_OR_NULL(dentry))
-+		return;
-+
-+	debugfs_remove(dentry);
-+	dput(dentry);
-+}
-+EXPORT_SYMBOL_GPL(debugfs_lookup_and_remove);
-+
- /**
-  * debugfs_rename - rename a file/directory in the debugfs filesystem
-  * @old_dir: a pointer to the parent dentry for the renamed object. This
-diff --git a/include/linux/debugfs.h b/include/linux/debugfs.h
-index c869f1e73d75..f60674692d36 100644
---- a/include/linux/debugfs.h
-+++ b/include/linux/debugfs.h
-@@ -91,6 +91,8 @@ struct dentry *debugfs_create_automount(const char *name,
- void debugfs_remove(struct dentry *dentry);
- #define debugfs_remove_recursive debugfs_remove
- 
-+void debugfs_lookup_and_remove(const char *name, struct dentry *parent);
-+
- const struct file_operations *debugfs_real_fops(const struct file *filp);
- 
- int debugfs_file_get(struct dentry *dentry);
-@@ -225,6 +227,10 @@ static inline void debugfs_remove(struct dentry *dentry)
- static inline void debugfs_remove_recursive(struct dentry *dentry)
- { }
- 
-+static inline void debugfs_lookup_and_remove(const char *name,
-+					     struct dentry *parent)
-+{ }
-+
- const struct file_operations *debugfs_real_fops(const struct file *filp);
- 
- static inline int debugfs_file_get(struct dentry *dentry)
--- 
-2.37.3
+
 
