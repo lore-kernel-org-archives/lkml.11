@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAC7CECAAD3
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 02:19:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79E47ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 02:19:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235368AbiIBCTl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 22:19:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59636 "EHLO
+        id S235387AbiIBCTs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 22:19:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234960AbiIBCS3 (ORCPT
+        with ESMTP id S235063AbiIBCS3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 1 Sep 2022 22:18:29 -0400
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F255AA4C9;
-        Thu,  1 Sep 2022 19:18:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64F46AA4F8;
+        Thu,  1 Sep 2022 19:18:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662085099; x=1693621099;
+  t=1662085100; x=1693621100;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=dGgh1fBii19rynGcNWo4YOc+BKQW6hO1QduqyeeSino=;
-  b=OQPUuL6qCh5pctD0JQZtkQ/IkxWfAa96gMSxNqnVcde7eo05mYtNG1EE
-   QWhUZ+HhvHd2SJeB5K13XasxVqmqC7ShSjKKWMptM9gk5vyMwDjSLuz1g
-   zQxp0zFItaXLL8Y0RgMg91LR3bw6OpuE0F30dXitr4UTuaj9L6pe0NEpW
-   BCgLG9cyysHag93gKCsqhrmW8X80oNebm88s1oagRwjve47mw9mwcD018
-   E+miQrvqS7wjaIC4kw5/llAeAXCwMSDrrSBxgMY0Qe+0oplOi+1HMwMkp
-   g1UNfNlNegZl5BJ5C+S9FB2IW5Ghl2yjzE5FIqzqpAPltXCcgYkxS+k/p
+  bh=cY/sye/eqDIWklur2ePtwjCoskK1QiS6z4F30oQEG7U=;
+  b=fXhW9n8UXhYJrLV5MCrjeIVOotFLaQKT3Bl4jmi2ou12JnWPX/Tcf3UT
+   WeGCfqYebHJoegCi/s9jqGqbH6RAI7zYcm4sp0ITnS2OsPc/1pZvp26mz
+   n+0r7RfpoeUGiBWTaS1xIkzHaHuJ0dupbPv6MMrDP11iNQFubNJS03FfN
+   NP2KimrROyQZPDRRAb3GxnSs6V+tJPx1la9s7zP4QSOwfxQ7BlqdGZUwh
+   r83R1xZq/fIZLjU0NO0Wl4+I91+nAg/TzOzsBe80Iiwv0YDaEuDrdIcNu
+   d426gfpbKkY1R8XF2ctcifV64C8rMcatL8K0pYhaJ6DHmK7KvN/mLYjMy
    Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="297157858"
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="297157863"
 X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
-   d="scan'208";a="297157858"
+   d="scan'208";a="297157863"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 19:18:19 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 19:18:20 -0700
 X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
-   d="scan'208";a="608835657"
+   d="scan'208";a="608835665"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 19:18:18 -0700
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 19:18:19 -0700
 From:   isaku.yamahata@intel.com
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
         Paolo Bonzini <pbonzini@redhat.com>,
@@ -54,9 +54,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Huacai Chen <chenhuacai@kernel.org>,
         Dave Hansen <dave.hansen@linux.intel.com>,
         Borislav Petkov <bp@alien8.de>
-Subject: [PATCH v3 16/22] KVM: kvm_arch.c: Remove a global variable, hardware_enable_failed
-Date:   Thu,  1 Sep 2022 19:17:51 -0700
-Message-Id: <91715ddc16f001bf2b76f68b57ebd59092b40591.1662084396.git.isaku.yamahata@intel.com>
+Subject: [PATCH v3 18/22] KVM: Eliminate kvm_arch_post_init_vm()
+Date:   Thu,  1 Sep 2022 19:17:53 -0700
+Message-Id: <0adf5268ef7b09876acab9098acd28d198b03b38.1662084396.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1662084396.git.isaku.yamahata@intel.com>
 References: <cover.1662084396.git.isaku.yamahata@intel.com>
@@ -68,126 +68,86 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-A global variable hardware_enable_failed in kvm_arch.c is used only by
-kvm_arch_add_vm() and hardware_enable().  It doesn't have to be a global
-variable.  Make it function local.
+Now kvm_arch_post_init_vm() is used only by x86 kvm_arch_add_vm().  Other
+arch doesn't define it. Merge x86 kvm_arch_post_init_vm() int x86
+kvm_arch_add_vm() and eliminate kvm_arch_post_init_vm().
 
+Suggested-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- virt/kvm/kvm_arch.c | 49 +++++++++++++++++++++------------------------
- 1 file changed, 23 insertions(+), 26 deletions(-)
+ arch/x86/kvm/x86.c       |  7 +------
+ include/linux/kvm_host.h |  1 -
+ virt/kvm/kvm_arch.c      | 12 +-----------
+ 3 files changed, 2 insertions(+), 18 deletions(-)
 
-diff --git a/virt/kvm/kvm_arch.c b/virt/kvm/kvm_arch.c
-index de39d0127584..f7dcde842eb5 100644
---- a/virt/kvm/kvm_arch.c
-+++ b/virt/kvm/kvm_arch.c
-@@ -13,14 +13,13 @@
- #include <linux/kvm_host.h>
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 9a28eb5fbb76..fa68bea655f0 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -11847,11 +11847,6 @@ void kvm_arch_hardware_disable(void)
  
  static cpumask_t cpus_hardware_enabled = CPU_MASK_NONE;
--static atomic_t hardware_enable_failed;
  
- __weak int kvm_arch_post_init_vm(struct kvm *kvm)
- {
- 	return 0;
- }
- 
--static void hardware_enable(void *caller_name)
-+static int __hardware_enable(void *caller_name)
+-int kvm_arch_post_init_vm(struct kvm *kvm)
+-{
+-	return kvm_mmu_post_init_vm(kvm);
+-}
+-
+ static int __hardware_enable(void *caller_name)
  {
  	int cpu = raw_smp_processor_id();
- 	int r;
-@@ -28,18 +27,22 @@ static void hardware_enable(void *caller_name)
- 	WARN_ON_ONCE(preemptible());
- 
- 	if (cpumask_test_cpu(cpu, &cpus_hardware_enabled))
--		return;
--
--	cpumask_set_cpu(cpu, &cpus_hardware_enabled);
--
-+		return 0;
- 	r = kvm_arch_hardware_enable();
--
--	if (r) {
--		cpumask_clear_cpu(cpu, &cpus_hardware_enabled);
--		atomic_inc(&hardware_enable_failed);
-+	if (r)
- 		pr_warn("kvm: enabling virtualization on CPU%d failed during %s()\n",
- 			cpu, (const char *)caller_name);
--	}
-+	else
-+		cpumask_set_cpu(cpu, &cpus_hardware_enabled);
-+	return r;
-+}
-+
-+static void hardware_enable(void *arg)
-+{
-+	atomic_t *failed = arg;
-+
-+	if (__hardware_enable((void *)__func__))
-+		atomic_inc(failed);
- }
- 
- static void hardware_disable(void *junk)
-@@ -65,15 +68,16 @@ __weak void kvm_arch_pre_hardware_unsetup(void)
-  */
- __weak int kvm_arch_add_vm(struct kvm *kvm, int usage_count)
- {
-+	atomic_t failed;
- 	int r = 0;
- 
- 	if (usage_count != 1)
- 		return 0;
- 
--	atomic_set(&hardware_enable_failed, 0);
--	on_each_cpu(hardware_enable, (void *)__func__, 1);
-+	atomic_set(&failed, 0);
-+	on_each_cpu(hardware_enable, &failed, 1);
- 
--	if (atomic_read(&hardware_enable_failed)) {
-+	if (atomic_read(&failed)) {
- 		r = -EBUSY;
+@@ -11915,7 +11910,7 @@ int kvm_arch_add_vm(struct kvm *kvm, int usage_count)
  		goto err;
  	}
-@@ -96,27 +100,20 @@ __weak int kvm_arch_del_vm(int usage_count)
  
- __weak int kvm_arch_online_cpu(unsigned int cpu, int usage_count)
- {
--	int ret = 0;
-+	int ret;
+-	r = kvm_arch_post_init_vm(kvm);
++	r = kvm_mmu_post_init_vm(kvm);
+ err:
+ 	if (r)
+ 		on_each_cpu(hardware_disable, NULL, 1);
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index 60f4ae9d6f48..8abbf7a1773b 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -1445,7 +1445,6 @@ bool kvm_arch_vcpu_in_kernel(struct kvm_vcpu *vcpu);
+ int kvm_arch_vcpu_should_kick(struct kvm_vcpu *vcpu);
+ bool kvm_arch_dy_runnable(struct kvm_vcpu *vcpu);
+ bool kvm_arch_dy_has_pending_interrupt(struct kvm_vcpu *vcpu);
+-int kvm_arch_post_init_vm(struct kvm *kvm);
+ int kvm_arch_add_vm(struct kvm *kvm, int usage_count);
+ int kvm_arch_del_vm(int usage_count);
+ void kvm_arch_pre_destroy_vm(struct kvm *kvm);
+diff --git a/virt/kvm/kvm_arch.c b/virt/kvm/kvm_arch.c
+index f7dcde842eb5..bcd82b75fa17 100644
+--- a/virt/kvm/kvm_arch.c
++++ b/virt/kvm/kvm_arch.c
+@@ -14,11 +14,6 @@
  
- 	ret = kvm_arch_check_processor_compat();
- 	if (ret)
- 		return ret;
+ static cpumask_t cpus_hardware_enabled = CPU_MASK_NONE;
  
-+	if (!usage_count)
-+		return 0;
- 	/*
- 	 * Abort the CPU online process if hardware virtualization cannot
- 	 * be enabled. Otherwise running VMs would encounter unrecoverable
- 	 * errors when scheduled to this CPU.
- 	 */
--	if (usage_count) {
--		WARN_ON_ONCE(atomic_read(&hardware_enable_failed));
+-__weak int kvm_arch_post_init_vm(struct kvm *kvm)
+-{
+-	return 0;
+-}
 -
--		hardware_enable((void *)__func__);
--		if (atomic_read(&hardware_enable_failed)) {
--			atomic_set(&hardware_enable_failed, 0);
--			ret = -EIO;
--		}
+ static int __hardware_enable(void *caller_name)
+ {
+ 	int cpu = raw_smp_processor_id();
+@@ -79,13 +74,8 @@ __weak int kvm_arch_add_vm(struct kvm *kvm, int usage_count)
+ 
+ 	if (atomic_read(&failed)) {
+ 		r = -EBUSY;
+-		goto err;
 -	}
--	return ret;
-+	return __hardware_enable((void *)__func__);
+-
+-	r = kvm_arch_post_init_vm(kvm);
+-err:
+-	if (r)
+ 		on_each_cpu(hardware_disable, NULL, 1);
++	}
+ 	return r;
  }
  
- __weak int kvm_arch_offline_cpu(unsigned int cpu, int usage_count)
-@@ -149,5 +146,5 @@ __weak void kvm_arch_resume(int usage_count)
- 		return; /* FIXME: disable KVM */
- 
- 	if (usage_count)
--		hardware_enable((void *)__func__);
-+		(void)__hardware_enable((void *)__func__);
- }
 -- 
 2.25.1
 
