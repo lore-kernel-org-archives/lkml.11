@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F797C54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:35:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2C53C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:36:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236626AbiIBMfz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:35:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55314 "EHLO
+        id S236989AbiIBMf7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:35:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236036AbiIBMeL (ORCPT
+        with ESMTP id S236565AbiIBMeM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:34:11 -0400
+        Fri, 2 Sep 2022 08:34:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D9C9E3988;
-        Fri,  2 Sep 2022 05:28:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77D42D632F;
+        Fri,  2 Sep 2022 05:28:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7075562136;
-        Fri,  2 Sep 2022 12:26:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74338C433D6;
-        Fri,  2 Sep 2022 12:26:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 273FA62160;
+        Fri,  2 Sep 2022 12:28:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BC77C433D6;
+        Fri,  2 Sep 2022 12:28:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121586;
-        bh=lmIPIPSBVldjHAb2BCMXUesAoUg65FxjM5NXsjyYyYo=;
+        s=korg; t=1662121708;
+        bh=eimgQIMxHZOEPBtE5nCL9Itkgzj3zGOzM7yaxfP4ZyQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jpS8S7ZluCYrSrZnrOGexXXkhM2hrWJbB6HQ3NffLql60Sp3TMTUJzlkVePUYEQNE
-         P82dBLC4c8cje+l00TB7FNLwQaMA59UrthLFOURBZOQDndTji8Zjd1BmZFnz/Fmmjy
-         r/8XB5CFWMBlCO/3tdY8W9iF5x8XlxKLhEeb3bgs=
+        b=E9L1T/1ETqzvVmFpm6xkhmWVMFqggDJh89QYIvSglmqqzleXLo63UaIkDICK9hYX7
+         /tr6XooYHxo+xMbq5A9dr7WUIxqbivgbSNvXule4chDkJuLlrAW6qa4TyC5+aGA8+E
+         rz7xLiFpAqKlfNk9xGFv2cXLaYgMKDEGOHs9BpJ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
-        Filipe Manana <fdmanana@suse.com>,
-        Goldwyn Rodrigues <rgoldwyn@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 4.19 29/56] btrfs: check if root is readonly while setting security xattr
+        stable@vger.kernel.org, Chen Zhongjin <chenzhongjin@huawei.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.4 40/77] x86/unwind/orc: Unwind ftrace trampolines with correct ORC entry
 Date:   Fri,  2 Sep 2022 14:18:49 +0200
-Message-Id: <20220902121401.248191627@linuxfoundation.org>
+Message-Id: <20220902121404.981315369@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
-References: <20220902121400.219861128@linuxfoundation.org>
+In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
+References: <20220902121403.569927325@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,60 +49,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Goldwyn Rodrigues <rgoldwyn@suse.de>
+From: Chen Zhongjin <chenzhongjin@huawei.com>
 
-commit b51111271b0352aa596c5ae8faf06939e91b3b68 upstream.
+commit fc2e426b1161761561624ebd43ce8c8d2fa058da upstream.
 
-For a filesystem which has btrfs read-only property set to true, all
-write operations including xattr should be denied. However, security
-xattr can still be changed even if btrfs ro property is true.
+When meeting ftrace trampolines in ORC unwinding, unwinder uses address
+of ftrace_{regs_}call address to find the ORC entry, which gets next frame at
+sp+176.
 
-This happens because xattr_permission() does not have any restrictions
-on security.*, system.*  and in some cases trusted.* from VFS and
-the decision is left to the underlying filesystem. See comments in
-xattr_permission() for more details.
+If there is an IRQ hitting at sub $0xa8,%rsp, the next frame should be
+sp+8 instead of 176. It makes unwinder skip correct frame and throw
+warnings such as "wrong direction" or "can't access registers", etc,
+depending on the content of the incorrect frame address.
 
-This patch checks if the root is read-only before performing the set
-xattr operation.
+By adding the base address ftrace_{regs_}caller with the offset
+*ip - ops->trampoline*, we can get the correct address to find the ORC entry.
 
-Testcase:
+Also change "caller" to "tramp_addr" to make variable name conform to
+its content.
 
-  DEV=/dev/vdb
-  MNT=/mnt
+[ mingo: Clarified the changelog a bit. ]
 
-  mkfs.btrfs -f $DEV
-  mount $DEV $MNT
-  echo "file one" > $MNT/f1
-
-  setfattr -n "security.one" -v 2 $MNT/f1
-  btrfs property set /mnt ro true
-
-  setfattr -n "security.one" -v 1 $MNT/f1
-
-  umount $MNT
-
-CC: stable@vger.kernel.org # 4.9+
-Reviewed-by: Qu Wenruo <wqu@suse.com>
-Reviewed-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: Goldwyn Rodrigues <rgoldwyn@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: 6be7fa3c74d1 ("ftrace, orc, x86: Handle ftrace dynamically allocated trampolines")
+Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220819084334.244016-1-chenzhongjin@huawei.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/xattr.c |    3 +++
- 1 file changed, 3 insertions(+)
+ arch/x86/kernel/unwind_orc.c |   15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
---- a/fs/btrfs/xattr.c
-+++ b/fs/btrfs/xattr.c
-@@ -369,6 +369,9 @@ static int btrfs_xattr_handler_set(const
- 				   const char *name, const void *buffer,
- 				   size_t size, int flags)
+--- a/arch/x86/kernel/unwind_orc.c
++++ b/arch/x86/kernel/unwind_orc.c
+@@ -90,22 +90,27 @@ static struct orc_entry *orc_find(unsign
+ static struct orc_entry *orc_ftrace_find(unsigned long ip)
  {
-+	if (btrfs_root_readonly(BTRFS_I(inode)->root))
-+		return -EROFS;
+ 	struct ftrace_ops *ops;
+-	unsigned long caller;
++	unsigned long tramp_addr, offset;
+ 
+ 	ops = ftrace_ops_trampoline(ip);
+ 	if (!ops)
+ 		return NULL;
+ 
++	/* Set tramp_addr to the start of the code copied by the trampoline */
+ 	if (ops->flags & FTRACE_OPS_FL_SAVE_REGS)
+-		caller = (unsigned long)ftrace_regs_call;
++		tramp_addr = (unsigned long)ftrace_regs_caller;
+ 	else
+-		caller = (unsigned long)ftrace_call;
++		tramp_addr = (unsigned long)ftrace_caller;
 +
- 	name = xattr_full_name(handler, name);
- 	return btrfs_setxattr(NULL, inode, name, buffer, size, flags);
++	/* Now place tramp_addr to the location within the trampoline ip is at */
++	offset = ip - ops->trampoline;
++	tramp_addr += offset;
+ 
+ 	/* Prevent unlikely recursion */
+-	if (ip == caller)
++	if (ip == tramp_addr)
+ 		return NULL;
+ 
+-	return orc_find(caller);
++	return orc_find(tramp_addr);
  }
+ #else
+ static struct orc_entry *orc_ftrace_find(unsigned long ip)
 
 
