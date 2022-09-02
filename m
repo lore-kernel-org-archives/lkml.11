@@ -2,86 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78568C6FA82
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:49:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2EECECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:51:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237154AbiIBOtk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:49:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58964 "EHLO
+        id S236306AbiIBOvP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:51:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236431AbiIBOtE (ORCPT
+        with ESMTP id S235614AbiIBOu7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:49:04 -0400
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ED4AA59AF;
-        Fri,  2 Sep 2022 07:10:27 -0700 (PDT)
-Received: (Authenticated sender: gregory.clement@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 6C826C0019;
-        Fri,  2 Sep 2022 14:10:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1662127826;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=foJpWALHT8diJKC3gFfZMbMqoru/vx4Wr7PWfEagvV4=;
-        b=PHSLSiuqG5UA4f2xzslzfJoJD9vCTjbkRTmN71HPkQjM7uegoDXSjNqjJadcvC8H/8LxGy
-        82pNAgcEX0WCuAMdRdKt4L9Q/vwKSlqxBhsTZ9MJP0o0pfcqGD3fRFt7850zT+IbONqFmz
-        jFvVrIhfVJntZR3kIKUWjbfcZQF7rdNeRwNBbrDIWRIhyAK10m7Ll6+Z4dlzYgBf8c164r
-        VC+2n2q75COyGLINhfVmB4sC9sxDCtKvFkcFoQh916YysJuESEYN3Cp2/mwQHfmZXGRDE0
-        cewI6BoCb+2yGzNtzbrr3Ki36kTgHAvf6k7s3g0mBiagroJ/ZDKCXmOxdIZkVQ==
-From:   Gregory CLEMENT <gregory.clement@bootlin.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH] ARM: dts: armada-xp: align SPI node name with dtschema
-In-Reply-To: <20220810111122.281184-1-krzysztof.kozlowski@linaro.org>
-References: <20220810111122.281184-1-krzysztof.kozlowski@linaro.org>
-Date:   Fri, 02 Sep 2022 16:10:25 +0200
-Message-ID: <8735d9g94e.fsf@BL-laptop>
+        Fri, 2 Sep 2022 10:50:59 -0400
+Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 2CAB95E32F
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 07:12:58 -0700 (PDT)
+Received: (qmail 272628 invoked by uid 1000); 2 Sep 2022 10:12:58 -0400
+Date:   Fri, 2 Sep 2022 10:12:58 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Yinbo Zhu <zhuyinbo@loongson.cn>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <greg@kroah.com>,
+        Patchwork Bot <patchwork-bot@kernel.org>
+Subject: Re: [PATCH v4] usb: ohci-platform: fix usb disconnect issue after s4
+Message-ID: <YxIPai+YGyzCRlkp@rowland.harvard.edu>
+References: <20220902063639.17875-1-zhuyinbo@loongson.cn>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220902063639.17875-1-zhuyinbo@loongson.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> writes:
-
-> The node names should be generic and DT schema expects certain pattern.
->
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-Applied on mvebu/dt
-
-Thanks,
-
-Gregory
+On Fri, Sep 02, 2022 at 02:36:39PM +0800, Yinbo Zhu wrote:
+> The ohci retaining bogus hardware states cause usb disconnect devices
+> connected before hibernation(s4), this issue occur when ohci-platform
+> driver build as a module and the built-in ohci-platform driver will
+> re probe and re enumerate the devices, so there will be no such problem.
+> 
+> Avoid retaining bogus hardware states during resume-from-hibernation.
+> Previously we had reset the hardware as part of preparing to reinstate
+> the snapshot image. But we can do better now with the new PM framework,
+> since we know exactly which resume operations are from hibernation.
+> 
+> According to the commit 'cd1965db054e ("USB: ohci: move ohci_pci_{
+> suspend,resume} to ohci-hcd.c")' and commit '6ec4beb5c701 ("USB: new
+> flag for resume-from-hibernation")', the flag "hibernated" is for
+> resume-from-hibernation and it should be true when usb resume from disk.
+> 
+> When this flag "hibernated" is set, the drivers will reset the hardware
+> to get rid of any existing state and make sure resume from hibernation
+> re-enumerates everything for ohci.
+> 
+> Signed-off-by: Yinbo Zhu <zhuyinbo@loongson.cn>
 > ---
->  arch/arm/boot/dts/armada-xp-lenovo-ix4-300d.dts | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/arch/arm/boot/dts/armada-xp-lenovo-ix4-300d.dts b/arch/arm/boot/dts/armada-xp-lenovo-ix4-300d.dts
-> index 87dcb502f72d..0dad95ea26c2 100644
-> --- a/arch/arm/boot/dts/armada-xp-lenovo-ix4-300d.dts
-> +++ b/arch/arm/boot/dts/armada-xp-lenovo-ix4-300d.dts
-> @@ -164,7 +164,7 @@ scroll-button {
->  		};
->  	};
->  
-> -	spi3 {
-> +	spi-3 {
->  		compatible = "spi-gpio";
->  		status = "okay";
->  		gpio-sck = <&gpio0 25 GPIO_ACTIVE_LOW>;
-> -- 
-> 2.34.1
->
+> Change in v4:
+> 		Add explain what this disconnect issue is.
 
--- 
-Gregory Clement, Bootlin
-Embedded Linux and Kernel engineering
-http://bootlin.com
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+
+I'm a little surprised that the driver doesn't support runtime PM.
+
+>  drivers/usb/host/ohci-platform.c | 28 ++++++++++++++++++++++++----
+>  1 file changed, 24 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/usb/host/ohci-platform.c b/drivers/usb/host/ohci-platform.c
+> index 0adae6265127..822a0f927e62 100644
+> --- a/drivers/usb/host/ohci-platform.c
+> +++ b/drivers/usb/host/ohci-platform.c
+> @@ -289,7 +289,7 @@ static int ohci_platform_suspend(struct device *dev)
+>  	return ret;
+>  }
+>  
+> -static int ohci_platform_resume(struct device *dev)
+> +static int ohci_platform_resume_common(struct device *dev, bool hibernated)
+>  {
+>  	struct usb_hcd *hcd = dev_get_drvdata(dev);
+>  	struct usb_ohci_pdata *pdata = dev_get_platdata(dev);
+> @@ -301,7 +301,7 @@ static int ohci_platform_resume(struct device *dev)
+>  			return err;
+>  	}
+>  
+> -	ohci_resume(hcd, false);
+> +	ohci_resume(hcd, hibernated);
+>  
+>  	pm_runtime_disable(dev);
+>  	pm_runtime_set_active(dev);
+> @@ -309,6 +309,16 @@ static int ohci_platform_resume(struct device *dev)
+>  
+>  	return 0;
+>  }
+> +
+> +static int ohci_platform_resume(struct device *dev)
+> +{
+> +	return ohci_platform_resume_common(dev, false);
+> +}
+> +
+> +static int ohci_platform_restore(struct device *dev)
+> +{
+> +	return ohci_platform_resume_common(dev, true);
+> +}
+>  #endif /* CONFIG_PM_SLEEP */
+>  
+>  static const struct of_device_id ohci_platform_ids[] = {
+> @@ -325,8 +335,16 @@ static const struct platform_device_id ohci_platform_table[] = {
+>  };
+>  MODULE_DEVICE_TABLE(platform, ohci_platform_table);
+>  
+> -static SIMPLE_DEV_PM_OPS(ohci_platform_pm_ops, ohci_platform_suspend,
+> -	ohci_platform_resume);
+> +#ifdef CONFIG_PM_SLEEP
+> +static const struct dev_pm_ops ohci_platform_pm_ops = {
+> +	.suspend = ohci_platform_suspend,
+> +	.resume = ohci_platform_resume,
+> +	.freeze = ohci_platform_suspend,
+> +	.thaw = ohci_platform_resume,
+> +	.poweroff = ohci_platform_suspend,
+> +	.restore = ohci_platform_restore,
+> +};
+> +#endif
+>  
+>  static struct platform_driver ohci_platform_driver = {
+>  	.id_table	= ohci_platform_table,
+> @@ -335,7 +353,9 @@ static struct platform_driver ohci_platform_driver = {
+>  	.shutdown	= usb_hcd_platform_shutdown,
+>  	.driver		= {
+>  		.name	= "ohci-platform",
+> +#ifdef CONFIG_PM_SLEEP
+>  		.pm	= &ohci_platform_pm_ops,
+> +#endif
+>  		.of_match_table = ohci_platform_ids,
+>  		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+>  	}
+> -- 
+> 2.31.1
+> 
