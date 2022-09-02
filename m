@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C233C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:35:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17351C54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:35:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236901AbiIBMfG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:35:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55302 "EHLO
+        id S236909AbiIBMfK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:35:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236932AbiIBMdp (ORCPT
+        with ESMTP id S236936AbiIBMdq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:33:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0460CDC091;
-        Fri,  2 Sep 2022 05:28:04 -0700 (PDT)
+        Fri, 2 Sep 2022 08:33:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE8A3E3438;
+        Fri,  2 Sep 2022 05:28:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2EB706212E;
-        Fri,  2 Sep 2022 12:26:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38E09C433D7;
-        Fri,  2 Sep 2022 12:26:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 158CFB82AA1;
+        Fri,  2 Sep 2022 12:28:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DDB7C433C1;
+        Fri,  2 Sep 2022 12:28:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121571;
-        bh=XEmRic85PvfccO/QQnOEAmcrb59gqVDvOmPW7qUZOG0=;
+        s=korg; t=1662121683;
+        bh=bjlUEf+Dr1gI09ygxVRd1FmBAP970UMclWHUNlzSSjI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zrMQ/a43VuBpyAt8LIf7hJCZTUnr1A8bkEgZXAkpYy8EAFWr2SlbMSDPDg+iCBd6D
-         lxt8p8vL8RT4LtpJ1X0SbxlW+QqN6BHI+QgKmJUep8ZWtu95YeeEyxBBZ5LEJg6Yfm
-         BWAb/kM+Zj3KR1Dw/EnTiiKyqOCyxHi+cIQCaF9Y=
+        b=rE2jXoE3vAgqf4mqK9lGxlFKjuee/htTOmDdygFkhVCH0sGNRXpfDU9i/t3aTN9Xk
+         BlaejM7Th1ssUN7/aboVh1W0OeT2Yg39G4LydONHzqC0NxLs0ZHcgWaz178q8rox4J
+         rWkYLSet+cp+XypbUEHF16lwa1Nz2w1GYAGbU220=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alvin Lee <alvin.lee2@amd.com>,
-        Tom Chung <chiahsuan.chung@amd.com>,
-        Fudong Wang <Fudong.Wang@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 51/56] drm/amd/display: clear optc underflow before turn off odm clock
-Date:   Fri,  2 Sep 2022 14:19:11 +0200
-Message-Id: <20220902121402.205482749@linuxfoundation.org>
+Subject: [PATCH 5.4 32/77] net: Fix a data-race around netdev_budget.
+Date:   Fri,  2 Sep 2022 14:18:41 +0200
+Message-Id: <20220902121404.710820787@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
-References: <20220902121400.219861128@linuxfoundation.org>
+In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
+References: <20220902121403.569927325@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,43 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fudong Wang <Fudong.Wang@amd.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit b2a93490201300a749ad261b5c5d05cb50179c44 ]
+[ Upstream commit 2e0c42374ee32e72948559d2ae2f7ba3dc6b977c ]
 
-[Why]
-After ODM clock off, optc underflow bit will be kept there always and clear not work.
-We need to clear that before clock off.
+While reading netdev_budget, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-[How]
-Clear that if have when clock off.
-
-Reviewed-by: Alvin Lee <alvin.lee2@amd.com>
-Acked-by: Tom Chung <chiahsuan.chung@amd.com>
-Signed-off-by: Fudong Wang <Fudong.Wang@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fixes: 51b0bdedb8e7 ("[NET]: Separate two usages of netdev_max_backlog.")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ net/core/dev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c
-index 411f89218e019..cb5c44b339e09 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c
-@@ -452,6 +452,11 @@ void optc1_enable_optc_clock(struct timing_generator *optc, bool enable)
- 				OTG_CLOCK_ON, 1,
- 				1, 1000);
- 	} else  {
-+
-+		//last chance to clear underflow, otherwise, it will always there due to clock is off.
-+		if (optc->funcs->is_optc_underflow_occurred(optc) == true)
-+			optc->funcs->clear_optc_underflow(optc);
-+
- 		REG_UPDATE_2(OTG_CLOCK_CONTROL,
- 				OTG_CLOCK_GATE_DIS, 0,
- 				OTG_CLOCK_EN, 0);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 99b0025864984..7c19e672dde84 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -6394,7 +6394,7 @@ static __latent_entropy void net_rx_action(struct softirq_action *h)
+ 	struct softnet_data *sd = this_cpu_ptr(&softnet_data);
+ 	unsigned long time_limit = jiffies +
+ 		usecs_to_jiffies(netdev_budget_usecs);
+-	int budget = netdev_budget;
++	int budget = READ_ONCE(netdev_budget);
+ 	LIST_HEAD(list);
+ 	LIST_HEAD(repoll);
+ 
 -- 
 2.35.1
 
