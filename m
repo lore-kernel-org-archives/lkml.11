@@ -2,114 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9D5DECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:12:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15EAEC6FA82
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:15:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229558AbiIBSMz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 14:12:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42614 "EHLO
+        id S229530AbiIBSPD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 14:15:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbiIBSMw (ORCPT
+        with ESMTP id S229623AbiIBSOw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 14:12:52 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 767B5106D9C;
-        Fri,  2 Sep 2022 11:12:49 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id f24so2634802plr.1;
-        Fri, 02 Sep 2022 11:12:49 -0700 (PDT)
+        Fri, 2 Sep 2022 14:14:52 -0400
+Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E40B6D51D7
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 11:06:12 -0700 (PDT)
+Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-11f34610d4aso6563499fac.9
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 11:06:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=qXSasRBrbour0DrsSR74a0zFIaNcb92JbMh4N3aL/kk=;
-        b=C6krQAkmnZUXAZUOemiCFBIp9svy4FoRuDZAaY8WLKWUHUT4blV3Qvv/QPscBe0DfX
-         EeLXAJY5vlW7UYtwsiCVK1ML+s/KgwQezy+eKOxOWJMUrllqxTNJv1lox5esLSjYiSv5
-         HICoGgGhv2maNaoE9+ZQG0UhzQSq6HDzJ5vcuWBuUJEiSVA/qRUuPOeJFJQ2RbZJ9e58
-         tMXZI+cE53KqxgoiywdaQ8eR7OOYnMi1j4TfyqWFaa77xPyfaaL8msmnfQqGGGk6DTWP
-         MHl5i6HdkYQKruQHr3qTB85j4aqIXNsVXF+8T5ciRpdU38Z3/wlvDA/jLGoLVThK4xSp
-         HdLQ==
+        d=kali.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=4SReG0dYNdI4sOJC0GCXgHb2e5dEKOUxDukEb4b+e3g=;
+        b=Gf3EwLi68gK30oxnDc7X+CvSXy+AZ4yGBhpy4/ay6Jn8oWYAThI8VKoz/ohSrtiEl+
+         c8BgNy/F1Tjrut1lp8ExIpLI3g/3SqMpkl6k9xXHNkb1xjvlsePjweTksO8QUVw/9608
+         /MQBVBsn2FKtx+DsXSnS1wOalKeLJcay8/3dwij/LsXpuPQX0L/E5qE+apDQoHdvzwpA
+         uAgwsv3xMmn3hURe2+ga7Drt+ZWs76BS1nmPrq6wabvCKnTLOaM05iwbdXJAKPz0Q6dF
+         oZ8tHRAP9ek4cip58Q5hz4KBdZSnrDIwPMOyRjyNPin8wiGFdlXoYKeg2pT5texxrDI3
+         FF6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=qXSasRBrbour0DrsSR74a0zFIaNcb92JbMh4N3aL/kk=;
-        b=6WFWu97xmXmhBJYq9p3BDHRvNEbYDiSdD7tbccXjtGQbiDzi52oLzkLw7VAeseehcF
-         p8QQtvjGQgJ55tCF33Vxww39tVo0Zlc1E3myyRbV4JKnTvmeTXQHhsm7XmGIBwPLGoKN
-         TsfNoJf4q8+wReu18m93JhHg6GZ5gtV4VmXfZIdTwZzgSTA6pk8+aJ43MvJWfw/TnfDk
-         uEqSPcUpsPG14BSPEiIfFg6krVcgQzhhnGMq82EScsksSHppsO60nSkViaYSuHkUJON3
-         sjBiYJEPcDEiZ++3FPYIZ8roVRuMc8acthf4M6WxEL7xOkjW40sNbXJ2Shwljsue228s
-         5l/A==
-X-Gm-Message-State: ACgBeo2ws3+T+l7cl9xs5k49n9UbjrXw5Gbw4P1s0DpBX6FTCvGsfrqK
-        ZOEbhdbsbtLR6z7nb2+ojP4=
-X-Google-Smtp-Source: AA6agR7oSpGsec3utVnjIXVkhP+SLTmGHlFdC1QX6zt+RkmXC275Y+Q+LembaNt84cTdLMWkknEN2A==
-X-Received: by 2002:a17:902:d4c4:b0:172:f328:e474 with SMTP id o4-20020a170902d4c400b00172f328e474mr36902644plg.144.1662142368939;
-        Fri, 02 Sep 2022 11:12:48 -0700 (PDT)
-Received: from biggie ([103.230.148.184])
-        by smtp.gmail.com with ESMTPSA id z4-20020a626504000000b005375a574846sm2123232pfb.125.2022.09.02.11.12.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 11:12:48 -0700 (PDT)
-Date:   Fri, 2 Sep 2022 23:42:41 +0530
-From:   Gautam Menghani <gautammenghani201@gmail.com>
-To:     sean@mess.org, mchehab@kernel.org
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzbot+0c3cb6dc05fbbdc3ad66@syzkaller.appspotmail.com,
-        hdanton@sina.com
-Subject: Re: [PATCH] drivers/media/rc: Ensure usb_submit_urb() is not called
- if write is in progress
-Message-ID: <YxJHmYDMtmzaHWQG@biggie>
-References: <20220814142543.24910-1-gautammenghani201@gmail.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=4SReG0dYNdI4sOJC0GCXgHb2e5dEKOUxDukEb4b+e3g=;
+        b=f90fPgWmG15jXHtg89l8HRMjBkRvc/gnzqs0s2/rH6mC9OyU+RgIgn3PiFC11yIQkZ
+         JfOnNna2qZT9t4cwhyBUoegyF0N6cDDdg2lHxlhpABy3o1ntT9YFX7AQ3s7CyPO0eCK5
+         fZ01NCPaX5yw23A7sZrs0JU2haOKIjW6T/umTfEt1nyjxJUv6SXel2hONM8TDoGyH4Aj
+         xC7AfxD1Mg23qLWEezjBP99xNwViOi+Sa1QkZhpogpP0ERZZcrYEV2o+HPh3NArMzy9z
+         kcyBw59NCDCs+0ysprBcWvY+wYCg19WvTx77d2tyL/+JP+ipfg7FdfHmuWKnD98ZoTdU
+         Ksuw==
+X-Gm-Message-State: ACgBeo3qJk9Mp9XokAotGbPtjNvkbxkKBSMDp1SwViHTZqMWUSjfSM/2
+        B7sZGQBbItPe4oZTz7fz4tahFhOh/44whw==
+X-Google-Smtp-Source: AA6agR5XFga2vK5PDHLiSqbDdvjvScCcjkcLJ9gsHdinH5VF8FR2zg4J7zP11R9j2qct/wxbjCgAgA==
+X-Received: by 2002:a05:6808:2127:b0:343:ce6:18ff with SMTP id r39-20020a056808212700b003430ce618ffmr2357622oiw.165.1662141972245;
+        Fri, 02 Sep 2022 11:06:12 -0700 (PDT)
+Received: from [192.168.11.16] (cpe-173-173-107-246.satx.res.rr.com. [173.173.107.246])
+        by smtp.gmail.com with ESMTPSA id x8-20020a056808144800b0033b15465357sm1257467oiv.5.2022.09.02.11.06.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Sep 2022 11:06:11 -0700 (PDT)
+Message-ID: <55e5fb0f-0b65-c27a-5c60-4ae7991ba538@kali.org>
+Date:   Fri, 2 Sep 2022 13:06:10 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220814142543.24910-1-gautammenghani201@gmail.com>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.0
+Subject: Re: [PATCH] arm64: dts: qcom: sc8280xp: mark USB controllers as
+ wakeup-sources
+Content-Language: en-US
+To:     Johan Hovold <johan+linaro@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220902081652.12631-1-johan+linaro@kernel.org>
+From:   Steev Klimaszewski <steev@kali.org>
+In-Reply-To: <20220902081652.12631-1-johan+linaro@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 14, 2022 at 07:55:42PM +0530, Gautam Menghani wrote:
-> The warning "URB submitted while active" is reported if the function
-> send_packet() in imon.c is called if a write is already is in progress.
-> Add a check to return -EBUSY in case a write is already is in progress.
-> Also, mark tx.busy as false after transmission is completed.
-> 
-> Fixes: 21677cfc562a ("V4L/DVB: ir-core: add imon driver")
-> Cc: hdanton@sina.com
-> Suggested-by: hdanton@sina.com
-> Link: https://syzkaller.appspot.com/bug?id=e378e6a51fbe6c5cc43e34f131cc9a315ef0337e
-> Reported-by: syzbot+0c3cb6dc05fbbdc3ad66@syzkaller.appspotmail.com
-> Signed-off-by: Gautam Menghani <gautammenghani201@gmail.com>
+
+On 9/2/22 3:16 AM, Johan Hovold wrote:
+> The primary and secondary USB controllers can be used to wake the system
+> from suspend so mark them accordingly.
+>
+> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 > ---
->  drivers/media/rc/imon.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/media/rc/imon.c b/drivers/media/rc/imon.c
-> index 735b925da998..a5b997c2c7e2 100644
-> --- a/drivers/media/rc/imon.c
-> +++ b/drivers/media/rc/imon.c
-> @@ -598,6 +598,8 @@ static int send_packet(struct imon_context *ictx)
->  	int retval = 0;
->  	struct usb_ctrlrequest *control_req = NULL;
->  
-> +	if (ictx->tx.busy)
-> +		return -EBUSY;
->  	/* Check if we need to use control or interrupt urb */
->  	if (!ictx->tx_control) {
->  		pipe = usb_sndintpipe(ictx->usbdev_intf0,
-> @@ -654,6 +656,7 @@ static int send_packet(struct imon_context *ictx)
->  			pr_err_ratelimited("task interrupted\n");
->  		}
->  		mutex_lock(&ictx->lock);
-> +		ictx->tx.busy = false;
->  
->  		retval = ictx->tx.status;
->  		if (retval)
-> -- 
-> 2.34.1
-> 
-Hi,
-
-Please review the above fix and let me know if any changes are needed.
-
-Thanks,
-Gautam
+>   arch/arm64/boot/dts/qcom/sc8280xp.dtsi | 4 ++++
+>   1 file changed, 4 insertions(+)
+>
+> diff --git a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> index 3bbaec97aee9..e441d632c3e8 100644
+> --- a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> @@ -1872,6 +1872,8 @@ usb_0: usb@a6f8800 {
+>   					<&gem_noc MASTER_APPSS_PROC 0 &config_noc SLAVE_USB3_0 0>;
+>   			interconnect-names = "usb-ddr", "apps-usb";
+>   
+> +			wakeup-source;
+> +
+>   			status = "disabled";
+>   
+>   			usb_0_dwc3: usb@a600000 {
+> @@ -1924,6 +1926,8 @@ usb_1: usb@a8f8800 {
+>   					<&gem_noc MASTER_APPSS_PROC 0 &config_noc SLAVE_USB3_1 0>;
+>   			interconnect-names = "usb-ddr", "apps-usb";
+>   
+> +			wakeup-source;
+> +
+>   			status = "disabled";
+>   
+>   			usb_1_dwc3: usb@a800000 {
+Tested-by: Steev Klimaszewski <steev@kali.org> #Lenovo Thinkpad X13s
