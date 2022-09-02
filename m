@@ -2,103 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1864ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:39:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3249EC001B5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:39:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236940AbiIBPjP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 11:39:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51766 "EHLO
+        id S237146AbiIBPjT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 11:39:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236649AbiIBPi1 (ORCPT
+        with ESMTP id S236633AbiIBPi1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 11:38:27 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68307D5735
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 08:25:44 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4MK1vW3Wfkz9sZ3;
-        Fri,  2 Sep 2022 17:25:43 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id QPSFDO7JHai2; Fri,  2 Sep 2022 17:25:43 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4MK1vV4t3qz9sff;
-        Fri,  2 Sep 2022 17:25:42 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 973788B764;
-        Fri,  2 Sep 2022 17:25:42 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id CYFeafEYm9IA; Fri,  2 Sep 2022 17:25:42 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.232.39])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 581E18B787;
-        Fri,  2 Sep 2022 17:25:42 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 282FPVCa2217410
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Fri, 2 Sep 2022 17:25:31 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 282FPUMj2217380;
-        Fri, 2 Sep 2022 17:25:30 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH v2] powerpc/vdso: link with -z noexecstack
-Date:   Fri,  2 Sep 2022 17:25:24 +0200
-Message-Id: <b95f2e3216a574837dd61208444e9515c3423da4.1662132312.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.37.1
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6851BE0FFE;
+        Fri,  2 Sep 2022 08:25:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662132346; x=1693668346;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=WkkhMq7jUWQDxjct1eMk17xBl5izK88Vwv+Go0eqOMw=;
+  b=jRLbk8LS8vs1mCFlWkwctJj5KNT1MhDJJqPVDTvnsChb5k3aB7/17C3v
+   DFkHtVaHOM4HSVbTHQrkTWM77mlRlBjk1b/Vl79wUdvtOEDUzgjy/gxUf
+   CFH1OvaeXrq+6dN8Oj5scsnBQv8VpTe2OTxoQUWNDbRQG5Wh/Vz/FtPu2
+   XNpZKIjguSTzBO8+a5FOjT8xmFQhXHJR3RUTp9Dgx57C1Xk+pwdmd4evG
+   +zF9w194GlEn8IjlKuBz3FCm+Gwfmlg2Iqs5JQk8LxdtSXj6UjesPsxgf
+   7oykpm/dGDopJhjIzm7oNqFNYNYjZkTDs8afRxQ/lcpBb6KU08BAQToSE
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10458"; a="296782558"
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="296782558"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 08:25:45 -0700
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="642942553"
+Received: from tanjeffr-mobl1.amr.corp.intel.com (HELO [10.212.156.60]) ([10.212.156.60])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 08:25:44 -0700
+Message-ID: <5d667258-b58b-3d28-3609-e7914c99b31b@intel.com>
+Date:   Fri, 2 Sep 2022 08:25:44 -0700
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1662132323; l=2291; s=20211009; h=from:subject:message-id; bh=1t0lJDIli6rqkKhPYM/6mAJjgb0mjc9+/i/6Gd5VKd4=; b=GS9dzfO8nvY0H/dFq+PXD7w8mxK6h81gVlUTrwOkNQtOAmuTzoPuZla9o5Z7AIKE+npi198uUc7q tNdr7NTyBPEydSBjB50jA0IJ4WUqgtPn/usPib8+va3qsykMgV09
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] KVM: SVM: Replace kmap_atomic() with kmap_local_page()
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>,
+        Zhao Liu <zhao1.liu@linux.intel.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ira Weiny <ira.weiny@intel.com>,
+        "Fabio M . De Francesco" <fmdefrancesco@gmail.com>,
+        Zhenyu Wang <zhenyu.z.wang@intel.com>,
+        Zhao Liu <zhao1.liu@intel.com>
+References: <20220902090811.2430228-1-zhao1.liu@linux.intel.com>
+ <YxId/V1qZcie9eyp@google.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <YxId/V1qZcie9eyp@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With recent binutils, the following warning appears:
+On 9/2/22 08:15, Sean Christopherson wrote:
+>>  	for (i = 0; i < npages; i++) {
+>> -		page_virtual = kmap_atomic(pages[i]);
+>> +		page_virtual = kmap_local_page(pages[i]);
+>>  		clflush_cache_range(page_virtual, PAGE_SIZE);
+> SEV is 64-bit only, any reason not to go straight to page_address()?
 
-  VDSO32L arch/powerpc/kernel/vdso/vdso32.so.dbg
-/opt/gcc-12.2.0-nolibc/powerpc64-linux/bin/../lib/gcc/powerpc64-linux/12.2.0/../../../../powerpc64-linux/bin/ld: warning: arch/powerpc/kernel/vdso/getcpu-32.o: missing .note.GNU-stack section implies executable stack
-/opt/gcc-12.2.0-nolibc/powerpc64-linux/bin/../lib/gcc/powerpc64-linux/12.2.0/../../../../powerpc64-linux/bin/ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
+Yes.  page_address() is a hack.  People get away with using it, but they
+really shouldn't, especially when it is used on pages you didn't
+allocate yourself.
 
-To avoid that, explicitely tell the linker we don't
-want executable stack.
+IOW:
 
-For more explanations, see commit ffcf9c5700e4 ("x86: link vdso
-and boot with -z noexecstack --no-warn-rwx-segments")
+	page = alloc_page(GFP_KERNEL);
+	ptr = page_address(page);
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
-v2: Removed unrelated change in arch/powerpc/kernel/Makefile
----
- arch/powerpc/kernel/vdso/Makefile | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+is fine.  But:
 
-diff --git a/arch/powerpc/kernel/vdso/Makefile b/arch/powerpc/kernel/vdso/Makefile
-index 096b0bf1335f..a2e7b0ce5b19 100644
---- a/arch/powerpc/kernel/vdso/Makefile
-+++ b/arch/powerpc/kernel/vdso/Makefile
-@@ -92,13 +92,13 @@ include/generated/vdso64-offsets.h: $(obj)/vdso64.so.dbg FORCE
- 
- # actual build commands
- quiet_cmd_vdso32ld_and_check = VDSO32L $@
--      cmd_vdso32ld_and_check = $(VDSOCC) $(c_flags) $(CC32FLAGS) -o $@ -Wl,-T$(filter %.lds,$^) $(filter %.o,$^) ; $(cmd_vdso_check)
-+      cmd_vdso32ld_and_check = $(VDSOCC) $(c_flags) $(CC32FLAGS) -o $@ -Wl,-T$(filter %.lds,$^) $(filter %.o,$^) -z noexecstack ; $(cmd_vdso_check)
- quiet_cmd_vdso32as = VDSO32A $@
-       cmd_vdso32as = $(VDSOCC) $(a_flags) $(CC32FLAGS) $(AS32FLAGS) -c -o $@ $<
- quiet_cmd_vdso32cc = VDSO32C $@
-       cmd_vdso32cc = $(VDSOCC) $(c_flags) $(CC32FLAGS) -c -o $@ $<
- 
- quiet_cmd_vdso64ld_and_check = VDSO64L $@
--      cmd_vdso64ld_and_check = $(VDSOCC) $(c_flags) $(CC64FLAGS) -o $@ -Wl,-T$(filter %.lds,$^) $(filter %.o,$^) ; $(cmd_vdso_check)
-+      cmd_vdso64ld_and_check = $(VDSOCC) $(c_flags) $(CC64FLAGS) -o $@ -Wl,-T$(filter %.lds,$^) $(filter %.o,$^) -z noexecstack ; $(cmd_vdso_check)
- quiet_cmd_vdso64as = VDSO64A $@
-       cmd_vdso64as = $(VDSOCC) $(a_flags) $(CC64FLAGS) $(AS64FLAGS) -c -o $@ $<
--- 
-2.37.1
+	page = alloc_page(GFP_HIGHUSER);
+	ptr = page_address(page);
+
+even on something that's Kconfig'd 64-bit only is a no-no in my book.
+The same goes for a generic-looking function like sev_clflush_pages()
+where the pages come from who-knows-where.
+
+It's incredibly useful for kernel accesses to random pages to be bounded
+explicitly.  Keeping the kmap() *API* in place means it can be used for
+things other than highmem mappings (like protection keys).  The kmap*()
+family is a pretty thin wrapper around page_address() on 64-bit most of
+the time anyway.
 
