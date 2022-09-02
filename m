@@ -2,134 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD507ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:46:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5151C6FA82
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:47:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237998AbiIBNp7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:45:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50458 "EHLO
+        id S236909AbiIBNr2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:47:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237330AbiIBNpS (ORCPT
+        with ESMTP id S236951AbiIBNrJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:45:18 -0400
-Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D862912EC60;
-        Fri,  2 Sep 2022 06:21:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1662124883; x=1693660883;
-  h=message-id:date:mime-version:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:subject;
-  bh=nzPUc9EDrOhRtDNeKPMRzpudxcLrf0JAPFl0JHh3d9o=;
-  b=DZ2Sxio5il+oQReWjRJLz0mEL7NTc3FEzLKuoGfHG+NNTHSmzgEOS7DZ
-   xcKu9A6lXnc5joQlxm4W3hy8meJCNbRoBzYWkDgjWJkG20XucwkYeOlFS
-   S20HOBJfv/Ndg+MqjWPoSrx1u3YchQD5IkWjXdKn9L67gV/9Ww8J2EKaK
-   c=;
-X-IronPort-AV: E=Sophos;i="5.93,283,1654560000"; 
-   d="scan'208";a="255577710"
-Subject: Re: [PATCH v3 14/19] dt-bindings: hwmon: (mr75203) add "moortec,
- ts-series" property
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-388992e0.us-west-2.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 13:18:10 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2c-388992e0.us-west-2.amazon.com (Postfix) with ESMTPS id C2D51E48AB;
-        Fri,  2 Sep 2022 13:18:09 +0000 (UTC)
-Received: from EX19D013UWB004.ant.amazon.com (10.13.138.62) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Fri, 2 Sep 2022 13:18:09 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (10.43.161.207) by
- EX19D013UWB004.ant.amazon.com (10.13.138.62) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.1118.12; Fri, 2 Sep 2022 13:18:09 +0000
-Received: from [192.168.149.164] (10.85.143.177) by mail-relay.amazon.com
- (10.43.161.249) with Microsoft SMTP Server id 15.0.1497.38 via Frontend
- Transport; Fri, 2 Sep 2022 13:18:03 +0000
-Message-ID: <52e48e0a-1369-2c8f-b3e8-c854365384d4@amazon.com>
-Date:   Fri, 2 Sep 2022 16:18:02 +0300
+        Fri, 2 Sep 2022 09:47:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7178323168;
+        Fri,  2 Sep 2022 06:22:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 59EF462180;
+        Fri,  2 Sep 2022 12:28:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55629C433C1;
+        Fri,  2 Sep 2022 12:28:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662121732;
+        bh=GXpS0K7nMoJ0lD89ZTWvPSyPpAQxwDn/AVLCeVa0IZw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PCmoN/aRW1pVkxKaYE3PG4TqTs7BgucLTThPLfmVpcueWr8kOWBGXfLYgoh5KVuLT
+         JNWsBtzJHMgiQJnnVO8EgsGDbKPGTLmnq6S5IRYjnrJxBPAMnriV1anjIFBxz24MGD
+         4wekye8glsLuNwcnVVsGX8tk1TVpKfw34zJKqoNQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Stephane Eranian <eranian@google.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Kan Liang <kan.liang@linux.intel.com>
+Subject: [PATCH 5.4 47/77] perf/x86/intel/uncore: Fix broken read_counter() for SNB IMC PMU
+Date:   Fri,  2 Sep 2022 14:18:56 +0200
+Message-Id: <20220902121405.211947115@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
+References: <20220902121403.569927325@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-To:     Philipp Zabel <p.zabel@pengutronix.de>, <jdelvare@suse.com>,
-        <linux@roeck-us.net>, <robh+dt@kernel.org>,
-        <rtanwar@maxlinear.com>, <linux-hwmon@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <talel@amazon.com>, <hhhawa@amazon.com>, <jonnyc@amazon.com>,
-        <hanochu@amazon.com>, <ronenk@amazon.com>, <itamark@amazon.com>,
-        <shellykz@amazon.com>, <shorer@amazon.com>, <amitlavi@amazon.com>,
-        <almogbs@amazon.com>, <dkl@amazon.com>,
-        <andriy.shevchenko@intel.com>, "Farber, Eliav" <farbere@amazon.com>
-References: <20220830192212.28570-1-farbere@amazon.com>
- <20220830192212.28570-15-farbere@amazon.com>
- <89806ee9a80652d5877ef5c4a86574e82af48da4.camel@pengutronix.de>
- <f49558fa-e987-145c-425e-0e8a7a9fba5f@amazon.com>
- <4ab6f79f54ad975d7c21c86c57fa2defbb8c98c0.camel@pengutronix.de>
-Content-Language: en-US
-From:   "Farber, Eliav" <farbere@amazon.com>
-In-Reply-To: <4ab6f79f54ad975d7c21c86c57fa2defbb8c98c0.camel@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/31/2022 12:42 PM, Philipp Zabel wrote:
-> On Mi, 2022-08-31 at 12:23 +0300, Farber, Eliav wrote:
->> On 8/31/2022 11:23 AM, Philipp Zabel wrote:
->> > On Di, 2022-08-30 at 19:22 +0000, Eliav Farber wrote:
->> > > Add optional "moortec,ts-series" property to define the temperature
->> > > equation and coefficients that shall be used to convert the digital
->> > > output to value in milli-Celsius.
->> > > Supported series: 5 (default) and 6.
->> >
->> > Is this the difference between mr75xxx and mr76xxx series?
->> > If so, should be a compatible "moortec,mr76006" instead?
->> > If the temperature equation could be derived from the compatible, this
->> > property would not be necessary.
->> The PVT (Process, Voltage, Temperature) monitoring logic can be
->> constructed from many different sub-blocks:
->> *) CONTROLLER (mr75203) - controlling TS, PD and VM.
->> *) TS (mr74137) - for measuring temperature in ring.
->> *) PD (mr74139) - for measuring IO based transistors.
->> *) VM (mr74138) - for measuring voltage rails across the SoC.
->> *) Ring oscillators (mr76007/mr76008)
->> *) Pre-scalers (mr76006)
->>
->> Besides mr75203 which is digital all other IPs are analog.
->> There is a single mr75203 and there can be several or none of the other
->> units.
->
-> Thank you for the explanation, I think this information would be nice
-> to have in a description in moortec,mr75203.yaml. 
+From: Stephane Eranian <eranian@google.com>
 
-For v4 I added a new patch which adds this description in
-moortec,mr75203.yaml:
+commit 11745ecfe8fea4b4a4c322967a7605d2ecbd5080 upstream.
 
-description: |
-   A Moortec PVT (Process, Voltage, Temperature) monitoring logic design can
-   include many different units.
-   Such a design will usually consists of several Moortec's embedded 
-analog IPs,
-   and a single Moortec controller to configure and control the IPs.
+Existing code was generating bogus counts for the SNB IMC bandwidth counters:
 
-   Some of the Moortec's analog hard IPs that can be used in a design:
-   *) Temperature Sensor (TS) - used to monitor core temperature (e.g. 
-mr74137).
-   *) Voltage Monitor (VM) - used to monitor voltage levels (e.g. mr74138).
-   *) Process Detector (PD) - used to assess silicon speed (e.g. mr74139).
-   *) Delay Chain - ring oscillator connected to the PD, used to measure IO
-      based transistors (e.g. mr76008 ring oscillator at 1.1V, mr76007 ring
-      oscillator at 1.8V).
-   *) Pre Scaler - provides divide-by-X scaling of input voltage, which 
-can then
-      be presented for VM for measurement within its range (e.g. mr76006 -
-      divide by 2 pre-scaler).
+$ perf stat -a -I 1000 -e uncore_imc/data_reads/,uncore_imc/data_writes/
+     1.000327813           1,024.03 MiB  uncore_imc/data_reads/
+     1.000327813              20.73 MiB  uncore_imc/data_writes/
+     2.000580153         261,120.00 MiB  uncore_imc/data_reads/
+     2.000580153              23.28 MiB  uncore_imc/data_writes/
 
-   TS, VM & PD also include a digital interface, which consists of 
-configuration
-   inputs and measurement outputs.
-   The mr75203 binding describes configuration for the controller unit, 
-but also
-   for some of the analog IPs.
+The problem was introduced by commit:
+  07ce734dd8ad ("perf/x86/intel/uncore: Clean up client IMC")
 
---
-Regards, Eliav
+Where the read_counter callback was replace to point to the generic
+uncore_mmio_read_counter() function.
+
+The SNB IMC counters are freerunnig 32-bit counters laid out contiguously in
+MMIO. But uncore_mmio_read_counter() is using a readq() call to read from
+MMIO therefore reading 64-bit from MMIO. Although this is okay for the
+uncore_perf_event_update() function because it is shifting the value based
+on the actual counter width to compute a delta, it is not okay for the
+uncore_pmu_event_start() which is simply reading the counter  and therefore
+priming the event->prev_count with a bogus value which is responsible for
+causing bogus deltas in the perf stat command above.
+
+The fix is to reintroduce the custom callback for read_counter for the SNB
+IMC PMU and use readl() instead of readq(). With the change the output of
+perf stat is back to normal:
+$ perf stat -a -I 1000 -e uncore_imc/data_reads/,uncore_imc/data_writes/
+     1.000120987             296.94 MiB  uncore_imc/data_reads/
+     1.000120987             138.42 MiB  uncore_imc/data_writes/
+     2.000403144             175.91 MiB  uncore_imc/data_reads/
+     2.000403144              68.50 MiB  uncore_imc/data_writes/
+
+Fixes: 07ce734dd8ad ("perf/x86/intel/uncore: Clean up client IMC")
+Signed-off-by: Stephane Eranian <eranian@google.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+Link: https://lore.kernel.org/r/20220803160031.1379788-1-eranian@google.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/x86/events/intel/uncore_snb.c |   18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
+
+--- a/arch/x86/events/intel/uncore_snb.c
++++ b/arch/x86/events/intel/uncore_snb.c
+@@ -575,6 +575,22 @@ int snb_pci2phy_map_init(int devid)
+ 	return 0;
+ }
+ 
++static u64 snb_uncore_imc_read_counter(struct intel_uncore_box *box, struct perf_event *event)
++{
++	struct hw_perf_event *hwc = &event->hw;
++
++	/*
++	 * SNB IMC counters are 32-bit and are laid out back to back
++	 * in MMIO space. Therefore we must use a 32-bit accessor function
++	 * using readq() from uncore_mmio_read_counter() causes problems
++	 * because it is reading 64-bit at a time. This is okay for the
++	 * uncore_perf_event_update() function because it drops the upper
++	 * 32-bits but not okay for plain uncore_read_counter() as invoked
++	 * in uncore_pmu_event_start().
++	 */
++	return (u64)readl(box->io_addr + hwc->event_base);
++}
++
+ static struct pmu snb_uncore_imc_pmu = {
+ 	.task_ctx_nr	= perf_invalid_context,
+ 	.event_init	= snb_uncore_imc_event_init,
+@@ -594,7 +610,7 @@ static struct intel_uncore_ops snb_uncor
+ 	.disable_event	= snb_uncore_imc_disable_event,
+ 	.enable_event	= snb_uncore_imc_enable_event,
+ 	.hw_config	= snb_uncore_imc_hw_config,
+-	.read_counter	= uncore_mmio_read_counter,
++	.read_counter	= snb_uncore_imc_read_counter,
+ };
+ 
+ static struct intel_uncore_type snb_uncore_imc = {
+
+
