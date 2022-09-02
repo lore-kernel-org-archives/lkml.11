@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D8F2C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:32:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE19BC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:32:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236729AbiIBMcP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:32:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36612 "EHLO
+        id S236742AbiIBMcT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:32:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236566AbiIBMbT (ORCPT
+        with ESMTP id S236661AbiIBMbT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 08:31:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 159C4E1146;
-        Fri,  2 Sep 2022 05:26:41 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41113E190B;
+        Fri,  2 Sep 2022 05:26:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F52DB82AA7;
-        Fri,  2 Sep 2022 12:26:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 766CEC433D7;
-        Fri,  2 Sep 2022 12:26:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 29D3A62109;
+        Fri,  2 Sep 2022 12:24:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CC7BC433C1;
+        Fri,  2 Sep 2022 12:24:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121565;
-        bh=X5zm/3ACRpIb6zzS26kH/5/nDg/MHI/i3VZuY3Du/z8=;
+        s=korg; t=1662121489;
+        bh=48K8ti4/WbEJQ+8DJb0y3V3p3MGlpvPYyectvO5r+L0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QF3KZvyayJ1h8bp9xG4K/63DxVQ8ZmsnsTmDL1Fy0Epug1chKPyJ1QixGhzprP9FX
-         AY8GQeq6w1p7oXZg/VIQktKUOs6XRriVqm5kxq41aInSJNsvj/qA8AWGIxU7maEa5e
-         FVF8bw+krJMcCJbkC3n/+B7jQKhlZY+BFKtUQo3o=
+        b=afQpzJo2wU24i9wMsaZ7WuRkd1NBidx+WNWRK9Fth6Oycut0/8rhToQjniqYX8Dp+
+         BafiK/uL2JrajNYwRdAviUbEtZXFxMy7PfZqfjtKv3TJqc/V1huqnk25bKRGb2l6vt
+         +/v5uILpbOru9O2M0sN9EGAScJjn7bFQc7i1eLvY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
-        Yang Jihong <yangjihong1@huawei.com>
-Subject: [PATCH 4.19 49/56] ftrace: Fix NULL pointer dereference in is_ftrace_trampoline when ftrace is dead
-Date:   Fri,  2 Sep 2022 14:19:09 +0200
-Message-Id: <20220902121402.128688274@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 24/56] net: Fix a data-race around sysctl_net_busy_read.
+Date:   Fri,  2 Sep 2022 14:18:44 +0200
+Message-Id: <20220902121401.037492311@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
 References: <20220902121400.219861128@linuxfoundation.org>
@@ -48,93 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Jihong <yangjihong1@huawei.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit c3b0f72e805f0801f05fa2aa52011c4bfc694c44 upstream.
+[ Upstream commit e59ef36f0795696ab229569c153936bfd068d21c ]
 
-ftrace_startup does not remove ops from ftrace_ops_list when
-ftrace_startup_enable fails:
+While reading sysctl_net_busy_read, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-register_ftrace_function
-  ftrace_startup
-    __register_ftrace_function
-      ...
-      add_ftrace_ops(&ftrace_ops_list, ops)
-      ...
-    ...
-    ftrace_startup_enable // if ftrace failed to modify, ftrace_disabled is set to 1
-    ...
-  return 0 // ops is in the ftrace_ops_list.
-
-When ftrace_disabled = 1, unregister_ftrace_function simply returns without doing anything:
-unregister_ftrace_function
-  ftrace_shutdown
-    if (unlikely(ftrace_disabled))
-            return -ENODEV;  // return here, __unregister_ftrace_function is not executed,
-                             // as a result, ops is still in the ftrace_ops_list
-    __unregister_ftrace_function
-    ...
-
-If ops is dynamically allocated, it will be free later, in this case,
-is_ftrace_trampoline accesses NULL pointer:
-
-is_ftrace_trampoline
-  ftrace_ops_trampoline
-    do_for_each_ftrace_op(op, ftrace_ops_list) // OOPS! op may be NULL!
-
-Syzkaller reports as follows:
-[ 1203.506103] BUG: kernel NULL pointer dereference, address: 000000000000010b
-[ 1203.508039] #PF: supervisor read access in kernel mode
-[ 1203.508798] #PF: error_code(0x0000) - not-present page
-[ 1203.509558] PGD 800000011660b067 P4D 800000011660b067 PUD 130fb8067 PMD 0
-[ 1203.510560] Oops: 0000 [#1] SMP KASAN PTI
-[ 1203.511189] CPU: 6 PID: 29532 Comm: syz-executor.2 Tainted: G    B   W         5.10.0 #8
-[ 1203.512324] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
-[ 1203.513895] RIP: 0010:is_ftrace_trampoline+0x26/0xb0
-[ 1203.514644] Code: ff eb d3 90 41 55 41 54 49 89 fc 55 53 e8 f2 00 fd ff 48 8b 1d 3b 35 5d 03 e8 e6 00 fd ff 48 8d bb 90 00 00 00 e8 2a 81 26 00 <48> 8b ab 90 00 00 00 48 85 ed 74 1d e8 c9 00 fd ff 48 8d bb 98 00
-[ 1203.518838] RSP: 0018:ffffc900012cf960 EFLAGS: 00010246
-[ 1203.520092] RAX: 0000000000000000 RBX: 000000000000007b RCX: ffffffff8a331866
-[ 1203.521469] RDX: 0000000000000000 RSI: 0000000000000008 RDI: 000000000000010b
-[ 1203.522583] RBP: 0000000000000000 R08: 0000000000000000 R09: ffffffff8df18b07
-[ 1203.523550] R10: fffffbfff1be3160 R11: 0000000000000001 R12: 0000000000478399
-[ 1203.524596] R13: 0000000000000000 R14: ffff888145088000 R15: 0000000000000008
-[ 1203.525634] FS:  00007f429f5f4700(0000) GS:ffff8881daf00000(0000) knlGS:0000000000000000
-[ 1203.526801] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 1203.527626] CR2: 000000000000010b CR3: 0000000170e1e001 CR4: 00000000003706e0
-[ 1203.528611] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[ 1203.529605] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-Therefore, when ftrace_startup_enable fails, we need to rollback registration
-process and remove ops from ftrace_ops_list.
-
-Link: https://lkml.kernel.org/r/20220818032659.56209-1-yangjihong1@huawei.com
-
-Suggested-by: Steven Rostedt <rostedt@goodmis.org>
-Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 2d48d67fa8cd ("net: poll/select low latency socket support")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/ftrace.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ net/core/sock.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -2748,6 +2748,16 @@ static int ftrace_startup(struct ftrace_
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 79f085df52cef..cd23a8e4556ca 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2856,7 +2856,7 @@ void sock_init_data(struct socket *sock, struct sock *sk)
  
- 	ftrace_startup_enable(command);
+ #ifdef CONFIG_NET_RX_BUSY_POLL
+ 	sk->sk_napi_id		=	0;
+-	sk->sk_ll_usec		=	sysctl_net_busy_read;
++	sk->sk_ll_usec		=	READ_ONCE(sysctl_net_busy_read);
+ #endif
  
-+	/*
-+	 * If ftrace is in an undefined state, we just remove ops from list
-+	 * to prevent the NULL pointer, instead of totally rolling it back and
-+	 * free trampoline, because those actions could cause further damage.
-+	 */
-+	if (unlikely(ftrace_disabled)) {
-+		__unregister_ftrace_function(ops);
-+		return -ENODEV;
-+	}
-+
- 	ops->flags &= ~FTRACE_OPS_FL_ADDING;
- 
- 	return 0;
+ 	sk->sk_max_pacing_rate = ~0U;
+-- 
+2.35.1
+
 
 
