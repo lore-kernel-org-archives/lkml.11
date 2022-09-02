@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 516C1ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:52:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDE73ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:52:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237919AbiIBMwS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:52:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45390 "EHLO
+        id S237923AbiIBMwW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:52:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237830AbiIBMvU (ORCPT
+        with ESMTP id S237835AbiIBMvV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:51:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AF0B1274B;
-        Fri,  2 Sep 2022 05:37:01 -0700 (PDT)
+        Fri, 2 Sep 2022 08:51:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A92002CDDC;
+        Fri,  2 Sep 2022 05:37:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5553FB82A77;
-        Fri,  2 Sep 2022 12:35:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FDCAC433D7;
-        Fri,  2 Sep 2022 12:35:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9D1E8B82AD7;
+        Fri,  2 Sep 2022 12:35:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECA30C433D6;
+        Fri,  2 Sep 2022 12:35:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122120;
-        bh=rvsRqFwA2k2w3Fi1nbNzzjO0ZKeucinFjbQ5L5lGwKk=;
+        s=korg; t=1662122151;
+        bh=Bs2CQBsnUjpIZ+XxHHFSiRhfkB928kkGSKMck2e8gws=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L65w096k/3SHDC0tN9VwF/m1tZh04hHaychVyZ0HFXdiiiE/EyXs3ucx/+crp9X/C
-         cRfWquzj2qdKd0ymBMm7A9QDxlieRMCEw0qujKt7fyk0HxIqTCG+KZ92BC/SutHlP/
-         JvvKHyQDc5kZtnaCgrpLHlJ/kiZKk0ePIoQzDdg0=
+        b=nFipbIvLdvWGNnFudSU0aS7GUedmCQyE3XwtX7MhLuPX7gYNSGY08Dc4wo1+PnpKe
+         bMEeIZacatV/jzUhMnqMy57Ojyql7gJVLz7t0K3VX9iul3p+EDgj8U3GbDWzJTFYqk
+         9sboJsnet0w+wnZ21ZHvhMSxB3Kwkyy/skLTY3FI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lennert Van Alboom <lennert@vanalboom.org>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.19 19/72] ALSA: usb-audio: Add quirk for LH Labs Geek Out HD Audio 1V5
-Date:   Fri,  2 Sep 2022 14:18:55 +0200
-Message-Id: <20220902121405.408654318@linuxfoundation.org>
+        stable@vger.kernel.org, Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        linux-input@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.19 09/72] HID: steam: Prevent NULL pointer dereference in steam_{recv,send}_report
+Date:   Fri,  2 Sep 2022 14:18:45 +0200
+Message-Id: <20220902121405.102987587@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
 References: <20220902121404.772492078@linuxfoundation.org>
@@ -48,35 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Lee Jones <lee.jones@linaro.org>
 
-commit 5f3d9e8161bb8cb23ab3b4678cd13f6e90a06186 upstream.
+commit cd11d1a6114bd4bc6450ae59f6e110ec47362126 upstream.
 
-The USB DAC from LH Labs (2522:0007) seems requiring the same quirk as
-Sony Walkman to set up the interface like UAC1; otherwise it gets the
-constant errors "usb_set_interface failed (-71)".  This patch adds a
-quirk entry for addressing the buggy behavior.
+It is possible for a malicious device to forgo submitting a Feature
+Report.  The HID Steam driver presently makes no prevision for this
+and de-references the 'struct hid_report' pointer obtained from the
+HID devices without first checking its validity.  Let's change that.
 
-Reported-by: Lennert Van Alboom <lennert@vanalboom.org>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/T3VPXtCc4uFws9Gfh2RjX6OdwM1RqfC6VqQr--_LMDyB2x5N3p9_q6AtPna17IXhHwBtcJVdXuS80ZZSCMjh_BafIbnzJPhbrkmhmWS6DlI=@vanalboom.org
-Link: https://lore.kernel.org/r/20220828074143.14736-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Cc: Jiri Kosina <jikos@kernel.org>
+Cc: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc: linux-input@vger.kernel.org
+Fixes: c164d6abf3841 ("HID: add driver for Valve Steam Controller")
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/usb/quirks.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/hid/hid-steam.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/sound/usb/quirks.c
-+++ b/sound/usb/quirks.c
-@@ -1903,6 +1903,8 @@ static const struct usb_audio_quirk_flag
- 		   QUIRK_FLAG_SHARE_MEDIA_DEVICE | QUIRK_FLAG_ALIGN_TRANSFER),
- 	DEVICE_FLG(0x21b4, 0x0081, /* AudioQuest DragonFly */
- 		   QUIRK_FLAG_GET_SAMPLE_RATE),
-+	DEVICE_FLG(0x2522, 0x0007, /* LH Labs Geek Out HD Audio 1V5 */
-+		   QUIRK_FLAG_SET_IFACE_FIRST),
- 	DEVICE_FLG(0x2708, 0x0002, /* Audient iD14 */
- 		   QUIRK_FLAG_IGNORE_CTL_ERROR),
- 	DEVICE_FLG(0x2912, 0x30c8, /* Audioengine D1 */
+--- a/drivers/hid/hid-steam.c
++++ b/drivers/hid/hid-steam.c
+@@ -134,6 +134,11 @@ static int steam_recv_report(struct stea
+ 	int ret;
+ 
+ 	r = steam->hdev->report_enum[HID_FEATURE_REPORT].report_id_hash[0];
++	if (!r) {
++		hid_err(steam->hdev, "No HID_FEATURE_REPORT submitted -  nothing to read\n");
++		return -EINVAL;
++	}
++
+ 	if (hid_report_len(r) < 64)
+ 		return -EINVAL;
+ 
+@@ -165,6 +170,11 @@ static int steam_send_report(struct stea
+ 	int ret;
+ 
+ 	r = steam->hdev->report_enum[HID_FEATURE_REPORT].report_id_hash[0];
++	if (!r) {
++		hid_err(steam->hdev, "No HID_FEATURE_REPORT submitted -  nothing to read\n");
++		return -EINVAL;
++	}
++
+ 	if (hid_report_len(r) < 64)
+ 		return -EINVAL;
+ 
 
 
