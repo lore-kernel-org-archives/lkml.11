@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC5EC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:55:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 088E2ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:55:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238088AbiIBMy6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:54:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33048 "EHLO
+        id S238134AbiIBMzG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:55:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238006AbiIBMxW (ORCPT
+        with ESMTP id S238010AbiIBMx0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:53:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E1EF995C;
-        Fri,  2 Sep 2022 05:38:02 -0700 (PDT)
+        Fri, 2 Sep 2022 08:53:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C214BF9940;
+        Fri,  2 Sep 2022 05:37:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D5DDD620DF;
-        Fri,  2 Sep 2022 12:37:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D34FEC433D6;
-        Fri,  2 Sep 2022 12:37:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 54AA2B82AE2;
+        Fri,  2 Sep 2022 12:36:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB6FCC433C1;
+        Fri,  2 Sep 2022 12:36:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122245;
-        bh=lDiYmQI/djaaLrRQd07xuv/P1PgvtaUZVRp8uxNge+w=;
+        s=korg; t=1662122207;
+        bh=AyoUCDITYVxRiU7eJuWQT5v3RL+D8n4SQJt7lcoFtRw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=duGwJcDAaWO/xWtofRiXZdbKi6Ps41sfWumZiI5eFbr1EoPSdinTfy5IaO0BM87/p
-         thMXOKZQKQmMK2Ncj6bKJgxLYkoP+WI5AO/qdajpl62kJwwiosqbzNaRrpLkc6m5vC
-         54rNiOli9xY1HgzMLlFA4hfVwb6VojcGKJ3bw/EE=
+        b=sS940ZgcjqRgAZYhgTJU/bImAFp18vvIj2/qI5vchVbSGPwFGK9pNF9QkOrrC/8Tz
+         0RYyxLxX4jTgKwkGPprWW8Bjh2P32kKMsa0YZYiQj0cWnRqU17e1BahsC+LSNO8c5w
+         GyvtNZsMQSDb56y8m2YeoQiiffG/TiVxyuH9zAjs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wenbin Mei <wenbin.mei@mediatek.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
+        Hyunchul Lee <hyc.lee@gmail.com>,
+        Steve French <stfrench@microsoft.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 28/72] mmc: mtk-sd: Clear interrupts when cqe off/disable
-Date:   Fri,  2 Sep 2022 14:19:04 +0200
-Message-Id: <20220902121405.722131658@linuxfoundation.org>
+Subject: [PATCH 5.19 46/72] ksmbd: return STATUS_BAD_NETWORK_NAME error status if share is not configured
+Date:   Fri,  2 Sep 2022 14:19:22 +0200
+Message-Id: <20220902121406.281634426@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
 References: <20220902121404.772492078@linuxfoundation.org>
@@ -49,58 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wenbin Mei <wenbin.mei@mediatek.com>
+From: Namjae Jeon <linkinjeon@kernel.org>
 
-[ Upstream commit cc5d1692600613e72f32af60e27330fe0c79f4fe ]
+[ Upstream commit fe54833dc8d97ef387e86f7c80537d51c503ca75 ]
 
-Currently we don't clear MSDC interrupts when cqe off/disable, which led
-to the data complete interrupt will be reserved for the next command.
-If the next command with data transfer after cqe off/disable, we process
-the CMD ready interrupt and trigger DMA start for data, but the data
-complete interrupt is already exists, then SW assume that the data transfer
-is complete, SW will trigger DMA stop, but the data may not be transmitted
-yet or is transmitting, so we may encounter the following error:
-mtk-msdc 11230000.mmc: CMD bus busy detected.
+If share is not configured in smb.conf, smb2 tree connect should return
+STATUS_BAD_NETWORK_NAME instead of STATUS_BAD_NETWORK_PATH.
 
-Signed-off-by: Wenbin Mei <wenbin.mei@mediatek.com>
-Fixes: 88bd652b3c74 ("mmc: mediatek: command queue support")
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220728080048.21336-1-wenbin.mei@mediatek.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Reviewed-by: Hyunchul Lee <hyc.lee@gmail.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/mtk-sd.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ fs/ksmbd/mgmt/tree_connect.c | 2 +-
+ fs/ksmbd/smb2pdu.c           | 3 ++-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/mmc/host/mtk-sd.c b/drivers/mmc/host/mtk-sd.c
-index 9da4489dc345a..378a26a1825c4 100644
---- a/drivers/mmc/host/mtk-sd.c
-+++ b/drivers/mmc/host/mtk-sd.c
-@@ -2414,6 +2414,9 @@ static void msdc_cqe_disable(struct mmc_host *mmc, bool recovery)
- 	/* disable busy check */
- 	sdr_clr_bits(host->base + MSDC_PATCH_BIT1, MSDC_PB1_BUSY_CHECK_SEL);
- 
-+	val = readl(host->base + MSDC_INT);
-+	writel(val, host->base + MSDC_INT);
-+
- 	if (recovery) {
- 		sdr_set_field(host->base + MSDC_DMA_CTRL,
- 			      MSDC_DMA_CTRL_STOP, 1);
-@@ -2871,11 +2874,14 @@ static int __maybe_unused msdc_suspend(struct device *dev)
+diff --git a/fs/ksmbd/mgmt/tree_connect.c b/fs/ksmbd/mgmt/tree_connect.c
+index 0d28e723a28c7..940385c6a9135 100644
+--- a/fs/ksmbd/mgmt/tree_connect.c
++++ b/fs/ksmbd/mgmt/tree_connect.c
+@@ -18,7 +18,7 @@
+ struct ksmbd_tree_conn_status
+ ksmbd_tree_conn_connect(struct ksmbd_session *sess, char *share_name)
  {
- 	struct mmc_host *mmc = dev_get_drvdata(dev);
- 	int ret;
-+	u32 val;
- 
- 	if (mmc->caps2 & MMC_CAP2_CQE) {
- 		ret = cqhci_suspend(mmc);
- 		if (ret)
- 			return ret;
-+		val = readl(((struct msdc_host *)mmc_priv(mmc))->base + MSDC_INT);
-+		writel(val, ((struct msdc_host *)mmc_priv(mmc))->base + MSDC_INT);
- 	}
- 
- 	return pm_runtime_force_suspend(dev);
+-	struct ksmbd_tree_conn_status status = {-EINVAL, NULL};
++	struct ksmbd_tree_conn_status status = {-ENOENT, NULL};
+ 	struct ksmbd_tree_connect_response *resp = NULL;
+ 	struct ksmbd_share_config *sc;
+ 	struct ksmbd_tree_connect *tree_conn = NULL;
+diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
+index a9c33d15ca1fb..bbb3958b6469d 100644
+--- a/fs/ksmbd/smb2pdu.c
++++ b/fs/ksmbd/smb2pdu.c
+@@ -1930,8 +1930,9 @@ int smb2_tree_connect(struct ksmbd_work *work)
+ 		rsp->hdr.Status = STATUS_SUCCESS;
+ 		rc = 0;
+ 		break;
++	case -ENOENT:
+ 	case KSMBD_TREE_CONN_STATUS_NO_SHARE:
+-		rsp->hdr.Status = STATUS_BAD_NETWORK_PATH;
++		rsp->hdr.Status = STATUS_BAD_NETWORK_NAME;
+ 		break;
+ 	case -ENOMEM:
+ 	case KSMBD_TREE_CONN_STATUS_NOMEM:
 -- 
 2.35.1
 
