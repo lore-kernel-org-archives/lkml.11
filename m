@@ -2,73 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACFD4C6FA82
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:09:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B08DC6FA82
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:10:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229457AbiIBSJZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 14:09:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34346 "EHLO
+        id S229512AbiIBSJ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 14:09:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbiIBSJP (ORCPT
+        with ESMTP id S229583AbiIBSJw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 14:09:15 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD3C1037E2
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 11:09:14 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id nc14so5431548ejc.4
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 11:09:14 -0700 (PDT)
+        Fri, 2 Sep 2022 14:09:52 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9174FE355
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 11:03:23 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id b142so2247082iof.10
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 11:03:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
+        d=google.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date;
-        bh=JyntNzc9hzuaj3nr0osrxHTy6k2DuFd1979TPD9JLwg=;
-        b=EVMKlGRoqiBowwUsR9klBSlEZmEf3zkPBbmydY3GxU04Pu2Ha912oAzUDBIwtGfKCk
-         U7fppUa0DMBas23VtkV/KbNCX+cjHmzpAXb30xBC0MiMF/kx5S9MIjgDqSNnU2z5jcOz
-         RJytNCQ5Xb3iBta1IgGsesmANWTFy3p6ZY0ho=
+        bh=DsSYyvFRX7OXTQcg53ZJE+LnyNTxlorHM7slCEXW1is=;
+        b=s49s0x8Ap3YZB8Nrgbh1MSaxaMzcT1YE9yzG4odKqHlffOpfQVqq/hUsP1TUKeRGJu
+         QRVO7pNCfKVJo7u0MvpvsqS9M9gsQH53ZIyBJT7Afz7N92Tr6RFIIeLVoKLWGB1Vvbmv
+         /v6VMZrnnX0C5PbrAYGI+ME5XeEoy8hdNqfZjMc6kN9SwutOVQdQaOefZalIqjwGWgb/
+         tb9eEhxr8IDSLO7C5T9xgeAR59Ilnzo1PAbjQLdy2bLHiyeMQ85AuCV7Pu4kiCF92+eV
+         1FcyjOi7DtqyQozwRRjXiWNRSOrN057Fj1lzJobm015Kc/y47DMkuwoqOLBzADB2PQsb
+         1obg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=JyntNzc9hzuaj3nr0osrxHTy6k2DuFd1979TPD9JLwg=;
-        b=AxrVQoteZTawT2JrLiOqrdbOkmm15iU6xZ++eaJdS5oUu0de/4ngvfdTvXTIKIuTUC
-         JJekQzdzDY9wIqpc8IUYDWMImLNZkJ2rUPF552pLOx2SOABrre8dAMIve5A9Icav5MRu
-         Nx/RJmuWly/BBupx4t/GooJcluv0I0PZSugRvgWFcCU/lkyU59/pyx9k3gSpdWUy+gr9
-         UQi02YBZMcQhhDh8odSSKdoFMgberVUfz15n7rups5O+VaqiFoMT7rC2I4758RVvQORD
-         v/ETaB2e9DsUe+4ubRrLtw5AXldwSHuiA+Ee+rr30W4NCvCpdgPk3iKQjUt6AExXh5Gh
-         eUGg==
-X-Gm-Message-State: ACgBeo2QVmAj+sJhZV4+wzLOFod4HUlnxlU/BrGoVVn0cRm3YUe0mh6t
-        GTrAm93aIHelTiNTdItN9HwGuEsK+uw3jTP7fvg=
-X-Google-Smtp-Source: AA6agR4sZ0EHn4VwLT/dnrsncfM2zqveg9J8TpTg/ESNv4PHWssvJY//SkGogkpc0uOfxy2KtmVUfA==
-X-Received: by 2002:a17:907:3e81:b0:726:9615:d14d with SMTP id hs1-20020a1709073e8100b007269615d14dmr27368960ejc.517.1662142152895;
-        Fri, 02 Sep 2022 11:09:12 -0700 (PDT)
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com. [209.85.221.53])
-        by smtp.gmail.com with ESMTPSA id d10-20020a1709061f4a00b0073dc5bb7c32sm1579801ejk.64.2022.09.02.11.09.11
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Sep 2022 11:09:11 -0700 (PDT)
-Received: by mail-wr1-f53.google.com with SMTP id k9so3332288wri.0
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 11:09:11 -0700 (PDT)
-X-Received: by 2002:a5d:6248:0:b0:222:cd3b:94c8 with SMTP id
- m8-20020a5d6248000000b00222cd3b94c8mr18487105wrv.97.1662142150888; Fri, 02
- Sep 2022 11:09:10 -0700 (PDT)
+        bh=DsSYyvFRX7OXTQcg53ZJE+LnyNTxlorHM7slCEXW1is=;
+        b=wP5+V/I75afLYdmnHHHlyAcble4WYr42xogg004FCSEix32QXGcLneQnVs7hm9sH6T
+         0dz7izS2KiQYOmJXvJENogaIrV/aWjy3vbeRPyq/9IzGW9ogtvv9BD0t9Hc8AgNMAjJT
+         DnGS81/xlu7E7IrWcZYIZeIcPURZSvYRrWTXVCzGjdw4U+djqsG8NfKTIYM9ooVYblgv
+         L1DPAm8PqoswcfQsDUsmCBQk/84zayk/EXhfG8mSbGoEPlG/1lAuuIOhoR51ETv5hcfH
+         fFib4gKawigXlZCh2dJFPBRV6BjknTaPNY6g7nzEzYzcN8GL86oNZf/gBRXWSyoMRdCv
+         RWIQ==
+X-Gm-Message-State: ACgBeo2mePQqGFTgsgBC8CU2fuL7PFW3jibREhAvaRlBwZLy0jmImvOX
+        P1b+esAQ1pIZrg9vXvvH40fRr8APxwFB24Yjw9/hmA==
+X-Google-Smtp-Source: AA6agR7KFZlUy2pvfIV3UweeLdnL2W9zoROxivfRRaX8xm4LeDOW1Axpu3vJAjTM1oWttoJXdRXvxik2dVQ/xnaxZAM=
+X-Received: by 2002:a05:6638:2042:b0:346:e51a:da4e with SMTP id
+ t2-20020a056638204200b00346e51ada4emr20421153jaj.164.1662141803111; Fri, 02
+ Sep 2022 11:03:23 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220902130625.217071627@infradead.org> <20220902130947.190618587@infradead.org>
- <CAHk-=whdvPcHmH5eG+FUrbQw1e-05n__EWobMqbxcCTP7dtZAg@mail.gmail.com> <YxI+K8Y+f/FHSQCU@hirez.programming.kicks-ass.net>
-In-Reply-To: <YxI+K8Y+f/FHSQCU@hirez.programming.kicks-ass.net>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 2 Sep 2022 11:08:54 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjRLehUO=u8HDJGRFv+wz7hakSc=z6eTg547pAmb0UKHg@mail.gmail.com>
-Message-ID: <CAHk-=wjRLehUO=u8HDJGRFv+wz7hakSc=z6eTg547pAmb0UKHg@mail.gmail.com>
-Subject: Re: [PATCH v2 08/59] x86/build: Ensure proper function alignment
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
-        x86@kernel.org, Tim Chen <tim.c.chen@linux.intel.com>,
+References: <20220902130625.217071627@infradead.org> <20220902130948.643735860@infradead.org>
+In-Reply-To: <20220902130948.643735860@infradead.org>
+From:   Jann Horn <jannh@google.com>
+Date:   Fri, 2 Sep 2022 20:02:46 +0200
+Message-ID: <CAG48ez07c2ThydovaHtBZ+u137eaXdEut4J-zycvPn7io4MySw@mail.gmail.com>
+Subject: Re: [PATCH v2 22/59] x86: Put hot per CPU variables into a struct
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
         Josh Poimboeuf <jpoimboe@kernel.org>,
         Andrew Cooper <Andrew.Cooper3@citrix.com>,
         Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
         Johannes Wikner <kwikner@ethz.ch>,
         Alyssa Milburn <alyssa.milburn@linux.intel.com>,
-        Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
+        "H.J. Lu" <hjl.tools@gmail.com>,
         Joao Moreira <joao.moreira@intel.com>,
         Joseph Nuzman <joseph.nuzman@intel.com>,
         Steven Rostedt <rostedt@goodmis.org>,
@@ -83,26 +77,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Sep 2, 2022 at 10:32 AM Peter Zijlstra <peterz@infradead.org> wrote:
+On Fri, Sep 2, 2022 at 3:54 PM Peter Zijlstra <peterz@infradead.org> wrote:
+> From: Thomas Gleixner <tglx@linutronix.de>
 >
-> There is a DEBUG case that increases the thing to 32.
+> The layout of per-cpu variables is at the mercy of the compiler. This
+> can lead to random performance fluctuations from build to build.
+>
+> Create a structure to hold some of the hottest per-cpu variables,
+> starting with current_task.
+[...]
+> -DECLARE_PER_CPU(struct task_struct *, current_task);
+> +struct pcpu_hot {
+> +       union {
+> +               struct {
+> +                       struct task_struct      *current_task;
+> +               };
+> +               u8      pad[64];
+> +       };
+> +};
 
-Well, but that should be part of the Kconfig rules too.
-
-In fact, I think that argues for moving that FUNCTION_ALIGNMENT into
-the generic Kconfig, since we already have that much hackier debug
-thing there.
-
-That would then get rid of the conditional in asm-generic too, and get
-rid of the horrid hack in the main Makefile as well.
-
-I love how commit cf536e185869 ("Makefile: extend 32B aligned debug
-option to 64B aligned") took that previous random debug entry and just
-made it 64B instead of 32B. What a crock that all is.
-
-Let's just do this right.
-
-             Linus
-
-
-               Linus
+fixed_percpu_data::stack_canary is probably also a fairly hot per-cpu
+variable on distro kernels with CONFIG_STACKPROTECTOR_STRONG (which
+e.g. Debian enables), so perhaps it'd make sense to reuse
+fixed_percpu_data as the struct for hot percpu variables? But I don't
+have any numbers to actually back up that idea.
