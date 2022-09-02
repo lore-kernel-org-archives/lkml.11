@@ -2,176 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5395DECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:45:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA0B9ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:45:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237641AbiIBMpr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:45:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56114 "EHLO
+        id S237638AbiIBMpv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:45:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237466AbiIBMnn (ORCPT
+        with ESMTP id S237479AbiIBMno (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:43:43 -0400
-Received: from mail-ua1-x932.google.com (mail-ua1-x932.google.com [IPv6:2607:f8b0:4864:20::932])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BF8EEE699
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 05:32:42 -0700 (PDT)
-Received: by mail-ua1-x932.google.com with SMTP id x15so746571uat.2
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 05:32:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=aisHGB6kliCWFYR6hktBFI6xPvEsBHOH5IFtImlUy1Y=;
-        b=M3wI0e52BxZLYgTCSnZbFh8BbDd8a8KUQmpDEPATAE8yfijlAuMSq+E133hkT2rGqW
-         XLoM5kTB/KGXZ+XQFk28FXOOCSlzwRwb2C1vlwAzX9LAnpvoiLkI2rYy40o53GZLubXt
-         km0QsfL0zO0JV/l2bH23bzdvYxV8MKkpmXSmk0f0h5GN44bVG/TLvsPQvX6fIFJ+6xjy
-         dD07jsf6adJrDcn4D5up3n3XfYtb0eah4sLfZK1pZu+ivNJFVbamYdfU1Hl3N0JVpD83
-         +76HH9FAu1Qk1i35MaI/ibBbNQYrJ3Ptr59a6pC2IHe1U7teSQHAhmK15BdZw5fCPeYN
-         Q9xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=aisHGB6kliCWFYR6hktBFI6xPvEsBHOH5IFtImlUy1Y=;
-        b=oMILWr7M/8fmlpu81Wj81XtXU1nGQat2sQmsxLuduQQLNzSHLu3elfGHrSjo4lwyWx
-         JRT/L74QdMNKbl0e3kB4JYqF+ezpNXl6z3yBOl+Y6eibvxfuyjVZlCMrpl7iGjqQ1cyD
-         PlrxZYenDL+B7IlXi0xrVk/nUpARRvh591QpEUpU6ON2pdZ3sdbJ4G3j9DR8VsqdokvG
-         MOQDvKp3VZXJ90cqh1AR/E9ERkUMniCEUj+vSJqC8+DfysDLUQB8xcrO3K5QaY+diSmU
-         QInp/lxHhWuGEIMkIFRY8N3byLxXAgBCBhd+ZHpqZZVBL//14R4SzcUb3Dtbe1nHCRP8
-         0t3g==
-X-Gm-Message-State: ACgBeo3oFRFvWu0tMSj1INaq88enPq+xaWDcKyy1TRlTLRgUCyMY4BkB
-        zLER5vhVfENRkVYEtr8cHCkEhCDEHCvC9o7lMYvcUFLQOLIbHw==
-X-Google-Smtp-Source: AA6agR4ZWOZ4z2pkadj7P4hHLA0cjbSI2VE3aHEaR44WlCMPj78gmnaMu3hFIcV5R7gKIQjoW1T1yc7ZBTVSExDUu74=
-X-Received: by 2002:ab0:70c6:0:b0:39e:ed14:806b with SMTP id
- r6-20020ab070c6000000b0039eed14806bmr11023117ual.82.1662121865344; Fri, 02
- Sep 2022 05:31:05 -0700 (PDT)
+        Fri, 2 Sep 2022 08:43:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01369ED03C;
+        Fri,  2 Sep 2022 05:32:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 90FD9B82A91;
+        Fri,  2 Sep 2022 12:32:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05340C433D6;
+        Fri,  2 Sep 2022 12:32:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662121940;
+        bh=rvsRqFwA2k2w3Fi1nbNzzjO0ZKeucinFjbQ5L5lGwKk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=QD2s1Hn9ozHT8A+4RT3IzBYGrK2el9fDyW4UXg9Y9G/QNCOElD1jx8YH6mL4qYr63
+         cS1lA5nQcU2T7oLnFAoh5tbGhQriXd3WvJXlUOlNaAu4MvbYmdZ34wEsgKsPs8gHjA
+         fZ1fPquJOieyvxNVVqwx4TL07ls6RKFUWadqOvFs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Lennert Van Alboom <lennert@vanalboom.org>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 36/73] ALSA: usb-audio: Add quirk for LH Labs Geek Out HD Audio 1V5
+Date:   Fri,  2 Sep 2022 14:19:00 +0200
+Message-Id: <20220902121405.627749226@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
+References: <20220902121404.435662285@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-References: <0000000000007e402e05e6f8b043@google.com>
-In-Reply-To: <0000000000007e402e05e6f8b043@google.com>
-From:   Aleksandr Nogikh <nogikh@google.com>
-Date:   Fri, 2 Sep 2022 14:30:54 +0200
-Message-ID: <CANp29Y4u7N8wVMZmCa6pY=3kKBSVDWZnhP5n_-RfQpMDWVjOOA@mail.gmail.com>
-Subject: Re: [syzbot] WARNING in handle_bug (3)
-To:     syzbot <syzbot+0b1ca6d5c5cd600df7a0@syzkaller.appspotmail.com>
-Cc:     arve@android.com, brauner@kernel.org, cmllamas@google.com,
-        gregkh@linuxfoundation.org, joel@joelfernandes.org,
-        LKML <linux-kernel@vger.kernel.org>, maco@android.com,
-        surenb@google.com,
-        "'Aleksandr Nogikh' via syzkaller-bugs" 
-        <syzkaller-bugs@googlegroups.com>, tkjos@android.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-#syz dup: general protection fault in binder_alloc_new_buf
+From: Takashi Iwai <tiwai@suse.de>
 
-On Wed, Aug 24, 2022 at 10:44 AM syzbot
-<syzbot+0b1ca6d5c5cd600df7a0@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following issue on:
->
-> HEAD commit:    50cd95ac4654 Merge tag 'execve-v6.0-rc2' of git://git.kern..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=151e0ab5080000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=e706e91b2a433db
-> dashboard link: https://syzkaller.appspot.com/bug?extid=0b1ca6d5c5cd600df7a0
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
->
-> Unfortunately, I don't have any reproducer for this issue yet.
->
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+0b1ca6d5c5cd600df7a0@syzkaller.appspotmail.com
->
-> ------------[ cut here ]------------
-> WARNING: CPU: 3 PID: 21395 at include/linux/mmap_lock.h:155 mmap_assert_locked include/linux/mmap_lock.h:155 [inline]
-> WARNING: CPU: 3 PID: 21395 at include/linux/mmap_lock.h:155 find_vma+0xf8/0x270 mm/mmap.c:2255
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-> RAX: 00000000000023cc RBX: 0000000000000000 RCX: ffffc90003259000
-> RDX: 0000000000040000 RSI: ffffffff81b5e258 RDI: 0000000000000005
-> RBP: 0000000020ffc000 R08: 0000000000000005 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000000 R12: ffff88801af3f840
->  <TASK>
->  binder_thread_write+0x664/0x3220 drivers/android/binder.c:3974
->  binder_ioctl_write_read drivers/android/binder.c:5024 [inline]
->  binder_ioctl+0x3470/0x6d00 drivers/android/binder.c:5311
->  vfs_ioctl fs/ioctl.c:51 [inline]
->  __do_sys_ioctl fs/ioctl.c:870 [inline]
->  __se_sys_ioctl fs/ioctl.c:856 [inline]
->  __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> RIP: 0033:0x7f6019a89279
-> Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007f601ac2a168 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-> RAX: ffffffffffffffda RBX: 00007f6019b9bf80 RCX: 00007f6019a89279
-> RDX: 0000000020000380 RSI: 00000000c0306201 RDI: 0000000000000004
-> RBP: 00007f6019ae3189 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007ffd82d3b46f R14: 00007f601ac2a300 R15: 0000000000022000
->  </TASK>
-> Kernel panic - not syncing: panic_on_warn set ...
-> CPU: 3 PID: 21395 Comm: syz-executor.0 Not tainted 6.0.0-rc1-syzkaller-00340-g50cd95ac4654 #0
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-> Call Trace:
->  <TASK>
->  __dump_stack lib/dump_stack.c:88 [inline]
->  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
->  panic+0x2c8/0x627 kernel/panic.c:274
->  __warn.cold+0x259/0x2c4 kernel/panic.c:624
->  report_bug+0x1bc/0x210 lib/bug.c:198
->  handle_bug+0x3c/0x60 arch/x86/kernel/traps.c:316
->  exc_invalid_op+0x14/0x40 arch/x86/kernel/traps.c:336
->  asm_exc_invalid_op+0x16/0x20 arch/x86/include/asm/idtentry.h:568
-> RIP: 0010:mmap_assert_locked include/linux/mmap_lock.h:155 [inline]
-> RIP: 0010:find_vma+0xf8/0x270 mm/mmap.c:2255
-> Code: 49 8d bc 24 28 01 00 00 be ff ff ff ff e8 a0 4a c9 07 31 ff 89 c3 89 c6 e8 75 54 c5 ff 85 db 0f 85 61 ff ff ff e8 a8 57 c5 ff <0f> 0b e9 55 ff ff ff e8 9c 57 c5 ff 4c 89 e7 e8 64 38 fb ff 0f 0b
-> RSP: 0018:ffffc90003bb7530 EFLAGS: 00010212
-> RAX: 00000000000023cc RBX: 0000000000000000 RCX: ffffc90003259000
-> RDX: 0000000000040000 RSI: ffffffff81b5e258 RDI: 0000000000000005
-> RBP: 0000000020ffc000 R08: 0000000000000005 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000000 R12: ffff88801af3f840
-> R13: 0000000000000001 R14: 0000000000000000 R15: 0000000000000000
->  vma_lookup include/linux/mm.h:2743 [inline]
->  binder_alloc_get_vma drivers/android/binder_alloc.c:340 [inline]
->  binder_alloc_new_buf_locked drivers/android/binder_alloc.c:405 [inline]
->  binder_alloc_new_buf+0xd6/0x18b0 drivers/android/binder_alloc.c:590
->  binder_transaction+0x242e/0x9a80 drivers/android/binder.c:3187
->  binder_thread_write+0x664/0x3220 drivers/android/binder.c:3974
->  binder_ioctl_write_read drivers/android/binder.c:5024 [inline]
->  binder_ioctl+0x3470/0x6d00 drivers/android/binder.c:5311
->  vfs_ioctl fs/ioctl.c:51 [inline]
->  __do_sys_ioctl fs/ioctl.c:870 [inline]
->  __se_sys_ioctl fs/ioctl.c:856 [inline]
->  __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> RIP: 0033:0x7f6019a89279
-> Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007f601ac2a168 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-> RAX: ffffffffffffffda RBX: 00007f6019b9bf80 RCX: 00007f6019a89279
-> RDX: 0000000020000380 RSI: 00000000c0306201 RDI: 0000000000000004
-> RBP: 00007f6019ae3189 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007ffd82d3b46f R14: 00007f601ac2a300 R15: 0000000000022000
->  </TASK>
-> Kernel Offset: disabled
-> Rebooting in 86400 seconds..
->
->
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
->
-> --
-> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/0000000000007e402e05e6f8b043%40google.com.
+commit 5f3d9e8161bb8cb23ab3b4678cd13f6e90a06186 upstream.
+
+The USB DAC from LH Labs (2522:0007) seems requiring the same quirk as
+Sony Walkman to set up the interface like UAC1; otherwise it gets the
+constant errors "usb_set_interface failed (-71)".  This patch adds a
+quirk entry for addressing the buggy behavior.
+
+Reported-by: Lennert Van Alboom <lennert@vanalboom.org>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/T3VPXtCc4uFws9Gfh2RjX6OdwM1RqfC6VqQr--_LMDyB2x5N3p9_q6AtPna17IXhHwBtcJVdXuS80ZZSCMjh_BafIbnzJPhbrkmhmWS6DlI=@vanalboom.org
+Link: https://lore.kernel.org/r/20220828074143.14736-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ sound/usb/quirks.c |    2 ++
+ 1 file changed, 2 insertions(+)
+
+--- a/sound/usb/quirks.c
++++ b/sound/usb/quirks.c
+@@ -1903,6 +1903,8 @@ static const struct usb_audio_quirk_flag
+ 		   QUIRK_FLAG_SHARE_MEDIA_DEVICE | QUIRK_FLAG_ALIGN_TRANSFER),
+ 	DEVICE_FLG(0x21b4, 0x0081, /* AudioQuest DragonFly */
+ 		   QUIRK_FLAG_GET_SAMPLE_RATE),
++	DEVICE_FLG(0x2522, 0x0007, /* LH Labs Geek Out HD Audio 1V5 */
++		   QUIRK_FLAG_SET_IFACE_FIRST),
+ 	DEVICE_FLG(0x2708, 0x0002, /* Audient iD14 */
+ 		   QUIRK_FLAG_IGNORE_CTL_ERROR),
+ 	DEVICE_FLG(0x2912, 0x30c8, /* Audioengine D1 */
+
+
