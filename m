@@ -2,74 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFBADECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:48:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA0FDC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:48:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236327AbiIBOr6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:47:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48184 "EHLO
+        id S236405AbiIBOsZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:48:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236330AbiIBOrd (ORCPT
+        with ESMTP id S236498AbiIBOr7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:47:33 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9199D2B15
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 07:08:02 -0700 (PDT)
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1oU65Y-000C5F-GN; Fri, 02 Sep 2022 14:48:00 +0200
-Received: from [85.1.206.226] (helo=linux-4.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1oU65Y-000B5y-7e; Fri, 02 Sep 2022 14:48:00 +0200
-Subject: Re: [RFC bpf-next 1/2] bpf: tnums: warn against the usage of
- tnum_in(tnum_range(), ...)
-To:     Shung-Hsi Yu <shung-hsi.yu@suse.com>
-Cc:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-References: <20220831031907.16133-1-shung-hsi.yu@suse.com>
- <20220831031907.16133-2-shung-hsi.yu@suse.com>
- <0f6d7f97-8cd9-d513-368b-39706dd6b06a@iogearbox.net>
- <YxF984GIloJWnV9x@syu-laptop>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <615a2102-2244-f0be-6375-16cf795715ef@iogearbox.net>
-Date:   Fri, 2 Sep 2022 14:47:59 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        Fri, 2 Sep 2022 10:47:59 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1497AA9243;
+        Fri,  2 Sep 2022 07:08:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662127713; x=1693663713;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=c7Z/N5tHcfEnQNOU6Imm0br8Q97DRPhQZDzGctYv+DQ=;
+  b=XqE66Wpxhv7zBkkePnlarzFIqXXZgA9jMgXOw4zjxbAU9Ilw4MlBT8Ee
+   CEXaL83yfLinFbvIv5Hw2/aa9VzUU/O61Q9+8f5raQrS1SyJ+gVRAWFFM
+   ptg+cVDH+aKQFU4bl/PfsSq8xOuEaeC3UoJ3d1nyBANrN1LkKn2YohUWe
+   g8568kW7mOUcRSyWbnbFWtpbE4VD8hRMDn6o2dKNWX4kozB/syffuRJYa
+   9hXbJbSCNryjqwZ8/UcswtBq1h2ftB3keGt0KuxNCJ7N4M+cA05sAkw5z
+   URLLrUTAyG3g+MCIWYeBQSz7ur7h63u+f5qGZTBdo3pEaPaJNkPRo41IY
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="293565038"
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="293565038"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 07:08:32 -0700
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="613046760"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 07:08:28 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oU7LN-007Pvx-0U;
+        Fri, 02 Sep 2022 17:08:25 +0300
+Date:   Fri, 2 Sep 2022 17:08:24 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Tharunkumar.Pasumarthi@microchip.com
+Cc:     UNGLinuxDriver@microchip.com, wsa@kernel.org, krzk@kernel.org,
+        sven@svenpeter.dev, robh@kernel.org, semen.protsenko@linaro.org,
+        linux-kernel@vger.kernel.org, jarkko.nikula@linux.intel.com,
+        olof@lixom.net, linux-i2c@vger.kernel.org, jsd@semihalf.com,
+        arnd@arndb.de, rafal@milecki.pl
+Subject: Re: [PATCH v2 i2c-master] i2c: microchip: pci1xxxx: Add driver for
+ I2C host controller in multifunction endpoint of pci1xxxx switch
+Message-ID: <YxIOWMqjP2+k7MPi@smile.fi.intel.com>
+References: <20220901013626.2213100-1-tharunkumar.pasumarthi@microchip.com>
+ <YxD+NTWok2vkYos/@smile.fi.intel.com>
+ <2345b4bcd0c529878307b2a84364ea849005eed9.camel@microchip.com>
 MIME-Version: 1.0
-In-Reply-To: <YxF984GIloJWnV9x@syu-laptop>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26646/Fri Sep  2 09:55:25 2022)
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <2345b4bcd0c529878307b2a84364ea849005eed9.camel@microchip.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 9/2/22 5:52 AM, Shung-Hsi Yu wrote:
-> On Thu, Sep 01, 2022 at 05:00:58PM +0200, Daniel Borkmann wrote:
->> On 8/31/22 5:19 AM, Shung-Hsi Yu wrote:
->>> Commit a657182a5c51 ("bpf: Don't use tnum_range on array range checking
->>> for poke descriptors") has shown that using tnum_range() as argument to
->>> tnum_in() can lead to misleading code that looks like tight bound check
->>> when in fact the actual allowed range is much wider.
->>>
->>> Document such behavior to warn against its usage in general, and suggest
->>> some scenario where result can be trusted.
->>>
->>> Link: https://lore.kernel.org/bpf/984b37f9fdf7ac36831d2137415a4a915744c1b6.1661462653.git.daniel@iogearbox.net/
->>> Link: https://www.openwall.com/lists/oss-security/2022/08/26/1
->>> Signed-off-by: Shung-Hsi Yu <shung-hsi.yu@suse.com>
->>
->> Any objections from your side if I merge this? Thanks for adding doc. :)
-> 
-> There is a small typo I meant to fix with s/including/include below.
-> 
-> Other than that, none at all, thanks! :)
+On Fri, Sep 02, 2022 at 11:31:11AM +0000, Tharunkumar.Pasumarthi@microchip.com wrote:
+> On Thu, 2022-09-01 at 21:47 +0300, Andy Shevchenko wrote:
 
-Fixed up and applied to bpf-next, thanks!
+...
+
+> > > +             if (buf)
+> > > +                     memcpy_toio((i2c->i2c_base + SMBUS_MST_BUF), buf,
+> > > transferlen);
+> > 
+> > Why do you need buf checks? Is your code can shoot itself in the foot?
+> 
+> Yes, buf will be passed as NULL in some cases. So, this check is required.
+
+Can you show an excerpt of the caller which passes NULL?
+
+...
+
+> > Each long sleep (20 ms is quite long) has to be explained. But this entire
+> > loop
+> > looks like a band-aid of lack of IRQ or so. Why do you need to poll?
+> 
+> This handling takes care of special case when system is put to suspend when i2c
+> transfer is progress in driver. We will wait until transfer completes.
+
+This should be at least a comment in the code.
+
+...
+
+> > > +     pci1xxxx_i2c_init(i2c);
+> > 
+> > Here you need to wrap pci1xxxx_i2c_shutdown() to be devm_. See below.
+> > 
+> > > +     ret = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_ALL_TYPES);
+> > > +     if (ret < 0) {
+> > > +             pci1xxxx_i2c_shutdown(i2c);
+> 
+> I am not getting. Are you suggesting to change API name to
+> devm_pci1xxxx_i2c_shutdown?
+> 
+> > > +
+> > > +     ret = devm_i2c_add_adapter(&pdev->dev, &i2c->adap);
+> > > +     if (ret) {
+> > > +             dev_err(&pdev->dev, "i2c add adapter failed = %d\n", ret);
+> > 
+> > > +             pci1xxxx_i2c_shutdown(i2c);
+> > 
+> > You can't mix devm_ and non-devm_ in such manner. It's asking for troubles at
+> > ->remove() or unbind stages.
+> 
+> I am not getting this comment. Can you kindly explain more.
+> 
+> > > +             return ret;
+
+Explanations [1] & [2]. Example how to workaround [3].
+
+[1]: https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1949091.html
+[2]: https://lore.kernel.org/all/YXktrG1LhK5tj2uF@smile.fi.intel.com/
+[3]: https://www.spinics.net/lists/kernel/msg4433985.html
+
+...
+
+> > After fixing above, convert the error messages to use
+> > 
+> >         return dev_err_probe(...);
+> > 
+> > pattern.
+> 
+> Okay.
+
+Will be result of above fix.
+
+...
+
+> > > +static void pci1xxxx_i2c_remove_pci(struct pci_dev *pdev)
+> > > +{
+> > > +     struct pci1xxxx_i2c *i2c = pci_get_drvdata(pdev);
+> > > +
+> > > +     pci1xxxx_i2c_shutdown(i2c);
+> > > +}
+> > 
+> > This will be gone.
+> 
+> I am not getting this comment also.
+
+See above.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
