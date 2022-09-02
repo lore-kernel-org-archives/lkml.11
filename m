@@ -2,100 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8811ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 03:27:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F92BECAAD2
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 03:28:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233250AbiIBD1v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 23:27:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37268 "EHLO
+        id S235223AbiIBD2b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 23:28:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235175AbiIBD1g (ORCPT
+        with ESMTP id S230271AbiIBD22 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 23:27:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 874E2A0622;
-        Thu,  1 Sep 2022 20:27:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5636B829B7;
-        Fri,  2 Sep 2022 03:27:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1416CC433C1;
-        Fri,  2 Sep 2022 03:27:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662089252;
-        bh=qSAS0T0MuBmaWeT8uG5lNnET4yd1Q33sgQdS6DbDcJo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Qvnk9aGn58J554jGx93rrg65XFeihTphkgWxYKbWYj+w8dYmNgGUwSWflA4AdmhUg
-         AbVqcYUucbQnz/XNnCf9toUpbL1FvSoz5iThdvfUBVbT9xcgJ7y930xmQ81edGrzb0
-         TP/dJuUwCZxQ3SgFlCQSOFNt8bP5c4mjOkrAp9p5u5iZsq3hcIeIjziNHJ1a8PY3SX
-         g64TdCOTQ43CVy3z1fs/wpko3HvbEZC/wUG8rZ+GiiC958/B7ga4p01wl+tPNWovoR
-         EaDg0ltOoemE0r+kTJdaEGn4BFVQ9Bd6d766ultH2RxUxLLnALCVt273hjYLNJ78eQ
-         gRXrdlGXfJXmA==
-Date:   Fri, 2 Sep 2022 06:27:27 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Roberto Sassu <roberto.sassu@huaweicloud.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>,
-        David Howells <dhowells@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Paul Moore <paul@paul-moore.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Shuah Khan <shuah@kernel.org>, bpf <bpf@vger.kernel.org>,
-        keyrings@vger.kernel.org,
-        LSM List <linux-security-module@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Daniel =?iso-8859-1?Q?M=FCller?= <deso@posteo.net>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Roberto Sassu <roberto.sassu@huawei.com>
-Subject: Re: [PATCH v14 05/12] KEYS: Move KEY_LOOKUP_ to include/linux/key.h
- and set KEY_LOOKUP_FLAGS_ALL
-Message-ID: <YxF4H9MTDj+PnJ+V@kernel.org>
-References: <20220830161716.754078-1-roberto.sassu@huaweicloud.com>
- <20220830161716.754078-6-roberto.sassu@huaweicloud.com>
- <Yw7NKJfhyJqIWUcx@kernel.org>
- <Yw7o43Ivfo3jRwQg@kernel.org>
- <cad9a20cadc074cf15dcd0d8eb63b43c98a2f13d.camel@huaweicloud.com>
- <CAADnVQLCyts0JZ7_=rTp8vP67ET4PjVsZ0Cis0XKUpeCdC13LA@mail.gmail.com>
+        Thu, 1 Sep 2022 23:28:28 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBD808B2C8
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 20:28:26 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id x23so643975pll.7
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 20:28:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=GFQY0YKLoXtjJUiJG5Fqkj40S/j1pTR0BA9ddLQmSRY=;
+        b=ZgvPnWX/oPWp8lgiTy/gR1/l9XJxrRLjooP4OnGdpdVDsFHE8dUE1MsWoyrmjlHZw3
+         cmlhUhMyeWBpbX78ycD6vbCH8gh9AA2sPkkD+t0kdVAdc2b1bhs/pabQYXw94JJXQCOB
+         1dj11T5S06kDSPJYX+ahh0YQm8VBD6dBK0QTu2HKjU275S7VxA+rRWOjcU8QsTGAp5Em
+         AE3L1dGGMY3p2g0C6b7WTtEXFOzIe6xEQvT828e3z9d4EJcVpyuYlVJZSI+vM4SmodhA
+         9xtDgqlCA06oyZC/6oA+QwA/f1tBGCVHZoK2SSiGnkGO2LG5qAGckOvYuQAjngfh7TZd
+         3xxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=GFQY0YKLoXtjJUiJG5Fqkj40S/j1pTR0BA9ddLQmSRY=;
+        b=mbD5LCOG9N0IQd2jJn8mwFcjKPdmtx8JEBV7ehEKFcCtzlX6YdZ0dmtUmLGWkVrzYc
+         oBRbl5TfHRkbxIjqSk9JR5GZx5jdL7T5m+MfYZsQWiR0uWiQ7c9g0hN5fOqhopbzrNU/
+         5HsyW8LjBL9NL8DdY/5LxkaC42he1V9OJTRovx/nUER3K6OllDK9NSI6TEcWZar/XvG6
+         7r8SxJHcr2het8Xz8V2bDFZtkY6rAenMO83HYBKPNXoZ9Hws/fxG4bkyMHsHg+VTdERS
+         BZzZ6lh+i+lahjwiFVWOMUUD39QPXuN4SoEHqD8tP+f1oUSKaNQDt1Mv4+hgzmBNLr3k
+         3djQ==
+X-Gm-Message-State: ACgBeo2Ok8kOeqSaf8LXUPqtXLM5AiknL6bW9TUruODjlnLA28dUEkWc
+        wP+ojA8wZ4yCgcgd2WE7d8YzvQ==
+X-Google-Smtp-Source: AA6agR4jSP++v3AnFbkC5c2Lx7gnO/dlBYEL3J0diQzRUqXBn1s6uYHo8piOi+/kh2oofB9IXimn1Q==
+X-Received: by 2002:a17:90b:46c4:b0:1fe:4d96:f6df with SMTP id jx4-20020a17090b46c400b001fe4d96f6dfmr2478149pjb.219.1662089306340;
+        Thu, 01 Sep 2022 20:28:26 -0700 (PDT)
+Received: from [10.254.35.190] ([139.177.225.227])
+        by smtp.gmail.com with ESMTPSA id i194-20020a6287cb000000b0053788e9f865sm410062pfe.21.2022.09.01.20.28.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Sep 2022 20:28:26 -0700 (PDT)
+Message-ID: <ea3a4260-6fd1-032d-d84a-2973886fcda4@bytedance.com>
+Date:   Fri, 2 Sep 2022 11:28:21 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAADnVQLCyts0JZ7_=rTp8vP67ET4PjVsZ0Cis0XKUpeCdC13LA@mail.gmail.com>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.0
+Subject: Re: Re: [PATCH v2 5/5] sched/fair: cleanup for SIS_PROP
+Content-Language: en-US
+To:     Mel Gorman <mgorman@suse.de>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Josh Don <joshdon@google.com>, Chen Yu <yu.c.chen@intel.com>,
+        Yicong Yang <yangyicong@huawei.com>,
+        linux-kernel@vger.kernel.org
+References: <20220901131107.71785-1-wuyun.abel@bytedance.com>
+ <20220901131107.71785-5-wuyun.abel@bytedance.com>
+ <20220901140311.xi3y72uxdwbpxzrq@suse.de>
+From:   Abel Wu <wuyun.abel@bytedance.com>
+In-Reply-To: <20220901140311.xi3y72uxdwbpxzrq@suse.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 08:33:38AM -0700, Alexei Starovoitov wrote:
-> On Wed, Aug 31, 2022 at 2:24 AM Roberto Sassu
-> <roberto.sassu@huaweicloud.com> wrote:
-> > > > >
-> > > > > +#define KEY_LOOKUP_CREATE        0x01
-> > > > > +#define KEY_LOOKUP_PARTIAL       0x02
-> > > > > +#define KEY_LOOKUP_FLAGS_ALL     (KEY_LOOKUP_CREATE |
-> > > > > KEY_LOOKUP_PARTIAL)
-> > > >
-> > > > IMHO this could be just KEY_LOOKUP_ALL.
+On 9/1/22 10:03 PM, Mel Gorman Wrote:
+> On Thu, Sep 01, 2022 at 09:11:07PM +0800, Abel Wu wrote:
+>> The sched-domain of this cpu is only used when SIS_PROP is enabled,
+>> and it should be irrelevant whether the local sd_llc is valid or
+>> not, since all we care about is target sd_llc if !SIS_PROP.
+>>
+>> Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
 > 
-> Since this is supposed to be kernel internal flags
-> please make them enum, so that bpf progs can auto-adjust
-> (with the help of CORE) to changes in this enum.
-> With #define there is no way for bpf prog to know
-> when #define changed in the future kernels.
+> This could conceivably result in an uninitialised memory access if
+> SIS_PROP was enabled while select_idle_cpu is running. I'm not sure if
+> it can happen when jump labels are in use but I think it could happen
+> for !CONFIG_JUMP_LABEL updating the sysctl_sched_features bitmap updated
+> via sysctl.
 
-Isn't enum also Rust compatibility requirement, or do I remember
-incorrectly? Anyway, good suggestion.
+Nice catch!
 
-BR, Jarkko
+> 
+> The patch is still a good idea because it moves an unlikely rcu_deference
+> out of the default path for sched features but either this_sd needs to
+> be initialised to NULL and checked or the this_sd lookup needs to happen
+> twice at a slight additional cost to the default-disabled SIS_PROP path.
+> 
+
+I'd prefer the former.
+
+Thanks & BR,
+Abel
