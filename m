@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E904C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:23:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C90EECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:23:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236232AbiIBMXE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:23:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48132 "EHLO
+        id S236143AbiIBMXH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:23:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235984AbiIBMVV (ORCPT
+        with ESMTP id S235983AbiIBMVY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:21:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF17C6E8C;
-        Fri,  2 Sep 2022 05:21:20 -0700 (PDT)
+        Fri, 2 Sep 2022 08:21:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24865C7BA9;
+        Fri,  2 Sep 2022 05:21:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CBA3B620E6;
-        Fri,  2 Sep 2022 12:21:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB4B9C43140;
-        Fri,  2 Sep 2022 12:21:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A710E620E6;
+        Fri,  2 Sep 2022 12:21:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F0F6C433D6;
+        Fri,  2 Sep 2022 12:21:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121279;
-        bh=0QXl4JqaFq4iPz9u4o3OB7ub7UpUJipo4GZ/K8OT0eM=;
+        s=korg; t=1662121282;
+        bh=Y/pUW4qRVI0lIi6e/ZrRwlGWlPvSO+C3ncU7lK2YWkQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tqlo0brOng6HJAro3Y2OrAYDOWOlObDJ7P6+gbs0EUbVxoIUIAfdlQ4EILWekNuR0
-         ZmiPckaJDLsbcUaqX3MjnioEpJRUxFvKSapfrYFIXg0RyXUdFCuLDPWWeZYFPUhJql
-         F1lGMTE9ulMe+0VFy4h4vySe5PQOvWLPidnIKOPQ=
+        b=jzGJXDwVMaYbM1/Fo0ovq1JWaLQSpUfUzHQjFEszOmVgpnqFp+ywGlAf7QnMK+uhy
+         PY3WHrEcth2a1L6aIn3Ok9uGu+YavSfLaXeS0G3TbPK4u4n1TX0HvwpQ9IIR/zoe5N
+         2j8ginSbliLeY29EOmKEBcnpCIA/zlK2LNF+Wsnc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Michal Hocko <mhocko@suse.com>,
-        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.9 30/31] mm/rmap: Fix anon_vma->degree ambiguity leading to double-reuse
-Date:   Fri,  2 Sep 2022 14:18:56 +0200
-Message-Id: <20220902121357.839647776@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Ayushman Dutta <ayudutta@amazon.com>,
+        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Wang Nan <wangnan0@huawei.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 4.9 31/31] kprobes: dont call disarm_kprobe() for disabled kprobes
+Date:   Fri,  2 Sep 2022 14:18:57 +0200
+Message-Id: <20220902121357.880910913@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121356.732130937@linuxfoundation.org>
 References: <20220902121356.732130937@linuxfoundation.org>
@@ -50,170 +55,152 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 2555283eb40df89945557273121e9393ef9b542b upstream.
+commit 9c80e79906b4ca440d09e7f116609262bb747909 upstream.
 
-anon_vma->degree tracks the combined number of child anon_vmas and VMAs
-that use the anon_vma as their ->anon_vma.
+The assumption in __disable_kprobe() is wrong, and it could try to disarm
+an already disarmed kprobe and fire the WARN_ONCE() below. [0]  We can
+easily reproduce this issue.
 
-anon_vma_clone() then assumes that for any anon_vma attached to
-src->anon_vma_chain other than src->anon_vma, it is impossible for it to
-be a leaf node of the VMA tree, meaning that for such VMAs ->degree is
-elevated by 1 because of a child anon_vma, meaning that if ->degree
-equals 1 there are no VMAs that use the anon_vma as their ->anon_vma.
+1. Write 0 to /sys/kernel/debug/kprobes/enabled.
 
-This assumption is wrong because the ->degree optimization leads to leaf
-nodes being abandoned on anon_vma_clone() - an existing anon_vma is
-reused and no new parent-child relationship is created.  So it is
-possible to reuse an anon_vma for one VMA while it is still tied to
-another VMA.
+  # echo 0 > /sys/kernel/debug/kprobes/enabled
 
-This is an issue because is_mergeable_anon_vma() and its callers assume
-that if two VMAs have the same ->anon_vma, the list of anon_vmas
-attached to the VMAs is guaranteed to be the same.  When this assumption
-is violated, vma_merge() can merge pages into a VMA that is not attached
-to the corresponding anon_vma, leading to dangling page->mapping
-pointers that will be dereferenced during rmap walks.
+2. Run execsnoop.  At this time, one kprobe is disabled.
 
-Fix it by separately tracking the number of child anon_vmas and the
-number of VMAs using the anon_vma as their ->anon_vma.
+  # /usr/share/bcc/tools/execsnoop &
+  [1] 2460
+  PCOMM            PID    PPID   RET ARGS
 
-Fixes: 7a3ef208e662 ("mm: prevent endless growth of anon_vma hierarchy")
-Cc: stable@kernel.org
-Acked-by: Michal Hocko <mhocko@suse.com>
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
-Signed-off-by: Jann Horn <jannh@google.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-[manually fixed up different indentation in stable]
-Signed-off-by: Jann Horn <jannh@google.com>
+  # cat /sys/kernel/debug/kprobes/list
+  ffffffff91345650  r  __x64_sys_execve+0x0    [FTRACE]
+  ffffffff91345650  k  __x64_sys_execve+0x0    [DISABLED][FTRACE]
+
+3. Write 1 to /sys/kernel/debug/kprobes/enabled, which changes
+   kprobes_all_disarmed to false but does not arm the disabled kprobe.
+
+  # echo 1 > /sys/kernel/debug/kprobes/enabled
+
+  # cat /sys/kernel/debug/kprobes/list
+  ffffffff91345650  r  __x64_sys_execve+0x0    [FTRACE]
+  ffffffff91345650  k  __x64_sys_execve+0x0    [DISABLED][FTRACE]
+
+4. Kill execsnoop, when __disable_kprobe() calls disarm_kprobe() for the
+   disabled kprobe and hits the WARN_ONCE() in __disarm_kprobe_ftrace().
+
+  # fg
+  /usr/share/bcc/tools/execsnoop
+  ^C
+
+Actually, WARN_ONCE() is fired twice, and __unregister_kprobe_top() misses
+some cleanups and leaves the aggregated kprobe in the hash table.  Then,
+__unregister_trace_kprobe() initialises tk->rp.kp.list and creates an
+infinite loop like this.
+
+  aggregated kprobe.list -> kprobe.list -.
+                                     ^    |
+                                     '.__.'
+
+In this situation, these commands fall into the infinite loop and result
+in RCU stall or soft lockup.
+
+  cat /sys/kernel/debug/kprobes/list : show_kprobe_addr() enters into the
+                                       infinite loop with RCU.
+
+  /usr/share/bcc/tools/execsnoop : warn_kprobe_rereg() holds kprobe_mutex,
+                                   and __get_valid_kprobe() is stuck in
+				   the loop.
+
+To avoid the issue, make sure we don't call disarm_kprobe() for disabled
+kprobes.
+
+[0]
+Failed to disarm kprobe-ftrace at __x64_sys_execve+0x0/0x40 (error -2)
+WARNING: CPU: 6 PID: 2460 at kernel/kprobes.c:1130 __disarm_kprobe_ftrace.isra.19 (kernel/kprobes.c:1129)
+Modules linked in: ena
+CPU: 6 PID: 2460 Comm: execsnoop Not tainted 5.19.0+ #28
+Hardware name: Amazon EC2 c5.2xlarge/, BIOS 1.0 10/16/2017
+RIP: 0010:__disarm_kprobe_ftrace.isra.19 (kernel/kprobes.c:1129)
+Code: 24 8b 02 eb c1 80 3d c4 83 f2 01 00 75 d4 48 8b 75 00 89 c2 48 c7 c7 90 fa 0f 92 89 04 24 c6 05 ab 83 01 e8 e4 94 f0 ff <0f> 0b 8b 04 24 eb b1 89 c6 48 c7 c7 60 fa 0f 92 89 04 24 e8 cc 94
+RSP: 0018:ffff9e6ec154bd98 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: ffffffff930f7b00 RCX: 0000000000000001
+RDX: 0000000080000001 RSI: ffffffff921461c5 RDI: 00000000ffffffff
+RBP: ffff89c504286da8 R08: 0000000000000000 R09: c0000000fffeffff
+R10: 0000000000000000 R11: ffff9e6ec154bc28 R12: ffff89c502394e40
+R13: ffff89c502394c00 R14: ffff9e6ec154bc00 R15: 0000000000000000
+FS:  00007fe800398740(0000) GS:ffff89c812d80000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000c00057f010 CR3: 0000000103b54006 CR4: 00000000007706e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+PKRU: 55555554
+Call Trace:
+<TASK>
+ __disable_kprobe (kernel/kprobes.c:1716)
+ disable_kprobe (kernel/kprobes.c:2392)
+ __disable_trace_kprobe (kernel/trace/trace_kprobe.c:340)
+ disable_trace_kprobe (kernel/trace/trace_kprobe.c:429)
+ perf_trace_event_unreg.isra.2 (./include/linux/tracepoint.h:93 kernel/trace/trace_event_perf.c:168)
+ perf_kprobe_destroy (kernel/trace/trace_event_perf.c:295)
+ _free_event (kernel/events/core.c:4971)
+ perf_event_release_kernel (kernel/events/core.c:5176)
+ perf_release (kernel/events/core.c:5186)
+ __fput (fs/file_table.c:321)
+ task_work_run (./include/linux/sched.h:2056 (discriminator 1) kernel/task_work.c:179 (discriminator 1))
+ exit_to_user_mode_prepare (./include/linux/resume_user_mode.h:49 kernel/entry/common.c:169 kernel/entry/common.c:201)
+ syscall_exit_to_user_mode (./arch/x86/include/asm/jump_label.h:55 ./arch/x86/include/asm/nospec-branch.h:384 ./arch/x86/include/asm/entry-common.h:94 kernel/entry/common.c:133 kernel/entry/common.c:296)
+ do_syscall_64 (arch/x86/entry/common.c:87)
+ entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
+RIP: 0033:0x7fe7ff210654
+Code: 15 79 89 20 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb be 0f 1f 00 8b 05 9a cd 20 00 48 63 ff 85 c0 75 11 b8 03 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 3a f3 c3 48 83 ec 18 48 89 7c 24 08 e8 34 fc
+RSP: 002b:00007ffdbd1d3538 EFLAGS: 00000246 ORIG_RAX: 0000000000000003
+RAX: 0000000000000000 RBX: 0000000000000008 RCX: 00007fe7ff210654
+RDX: 0000000000000000 RSI: 0000000000002401 RDI: 0000000000000008
+RBP: 0000000000000000 R08: 94ae31d6fda838a4 R0900007fe8001c9d30
+R10: 00007ffdbd1d34b0 R11: 0000000000000246 R12: 00007ffdbd1d3600
+R13: 0000000000000000 R14: fffffffffffffffc R15: 00007ffdbd1d3560
+</TASK>
+
+Link: https://lkml.kernel.org/r/20220813020509.90805-1-kuniyu@amazon.com
+Fixes: 69d54b916d83 ("kprobes: makes kprobes/enabled works correctly for optimized kprobes.")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Reported-by: Ayushman Dutta <ayudutta@amazon.com>
+Cc: "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>
+Cc: Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Wang Nan <wangnan0@huawei.com>
+Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc: Kuniyuki Iwashima <kuni1840@gmail.com>
+Cc: Ayushman Dutta <ayudutta@amazon.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/rmap.h |    7 +++++--
- mm/rmap.c            |   31 +++++++++++++++++--------------
- 2 files changed, 22 insertions(+), 16 deletions(-)
+ kernel/kprobes.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
---- a/include/linux/rmap.h
-+++ b/include/linux/rmap.h
-@@ -37,12 +37,15 @@ struct anon_vma {
- 	atomic_t refcount;
- 
- 	/*
--	 * Count of child anon_vmas and VMAs which points to this anon_vma.
-+	 * Count of child anon_vmas. Equals to the count of all anon_vmas that
-+	 * have ->parent pointing to this one, including itself.
- 	 *
- 	 * This counter is used for making decision about reusing anon_vma
- 	 * instead of forking new one. See comments in function anon_vma_clone.
- 	 */
--	unsigned degree;
-+	unsigned long num_children;
-+	/* Count of VMAs whose ->anon_vma pointer points to this object. */
-+	unsigned long num_active_vmas;
- 
- 	struct anon_vma *parent;	/* Parent of this anon_vma */
- 
---- a/mm/rmap.c
-+++ b/mm/rmap.c
-@@ -78,7 +78,8 @@ static inline struct anon_vma *anon_vma_
- 	anon_vma = kmem_cache_alloc(anon_vma_cachep, GFP_KERNEL);
- 	if (anon_vma) {
- 		atomic_set(&anon_vma->refcount, 1);
--		anon_vma->degree = 1;	/* Reference for first vma */
-+		anon_vma->num_children = 0;
-+		anon_vma->num_active_vmas = 0;
- 		anon_vma->parent = anon_vma;
- 		/*
- 		 * Initialise the anon_vma root to point to itself. If called
-@@ -187,6 +188,7 @@ int anon_vma_prepare(struct vm_area_stru
- 			anon_vma = anon_vma_alloc();
- 			if (unlikely(!anon_vma))
- 				goto out_enomem_free_avc;
-+			anon_vma->num_children++; /* self-parent link for new root */
- 			allocated = anon_vma;
+--- a/kernel/kprobes.c
++++ b/kernel/kprobes.c
+@@ -1616,12 +1616,14 @@ static struct kprobe *__disable_kprobe(s
+ 		/* Try to disarm and disable this/parent probe */
+ 		if (p == orig_p || aggr_kprobe_disabled(orig_p)) {
+ 			/*
+-			 * If kprobes_all_disarmed is set, orig_p
+-			 * should have already been disarmed, so
+-			 * skip unneed disarming process.
++			 * Don't be lazy here.  Even if 'kprobes_all_disarmed'
++			 * is false, 'orig_p' might not have been armed yet.
++			 * Note arm_all_kprobes() __tries__ to arm all kprobes
++			 * on the best effort basis.
+ 			 */
+-			if (!kprobes_all_disarmed)
++			if (!kprobes_all_disarmed && !kprobe_disabled(orig_p))
+ 				disarm_kprobe(orig_p, true);
++
+ 			orig_p->flags |= KPROBE_FLAG_DISABLED;
  		}
- 
-@@ -196,8 +198,7 @@ int anon_vma_prepare(struct vm_area_stru
- 		if (likely(!vma->anon_vma)) {
- 			vma->anon_vma = anon_vma;
- 			anon_vma_chain_link(vma, avc, anon_vma);
--			/* vma reference or self-parent link for new root */
--			anon_vma->degree++;
-+			anon_vma->num_active_vmas++;
- 			allocated = NULL;
- 			avc = NULL;
- 		}
-@@ -276,19 +277,19 @@ int anon_vma_clone(struct vm_area_struct
- 		anon_vma_chain_link(dst, avc, anon_vma);
- 
- 		/*
--		 * Reuse existing anon_vma if its degree lower than two,
--		 * that means it has no vma and only one anon_vma child.
-+		 * Reuse existing anon_vma if it has no vma and only one
-+		 * anon_vma child.
- 		 *
--		 * Do not chose parent anon_vma, otherwise first child
--		 * will always reuse it. Root anon_vma is never reused:
-+		 * Root anon_vma is never reused:
- 		 * it has self-parent reference and at least one child.
- 		 */
--		if (!dst->anon_vma && anon_vma != src->anon_vma &&
--				anon_vma->degree < 2)
-+		if (!dst->anon_vma &&
-+		    anon_vma->num_children < 2 &&
-+		    anon_vma->num_active_vmas == 0)
- 			dst->anon_vma = anon_vma;
  	}
- 	if (dst->anon_vma)
--		dst->anon_vma->degree++;
-+		dst->anon_vma->num_active_vmas++;
- 	unlock_anon_vma_root(root);
- 	return 0;
- 
-@@ -338,6 +339,7 @@ int anon_vma_fork(struct vm_area_struct
- 	anon_vma = anon_vma_alloc();
- 	if (!anon_vma)
- 		goto out_error;
-+	anon_vma->num_active_vmas++;
- 	avc = anon_vma_chain_alloc(GFP_KERNEL);
- 	if (!avc)
- 		goto out_error_free_anon_vma;
-@@ -358,7 +360,7 @@ int anon_vma_fork(struct vm_area_struct
- 	vma->anon_vma = anon_vma;
- 	anon_vma_lock_write(anon_vma);
- 	anon_vma_chain_link(vma, avc, anon_vma);
--	anon_vma->parent->degree++;
-+	anon_vma->parent->num_children++;
- 	anon_vma_unlock_write(anon_vma);
- 
- 	return 0;
-@@ -390,7 +392,7 @@ void unlink_anon_vmas(struct vm_area_str
- 		 * to free them outside the lock.
- 		 */
- 		if (RB_EMPTY_ROOT(&anon_vma->rb_root)) {
--			anon_vma->parent->degree--;
-+			anon_vma->parent->num_children--;
- 			continue;
- 		}
- 
-@@ -398,7 +400,7 @@ void unlink_anon_vmas(struct vm_area_str
- 		anon_vma_chain_free(avc);
- 	}
- 	if (vma->anon_vma)
--		vma->anon_vma->degree--;
-+		vma->anon_vma->num_active_vmas--;
- 	unlock_anon_vma_root(root);
- 
- 	/*
-@@ -409,7 +411,8 @@ void unlink_anon_vmas(struct vm_area_str
- 	list_for_each_entry_safe(avc, next, &vma->anon_vma_chain, same_vma) {
- 		struct anon_vma *anon_vma = avc->anon_vma;
- 
--		VM_WARN_ON(anon_vma->degree);
-+		VM_WARN_ON(anon_vma->num_children);
-+		VM_WARN_ON(anon_vma->num_active_vmas);
- 		put_anon_vma(anon_vma);
- 
- 		list_del(&avc->same_vma);
 
 
