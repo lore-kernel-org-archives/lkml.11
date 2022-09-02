@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0AA6C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:39:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15B47C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:39:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237113AbiIBNjI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:39:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52610 "EHLO
+        id S237609AbiIBNjY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:39:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237435AbiIBNie (ORCPT
+        with ESMTP id S237787AbiIBNim (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:38:34 -0400
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0DEC125BA5
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:16:53 -0700 (PDT)
-Received: by mail-wr1-f46.google.com with SMTP id az27so2280451wrb.6
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 06:16:53 -0700 (PDT)
+        Fri, 2 Sep 2022 09:38:42 -0400
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37A0B155D50
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:17:01 -0700 (PDT)
+Received: by mail-wr1-f50.google.com with SMTP id v16so2273933wrm.8
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 06:17:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=blbmrFpJ9v4eZ8XtVb/9BQ24QeOnYxz1Q7arIgGoVBE=;
-        b=JkMK5OzLYFHwYGJkH+rJgVL2TXyIeszHxwCz+5aDOVBJPPpq8XrVl8OYIuQHSxSCJp
-         BLEbXQX3r5/3pXknb0xdPg5cOJel8nLrsAvMuqpDIewgODYkKZWHacnjrIg3mHVOWPZq
-         CivERmwWkfqGEsMo40rqUtArQztACHGG4RW6ZsInO7ONCw+m4MyEbvK6D22gYgkjfwl3
-         ru1v3hjmip+LvvyOl41JtMwfGqIyk2Wzz6lCRmRl6fNZnqtljNqSvV1bR07faw2JQMxt
-         XmHgO9JNrtOng4XeOCrl3Oi87G+U8JCbC1CrsswSR+wIH7tDJsKMGr0syzI0zFaBXFHx
-         0l8Q==
+        bh=drLF7rfbGFyvXeY1M1WJL6CSV1JIiJp9EbWQRGL1rFU=;
+        b=dg3A8/XIlRqPp1CPoTasxNUHNieEKqRPUkIQRJSP30IIxvMZ3nilnRE7HylejN9mbV
+         cXTjHFLpstcLyIKQXdYUqOHE9NxReukOLmasdZTY5TCbcpLkshUh101kBZ4RDr29op1W
+         eVcar4IsoHkNcma0VlMXNgRgJ50BGWTSJ5TX5oZizKbSwox1qSPV+E6IFWvhC5Wv1yUZ
+         1KrLEQTwXjfcptO9UO7w20FQE9s8UFJ8PyfhS6BQyAtZA7SQ0hQcOAbCspGoA4Dpc4ae
+         o2xTfjqqZlH2PkJQzU2/t89OH6z81wjZjk1U6dj6yYEw8JABZ9lklsZZrkJlO34Pt32R
+         uWLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=blbmrFpJ9v4eZ8XtVb/9BQ24QeOnYxz1Q7arIgGoVBE=;
-        b=FFKgtCCmhsLnmnpyj5nSXsKMW79sy6B2NuT8LyyRF2qPw+O8aaJOCBmchvI0TaHER1
-         B4mwvXbK9KJPYQKeI8UoJz+/awgtNhdGQUPbi3KDwk978Re84TXXHinGylkb8wHyAE5a
-         UjQ5Wp4dHSPv9aM/6VmOCPQy/IAhKPHqQi/ajrX957PuyWF6Gt6fOCfHXdl42HDj94pQ
-         1xlfwE9QkXPZQ5zMfeUmxKH4HLOfg0za0/xC7rRcYWFQWKle/mAS9p8Zq7QbH/Oa8gDY
-         1KCMvUZ2MEmSH4s23YOfYIsyZkgFVo7AoljhkAqboWwzkLqjfnYfsrUhJFFefcUOvXhb
-         TEOg==
-X-Gm-Message-State: ACgBeo3RSxCBYD4ZWu65B0CG91x5GxC7jx6ClCbe3NYoCZxGMYTyEwd/
-        hL1dX4X4lhvopgwbV6986b19wA==
-X-Google-Smtp-Source: AA6agR635/f4JPmMaovAepr83BQhxnemnllSa7fgOEtLDvqVJBZAPT36PfDqSGdGiT/AsgWwDvBDoQ==
-X-Received: by 2002:a5d:47a6:0:b0:228:473c:b84b with SMTP id 6-20020a5d47a6000000b00228473cb84bmr1178709wrb.556.1662124464603;
-        Fri, 02 Sep 2022 06:14:24 -0700 (PDT)
+        bh=drLF7rfbGFyvXeY1M1WJL6CSV1JIiJp9EbWQRGL1rFU=;
+        b=o4DXhp4rsL19qgxEME6w3bgvOTjQzDBIjbIuOir2g6rDp2DjsxgZ8eNgcvRui1+UpQ
+         Ib8wAcke+Ek6jaBW0IVwpZRUeE+lGAhY1cChbZr7in3y90YcLzEvSuGKUco7WW/l0KFQ
+         BCyaHr8hL82Mj4d3FuMV38Qoi/jl/VhKPz+oDxnbqCFlXP4rebo4zSrduHPnCPvI895t
+         RE+wpyAUfk7fCRXOEWNL4UXPvhSqrHtOjY9g1J/ozOqA63vuTiSnO6ekDTJ2gxbHutzq
+         YOUvBkypEupUHYYWzWfAc+pBOdMi2X/6n14dfzVIKd2Yux/0/CrmUAHNvuZUDdte/F+O
+         p+Vg==
+X-Gm-Message-State: ACgBeo1lKvE/7B6bZ7kVt3IZpyvqyLfm36HHlun9BNqwq6gY3COs/nBf
+        bdpQZvbSCameYyYBzHfL8ZJLpQ==
+X-Google-Smtp-Source: AA6agR5R9G7qEf/kpeyJBujQrfYmCftSy6m0SLRKczMsXmGCtHr7J2rnQDY43bEkD0QHw1NBbh+9Ug==
+X-Received: by 2002:a5d:59ab:0:b0:227:8f1e:f4ab with SMTP id p11-20020a5d59ab000000b002278f1ef4abmr2069723wrr.321.1662124469173;
+        Fri, 02 Sep 2022 06:14:29 -0700 (PDT)
 Received: from hackbox.lan ([94.52.112.99])
-        by smtp.gmail.com with ESMTPSA id v14-20020a5d43ce000000b002253fd19a6asm1766253wrr.18.2022.09.02.06.14.22
+        by smtp.gmail.com with ESMTPSA id v14-20020a5d43ce000000b002253fd19a6asm1766253wrr.18.2022.09.02.06.14.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 06:14:23 -0700 (PDT)
+        Fri, 02 Sep 2022 06:14:28 -0700 (PDT)
 From:   Abel Vesa <abel.vesa@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorande@qti.qualcomm.com>,
@@ -61,11 +61,10 @@ To:     Andy Gross <agross@kernel.org>,
 Cc:     Arnd Bergmann <arnd@arndb.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Ola Jeppsson <ola@snap.com>
-Subject: [PATCH 03/14] misc: fastrpc: Fix use-after-free race condition for maps
-Date:   Fri,  2 Sep 2022 16:13:33 +0300
-Message-Id: <20220902131344.3029826-4-abel.vesa@linaro.org>
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: [PATCH 06/14] dt-bindings: misc: fastrpc: Document memory-region property
+Date:   Fri,  2 Sep 2022 16:13:36 +0300
+Message-Id: <20220902131344.3029826-7-abel.vesa@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220902131344.3029826-1-abel.vesa@linaro.org>
 References: <20220902131344.3029826-1-abel.vesa@linaro.org>
@@ -75,57 +74,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ola Jeppsson <ola@snap.com>
+Add memory-region property to the list of optional properties, specify
+the value type and a definition
 
-It is possible that in between calling fastrpc_map_get() until
-map->fl->lock is taken in fastrpc_free_map(), another thread can call
-fastrpc_map_lookup() and get a reference to a map that is about to be
-deleted.
-
-Rewrite fastrpc_map_get() to only increase the reference count of a map
-if it's non-zero. Propagate this to callers so they can know if a map is
-about to be deleted.
-
-Fixes this warning:
-refcount_t: addition on 0; use-after-free.
-WARNING: CPU: 5 PID: 10100 at lib/refcount.c:25 refcount_warn_saturate
-...
-Call trace:
- refcount_warn_saturate
- [fastrpc_map_get inlined]
- [fastrpc_map_lookup inlined]
- fastrpc_map_create
- fastrpc_internal_invoke
- fastrpc_device_ioctl
- __arm64_sys_ioctl
- invoke_syscall
-
-Signed-off-by: Ola Jeppsson <ola@snap.com>
 Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
 ---
- drivers/misc/fastrpc.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ Documentation/devicetree/bindings/misc/qcom,fastrpc.txt | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
-index 50c17f5da3a8..58654d394d17 100644
---- a/drivers/misc/fastrpc.c
-+++ b/drivers/misc/fastrpc.c
-@@ -332,10 +332,12 @@ static void fastrpc_map_put(struct fastrpc_map *map)
- 		kref_put(&map->refcount, fastrpc_free_map);
- }
+diff --git a/Documentation/devicetree/bindings/misc/qcom,fastrpc.txt b/Documentation/devicetree/bindings/misc/qcom,fastrpc.txt
+index 5ec124b138a6..3dd02aaa7ba7 100644
+--- a/Documentation/devicetree/bindings/misc/qcom,fastrpc.txt
++++ b/Documentation/devicetree/bindings/misc/qcom,fastrpc.txt
+@@ -17,6 +17,11 @@ other tasks.
+ 	Definition: should specify the dsp domain name this fastrpc
+ 	corresponds to. must be one of this: "adsp", "mdsp", "sdsp", "cdsp"
  
--static void fastrpc_map_get(struct fastrpc_map *map)
-+static int fastrpc_map_get(struct fastrpc_map *map)
- {
--	if (map)
--		kref_get(&map->refcount);
-+	if (!map)
-+		return -ENOENT;
++- memory-region:
++	Usage: optional
++	Value type: <phandle>
++	Definition: reference to the reserved-memory for the region
 +
-+	return kref_get_unless_zero(&map->refcount) ? 0 : -ENOENT;
- }
- 
- 
+ - qcom,non-secure-domain:
+ 	Usage: required
+ 	Value type: <boolean>
 -- 
 2.34.1
 
