@@ -2,97 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D157AECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:54:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AA54C001B5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:54:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237341AbiIBPyG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 11:54:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40500 "EHLO
+        id S237432AbiIBPyR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 11:54:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237462AbiIBPxn (ORCPT
+        with ESMTP id S237505AbiIBPxr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 11:53:43 -0400
-Received: from mail.base45.de (mail.base45.de [IPv6:2001:67c:2050:320::77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138CE7EFD9;
-        Fri,  2 Sep 2022 08:47:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fe80.eu;
-        s=20190804; h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:
-        In-Reply-To:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=CTrG12qWnI/c/AxI8kTL2+rjoFmKz1TXs568RjVaASw=; b=ifKtc5mRxPP/hgk+Ujk1yvgVcL
-        Hd0Yi+M6uyrX3B0eqHzbr8jt3EzwK2h1hez7h9JQijZsTOI/t7b77YbQsg8TdY2kbc1MoO2iNRdqx
-        fZW+VmZsVJeH2MySiJ5JZ5iiLwkpTJLYP/QJ+u3bsptU1mfzf971861j5yM7+VfOck15C0+diOs4j
-        kL+vIvmkhQ8N98uA87gx95GTk2C+k7qFrK5CfD6L/Ay9F4DUKz0oBSilvXKQRLXbmkQV00XqhEMom
-        Y3AJps/tqC2vkBIBL5YH8RPrRMTiOlGrInb/392Q1OI26agkHoUVlC5NwGEFsOUcCRbxKLExnQJoN
-        wxDzstOA==;
-Received: from [92.206.252.219] (helo=javelin)
-        by mail.base45.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <lynxis@fe80.eu>)
-        id 1oU8sx-005KhR-5H; Fri, 02 Sep 2022 15:47:11 +0000
-Date:   Fri, 2 Sep 2022 17:47:10 +0200
-From:   Alexander 'lynxis' Couzens <lynxis@fe80.eu>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Daniel Golle <daniel@makrotopia.org>
-Subject: Re: [PATCH 3/4] net: mediatek: sgmii: mtk_pcs_setup_mode_an: don't
- rely on register defaults
-Message-ID: <20220902174710.54a1d317@javelin>
-In-Reply-To: <YwTyLwRnQ+eTXeDr@shell.armlinux.org.uk>
-References: <20220820224538.59489-1-lynxis@fe80.eu>
-        <20220820224538.59489-4-lynxis@fe80.eu>
-        <YwTyLwRnQ+eTXeDr@shell.armlinux.org.uk>
+        Fri, 2 Sep 2022 11:53:47 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 21EE088DC2
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 08:48:06 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 68212D6E;
+        Fri,  2 Sep 2022 08:48:12 -0700 (PDT)
+Received: from [10.1.197.78] (eglon.cambridge.arm.com [10.1.197.78])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B2DC33F766;
+        Fri,  2 Sep 2022 08:48:03 -0700 (PDT)
+Message-ID: <4ca8b7c8-0b67-d3a0-73c9-a2c4974cdcac@arm.com>
+Date:   Fri, 2 Sep 2022 16:47:58 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v5 00/21] x86/resctrl: Make resctrl_arch_rmid_read()
+ return values in bytes
+Content-Language: en-GB
+To:     Reinette Chatre <reinette.chatre@intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Fenghua Yu <fenghua.yu@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        H Peter Anvin <hpa@zytor.com>,
+        Babu Moger <Babu.Moger@amd.com>,
+        shameerali.kolothum.thodi@huawei.com,
+        D Scott Phillips OS <scott@os.amperecomputing.com>,
+        lcherian@marvell.com, bobo.shaobowang@huawei.com,
+        tan.shaopeng@fujitsu.com, Jamie Iles <quic_jiles@quicinc.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
+        baolin.wang@linux.alibaba.com
+References: <20220622164629.20795-1-james.morse@arm.com>
+ <d8f0224a-6cb4-eeb4-59cc-39d6ce4fba5a@intel.com>
+From:   James Morse <james.morse@arm.com>
+In-Reply-To: <d8f0224a-6cb4-eeb4-59cc-39d6ce4fba5a@intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 23 Aug 2022 16:28:47 +0100
-"Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
+Hi Reinette,
 
-> On Sun, Aug 21, 2022 at 12:45:37AM +0200, Alexander Couzens wrote:
-> > Ensure autonegotiation is enabled.
-> > 
-> > Signed-off-by: Alexander Couzens <lynxis@fe80.eu>
-> > ---
-> >  drivers/net/ethernet/mediatek/mtk_sgmii.c | 5 +++--
-> >  1 file changed, 3 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/mediatek/mtk_sgmii.c
-> > b/drivers/net/ethernet/mediatek/mtk_sgmii.c index
-> > 782812434367..aa69baf1a42f 100644 ---
-> > a/drivers/net/ethernet/mediatek/mtk_sgmii.c +++
-> > b/drivers/net/ethernet/mediatek/mtk_sgmii.c @@ -32,12 +32,13 @@
-> > static int mtk_pcs_setup_mode_an(struct mtk_pcs *mpcs)
-> > regmap_write(mpcs->regmap, SGMSYS_PCS_LINK_TIMER,
-> > SGMII_LINK_TIMER_DEFAULT); 
-> > +	/* disable remote fault & enable auto neg */
-> >  	regmap_read(mpcs->regmap, SGMSYS_SGMII_MODE, &val);
-> > -	val |= SGMII_REMOTE_FAULT_DIS;
-> > +	val |= SGMII_REMOTE_FAULT_DIS | SGMII_SPEED_DUPLEX_AN;  
+On 23/08/2022 18:20, Reinette Chatre wrote:
+> On 6/22/2022 9:46 AM, James Morse wrote:
+>> The aim of this series is to insert a split between the parts of the monitor
+>> code that the architecture must implement, and those that are part of the
+>> resctrl filesystem. The eventual aim is to move all filesystem parts out
+>> to live in /fs/resctrl, so that resctrl can be wired up for MPAM.
+>>
+>> What's MPAM? See the cover letter of a previous series. [1]
+>>
+>> The series adds domain online/offline callbacks to allow the filesystem to
+>> manage some of its structures itself, then moves all the 'mba_sc' behaviour
+>> to be part of the filesystem.
+>> This means another architecture doesn't need to provide an mbps_val array.
+>> As its all software, the resctrl filesystem should be able to do this without
+>> any help from the architecture code.
+>>
+>> Finally __rmid_read() is refactored to be the API call that the architecture
+>> provides to read a counter value. All the hardware specific overflow detection,
+>> scaling and value correction should occur behind this helper.
+>>
 > 
-> Does SGMII_SPEED_DUPLEX_AN need to be cleared in
-> mtk_pcs_setup_mode_force(), so mtk_pcs_link_up() can force the
-> duplex setting for base-X protocols?
+> Thank you for your patience as I was offline for a while. 
+
+No problem,
+
+
+> This series looks good to me. I have one remaining comment that I provided
+> in reply to "[07/21] x86/resctrl: Abstract and use supports_mba_mbps()" where
+> it seems to me that an existing issue could easily be addressed in the new
+> function. 
+
+Yup, that made sense to me.
+
+
+> I do not have tests for the software controller and only did basic sanity
+> checks. It would be great if the folks using this feature could test this
+> series.
 > 
+> Thank you very much. From my side it looks good:
+> 
+> Reviewed-by: Reinette Chatre <reinette.chatre@intel.com>
 
-Yes SGMII_SPEED_DUPLEX_AN needs to be cleared to have FORCE_DUPLEX
-working. But mtk_pcs_setup_mode_force() is clearing it implicit by
 
-val &= SGMII_DUPLEX_FULL & ~SGMII_IF_MODE_MASK
+Thanks!
 
-because it's included in the SGMII_IF_MODE_MASK.
-I also don't understand why it's forcing it in the
-mtk_pcs_link_up().
+James
