@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C19BC6FA82
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:33:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60039ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:33:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236825AbiIBMdV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:33:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36696 "EHLO
+        id S236832AbiIBMdX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:33:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236702AbiIBMcF (ORCPT
+        with ESMTP id S236255AbiIBMcI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:32:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75E8E1934;
-        Fri,  2 Sep 2022 05:27:23 -0700 (PDT)
+        Fri, 2 Sep 2022 08:32:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63993E1A87;
+        Fri,  2 Sep 2022 05:27:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2A10EB82AA2;
-        Fri,  2 Sep 2022 12:25:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 868D0C433D7;
-        Fri,  2 Sep 2022 12:25:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 03D7AB82A93;
+        Fri,  2 Sep 2022 12:26:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C714C433C1;
+        Fri,  2 Sep 2022 12:26:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121524;
-        bh=datHgiSjND2VmkLLoF7eduR5OnhuevfGSmxmRwUU9Jg=;
+        s=korg; t=1662121601;
+        bh=nN8ADwqc5PZvKklE1YnMtGZ5CSJV3QwI3GVA9DAi9VU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sCUSvf4kzN5e+Tj84nq2/X2zb5mdjSEoHAlZcrh2D/vTkLiZakf3mzwzvxECs2AHp
-         nJv2ODDrhDT5DBV9yOo3bNETSOa3vxq3SbAiKTIHvCQVJsKGeojTplKnd77jikU/Wa
-         KM27q+3hw2DEYuJS3OnhWNLvmRt6Urz0URCS++dE=
+        b=ZnoWNNfcntcwFYqYOCLJc1oySTMNh3Ctxq8Nyi3F5ntrP47Npu7ixyXuB6a/lsL0N
+         du2KoEl2jaRmTHNOLtMntWCw3/KRcQCauK/t5ZnnhKpptQyEsJHHBvpg0aqWVYocPf
+         mf6lUkUWvR6yIjyTljRJKB/TMFydqBk4YpO3RzVk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Kelley <mikelley@microsoft.com>,
-        Saurabh Sengar <ssengar@linux.microsoft.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 4.19 36/56] scsi: storvsc: Remove WQ_MEM_RECLAIM from storvsc_error_wq
-Date:   Fri,  2 Sep 2022 14:18:56 +0200
-Message-Id: <20220902121401.554898954@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Foster <bfoster@redhat.com>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Subject: [PATCH 4.19 33/56] s390: fix double free of GS and RI CBs on fork() failure
+Date:   Fri,  2 Sep 2022 14:18:53 +0200
+Message-Id: <20220902121401.424236751@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
 References: <20220902121400.219861128@linuxfoundation.org>
@@ -49,67 +50,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Saurabh Sengar <ssengar@linux.microsoft.com>
+From: Brian Foster <bfoster@redhat.com>
 
-commit d957e7ffb2c72410bcc1a514153a46719255a5da upstream.
+commit 13cccafe0edcd03bf1c841de8ab8a1c8e34f77d9 upstream.
 
-storvsc_error_wq workqueue should not be marked as WQ_MEM_RECLAIM as it
-doesn't need to make forward progress under memory pressure.  Marking this
-workqueue as WQ_MEM_RECLAIM may cause deadlock while flushing a
-non-WQ_MEM_RECLAIM workqueue.  In the current state it causes the following
-warning:
+The pointers for guarded storage and runtime instrumentation control
+blocks are stored in the thread_struct of the associated task. These
+pointers are initially copied on fork() via arch_dup_task_struct()
+and then cleared via copy_thread() before fork() returns. If fork()
+happens to fail after the initial task dup and before copy_thread(),
+the newly allocated task and associated thread_struct memory are
+freed via free_task() -> arch_release_task_struct(). This results in
+a double free of the guarded storage and runtime info structs
+because the fields in the failed task still refer to memory
+associated with the source task.
 
-[   14.506347] ------------[ cut here ]------------
-[   14.506354] workqueue: WQ_MEM_RECLAIM storvsc_error_wq_0:storvsc_remove_lun is flushing !WQ_MEM_RECLAIM events_freezable_power_:disk_events_workfn
-[   14.506360] WARNING: CPU: 0 PID: 8 at <-snip->kernel/workqueue.c:2623 check_flush_dependency+0xb5/0x130
-[   14.506390] CPU: 0 PID: 8 Comm: kworker/u4:0 Not tainted 5.4.0-1086-azure #91~18.04.1-Ubuntu
-[   14.506391] Hardware name: Microsoft Corporation Virtual Machine/Virtual Machine, BIOS Hyper-V UEFI Release v4.1 05/09/2022
-[   14.506393] Workqueue: storvsc_error_wq_0 storvsc_remove_lun
-[   14.506395] RIP: 0010:check_flush_dependency+0xb5/0x130
-		<-snip->
-[   14.506408] Call Trace:
-[   14.506412]  __flush_work+0xf1/0x1c0
-[   14.506414]  __cancel_work_timer+0x12f/0x1b0
-[   14.506417]  ? kernfs_put+0xf0/0x190
-[   14.506418]  cancel_delayed_work_sync+0x13/0x20
-[   14.506420]  disk_block_events+0x78/0x80
-[   14.506421]  del_gendisk+0x3d/0x2f0
-[   14.506423]  sr_remove+0x28/0x70
-[   14.506427]  device_release_driver_internal+0xef/0x1c0
-[   14.506428]  device_release_driver+0x12/0x20
-[   14.506429]  bus_remove_device+0xe1/0x150
-[   14.506431]  device_del+0x167/0x380
-[   14.506432]  __scsi_remove_device+0x11d/0x150
-[   14.506433]  scsi_remove_device+0x26/0x40
-[   14.506434]  storvsc_remove_lun+0x40/0x60
-[   14.506436]  process_one_work+0x209/0x400
-[   14.506437]  worker_thread+0x34/0x400
-[   14.506439]  kthread+0x121/0x140
-[   14.506440]  ? process_one_work+0x400/0x400
-[   14.506441]  ? kthread_park+0x90/0x90
-[   14.506443]  ret_from_fork+0x35/0x40
-[   14.506445] ---[ end trace 2d9633159fdc6ee7 ]---
+This problem can manifest as a BUG_ON() in set_freepointer() (with
+CONFIG_SLAB_FREELIST_HARDENED enabled) or KASAN splat (if enabled)
+when running trinity syscall fuzz tests on s390x. To avoid this
+problem, clear the associated pointer fields in
+arch_dup_task_struct() immediately after the new task is copied.
+Note that the RI flag is still cleared in copy_thread() because it
+resides in thread stack memory and that is where stack info is
+copied.
 
-Link: https://lore.kernel.org/r/1659628534-17539-1-git-send-email-ssengar@linux.microsoft.com
-Fixes: 436ad9413353 ("scsi: storvsc: Allow only one remove lun work item to be issued per lun")
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Brian Foster <bfoster@redhat.com>
+Fixes: 8d9047f8b967c ("s390/runtime instrumentation: simplify task exit handling")
+Fixes: 7b83c6297d2fc ("s390/guarded storage: simplify task exit handling")
+Cc: <stable@vger.kernel.org> # 4.15
+Reviewed-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220816155407.537372-1-bfoster@redhat.com
+Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/storvsc_drv.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/s390/kernel/process.c |   22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
 
---- a/drivers/scsi/storvsc_drv.c
-+++ b/drivers/scsi/storvsc_drv.c
-@@ -1858,7 +1858,7 @@ static int storvsc_probe(struct hv_devic
- 	 */
- 	host_dev->handle_error_wq =
- 			alloc_ordered_workqueue("storvsc_error_wq_%d",
--						WQ_MEM_RECLAIM,
-+						0,
- 						host->host_no);
- 	if (!host_dev->handle_error_wq)
- 		goto err_out2;
+--- a/arch/s390/kernel/process.c
++++ b/arch/s390/kernel/process.c
+@@ -75,6 +75,18 @@ int arch_dup_task_struct(struct task_str
+ 
+ 	memcpy(dst, src, arch_task_struct_size);
+ 	dst->thread.fpu.regs = dst->thread.fpu.fprs;
++
++	/*
++	 * Don't transfer over the runtime instrumentation or the guarded
++	 * storage control block pointers. These fields are cleared here instead
++	 * of in copy_thread() to avoid premature freeing of associated memory
++	 * on fork() failure. Wait to clear the RI flag because ->stack still
++	 * refers to the source thread.
++	 */
++	dst->thread.ri_cb = NULL;
++	dst->thread.gs_cb = NULL;
++	dst->thread.gs_bc_cb = NULL;
++
+ 	return 0;
+ }
+ 
+@@ -131,13 +143,11 @@ int copy_thread_tls(unsigned long clone_
+ 	frame->childregs.flags = 0;
+ 	if (new_stackp)
+ 		frame->childregs.gprs[15] = new_stackp;
+-
+-	/* Don't copy runtime instrumentation info */
+-	p->thread.ri_cb = NULL;
++	/*
++	 * Clear the runtime instrumentation flag after the above childregs
++	 * copy. The CB pointer was already cleared in arch_dup_task_struct().
++	 */
+ 	frame->childregs.psw.mask &= ~PSW_MASK_RI;
+-	/* Don't copy guarded storage control block */
+-	p->thread.gs_cb = NULL;
+-	p->thread.gs_bc_cb = NULL;
+ 
+ 	/* Set a new TLS ?  */
+ 	if (clone_flags & CLONE_SETTLS) {
 
 
