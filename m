@@ -2,145 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D337AECAAD3
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 00:33:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20BE9ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 00:34:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234330AbiIBAdK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 20:33:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41908 "EHLO
+        id S234425AbiIBAeM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 20:34:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232631AbiIBAdH (ORCPT
+        with ESMTP id S233931AbiIBAeI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 20:33:07 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A2E9E12E
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 17:33:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662078787; x=1693614787;
-  h=from:to:cc:subject:references:date:in-reply-to:
-   message-id:mime-version:content-transfer-encoding;
-  bh=8qubwDEk7bK1thYQZ5HsOms2XEz5Np/BfJ6RKgPJUN8=;
-  b=ZgLUBkRu1uvx4bqUBCTX0S92gZY3litj8W1IkU8Kc3InhewUanapHeKI
-   JbuzDzganO6F1NOGheaKHA1RhVlwivAzhBmahETDLA5QUiuISEoAXZ3Gf
-   olP127YkntHsWBj9gX7mvrivdJAEVZZEj1TdxLMLSZ6GbFjlOGRtUgaek
-   HQU+yDn9J21Wd/6UE+aRHc+583WPXL2cBbT7LJBD+NmKWhCZsvnvtYZMK
-   7kQx7Y+t8y3jazgBXaiKn6pLQvxYDWX7UOli53QLCVMu+S5jcafgExLPH
-   SvoJyPUwm40mP+V1Bfwm0FcSuAsuPvMsh3ony4KLXkTN9gwG2wy1A8kH+
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="278878607"
-X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
-   d="scan'208";a="278878607"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 17:33:06 -0700
-X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
-   d="scan'208";a="563716721"
-Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.238.208.55])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 17:33:02 -0700
-From:   "Huang, Ying" <ying.huang@intel.com>
-To:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>,
-        Wei Xu <weixugc@google.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>, linux-mm@kvack.org,
-        akpm@linux-foundation.org, Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        jvgediya.oss@gmail.com, Bharata B Rao <bharata@amd.com>
-Subject: Re: [PATCH v3 updated] mm/demotion: Expose memory tier details via
- sysfs
-References: <20220830081736.119281-1-aneesh.kumar@linux.ibm.com>
-        <87tu5rzigc.fsf@yhuang6-desk2.ccr.corp.intel.com>
-        <ad19e105-9290-922d-59e6-e6813a30f5f0@linux.ibm.com>
-Date:   Fri, 02 Sep 2022 08:29:54 +0800
-In-Reply-To: <ad19e105-9290-922d-59e6-e6813a30f5f0@linux.ibm.com> (Aneesh
-        Kumar K. V.'s message of "Thu, 1 Sep 2022 13:54:27 +0530")
-Message-ID: <87pmgezkhp.fsf@yhuang6-desk2.ccr.corp.intel.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Thu, 1 Sep 2022 20:34:08 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 846179F1BE
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 17:34:07 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id s11so714928edd.13
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 17:34:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=g0W4XosBFsOU9OJyk6RCXP1Ph74BaHmTWPXYbDZyi0E=;
+        b=g7NAxXDM5jwt2ZQIuC23zS+Gj6bX7gmaIfqxEAECYQiGWpEAFQa1f2CsL5nh5ft/Y9
+         AIr2al38oLiJRpzGtrGgnk4w9IfIMWUonkE+9DZ6k2P21Kl0EvuSxr29PbDA1+1em1cd
+         dYTEjCtfgKnZWDVIJDxxMjQp1lOCGSGhpovijuO0b3qiav5w11KiSdLi8IeR1Geo5r/F
+         b3Rjza8J92KowwOKuk21IB4N0MxylAQhqeD2/xpXuUb7S+NMLxhQTDWf08GnJke1P5zt
+         6uPpCh2NkLp/0pddJFPMNAMbbgzJsAElawX2udhNU0JRHIMRapcX8PefW1fFTfaGdcet
+         aB2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=g0W4XosBFsOU9OJyk6RCXP1Ph74BaHmTWPXYbDZyi0E=;
+        b=EpKG4UsgGfBSsV0mzcnLcwmP9zn6zUQCHW4nKGxwri23GO1TxcjamUTCaWf512vdEO
+         coM01sWUF2c22igrYKsInRjKkywrVy0FaUWpp/q4RdWJYGJ1Uj9WowV5a3htDe68eh5u
+         JD58iDeoQPykiXyQFgZqo33X5OeaZiGQQScOXXlkIPeQn9vYD0JpITmOmHO0jypJVB1e
+         Rn02TBrrDRSSEEYXsOAJtyu7gpEXzr3R84C3e2GDlvdgjgBnkop3HL/Vlo4Uc9kGH8yc
+         0sMTBY5dejVZTeLd+JlfWchjerWHvrXIY/Oj9PntEBr/WrQJiRWffRIpwKtSQy4ibHJk
+         S2/w==
+X-Gm-Message-State: ACgBeo3h79vQCRzLDvAVxN+91HzLLJ/miWn5327qy99X46hVt+6Xr2VD
+        bEW7EIo2+AexKnpUWkvpFfsivR+3CO56CSe+Sz5Q2Q==
+X-Google-Smtp-Source: AA6agR7L1g+GrifIuIL2RvuO0MF4C2Vtm6LL1S4dqJ/PngqADbOmXg04ta+aDasVtIdRN9a8Nlvw5KjebtJPyg0x6M0=
+X-Received: by 2002:a05:6402:3227:b0:448:706c:185d with SMTP id
+ g39-20020a056402322700b00448706c185dmr18264220eda.357.1662078845879; Thu, 01
+ Sep 2022 17:34:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <20220830233129.30610-1-samitolvanen@google.com> <YxEh+pLyOyPalW1u@dev-arch.thelio-3990X>
+In-Reply-To: <YxEh+pLyOyPalW1u@dev-arch.thelio-3990X>
+From:   Sami Tolvanen <samitolvanen@google.com>
+Date:   Thu, 1 Sep 2022 17:33:29 -0700
+Message-ID: <CABCJKucP5nXGiCTTCEPUGYo5Z9A9qaQkJ6_kXTOfw-o-=TYH0g@mail.gmail.com>
+Subject: Re: [PATCH v4 00/21] KCFI support
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>, X86 ML <x86@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Joao Moreira <joao@overdrivepizza.com>,
+        Sedat Dilek <sedat.dilek@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-hardening@vger.kernel.org,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Aneesh Kumar K V <aneesh.kumar@linux.ibm.com> writes:
+Hi Nathan,
 
-> On 9/1/22 12:31 PM, Huang, Ying wrote:
->> "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
->>=20
->>> This patch adds /sys/devices/virtual/memory_tiering/ where all memory t=
-ier
->>> related details can be found. All allocated memory tiers will be listed
->>> there as /sys/devices/virtual/memory_tiering/memory_tierN/
->>>
->>> The nodes which are part of a specific memory tier can be listed via
->>> /sys/devices/virtual/memory_tiering/memory_tierN/nodes
->>=20
->> I think "memory_tier" is a better subsystem/bus name than
->> memory_tiering.  Because we have a set of memory_tierN devices inside.
->> "memory_tier" sounds more natural.  I know this is subjective, just my
->> preference.
->>=20
->>>
->>> A directory hierarchy looks like
->>> :/sys/devices/virtual/memory_tiering$ tree memory_tier4/
->>> memory_tier4/
->>> =E2=94=9C=E2=94=80=E2=94=80 nodes
->>> =E2=94=9C=E2=94=80=E2=94=80 subsystem -> ../../../../bus/memory_tiering
->>> =E2=94=94=E2=94=80=E2=94=80 uevent
->>>
->>> All toptier nodes are listed via
->>> /sys/devices/virtual/memory_tiering/toptier_nodes
->>>
->>> :/sys/devices/virtual/memory_tiering$ cat toptier_nodes
->>> 0,2
->>> :/sys/devices/virtual/memory_tiering$ cat memory_tier4/nodes
->>> 0,2
->>=20
->> I don't think that it is a good idea to show toptier information in user
->> space interface.  Because it is just a in kernel implementation
->> details.  Now, we only promote pages from !toptier to toptier.  But
->> there may be multiple memory tiers in toptier and !toptier, we may
->> change the implementation in the future.  For example, we may promote
->> pages from DRAM to HBM in the future.
->>=20
+On Thu, Sep 1, 2022 at 2:19 PM Nathan Chancellor <nathan@kernel.org> wrote:
+> I took this series for a spin on arm64 and x86_64.
+
+Thanks for testing!
+
+> I did not see any runtime issues on my arm64 or AMD test machines but I
+> do see a set of failures on my two Intel test machines when accessing
+> the files in /sys/devices/pci0000:00/0000:00:02.0/drm/card0/gt/gt0:
+
+Yes, I suspect there are a few sysfs type mismatches left to fix
+still. I believe Kees was looking into these earlier.
+
+> The source of those is drivers/gpu/drm/i915/gt/intel_gt_sysfs_pm.c. I
+> have not looked too closely yet but the fix should be something along
+> the lines of commit 58606220a2f1 ("drm/i915: Fix CFI violation with
+> show_dynamic_id()").
+
+I don't have hardware for testing this driver, but that looks like a
+typical kobj_attribute / device_attribute mismatch, which happens to
+work because struct device starts with a kobject and the attribute
+structure is identical. I can take a look at this next week.
+
+> Interestingly, I do not see the KVM failure [1] that I reported anymore.
+> I do not see an obvious fix for it in this series or -next though, could
+> it have been an issue with an earlier revision of kCFI on the compiler
+> side?
+
+Most likely the compiler either converted it into a direct call, or
+inlined it. There are a few type mismatches in the kernel still that
+don't trip KCFI because they're optimized into direct calls.
+
+> I do see a few new objtool warnings as well:
 >
->
-> In the case you describe above and others, we will always have a list of
-> NUMA nodes from which memory promotion is not done.
-> /sys/devices/virtual/memory_tiering/toptier_nodes shows that list.
+> vmlinux.o: warning: objtool: apply_relocate_add+0x34: relocation to !ENDBR: memcpy+0x0
+> vmlinux.o: warning: objtool: ___ksymtab+__memcpy+0x0: data relocation to !ENDBR: memcpy+0x0
+> vmlinux.o: warning: objtool: ___ksymtab+memcpy+0x0: data relocation to !ENDBR: memcpy+0x0
 
-I don't think we will need that interface if we don't restrict promotion
-in the future.  For example, he can just check the memory tier with
-smallest number.
+That's interesting. I can only reproduce this warning with
+allmodconfig+LTO, even though the relocation exists in all builds (the
+code makes an indirect call to memcpy) and memcpy (aliased to
+__memcpy) doesn't start with endbr. I'll have to take a closer look at
+why this warning only appears with LTO.
 
-TBH, I don't know why do we need that interface.  What is it for?  We
-don't want to expose unnecessary information to restrict our in kernel
-implementation in the future.
-
-So, please remove that interface at least before we discussing it
-thoroughly.
-
->> Do we need a way to show the default memory tier in sysfs?  That is, the
->> memory tier that the DRAM nodes belong to.
->>=20
->
-> I will hold adding that until we have support for modifying memory tier d=
-etails from
-> userspace. That is when userspace would want to know about the default me=
-mory tier.=20
->
-> For now, the user interface is a simpler hierarchy of memory tiers, it's =
-associated
-> nodes and the list of nodes from which promotion is not done.
-
-OK.
-
-Best Regards,
-Huang, Ying
+Sami
