@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1FE7C54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:00:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CE7CC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:00:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238488AbiIBNAV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:00:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37824 "EHLO
+        id S238503AbiIBNA2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:00:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238552AbiIBM7C (ORCPT
+        with ESMTP id S238546AbiIBM7B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:59:02 -0400
+        Fri, 2 Sep 2022 08:59:01 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 345765EDCD;
-        Fri,  2 Sep 2022 05:40:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667C6EE3A;
+        Fri,  2 Sep 2022 05:40:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6A8E3B82A94;
-        Fri,  2 Sep 2022 12:39:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4327C43470;
-        Fri,  2 Sep 2022 12:39:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5ED8AB82ACF;
+        Fri,  2 Sep 2022 12:31:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D70AC433D6;
+        Fri,  2 Sep 2022 12:31:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122395;
-        bh=I8lkaMFzQUWXn3VkE2HN1MPqneA7HYh09OkxjTKmFqI=;
+        s=korg; t=1662121899;
+        bh=aTEHJ4fS54rwEHzxV41QnRRSPAd+gExdSnKihoHECng=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TEv69qIpIL4BLlSM2kRStbC0PQit3YTdBIgEJExXvJa3L4A2F2nRYEYuXVATxn12Y
-         0cgdYCyzLDpO9BJUD4966CPE4RbuPi6Z4mcAtD+tP4b0dw+8LKlREcVuGpybsqvBjl
-         qlRML+7vdAQfwAwVzpaQ+JC6kDUPygNrX8ZVpCns=
+        b=OjfGSFRCKOTGOMZliXXbLQhCE6mChugz7aKYWWwKEgR728i280hKvtmYzTZhE7wWK
+         x+XnwCei62IgK0HvXHZM3+o6kcPwsgsWrj9CAI4hTyU87E/IhtWZ02QCkXeHYjuG15
+         xBLSqWHRjEU435yZMbqKop/9bwkRprog6EjRkq2M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Darrick J. Wong" <djwong@kernel.org>,
-        Dave Chinner <dchinner@redhat.com>,
-        Amir Goldstein <amir73il@gmail.com>
-Subject: [PATCH 5.10 33/37] xfs: fix overfilling of reserve pool
-Date:   Fri,  2 Sep 2022 14:19:55 +0200
-Message-Id: <20220902121400.210546576@linuxfoundation.org>
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 22/73] io_uring: fix wrong arm_poll error handling
+Date:   Fri,  2 Sep 2022 14:18:46 +0200
+Message-Id: <20220902121405.182443393@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121359.177846782@linuxfoundation.org>
-References: <20220902121359.177846782@linuxfoundation.org>
+In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
+References: <20220902121404.435662285@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,54 +48,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Darrick J. Wong" <djwong@kernel.org>
+From: Pavel Begunkov <asml.silence@gmail.com>
 
-commit 82be38bcf8a2e056b4c99ce79a3827fa743df6ec upstream.
+[ upstream commmit 9d2ad2947a53abf5e5e6527a9eeed50a3a4cbc72 ]
 
-Due to cycling of m_sb_lock, it's possible for multiple callers of
-xfs_reserve_blocks to race at changing the pool size, subtracting blocks
-from fdblocks, and actually putting it in the pool.  The result of all
-this is that we can overfill the reserve pool to hilarious levels.
+Leaving ip.error set when a request was punted to task_work execution is
+problematic, don't forget to clear it.
 
-xfs_mod_fdblocks, when called with a positive value, already knows how
-to take freed blocks and either fill the reserve until it's full, or put
-them in fdblocks.  Use that instead of setting m_resblks_avail directly.
-
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Reviewed-by: Dave Chinner <dchinner@redhat.com>
-Signed-off-by: Amir Goldstein <amir73il@gmail.com>
-Acked-by: Darrick J. Wong <djwong@kernel.org>
+Fixes: aa43477b04025 ("io_uring: poll rework")
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+Link: https://lore.kernel.org/r/a6c84ef4182c6962380aebe11b35bdcb25b0ccfb.1655852245.git.asml.silence@gmail.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+[pavel: backport]
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/xfs/xfs_fsops.c |   13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ fs/io_uring.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/fs/xfs/xfs_fsops.c
-+++ b/fs/xfs/xfs_fsops.c
-@@ -394,18 +394,17 @@ xfs_reserve_blocks(
- 		 * count or we'll get an ENOSPC.  Don't set the reserved flag
- 		 * here - we don't want to reserve the extra reserve blocks
- 		 * from the reserve.
-+		 *
-+		 * The desired reserve size can change after we drop the lock.
-+		 * Use mod_fdblocks to put the space into the reserve or into
-+		 * fdblocks as appropriate.
- 		 */
- 		fdblks_delta = min(free, delta);
- 		spin_unlock(&mp->m_sb_lock);
- 		error = xfs_mod_fdblocks(mp, -fdblks_delta, 0);
--		spin_lock(&mp->m_sb_lock);
--
--		/*
--		 * Update the reserve counters if blocks have been successfully
--		 * allocated.
--		 */
- 		if (!error)
--			mp->m_resblks_avail += fdblks_delta;
-+			xfs_mod_fdblocks(mp, fdblks_delta, 0);
-+		spin_lock(&mp->m_sb_lock);
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -5627,8 +5627,10 @@ static int __io_arm_poll_handler(struct
+ 
+ 	if (mask) {
+ 		/* can't multishot if failed, just queue the event we've got */
+-		if (unlikely(ipt->error || !ipt->nr_entries))
++		if (unlikely(ipt->error || !ipt->nr_entries)) {
+ 			poll->events |= EPOLLONESHOT;
++			ipt->error = 0;
++		}
+ 		__io_poll_execute(req, mask);
+ 		return 0;
  	}
- out:
- 	if (outval) {
 
 
