@@ -2,286 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C05FECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:57:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FD58ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:57:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237235AbiIBP5L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 11:57:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38420 "EHLO
+        id S236011AbiIBP5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 11:57:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237580AbiIBPzd (ORCPT
+        with ESMTP id S237594AbiIBPzl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 11:55:33 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CDCF4C9E91
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 08:49:33 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C0E831595;
-        Fri,  2 Sep 2022 08:49:39 -0700 (PDT)
-Received: from merodach.members.linode.com (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3BFA73F766;
-        Fri,  2 Sep 2022 08:49:31 -0700 (PDT)
-From:   James Morse <james.morse@arm.com>
-To:     x86@kernel.org, linux-kernel@vger.kernel.org
-Cc:     Fenghua Yu <fenghua.yu@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        H Peter Anvin <hpa@zytor.com>,
-        Babu Moger <Babu.Moger@amd.com>,
-        James Morse <james.morse@arm.com>,
-        shameerali.kolothum.thodi@huawei.com,
-        D Scott Phillips OS <scott@os.amperecomputing.com>,
-        lcherian@marvell.com, bobo.shaobowang@huawei.com,
-        tan.shaopeng@fujitsu.com, Jamie Iles <quic_jiles@quicinc.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
-        baolin.wang@linux.alibaba.com
-Subject: [PATCH v6 15/21] x86/resctrl: Abstract __rmid_read()
-Date:   Fri,  2 Sep 2022 15:48:23 +0000
-Message-Id: <20220902154829.30399-16-james.morse@arm.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220902154829.30399-1-james.morse@arm.com>
-References: <20220902154829.30399-1-james.morse@arm.com>
+        Fri, 2 Sep 2022 11:55:41 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 008BACCD5D
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 08:49:36 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id u17so2856563wrp.3
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 08:49:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=+dqtA1vC5bbu7+19eRzEcb3GPd6mCeJ5uJ0I2dFRg1s=;
+        b=daEASc8ioBX227MnsitZVw9FMNnmXF1j5HiSzxM+U58lzF8dXRjdaCXpTPZzn+Q1YD
+         KR8+sU5BmJI1ZMgzdtAFblCI4nR3EBW2jfWkCHwNqlbVydvrLrz4kSnmuy/HFAkU9adm
+         mUTZPxJnR9cqcrEu61Nr06K5Afrkse1z3hbqd3eWN7t2qyLYQ8qEJaH6hNTkFvau7XRW
+         Zxekbb3wVUEA1vNCwCOI5gQx+l/N4tFk+q8Gyz0XQMfk0OlBQgjy9+lIFtzw2R+MZX0v
+         mcWZeqlUi2zLUGcdGAmY1xHMUi57v2u855oc2qPOO2cFglT7+5rx6BXZ7gTy5TWIZ9cW
+         5OYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=+dqtA1vC5bbu7+19eRzEcb3GPd6mCeJ5uJ0I2dFRg1s=;
+        b=v2KRrBonCSkpL+zfYjItFmRNF73rjZW1utSez6Qg7604Z3HVUHgqYOm8lLLKBFH1hQ
+         es5Ex5+mIdUJfhPXknE6U5dHNUj/kugHsJSL6E0TZMIi5nFJLJQCari/1idcxaDF0yyo
+         z1sQxB4QYaFLgqhxFf3IHkvWrfBfltH3W9FOU3X462pxP3x1+41Rj8GvtJxX1SYC8+jg
+         NsX1axrXRrR3FCAFmg84qiez+TH3UwMwvvMJrtSQoO87vQOcfHas5AlzRPGtV2/rPAq3
+         GUYbYA+T5Sbb9Pt8ar5Qq2zwxoGXBxZkpeWKtCxyzgkGw/8u8U12zTCW99ywdWHa8l+b
+         kt3Q==
+X-Gm-Message-State: ACgBeo3G52w0JlGobvyYWdGEtPa4uUG5lRt1IAyOSPTRChvTgKP0PoBS
+        Xu8D2yz1reMXE7idE+Bb0eyTPg==
+X-Google-Smtp-Source: AA6agR6d+OW/Kb+f1G1p6/IWipjCrHaUTlHmriTMJZTjpULj4Gq7CkBZGCuPmqRTgsUmbSQd95dYoQ==
+X-Received: by 2002:adf:f085:0:b0:226:d6e4:58f5 with SMTP id n5-20020adff085000000b00226d6e458f5mr16219092wro.50.1662133775532;
+        Fri, 02 Sep 2022 08:49:35 -0700 (PDT)
+Received: from hackbox.lan ([94.52.112.99])
+        by smtp.gmail.com with ESMTPSA id b1-20020a05600010c100b002250f9abdefsm2046741wrx.117.2022.09.02.08.49.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 08:49:35 -0700 (PDT)
+From:   Abel Vesa <abel.vesa@linaro.org>
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Amol Maheshwari <amahesh@qti.qualcomm.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Ekansh Gupta <quic_ekagupt@quicinc.com>
+Cc:     Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-arm-msm@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree@vger.kernel.org
+Subject: [PATCH v2 08/10] misc: fastrpc: Safekeep mmaps on interrupted invoke
+Date:   Fri,  2 Sep 2022 18:48:58 +0300
+Message-Id: <20220902154900.3404524-9-abel.vesa@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220902154900.3404524-1-abel.vesa@linaro.org>
+References: <20220902154900.3404524-1-abel.vesa@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-__rmid_read() selects the specified eventid and returns the counter
-value from the MSR. The error handling is architecture specific, and
-handled by the callers, rdtgroup_mondata_show() and __mon_event_count().
+If the userspace daemon is killed in the middle of an invoke (e.g.
+audiopd listerner invoke), we need to skip the unmapping on device
+release, otherwise the DSP will crash. So lets safekeep all the maps
+only if there is in invoke interrupted, by attaching them to the channel
+context (which is resident until RPMSG driver is removed), and restore
+them back to the fastrpc user on the next device open call.
 
-Error handling should be handled by architecture specific code, as
-a different architecture may have different requirements. MPAM's
-counters can report that they are 'not ready', requiring a second
-read after a short delay. This should be hidden from resctrl.
-
-Make __rmid_read() the architecture specific function for reading
-a counter. Rename it resctrl_arch_rmid_read() and move the error
-handling into it.
-
-A read from a counter that hardware supports but resctrl does not
-now returns -EINVAL instead of -EIO from the default case in
-__mon_event_count(). It isn't possible for user-space to see this
-change as resctrl doesn't expose counters it doesn't support.
-
-Reviewed-by: Jamie Iles <quic_jiles@quicinc.com>
-Tested-by: Xin Hao <xhao@linux.alibaba.com>
-Reviewed-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
-Tested-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
-Tested-by: Cristian Marussi <cristian.marussi@arm.com>
-Reviewed-by: Reinette Chatre <reinette.chatre@intel.com>
-Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
 ---
-Changes since v4:
- * Fixed __rmid_read in comment.
- * Renamed ret_val ret.
+ drivers/misc/fastrpc.c | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
 
-Changes since v3:
- * Changed return type of __mon_event_count().
- * Clarified comment in mon_event_count()
-
-Changes since v2:
- * Capitalisation
- * Stray newline restored
- * Removed rr->val set to the error value, and replaced it with clearing the
-   the error to hide Unavailable from monitor group reads. (and added a block
-   comment).
-
-Changes since v1:
- * Return EINVAL from the impossible case in __mon_event_count() instead
-   of an x86 hardware specific value.
----
- arch/x86/kernel/cpu/resctrl/ctrlmondata.c |  4 +-
- arch/x86/kernel/cpu/resctrl/internal.h    |  1 +
- arch/x86/kernel/cpu/resctrl/monitor.c     | 62 ++++++++++++++---------
- include/linux/resctrl.h                   |  1 +
- 4 files changed, 43 insertions(+), 25 deletions(-)
-
-diff --git a/arch/x86/kernel/cpu/resctrl/ctrlmondata.c b/arch/x86/kernel/cpu/resctrl/ctrlmondata.c
-index ece3a1e0e6f2..d3f7eb2ac14b 100644
---- a/arch/x86/kernel/cpu/resctrl/ctrlmondata.c
-+++ b/arch/x86/kernel/cpu/resctrl/ctrlmondata.c
-@@ -579,9 +579,9 @@ int rdtgroup_mondata_show(struct seq_file *m, void *arg)
- 
- 	mon_event_read(&rr, r, d, rdtgrp, evtid, false);
- 
--	if (rr.val & RMID_VAL_ERROR)
-+	if (rr.err == -EIO)
- 		seq_puts(m, "Error\n");
--	else if (rr.val & RMID_VAL_UNAVAIL)
-+	else if (rr.err == -EINVAL)
- 		seq_puts(m, "Unavailable\n");
- 	else
- 		seq_printf(m, "%llu\n", rr.val * hw_res->mon_scale);
-diff --git a/arch/x86/kernel/cpu/resctrl/internal.h b/arch/x86/kernel/cpu/resctrl/internal.h
-index b34a1403f033..1d2e7bd6305f 100644
---- a/arch/x86/kernel/cpu/resctrl/internal.h
-+++ b/arch/x86/kernel/cpu/resctrl/internal.h
-@@ -94,6 +94,7 @@ struct rmid_read {
- 	struct rdt_domain	*d;
- 	enum resctrl_event_id	evtid;
- 	bool			first;
-+	int			err;
- 	u64			val;
+diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
+index 2c656da4ca5e..41eabdf0a256 100644
+--- a/drivers/misc/fastrpc.c
++++ b/drivers/misc/fastrpc.c
+@@ -275,6 +275,7 @@ struct fastrpc_channel_ctx {
+ 	struct fastrpc_device *secure_fdevice;
+ 	struct fastrpc_device *fdevice;
+ 	struct fastrpc_buf *remote_heap;
++	struct list_head invoke_interrupted_mmaps;
+ 	bool secure;
+ 	bool unsigned_support;
  };
+@@ -1114,6 +1115,26 @@ static int fastrpc_invoke_send(struct fastrpc_session_ctx *sctx,
  
-diff --git a/arch/x86/kernel/cpu/resctrl/monitor.c b/arch/x86/kernel/cpu/resctrl/monitor.c
-index e9755143492b..51ab76f2dfbc 100644
---- a/arch/x86/kernel/cpu/resctrl/monitor.c
-+++ b/arch/x86/kernel/cpu/resctrl/monitor.c
-@@ -167,9 +167,9 @@ void resctrl_arch_reset_rmid(struct rdt_resource *r, struct rdt_domain *d,
- 		memset(am, 0, sizeof(*am));
  }
  
--static u64 __rmid_read(u32 rmid, enum resctrl_event_id eventid)
-+int resctrl_arch_rmid_read(u32 rmid, enum resctrl_event_id eventid, u64 *val)
- {
--	u64 val;
-+	u64 msr_val;
- 
- 	/*
- 	 * As per the SDM, when IA32_QM_EVTSEL.EvtID (bits 7:0) is configured
-@@ -180,14 +180,24 @@ static u64 __rmid_read(u32 rmid, enum resctrl_event_id eventid)
- 	 * are error bits.
- 	 */
- 	wrmsr(MSR_IA32_QM_EVTSEL, eventid, rmid);
--	rdmsrl(MSR_IA32_QM_CTR, val);
-+	rdmsrl(MSR_IA32_QM_CTR, msr_val);
- 
--	return val;
-+	if (msr_val & RMID_VAL_ERROR)
-+		return -EIO;
-+	if (msr_val & RMID_VAL_UNAVAIL)
-+		return -EINVAL;
++static void fastrpc_invoke_interrupted_restore_mmaps(struct fastrpc_user *fl)
++{
++	struct fastrpc_buf *buf, *b;
 +
-+	*val = msr_val;
++	list_for_each_entry_safe(buf, b, &fl->cctx->invoke_interrupted_mmaps, node) {
++		list_del(&buf->node);
++		list_add(&buf->node, &fl->mmaps);
++	}
++}
 +
-+	return 0;
- }
- 
- static bool rmid_dirty(struct rmid_entry *entry)
- {
--	u64 val = __rmid_read(entry->rmid, QOS_L3_OCCUP_EVENT_ID);
-+	u64 val = 0;
++static void fastrpc_invoke_interrupted_save_mmaps(struct fastrpc_user *fl)
++{
++	struct fastrpc_buf *buf, *b;
 +
-+	if (resctrl_arch_rmid_read(entry->rmid, QOS_L3_OCCUP_EVENT_ID, &val))
-+		return true;
- 
- 	return val >= resctrl_cqm_threshold;
- }
-@@ -259,8 +269,8 @@ static void add_rmid_to_limbo(struct rmid_entry *entry)
- {
- 	struct rdt_resource *r;
- 	struct rdt_domain *d;
--	int cpu;
--	u64 val;
-+	int cpu, err;
-+	u64 val = 0;
- 
- 	r = &rdt_resources_all[RDT_RESOURCE_L3].r_resctrl;
- 
-@@ -268,8 +278,10 @@ static void add_rmid_to_limbo(struct rmid_entry *entry)
- 	cpu = get_cpu();
- 	list_for_each_entry(d, &r->domains, list) {
- 		if (cpumask_test_cpu(cpu, &d->cpu_mask)) {
--			val = __rmid_read(entry->rmid, QOS_L3_OCCUP_EVENT_ID);
--			if (val <= resctrl_cqm_threshold)
-+			err = resctrl_arch_rmid_read(entry->rmid,
-+						     QOS_L3_OCCUP_EVENT_ID,
-+						     &val);
-+			if (err || val <= resctrl_cqm_threshold)
- 				continue;
- 		}
- 
-@@ -315,19 +327,19 @@ static u64 mbm_overflow_count(u64 prev_msr, u64 cur_msr, unsigned int width)
- 	return chunks >> shift;
- }
- 
--static u64 __mon_event_count(u32 rmid, struct rmid_read *rr)
-+static int __mon_event_count(u32 rmid, struct rmid_read *rr)
- {
- 	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(rr->r);
- 	struct mbm_state *m;
--	u64 chunks, tval;
-+	u64 chunks, tval = 0;
- 
- 	if (rr->first)
- 		resctrl_arch_reset_rmid(rr->r, rr->d, rmid, rr->evtid);
- 
--	tval = __rmid_read(rmid, rr->evtid);
--	if (tval & (RMID_VAL_ERROR | RMID_VAL_UNAVAIL)) {
--		return tval;
--	}
-+	rr->err = resctrl_arch_rmid_read(rmid, rr->evtid, &tval);
-+	if (rr->err)
-+		return rr->err;
++	list_for_each_entry_safe(buf, b, &fl->mmaps, node) {
++		list_del(&buf->node);
++		list_add_tail(&buf->node, &fl->cctx->invoke_interrupted_mmaps);
++	}
++}
 +
- 	switch (rr->evtid) {
- 	case QOS_L3_OCCUP_EVENT_ID:
- 		rr->val += tval;
-@@ -341,9 +353,9 @@ static u64 __mon_event_count(u32 rmid, struct rmid_read *rr)
- 	default:
- 		/*
- 		 * Code would never reach here because an invalid
--		 * event id would fail the __rmid_read.
-+		 * event id would fail in resctrl_arch_rmid_read().
- 		 */
--		return RMID_VAL_ERROR;
-+		return -EINVAL;
+ static int fastrpc_internal_invoke(struct fastrpc_user *fl,  u32 kernel,
+ 				   u32 handle, u32 sc,
+ 				   struct fastrpc_invoke_args *args)
+@@ -1182,6 +1203,9 @@ static int fastrpc_internal_invoke(struct fastrpc_user *fl,  u32 kernel,
+ 		fastrpc_context_put(ctx);
  	}
  
- 	if (rr->first) {
-@@ -399,11 +411,11 @@ void mon_event_count(void *info)
- 	struct rdtgroup *rdtgrp, *entry;
- 	struct rmid_read *rr = info;
- 	struct list_head *head;
--	u64 ret_val;
-+	int ret;
++	if (err == -ERESTARTSYS)
++		fastrpc_invoke_interrupted_save_mmaps(fl);
++
+ 	if (err)
+ 		dev_dbg(fl->sctx->dev, "Error: Invoke Failed %d\n", err);
  
- 	rdtgrp = rr->rgrp;
- 
--	ret_val = __mon_event_count(rdtgrp->mon.rmid, rr);
-+	ret = __mon_event_count(rdtgrp->mon.rmid, rr);
- 
- 	/*
- 	 * For Ctrl groups read data from child monitor groups and
-@@ -415,13 +427,17 @@ void mon_event_count(void *info)
- 	if (rdtgrp->type == RDTCTRL_GROUP) {
- 		list_for_each_entry(entry, head, mon.crdtgrp_list) {
- 			if (__mon_event_count(entry->mon.rmid, rr) == 0)
--				ret_val = 0;
-+				ret = 0;
- 		}
+@@ -1551,6 +1575,8 @@ static int fastrpc_device_open(struct inode *inode, struct file *filp)
+ 		return -EBUSY;
  	}
  
--	/* Report error if none of rmid_reads are successful */
--	if (ret_val)
--		rr->val = ret_val;
-+	/*
-+	 * __mon_event_count() calls for newly created monitor groups may
-+	 * report -EINVAL/Unavailable if the monitor hasn't seen any traffic.
-+	 * Discard error if any of the monitor event reads succeeded.
-+	 */
-+	if (ret == 0)
-+		rr->err = 0;
- }
++	fastrpc_invoke_interrupted_restore_mmaps(fl);
++
+ 	spin_lock_irqsave(&cctx->lock, flags);
+ 	list_add_tail(&fl->user, &cctx->users);
+ 	spin_unlock_irqrestore(&cctx->lock, flags);
+@@ -2268,6 +2294,7 @@ static int fastrpc_rpmsg_probe(struct rpmsg_device *rpdev)
+ 	dev_set_drvdata(&rpdev->dev, data);
+ 	dma_set_mask_and_coherent(rdev, DMA_BIT_MASK(32));
+ 	INIT_LIST_HEAD(&data->users);
++	INIT_LIST_HEAD(&data->invoke_interrupted_mmaps);
+ 	spin_lock_init(&data->lock);
+ 	idr_init(&data->ctx_idr);
+ 	data->domain_id = domain_id;
+@@ -2292,6 +2319,7 @@ static void fastrpc_notify_users(struct fastrpc_user *user)
+ static void fastrpc_rpmsg_remove(struct rpmsg_device *rpdev)
+ {
+ 	struct fastrpc_channel_ctx *cctx = dev_get_drvdata(&rpdev->dev);
++	struct fastrpc_buf *buf, *b;
+ 	struct fastrpc_user *user;
+ 	unsigned long flags;
  
- /*
-diff --git a/include/linux/resctrl.h b/include/linux/resctrl.h
-index 818456770176..efe60dd7fd21 100644
---- a/include/linux/resctrl.h
-+++ b/include/linux/resctrl.h
-@@ -219,6 +219,7 @@ u32 resctrl_arch_get_config(struct rdt_resource *r, struct rdt_domain *d,
- 			    u32 closid, enum resctrl_conf_type type);
- int resctrl_online_domain(struct rdt_resource *r, struct rdt_domain *d);
- void resctrl_offline_domain(struct rdt_resource *r, struct rdt_domain *d);
-+int resctrl_arch_rmid_read(u32 rmid, enum resctrl_event_id eventid, u64 *res);
+@@ -2306,6 +2334,9 @@ static void fastrpc_rpmsg_remove(struct rpmsg_device *rpdev)
+ 	if (cctx->secure_fdevice)
+ 		misc_deregister(&cctx->secure_fdevice->miscdev);
  
- /**
-  * resctrl_arch_reset_rmid() - Reset any private state associated with rmid
++	list_for_each_entry_safe(buf, b, &cctx->invoke_interrupted_mmaps, node)
++		list_del(&buf->node);
++
+ 	if (cctx->remote_heap)
+ 		fastrpc_buf_free(cctx->remote_heap);
+ 
 -- 
-2.30.2
+2.34.1
 
