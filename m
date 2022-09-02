@@ -2,107 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A9FC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:51:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A93BCECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:51:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238162AbiIBNvL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:51:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36154 "EHLO
+        id S236756AbiIBNvf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:51:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238149AbiIBNus (ORCPT
+        with ESMTP id S237675AbiIBNvH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:50:48 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AEDF4504B
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:25:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662125124; x=1693661124;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=+HasZQGD/dK7/z/ep2cvAoa6qEef3JudFUKpRtdWqMg=;
-  b=Qz579+DETtn0Vw9lB9jKZwdRS6D3TLmTm9KZGdLQAbFvEPRjbja5/g0q
-   CtV0f8BYqA41yD7Wiy6MTa+bheY58fp26sVkgraUYPd4fTzK8XysA1prk
-   /HbEImHHKwBQ1BY8rc5gbxFQAI4XG0FwtUcCvI0T7ElRuQjdd+qFjCGHh
-   FH5qwrpvryysuTrR7KGez4Bcs2A+X6S987d5i6SidMUtoHRCfH23UPvFx
-   dtOZyVWOTnFixPzLtWDdpIq2ORTnirzn6fnFmJUVtGtaVBM3FgzsKCOCD
-   MxTzImiS2e8A+u9u4RC7ZD4g3wBsmUYeoyRcXLxOUUz1nzP8yssKcGHRT
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="278994222"
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="278994222"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 06:23:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="674352535"
-Received: from crojewsk-ctrl.igk.intel.com ([10.102.9.28])
-  by fmsmga008.fm.intel.com with ESMTP; 02 Sep 2022 06:23:06 -0700
-From:   Cezary Rojewski <cezary.rojewski@intel.com>
-To:     alsa-devel@alsa-project.org, broonie@kernel.org
-Cc:     tiwai@suse.com, perex@perex.cz,
-        amadeuszx.slawinski@linux.intel.com,
-        pierre-louis.bossart@linux.intel.com, hdegoede@redhat.com,
-        lgirdwood@gmail.com, kai.vehmanen@linux.intel.com,
-        peter.ujfalusi@linux.intel.com, ranjani.sridharan@linux.intel.com,
-        yung-chuan.liao@linux.intel.com, willy@infradead.org,
-        linux-kernel@vger.kernel.org, andy@kernel.org,
-        intel-poland@eclists.intel.com, andy.shevchenko@gmail.com,
-        Cezary Rojewski <cezary.rojewski@intel.com>
-Subject: [PATCH v5 0/2] lib/string_helpers: Introduce parse_int_array_user()
-Date:   Fri,  2 Sep 2022 15:32:54 +0200
-Message-Id: <20220902133256.789165-1-cezary.rojewski@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 2 Sep 2022 09:51:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E518AC12D3;
+        Fri,  2 Sep 2022 06:25:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5EC99B82A9F;
+        Fri,  2 Sep 2022 12:24:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4455C43149;
+        Fri,  2 Sep 2022 12:23:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662121439;
+        bh=V9A0EwG/aX+YjLSOdCVioJulTU+wCxpArl6ri0QFYpM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Uvq4qgYH05k59pa9Kpc3V3BW5xDlOC4UIzgF+mSa73X8jsAImwlbRN9f/TN6IBWA7
+         Yx23sDnucD3pOvBQRRdXFxN+7DuMGEBCUAFDU1GFPUvsjzNVh3Q6VCmIaloOZjVuRP
+         yPrgpGzEsNIJxfMBmZ+mH82OVdyxK+2NHne+u6wg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, stable@kernel.org,
+        Michal Hocko <mhocko@suse.com>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 4.14 37/42] mm/rmap: Fix anon_vma->degree ambiguity leading to double-reuse
+Date:   Fri,  2 Sep 2022 14:19:01 +0200
+Message-Id: <20220902121400.056184517@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220902121358.773776406@linuxfoundation.org>
+References: <20220902121358.773776406@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Continuation of recent upstream discussion [1] regarding user string
-tokenization.
+From: Jann Horn <jannh@google.com>
 
-First, parse_int_array_user() is introduced to allow for splitting
-specified user string into a sequence of integers. Makes use of
-get_options() internally so the parsing logic is not duplicated.
+commit 2555283eb40df89945557273121e9393ef9b542b upstream.
 
-With that done, redundant parts of the sound driver are removed.
+anon_vma->degree tracks the combined number of child anon_vmas and VMAs
+that use the anon_vma as their ->anon_vma.
 
-Originally similar functionality was added for the SOF sound driver. As
-more users are on the horizon, it is desirable to update existing
-string_helpers code and provide a unified solution.
+anon_vma_clone() then assumes that for any anon_vma attached to
+src->anon_vma_chain other than src->anon_vma, it is impossible for it to
+be a leaf node of the VMA tree, meaning that for such VMAs ->degree is
+elevated by 1 because of a child anon_vma, meaning that if ->degree
+equals 1 there are no VMAs that use the anon_vma as their ->anon_vma.
 
+This assumption is wrong because the ->degree optimization leads to leaf
+nodes being abandoned on anon_vma_clone() - an existing anon_vma is
+reused and no new parent-child relationship is created.  So it is
+possible to reuse an anon_vma for one VMA while it is still tied to
+another VMA.
 
-Changes in v5:
-- fixed kernel doc for parse_int_array_user()
+This is an issue because is_mergeable_anon_vma() and its callers assume
+that if two VMAs have the same ->anon_vma, the list of anon_vmas
+attached to the VMAs is guaranteed to be the same.  When this assumption
+is violated, vma_merge() can merge pages into a VMA that is not attached
+to the corresponding anon_vma, leading to dangling page->mapping
+pointers that will be dereferenced during rmap walks.
 
-Changes in v4:
-- renamed the function to parse_int_array_user()
-- at the name several local variable names have been reworded to match
-  the above
+Fix it by separately tracking the number of child anon_vmas and the
+number of VMAs using the anon_vma as their ->anon_vma.
 
-Changes in v3:
-- relocated tokenize_user_input() implementation to string_helpers as
-  requested by Matthew
+Fixes: 7a3ef208e662 ("mm: prevent endless growth of anon_vma hierarchy")
+Cc: stable@kernel.org
+Acked-by: Michal Hocko <mhocko@suse.com>
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
+Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/linux/rmap.h |    7 +++++--
+ mm/rmap.c            |   31 +++++++++++++++++--------------
+ 2 files changed, 22 insertions(+), 16 deletions(-)
 
-Changes in v2:
-- reused get_options() so no parsing logic is duplicated
-- simplified __user variant with help of memdup_user_nul()
-  Both suggested by Andy, thanks for thorough review
+--- a/include/linux/rmap.h
++++ b/include/linux/rmap.h
+@@ -39,12 +39,15 @@ struct anon_vma {
+ 	atomic_t refcount;
+ 
+ 	/*
+-	 * Count of child anon_vmas and VMAs which points to this anon_vma.
++	 * Count of child anon_vmas. Equals to the count of all anon_vmas that
++	 * have ->parent pointing to this one, including itself.
+ 	 *
+ 	 * This counter is used for making decision about reusing anon_vma
+ 	 * instead of forking new one. See comments in function anon_vma_clone.
+ 	 */
+-	unsigned degree;
++	unsigned long num_children;
++	/* Count of VMAs whose ->anon_vma pointer points to this object. */
++	unsigned long num_active_vmas;
+ 
+ 	struct anon_vma *parent;	/* Parent of this anon_vma */
+ 
+--- a/mm/rmap.c
++++ b/mm/rmap.c
+@@ -82,7 +82,8 @@ static inline struct anon_vma *anon_vma_
+ 	anon_vma = kmem_cache_alloc(anon_vma_cachep, GFP_KERNEL);
+ 	if (anon_vma) {
+ 		atomic_set(&anon_vma->refcount, 1);
+-		anon_vma->degree = 1;	/* Reference for first vma */
++		anon_vma->num_children = 0;
++		anon_vma->num_active_vmas = 0;
+ 		anon_vma->parent = anon_vma;
+ 		/*
+ 		 * Initialise the anon_vma root to point to itself. If called
+@@ -190,6 +191,7 @@ int __anon_vma_prepare(struct vm_area_st
+ 		anon_vma = anon_vma_alloc();
+ 		if (unlikely(!anon_vma))
+ 			goto out_enomem_free_avc;
++		anon_vma->num_children++; /* self-parent link for new root */
+ 		allocated = anon_vma;
+ 	}
+ 
+@@ -199,8 +201,7 @@ int __anon_vma_prepare(struct vm_area_st
+ 	if (likely(!vma->anon_vma)) {
+ 		vma->anon_vma = anon_vma;
+ 		anon_vma_chain_link(vma, avc, anon_vma);
+-		/* vma reference or self-parent link for new root */
+-		anon_vma->degree++;
++		anon_vma->num_active_vmas++;
+ 		allocated = NULL;
+ 		avc = NULL;
+ 	}
+@@ -279,19 +280,19 @@ int anon_vma_clone(struct vm_area_struct
+ 		anon_vma_chain_link(dst, avc, anon_vma);
+ 
+ 		/*
+-		 * Reuse existing anon_vma if its degree lower than two,
+-		 * that means it has no vma and only one anon_vma child.
++		 * Reuse existing anon_vma if it has no vma and only one
++		 * anon_vma child.
+ 		 *
+-		 * Do not chose parent anon_vma, otherwise first child
+-		 * will always reuse it. Root anon_vma is never reused:
++		 * Root anon_vma is never reused:
+ 		 * it has self-parent reference and at least one child.
+ 		 */
+-		if (!dst->anon_vma && anon_vma != src->anon_vma &&
+-				anon_vma->degree < 2)
++		if (!dst->anon_vma &&
++		    anon_vma->num_children < 2 &&
++		    anon_vma->num_active_vmas == 0)
+ 			dst->anon_vma = anon_vma;
+ 	}
+ 	if (dst->anon_vma)
+-		dst->anon_vma->degree++;
++		dst->anon_vma->num_active_vmas++;
+ 	unlock_anon_vma_root(root);
+ 	return 0;
+ 
+@@ -341,6 +342,7 @@ int anon_vma_fork(struct vm_area_struct
+ 	anon_vma = anon_vma_alloc();
+ 	if (!anon_vma)
+ 		goto out_error;
++	anon_vma->num_active_vmas++;
+ 	avc = anon_vma_chain_alloc(GFP_KERNEL);
+ 	if (!avc)
+ 		goto out_error_free_anon_vma;
+@@ -361,7 +363,7 @@ int anon_vma_fork(struct vm_area_struct
+ 	vma->anon_vma = anon_vma;
+ 	anon_vma_lock_write(anon_vma);
+ 	anon_vma_chain_link(vma, avc, anon_vma);
+-	anon_vma->parent->degree++;
++	anon_vma->parent->num_children++;
+ 	anon_vma_unlock_write(anon_vma);
+ 
+ 	return 0;
+@@ -393,7 +395,7 @@ void unlink_anon_vmas(struct vm_area_str
+ 		 * to free them outside the lock.
+ 		 */
+ 		if (RB_EMPTY_ROOT(&anon_vma->rb_root.rb_root)) {
+-			anon_vma->parent->degree--;
++			anon_vma->parent->num_children--;
+ 			continue;
+ 		}
+ 
+@@ -401,7 +403,7 @@ void unlink_anon_vmas(struct vm_area_str
+ 		anon_vma_chain_free(avc);
+ 	}
+ 	if (vma->anon_vma)
+-		vma->anon_vma->degree--;
++		vma->anon_vma->num_active_vmas--;
+ 	unlock_anon_vma_root(root);
+ 
+ 	/*
+@@ -412,7 +414,8 @@ void unlink_anon_vmas(struct vm_area_str
+ 	list_for_each_entry_safe(avc, next, &vma->anon_vma_chain, same_vma) {
+ 		struct anon_vma *anon_vma = avc->anon_vma;
+ 
+-		VM_WARN_ON(anon_vma->degree);
++		VM_WARN_ON(anon_vma->num_children);
++		VM_WARN_ON(anon_vma->num_active_vmas);
+ 		put_anon_vma(anon_vma);
+ 
+ 		list_del(&avc->same_vma);
 
-
-[1]: https://lore.kernel.org/alsa-devel/20220707091301.1282291-1-cezary.rojewski@intel.com/
-
-
-Cezary Rojewski (2):
-  lib/string_helpers: Introduce parse_int_array_user()
-  ASoC: SOF: Remove strsplit_u32() and tokenize_input()
-
- include/linux/string_helpers.h    |   2 +
- lib/string_helpers.c              |  44 +++++++++++++
- sound/soc/sof/sof-client-probes.c | 104 ++++++------------------------
- 3 files changed, 64 insertions(+), 86 deletions(-)
-
--- 
-2.25.1
 
