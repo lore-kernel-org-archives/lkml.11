@@ -2,81 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88342ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 06:43:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7BE5C6FA81
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 06:43:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235528AbiIBGnF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 02:43:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43742 "EHLO
+        id S235429AbiIBGns (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 02:43:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235513AbiIBGm7 (ORCPT
+        with ESMTP id S231266AbiIBGnq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 02:42:59 -0400
-Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D177BBA79;
-        Thu,  1 Sep 2022 23:42:58 -0700 (PDT)
-Received: by mail-qv1-xf32.google.com with SMTP id jy14so758600qvb.12;
-        Thu, 01 Sep 2022 23:42:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=ijNv5WqEEQFROPjZ7hs8XYIOd3yXWWZXXWp0NKKqDtQ=;
-        b=C5o7qskSx+1+hp9CSvidJ3m4RcIrjIlaVRNx8Kr+rcLkWve7RXxSaVDkylrJKjpSaY
-         TnsVP9BpFVCHJAbUvaPFKBS0Tqq7JUyaHvc5PMWjP4lwziqXzRy5fHdkDPmWOBpdgW+v
-         ySg9NPKDBZ73phjgOv6IrVm/9Ybk9Z2kAxqZ+4/jw0IiVdqNj0iNYPONREliqIT+XNuQ
-         L2+EHElOpmQkBLaT3mOpebzcxC/5FexnASQN7YjM2X6RNGl0OH/5bzW1j8d0eq3vE58h
-         X5cHKv99WAQkmCEfA5BGTHEZkn4yVjh5Kgcc8wYlRvETdfL7+F2sQzlU4UOh2DPr5z2m
-         I3Jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=ijNv5WqEEQFROPjZ7hs8XYIOd3yXWWZXXWp0NKKqDtQ=;
-        b=UDsioRIf227JBAPwnlj4A9A1kVrjsVq+d4YdwWIJyJ/QCvUmnM2Pw7LdY3nAdOm6Dg
-         Bzjbc5M8IBQ0woLY9ytjekfHEDx3gcydDd7pFmuIjJm6x76NlyYXg0yHCHsM+8CHlGa9
-         s5WGFFPcEiU8QB73IE8VtEMkR3viG3Uk++04TgO/0F0slgPpjWDHoSnuZfpF/r5EvC3I
-         W8GeWpcHn5ciBwv8HVKUQe+h8zulcETv5Y1QFv3wVPHgXkNbm1fm8GOliGdJ68HRRFWj
-         5ttbxYt+6jAFcLTBOii4bQ6gbvJ915nZDZnyUDopm93T5ZZA+E6w5iAIspBEN94JOaCp
-         u2Ug==
-X-Gm-Message-State: ACgBeo1TmgWls8edeXDeqoXbUpbw7Vq1MELJQ9Eh1cg99yoHwgjLtATL
-        wTzy5bOR/kbJwTCRChHznNXqiMAwBo5C1rYAocJOfBG461A=
-X-Google-Smtp-Source: AA6agR4vBazx/jplPCR7QUKsWHhJXKjqYpf8dvxM0kDkmBar9x+MzdDN2Ny5QwQEfhxOMQu7C6j52hiI2G+IQzA6YLE=
-X-Received: by 2002:a05:6214:27ca:b0:499:95f:6379 with SMTP id
- ge10-20020a05621427ca00b00499095f6379mr18544602qvb.82.1662100977308; Thu, 01
- Sep 2022 23:42:57 -0700 (PDT)
+        Fri, 2 Sep 2022 02:43:46 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43955BB92E
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 23:43:44 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MJpFB5B57zlWbk;
+        Fri,  2 Sep 2022 14:40:14 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 2 Sep 2022 14:43:42 +0800
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 2 Sep 2022 14:43:41 +0800
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+To:     Andrew Morton <akpm@linux-foundation.org>, <linux-mm@kvack.org>
+CC:     Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        <linux-kernel@vger.kernel.org>, "Vlastimil Babka" <vbabka@suse.cz>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: [PATCH 1/2] mm: reuse pageblock_start/end_pfn() macro
+Date:   Fri, 2 Sep 2022 14:47:50 +0800
+Message-ID: <20220902064751.17890-1-wangkefeng.wang@huawei.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-References: <20220831055811.1936613-1-s.hauer@pengutronix.de> <20220831055811.1936613-2-s.hauer@pengutronix.de>
-In-Reply-To: <20220831055811.1936613-2-s.hauer@pengutronix.de>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 2 Sep 2022 09:42:21 +0300
-Message-ID: <CAHp75VfbNespbCZ81xcvA7zsr3K8nbb3LBrpXOjH04R-hEFumw@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] gpio: Add gpio latch driver
-To:     Sascha Hauer <s.hauer@pengutronix.de>
-Cc:     "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Sascha Hauer <kernel@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 9:02 AM Sascha Hauer <s.hauer@pengutronix.de> wrote:
->
-> This driver implements a GPIO multiplexer based on latches connected to
-> other GPIOs. A set of data GPIOs is connected to the data input of
-> multiple latches. The clock input of each latch is driven by another
-> set of GPIOs. With two 8-bit latches 10 GPIOs can be multiplexed into
-> 16 GPIOs. GPOs might be a better term as in fact the multiplexed pins
-> are output only.
+Move pageblock_start_pfn/pageblock_end_pfn() into pageblock-flags.h,
+then they could be used somewhere else, not only in compaction.
 
-So, this is for only one type of latches, now I'm wondering why
-gpio-74xx-mmio can't cover this case (with probably small
-modifications to the code)?
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+---
+ include/linux/pageblock-flags.h |  2 ++
+ mm/compaction.c                 |  2 --
+ mm/memblock.c                   |  2 +-
+ mm/page_alloc.c                 | 13 ++++++-------
+ mm/page_isolation.c             |  2 +-
+ mm/page_owner.c                 |  4 ++--
+ 6 files changed, 12 insertions(+), 13 deletions(-)
 
+diff --git a/include/linux/pageblock-flags.h b/include/linux/pageblock-flags.h
+index 83c7248053a1..ef2e17e312ae 100644
+--- a/include/linux/pageblock-flags.h
++++ b/include/linux/pageblock-flags.h
+@@ -53,6 +53,8 @@ extern unsigned int pageblock_order;
+ #endif /* CONFIG_HUGETLB_PAGE */
+ 
+ #define pageblock_nr_pages	(1UL << pageblock_order)
++#define pageblock_start_pfn(pfn)	round_down(pfn, pageblock_nr_pages)
++#define pageblock_end_pfn(pfn)		ALIGN((pfn + 1), pageblock_nr_pages)
+ 
+ /* Forward declaration */
+ struct page;
+diff --git a/mm/compaction.c b/mm/compaction.c
+index f72907c7cfef..65bef5f78897 100644
+--- a/mm/compaction.c
++++ b/mm/compaction.c
+@@ -52,8 +52,6 @@ static inline void count_compact_events(enum vm_event_item item, long delta)
+ 
+ #define block_start_pfn(pfn, order)	round_down(pfn, 1UL << (order))
+ #define block_end_pfn(pfn, order)	ALIGN((pfn) + 1, 1UL << (order))
+-#define pageblock_start_pfn(pfn)	block_start_pfn(pfn, pageblock_order)
+-#define pageblock_end_pfn(pfn)		block_end_pfn(pfn, pageblock_order)
+ 
+ /*
+  * Page order with-respect-to which proactive compaction
+diff --git a/mm/memblock.c b/mm/memblock.c
+index b5d3026979fc..46fe7575f03c 100644
+--- a/mm/memblock.c
++++ b/mm/memblock.c
+@@ -2000,7 +2000,7 @@ static void __init free_unused_memmap(void)
+ 		 * presume that there are no holes in the memory map inside
+ 		 * a pageblock
+ 		 */
+-		start = round_down(start, pageblock_nr_pages);
++		start = pageblock_start_pfn(start);
+ 
+ 		/*
+ 		 * If we had a previous bank, and there is a space
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 36b20215a3be..93339cc61f92 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -544,7 +544,7 @@ static inline int pfn_to_bitidx(const struct page *page, unsigned long pfn)
+ #ifdef CONFIG_SPARSEMEM
+ 	pfn &= (PAGES_PER_SECTION-1);
+ #else
+-	pfn = pfn - round_down(page_zone(page)->zone_start_pfn, pageblock_nr_pages);
++	pfn = pfn - pageblock_start_pfn(page_zone(page)->zone_start_pfn);
+ #endif /* CONFIG_SPARSEMEM */
+ 	return (pfn >> pageblock_order) * NR_PAGEBLOCK_BITS;
+ }
+@@ -1857,7 +1857,7 @@ void set_zone_contiguous(struct zone *zone)
+ 	unsigned long block_start_pfn = zone->zone_start_pfn;
+ 	unsigned long block_end_pfn;
+ 
+-	block_end_pfn = ALIGN(block_start_pfn + 1, pageblock_nr_pages);
++	block_end_pfn = pageblock_end_pfn(block_start_pfn);
+ 	for (; block_start_pfn < zone_end_pfn(zone);
+ 			block_start_pfn = block_end_pfn,
+ 			 block_end_pfn += pageblock_nr_pages) {
+@@ -2653,8 +2653,8 @@ int move_freepages_block(struct zone *zone, struct page *page,
+ 		*num_movable = 0;
+ 
+ 	pfn = page_to_pfn(page);
+-	start_pfn = pfn & ~(pageblock_nr_pages - 1);
+-	end_pfn = start_pfn + pageblock_nr_pages - 1;
++	start_pfn = pageblock_start_pfn(pfn);
++	end_pfn = pageblock_end_pfn(pfn) - 1;
+ 
+ 	/* Do not cross zone boundaries */
+ 	if (!zone_spans_pfn(zone, start_pfn))
+@@ -6939,9 +6939,8 @@ static void __init init_unavailable_range(unsigned long spfn,
+ 	u64 pgcnt = 0;
+ 
+ 	for (pfn = spfn; pfn < epfn; pfn++) {
+-		if (!pfn_valid(ALIGN_DOWN(pfn, pageblock_nr_pages))) {
+-			pfn = ALIGN_DOWN(pfn, pageblock_nr_pages)
+-				+ pageblock_nr_pages - 1;
++		if (!pfn_valid(pageblock_start_pfn(pfn))) {
++			pfn = pageblock_end_pfn(pfn) - 1;
+ 			continue;
+ 		}
+ 		__init_single_page(pfn_to_page(pfn), pfn, zone, node);
+diff --git a/mm/page_isolation.c b/mm/page_isolation.c
+index 9d73dc38e3d7..f2df4ad53cd6 100644
+--- a/mm/page_isolation.c
++++ b/mm/page_isolation.c
+@@ -172,7 +172,7 @@ static int set_migratetype_isolate(struct page *page, int migratetype, int isol_
+ 	 * to avoid redundant checks.
+ 	 */
+ 	check_unmovable_start = max(page_to_pfn(page), start_pfn);
+-	check_unmovable_end = min(ALIGN(page_to_pfn(page) + 1, pageblock_nr_pages),
++	check_unmovable_end = min(pageblock_end_pfn(page_to_pfn(page)),
+ 				  end_pfn);
+ 
+ 	unmovable = has_unmovable_pages(check_unmovable_start, check_unmovable_end,
+diff --git a/mm/page_owner.c b/mm/page_owner.c
+index 90023f938c19..c91664a4b768 100644
+--- a/mm/page_owner.c
++++ b/mm/page_owner.c
+@@ -297,7 +297,7 @@ void pagetypeinfo_showmixedcount_print(struct seq_file *m,
+ 			continue;
+ 		}
+ 
+-		block_end_pfn = ALIGN(pfn + 1, pageblock_nr_pages);
++		block_end_pfn = pageblock_end_pfn(pfn);
+ 		block_end_pfn = min(block_end_pfn, end_pfn);
+ 
+ 		pageblock_mt = get_pageblock_migratetype(page);
+@@ -637,7 +637,7 @@ static void init_pages_in_zone(pg_data_t *pgdat, struct zone *zone)
+ 			continue;
+ 		}
+ 
+-		block_end_pfn = ALIGN(pfn + 1, pageblock_nr_pages);
++		block_end_pfn = pageblock_end_pfn(pfn);
+ 		block_end_pfn = min(block_end_pfn, end_pfn);
+ 
+ 		for (; pfn < block_end_pfn; pfn++) {
 -- 
-With Best Regards,
-Andy Shevchenko
+2.35.3
+
