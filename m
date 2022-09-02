@@ -2,67 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C43BCECAAD3
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 01:29:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CADF7ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 01:29:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235230AbiIBB3T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 21:29:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43524 "EHLO
+        id S235233AbiIBB3m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 21:29:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235184AbiIBB3L (ORCPT
+        with ESMTP id S235184AbiIBB3k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 21:29:11 -0400
-Received: from smtpbg.qq.com (bg4.exmail.qq.com [43.154.221.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F3F679605;
-        Thu,  1 Sep 2022 18:29:06 -0700 (PDT)
-X-QQ-mid: bizesmtp68t1662082135tqjicsrj
-Received: from localhost.localdomain ( [182.148.14.80])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Fri, 02 Sep 2022 09:28:54 +0800 (CST)
-X-QQ-SSF: 01000000000000D0F000000A0000000
-X-QQ-FEAT: 8eavv92r+YlmjxAEJjodkwBTVHnfVczq5UHUdO0tQNmImGvjEl6ZhqUYPFFj8
-        UkeHsw2mQdIVNU0naJS7cZ/x9EWOetFII3qQ8ois3rczrB0LiXD/ydopBJRxNOU76pVRNRC
-        505as5pByuosIbGzIskbGsSZgh7MtM6zIMftxaRwshy14XbUf6Bat+CtNS7CRbZ5oJRP0NS
-        NL4A12Wg9iSTe8TvC9uN23VBWLPSNP5O6YCsJzhrUPMxjFgqFV8etUvr28nvdKQZ6h7d3Ze
-        yVo3HtDY5NN5kDsrELcc1bXifl1NZemSWfSV2hKrtlYzXDrHp96RVVNXpmRj7zI/YtbBYH4
-        suf+l0pKkbEQ/GRFkIGQaMUo6MhEw==
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     arnd@arndb.de
-Cc:     linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] uapi: fix repeated words in comments
-Date:   Fri,  2 Sep 2022 09:28:48 +0800
-Message-Id: <20220902012848.65432-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Thu, 1 Sep 2022 21:29:40 -0400
+Received: from out199-17.us.a.mail.aliyun.com (out199-17.us.a.mail.aliyun.com [47.90.199.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B112A6C21
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 18:29:35 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VO3hyue_1662082171;
+Received: from 30.97.48.41(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VO3hyue_1662082171)
+          by smtp.aliyun-inc.com;
+          Fri, 02 Sep 2022 09:29:32 +0800
+Message-ID: <46ab4086-8a7f-7c20-c326-72a863b77fbb@linux.alibaba.com>
+Date:   Fri, 2 Sep 2022 09:29:44 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v3] mm/hugetlb: fix races when looking up a CONT-PTE/PMD
+ size hugetlb page
+To:     Mike Kravetz <mike.kravetz@oracle.com>, akpm@linux-foundation.org
+Cc:     songmuchun@bytedance.com, david@redhat.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+References: <635f43bdd85ac2615a58405da82b4d33c6e5eb05.1662017562.git.baolin.wang@linux.alibaba.com>
+ <YxEevpqBy2rIjcrO@monkey>
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <YxEevpqBy2rIjcrO@monkey>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'the'.
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- include/uapi/asm-generic/fcntl.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/uapi/asm-generic/fcntl.h b/include/uapi/asm-generic/fcntl.h
-index 1ecdb911add8..b02c8e0f4057 100644
---- a/include/uapi/asm-generic/fcntl.h
-+++ b/include/uapi/asm-generic/fcntl.h
-@@ -143,7 +143,7 @@
-  * record  locks, but are "owned" by the open file description, not the
-  * process. This means that they are inherited across fork() like BSD (flock)
-  * locks, and they are only released automatically when the last reference to
-- * the the open file against which they were acquired is put.
-+ * the open file against which they were acquired is put.
-  */
- #define F_OFD_GETLK	36
- #define F_OFD_SETLK	37
--- 
-2.36.1
+On 9/2/2022 5:06 AM, Mike Kravetz wrote:
+> On 09/01/22 18:41, Baolin Wang wrote:
+>> On some architectures (like ARM64), it can support CONT-PTE/PMD size
+>> hugetlb, which means it can support not only PMD/PUD size hugetlb
+>> (2M and 1G), but also CONT-PTE/PMD size(64K and 32M) if a 4K page size
+>> specified.
+>>
+>> So when looking up a CONT-PTE size hugetlb page by follow_page(), it
+>> will use pte_offset_map_lock() to get the pte entry lock for the CONT-PTE
+>> size hugetlb in follow_page_pte(). However this pte entry lock is incorrect
+>> for the CONT-PTE size hugetlb, since we should use huge_pte_lock() to
+>> get the correct lock, which is mm->page_table_lock.
+>>
+>> That means the pte entry of the CONT-PTE size hugetlb under current
+>> pte lock is unstable in follow_page_pte(), we can continue to migrate
+>> or poison the pte entry of the CONT-PTE size hugetlb, which can cause
+>> some potential race issues, even though they are under the 'pte lock'.
+>>
+>> For example, suppose thread A is trying to look up a CONT-PTE size
+>> hugetlb page by move_pages() syscall under the lock, however antoher
+>> thread B can migrate the CONT-PTE hugetlb page at the same time, which
+>> will cause thread A to get an incorrect page, if thread A also wants to
+>> do page migration, then data inconsistency error occurs.
+>>
+>> Moreover we have the same issue for CONT-PMD size hugetlb in
+>> follow_huge_pmd().
+>>
+>> To fix above issues, rename the follow_huge_pmd() as follow_huge_pmd_pte()
+>> to handle PMD and PTE level size hugetlb, which uses huge_pte_lock() to
+>> get the correct pte entry lock to make the pte entry stable.
+>>
+>> Cc: <stable@vger.kernel.org>
+>> Suggested-by: Mike Kravetz <mike.kravetz@oracle.com>
+>> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+>> ---
+>> Changes from v2:
+>>   - Combine PMD and PTE level hugetlb handling into one function.
+>>   - Drop unnecessary patches.
+>>   - Update the commit message.
+> 
+> Baolin, were you able to at least exercise the new code paths?  Especially the
+> path for CONT_PTE.  Code looks fine to me.
 
+Yes, I've tested CONT-PTE, CONT-PMD and PMD size hugetlb with 
+move_pages() syscall, all works well and the lock is expected.
+
+> 
+> Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+> 
+> It is a little hackish, but this is only for backports.  So, I think it is OK.
+> We may want to point out that code cleanup and simplification is going upstream
+> that will address these issues in a more elegant manner.
+> 
+>>
+>> Mike, please fold this patch into your series. Thanks.
+> 
+> If I understand Andrew, this can go in as a separate patch for backport to
+> address potential bugs.  I will provide a cleanup/simplification that will
+> remove this going forward.
+> 
+> Andrew also asked for a Fixes tag.
+> Support for CONT_PMD/_PTE was added with bb9dd3df8ee9 "arm64: hugetlb: refactor
+> find_num_contig()".  Patch series "Support for contiguous pte hugepages", v4.
+> However, I do not believe these code paths were executed until migration
+> support was added with 5480280d3f2d "arm64/mm: enable HugeTLB migration for
+> contiguous bit HugeTLB pages"
+> I would go with 5480280d3f2d.
+
+Make sense. And I saw Andrew has helped to add a Fixes tag with your 
+suggestion. Thanks Mike and Andrew.
