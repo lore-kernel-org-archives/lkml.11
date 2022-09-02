@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E91CECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:29:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B11A8C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:29:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236484AbiIBM3Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:29:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58584 "EHLO
+        id S236519AbiIBM32 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:29:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236493AbiIBM1x (ORCPT
+        with ESMTP id S236497AbiIBM1z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:27:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA54D3EC4;
-        Fri,  2 Sep 2022 05:24:25 -0700 (PDT)
+        Fri, 2 Sep 2022 08:27:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59E25D99CB;
+        Fri,  2 Sep 2022 05:24:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9D624B82A8B;
-        Fri,  2 Sep 2022 12:24:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDD8CC433D7;
-        Fri,  2 Sep 2022 12:24:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 66067620FE;
+        Fri,  2 Sep 2022 12:22:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AA48C4347C;
+        Fri,  2 Sep 2022 12:22:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121463;
-        bh=Rk1WS9y8pDkFDaZEbT9tCSSI1OHbxBTz6GYp05s8Cmk=;
+        s=korg; t=1662121366;
+        bh=CaPcejMvq5lnvRq2Ub3CTht8iOus3RIxbKRjKmiWj2s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xh+p1qP62Gkh2nY3bVqgP0V843BdUidziwebDdFPXbMGiWtpQtvU7vhpAHtcBmVls
-         RebsmZMNX9fsb5RaOLmEiNkMmoeL98gXexjXHhZliId46uXzm4vHAsr9pugAVL2Wx6
-         7bFdxFkwbQvrn5o5b6MD3WDhq9AU4QA9DmWSNYUU=
+        b=EyYdkMPw1MfZi0vPQJlzg7jN53DXNBwGHZbYAqt8drmI2AYcR8A712LIArKSAYEEL
+         99oSToi13QFTxMR88cZeZV94yBd+LXeSH8mXzFSh6J4VorcAiDzS9d48x1v3bAAoRx
+         ieJ6hsu2U2QV/GIW++yy6SOhCYxfI42cokXxXtyU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 16/56] netfilter: nft_payload: do not truncate csum_offset and csum_type
-Date:   Fri,  2 Sep 2022 14:18:36 +0200
-Message-Id: <20220902121400.739212698@linuxfoundation.org>
+        Jann Horn <jannh@google.com>
+Subject: [PATCH 4.14 26/42] mm: Force TLB flush for PFNMAP mappings before unlink_file_vma()
+Date:   Fri,  2 Sep 2022 14:18:50 +0200
+Message-Id: <20220902121359.707993240@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
-References: <20220902121400.219861128@linuxfoundation.org>
+In-Reply-To: <20220902121358.773776406@linuxfoundation.org>
+References: <20220902121358.773776406@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,72 +47,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Jann Horn <jannh@google.com>
 
-[ Upstream commit 7044ab281febae9e2fa9b0b247693d6026166293 ]
+commit b67fbebd4cf980aecbcc750e1462128bffe8ae15 upstream.
 
-Instead report ERANGE if csum_offset is too long, and EOPNOTSUPP if type
-is not support.
+Some drivers rely on having all VMAs through which a PFN might be
+accessible listed in the rmap for correctness.
+However, on X86, it was possible for a VMA with stale TLB entries
+to not be listed in the rmap.
 
-Fixes: 7ec3f7b47b8d ("netfilter: nft_payload: add packet mangling support")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This was fixed in mainline with
+commit b67fbebd4cf9 ("mmu_gather: Force tlb-flush VM_PFNMAP vmas"),
+but that commit relies on preceding refactoring in
+commit 18ba064e42df3 ("mmu_gather: Let there be one tlb_{start,end}_vma()
+implementation") and commit 1e9fdf21a4339 ("mmu_gather: Remove per arch
+tlb_{start,end}_vma()").
+
+This patch provides equivalent protection without needing that
+refactoring, by forcing a TLB flush between removing PTEs in
+unmap_vmas() and the call to unlink_file_vma() in free_pgtables().
+
+[This is a stable-specific rewrite of the upstream commit!]
+Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nft_payload.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
+ mm/mmap.c |   12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/net/netfilter/nft_payload.c b/net/netfilter/nft_payload.c
-index 04b9df9e39554..5732b32ab9320 100644
---- a/net/netfilter/nft_payload.c
-+++ b/net/netfilter/nft_payload.c
-@@ -332,6 +332,8 @@ static int nft_payload_set_init(const struct nft_ctx *ctx,
- 				const struct nlattr * const tb[])
- {
- 	struct nft_payload_set *priv = nft_expr_priv(expr);
-+	u32 csum_offset, csum_type = NFT_PAYLOAD_CSUM_NONE;
-+	int err;
- 
- 	priv->base        = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_BASE]));
- 	priv->offset      = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_OFFSET]));
-@@ -339,11 +341,15 @@ static int nft_payload_set_init(const struct nft_ctx *ctx,
- 	priv->sreg        = nft_parse_register(tb[NFTA_PAYLOAD_SREG]);
- 
- 	if (tb[NFTA_PAYLOAD_CSUM_TYPE])
--		priv->csum_type =
--			ntohl(nla_get_be32(tb[NFTA_PAYLOAD_CSUM_TYPE]));
--	if (tb[NFTA_PAYLOAD_CSUM_OFFSET])
--		priv->csum_offset =
--			ntohl(nla_get_be32(tb[NFTA_PAYLOAD_CSUM_OFFSET]));
-+		csum_type = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_CSUM_TYPE]));
-+	if (tb[NFTA_PAYLOAD_CSUM_OFFSET]) {
-+		err = nft_parse_u32_check(tb[NFTA_PAYLOAD_CSUM_OFFSET], U8_MAX,
-+					  &csum_offset);
-+		if (err < 0)
-+			return err;
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -2529,6 +2529,18 @@ static void unmap_region(struct mm_struc
+ 	tlb_gather_mmu(&tlb, mm, start, end);
+ 	update_hiwater_rss(mm);
+ 	unmap_vmas(&tlb, vma, start, end);
 +
-+		priv->csum_offset = csum_offset;
-+	}
- 	if (tb[NFTA_PAYLOAD_CSUM_FLAGS]) {
- 		u32 flags;
- 
-@@ -354,13 +360,14 @@ static int nft_payload_set_init(const struct nft_ctx *ctx,
- 		priv->csum_flags = flags;
- 	}
- 
--	switch (priv->csum_type) {
-+	switch (csum_type) {
- 	case NFT_PAYLOAD_CSUM_NONE:
- 	case NFT_PAYLOAD_CSUM_INET:
- 		break;
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-+	priv->csum_type = csum_type;
- 
- 	return nft_validate_register_load(priv->sreg, priv->len);
- }
--- 
-2.35.1
-
++	/*
++	 * Ensure we have no stale TLB entries by the time this mapping is
++	 * removed from the rmap.
++	 * Note that we don't have to worry about nested flushes here because
++	 * we're holding the mm semaphore for removing the mapping - so any
++	 * concurrent flush in this region has to be coming through the rmap,
++	 * and we synchronize against that using the rmap lock.
++	 */
++	if ((vma->vm_flags & (VM_PFNMAP|VM_MIXEDMAP)) != 0)
++		tlb_flush_mmu(&tlb);
++
+ 	free_pgtables(&tlb, vma, prev ? prev->vm_end : FIRST_USER_ADDRESS,
+ 				 next ? next->vm_start : USER_PGTABLES_CEILING);
+ 	tlb_finish_mmu(&tlb, start, end);
 
 
