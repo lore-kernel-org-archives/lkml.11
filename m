@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8572C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:52:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 516C1ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:52:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237910AbiIBMwM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:52:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55500 "EHLO
+        id S237919AbiIBMwS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:52:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237826AbiIBMvT (ORCPT
+        with ESMTP id S237830AbiIBMvU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:51:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 496D728E18;
-        Fri,  2 Sep 2022 05:36:59 -0700 (PDT)
+        Fri, 2 Sep 2022 08:51:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AF0B1274B;
+        Fri,  2 Sep 2022 05:37:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E0AD2B82ADB;
-        Fri,  2 Sep 2022 12:35:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 244E8C433D7;
-        Fri,  2 Sep 2022 12:35:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5553FB82A77;
+        Fri,  2 Sep 2022 12:35:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FDCAC433D7;
+        Fri,  2 Sep 2022 12:35:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122116;
-        bh=8jsAPtMGlsuCzuAVGPD8M+SQwAdaH1zWjwoBq7n6LIg=;
+        s=korg; t=1662122120;
+        bh=rvsRqFwA2k2w3Fi1nbNzzjO0ZKeucinFjbQ5L5lGwKk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sFYovwuXFT2Mww6y7WXDZ122cgY3qeRjK/d1yDO+KrDYkSj2lwMtLkFKnrXkvO4CD
-         ZL8rcoxayIfT+Zep+0cXIKjq2BXnjiB5reh3+qw7ZKaTTvBc3snq7uACMtgkC5Vz19
-         FVtq1X4OqWKwCDNAmhsgjdwk9edCWJAQnW1ozrQ0=
+        b=L65w096k/3SHDC0tN9VwF/m1tZh04hHaychVyZ0HFXdiiiE/EyXs3ucx/+crp9X/C
+         cRfWquzj2qdKd0ymBMm7A9QDxlieRMCEw0qujKt7fyk0HxIqTCG+KZ92BC/SutHlP/
+         JvvKHyQDc5kZtnaCgrpLHlJ/kiZKk0ePIoQzDdg0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Michal Hocko <mhocko@suse.com>,
-        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.19 18/72] mm/rmap: Fix anon_vma->degree ambiguity leading to double-reuse
-Date:   Fri,  2 Sep 2022 14:18:54 +0200
-Message-Id: <20220902121405.380066168@linuxfoundation.org>
+        stable@vger.kernel.org, Lennert Van Alboom <lennert@vanalboom.org>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.19 19/72] ALSA: usb-audio: Add quirk for LH Labs Geek Out HD Audio 1V5
+Date:   Fri,  2 Sep 2022 14:18:55 +0200
+Message-Id: <20220902121405.408654318@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
 References: <20220902121404.772492078@linuxfoundation.org>
@@ -50,167 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit 2555283eb40df89945557273121e9393ef9b542b upstream.
+commit 5f3d9e8161bb8cb23ab3b4678cd13f6e90a06186 upstream.
 
-anon_vma->degree tracks the combined number of child anon_vmas and VMAs
-that use the anon_vma as their ->anon_vma.
+The USB DAC from LH Labs (2522:0007) seems requiring the same quirk as
+Sony Walkman to set up the interface like UAC1; otherwise it gets the
+constant errors "usb_set_interface failed (-71)".  This patch adds a
+quirk entry for addressing the buggy behavior.
 
-anon_vma_clone() then assumes that for any anon_vma attached to
-src->anon_vma_chain other than src->anon_vma, it is impossible for it to
-be a leaf node of the VMA tree, meaning that for such VMAs ->degree is
-elevated by 1 because of a child anon_vma, meaning that if ->degree
-equals 1 there are no VMAs that use the anon_vma as their ->anon_vma.
-
-This assumption is wrong because the ->degree optimization leads to leaf
-nodes being abandoned on anon_vma_clone() - an existing anon_vma is
-reused and no new parent-child relationship is created.  So it is
-possible to reuse an anon_vma for one VMA while it is still tied to
-another VMA.
-
-This is an issue because is_mergeable_anon_vma() and its callers assume
-that if two VMAs have the same ->anon_vma, the list of anon_vmas
-attached to the VMAs is guaranteed to be the same.  When this assumption
-is violated, vma_merge() can merge pages into a VMA that is not attached
-to the corresponding anon_vma, leading to dangling page->mapping
-pointers that will be dereferenced during rmap walks.
-
-Fix it by separately tracking the number of child anon_vmas and the
-number of VMAs using the anon_vma as their ->anon_vma.
-
-Fixes: 7a3ef208e662 ("mm: prevent endless growth of anon_vma hierarchy")
-Cc: stable@kernel.org
-Acked-by: Michal Hocko <mhocko@suse.com>
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
-Signed-off-by: Jann Horn <jannh@google.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Reported-by: Lennert Van Alboom <lennert@vanalboom.org>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/T3VPXtCc4uFws9Gfh2RjX6OdwM1RqfC6VqQr--_LMDyB2x5N3p9_q6AtPna17IXhHwBtcJVdXuS80ZZSCMjh_BafIbnzJPhbrkmhmWS6DlI=@vanalboom.org
+Link: https://lore.kernel.org/r/20220828074143.14736-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/rmap.h |    7 +++++--
- mm/rmap.c            |   29 ++++++++++++++++-------------
- 2 files changed, 21 insertions(+), 15 deletions(-)
+ sound/usb/quirks.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/include/linux/rmap.h
-+++ b/include/linux/rmap.h
-@@ -41,12 +41,15 @@ struct anon_vma {
- 	atomic_t refcount;
- 
- 	/*
--	 * Count of child anon_vmas and VMAs which points to this anon_vma.
-+	 * Count of child anon_vmas. Equals to the count of all anon_vmas that
-+	 * have ->parent pointing to this one, including itself.
- 	 *
- 	 * This counter is used for making decision about reusing anon_vma
- 	 * instead of forking new one. See comments in function anon_vma_clone.
- 	 */
--	unsigned degree;
-+	unsigned long num_children;
-+	/* Count of VMAs whose ->anon_vma pointer points to this object. */
-+	unsigned long num_active_vmas;
- 
- 	struct anon_vma *parent;	/* Parent of this anon_vma */
- 
---- a/mm/rmap.c
-+++ b/mm/rmap.c
-@@ -93,7 +93,8 @@ static inline struct anon_vma *anon_vma_
- 	anon_vma = kmem_cache_alloc(anon_vma_cachep, GFP_KERNEL);
- 	if (anon_vma) {
- 		atomic_set(&anon_vma->refcount, 1);
--		anon_vma->degree = 1;	/* Reference for first vma */
-+		anon_vma->num_children = 0;
-+		anon_vma->num_active_vmas = 0;
- 		anon_vma->parent = anon_vma;
- 		/*
- 		 * Initialise the anon_vma root to point to itself. If called
-@@ -201,6 +202,7 @@ int __anon_vma_prepare(struct vm_area_st
- 		anon_vma = anon_vma_alloc();
- 		if (unlikely(!anon_vma))
- 			goto out_enomem_free_avc;
-+		anon_vma->num_children++; /* self-parent link for new root */
- 		allocated = anon_vma;
- 	}
- 
-@@ -210,8 +212,7 @@ int __anon_vma_prepare(struct vm_area_st
- 	if (likely(!vma->anon_vma)) {
- 		vma->anon_vma = anon_vma;
- 		anon_vma_chain_link(vma, avc, anon_vma);
--		/* vma reference or self-parent link for new root */
--		anon_vma->degree++;
-+		anon_vma->num_active_vmas++;
- 		allocated = NULL;
- 		avc = NULL;
- 	}
-@@ -296,19 +297,19 @@ int anon_vma_clone(struct vm_area_struct
- 		anon_vma_chain_link(dst, avc, anon_vma);
- 
- 		/*
--		 * Reuse existing anon_vma if its degree lower than two,
--		 * that means it has no vma and only one anon_vma child.
-+		 * Reuse existing anon_vma if it has no vma and only one
-+		 * anon_vma child.
- 		 *
--		 * Do not choose parent anon_vma, otherwise first child
--		 * will always reuse it. Root anon_vma is never reused:
-+		 * Root anon_vma is never reused:
- 		 * it has self-parent reference and at least one child.
- 		 */
- 		if (!dst->anon_vma && src->anon_vma &&
--		    anon_vma != src->anon_vma && anon_vma->degree < 2)
-+		    anon_vma->num_children < 2 &&
-+		    anon_vma->num_active_vmas == 0)
- 			dst->anon_vma = anon_vma;
- 	}
- 	if (dst->anon_vma)
--		dst->anon_vma->degree++;
-+		dst->anon_vma->num_active_vmas++;
- 	unlock_anon_vma_root(root);
- 	return 0;
- 
-@@ -358,6 +359,7 @@ int anon_vma_fork(struct vm_area_struct
- 	anon_vma = anon_vma_alloc();
- 	if (!anon_vma)
- 		goto out_error;
-+	anon_vma->num_active_vmas++;
- 	avc = anon_vma_chain_alloc(GFP_KERNEL);
- 	if (!avc)
- 		goto out_error_free_anon_vma;
-@@ -378,7 +380,7 @@ int anon_vma_fork(struct vm_area_struct
- 	vma->anon_vma = anon_vma;
- 	anon_vma_lock_write(anon_vma);
- 	anon_vma_chain_link(vma, avc, anon_vma);
--	anon_vma->parent->degree++;
-+	anon_vma->parent->num_children++;
- 	anon_vma_unlock_write(anon_vma);
- 
- 	return 0;
-@@ -410,7 +412,7 @@ void unlink_anon_vmas(struct vm_area_str
- 		 * to free them outside the lock.
- 		 */
- 		if (RB_EMPTY_ROOT(&anon_vma->rb_root.rb_root)) {
--			anon_vma->parent->degree--;
-+			anon_vma->parent->num_children--;
- 			continue;
- 		}
- 
-@@ -418,7 +420,7 @@ void unlink_anon_vmas(struct vm_area_str
- 		anon_vma_chain_free(avc);
- 	}
- 	if (vma->anon_vma) {
--		vma->anon_vma->degree--;
-+		vma->anon_vma->num_active_vmas--;
- 
- 		/*
- 		 * vma would still be needed after unlink, and anon_vma will be prepared
-@@ -436,7 +438,8 @@ void unlink_anon_vmas(struct vm_area_str
- 	list_for_each_entry_safe(avc, next, &vma->anon_vma_chain, same_vma) {
- 		struct anon_vma *anon_vma = avc->anon_vma;
- 
--		VM_WARN_ON(anon_vma->degree);
-+		VM_WARN_ON(anon_vma->num_children);
-+		VM_WARN_ON(anon_vma->num_active_vmas);
- 		put_anon_vma(anon_vma);
- 
- 		list_del(&avc->same_vma);
+--- a/sound/usb/quirks.c
++++ b/sound/usb/quirks.c
+@@ -1903,6 +1903,8 @@ static const struct usb_audio_quirk_flag
+ 		   QUIRK_FLAG_SHARE_MEDIA_DEVICE | QUIRK_FLAG_ALIGN_TRANSFER),
+ 	DEVICE_FLG(0x21b4, 0x0081, /* AudioQuest DragonFly */
+ 		   QUIRK_FLAG_GET_SAMPLE_RATE),
++	DEVICE_FLG(0x2522, 0x0007, /* LH Labs Geek Out HD Audio 1V5 */
++		   QUIRK_FLAG_SET_IFACE_FIRST),
+ 	DEVICE_FLG(0x2708, 0x0002, /* Audient iD14 */
+ 		   QUIRK_FLAG_IGNORE_CTL_ERROR),
+ 	DEVICE_FLG(0x2912, 0x30c8, /* Audioengine D1 */
 
 
