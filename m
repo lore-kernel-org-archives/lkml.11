@@ -2,144 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EF27C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:34:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C706ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:34:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236728AbiIBOdc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:33:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38774 "EHLO
+        id S236809AbiIBOdi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:33:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236977AbiIBOas (ORCPT
+        with ESMTP id S237072AbiIBOav (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:30:48 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3288714D3F
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
-        Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:In-Reply-To;
-        bh=VtHSfWHBCM/dkewK26y+PcMV0oq6+DiYrWTtkB689iQ=; b=Ycygkh2jN7m1q17HxTbE+bSJD5
-        d0nMCb3gQG4Kb408oFfp3kF6NGqMcXaxIcF7E4S7cCmHsKzost2zxuq0AH/KyNfDAiCneJi+lo2Ul
-        9L9U6/qs0SPPQMsv0/HoACJF3CXUPEh/c1MeWPzCI3ztxPNUuorOk4YuHI1KP4/SauR14o4aRxKX/
-        Ge8NTyhbMvjCI0Vp1Ovvx8VmkgKWCwyrOp1hzmh6D1vyUBxpibD41WaM2XtesOqveimS+LNpAfBOU
-        nQuq2w6W6Rv57Bs4wMedkujSY9+3PVVeSSPeTCFCEVBlOvEJIauA54/dMgEbnW1b2aPmP5RNzHUHy
-        IFnW7D8A==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oU77N-0074TJ-JZ; Fri, 02 Sep 2022 13:53:57 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 26CD9301D17;
-        Fri,  2 Sep 2022 15:53:54 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id CD4CB2B8EF7F2; Fri,  2 Sep 2022 15:53:52 +0200 (CEST)
-Message-ID: <20220902130949.268856815@infradead.org>
-User-Agent: quilt/0.66
-Date:   Fri, 02 Sep 2022 15:06:53 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Johannes Wikner <kwikner@ethz.ch>,
-        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
-        Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
-        Joao Moreira <joao.moreira@intel.com>,
-        Joseph Nuzman <joseph.nuzman@intel.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Juergen Gross <jgross@suse.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        K Prateek Nayak <kprateek.nayak@amd.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: [PATCH v2 28/59] objtool: Allow !PC relative relocations
-References: <20220902130625.217071627@infradead.org>
+        Fri, 2 Sep 2022 10:30:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96392201A4;
+        Fri,  2 Sep 2022 06:55:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 74FA4B82AAC;
+        Fri,  2 Sep 2022 12:39:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9DEEC433D6;
+        Fri,  2 Sep 2022 12:38:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662122339;
+        bh=grrOAlYIZGyqwrMbbVHIL1tatlu+W0H81mTS44QmifQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=x4j+pr9lj3Yfi8s83ixAKCgJNvqnhYeBJYPxRivY8nzH7NVYonq16nv78Zn5pe+hc
+         fZf2jyH96iy9GuNZFA593plCxMf5dWiJyXh6TviValFNr+7agDIPgl/ZWUCLuwFrhr
+         J6nUrRgcCmA/dW/Wd5HBfYzosdQ8/dJZDB38u+Bw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com,
+        Zhengchao Shao <shaozhengchao@huawei.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.10 16/37] bpf: Dont redirect packets with invalid pkt_len
+Date:   Fri,  2 Sep 2022 14:19:38 +0200
+Message-Id: <20220902121359.686245488@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220902121359.177846782@linuxfoundation.org>
+References: <20220902121359.177846782@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Zhengchao Shao <shaozhengchao@huawei.com>
 
-Objtool doesn't currently much like per-cpu usage in alternatives:
+commit fd1894224407c484f652ad456e1ce423e89bb3eb upstream.
 
-arch/x86/entry/entry_64.o: warning: objtool: .altinstr_replacement+0xf: unsupported relocation in alternatives section
-  f:   65 c7 04 25 00 00 00 00 00 00 00 80     movl   $0x80000000,%gs:0x0      13: R_X86_64_32S        __x86_call_depth
+Syzbot found an issue [1]: fq_codel_drop() try to drop a flow whitout any
+skbs, that is, the flow->head is null.
+The root cause, as the [2] says, is because that bpf_prog_test_run_skb()
+run a bpf prog which redirects empty skbs.
+So we should determine whether the length of the packet modified by bpf
+prog or others like bpf_prog_test is valid before forwarding it directly.
 
-Since the R_X86_64_32S relocation is location invariant (it's
-computation doesn't include P - the address of the location itself),
-it can be trivially allowed.
+LINK: [1] https://syzkaller.appspot.com/bug?id=0b84da80c2917757915afa89f7738a9d16ec96c5
+LINK: [2] https://www.spinics.net/lists/netdev/msg777503.html
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reported-by: syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+Reviewed-by: Stanislav Fomichev <sdf@google.com>
+Link: https://lore.kernel.org/r/20220715115559.139691-1-shaozhengchao@huawei.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/objtool/arch/x86/decode.c       |   42 +++++++++++++++++++++++++++++-----
- tools/objtool/check.c                 |    6 +---
- tools/objtool/include/objtool/arch.h  |    6 ++--
- tools/objtool/include/objtool/check.h |   17 +++++++------
- 4 files changed, 51 insertions(+), 20 deletions(-)
+ include/linux/skbuff.h |    8 ++++++++
+ net/bpf/test_run.c     |    3 +++
+ net/core/dev.c         |    1 +
+ 3 files changed, 12 insertions(+)
 
---- a/tools/objtool/arch/x86/decode.c
-+++ b/tools/objtool/arch/x86/decode.c
-@@ -73,6 +73,30 @@ unsigned long arch_jump_destination(stru
- 	return insn->offset + insn->len + insn->immediate;
- }
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -2222,6 +2222,14 @@ static inline void skb_set_tail_pointer(
  
-+bool arch_pc_relative_reloc(struct reloc *reloc)
+ #endif /* NET_SKBUFF_DATA_USES_OFFSET */
+ 
++static inline void skb_assert_len(struct sk_buff *skb)
 +{
-+	/*
-+	 * All relocation types where P (the address of the target)
-+	 * is included in the computation.
-+	 */
-+	switch (reloc->type) {
-+	case R_X86_64_PC8:
-+	case R_X86_64_PC16:
-+	case R_X86_64_PC32:
-+	case R_X86_64_PC64:
-+
-+	case R_X86_64_PLT32:
-+	case R_X86_64_GOTPC32:
-+	case R_X86_64_GOTPCREL:
-+		return true;
-+
-+	default:
-+		break;
-+	}
-+
-+	return false;
++#ifdef CONFIG_DEBUG_NET
++	if (WARN_ONCE(!skb->len, "%s\n", __func__))
++		DO_ONCE_LITE(skb_dump, KERN_ERR, skb, false);
++#endif /* CONFIG_DEBUG_NET */
 +}
 +
- #define ADD_OP(op) \
- 	if (!(op = calloc(1, sizeof(*op)))) \
- 		return -1; \
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -1622,7 +1620,7 @@ static int handle_group_alt(struct objto
- 		 * accordingly.
- 		 */
- 		alt_reloc = insn_reloc(file, insn);
--		if (alt_reloc &&
-+		if (alt_reloc && arch_pc_relative_reloc(alt_reloc) &&
- 		    !arch_support_alt_relocation(special_alt, insn, alt_reloc)) {
+ /*
+  *	Add data to an sk_buff
+  */
+--- a/net/bpf/test_run.c
++++ b/net/bpf/test_run.c
+@@ -441,6 +441,9 @@ static int convert___skb_to_skb(struct s
+ {
+ 	struct qdisc_skb_cb *cb = (struct qdisc_skb_cb *)skb->cb;
  
- 			WARN_FUNC("unsupported relocation in alternatives section",
---- a/tools/objtool/include/objtool/arch.h
-+++ b/tools/objtool/include/objtool/arch.h
-@@ -93,4 +91,6 @@ bool arch_is_rethunk(struct symbol *sym)
- 
- int arch_rewrite_retpolines(struct objtool_file *file);
- 
-+bool arch_pc_relative_reloc(struct reloc *reloc);
++	if (!skb->len)
++		return -EINVAL;
 +
- #endif /* _ARCH_H */
+ 	if (!__skb)
+ 		return 0;
+ 
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4097,6 +4097,7 @@ static int __dev_queue_xmit(struct sk_bu
+ 	bool again = false;
+ 
+ 	skb_reset_mac_header(skb);
++	skb_assert_len(skb);
+ 
+ 	if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_SCHED_TSTAMP))
+ 		__skb_tstamp_tx(skb, NULL, skb->sk, SCM_TSTAMP_SCHED);
 
 
