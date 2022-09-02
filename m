@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2574DECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:30:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 491E6ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:31:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236310AbiIBOaz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:30:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50864 "EHLO
+        id S236376AbiIBObB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:31:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237335AbiIBO1i (ORCPT
+        with ESMTP id S235901AbiIBO1i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 10:27:38 -0400
 Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 661661581A5
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB0E1581A9
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=HFxAeBcqZzx1YzuFlftNJ033Kmjw/OvruEBmGEN0HcI=; b=Oa2G8BWpsj8uyUvV/CiV/15FjQ
-        zBV1SPgVZMnFaVxUQAk2DiFZ9ufbK1BwWqBqPlrWUycI2Yqb9YKqzp7IFt6XwL1Y3OoXTvxu+qKyw
-        IfNRfNkoV6aUlNObp0nWvVmhqRfHjWOSyAfP4w8GQD48MOTmIC6G4I4m1W/e9k8X8M9pyw+5qx1SC
-        iXz8vQ8Gr7yDtHvO/tX24vPqmP3FtnY/hCmzwibMcEiK5h/HQa1GQKsFB6YLlzaZQpiIizC1yyY9S
-        ISkdlV7cwegy1viTXnndnRbeieBDIz0+AszkSG1fGr2J1AkkBEgnJ4D9uOscrJE2Ya3lVqJpfE6k5
-        Zl3hCOHA==;
+        bh=cGtjwbCjC/FUhMHf/1kXmsZcQFKDFVc++WobQ3K3nBI=; b=APDtxBO7wjqNEwPgO0C+AlCsSR
+        jNRI5vZv7TMLB2lH79K0ZYm5ieuJgvBdwUs0dJNACeD4UsCsiv3rH7alQFYOjZ9ih65DWU/5QZpI9
+        qhputzlsedjplmisujZXysSyEddNEdB9Ce+XDFOiv+AXL333sCeC0cimvOvnbxYDV4W+o2yx2KKhs
+        fTntF6UwkiWLhmaLU/frMjCH1EDPsZUucb2vCOS5iWszKxy0UHL1W3lLyN0VpTzoruJ2sX6Wx4Pe+
+        MGeLkcHktE6C34DJXrYAbF9+sYJQn2wqHQ09dulFVQ5ZQkSLmPmeZ+hLmpKE7pYvuAooUWTLT6/cv
+        qZbus9nA==;
 Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
         by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oU77L-008g7z-JF; Fri, 02 Sep 2022 13:53:55 +0000
+        id 1oU77P-008g8r-M2; Fri, 02 Sep 2022 13:54:03 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 0ABC6301482;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 490E8302E11;
         Fri,  2 Sep 2022 15:53:54 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 4D3E32B1A6BE6; Fri,  2 Sep 2022 15:53:52 +0200 (CEST)
-Message-ID: <20220902130947.502476538@infradead.org>
+        id C38952B8EFB63; Fri,  2 Sep 2022 15:53:53 +0200 (CEST)
+Message-ID: <20220902130952.167578304@infradead.org>
 User-Agent: quilt/0.66
-Date:   Fri, 02 Sep 2022 15:06:36 +0200
+Date:   Fri, 02 Sep 2022 15:07:21 +0200
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     Thomas Gleixner <tglx@linutronix.de>
 Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
@@ -59,7 +59,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
         Daniel Borkmann <daniel@iogearbox.net>,
         K Prateek Nayak <kprateek.nayak@amd.com>,
         Eric Dumazet <edumazet@google.com>
-Subject: [PATCH v2 11/59] x86/paravirt: Properly align PV functions
+Subject: [PATCH v2 56/59] x86/ftrace: Remove ftrace_epilogue()
 References: <20220902130625.217071627@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -67,68 +67,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Peter Zijlstra <peterz@infradead.org>
 
-Ensure inline asm functions are consistently aligned with compiler
-generated and SYM_FUNC_START*() functions.
+Remove the weird jumps to RET and simply use RET.
 
+This then promotes ftrace_stub() to a real function; which becomes
+important for kcfi.
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/x86/include/asm/paravirt.h           |    1 +
- arch/x86/include/asm/qspinlock_paravirt.h |    2 +-
- arch/x86/kernel/kvm.c                     |    1 +
- arch/x86/kernel/paravirt.c                |    2 ++
- 4 files changed, 5 insertions(+), 1 deletion(-)
+ arch/x86/kernel/ftrace_64.S |   21 ++++++---------------
+ 1 file changed, 6 insertions(+), 15 deletions(-)
 
---- a/arch/x86/include/asm/paravirt.h
-+++ b/arch/x86/include/asm/paravirt.h
-@@ -665,6 +665,7 @@ bool __raw_callee_save___native_vcpu_is_
- 	asm(".pushsection " section ", \"ax\";"				\
- 	    ".globl " PV_THUNK_NAME(func) ";"				\
- 	    ".type " PV_THUNK_NAME(func) ", @function;"			\
-+	    ASM_FUNC_ALIGN						\
- 	    PV_THUNK_NAME(func) ":"					\
- 	    ASM_ENDBR							\
- 	    FRAME_BEGIN							\
---- a/arch/x86/include/asm/qspinlock_paravirt.h
-+++ b/arch/x86/include/asm/qspinlock_paravirt.h
-@@ -39,7 +39,7 @@ PV_CALLEE_SAVE_REGS_THUNK(__pv_queued_sp
- asm    (".pushsection .text;"
- 	".globl " PV_UNLOCK ";"
- 	".type " PV_UNLOCK ", @function;"
--	".align 4,0x90;"
-+	ASM_FUNC_ALIGN
- 	PV_UNLOCK ": "
- 	ASM_ENDBR
- 	FRAME_BEGIN
---- a/arch/x86/kernel/kvm.c
-+++ b/arch/x86/kernel/kvm.c
-@@ -802,6 +802,7 @@ asm(
- ".pushsection .text;"
- ".global __raw_callee_save___kvm_vcpu_is_preempted;"
- ".type __raw_callee_save___kvm_vcpu_is_preempted, @function;"
-+ASM_FUNC_ALIGN
- "__raw_callee_save___kvm_vcpu_is_preempted:"
- ASM_ENDBR
- "movq	__per_cpu_offset(,%rdi,8), %rax;"
---- a/arch/x86/kernel/paravirt.c
-+++ b/arch/x86/kernel/paravirt.c
-@@ -40,6 +40,7 @@
- extern void _paravirt_nop(void);
- asm (".pushsection .entry.text, \"ax\"\n"
-      ".global _paravirt_nop\n"
-+     ASM_FUNC_ALIGN
-      "_paravirt_nop:\n\t"
-      ASM_ENDBR
-      ASM_RET
-@@ -50,6 +51,7 @@ asm (".pushsection .entry.text, \"ax\"\n
- /* stub always returning 0. */
- asm (".pushsection .entry.text, \"ax\"\n"
-      ".global paravirt_ret0\n"
-+     ASM_FUNC_ALIGN
-      "paravirt_ret0:\n\t"
-      ASM_ENDBR
-      "xor %" _ASM_AX ", %" _ASM_AX ";\n\t"
+--- a/arch/x86/kernel/ftrace_64.S
++++ b/arch/x86/kernel/ftrace_64.S
+@@ -172,20 +172,14 @@ SYM_INNER_LABEL(ftrace_call, SYM_L_GLOBA
+ 	 */
+ SYM_INNER_LABEL(ftrace_caller_end, SYM_L_GLOBAL)
+ 	ANNOTATE_NOENDBR
+-
+-	jmp ftrace_epilogue
++	RET
+ SYM_FUNC_END(ftrace_caller);
+ STACK_FRAME_NON_STANDARD_FP(ftrace_caller)
+ 
+-SYM_FUNC_START(ftrace_epilogue)
+-/*
+- * This is weak to keep gas from relaxing the jumps.
+- */
+-SYM_INNER_LABEL_ALIGN(ftrace_stub, SYM_L_WEAK)
++SYM_FUNC_START(ftrace_stub)
+ 	UNWIND_HINT_FUNC
+-	ENDBR
+ 	RET
+-SYM_FUNC_END(ftrace_epilogue)
++SYM_FUNC_END(ftrace_stub)
+ 
+ SYM_FUNC_START(ftrace_regs_caller)
+ 	/* Save the current flags before any operations that can change them */
+@@ -262,14 +256,11 @@ SYM_INNER_LABEL(ftrace_regs_caller_jmp,
+ 	popfq
+ 
+ 	/*
+-	 * As this jmp to ftrace_epilogue can be a short jump
+-	 * it must not be copied into the trampoline.
+-	 * The trampoline will add the code to jump
+-	 * to the return.
++	 * The trampoline will add the return.
+ 	 */
+ SYM_INNER_LABEL(ftrace_regs_caller_end, SYM_L_GLOBAL)
+ 	ANNOTATE_NOENDBR
+-	jmp ftrace_epilogue
++	RET
+ 
+ 	/* Swap the flags with orig_rax */
+ 1:	movq MCOUNT_REG_SIZE(%rsp), %rdi
+@@ -280,7 +271,7 @@ SYM_INNER_LABEL(ftrace_regs_caller_end,
+ 	/* Restore flags */
+ 	popfq
+ 	UNWIND_HINT_FUNC
+-	jmp	ftrace_epilogue
++	RET
+ 
+ SYM_FUNC_END(ftrace_regs_caller)
+ STACK_FRAME_NON_STANDARD_FP(ftrace_regs_caller)
 
 
