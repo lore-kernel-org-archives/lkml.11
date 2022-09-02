@@ -2,44 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93B34C6FA85
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:01:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9663ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:01:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238455AbiIBNBD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:01:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49292 "EHLO
+        id S238443AbiIBNBI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:01:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238692AbiIBM7U (ORCPT
+        with ESMTP id S238704AbiIBM7W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:59:20 -0400
+        Fri, 2 Sep 2022 08:59:22 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 922C8CEB1B;
-        Fri,  2 Sep 2022 05:40:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A842C3AE4B;
+        Fri,  2 Sep 2022 05:40:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4E080B82AA2;
-        Fri,  2 Sep 2022 12:27:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AC0DC433D6;
-        Fri,  2 Sep 2022 12:27:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BD381B829E5;
+        Fri,  2 Sep 2022 12:40:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA5FBC433D6;
+        Fri,  2 Sep 2022 12:40:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121656;
-        bh=y22KnKr1+JIk3i0jCCB6oiluxBJ8/iLl7XYTywdc0s4=;
+        s=korg; t=1662122401;
+        bh=2mE2jwlzv5qeiHp5VD8bwbMz3PgUEayrX1/dxiB2RAo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lSQowt24jAezOMoMU0t6ufWw28YOZKm7KWJR8UOWjXElf0yz1/p+fjopaMWBsVR6+
-         2f1b5r1ZzXwVu56qTPxCb2DTXiCrVR+0aAjZxb5QhiqZkOr0AJ+PyKmadGy7cGDzWH
-         8H3nEIfvCvhFikiF65PCNiT4wVRCiy3OBBMxsLxI=
+        b=If7ApqSgGfBVurx12uHdtdH0ljx1Kzx71rW3LLtxtL0aSBpNg3c5CRcOYCWX9UMPd
+         ghHo1H81oJx2KeGNrob0M7OdP6DoM2cLIOKtBLSA/AHBbql1bKwvZkONGFU5SshJcW
+         /cL8AhqmYdoysckshYrh4RQaOU75Wq9fYtddyTek=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Chen <peter.chen@kernel.org>,
-        Pawel Laszczak <pawell@cadence.com>
-Subject: [PATCH 5.4 04/77] usb: cdns3: Fix issue for clear halt endpoint
-Date:   Fri,  2 Sep 2022 14:18:13 +0200
-Message-Id: <20220902121403.750784175@linuxfoundation.org>
+        stable@vger.kernel.org, Ben Greear <greearb@candelatech.com>,
+        Stefan Roese <sr@denx.de>, Bjorn Helgaas <bhelgaas@google.com>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Yao Hongbo <yaohongbo@linux.alibaba.com>,
+        Naveen Naidu <naveennaidu479@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 08/37] Revert "PCI/portdrv: Dont disable AER reporting in get_port_device_capability()"
+Date:   Fri,  2 Sep 2022 14:19:30 +0200
+Message-Id: <20220902121359.438662311@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
-References: <20220902121403.569927325@linuxfoundation.org>
+In-Reply-To: <20220902121359.177846782@linuxfoundation.org>
+References: <20220902121359.177846782@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,58 +55,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pawel Laszczak <pawell@cadence.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-commit b3fa25de31fb7e9afebe9599b8ff32eda13d7c94 upstream.
+This reverts commit ee70aa214a2d9fa74539b52f6c326ba2f7c0fb11 which is
+commit 8795e182b02dc87e343c79e73af6b8b7f9c5e635 upstream.
 
-Path fixes bug which occurs during resetting endpoint in
-__cdns3_gadget_ep_clear_halt function. During resetting endpoint
-controller will change HW/DMA owned TRB. It set Abort flag in
-trb->control and will change trb->length field. If driver want
-to use the aborted trb it must update the changed field in
-TRB.
+It is reported to cause problems, so drop it from the stable trees for
+now until it gets sorted out.
 
-Fixes: 7733f6c32e36 ("usb: cdns3: Add Cadence USB3 DRD Driver")
-cc: <stable@vger.kernel.org>
-Acked-by: Peter Chen <peter.chen@kernel.org>
-Signed-off-by: Pawel Laszczak <pawell@cadence.com>
-Link: https://lore.kernel.org/r/20220329084605.4022-1-pawell@cadence.com
+Link: https://lore.kernel.org/r/47b775c5-57fa-5edf-b59e-8a9041ffbee7@candelatech.com
+Reported-by: Ben Greear <greearb@candelatech.com>
+Cc: Stefan Roese <sr@denx.de>
+Cc: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Pali Rohár <pali@kernel.org>
+Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
+Cc: Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
+Cc: Michal Simek <michal.simek@xilinx.com>
+Cc: Yao Hongbo <yaohongbo@linux.alibaba.com>
+Cc: Naveen Naidu <naveennaidu479@gmail.com>
+Cc: Sasha Levin <sashal@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/cdns3/gadget.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/pci/pcie/portdrv_core.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/drivers/usb/cdns3/gadget.c
-+++ b/drivers/usb/cdns3/gadget.c
-@@ -2166,6 +2166,7 @@ int __cdns3_gadget_ep_clear_halt(struct
- 	struct usb_request *request;
- 	struct cdns3_request *priv_req;
- 	struct cdns3_trb *trb = NULL;
-+	struct cdns3_trb trb_tmp;
- 	int ret;
- 	int val;
+--- a/drivers/pci/pcie/portdrv_core.c
++++ b/drivers/pci/pcie/portdrv_core.c
+@@ -222,8 +222,15 @@ static int get_port_device_capability(st
  
-@@ -2175,8 +2176,10 @@ int __cdns3_gadget_ep_clear_halt(struct
- 	if (request) {
- 		priv_req = to_cdns3_request(request);
- 		trb = priv_req->trb;
--		if (trb)
-+		if (trb) {
-+			trb_tmp = *trb;
- 			trb->control = trb->control ^ TRB_CYCLE;
-+		}
- 	}
- 
- 	writel(EP_CMD_CSTALL | EP_CMD_EPRST, &priv_dev->regs->ep_cmd);
-@@ -2191,7 +2194,8 @@ int __cdns3_gadget_ep_clear_halt(struct
- 
- 	if (request) {
- 		if (trb)
--			trb->control = trb->control ^ TRB_CYCLE;
-+			*trb = trb_tmp;
+ #ifdef CONFIG_PCIEAER
+ 	if (dev->aer_cap && pci_aer_available() &&
+-	    (pcie_ports_native || host->native_aer))
++	    (pcie_ports_native || host->native_aer)) {
+ 		services |= PCIE_PORT_SERVICE_AER;
 +
- 		cdns3_rearm_transfer(priv_ep, 1);
- 	}
++		/*
++		 * Disable AER on this port in case it's been enabled by the
++		 * BIOS (the AER service driver will enable it when necessary).
++		 */
++		pci_disable_pcie_error_reporting(dev);
++	}
+ #endif
  
+ 	/*
 
 
