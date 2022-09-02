@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA62C54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:24:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 197A5C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:24:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236317AbiIBMYV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:24:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50710 "EHLO
+        id S236255AbiIBMY0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:24:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236116AbiIBMXk (ORCPT
+        with ESMTP id S236137AbiIBMXp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:23:40 -0400
+        Fri, 2 Sep 2022 08:23:45 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B640D8B1D;
-        Fri,  2 Sep 2022 05:22:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8C21DA3DA;
+        Fri,  2 Sep 2022 05:22:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 685FDB82A93;
-        Fri,  2 Sep 2022 12:22:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC2F9C433C1;
-        Fri,  2 Sep 2022 12:22:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 97073B82A8F;
+        Fri,  2 Sep 2022 12:22:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5BA5C433C1;
+        Fri,  2 Sep 2022 12:22:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121327;
-        bh=1irPF9f9NgtVWUIpuCGyyflCK9e158z0MmQHEUYWijk=;
+        s=korg; t=1662121330;
+        bh=UaZrfu1nQDE2wLZiRHbDalvvme+/Dm9wfmw5w5Ili/E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TfANehj9CAu5yiiKbCbr5uFOyPrKp9uSc31Pf3NA2dZQ/Os1jCjTeBDoYa+8tFi6V
-         m3pdgVJkCHfFeSD4eVyGaNZKpHWsVHm3qPaQ6upbKfRu/aqLWmoWuPwCd6US9DvbnZ
-         rM0tdrbpENsUHO7N37XIN6wrXou5f0yFAvEpO6nI=
+        b=RUu1xN7wYr+adKAdq0+xnnlYdzE5BD077Y1kQSaR8j23Ocx8vA634urVaSetjv8H3
+         gK3JjYKdujWvmkZn/kiOwF010BBOYPVdZasVMCtN5ldEErswV+Dn79gmu4VdyFbDgy
+         71cYxGojo864ikj+J1VSyhjRrUJFxDIuAy32Q8Bg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 14/42] net: Fix a data-race around sysctl_tstamp_allow_data.
-Date:   Fri,  2 Sep 2022 14:18:38 +0200
-Message-Id: <20220902121359.311814170@linuxfoundation.org>
+Subject: [PATCH 4.14 15/42] net: Fix a data-race around sysctl_net_busy_poll.
+Date:   Fri,  2 Sep 2022 14:18:39 +0200
+Message-Id: <20220902121359.342587822@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121358.773776406@linuxfoundation.org>
 References: <20220902121358.773776406@linuxfoundation.org>
@@ -51,32 +51,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit d2154b0afa73c0159b2856f875c6b4fe7cf6a95e ]
+[ Upstream commit c42b7cddea47503411bfb5f2f93a4154aaffa2d9 ]
 
-While reading sysctl_tstamp_allow_data, it can be changed
-concurrently.  Thus, we need to add READ_ONCE() to its reader.
+While reading sysctl_net_busy_poll, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: b245be1f4db1 ("net-timestamp: no-payload only sysctl")
+Fixes: 060212928670 ("net: add low latency socket poll")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/skbuff.c | 2 +-
+ include/net/busy_poll.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 629997753f69b..11d0ffc51c24a 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -4352,7 +4352,7 @@ static bool skb_may_tx_timestamp(struct sock *sk, bool tsonly)
+diff --git a/include/net/busy_poll.h b/include/net/busy_poll.h
+index 5dd22b740f9ce..4a9fc96317a9e 100644
+--- a/include/net/busy_poll.h
++++ b/include/net/busy_poll.h
+@@ -43,7 +43,7 @@ extern unsigned int sysctl_net_busy_poll __read_mostly;
+ 
+ static inline bool net_busy_loop_on(void)
  {
- 	bool ret;
+-	return sysctl_net_busy_poll;
++	return READ_ONCE(sysctl_net_busy_poll);
+ }
  
--	if (likely(sysctl_tstamp_allow_data || tsonly))
-+	if (likely(READ_ONCE(sysctl_tstamp_allow_data) || tsonly))
- 		return true;
- 
- 	read_lock_bh(&sk->sk_callback_lock);
+ static inline bool sk_can_busy_loop(const struct sock *sk)
 -- 
 2.35.1
 
