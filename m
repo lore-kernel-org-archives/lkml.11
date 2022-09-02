@@ -2,97 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 027BDECAAA1
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 04:41:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A424AECAAA1
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 04:49:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233289AbiIBElJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 00:41:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32894 "EHLO
+        id S232670AbiIBEtG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 00:49:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229554AbiIBElG (ORCPT
+        with ESMTP id S229554AbiIBEtF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 00:41:06 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 390A5AE22B;
-        Thu,  1 Sep 2022 21:41:05 -0700 (PDT)
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2824QimO029163;
-        Fri, 2 Sep 2022 04:41:00 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=qcppdkim1;
- bh=MfoTqYR14hSfoM2+FEog2Mx+KbQ5o5dZRdkS7s9Vd68=;
- b=ffSPX1TQIkpm5xGPvPRYHqBq4Rgevqzber5+MImW4xxBFBVFC1W+vPz2AJLAWAD3p+1X
- nYkpQxYyUBRb2QnwxPiThkHbDek936ur+NTypM8kP5jDMXCIvdktkKHwd/Z99jJdhyK3
- sSHltmxn5Z8cpvSPewBSp3tBLZscL0ESznncvv3Hi8YCgpI8uFKRzjW/xuW+Njemm2a2
- OTs7dbcLwcmSMjM7IV8B5CG7ZOXUj2CktCYbNW1bzIypUx3Lv40VN/2dQx3CaqrHWyij
- ddkp987ZeiYB6Na8BHj+jaHCZBaTN+tBTrs+m8Kn4TLWqgIGeginSKhUHbQNY7eJI4EV iQ== 
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3jafkx4v3e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 02 Sep 2022 04:41:00 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 2824ZxpJ001416
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 2 Sep 2022 04:35:59 GMT
-Received: from blr-ubuntu-173.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Thu, 1 Sep 2022 21:35:56 -0700
-From:   Rajendra Nayak <quic_rjendra@quicinc.com>
-To:     <krzysztof.kozlowski@linaro.org>, <agross@kernel.org>,
-        <andersson@kernel.org>, <konrad.dybcio@somainline.org>,
-        <robh+dt@kernel.org>
-CC:     <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        Rajendra Nayak <quic_rjendra@quicinc.com>
-Subject: [PATCH v2 0/4] soc: qcom: icc-bwmon: Add support for llcc and cpu bwmon on sc7280
-Date:   Fri, 2 Sep 2022 10:05:07 +0530
-Message-ID: <20220902043511.17130-1-quic_rjendra@quicinc.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 2 Sep 2022 00:49:05 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91197B2746
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 21:49:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662094144; x=1693630144;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=uWWeTrRXwjpOrChuGrhJNnY+K0/3p8HKfIFEywc8td8=;
+  b=G+hJLXTbb24RCdJKYnfQtSA6eBgaAew37siGUiDyCOWAyfyVsxKfsTNG
+   M8RijBCD9g56oJslQ0hGgqS4W0K6Crskg9Oa0dRraEmc39iEhN1OSB3C4
+   C6qHwIVAJqASNb0tS+cvJha2Llx+XFJxafZmtxkDdkQR0SY1byFfVA5+v
+   e6HkAuwqexPvX86h7rQXfRlkuS3kBCZTTixM4ntx8TEywcniERuy/DKjM
+   uS6yKgU+vvKLC7ZeWSXzGrPqbG9Z+1dqUp63DPbXruZ5Ct6LDCzOQgFhF
+   n0+VaVdPp6xBQMw91TsIOAVuI7iqW4b6jxJ7/kMQ5NrHspluxP/meCdSR
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="293470181"
+X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
+   d="scan'208";a="293470181"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 21:49:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
+   d="scan'208";a="645960524"
+Received: from lkp-server02.sh.intel.com (HELO fccc941c3034) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 01 Sep 2022 21:48:59 -0700
+Received: from kbuild by fccc941c3034 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oTybz-00009b-0G;
+        Fri, 02 Sep 2022 04:48:59 +0000
+Date:   Fri, 2 Sep 2022 12:48:26 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Muchun Song <songmuchun@bytedance.com>, gregkh@linuxfoundation.org,
+        rafael@kernel.org, mike.kravetz@oracle.com,
+        akpm@linux-foundation.org, osalvador@suse.de, david@redhat.com,
+        ying.huang@intel.com, aneesh.kumar@linux.ibm.com,
+        rientjes@google.com
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: Re: [PATCH] mm: hugetlb: eliminate memory-less nodes handling
+Message-ID: <202209021255.1ChhyCsl-lkp@intel.com>
+References: <20220901083023.42319-1-songmuchun@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: 3-P9iYNBXn6B6G_JBbqYoFhCsNECt1ZG
-X-Proofpoint-GUID: 3-P9iYNBXn6B6G_JBbqYoFhCsNECt1ZG
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-09-01_12,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 phishscore=0
- clxscore=1015 spamscore=0 mlxlogscore=793 malwarescore=0 impostorscore=0
- priorityscore=1501 adultscore=0 lowpriorityscore=0 mlxscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2209020020
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220901083023.42319-1-songmuchun@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changes in v2:
-Patch 1/1: rearranged compatibles in alphabetical order, no changes in rest of the patches
+Hi Muchun,
 
-This patchset adds support for cpu bwmon (bwmon4) and llcc bwmon (bwmon5) found
-on sc7280 SoC.
+I love your patch! Yet something to improve:
 
-Patchset is based on top of series [1] that adds support for llcc bwmon on sdm845
+[auto build test ERROR on akpm-mm/mm-everything]
 
-[1]
-https://patchwork.kernel.org/project/linux-arm-msm/list/?series=663695&state=*
+url:    https://github.com/intel-lab-lkp/linux/commits/Muchun-Song/mm-hugetlb-eliminate-memory-less-nodes-handling/20220901-163132
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-everything
+config: loongarch-buildonly-randconfig-r004-20220901 (https://download.01.org/0day-ci/archive/20220902/202209021255.1ChhyCsl-lkp@intel.com/config)
+compiler: loongarch64-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/8e3d203cb06be81565d117b3f6d5e279a833174c
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Muchun-Song/mm-hugetlb-eliminate-memory-less-nodes-handling/20220901-163132
+        git checkout 8e3d203cb06be81565d117b3f6d5e279a833174c
+        # save the config file
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 ARCH=loongarch 
 
-Rajendra Nayak (4):
-  dt-bindings: interconnect: qcom,msm8998-bwmon: Add support for sc7280
-    BWMONs
-  soc: qcom: icc-bwmon: add support for sc7280 LLCC BWMON
-  soc: qcom: icc-bwmon: force clear counter/irq registers
-  arm64: dts: qcom: sc7280: Add cpu and llcc BWMON
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
- .../interconnect/qcom,msm8998-bwmon.yaml      |  2 +
- arch/arm64/boot/dts/qcom/sc7280.dtsi          | 76 +++++++++++++++++++
- drivers/soc/qcom/icc-bwmon.c                  | 21 +++++
- 3 files changed, 99 insertions(+)
+All errors (new ones prefixed by >>):
+
+   drivers/base/node.c: In function 'register_node':
+>> drivers/base/node.c:614:17: error: implicit declaration of function 'hugetlb_register_node'; did you mean 'unregister_node'? [-Werror=implicit-function-declaration]
+     614 |                 hugetlb_register_node(node);
+         |                 ^~~~~~~~~~~~~~~~~~~~~
+         |                 unregister_node
+   drivers/base/node.c: In function 'unregister_node':
+>> drivers/base/node.c:630:9: error: implicit declaration of function 'hugetlb_unregister_node'; did you mean 'unregister_node'? [-Werror=implicit-function-declaration]
+     630 |         hugetlb_unregister_node(node);
+         |         ^~~~~~~~~~~~~~~~~~~~~~~
+         |         unregister_node
+   cc1: some warnings being treated as errors
+
+
+vim +614 drivers/base/node.c
+
+   594	
+   595	/*
+   596	 * register_node - Setup a sysfs device for a node.
+   597	 * @num - Node number to use when creating the device.
+   598	 *
+   599	 * Initialize and register the node device.
+   600	 */
+   601	static int register_node(struct node *node, int num)
+   602	{
+   603		int error;
+   604	
+   605		node->dev.id = num;
+   606		node->dev.bus = &node_subsys;
+   607		node->dev.release = node_device_release;
+   608		node->dev.groups = node_dev_groups;
+   609		error = device_register(&node->dev);
+   610	
+   611		if (error) {
+   612			put_device(&node->dev);
+   613		} else {
+ > 614			hugetlb_register_node(node);
+   615			compaction_register_node(node);
+   616		}
+   617	
+   618		return error;
+   619	}
+   620	
+   621	/**
+   622	 * unregister_node - unregister a node device
+   623	 * @node: node going away
+   624	 *
+   625	 * Unregisters a node device @node.  All the devices on the node must be
+   626	 * unregistered before calling this function.
+   627	 */
+   628	void unregister_node(struct node *node)
+   629	{
+ > 630		hugetlb_unregister_node(node);
+   631		compaction_unregister_node(node);
+   632		node_remove_accesses(node);
+   633		node_remove_caches(node);
+   634		device_unregister(&node->dev);
+   635	}
+   636	
 
 -- 
-2.17.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
