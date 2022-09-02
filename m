@@ -2,102 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B08DC6FA82
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:10:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9CABC6FA83
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:12:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229512AbiIBSJ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 14:09:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34912 "EHLO
+        id S229530AbiIBSMe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 14:12:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229583AbiIBSJw (ORCPT
+        with ESMTP id S229437AbiIBSMa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 14:09:52 -0400
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9174FE355
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 11:03:23 -0700 (PDT)
-Received: by mail-io1-xd33.google.com with SMTP id b142so2247082iof.10
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 11:03:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=DsSYyvFRX7OXTQcg53ZJE+LnyNTxlorHM7slCEXW1is=;
-        b=s49s0x8Ap3YZB8Nrgbh1MSaxaMzcT1YE9yzG4odKqHlffOpfQVqq/hUsP1TUKeRGJu
-         QRVO7pNCfKVJo7u0MvpvsqS9M9gsQH53ZIyBJT7Afz7N92Tr6RFIIeLVoKLWGB1Vvbmv
-         /v6VMZrnnX0C5PbrAYGI+ME5XeEoy8hdNqfZjMc6kN9SwutOVQdQaOefZalIqjwGWgb/
-         tb9eEhxr8IDSLO7C5T9xgeAR59Ilnzo1PAbjQLdy2bLHiyeMQ85AuCV7Pu4kiCF92+eV
-         1FcyjOi7DtqyQozwRRjXiWNRSOrN057Fj1lzJobm015Kc/y47DMkuwoqOLBzADB2PQsb
-         1obg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=DsSYyvFRX7OXTQcg53ZJE+LnyNTxlorHM7slCEXW1is=;
-        b=wP5+V/I75afLYdmnHHHlyAcble4WYr42xogg004FCSEix32QXGcLneQnVs7hm9sH6T
-         0dz7izS2KiQYOmJXvJENogaIrV/aWjy3vbeRPyq/9IzGW9ogtvv9BD0t9Hc8AgNMAjJT
-         DnGS81/xlu7E7IrWcZYIZeIcPURZSvYRrWTXVCzGjdw4U+djqsG8NfKTIYM9ooVYblgv
-         L1DPAm8PqoswcfQsDUsmCBQk/84zayk/EXhfG8mSbGoEPlG/1lAuuIOhoR51ETv5hcfH
-         fFib4gKawigXlZCh2dJFPBRV6BjknTaPNY6g7nzEzYzcN8GL86oNZf/gBRXWSyoMRdCv
-         RWIQ==
-X-Gm-Message-State: ACgBeo2mePQqGFTgsgBC8CU2fuL7PFW3jibREhAvaRlBwZLy0jmImvOX
-        P1b+esAQ1pIZrg9vXvvH40fRr8APxwFB24Yjw9/hmA==
-X-Google-Smtp-Source: AA6agR7KFZlUy2pvfIV3UweeLdnL2W9zoROxivfRRaX8xm4LeDOW1Axpu3vJAjTM1oWttoJXdRXvxik2dVQ/xnaxZAM=
-X-Received: by 2002:a05:6638:2042:b0:346:e51a:da4e with SMTP id
- t2-20020a056638204200b00346e51ada4emr20421153jaj.164.1662141803111; Fri, 02
- Sep 2022 11:03:23 -0700 (PDT)
+        Fri, 2 Sep 2022 14:12:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A059F14094;
+        Fri,  2 Sep 2022 11:12:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58FA0B82D01;
+        Fri,  2 Sep 2022 18:12:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38367C433D6;
+        Fri,  2 Sep 2022 18:12:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662142346;
+        bh=E30b+14ku7Sf32GYr68BrvzpZrKcbccz0XGByZ9Zg9A=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fB2mw+I83hOQ4LUp3b4wj8MNJ6whFO3s7CneREbnLn1ZmeR+z+GVpBDJuWjCTOxkk
+         APXjVzkJ83/bl6yILOcty4K4QwmVEbB/5xbBmCqs+vTDQ2jfFvhH/PWtgvV0oPrKBj
+         cusAh3f96ul5s5W8Rw+jKM44lXJWZAx3+zduKDSsG/Ph/SlLLRs/ZVigQrwATxN2h4
+         iyeVwrMTw8rFbQqrmBUaY/W+PdxdstiL5tpllOowQ7Zq5TuuKl5CpAYmLfqibmP6Vf
+         TRVLJy1TsG4DiNRPhploGx/ZR3XzgUGTMYp2VTD3WislJhV9KMgECl2EAx3LjKIveL
+         MBjqaExFPs41w==
+From:   SeongJae Park <sj@kernel.org>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        SeongJae Park <sj@kernel.org>, linux-kernel@vger.kernel.org,
+        damon@lists.linux.dev, linux-mm@kvack.org,
+        stable <stable@kernel.org>, stable@vger.kernel.org
+Subject: Re: [PATCH] mm/damon/dbgfs: fix memory leak when using debugfs_lookup()
+Date:   Fri,  2 Sep 2022 18:12:22 +0000
+Message-Id: <20220902181222.83287-1-sj@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220902091703.dcee7737e7ce8857e3235fa7@linux-foundation.org>
+References: 
 MIME-Version: 1.0
-References: <20220902130625.217071627@infradead.org> <20220902130948.643735860@infradead.org>
-In-Reply-To: <20220902130948.643735860@infradead.org>
-From:   Jann Horn <jannh@google.com>
-Date:   Fri, 2 Sep 2022 20:02:46 +0200
-Message-ID: <CAG48ez07c2ThydovaHtBZ+u137eaXdEut4J-zycvPn7io4MySw@mail.gmail.com>
-Subject: Re: [PATCH v2 22/59] x86: Put hot per CPU variables into a struct
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Johannes Wikner <kwikner@ethz.ch>,
-        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
-        "H.J. Lu" <hjl.tools@gmail.com>,
-        Joao Moreira <joao.moreira@intel.com>,
-        Joseph Nuzman <joseph.nuzman@intel.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Juergen Gross <jgross@suse.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        K Prateek Nayak <kprateek.nayak@amd.com>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Sep 2, 2022 at 3:54 PM Peter Zijlstra <peterz@infradead.org> wrote:
-> From: Thomas Gleixner <tglx@linutronix.de>
->
-> The layout of per-cpu variables is at the mercy of the compiler. This
-> can lead to random performance fluctuations from build to build.
->
-> Create a structure to hold some of the hottest per-cpu variables,
-> starting with current_task.
-[...]
-> -DECLARE_PER_CPU(struct task_struct *, current_task);
-> +struct pcpu_hot {
-> +       union {
-> +               struct {
-> +                       struct task_struct      *current_task;
-> +               };
-> +               u8      pad[64];
-> +       };
-> +};
+Hi Andrew and Greg!
 
-fixed_percpu_data::stack_canary is probably also a fairly hot per-cpu
-variable on distro kernels with CONFIG_STACKPROTECTOR_STRONG (which
-e.g. Debian enables), so perhaps it'd make sense to reuse
-fixed_percpu_data as the struct for hot percpu variables? But I don't
-have any numbers to actually back up that idea.
+On Fri, 2 Sep 2022 09:17:03 -0700 Andrew Morton <akpm@linux-foundation.org> wrote:
+
+> On Fri,  2 Sep 2022 14:56:31 +0200 Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+> 
+> > When calling debugfs_lookup() the result must have dput() called on it,
+> > otherwise the memory will leak over time.  Fix this up by properly
+> > calling dput().
+
+Thank you for finding this bug and posting this patch, Greg!
+
+> > 
+> > ...
+> >
+> 
+> Fixes: 75c1c2b53c78b, I assume.
+
+Correct, Andrew.
+
+Fixes: 75c1c2b53c78b ("mm/damon/dbgfs: support multiple contexts")
+Cc: <stable@vger.kernel.org> # 5.15.x
+
+> 
+> > --- a/mm/damon/dbgfs.c
+> > +++ b/mm/damon/dbgfs.c
+> > @@ -915,6 +915,7 @@ static int dbgfs_rm_context(char *name)
+> >  		new_ctxs[j++] = dbgfs_ctxs[i];
+> >  	}
+> >  
+> > +	dput(dir);
+> >  	kfree(dbgfs_dirs);
+> >  	kfree(dbgfs_ctxs);
+> >  
+> 
+> dput() is also needed if either of the kmalloc_array() calls fail?
+> Maybe something like
+
+Good catch.
+
+> 
+> --- a/mm/damon/dbgfs.c~a
+> +++ a/mm/damon/dbgfs.c
+> @@ -884,6 +884,7 @@ static int dbgfs_rm_context(char *name)
+>  	struct dentry *root, *dir, **new_dirs;
+>  	struct damon_ctx **new_ctxs;
+>  	int i, j;
+> +	int ret = 0;
+>  
+>  	if (damon_nr_running_ctxs())
+>  		return -EBUSY;
+> @@ -899,14 +900,12 @@ static int dbgfs_rm_context(char *name)
+>  	new_dirs = kmalloc_array(dbgfs_nr_ctxs - 1, sizeof(*dbgfs_dirs),
+>  			GFP_KERNEL);
+>  	if (!new_dirs)
+> -		return -ENOMEM;
+> +		goto out_dput;
+
+Shouldn't we also do 'ret = -ENOMEM;' before 'godo out_dput'?
+
+>  
+>  	new_ctxs = kmalloc_array(dbgfs_nr_ctxs - 1, sizeof(*dbgfs_ctxs),
+>  			GFP_KERNEL);
+> -	if (!new_ctxs) {
+> -		kfree(new_dirs);
+> -		return -ENOMEM;
+> -	}
+> +	if (!new_ctxs)
+> +		goto out_new_dirs;
+
+ditto.
+
+>  
+>  	for (i = 0, j = 0; i < dbgfs_nr_ctxs; i++) {
+>  		if (dbgfs_dirs[i] == dir) {
+> @@ -925,7 +924,13 @@ static int dbgfs_rm_context(char *name)
+>  	dbgfs_ctxs = new_ctxs;
+>  	dbgfs_nr_ctxs--;
+>  
+> -	return 0;
+> +	goto out_dput;
+> +
+> +out_new_dirs:
+> +	kfree(new_dirs);
+> +out_dput:
+> +	dput(dir);
+> +	return ret;
+>  }
+>  
+>  static ssize_t dbgfs_rm_context_write(struct file *file,
+> _
+
+
+Thanks,
+SJ
