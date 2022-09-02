@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3869EC54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:55:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61F00ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:55:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238155AbiIBMzK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:55:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33396 "EHLO
+        id S238180AbiIBMzP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:55:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237811AbiIBMxb (ORCPT
+        with ESMTP id S238021AbiIBMxb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 08:53:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D999FE3979;
-        Fri,  2 Sep 2022 05:38:06 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 440AEE58B1;
+        Fri,  2 Sep 2022 05:38:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DDF566217E;
-        Fri,  2 Sep 2022 12:37:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5FA4C433C1;
-        Fri,  2 Sep 2022 12:37:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 979AAB82A8B;
+        Fri,  2 Sep 2022 12:37:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09A69C433C1;
+        Fri,  2 Sep 2022 12:37:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122258;
-        bh=4Mef6oIVxypHg+mAHZHx0JWOr5/CBtzWkSoMACY3YZE=;
+        s=korg; t=1662122239;
+        bh=lV7mb2d2P7zCPfmJmyz0dYwCOsfkfJLOefpZXPPvb/4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V7a+TT/xmchhADjHRmBzZTAFc8ALdcJ5XYw15Lf9Db6Z1Q+d1hE90zki3xunMHQgb
-         XV3TIALyEkQmbtxao9DhfFXCEge3bjCn8A/DOBsf1IpMOznW8HJHoiFBo7mo94BjZF
-         vkjtgNZRAQW9Df0W4yyR9TMKNRaDbq02mSNxWHaE=
+        b=v575zYHYD0O6KL2SP9qdf9VRff1zVb7D7ghqntoQ0EuOaTsUXD9QfTczk7SEEPMDF
+         XwGbFKl8Ib9mf5CSMGDL6aLIUHFbTHbKSMI/gwhUNkWSqtgRh9PbnOXLleHjxWey1m
+         D0RqqlYvjfSyg38LD/JBKXkrWxwAUgqnqXYQgzVM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Akihiko Odaki <akihiko.odaki@gmail.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Michael=20H=C3=BCbner?= <michaelh.95@t-online.de>,
         Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.19 22/72] HID: AMD_SFH: Add a DMI quirk entry for Chromebooks
-Date:   Fri,  2 Sep 2022 14:18:58 +0200
-Message-Id: <20220902121405.511661631@linuxfoundation.org>
+Subject: [PATCH 5.19 26/72] HID: thrustmaster: Add sparco wheel and fix array length
+Date:   Fri,  2 Sep 2022 14:19:02 +0200
+Message-Id: <20220902121405.660611157@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
 References: <20220902121404.772492078@linuxfoundation.org>
@@ -50,57 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Akihiko Odaki <akihiko.odaki@gmail.com>
+From: Michael Hübner <michaelh.95@t-online.de>
 
-commit adada3f4930ac084740ea340bd8e94028eba4f22 upstream.
+commit d9a17651f3749e69890db57ca66e677dfee70829 upstream.
 
-Google Chromebooks use Chrome OS Embedded Controller Sensor Hub instead
-of Sensor Hub Fusion and leaves MP2 uninitialized, which disables all
-functionalities, even including the registers necessary for feature
-detections.
+Add device id for the Sparco R383 Mod wheel.
 
-The behavior was observed with Lenovo ThinkPad C13 Yoga.
+Fix wheel info array length to match actual wheel count present in the array.
 
-Signed-off-by: Akihiko Odaki <akihiko.odaki@gmail.com>
-Suggested-by: Mario Limonciello <mario.limonciello@amd.com>
-Acked-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
+Signed-off-by: Michael Hübner <michaelh.95@t-online.de>
 Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/amd-sfh-hid/amd_sfh_pcie.c |   18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ drivers/hid/hid-thrustmaster.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
-+++ b/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
-@@ -285,11 +285,29 @@ static int amd_sfh_irq_init(struct amd_m
- 	return 0;
- }
+--- a/drivers/hid/hid-thrustmaster.c
++++ b/drivers/hid/hid-thrustmaster.c
+@@ -67,12 +67,13 @@ static const struct tm_wheel_info tm_whe
+ 	{0x0200, 0x0005, "Thrustmaster T300RS (Missing Attachment)"},
+ 	{0x0206, 0x0005, "Thrustmaster T300RS"},
+ 	{0x0209, 0x0005, "Thrustmaster T300RS (Open Wheel Attachment)"},
++	{0x020a, 0x0005, "Thrustmaster T300RS (Sparco R383 Mod)"},
+ 	{0x0204, 0x0005, "Thrustmaster T300 Ferrari Alcantara Edition"},
+ 	{0x0002, 0x0002, "Thrustmaster T500RS"}
+ 	//{0x0407, 0x0001, "Thrustmaster TMX"}
+ };
  
-+static const struct dmi_system_id dmi_nodevs[] = {
-+	{
-+		/*
-+		 * Google Chromebooks use Chrome OS Embedded Controller Sensor
-+		 * Hub instead of Sensor Hub Fusion and leaves MP2
-+		 * uninitialized, which disables all functionalities, even
-+		 * including the registers necessary for feature detections.
-+		 */
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Google"),
-+		},
-+	},
-+	{ }
-+};
-+
- static int amd_mp2_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- {
- 	struct amd_mp2_dev *privdata;
- 	int rc;
+-static const uint8_t tm_wheels_infos_length = 4;
++static const uint8_t tm_wheels_infos_length = 7;
  
-+	if (dmi_first_match(dmi_nodevs))
-+		return -ENODEV;
-+
- 	privdata = devm_kzalloc(&pdev->dev, sizeof(*privdata), GFP_KERNEL);
- 	if (!privdata)
- 		return -ENOMEM;
+ /*
+  * This structs contains (in little endian) the response data
 
 
