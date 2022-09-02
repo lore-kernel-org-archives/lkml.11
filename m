@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB658ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:32:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1474FECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:32:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236784AbiIBMcm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:32:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35424 "EHLO
+        id S236794AbiIBMcr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:32:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236675AbiIBMbj (ORCPT
+        with ESMTP id S236439AbiIBMbl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:31:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35104DD75A;
-        Fri,  2 Sep 2022 05:26:57 -0700 (PDT)
+        Fri, 2 Sep 2022 08:31:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C516EE1AB9;
+        Fri,  2 Sep 2022 05:27:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C5201B82AB6;
-        Fri,  2 Sep 2022 12:26:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FFB0C433D6;
-        Fri,  2 Sep 2022 12:26:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 37B7662178;
+        Fri,  2 Sep 2022 12:27:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44C78C433C1;
+        Fri,  2 Sep 2022 12:27:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121595;
-        bh=7APQlxl+5Xdd2RpaXOxtTlui/y4z1tADJAtSHRII6MU=;
+        s=korg; t=1662121628;
+        bh=kbqhYeilcXusCl2mgIc1i1PvjLcthAyrfbJIfvIOEj0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Wxr9kJyvQfhnAxluiPzIwz4pfCRCwjgKtg8Z2W1IXNv7GBDR5UsTR243dm6iTBSM
-         KvOMdbBO42U8HGWJNWqygpGb0FFzcgYkZOnerl4/O/eR9Egy6ZacqzUfhtKCiT7Ree
-         8rTGWd2b941yRLXrqLPRsWBia7z8gX6so6/FgO5Y=
+        b=QuDpzGb8XWWjG0GNaKGC1fjwzIV8V/h/uqv9ifn/e1uCiMT0d5pjnvRQO8TxjI9KF
+         GVR73UIT1qF34ScWmVtyqEgDU03DXrduB6/1m8BvlgY/bFO5GpFGd4G69/vzRvPAIV
+         m0HJ3MTCXMGu6r2LhQVDfsNCzPLkAftJgkltYdd0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Siddh Raman Pant <code@siddh.me>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
-        syzbot+a8e049cd3abd342936b6@syzkaller.appspotmail.com
-Subject: [PATCH 4.19 31/56] loop: Check for overflow while configuring loop
-Date:   Fri,  2 Sep 2022 14:18:51 +0200
-Message-Id: <20220902121401.341355341@linuxfoundation.org>
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 14/77] SUNRPC: RPC level errors should set task->tk_rpc_status
+Date:   Fri,  2 Sep 2022 14:18:23 +0200
+Message-Id: <20220902121404.110025520@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
-References: <20220902121400.219861128@linuxfoundation.org>
+In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
+References: <20220902121403.569927325@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,59 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Siddh Raman Pant <code@siddh.me>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit c490a0b5a4f36da3918181a8acdc6991d967c5f3 upstream.
+[ Upstream commit ed06fce0b034b2e25bd93430f5c4cbb28036cc1a ]
 
-The userspace can configure a loop using an ioctl call, wherein
-a configuration of type loop_config is passed (see lo_ioctl()'s
-case on line 1550 of drivers/block/loop.c). This proceeds to call
-loop_configure() which in turn calls loop_set_status_from_info()
-(see line 1050 of loop.c), passing &config->info which is of type
-loop_info64*. This function then sets the appropriate values, like
-the offset.
+Fix up a case in call_encode() where we're failing to set
+task->tk_rpc_status when an RPC level error occurred.
 
-loop_device has lo_offset of type loff_t (see line 52 of loop.c),
-which is typdef-chained to long long, whereas loop_info64 has
-lo_offset of type __u64 (see line 56 of include/uapi/linux/loop.h).
-
-The function directly copies offset from info to the device as
-follows (See line 980 of loop.c):
-	lo->lo_offset = info->lo_offset;
-
-This results in an overflow, which triggers a warning in iomap_iter()
-due to a call to iomap_iter_done() which has:
-	WARN_ON_ONCE(iter->iomap.offset > iter->pos);
-
-Thus, check for negative value during loop_set_status_from_info().
-
-Bug report: https://syzkaller.appspot.com/bug?id=c620fe14aac810396d3c3edc9ad73848bf69a29e
-
-Reported-and-tested-by: syzbot+a8e049cd3abd342936b6@syzkaller.appspotmail.com
-Cc: stable@vger.kernel.org
-Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Signed-off-by: Siddh Raman Pant <code@siddh.me>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220823160810.181275-1-code@siddh.me
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 9c5948c24869 ("SUNRPC: task should be exit if encode return EKEYEXPIRED more times")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/loop.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ net/sunrpc/clnt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/block/loop.c
-+++ b/drivers/block/loop.c
-@@ -1351,6 +1351,11 @@ loop_get_status(struct loop_device *lo,
- 	info->lo_number = lo->lo_number;
- 	info->lo_offset = lo->lo_offset;
- 	info->lo_sizelimit = lo->lo_sizelimit;
-+
-+	/* loff_t vars have been assigned __u64 */
-+	if (lo->lo_offset < 0 || lo->lo_sizelimit < 0)
-+		return -EOVERFLOW;
-+
- 	info->lo_flags = lo->lo_flags;
- 	memcpy(info->lo_file_name, lo->lo_file_name, LO_NAME_SIZE);
- 	memcpy(info->lo_crypt_name, lo->lo_crypt_name, LO_NAME_SIZE);
+diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
+index 08e1ccc01e983..1893203cc94fc 100644
+--- a/net/sunrpc/clnt.c
++++ b/net/sunrpc/clnt.c
+@@ -1896,7 +1896,7 @@ call_encode(struct rpc_task *task)
+ 			break;
+ 		case -EKEYEXPIRED:
+ 			if (!task->tk_cred_retry) {
+-				rpc_exit(task, task->tk_status);
++				rpc_call_rpcerror(task, task->tk_status);
+ 			} else {
+ 				task->tk_action = call_refresh;
+ 				task->tk_cred_retry--;
+-- 
+2.35.1
+
 
 
