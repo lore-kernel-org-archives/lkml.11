@@ -2,51 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26232ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:52:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8572C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:52:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237900AbiIBMwJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:52:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55542 "EHLO
+        id S237910AbiIBMwM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:52:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237748AbiIBMvT (ORCPT
+        with ESMTP id S237826AbiIBMvT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 08:51:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0E5C3C8CB;
-        Fri,  2 Sep 2022 05:37:00 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 496D728E18;
+        Fri,  2 Sep 2022 05:36:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D228862181;
-        Fri,  2 Sep 2022 12:27:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEDA4C433C1;
-        Fri,  2 Sep 2022 12:27:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0AD2B82ADB;
+        Fri,  2 Sep 2022 12:35:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 244E8C433D7;
+        Fri,  2 Sep 2022 12:35:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121668;
-        bh=qObAQRL9jDvbNVUCBg+ifDtMBYI49zFZuQMYlD9sB0w=;
+        s=korg; t=1662122116;
+        bh=8jsAPtMGlsuCzuAVGPD8M+SQwAdaH1zWjwoBq7n6LIg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ulBxUM9WwWTEWnorfkHoueEPatANFVlg/vjgnskDfmIYcnOh/S/aWD3M3ZEuLEZzt
-         FQmv1pOBNOGFiDFJ1E/k2/rY/uOOtt1CjcOQdUyWenhbExgQc5/Lq26EhSpO12jTNa
-         4eloWoKlCq3U0tuiykcrvET//ZJN5Ml3Plv0VPtk=
+        b=sFYovwuXFT2Mww6y7WXDZ122cgY3qeRjK/d1yDO+KrDYkSj2lwMtLkFKnrXkvO4CD
+         ZL8rcoxayIfT+Zep+0cXIKjq2BXnjiB5reh3+qw7ZKaTTvBc3snq7uACMtgkC5Vz19
+         FVtq1X4OqWKwCDNAmhsgjdwk9edCWJAQnW1ozrQ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "srivatsab@vmware.com, srivatsa@csail.mit.edu, akaher@vmware.com,
-        amakhalov@vmware.com, vsirnapalli@vmware.com, sturlapati@vmware.com,
-        bordoloih@vmware.com, keerthanak@vmware.com, Ankit Jain" 
-        <ankitja@vmware.com>, Mark Simmons <msimmons@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Ankit Jain <ankitja@vmware.com>
-Subject: [PATCH 5.4 08/77] sched/deadline: Unthrottle PI boosted threads while enqueuing
-Date:   Fri,  2 Sep 2022 14:18:17 +0200
-Message-Id: <20220902121403.891470207@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Michal Hocko <mhocko@suse.com>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.19 18/72] mm/rmap: Fix anon_vma->degree ambiguity leading to double-reuse
+Date:   Fri,  2 Sep 2022 14:18:54 +0200
+Message-Id: <20220902121405.380066168@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
-References: <20220902121403.569927325@linuxfoundation.org>
+In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
+References: <20220902121404.772492078@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,110 +50,167 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Bristot de Oliveira <bristot@redhat.com>
+From: Jann Horn <jannh@google.com>
 
-commit feff2e65efd8d84cf831668e182b2ce73c604bbb upstream.
+commit 2555283eb40df89945557273121e9393ef9b542b upstream.
 
-stress-ng has a test (stress-ng --cyclic) that creates a set of threads
-under SCHED_DEADLINE with the following parameters:
+anon_vma->degree tracks the combined number of child anon_vmas and VMAs
+that use the anon_vma as their ->anon_vma.
 
-    dl_runtime   =  10000 (10 us)
-    dl_deadline  = 100000 (100 us)
-    dl_period    = 100000 (100 us)
+anon_vma_clone() then assumes that for any anon_vma attached to
+src->anon_vma_chain other than src->anon_vma, it is impossible for it to
+be a leaf node of the VMA tree, meaning that for such VMAs ->degree is
+elevated by 1 because of a child anon_vma, meaning that if ->degree
+equals 1 there are no VMAs that use the anon_vma as their ->anon_vma.
 
-These parameters are very aggressive. When using a system without HRTICK
-set, these threads can easily execute longer than the dl_runtime because
-the throttling happens with 1/HZ resolution.
+This assumption is wrong because the ->degree optimization leads to leaf
+nodes being abandoned on anon_vma_clone() - an existing anon_vma is
+reused and no new parent-child relationship is created.  So it is
+possible to reuse an anon_vma for one VMA while it is still tied to
+another VMA.
 
-During the main part of the test, the system works just fine because
-the workload does not try to run over the 10 us. The problem happens at
-the end of the test, on the exit() path. During exit(), the threads need
-to do some cleanups that require real-time mutex locks, mainly those
-related to memory management, resulting in this scenario:
+This is an issue because is_mergeable_anon_vma() and its callers assume
+that if two VMAs have the same ->anon_vma, the list of anon_vmas
+attached to the VMAs is guaranteed to be the same.  When this assumption
+is violated, vma_merge() can merge pages into a VMA that is not attached
+to the corresponding anon_vma, leading to dangling page->mapping
+pointers that will be dereferenced during rmap walks.
 
-Note: locks are rt_mutexes...
- ------------------------------------------------------------------------
-    TASK A:		TASK B:				TASK C:
-    activation
-							activation
-			activation
+Fix it by separately tracking the number of child anon_vmas and the
+number of VMAs using the anon_vma as their ->anon_vma.
 
-    lock(a): OK!	lock(b): OK!
-    			<overrun runtime>
-    			lock(a)
-    			-> block (task A owns it)
-			  -> self notice/set throttled
- +--<			  -> arm replenished timer
- |    			switch-out
- |    							lock(b)
- |    							-> <C prio > B prio>
- |    							-> boost TASK B
- |  unlock(a)						switch-out
- |  -> handle lock a to B
- |    -> wakeup(B)
- |      -> B is throttled:
- |        -> do not enqueue
- |     switch-out
- |
- |
- +---------------------> replenishment timer
-			-> TASK B is boosted:
-			  -> do not enqueue
- ------------------------------------------------------------------------
-
-BOOM: TASK B is runnable but !enqueued, holding TASK C: the system
-crashes with hung task C.
-
-This problem is avoided by removing the throttle state from the boosted
-thread while boosting it (by TASK A in the example above), allowing it to
-be queued and run boosted.
-
-The next replenishment will take care of the runtime overrun, pushing
-the deadline further away. See the "while (dl_se->runtime <= 0)" on
-replenish_dl_entity() for more information.
-
-Reported-by: Mark Simmons <msimmons@redhat.com>
-Signed-off-by: Daniel Bristot de Oliveira <bristot@redhat.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Juri Lelli <juri.lelli@redhat.com>
-Tested-by: Mark Simmons <msimmons@redhat.com>
-Link: https://lkml.kernel.org/r/5076e003450835ec74e6fa5917d02c4fa41687e6.1600170294.git.bristot@redhat.com
-[Ankit: Regenerated the patch for v5.4.y]
-Signed-off-by: Ankit Jain <ankitja@vmware.com>
+Fixes: 7a3ef208e662 ("mm: prevent endless growth of anon_vma hierarchy")
+Cc: stable@kernel.org
+Acked-by: Michal Hocko <mhocko@suse.com>
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
+Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/sched/deadline.c |   21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ include/linux/rmap.h |    7 +++++--
+ mm/rmap.c            |   29 ++++++++++++++++-------------
+ 2 files changed, 21 insertions(+), 15 deletions(-)
 
---- a/kernel/sched/deadline.c
-+++ b/kernel/sched/deadline.c
-@@ -1484,6 +1484,27 @@ static void enqueue_task_dl(struct rq *r
+--- a/include/linux/rmap.h
++++ b/include/linux/rmap.h
+@@ -41,12 +41,15 @@ struct anon_vma {
+ 	atomic_t refcount;
+ 
+ 	/*
+-	 * Count of child anon_vmas and VMAs which points to this anon_vma.
++	 * Count of child anon_vmas. Equals to the count of all anon_vmas that
++	 * have ->parent pointing to this one, including itself.
+ 	 *
+ 	 * This counter is used for making decision about reusing anon_vma
+ 	 * instead of forking new one. See comments in function anon_vma_clone.
  	 */
- 	if (pi_task && dl_prio(pi_task->normal_prio) && p->dl.dl_boosted) {
- 		pi_se = &pi_task->dl;
-+		/*
-+		 * Because of delays in the detection of the overrun of a
-+		 * thread's runtime, it might be the case that a thread
-+		 * goes to sleep in a rt mutex with negative runtime. As
-+		 * a consequence, the thread will be throttled.
-+		 *
-+		 * While waiting for the mutex, this thread can also be
-+		 * boosted via PI, resulting in a thread that is throttled
-+		 * and boosted at the same time.
-+		 *
-+		 * In this case, the boost overrides the throttle.
-+		 */
-+		if (p->dl.dl_throttled) {
-+			/*
-+			 * The replenish timer needs to be canceled. No
-+			 * problem if it fires concurrently: boosted threads
-+			 * are ignored in dl_task_timer().
-+			 */
-+			hrtimer_try_to_cancel(&p->dl.dl_timer);
-+			p->dl.dl_throttled = 0;
-+		}
- 	} else if (!dl_prio(p->normal_prio)) {
+-	unsigned degree;
++	unsigned long num_children;
++	/* Count of VMAs whose ->anon_vma pointer points to this object. */
++	unsigned long num_active_vmas;
+ 
+ 	struct anon_vma *parent;	/* Parent of this anon_vma */
+ 
+--- a/mm/rmap.c
++++ b/mm/rmap.c
+@@ -93,7 +93,8 @@ static inline struct anon_vma *anon_vma_
+ 	anon_vma = kmem_cache_alloc(anon_vma_cachep, GFP_KERNEL);
+ 	if (anon_vma) {
+ 		atomic_set(&anon_vma->refcount, 1);
+-		anon_vma->degree = 1;	/* Reference for first vma */
++		anon_vma->num_children = 0;
++		anon_vma->num_active_vmas = 0;
+ 		anon_vma->parent = anon_vma;
  		/*
- 		 * Special case in which we have a !SCHED_DEADLINE task
+ 		 * Initialise the anon_vma root to point to itself. If called
+@@ -201,6 +202,7 @@ int __anon_vma_prepare(struct vm_area_st
+ 		anon_vma = anon_vma_alloc();
+ 		if (unlikely(!anon_vma))
+ 			goto out_enomem_free_avc;
++		anon_vma->num_children++; /* self-parent link for new root */
+ 		allocated = anon_vma;
+ 	}
+ 
+@@ -210,8 +212,7 @@ int __anon_vma_prepare(struct vm_area_st
+ 	if (likely(!vma->anon_vma)) {
+ 		vma->anon_vma = anon_vma;
+ 		anon_vma_chain_link(vma, avc, anon_vma);
+-		/* vma reference or self-parent link for new root */
+-		anon_vma->degree++;
++		anon_vma->num_active_vmas++;
+ 		allocated = NULL;
+ 		avc = NULL;
+ 	}
+@@ -296,19 +297,19 @@ int anon_vma_clone(struct vm_area_struct
+ 		anon_vma_chain_link(dst, avc, anon_vma);
+ 
+ 		/*
+-		 * Reuse existing anon_vma if its degree lower than two,
+-		 * that means it has no vma and only one anon_vma child.
++		 * Reuse existing anon_vma if it has no vma and only one
++		 * anon_vma child.
+ 		 *
+-		 * Do not choose parent anon_vma, otherwise first child
+-		 * will always reuse it. Root anon_vma is never reused:
++		 * Root anon_vma is never reused:
+ 		 * it has self-parent reference and at least one child.
+ 		 */
+ 		if (!dst->anon_vma && src->anon_vma &&
+-		    anon_vma != src->anon_vma && anon_vma->degree < 2)
++		    anon_vma->num_children < 2 &&
++		    anon_vma->num_active_vmas == 0)
+ 			dst->anon_vma = anon_vma;
+ 	}
+ 	if (dst->anon_vma)
+-		dst->anon_vma->degree++;
++		dst->anon_vma->num_active_vmas++;
+ 	unlock_anon_vma_root(root);
+ 	return 0;
+ 
+@@ -358,6 +359,7 @@ int anon_vma_fork(struct vm_area_struct
+ 	anon_vma = anon_vma_alloc();
+ 	if (!anon_vma)
+ 		goto out_error;
++	anon_vma->num_active_vmas++;
+ 	avc = anon_vma_chain_alloc(GFP_KERNEL);
+ 	if (!avc)
+ 		goto out_error_free_anon_vma;
+@@ -378,7 +380,7 @@ int anon_vma_fork(struct vm_area_struct
+ 	vma->anon_vma = anon_vma;
+ 	anon_vma_lock_write(anon_vma);
+ 	anon_vma_chain_link(vma, avc, anon_vma);
+-	anon_vma->parent->degree++;
++	anon_vma->parent->num_children++;
+ 	anon_vma_unlock_write(anon_vma);
+ 
+ 	return 0;
+@@ -410,7 +412,7 @@ void unlink_anon_vmas(struct vm_area_str
+ 		 * to free them outside the lock.
+ 		 */
+ 		if (RB_EMPTY_ROOT(&anon_vma->rb_root.rb_root)) {
+-			anon_vma->parent->degree--;
++			anon_vma->parent->num_children--;
+ 			continue;
+ 		}
+ 
+@@ -418,7 +420,7 @@ void unlink_anon_vmas(struct vm_area_str
+ 		anon_vma_chain_free(avc);
+ 	}
+ 	if (vma->anon_vma) {
+-		vma->anon_vma->degree--;
++		vma->anon_vma->num_active_vmas--;
+ 
+ 		/*
+ 		 * vma would still be needed after unlink, and anon_vma will be prepared
+@@ -436,7 +438,8 @@ void unlink_anon_vmas(struct vm_area_str
+ 	list_for_each_entry_safe(avc, next, &vma->anon_vma_chain, same_vma) {
+ 		struct anon_vma *anon_vma = avc->anon_vma;
+ 
+-		VM_WARN_ON(anon_vma->degree);
++		VM_WARN_ON(anon_vma->num_children);
++		VM_WARN_ON(anon_vma->num_active_vmas);
+ 		put_anon_vma(anon_vma);
+ 
+ 		list_del(&avc->same_vma);
 
 
