@@ -2,44 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82C03C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:56:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 671BDECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:56:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238214AbiIBM4o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:56:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46426 "EHLO
+        id S238231AbiIBM4u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:56:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238250AbiIBMyL (ORCPT
+        with ESMTP id S238279AbiIBMyQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:54:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 061496345;
-        Fri,  2 Sep 2022 05:38:45 -0700 (PDT)
+        Fri, 2 Sep 2022 08:54:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14D83F995D;
+        Fri,  2 Sep 2022 05:38:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D36456217E;
-        Fri,  2 Sep 2022 12:38:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C92E5C433C1;
-        Fri,  2 Sep 2022 12:38:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E41C362211;
+        Fri,  2 Sep 2022 12:37:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7240C433D6;
+        Fri,  2 Sep 2022 12:37:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122303;
-        bh=3NtiLngTKqFl9XPjbLhNrrjCOUogu4M6f4ka2ODAOf4=;
+        s=korg; t=1662122277;
+        bh=MSnkjPP/MYSfeJHpJPpx1Hxgi4ylFwUpQBUk8PBVVwQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w2LCRsZrKiE3YK7BAoziZl1wWAcyybOmoRbZvwO1DRf3kQlZ7QGDa+ETUkzk5P6NU
-         cX260EqnlSTV4OWJe4ocWoYnOtrBnet8K7QdsiUZmDQyhtCnJ+04+IbphP3xC6OOe5
-         C5wtdTOQfLWEsM1W5XkDZtymADf73TRtpmHUhoZU=
+        b=HZs3ZK4tt5XHv76UEkywjCgAG4eMJHOhGGPnnpXouOkg5Uu5Oj/casmNbIuskZYM+
+         eR0IT0C95xkV5VmBkmNwpdpnJaOALpPGWZeT2XCP8TK+NS3ysOwQ+gbTJG+ZiWaEWQ
+         AVPlGWAjiJqCrurmpxS6b/V8NpWw0naU/p6vYoEs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mukul Joshi <mukul.joshi@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 61/72] drm/amdgpu: Fix interrupt handling on ih_soft ring
-Date:   Fri,  2 Sep 2022 14:19:37 +0200
-Message-Id: <20220902121406.786915743@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Liam R. Howlett" <Liam.Howlett@oracle.com>,
+        syzbot+da54fa8d793ca89c741f@syzkaller.appspotmail.com,
+        Todd Kjos <tkjos@google.com>,
+        =?UTF-8?q?Arve=20Hj=C3=B8nnev=C3=A5g?= <arve@android.com>,
+        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
+        Hridya Valsaraju <hridya@google.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Martijn Coenen <maco@android.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.19 69/72] android: binder: fix lockdep check on clearing vma
+Date:   Fri,  2 Sep 2022 14:19:45 +0200
+Message-Id: <20220902121407.062516874@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
 References: <20220902121404.772492078@linuxfoundation.org>
@@ -51,109 +57,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mukul Joshi <mukul.joshi@amd.com>
+From: Liam Howlett <liam.howlett@oracle.com>
 
-[ Upstream commit de8341ee3ce7316883e836a2c4e9bf01ab651e0f ]
+commit b0cab80ecd54ae3b2356bb081af0bffd538c8265 upstream.
 
-There are no backing hardware registers for ih_soft ring.
-As a result, don't try to access hardware registers for read
-and write pointers when processing interrupts on the IH soft
-ring.
+When munmapping a vma, the mmap_lock can be degraded to a write before
+calling close() on the file handle.  The binder close() function calls
+binder_alloc_set_vma() to clear the vma address, which now has a lock dep
+check for writing on the mmap_lock.  Change the lockdep check to ensure
+the reading lock is held while clearing and keep the write check while
+writing.
 
-Signed-off-by: Mukul Joshi <mukul.joshi@amd.com>
-Acked-by: Christian König <christian.koenig@amd.com>
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lkml.kernel.org/r/20220627151857.2316964-1-Liam.Howlett@oracle.com
+Fixes: 472a68df605b ("android: binder: stop saving a pointer to the VMA")
+Signed-off-by: Liam R. Howlett <Liam.Howlett@oracle.com>
+Reported-by: syzbot+da54fa8d793ca89c741f@syzkaller.appspotmail.com
+Acked-by: Todd Kjos <tkjos@google.com>
+Cc: "Arve Hjønnevåg" <arve@android.com>
+Cc: Christian Brauner (Microsoft) <brauner@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Hridya Valsaraju <hridya@google.com>
+Cc: Joel Fernandes <joel@joelfernandes.org>
+Cc: Martijn Coenen <maco@android.com>
+Cc: Suren Baghdasaryan <surenb@google.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/navi10_ih.c | 7 ++++++-
- drivers/gpu/drm/amd/amdgpu/vega10_ih.c | 7 ++++++-
- drivers/gpu/drm/amd/amdgpu/vega20_ih.c | 7 ++++++-
- 3 files changed, 18 insertions(+), 3 deletions(-)
+ drivers/android/binder_alloc.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/navi10_ih.c b/drivers/gpu/drm/amd/amdgpu/navi10_ih.c
-index 4b5396d3e60f6..eec13cb5bf758 100644
---- a/drivers/gpu/drm/amd/amdgpu/navi10_ih.c
-+++ b/drivers/gpu/drm/amd/amdgpu/navi10_ih.c
-@@ -409,9 +409,11 @@ static u32 navi10_ih_get_wptr(struct amdgpu_device *adev,
- 	u32 wptr, tmp;
- 	struct amdgpu_ih_regs *ih_regs;
- 
--	if (ih == &adev->irq.ih) {
-+	if (ih == &adev->irq.ih || ih == &adev->irq.ih_soft) {
- 		/* Only ring0 supports writeback. On other rings fall back
- 		 * to register-based code with overflow checking below.
-+		 * ih_soft ring doesn't have any backing hardware registers,
-+		 * update wptr and return.
- 		 */
- 		wptr = le32_to_cpu(*ih->wptr_cpu);
- 
-@@ -483,6 +485,9 @@ static void navi10_ih_set_rptr(struct amdgpu_device *adev,
+--- a/drivers/android/binder_alloc.c
++++ b/drivers/android/binder_alloc.c
+@@ -315,12 +315,19 @@ static inline void binder_alloc_set_vma(
  {
- 	struct amdgpu_ih_regs *ih_regs;
+ 	unsigned long vm_start = 0;
  
-+	if (ih == &adev->irq.ih_soft)
-+		return;
-+
- 	if (ih->use_doorbell) {
- 		/* XXX check if swapping is necessary on BE */
- 		*ih->rptr_cpu = ih->rptr;
-diff --git a/drivers/gpu/drm/amd/amdgpu/vega10_ih.c b/drivers/gpu/drm/amd/amdgpu/vega10_ih.c
-index cdd599a081258..03b7066471f9a 100644
---- a/drivers/gpu/drm/amd/amdgpu/vega10_ih.c
-+++ b/drivers/gpu/drm/amd/amdgpu/vega10_ih.c
-@@ -334,9 +334,11 @@ static u32 vega10_ih_get_wptr(struct amdgpu_device *adev,
- 	u32 wptr, tmp;
- 	struct amdgpu_ih_regs *ih_regs;
++	/*
++	 * Allow clearing the vma with holding just the read lock to allow
++	 * munmapping downgrade of the write lock before freeing and closing the
++	 * file using binder_alloc_vma_close().
++	 */
+ 	if (vma) {
+ 		vm_start = vma->vm_start;
+ 		alloc->vma_vm_mm = vma->vm_mm;
++		mmap_assert_write_locked(alloc->vma_vm_mm);
++	} else {
++		mmap_assert_locked(alloc->vma_vm_mm);
+ 	}
  
--	if (ih == &adev->irq.ih) {
-+	if (ih == &adev->irq.ih || ih == &adev->irq.ih_soft) {
- 		/* Only ring0 supports writeback. On other rings fall back
- 		 * to register-based code with overflow checking below.
-+		 * ih_soft ring doesn't have any backing hardware registers,
-+		 * update wptr and return.
- 		 */
- 		wptr = le32_to_cpu(*ih->wptr_cpu);
+-	mmap_assert_write_locked(alloc->vma_vm_mm);
+ 	alloc->vma_addr = vm_start;
+ }
  
-@@ -409,6 +411,9 @@ static void vega10_ih_set_rptr(struct amdgpu_device *adev,
- {
- 	struct amdgpu_ih_regs *ih_regs;
- 
-+	if (ih == &adev->irq.ih_soft)
-+		return;
-+
- 	if (ih->use_doorbell) {
- 		/* XXX check if swapping is necessary on BE */
- 		*ih->rptr_cpu = ih->rptr;
-diff --git a/drivers/gpu/drm/amd/amdgpu/vega20_ih.c b/drivers/gpu/drm/amd/amdgpu/vega20_ih.c
-index 3b4eb8285943c..2022ffbb8dba5 100644
---- a/drivers/gpu/drm/amd/amdgpu/vega20_ih.c
-+++ b/drivers/gpu/drm/amd/amdgpu/vega20_ih.c
-@@ -385,9 +385,11 @@ static u32 vega20_ih_get_wptr(struct amdgpu_device *adev,
- 	u32 wptr, tmp;
- 	struct amdgpu_ih_regs *ih_regs;
- 
--	if (ih == &adev->irq.ih) {
-+	if (ih == &adev->irq.ih || ih == &adev->irq.ih_soft) {
- 		/* Only ring0 supports writeback. On other rings fall back
- 		 * to register-based code with overflow checking below.
-+		 * ih_soft ring doesn't have any backing hardware registers,
-+		 * update wptr and return.
- 		 */
- 		wptr = le32_to_cpu(*ih->wptr_cpu);
- 
-@@ -461,6 +463,9 @@ static void vega20_ih_set_rptr(struct amdgpu_device *adev,
- {
- 	struct amdgpu_ih_regs *ih_regs;
- 
-+	if (ih == &adev->irq.ih_soft)
-+		return;
-+
- 	if (ih->use_doorbell) {
- 		/* XXX check if swapping is necessary on BE */
- 		*ih->rptr_cpu = ih->rptr;
--- 
-2.35.1
-
 
 
