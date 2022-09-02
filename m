@@ -2,104 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEF61ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:05:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 194EFC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:05:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238669AbiIBNFH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:05:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51722 "EHLO
+        id S238683AbiIBNFO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:05:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238753AbiIBNDu (ORCPT
+        with ESMTP id S238807AbiIBND5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:03:50 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9206C110D8B
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 05:42:18 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1BA961516;
-        Fri,  2 Sep 2022 05:40:53 -0700 (PDT)
-Received: from usa.arm.com (e103737-lin.cambridge.arm.com [10.1.197.49])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 947543F766;
-        Fri,  2 Sep 2022 05:40:45 -0700 (PDT)
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        op-tee@lists.trustedfirmware.org
-Cc:     Sudeep Holla <sudeep.holla@arm.com>,
-        Marc Bonnici <marc.bonnici@arm.com>,
-        Achin Gupta <achin.gupta@arm.com>,
-        Jens Wiklander <jens.wiklander@linaro.org>,
-        Valentin Laurent <valentin.laurent@trustonic.com>,
-        Lukas Hanel <lukas.hanel@trustonic.com>,
-        Coboy Chen <coboy.chen@mediatek.com>
-Subject: [PATCH v2 03/10] firmware: arm_ffa: Remove ffa_dev_ops_get()
-Date:   Fri,  2 Sep 2022 13:40:25 +0100
-Message-Id: <20220902124032.788488-4-sudeep.holla@arm.com>
+        Fri, 2 Sep 2022 09:03:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54ADD110DB9
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 05:42:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5AA72620FE
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 12:40:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11F9CC433D6;
+        Fri,  2 Sep 2022 12:40:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662122435;
+        bh=ctIlZ1dKIFN9a2uUzSrDB28SEGv6Sp4lWkDy3XCto0w=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=AbDGYx1cptX/p+QnlbRkFjpPXXiTtLWw9RBdJTbnUq0hWb7QTFTywE62cFjT7uSmq
+         LOeVmMKXNE0jW4jVL4yxLlUTewwjkFN/Vb+HoOmA8BYNyCZUjNBnUdO4zfxUo1gB2E
+         rSDv2gpNPw/7QeUj0BJao+YTfYQzb1r+/LziEM8Q=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Major Chen <major.chen@samsung.com>,
+        stable <stable@kernel.org>, Kuyo Chang <kuyo.chang@mediatek.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Valentin Schneider <vschneid@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Subject: [PATCH 2/2] sched/debug: fix dentry leak in update_sched_domain_debugfs
+Date:   Fri,  2 Sep 2022 14:31:07 +0200
+Message-Id: <20220902123107.109274-2-gregkh@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902124032.788488-1-sudeep.holla@arm.com>
-References: <20220902124032.788488-1-sudeep.holla@arm.com>
+In-Reply-To: <20220902123107.109274-1-gregkh@linuxfoundation.org>
+References: <20220902123107.109274-1-gregkh@linuxfoundation.org>
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1566; i=gregkh@linuxfoundation.org; h=from:subject; bh=ctIlZ1dKIFN9a2uUzSrDB28SEGv6Sp4lWkDy3XCto0w=; b=owGbwMvMwCRo6H6F97bub03G02pJDMmC37v3ZIT9uCl0cz3v37W3pOTZOqJfaDlZTWEwYlKTfr3Y vVSxI5aFQZCJQVZMkeXLNp6j+ysOKXoZ2p6GmcPKBDKEgYtTACaicIhhfs3vuZsdNp57vv4730HrpG tK2c7Z+Qzzq8sL7i7UvbymaMWM+YdOzmI/PY/rPgA=
+X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The only user of this exported ffa_dev_ops_get() was OPTEE driver which
-now uses ffa_dev->ops directly, there are no other users for this.
+Kuyo reports that the pattern of using debugfs_remove(debugfs_lookup())
+leaks a dentry and with a hotplug stress test, the machine eventually
+runs out of memory.
 
-Also, since any ffa driver can use ffa_dev->ops directly, there will be
-no need for ffa_dev_ops_get(), so just remove ffa_dev_ops_get().
+Fix this up by using the newly created debugfs_lookup_and_remove() call
+instead which properly handles the dentry reference counting logic.
 
-Reviewed-by: Jens Wiklander <jens.wiklander@linaro.org>
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+Cc: Major Chen <major.chen@samsung.com>
+Cc: stable <stable@kernel.org>
+Reported-by: Kuyo Chang <kuyo.chang@mediatek.com>
+Tested-by: Kuyo Chang <kuyo.chang@mediatek.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Vincent Guittot <vincent.guittot@linaro.org>
+Cc: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Ben Segall <bsegall@google.com>
+Cc: Mel Gorman <mgorman@suse.de>
+Cc: Daniel Bristot de Oliveira <bristot@redhat.com>
+Cc: Valentin Schneider <vschneid@redhat.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firmware/arm_ffa/driver.c | 9 ---------
- include/linux/arm_ffa.h           | 6 ------
- 2 files changed, 15 deletions(-)
+ kernel/sched/debug.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/firmware/arm_ffa/driver.c b/drivers/firmware/arm_ffa/driver.c
-index 213665e5ad0e..04e7cbb1b9aa 100644
---- a/drivers/firmware/arm_ffa/driver.c
-+++ b/drivers/firmware/arm_ffa/driver.c
-@@ -644,15 +644,6 @@ static const struct ffa_dev_ops ffa_ops = {
- 	.memory_lend = ffa_memory_lend,
- };
+diff --git a/kernel/sched/debug.c b/kernel/sched/debug.c
+index bb3d63bdf4ae..667876da8382 100644
+--- a/kernel/sched/debug.c
++++ b/kernel/sched/debug.c
+@@ -416,7 +416,7 @@ void update_sched_domain_debugfs(void)
+ 		char buf[32];
  
--const struct ffa_dev_ops *ffa_dev_ops_get(struct ffa_device *dev)
--{
--	if (ffa_device_is_valid(dev))
--		return &ffa_ops;
--
--	return NULL;
--}
--EXPORT_SYMBOL_GPL(ffa_dev_ops_get);
--
- void ffa_device_match_uuid(struct ffa_device *ffa_dev, const uuid_t *uuid)
- {
- 	int count, idx;
-diff --git a/include/linux/arm_ffa.h b/include/linux/arm_ffa.h
-index 91b47e42b73d..556f50f27fb1 100644
---- a/include/linux/arm_ffa.h
-+++ b/include/linux/arm_ffa.h
-@@ -55,7 +55,6 @@ int ffa_driver_register(struct ffa_driver *driver, struct module *owner,
- 			const char *mod_name);
- void ffa_driver_unregister(struct ffa_driver *driver);
- bool ffa_device_is_valid(struct ffa_device *ffa_dev);
--const struct ffa_dev_ops *ffa_dev_ops_get(struct ffa_device *dev);
+ 		snprintf(buf, sizeof(buf), "cpu%d", cpu);
+-		debugfs_remove(debugfs_lookup(buf, sd_dentry));
++		debugfs_lookup_and_remove(buf, sd_dentry);
+ 		d_cpu = debugfs_create_dir(buf, sd_dentry);
  
- #else
- static inline
-@@ -79,11 +78,6 @@ static inline void ffa_driver_unregister(struct ffa_driver *driver) {}
- static inline
- bool ffa_device_is_valid(struct ffa_device *ffa_dev) { return false; }
- 
--static inline
--const struct ffa_dev_ops *ffa_dev_ops_get(struct ffa_device *dev)
--{
--	return NULL;
--}
- #endif /* CONFIG_ARM_FFA_TRANSPORT */
- 
- #define ffa_register(driver) \
+ 		i = 0;
 -- 
 2.37.3
 
