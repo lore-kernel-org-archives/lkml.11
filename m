@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2C53C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:36:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B23C7C54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:36:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236989AbiIBMf7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:35:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55366 "EHLO
+        id S236840AbiIBMgD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:36:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236565AbiIBMeM (ORCPT
+        with ESMTP id S236759AbiIBMeO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:34:12 -0400
+        Fri, 2 Sep 2022 08:34:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77D42D632F;
-        Fri,  2 Sep 2022 05:28:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1814BD9EBC;
+        Fri,  2 Sep 2022 05:28:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 273FA62160;
-        Fri,  2 Sep 2022 12:28:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BC77C433D6;
-        Fri,  2 Sep 2022 12:28:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 12CDE6218D;
+        Fri,  2 Sep 2022 12:28:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2216BC433C1;
+        Fri,  2 Sep 2022 12:28:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121708;
-        bh=eimgQIMxHZOEPBtE5nCL9Itkgzj3zGOzM7yaxfP4ZyQ=;
+        s=korg; t=1662121711;
+        bh=02dvi00mHdGtZ2LxDeSycdfEgjyDOflIKnkQinHHrZg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E9L1T/1ETqzvVmFpm6xkhmWVMFqggDJh89QYIvSglmqqzleXLo63UaIkDICK9hYX7
-         /tr6XooYHxo+xMbq5A9dr7WUIxqbivgbSNvXule4chDkJuLlrAW6qa4TyC5+aGA8+E
-         rz7xLiFpAqKlfNk9xGFv2cXLaYgMKDEGOHs9BpJ0=
+        b=dR4Rmkpb08hi1RGDUD+h74aG4YJnY18mAvMxq9DdDZOHvIVq3ZILSG310NSWGu0uR
+         BdBHthNR3R+b9Iex724MztBnxQHcXzYIe+kTPLza2LKJBrHDXBaSeYJPysd56UGsuo
+         eJijuq8jCq/rWA6HG73pHQSEcbjxkA2++Jiq3hNg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen Zhongjin <chenzhongjin@huawei.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.4 40/77] x86/unwind/orc: Unwind ftrace trampolines with correct ORC entry
-Date:   Fri,  2 Sep 2022 14:18:49 +0200
-Message-Id: <20220902121404.981315369@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 23/77] netfilter: nft_payload: do not truncate csum_offset and csum_type
+Date:   Fri,  2 Sep 2022 14:18:32 +0200
+Message-Id: <20220902121404.420648109@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
 References: <20220902121403.569927325@linuxfoundation.org>
@@ -49,72 +48,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen Zhongjin <chenzhongjin@huawei.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit fc2e426b1161761561624ebd43ce8c8d2fa058da upstream.
+[ Upstream commit 7044ab281febae9e2fa9b0b247693d6026166293 ]
 
-When meeting ftrace trampolines in ORC unwinding, unwinder uses address
-of ftrace_{regs_}call address to find the ORC entry, which gets next frame at
-sp+176.
+Instead report ERANGE if csum_offset is too long, and EOPNOTSUPP if type
+is not support.
 
-If there is an IRQ hitting at sub $0xa8,%rsp, the next frame should be
-sp+8 instead of 176. It makes unwinder skip correct frame and throw
-warnings such as "wrong direction" or "can't access registers", etc,
-depending on the content of the incorrect frame address.
-
-By adding the base address ftrace_{regs_}caller with the offset
-*ip - ops->trampoline*, we can get the correct address to find the ORC entry.
-
-Also change "caller" to "tramp_addr" to make variable name conform to
-its content.
-
-[ mingo: Clarified the changelog a bit. ]
-
-Fixes: 6be7fa3c74d1 ("ftrace, orc, x86: Handle ftrace dynamically allocated trampolines")
-Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220819084334.244016-1-chenzhongjin@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 7ec3f7b47b8d ("netfilter: nft_payload: add packet mangling support")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/unwind_orc.c |   15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ net/netfilter/nft_payload.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
 
---- a/arch/x86/kernel/unwind_orc.c
-+++ b/arch/x86/kernel/unwind_orc.c
-@@ -90,22 +90,27 @@ static struct orc_entry *orc_find(unsign
- static struct orc_entry *orc_ftrace_find(unsigned long ip)
+diff --git a/net/netfilter/nft_payload.c b/net/netfilter/nft_payload.c
+index 7520ec17cabb7..6ed6ccef5e1ad 100644
+--- a/net/netfilter/nft_payload.c
++++ b/net/netfilter/nft_payload.c
+@@ -558,6 +558,8 @@ static int nft_payload_set_init(const struct nft_ctx *ctx,
+ 				const struct nlattr * const tb[])
  {
- 	struct ftrace_ops *ops;
--	unsigned long caller;
-+	unsigned long tramp_addr, offset;
+ 	struct nft_payload_set *priv = nft_expr_priv(expr);
++	u32 csum_offset, csum_type = NFT_PAYLOAD_CSUM_NONE;
++	int err;
  
- 	ops = ftrace_ops_trampoline(ip);
- 	if (!ops)
- 		return NULL;
+ 	priv->base        = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_BASE]));
+ 	priv->offset      = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_OFFSET]));
+@@ -565,11 +567,15 @@ static int nft_payload_set_init(const struct nft_ctx *ctx,
+ 	priv->sreg        = nft_parse_register(tb[NFTA_PAYLOAD_SREG]);
  
-+	/* Set tramp_addr to the start of the code copied by the trampoline */
- 	if (ops->flags & FTRACE_OPS_FL_SAVE_REGS)
--		caller = (unsigned long)ftrace_regs_call;
-+		tramp_addr = (unsigned long)ftrace_regs_caller;
- 	else
--		caller = (unsigned long)ftrace_call;
-+		tramp_addr = (unsigned long)ftrace_caller;
+ 	if (tb[NFTA_PAYLOAD_CSUM_TYPE])
+-		priv->csum_type =
+-			ntohl(nla_get_be32(tb[NFTA_PAYLOAD_CSUM_TYPE]));
+-	if (tb[NFTA_PAYLOAD_CSUM_OFFSET])
+-		priv->csum_offset =
+-			ntohl(nla_get_be32(tb[NFTA_PAYLOAD_CSUM_OFFSET]));
++		csum_type = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_CSUM_TYPE]));
++	if (tb[NFTA_PAYLOAD_CSUM_OFFSET]) {
++		err = nft_parse_u32_check(tb[NFTA_PAYLOAD_CSUM_OFFSET], U8_MAX,
++					  &csum_offset);
++		if (err < 0)
++			return err;
 +
-+	/* Now place tramp_addr to the location within the trampoline ip is at */
-+	offset = ip - ops->trampoline;
-+	tramp_addr += offset;
++		priv->csum_offset = csum_offset;
++	}
+ 	if (tb[NFTA_PAYLOAD_CSUM_FLAGS]) {
+ 		u32 flags;
  
- 	/* Prevent unlikely recursion */
--	if (ip == caller)
-+	if (ip == tramp_addr)
- 		return NULL;
+@@ -580,13 +586,14 @@ static int nft_payload_set_init(const struct nft_ctx *ctx,
+ 		priv->csum_flags = flags;
+ 	}
  
--	return orc_find(caller);
-+	return orc_find(tramp_addr);
+-	switch (priv->csum_type) {
++	switch (csum_type) {
+ 	case NFT_PAYLOAD_CSUM_NONE:
+ 	case NFT_PAYLOAD_CSUM_INET:
+ 		break;
+ 	default:
+ 		return -EOPNOTSUPP;
+ 	}
++	priv->csum_type = csum_type;
+ 
+ 	return nft_validate_register_load(priv->sreg, priv->len);
  }
- #else
- static struct orc_entry *orc_ftrace_find(unsigned long ip)
+-- 
+2.35.1
+
 
 
