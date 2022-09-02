@@ -2,110 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66571ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:17:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A5DEC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:18:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236462AbiIBORq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:17:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57234 "EHLO
+        id S237574AbiIBOSL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:18:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238455AbiIBORK (ORCPT
+        with ESMTP id S238600AbiIBORx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:17:10 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA18743632
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:43:14 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oU6Ue-0007Vb-Q6; Fri, 02 Sep 2022 15:13:56 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oU6Ub-003VMu-FG; Fri, 02 Sep 2022 15:13:55 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oU6Uc-006elW-Ep; Fri, 02 Sep 2022 15:13:54 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH v4 3/3] iio: adc: tsc2046: silent spi_device_id warning
-Date:   Fri,  2 Sep 2022 15:13:52 +0200
-Message-Id: <20220902131352.1586599-3-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220902131352.1586599-1-o.rempel@pengutronix.de>
-References: <20220902131352.1586599-1-o.rempel@pengutronix.de>
+        Fri, 2 Sep 2022 10:17:53 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72D555F125
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:43:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662126228; x=1693662228;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=qwD2MnFCCPaeWqxY3gsH7fYiNvcGic+bi1IDybKnebc=;
+  b=dwIS2PLa4VTu/qxPqpwYhUFZzjVMOt+zrHzROhbMC2DqrkxYYGc4eEF7
+   hKQUqhXtHYSgqtPsl1kiKwPVf+L7BgUsJiyc9DwEGGb8FeDNSp4L0Mqnn
+   KnZGYs7wiUhfD2Q7HzB726w//u6/Rb9rRwN/6rTF/mFhuIxzfRwjNT5JL
+   dEC5ChnLV09GVqrwLyyxlNIgMBpLtafQgtS/mXSZ8MQc51ZaBEOafyr5r
+   zgJMLypK7KwxNyLzU5LB5yiZcP4ONuA4sfr80RW0QYjbeYMPe8oPr8EvG
+   6VLKtGY6e0Xlsaub/YHNG+AYkwGbtynVLbKyqh0ewrY1FAQ7o2arxi7dG
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="297264191"
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="297264191"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 06:23:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="674352566"
+Received: from crojewsk-ctrl.igk.intel.com ([10.102.9.28])
+  by fmsmga008.fm.intel.com with ESMTP; 02 Sep 2022 06:23:12 -0700
+From:   Cezary Rojewski <cezary.rojewski@intel.com>
+To:     alsa-devel@alsa-project.org, broonie@kernel.org
+Cc:     tiwai@suse.com, perex@perex.cz,
+        amadeuszx.slawinski@linux.intel.com,
+        pierre-louis.bossart@linux.intel.com, hdegoede@redhat.com,
+        lgirdwood@gmail.com, kai.vehmanen@linux.intel.com,
+        peter.ujfalusi@linux.intel.com, ranjani.sridharan@linux.intel.com,
+        yung-chuan.liao@linux.intel.com, willy@infradead.org,
+        linux-kernel@vger.kernel.org, andy@kernel.org,
+        intel-poland@eclists.intel.com, andy.shevchenko@gmail.com,
+        Cezary Rojewski <cezary.rojewski@intel.com>
+Subject: [PATCH v5 1/2] lib/string_helpers: Introduce parse_int_array_user()
+Date:   Fri,  2 Sep 2022 15:32:55 +0200
+Message-Id: <20220902133256.789165-2-cezary.rojewski@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220902133256.789165-1-cezary.rojewski@intel.com>
+References: <20220902133256.789165-1-cezary.rojewski@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add spi_device_id to silent following kernel runtime warning:
-"SPI driver tsc2046 has no spi_device_id for ti,tsc2046e-adc".
+Add new helper function to allow for splitting specified user string
+into a sequence of integers. Internally it makes use of get_options() so
+the returned sequence contains the integers extracted plus an additional
+element that begins the sequence and specifies the integers count.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Cezary Rojewski <cezary.rojewski@intel.com>
 ---
-changes v4:
-- add Reviewed-by: Andy Shevchenko
-changes v3:
-- add missing point
-- remove unneeded blank line
-- assignment id at the definition line
-changes v2:
-- attach actual driver_data
-- use spi_get_device_id fallback
----
- drivers/iio/adc/ti-tsc2046.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ include/linux/string_helpers.h |  2 ++
+ lib/string_helpers.c           | 44 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 46 insertions(+)
 
-diff --git a/drivers/iio/adc/ti-tsc2046.c b/drivers/iio/adc/ti-tsc2046.c
-index 5f92754e066be..49680f312a5bf 100644
---- a/drivers/iio/adc/ti-tsc2046.c
-+++ b/drivers/iio/adc/ti-tsc2046.c
-@@ -802,6 +802,11 @@ static int tsc2046_adc_probe(struct spi_device *spi)
- 	}
+diff --git a/include/linux/string_helpers.h b/include/linux/string_helpers.h
+index 4d72258d42fd..dc2e726fd820 100644
+--- a/include/linux/string_helpers.h
++++ b/include/linux/string_helpers.h
+@@ -21,6 +21,8 @@ enum string_size_units {
+ void string_get_size(u64 size, u64 blk_size, enum string_size_units units,
+ 		     char *buf, int len);
  
- 	dcfg = device_get_match_data(dev);
-+	if (!dcfg) {
-+		const struct spi_device_id *id = spi_get_device_id(spi);
++int parse_int_array_user(const char __user *from, size_t count, int **array);
 +
-+		dcfg = (const struct tsc2046_adc_dcfg *)id->driver_data;
+ #define UNESCAPE_SPACE		BIT(0)
+ #define UNESCAPE_OCTAL		BIT(1)
+ #define UNESCAPE_HEX		BIT(2)
+diff --git a/lib/string_helpers.c b/lib/string_helpers.c
+index 5ed3beb066e6..230020a2e076 100644
+--- a/lib/string_helpers.c
++++ b/lib/string_helpers.c
+@@ -131,6 +131,50 @@ void string_get_size(u64 size, u64 blk_size, const enum string_size_units units,
+ }
+ EXPORT_SYMBOL(string_get_size);
+ 
++/**
++ * parse_int_array_user - Split string into a sequence of integers
++ * @from:	The user space buffer to read from
++ * @count:	The maximum number of bytes to read
++ * @array:	Returned pointer to sequence of integers
++ *
++ * On success @array is allocated and initialized with a sequence of
++ * integers extracted from the @from plus an additional element that
++ * begins the sequence and specifies the integers count.
++ *
++ * Caller takes responsibility for freeing @array when it is no longer
++ * needed.
++ */
++int parse_int_array_user(const char __user *from, size_t count, int **array)
++{
++	int *ints, nints;
++	char *buf;
++	int ret = 0;
++
++	buf = memdup_user_nul(from, count);
++	if (IS_ERR(buf))
++		return PTR_ERR(buf);
++
++	get_options(buf, 0, &nints);
++	if (!nints) {
++		ret = -ENOENT;
++		goto free_buf;
 +	}
- 	if (!dcfg)
- 		return -EINVAL;
- 
-@@ -883,11 +888,18 @@ static const struct of_device_id ads7950_of_table[] = {
- };
- MODULE_DEVICE_TABLE(of, ads7950_of_table);
- 
-+static const struct spi_device_id tsc2046_adc_spi_ids[] = {
-+	{ "tsc2046e-adc", (unsigned long)&tsc2046_adc_dcfg_tsc2046e },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(spi, tsc2046_adc_spi_ids);
 +
- static struct spi_driver tsc2046_adc_driver = {
- 	.driver = {
- 		.name = "tsc2046",
- 		.of_match_table = ads7950_of_table,
- 	},
-+	.id_table = tsc2046_adc_spi_ids,
- 	.probe = tsc2046_adc_probe,
- };
- module_spi_driver(tsc2046_adc_driver);
++	ints = kcalloc(nints + 1, sizeof(*ints), GFP_KERNEL);
++	if (!ints) {
++		ret = -ENOMEM;
++		goto free_buf;
++	}
++
++	get_options(buf, nints + 1, ints);
++	*array = ints;
++
++free_buf:
++	kfree(buf);
++	return ret;
++}
++EXPORT_SYMBOL(parse_int_array_user);
++
+ static bool unescape_space(char **src, char **dst)
+ {
+ 	char *p = *dst, *q = *src;
 -- 
-2.30.2
+2.25.1
 
