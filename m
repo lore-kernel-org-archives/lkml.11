@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 685D6C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:29:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AD36C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:29:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236561AbiIBM3n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:29:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37222 "EHLO
+        id S236576AbiIBM3r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:29:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236515AbiIBM2V (ORCPT
+        with ESMTP id S236482AbiIBM2a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:28:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E88CBD8E33;
-        Fri,  2 Sep 2022 05:24:36 -0700 (PDT)
+        Fri, 2 Sep 2022 08:28:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4038711C03;
+        Fri,  2 Sep 2022 05:24:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F9F0B82A9E;
-        Fri,  2 Sep 2022 12:24:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CC87C433C1;
-        Fri,  2 Sep 2022 12:24:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C243B82A95;
+        Fri,  2 Sep 2022 12:23:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC4B7C433D7;
+        Fri,  2 Sep 2022 12:23:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121475;
-        bh=GRY44WcHqY/SgymLIc9wHIjeXiuJ7rxdOZn+fozOfg8=;
+        s=korg; t=1662121418;
+        bh=0VtpXqFvjdzolSkUYnkn3ks1g0xBS+pk9oJcQgLaFCA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HV2bL/CoKqKFL/f0QUPQjKRNxBdz76le4erdchl5u8oKYuFbBIDCmCuNkmZo3zzBp
-         LaJ6TDsECzSRlEYMyh74CIr1WNcZLsEC/DOsQZAdtfZa5k3gw7TUNh80b26Zp1oSvr
-         CGObnOK9b9EYSPfvu/5uPxpzVGPCwshUp4Jy767E=
+        b=UN/9nyBlOZ3OBu0b8JjRR0ETpgqWnl8RIuiqsthQjJ/u/Ib/PxoN5Yu7Ewl2pUhgC
+         C/Ge/EpbxysYyEN9ddSYhb2+f+lHwHBK6T6jlIv9UssZv3tjz44tTFqc13Am3S9uzN
+         fs67FDNf8mGqfZZUEZNRX0xMKN8IxQJpX9m6kL/8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
-Subject: [PATCH 4.19 02/56] parisc: Fix exception handler for fldw and fstw instructions
-Date:   Fri,  2 Sep 2022 14:18:22 +0200
-Message-Id: <20220902121400.299316707@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 13/42] ratelimit: Fix data-races in ___ratelimit().
+Date:   Fri,  2 Sep 2022 14:18:37 +0200
+Message-Id: <20220902121359.282397749@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
-References: <20220902121400.219861128@linuxfoundation.org>
+In-Reply-To: <20220902121358.773776406@linuxfoundation.org>
+References: <20220902121358.773776406@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,49 +49,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 7ae1f5508d9a33fd58ed3059bd2d569961e3b8bd upstream.
+[ Upstream commit 6bae8ceb90ba76cdba39496db936164fa672b9be ]
 
-The exception handler is broken for unaligned memory acceses with fldw
-and fstw instructions, because it trashes or uses randomly some other
-floating point register than the one specified in the instruction word
-on loads and stores.
+While reading rs->interval and rs->burst, they can be changed
+concurrently via sysctl (e.g. net_ratelimit_state).  Thus, we
+need to add READ_ONCE() to their readers.
 
-The instruction "fldw 0(addr),%fr22L" (and the other fldw/fstw
-instructions) encode the target register (%fr22) in the rightmost 5 bits
-of the instruction word. The 7th rightmost bit of the instruction word
-defines if the left or right half of %fr22 should be used.
-
-While processing unaligned address accesses, the FR3() define is used to
-extract the offset into the local floating-point register set.  But the
-calculation in FR3() was buggy, so that for example instead of %fr22,
-register %fr12 [((22 * 2) & 0x1f) = 12] was used.
-
-This bug has been since forever in the parisc kernel and I wonder why it
-wasn't detected earlier. Interestingly I noticed this bug just because
-the libime debian package failed to build on *native* hardware, while it
-successfully built in qemu.
-
-This patch corrects the bitshift and masking calculation in FR3().
-
-Signed-off-by: Helge Deller <deller@gmx.de>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/parisc/kernel/unaligned.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ lib/ratelimit.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
---- a/arch/parisc/kernel/unaligned.c
-+++ b/arch/parisc/kernel/unaligned.c
-@@ -121,7 +121,7 @@
- #define R1(i) (((i)>>21)&0x1f)
- #define R2(i) (((i)>>16)&0x1f)
- #define R3(i) ((i)&0x1f)
--#define FR3(i) ((((i)<<1)&0x1f)|(((i)>>6)&1))
-+#define FR3(i) ((((i)&0x1f)<<1)|(((i)>>6)&1))
- #define IM(i,n) (((i)>>1&((1<<(n-1))-1))|((i)&1?((0-1L)<<(n-1)):0))
- #define IM5_2(i) IM((i)>>16,5)
- #define IM5_3(i) IM((i),5)
+diff --git a/lib/ratelimit.c b/lib/ratelimit.c
+index d01f471352390..b805702de84dd 100644
+--- a/lib/ratelimit.c
++++ b/lib/ratelimit.c
+@@ -27,10 +27,16 @@
+  */
+ int ___ratelimit(struct ratelimit_state *rs, const char *func)
+ {
++	/* Paired with WRITE_ONCE() in .proc_handler().
++	 * Changing two values seperately could be inconsistent
++	 * and some message could be lost.  (See: net_ratelimit_state).
++	 */
++	int interval = READ_ONCE(rs->interval);
++	int burst = READ_ONCE(rs->burst);
+ 	unsigned long flags;
+ 	int ret;
+ 
+-	if (!rs->interval)
++	if (!interval)
+ 		return 1;
+ 
+ 	/*
+@@ -45,7 +51,7 @@ int ___ratelimit(struct ratelimit_state *rs, const char *func)
+ 	if (!rs->begin)
+ 		rs->begin = jiffies;
+ 
+-	if (time_is_before_jiffies(rs->begin + rs->interval)) {
++	if (time_is_before_jiffies(rs->begin + interval)) {
+ 		if (rs->missed) {
+ 			if (!(rs->flags & RATELIMIT_MSG_ON_RELEASE)) {
+ 				printk_deferred(KERN_WARNING
+@@ -57,7 +63,7 @@ int ___ratelimit(struct ratelimit_state *rs, const char *func)
+ 		rs->begin   = jiffies;
+ 		rs->printed = 0;
+ 	}
+-	if (rs->burst && rs->burst > rs->printed) {
++	if (burst && burst > rs->printed) {
+ 		rs->printed++;
+ 		ret = 1;
+ 	} else {
+-- 
+2.35.1
+
 
 
