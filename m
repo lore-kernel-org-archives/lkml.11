@@ -2,133 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2087BC6FA82
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 21:30:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7C6BC6FA86
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 21:31:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230501AbiIBVai (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 17:30:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55266 "EHLO
+        id S230521AbiIBVbZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 17:31:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230521AbiIBVab (ORCPT
+        with ESMTP id S229595AbiIBVbW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 17:30:31 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3540FE398C;
-        Fri,  2 Sep 2022 14:30:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1662154228; x=1693690228;
-  h=from:to:subject:date:message-id:mime-version;
-  bh=KOTH4JPhMsOiAZR2ZzLX0VQD5TijJ7XjKW80Z9C78Wc=;
-  b=R+t6FRkH9dcQKaBeYJiB56k1Zah3bdu92MDIkfXaQBBtqj2fXnnIIptw
-   anlT1K5JHTYDLB0/cFJQlkmFFX8h7wZdBwURsJqKK2i2T91EEWen4+wnZ
-   v2bWoPQPHpB18c7UK+VlfFj8Nsw7hM78LUZIOXHQCROYgRwFyxIfMcQB/
-   Zs7sYnLsj8fwFwYiCdO5agvbbbSwSPcjWeVU2IrDVSTSs8rcCOpX2Jko8
-   NlMnVHQBQxxhCLWZgyQqaC3eipDzaKCYMIiDsKC4d3FJo5z1zazNpzWAm
-   TsGZ1PEeLuSPCqSyq+XqKYL9z8IGhWDYowEzRoT5boZVdVF4TNvxF8TfN
-   A==;
-X-IronPort-AV: E=Sophos;i="5.93,285,1654585200"; 
-   d="scan'208";a="111997240"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 Sep 2022 14:30:28 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Fri, 2 Sep 2022 14:30:23 -0700
-Received: from AUS-LT-C33025.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Fri, 2 Sep 2022 14:30:21 -0700
-From:   Jerry Ray <jerry.ray@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Jerry Ray <jerry.ray@microchip.com>
-Subject: [PATCH v2 1/2] net: dsa: LAN9303: Add early read to sync
-Date:   Fri, 2 Sep 2022 16:30:20 -0500
-Message-ID: <20220902213021.23151-1-jerry.ray@microchip.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 2 Sep 2022 17:31:22 -0400
+Received: from mail-oo1-f54.google.com (mail-oo1-f54.google.com [209.85.161.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA355EEF28;
+        Fri,  2 Sep 2022 14:31:19 -0700 (PDT)
+Received: by mail-oo1-f54.google.com with SMTP id u5-20020a4a5705000000b0044b34c2c89cso573622ooa.9;
+        Fri, 02 Sep 2022 14:31:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=RPXcg8S4KyYuvQ2h0ZxAMrKdXRJfPvOglHtgG5zFDQ0=;
+        b=wYPz78u/glMLM84PpMcBS+Yy/kVn4EvMrg77YNwin28t/lMBNR0S7eodemsdrTL7bZ
+         celfXD4hkib2nkNqwEku7FH1ClsI1k4YBUmkTLAcv3wGVxfNaWlp0b5W/X5M10+9pDZn
+         8e7FRoWosaUyIl8hT0kfL7yHg+wIQziaTDK4T1DxzwneTvmAb2pL9rtl9moZKiqP5zFV
+         c9a5BXeaegUBx7g5hj8mYNaBd5JNEbSjzHFa44d5rC8+YiQeWgX30jnb8WNGTI1R/CnB
+         Qtc+jNFaUzIXecTBYcne4fxpuTQvYnicXm1Q6zC2g7gO+SBnvf/fB+wVfVPH2dVSnvbW
+         COmA==
+X-Gm-Message-State: ACgBeo1nic8NIKaQrU1WEH4WoGDh6ZiGeXle7L6f4yQz1JVaIteaVCVG
+        9DFaP3AgSw5P5DcXORe6izoaE/Oguw==
+X-Google-Smtp-Source: AA6agR7gAHbiDGuf/4d73jGZkGGqXN72S41JDyjKovaLhBAQW2zNQZvmduOt+nfE80rWeCcDmIPUUQ==
+X-Received: by 2002:a4a:2c92:0:b0:448:a89b:af18 with SMTP id o140-20020a4a2c92000000b00448a89baf18mr13173764ooo.42.1662154279003;
+        Fri, 02 Sep 2022 14:31:19 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id n6-20020a4ad626000000b00435785e7b49sm1058116oon.19.2022.09.02.14.31.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 14:31:18 -0700 (PDT)
+Received: (nullmailer pid 449613 invoked by uid 1000);
+        Fri, 02 Sep 2022 21:31:17 -0000
+Date:   Fri, 2 Sep 2022 16:31:17 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH RFT v2 1/4] dt-bindings: soc: qcom: smd-rpm: add PMIC
+ regulators nodes
+Message-ID: <20220902213117.GA449547-robh@kernel.org>
+References: <20220901093243.134288-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220901093243.134288-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add initial BYTE_ORDER read to sync the 32-bit accesses over the 16-bit
-mdio bus to improve driver robustness.
+On Thu, 01 Sep 2022 12:32:40 +0300, Krzysztof Kozlowski wrote:
+> The Qualcomm RPM over SMD contains devices for one or two PMIC
+> regulators - already used in several DTS files.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> 
+> ---
+> 
+> Changes since v1:
+> 1. None
+> ---
+>  Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
 
-The lan9303 expects two mdio read transactions back-to-back to read a
-32-bit register. The first read transaction causes the other half of the
-32-bit register to get latched.  The subsequent read returns the latched
-second half of the 32-bit read. The BYTE_ORDER register is an exception to
-this rule. As it is a constant value, there is no need to latch the second
-half. We read this register first in case there were reads during the boot
-loader process that might have occurred prior to this driver taking over
-ownership of accessing this device.
-
-This patch has been tested on the SAMA5D3-EDS with a LAN9303 RMII daughter
-card.
-
-Signed-off-by: Jerry Ray <jerry.ray@microchip.com>
----
- drivers/net/dsa/lan9303-core.c | 19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/dsa/lan9303-core.c b/drivers/net/dsa/lan9303-core.c
-index e03ff1f267bb..9d5302001abf 100644
---- a/drivers/net/dsa/lan9303-core.c
-+++ b/drivers/net/dsa/lan9303-core.c
-@@ -32,6 +32,7 @@
- #define LAN9303_INT_EN 0x17
- # define LAN9303_INT_EN_PHY_INT2_EN BIT(27)
- # define LAN9303_INT_EN_PHY_INT1_EN BIT(26)
-+#define LAN9303_BYTE_ORDER 0x19
- #define LAN9303_HW_CFG 0x1D
- # define LAN9303_HW_CFG_READY BIT(27)
- # define LAN9303_HW_CFG_AMDX_EN_PORT2 BIT(26)
-@@ -851,10 +852,6 @@ static int lan9303_check_device(struct lan9303 *chip)
- 	if (ret) {
- 		dev_err(chip->dev, "failed to read chip revision register: %d\n",
- 			ret);
--		if (!chip->reset_gpio) {
--			dev_dbg(chip->dev,
--				"hint: maybe failed due to missing reset GPIO\n");
--		}
- 		return ret;
- 	}
- 
-@@ -1349,6 +1346,7 @@ static int lan9303_probe_reset_gpio(struct lan9303 *chip,
- int lan9303_probe(struct lan9303 *chip, struct device_node *np)
- {
- 	int ret;
-+	u32 reg;
- 
- 	mutex_init(&chip->indirect_mutex);
- 	mutex_init(&chip->alr_mutex);
-@@ -1359,6 +1357,19 @@ int lan9303_probe(struct lan9303 *chip, struct device_node *np)
- 
- 	lan9303_handle_reset(chip);
- 
-+	/* First read to the device.  This is a Dummy read to ensure MDIO */
-+	/* access is in 32-bit sync. */
-+	ret = lan9303_read(chip->regmap, LAN9303_BYTE_ORDER, &reg);
-+	if (ret) {
-+		dev_err(chip->dev, "failed to access the device: %d\n",
-+			ret);
-+		if (!chip->reset_gpio) {
-+			dev_dbg(chip->dev,
-+				"hint: maybe failed due to missing reset GPIO\n");
-+		}
-+		return ret;
-+	}
-+
- 	ret = lan9303_check_device(chip);
- 	if (ret)
- 		return ret;
--- 
-2.17.1
-
+Acked-by: Rob Herring <robh@kernel.org>
