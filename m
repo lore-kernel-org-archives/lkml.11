@@ -2,73 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41B8FECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:59:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D59FBC54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 16:01:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237429AbiIBP7j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 11:59:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58450 "EHLO
+        id S237690AbiIBQBp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 12:01:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236498AbiIBP7S (ORCPT
+        with ESMTP id S237458AbiIBQBN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 11:59:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37AECE01B;
-        Fri,  2 Sep 2022 08:53:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C884762013;
-        Fri,  2 Sep 2022 15:53:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5D8BC433C1;
-        Fri,  2 Sep 2022 15:53:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662134036;
-        bh=QCgsK1Pg/IUXYOh9bTRo6nAIJJyhIyOeOefYBPTtfj0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=spev8F1cnhg+nd67NQ7dvkwlZQxYdDSFsxF+E3LzKpHq02IBBKUKd9xNp7C58eXCj
-         fkwtmIPqCb1iubyS38gqS72tgD1/NIdLHL+CHlEKmG+P6YOWiBR0G8qCvwjqiqC3LL
-         FCzEOa5b5C/1rQYzvEUiGXlS0Fd7X6lH6G93/rSeO3CSonys6ARvKghX2TBzKgvLp5
-         Hi8rn6Q/NsgBQtpk2bQJJDwr4pJZFq4+QTszQ4NFBGe3LmeckcOWysV6X65hmOz81Z
-         Jzkp5ht7DUuM1L5sW9LnzPSEQbSA8YlfhMpzB+cdZ+oIY1A9tMN/BH7Kx8BKK07xHs
-         2505usmYmntqA==
-Date:   Fri, 2 Sep 2022 18:53:51 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Reinette Chatre <reinette.chatre@intel.com>
-Cc:     linux-sgx@vger.kernel.org,
-        Haitao Huang <haitao.huang@linux.intel.com>,
-        Vijay Dhanraj <vijay.dhanraj@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Paul Menzel <pmenzel@molgen.mpg.de>, stable@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 2/6] x86/sgx: Do not consider unsanitized pages an
- error
-Message-ID: <YxInD1m7rEnQ/yxW@kernel.org>
-References: <20220831173829.126661-1-jarkko@kernel.org>
- <20220831173829.126661-3-jarkko@kernel.org>
- <24906e57-461f-6c94-9e78-0d8507df01bb@intel.com>
- <YxEp8Ji+ukLBoNE+@kernel.org>
- <84b8eb06-7b77-675f-5bc8-292fe27dd2f5@intel.com>
- <YxFGykqMb+TD4L4l@kernel.org>
- <YxIEm4uHVvUY/rv6@kernel.org>
+        Fri, 2 Sep 2022 12:01:13 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE7C5D108
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 08:06:04 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id e20so2653386wri.13
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 08:06:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=ULSBxBsOqdpwFzaPZ22j0kNiyro44UCp/qPP6WG4pUQ=;
+        b=VfSVdt0GWEa9o6bZAvYBDsj3WBCtig9qxGkAwfoVlHzZojsv2xWY57x7Fh7YfwPhE5
+         GB0mK5i92H0+TW0EVBbl4Z2ws0tfCzGUVdApCIWbO3mVbudJt3Vt8UTezgsV38hLHe5j
+         92AH2RP3TK2aaPAhUk4f4omkqYcFFZqgeVl04MFaOPNDxOb2rCUNNYCyoageu1+lZ4Mn
+         pJpG2bS5815LzWe4SguSR5uGvlkSxfLleQ/ee1phN6JzcpbzmL3BQZ18dW6dh1jloSyM
+         2qgTtYilqnpQzMq5tREW31OuWzVUYfkERyo8Dqps25WZNLkv6wCTXW9BqDOR0yCb8jv1
+         KA1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=ULSBxBsOqdpwFzaPZ22j0kNiyro44UCp/qPP6WG4pUQ=;
+        b=cCgahVKBIcVySt3+NA4XY7JNSRxBoj7sqB6YZyKldi/ou7l7GG8F88UQwUJmIVP4hx
+         mk7K2v6lDWa6Y3hmSIUf+T0RKnfiwe4iyWtVGXBCS0jLknDeQ4VkyBPK4fYkjujqviWt
+         8xYROOAOhewcbcxBP8F9Jm9sPbc4DUG4gxU2vr4DBcOrP2SRga6DIyIrE4yq0/K6CEVZ
+         88qimEdR8KO2TD3sjZxT+VIyTf11zTvHKzTz5nYpOwCRsViTw2F8nM2J/aADmNQnYPKs
+         3gVuetuWz0bHIKehP8Q3R6pxTsXrCFNMrKNu0GDejfgHTYb15RdUeDdUU7yVuSNjUme/
+         /Mfg==
+X-Gm-Message-State: ACgBeo1wVEDXkE7dBeD4NS4WADswV7jRCN0Sr0zy9ygJhclkmUmXKotB
+        jYTGskdBZwDUQSPu82R6Nmppnw==
+X-Google-Smtp-Source: AA6agR68fv7LGJO4Aad4P2WItH/nXXhbfO9USrV2UE6cE8X9hGnpoyx8viAUcqabzuBelYoqTdUsHQ==
+X-Received: by 2002:a5d:5b08:0:b0:226:f421:79ba with SMTP id bx8-20020a5d5b08000000b00226f42179bamr5194084wrb.44.1662131163314;
+        Fri, 02 Sep 2022 08:06:03 -0700 (PDT)
+Received: from linaro.org ([94.52.112.99])
+        by smtp.gmail.com with ESMTPSA id o12-20020a05600c378c00b003a5f4fccd4asm8241871wmr.35.2022.09.02.08.06.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 08:06:02 -0700 (PDT)
+Date:   Fri, 2 Sep 2022 18:06:00 +0300
+From:   Abel Vesa <abel.vesa@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorande@qti.qualcomm.com>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Amol Maheshwari <amahesh@qti.qualcomm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Ekansh Gupta <ekangupt@qti.qualcomm.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 00/14] misc: fastrpc: Add audiopd support and some fixes
+Message-ID: <YxIb2N5BLFyXlm0u@linaro.org>
+References: <20220902131344.3029826-1-abel.vesa@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YxIEm4uHVvUY/rv6@kernel.org>
+In-Reply-To: <20220902131344.3029826-1-abel.vesa@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Sep 02, 2022 at 04:26:51PM +0300, Jarkko Sakkinen wrote:
-> +	if (ret)
-> +		pr_err("%ld unsanitized pages\n", left_dirty);
+On 22-09-02 16:13:30, Abel Vesa wrote:
+> This patchset's main goal is adding the audiopd support to fastrpc.
+> There are also some fixes and reworks.
+> 
 
-Yeah, I know, should be 'left_dirty'. I just quickly drafted
-the patch for the email.
+Please ignore this entire patchset. Will resend.
 
-BR, Jarkko
+> Abel Vesa (13):
+>   misc: fastrpc: Fix use-after-free and race in fastrpc_map_find
+>   misc: fastrpc: Don't remove map on creater_process and device_release
+>   misc: fastrpc: Rename audio protection domain to root
+>   misc: fastrpc: Add reserved mem support
+>   dt-bindings: misc: fastrpc: Document memory-region property
+>   misc: fastrpc: Add fastrpc_remote_heap_alloc
+>   misc: fastrpc: Use fastrpc_map_put in fastrpc_map_create on fail
+>   misc: fastrpc: Rework fastrpc_req_munmap
+>   misc: fastrpc: Add support for audiopd
+>   misc: fastrpc: Safekeep mmaps on interrupted invoke
+>   misc: fastrpc: Add mmap request assigning for static PD pool
+>   misc: fastrpc: Remove unnecessary if braces in fastrpc_internal_invoke
+>   misc: fastrpc: Add dma_mask to fastrpc_channel_ctx
+> 
+> Ola Jeppsson (1):
+>   misc: fastrpc: Fix use-after-free race condition for maps
+> 
+>  .../devicetree/bindings/misc/qcom,fastrpc.txt |   5 +
+>  drivers/misc/fastrpc.c                        | 337 ++++++++++++++----
+>  include/uapi/misc/fastrpc.h                   |   7 +
+>  3 files changed, 284 insertions(+), 65 deletions(-)
+> 
+> -- 
+> 2.34.1
+> 
