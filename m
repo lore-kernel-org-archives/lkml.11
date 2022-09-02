@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 773EEC6FA82
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:38:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05A0FC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:38:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237576AbiIBNia (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:38:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57532 "EHLO
+        id S236265AbiIBNi5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:38:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236255AbiIBNh4 (ORCPT
+        with ESMTP id S237542AbiIBNh7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:37:56 -0400
+        Fri, 2 Sep 2022 09:37:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43D8F124872;
-        Fri,  2 Sep 2022 06:16:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B2A0125B81;
+        Fri,  2 Sep 2022 06:16:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC034621EC;
-        Fri,  2 Sep 2022 12:36:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BECE6C433C1;
-        Fri,  2 Sep 2022 12:36:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E114621E3;
+        Fri,  2 Sep 2022 12:34:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C9A9C433D7;
+        Fri,  2 Sep 2022 12:34:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122201;
-        bh=qPtMQN6i7xa1IWnEibQFMTsGeomTP4hM3LBvwPWuPms=;
+        s=korg; t=1662122094;
+        bh=xIwGVScQaB9wNQuwUy6UEhNULReYG68Iz9QNMVFlI5Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U2jlOZHXz8AA371DAKf5q5T4a/s6WJ7G+oS9VoXACN3U6+Pfzbk+9OMFUMxFzjHym
-         2S+lxB9b31Z2gJ+VHaFhsLjVzr+2qHlZm/xYe0bHlO2203ViRIy5NBhB3+YvxRsI/z
-         B1a2zeON6/2oYpq82p23u/9oApXbyIhzPQNA92ns=
+        b=xP5Rsd4f5bnyctrj7SsA85/GUiaAxiOlRmvPwjWys6D5iqvZunNrM6JQklIXfOyeu
+         n6CoXy1hqnY8ZWy2KM+efzfN+/slaa5ugqJR3gAZJXQ0NDA4TJbKrKWIj+HrqK7oDB
+         Ror4lL1ripmBGZ2Ad9Ky1YClriA70qygx5LN3xUs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Xiaogang Chen <Xiaogang.Chen@amd.com>
-Subject: [PATCH 5.19 44/72] drm/amdkfd: Handle restart of kfd_ioctl_wait_events
-Date:   Fri,  2 Sep 2022 14:19:20 +0200
-Message-Id: <20220902121406.223114522@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+77b432d57c4791183ed4@syzkaller.appspotmail.com,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH 5.19 11/72] media: pvrusb2: fix memory leak in pvr_probe
+Date:   Fri,  2 Sep 2022 14:18:47 +0200
+Message-Id: <20220902121405.169501601@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
 References: <20220902121404.772492078@linuxfoundation.org>
@@ -50,127 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Kuehling <Felix.Kuehling@amd.com>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit bea9a56afbc4b5a41ea579b8b0dc5e189b439504 ]
+commit 945a9a8e448b65bec055d37eba58f711b39f66f0 upstream.
 
-When kfd_ioctl_wait_events needs to restart due to a signal, we need to
-update the timeout to account for the time already elapsed. We also need
-to undo auto_reset of events that have signaled already, so that the
-restarted ioctl will be able to count those signals again.
+The error handling code in pvr2_hdw_create forgets to unregister the
+v4l2 device. When pvr2_hdw_create returns back to pvr2_context_create,
+it calls pvr2_context_destroy to destroy context, but mp->hdw is NULL,
+which leads to that pvr2_hdw_destroy directly returns.
 
-This fixes infinite hangs when kfd_ioctl_wait_events is interrupted by a
-signal.
+Fix this by adding v4l2_device_unregister to decrease the refcount of
+usb interface.
 
-Signed-off-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Reviewed-and-tested-by: Xiaogang Chen <Xiaogang.Chen@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: syzbot+77b432d57c4791183ed4@syzkaller.appspotmail.com
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdkfd/kfd_chardev.c |  2 +-
- drivers/gpu/drm/amd/amdkfd/kfd_events.c  | 24 ++++++++++++------------
- drivers/gpu/drm/amd/amdkfd/kfd_priv.h    |  2 +-
- 3 files changed, 14 insertions(+), 14 deletions(-)
+ drivers/media/usb/pvrusb2/pvrusb2-hdw.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c b/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c
-index 1c7016958d6d9..bfca17ca399c6 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c
-@@ -814,7 +814,7 @@ static int kfd_ioctl_wait_events(struct file *filp, struct kfd_process *p,
- 	err = kfd_wait_on_events(p, args->num_events,
- 			(void __user *)args->events_ptr,
- 			(args->wait_for_all != 0),
--			args->timeout, &args->wait_result);
-+			&args->timeout, &args->wait_result);
- 
- 	return err;
- }
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_events.c b/drivers/gpu/drm/amd/amdkfd/kfd_events.c
-index 4df9c36146ba9..cbc20d779e5aa 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_events.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_events.c
-@@ -895,7 +895,8 @@ static long user_timeout_to_jiffies(uint32_t user_timeout_ms)
- 	return msecs_to_jiffies(user_timeout_ms) + 1;
- }
- 
--static void free_waiters(uint32_t num_events, struct kfd_event_waiter *waiters)
-+static void free_waiters(uint32_t num_events, struct kfd_event_waiter *waiters,
-+			 bool undo_auto_reset)
- {
- 	uint32_t i;
- 
-@@ -904,6 +905,9 @@ static void free_waiters(uint32_t num_events, struct kfd_event_waiter *waiters)
- 			spin_lock(&waiters[i].event->lock);
- 			remove_wait_queue(&waiters[i].event->wq,
- 					  &waiters[i].wait);
-+			if (undo_auto_reset && waiters[i].activated &&
-+			    waiters[i].event && waiters[i].event->auto_reset)
-+				set_event(waiters[i].event);
- 			spin_unlock(&waiters[i].event->lock);
- 		}
- 
-@@ -912,7 +916,7 @@ static void free_waiters(uint32_t num_events, struct kfd_event_waiter *waiters)
- 
- int kfd_wait_on_events(struct kfd_process *p,
- 		       uint32_t num_events, void __user *data,
--		       bool all, uint32_t user_timeout_ms,
-+		       bool all, uint32_t *user_timeout_ms,
- 		       uint32_t *wait_result)
- {
- 	struct kfd_event_data __user *events =
-@@ -921,7 +925,7 @@ int kfd_wait_on_events(struct kfd_process *p,
- 	int ret = 0;
- 
- 	struct kfd_event_waiter *event_waiters = NULL;
--	long timeout = user_timeout_to_jiffies(user_timeout_ms);
-+	long timeout = user_timeout_to_jiffies(*user_timeout_ms);
- 
- 	event_waiters = alloc_event_waiters(num_events);
- 	if (!event_waiters) {
-@@ -971,15 +975,11 @@ int kfd_wait_on_events(struct kfd_process *p,
- 		}
- 
- 		if (signal_pending(current)) {
--			/*
--			 * This is wrong when a nonzero, non-infinite timeout
--			 * is specified. We need to use
--			 * ERESTARTSYS_RESTARTBLOCK, but struct restart_block
--			 * contains a union with data for each user and it's
--			 * in generic kernel code that I don't want to
--			 * touch yet.
--			 */
- 			ret = -ERESTARTSYS;
-+			if (*user_timeout_ms != KFD_EVENT_TIMEOUT_IMMEDIATE &&
-+			    *user_timeout_ms != KFD_EVENT_TIMEOUT_INFINITE)
-+				*user_timeout_ms = jiffies_to_msecs(
-+					max(0l, timeout-1));
- 			break;
- 		}
- 
-@@ -1020,7 +1020,7 @@ int kfd_wait_on_events(struct kfd_process *p,
- 					       event_waiters, events);
- 
- out_unlock:
--	free_waiters(num_events, event_waiters);
-+	free_waiters(num_events, event_waiters, ret == -ERESTARTSYS);
- 	mutex_unlock(&p->event_mutex);
- out:
- 	if (ret)
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_priv.h b/drivers/gpu/drm/amd/amdkfd/kfd_priv.h
-index 2585d6e61d422..c6eec54b8102f 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_priv.h
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_priv.h
-@@ -1314,7 +1314,7 @@ void kfd_event_free_process(struct kfd_process *p);
- int kfd_event_mmap(struct kfd_process *process, struct vm_area_struct *vma);
- int kfd_wait_on_events(struct kfd_process *p,
- 		       uint32_t num_events, void __user *data,
--		       bool all, uint32_t user_timeout_ms,
-+		       bool all, uint32_t *user_timeout_ms,
- 		       uint32_t *wait_result);
- void kfd_signal_event_interrupt(u32 pasid, uint32_t partial_id,
- 				uint32_t valid_id_bits);
--- 
-2.35.1
-
+--- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
++++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
+@@ -2610,6 +2610,7 @@ struct pvr2_hdw *pvr2_hdw_create(struct
+ 		del_timer_sync(&hdw->encoder_run_timer);
+ 		del_timer_sync(&hdw->encoder_wait_timer);
+ 		flush_work(&hdw->workpoll);
++		v4l2_device_unregister(&hdw->v4l2_dev);
+ 		usb_free_urb(hdw->ctl_read_urb);
+ 		usb_free_urb(hdw->ctl_write_urb);
+ 		kfree(hdw->ctl_read_buffer);
 
 
