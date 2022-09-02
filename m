@@ -2,85 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05A0FC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:38:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3CC0ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:39:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236265AbiIBNi5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:38:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52652 "EHLO
+        id S236839AbiIBNjB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:39:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237542AbiIBNh7 (ORCPT
+        with ESMTP id S235990AbiIBNiO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:37:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B2A0125B81;
-        Fri,  2 Sep 2022 06:16:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E114621E3;
-        Fri,  2 Sep 2022 12:34:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C9A9C433D7;
-        Fri,  2 Sep 2022 12:34:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122094;
-        bh=xIwGVScQaB9wNQuwUy6UEhNULReYG68Iz9QNMVFlI5Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xP5Rsd4f5bnyctrj7SsA85/GUiaAxiOlRmvPwjWys6D5iqvZunNrM6JQklIXfOyeu
-         n6CoXy1hqnY8ZWy2KM+efzfN+/slaa5ugqJR3gAZJXQ0NDA4TJbKrKWIj+HrqK7oDB
-         Ror4lL1ripmBGZ2Ad9Ky1YClriA70qygx5LN3xUs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+77b432d57c4791183ed4@syzkaller.appspotmail.com,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Subject: [PATCH 5.19 11/72] media: pvrusb2: fix memory leak in pvr_probe
-Date:   Fri,  2 Sep 2022 14:18:47 +0200
-Message-Id: <20220902121405.169501601@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
-References: <20220902121404.772492078@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Fri, 2 Sep 2022 09:38:14 -0400
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB2E7132EE1
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:16:38 -0700 (PDT)
+Received: by mail-wr1-f49.google.com with SMTP id k9so2333145wri.0
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 06:16:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=NdB5Eag8SJU/73u2oaBSVfu1iUfNn2HCQO16zSHjpzg=;
+        b=j2HVVINs5SUWK2vZ9QoQTlNzGgy4k5poxJ8QlNOmNG3ULJ7KNBbd7VcVecud8t1ATu
+         qS8G+ZyWDDtsHWNNIjFQgf5qWxADx1/y77s8nXZkbLiNh1F5JWDvxuTutW4u7nhSfZJp
+         g+qTuE7POy+lY/G7OiZk1fEemcTIzLfIvQ5j1GoqYwg/LeL+bzaihesKYXZw/cHSBunA
+         +1gQR1wPTaae8lzkri6qkOAQelQBiOpX/LvFH5iKhjjmQYLg4cHxQHLazC7ThCYjlLDF
+         E451c7T2Ii+I6RG+QfSbBs16RelLiBlnI7ozPtwM0Z/RKa99eTnu7RjhRFGnOTsagWyC
+         MFNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=NdB5Eag8SJU/73u2oaBSVfu1iUfNn2HCQO16zSHjpzg=;
+        b=1Uq3RJoT+SGbotaqX2PooeU0a77wWwSR6BlVkx5h+98+ct7Js9J1MARQaZMqm4TYxe
+         XNeJ+f9BbX+rWHIPjB34QrQoMiW2/7WuljnW3Y3CLzb6SaVJ/N9+fx5kI7Tba2HfxjvK
+         DVhKvzE34kAMYQv+g7DHa2d5Mude85mdwI+LGletkqHszhVWb1rwAEY3qOfs6gdeifZz
+         LxrREi2Uc/YfwZSs+ahHdPQdvMOdxjxv2Xwlm8JnEEfx3ryYl/Yr2lYF6TwfqmUPwJtU
+         3KWEjWqDPXISlTvqcIxMCAKCfIj7mvpwicDCfMFdPkOABhkeHg5jG+GHi4RdCP/XbknF
+         UgwQ==
+X-Gm-Message-State: ACgBeo0FzFuxr24iQA9rGfEui9e0K4UlDaT4erwS80Fnu01fphu7IsFH
+        qK41WeDKMvIX3xsurgzH04B5QQ==
+X-Google-Smtp-Source: AA6agR73KElNyuraXPjontCL8mjzyqTHD/2hkc5ngtlZxbKaN9cUlR/crzqK6sdLN9SnzjjcMh7ZDw==
+X-Received: by 2002:a05:6000:100a:b0:226:da75:5209 with SMTP id a10-20020a056000100a00b00226da755209mr13600368wrx.156.1662124466124;
+        Fri, 02 Sep 2022 06:14:26 -0700 (PDT)
+Received: from hackbox.lan ([94.52.112.99])
+        by smtp.gmail.com with ESMTPSA id v14-20020a5d43ce000000b002253fd19a6asm1766253wrr.18.2022.09.02.06.14.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 06:14:25 -0700 (PDT)
+From:   Abel Vesa <abel.vesa@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorande@qti.qualcomm.com>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Amol Maheshwari <amahesh@qti.qualcomm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Ekansh Gupta <ekangupt@qti.qualcomm.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: [PATCH 04/14] misc: fastrpc: Rename audio protection domain to root
+Date:   Fri,  2 Sep 2022 16:13:34 +0300
+Message-Id: <20220902131344.3029826-5-abel.vesa@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220902131344.3029826-1-abel.vesa@linaro.org>
+References: <20220902131344.3029826-1-abel.vesa@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+The AUDIO_PD will be done via static pd, so the proper name here is
+actually ROOT_PD.
 
-commit 945a9a8e448b65bec055d37eba58f711b39f66f0 upstream.
-
-The error handling code in pvr2_hdw_create forgets to unregister the
-v4l2 device. When pvr2_hdw_create returns back to pvr2_context_create,
-it calls pvr2_context_destroy to destroy context, but mp->hdw is NULL,
-which leads to that pvr2_hdw_destroy directly returns.
-
-Fix this by adding v4l2_device_unregister to decrease the refcount of
-usb interface.
-
-Reported-by: syzbot+77b432d57c4791183ed4@syzkaller.appspotmail.com
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Co-developed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
 ---
- drivers/media/usb/pvrusb2/pvrusb2-hdw.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/misc/fastrpc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-+++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-@@ -2610,6 +2610,7 @@ struct pvr2_hdw *pvr2_hdw_create(struct
- 		del_timer_sync(&hdw->encoder_run_timer);
- 		del_timer_sync(&hdw->encoder_wait_timer);
- 		flush_work(&hdw->workpoll);
-+		v4l2_device_unregister(&hdw->v4l2_dev);
- 		usb_free_urb(hdw->ctl_read_urb);
- 		usb_free_urb(hdw->ctl_write_urb);
- 		kfree(hdw->ctl_read_buffer);
-
+diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
+index 58654d394d17..8d803ee33904 100644
+--- a/drivers/misc/fastrpc.c
++++ b/drivers/misc/fastrpc.c
+@@ -83,7 +83,7 @@
+ #define FASTRPC_RMID_INIT_MEM_UNMAP    11
+ 
+ /* Protection Domain(PD) ids */
+-#define AUDIO_PD	(0) /* also GUEST_OS PD? */
++#define ROOT_PD		(0) /* also GUEST_OS PD? */
+ #define USER_PD		(1)
+ #define SENSORS_PD	(2)
+ 
+@@ -1889,7 +1889,7 @@ static long fastrpc_device_ioctl(struct file *file, unsigned int cmd,
+ 		err = fastrpc_invoke(fl, argp);
+ 		break;
+ 	case FASTRPC_IOCTL_INIT_ATTACH:
+-		err = fastrpc_init_attach(fl, AUDIO_PD);
++		err = fastrpc_init_attach(fl, ROOT_PD);
+ 		break;
+ 	case FASTRPC_IOCTL_INIT_ATTACH_SNS:
+ 		err = fastrpc_init_attach(fl, SENSORS_PD);
+-- 
+2.34.1
 
