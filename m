@@ -2,150 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70E25C54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 06:20:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F126FECAAA1
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 06:23:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235470AbiIBGUl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 02:20:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38882 "EHLO
+        id S235282AbiIBGXy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 02:23:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234925AbiIBGUi (ORCPT
+        with ESMTP id S229482AbiIBGXv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 02:20:38 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3D1C50073;
-        Thu,  1 Sep 2022 23:20:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1662099637; x=1693635637;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Ym7YRYwYyvDY9fhkvBA5UnV1wOMfAoiNYtaQ4wfiJyg=;
-  b=swzBitQtxnSSgcqZIdp1a4k4xWvWmJcIa3skXDOKzFVwJXCODwrYqULP
-   bCBPwNObw2rmiD+zE8tZedCVsUCio39EJrSJ+fem2SNJ8edmKaREHQxZZ
-   /XURA9qKj1zhP0utPla1ayVBzOSuhEjQyMleCRzRJJr9G9vF/+9uJ1EZh
-   EbZn2LwsOb/GOXGjAT02g8iuJmk/r1B8hkK+FRl5Rla2l9EPZP5AuqHyk
-   +22WGbYNtKz+1qiAbThgmz+zyIuTEl/ScSTU//6OHupL1DQNjTodoBxbL
-   +GAiTVoZQhXiq0l8enVuivFDCOkBjVXGVUrXJhN9qiY33XNFw7oP+dqxm
-   A==;
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="111872642"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Sep 2022 23:20:36 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Thu, 1 Sep 2022 23:20:36 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Thu, 1 Sep 2022 23:20:34 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <claudiu.beznea@microchip.com>, <nicolas.ferre@microchip.com>,
-        <UNGLinuxDriver@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH v2] ARM: dts: lan966x: add led configuration
-Date:   Fri, 2 Sep 2022 08:24:47 +0200
-Message-ID: <20220902062447.443846-1-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
+        Fri, 2 Sep 2022 02:23:51 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F0D2B99FF
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 23:23:51 -0700 (PDT)
+Date:   Fri, 2 Sep 2022 08:23:46 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1662099829;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=FNXlO5JIHjp6Q9jkavDrFQejyN8sLjCcSCk1NEtTtuM=;
+        b=OMPrOq4cuXJfi3PPbr2inQsDbGefNlbzrD4jouWOIgow8vmRqFSG1Qde/Jtd+tU5Zi9HbP
+        y5Rl4zWgJJWrLwvNM1o2KoEgrxKoOs4dnhnEyqQ6BwseLzpDdvtslBatTN8FexHTwF1paE
+        s3nuKNJYza/SG+GQHTwUGmT2gqRA700qnp+5GNGzUOMLwjA/KOuhe0RxdqvV3pXmqtG0SH
+        isTrll9jCcqe5YX72qG/+E+TY/QgT3TR264Lu2tiUvdxSk+tKPGrrOi+meq1I5WOHhk713
+        /813tDIEMC5vjBbVcN7W5qzEmI2KTZlSl4uvg3MO+EPzyT9SuNFGYVRrO8VI4Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1662099829;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=FNXlO5JIHjp6Q9jkavDrFQejyN8sLjCcSCk1NEtTtuM=;
+        b=HZtJcpa5vxYATLgUzjtVGzhwNVCLOeNDJ+ONSgS5kxaY8UkTVlSUh1wXMjdIyoPHKWkhdp
+        d1pb5xRDehd/PUDg==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Kent Overstreet <kent.overstreet@linux.dev>
+Cc:     Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org,
+        michel@lespinasse.org, jglisse@google.com, mhocko@suse.com,
+        vbabka@suse.cz, hannes@cmpxchg.org, mgorman@suse.de,
+        dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com,
+        peterz@infradead.org, ldufour@linux.ibm.com,
+        laurent.dufour@fr.ibm.com, paulmck@kernel.org, luto@kernel.org,
+        songliubraving@fb.com, peterx@redhat.com, david@redhat.com,
+        dhowells@redhat.com, hughd@google.com, rientjes@google.com,
+        axelrasmussen@google.com, joelaf@google.com, minchan@google.com,
+        kernel-team@android.com, linux-mm@kvack.org,
+        linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH RESEND 04/28] mm: move mmap_lock assert function
+ definitions
+Message-ID: <YxGhcnKyV7KCiWCJ@linutronix.de>
+References: <20220901173516.702122-1-surenb@google.com>
+ <20220901173516.702122-5-surenb@google.com>
+ <20220901202409.e2fqegqghlijkzey@moria.home.lan>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220901202409.e2fqegqghlijkzey@moria.home.lan>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add led configuration for pcb8291 and pcb8309. Both pcbs have 4 leds which
-are connected to the sgpio controller.
+On 2022-09-01 16:24:09 [-0400], Kent Overstreet wrote:
+> > --- a/include/linux/mmap_lock.h
+> > +++ b/include/linux/mmap_lock.h
+> > @@ -60,6 +60,18 @@ static inline void __mmap_lock_trace_released(struct mm_struct *mm, bool write)
+> >  
+> >  #endif /* CONFIG_TRACING */
+> >  
+> > +static inline void mmap_assert_locked(struct mm_struct *mm)
+> > +{
+> > +	lockdep_assert_held(&mm->mmap_lock);
+> > +	VM_BUG_ON_MM(!rwsem_is_locked(&mm->mmap_lock), mm);
+> 
+> These look redundant to me - maybe there's a reason the VM developers want both,
+> but I would drop the VM_BUG_ON() and just keep the lockdep_assert_held(), since
+> that's the standard way to write that assertion.
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
-v1->v2:
-- remove status from the leds node as default is okay
----
- arch/arm/boot/dts/lan966x-pcb8291.dts | 28 +++++++++++++++++++++++++++
- arch/arm/boot/dts/lan966x-pcb8309.dts | 28 +++++++++++++++++++++++++++
- 2 files changed, 56 insertions(+)
+Exactly. rwsem_is_locked() returns true only if the lock is "locked" not
+necessary by the caller. lockdep_assert_held() checks that the lock is
+locked by the caller - this is the important part.
 
-diff --git a/arch/arm/boot/dts/lan966x-pcb8291.dts b/arch/arm/boot/dts/lan966x-pcb8291.dts
-index 24d9055c4a08..289a31649422 100644
---- a/arch/arm/boot/dts/lan966x-pcb8291.dts
-+++ b/arch/arm/boot/dts/lan966x-pcb8291.dts
-@@ -23,6 +23,34 @@ gpio-restart {
- 		gpios = <&gpio 56 GPIO_ACTIVE_LOW>;
- 		priority = <200>;
- 	};
-+
-+	leds {
-+		compatible = "gpio-leds";
-+
-+		led-s0-blue {
-+			label = "s0:blue";
-+			gpios = <&sgpio_out 2 0 GPIO_ACTIVE_LOW>;
-+			default-state = "off";
-+		};
-+
-+		led-s0-green {
-+			label = "s0:green";
-+			gpios = <&sgpio_out 2 1 GPIO_ACTIVE_LOW>;
-+			default-state = "off";
-+		};
-+
-+		led-s1-blue {
-+			label = "s1:blue";
-+			gpios = <&sgpio_out 3 0 GPIO_ACTIVE_LOW>;
-+			default-state = "off";
-+		};
-+
-+		led-s1-green {
-+			label = "s1:green";
-+			gpios = <&sgpio_out 3 1 GPIO_ACTIVE_LOW>;
-+			default-state = "off";
-+		};
-+	};
- };
- 
- &gpio {
-diff --git a/arch/arm/boot/dts/lan966x-pcb8309.dts b/arch/arm/boot/dts/lan966x-pcb8309.dts
-index 05ce27ed5648..cfd7c8933703 100644
---- a/arch/arm/boot/dts/lan966x-pcb8309.dts
-+++ b/arch/arm/boot/dts/lan966x-pcb8309.dts
-@@ -42,6 +42,34 @@ i2c103: i2c-sfp@2 {
- 		};
- 	};
- 
-+	leds {
-+		compatible = "gpio-leds";
-+
-+		led-s0-green {
-+			label = "s0:green";
-+			gpios = <&sgpio_out 2 0 GPIO_ACTIVE_LOW>;
-+			default-state = "off";
-+		};
-+
-+		led-s0-red {
-+			label = "s0:red";
-+			gpios = <&sgpio_out 2 1 GPIO_ACTIVE_LOW>;
-+			default-state = "off";
-+		};
-+
-+		led-s1-green {
-+			label = "s1:green";
-+			gpios = <&sgpio_out 3 0 GPIO_ACTIVE_LOW>;
-+			default-state = "off";
-+		};
-+
-+		led-s1-red {
-+			label = "s1:red";
-+			gpios = <&sgpio_out 3 1 GPIO_ACTIVE_LOW>;
-+			default-state = "off";
-+		};
-+	};
-+
- 	mux: mux-controller {
- 		compatible = "gpio-mux";
- 		#mux-control-cells = <0>;
--- 
-2.33.0
-
+Sebastian
