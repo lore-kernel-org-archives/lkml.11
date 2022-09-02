@@ -2,210 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 081D7ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:30:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1651DC54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:32:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235333AbiIBIae (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 04:30:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58166 "EHLO
+        id S235380AbiIBIcK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 04:32:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232239AbiIBIaa (ORCPT
+        with ESMTP id S232239AbiIBIcI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 04:30:30 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E7E131201
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 01:30:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1662107429; x=1693643429;
-  h=from:to:subject:date:message-id:references:in-reply-to:
-   content-transfer-encoding:mime-version;
-  bh=SPMzVZuvJN7KHxgdh7Az0HjwP/u60NqGgIhESLG/DIo=;
-  b=PimgBD7h2EWZa7axR2SDr2OYOsFEWKQnrasProSQ/up09p1kaeKhggqr
-   xzlUbiEZHy5eAD4Uza5EtR9HP2HV8UJPKGJ/Two0nenWplaIgJYRtOLa1
-   q8eL/bDf39SrI4sLVhLhPju4/gvAYjsAEAuaBFCu4ufzn6T3TAPk4Guo7
-   mApV1GK81T9ioKCDbGnrbyOdfgxr7YPucw4H3dnep+JkWh3ws5/HQVTW0
-   0lqoR2U9jxj73v1phA36b0AvdOiqQLvbFTGW3yEfmCeHsmXWFpUyN0NCc
-   jYyqrC27idLvXcn7cdB92we0P5b+2FpGfLtAvxWZaENZAOG1+b85Ue37I
-   A==;
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="178894125"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 Sep 2022 01:30:28 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Fri, 2 Sep 2022 01:30:28 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12 via Frontend Transport; Fri, 2 Sep 2022 01:30:28 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fXX5ch+qWuOHjB06TLUPBL9sMDeGHSmBjLZPN+8/pTRO+NJ7edrWr7fzlzeSf6nIW5Q2+U7DFjelhg0yW1+PuGJ4ofNA8IFhEVmhH0IIE6ePUTm0TCCihN2aRt6i7Wlk4UCORb1jCXL/K2qlQP5oHBh7zReXXne07aoGM4oPwRdDfbP91l1w6lqDvgHj3UV8DF+X2UBFfT6tlf3fB50TQWzELHB60YRXYvMTQcGipfxuDptPgwuc+hN5QCE6Tw33gZfIMKrMGRwe0E06VxECmi59+7P1mHDJbvx+4QXiU7kGwUnFZEAOfvG+XhWnUbLee8p9LSwTszoxfH2ctM5tcg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9cirjS9HHpaBYZJ7VZ2BmDVfWb/XoMG/QnZwV2Ug95Y=;
- b=c9svl9mioxKYtVaR6kVu5CWTDr/5OMKt1UKBv1a/SgxBYogkN68jmUNk1m/w6gai63tzw42OPDZtkbd9FlywN0NTaMgFq5UERPNsm6fIvBnZU9AohqgRD8S3WO3sWuxLiIRlqcJior+YPhk06j3f+jDdATk60rVVc5orToPmfA+iBp00RsEuW1x3zwavtJdcDv07x3t1F0nU6Pm0iG1dxjoiOF8ygrt86JAgI2fS6dwfI2fs8dTk/QVAUtl8oh/ZN5olluFN116EblvWiIO5/x+41jo0JsOoZ6QWpirDpXeVwLUgSx1b8UBQe/Cx4Fl14zet+IGZHCdDnNVNbGJLlg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9cirjS9HHpaBYZJ7VZ2BmDVfWb/XoMG/QnZwV2Ug95Y=;
- b=NZsJ7Q9kYpymaHFzM1ffmHcj24Soay1Y1lgugOj+QPlO3a4zKaH56QZLbmrdQm7k9EhzntQ0g2HAubxIHfm1EU52aizn8eoDbT2RdPiE3nKCIBhI1mkwNeQsWgRDRldKz/DKi/AeVjBpYK8xR2MBe8fkgT4yDzAF2yS6SZTcDR8=
-Received: from BN8PR11MB3668.namprd11.prod.outlook.com (2603:10b6:408:81::24)
- by DM6PR11MB2633.namprd11.prod.outlook.com (2603:10b6:5:c0::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.12; Fri, 2 Sep
- 2022 08:30:22 +0000
-Received: from BN8PR11MB3668.namprd11.prod.outlook.com
- ([fe80::3198:2077:56c7:1780]) by BN8PR11MB3668.namprd11.prod.outlook.com
- ([fe80::3198:2077:56c7:1780%4]) with mapi id 15.20.5588.014; Fri, 2 Sep 2022
- 08:30:22 +0000
-From:   <Kumaravel.Thiagarajan@microchip.com>
-To:     <gregkh@linuxfoundation.org>, <lkp@intel.com>,
-        <kbuild-all@lists.01.org>, <linux-kernel@vger.kernel.org>
-Subject: RE: [char-misc:char-misc-testing 20/24]
- drivers/misc/mchp_pci1xxxx/mchp_pci1xxxx_gp.c:87:52: error:
- 'PCI_IRQ_ALL_TYPES' undeclared
-Thread-Topic: [char-misc:char-misc-testing 20/24]
- drivers/misc/mchp_pci1xxxx/mchp_pci1xxxx_gp.c:87:52: error:
- 'PCI_IRQ_ALL_TYPES' undeclared
-Thread-Index: AQHYvlA4FMupJOOnQUyiaRis4mwVTq3Lt1wAgAAW29A=
-Date:   Fri, 2 Sep 2022 08:30:22 +0000
-Message-ID: <BN8PR11MB3668E0B249AB3CFCE15A4D3BE97A9@BN8PR11MB3668.namprd11.prod.outlook.com>
-References: <202209020641.mPiacQEP-lkp@intel.com> <YxGqkvNg0rXDXoew@kroah.com>
-In-Reply-To: <YxGqkvNg0rXDXoew@kroah.com>
-Accept-Language: en-IN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 385eadb1-a951-4435-586c-08da8cbd60bc
-x-ms-traffictypediagnostic: DM6PR11MB2633:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 3YAtlUXUVpD2WaBSCfySHPLB607biJDQ5reFOQl9lEiIIsHTIm3qA5Jq5RlKq+tAP8JnioSgvwapJegg0Nt2JZimiDbKYTftwBFIGljtnzM2fjQlEzxejYxK924Ow3qF1XVldJPGfmF+y/JnFWgnd7oKu9johd3KPm+Lxd6X/Z7xJA1ni7h8wvPUlz/AQMiQ27NGIupUhyjjUYfaC5n1xzTNuv2BJ4oRI1JA+SwVdYMPgFDNNYGgeaWgBCoCeg1wE+vyNTCkam6kETjEKOB792UWNOLFKrGfOM+yn3Mg43O95aHaNmMnmHIDj3ae/LnmC1WzmuK0B2uYLYqrmOFfUWbAfqBQgChjsrXHF1xXodcmbdydv9w9/N1XFpVSx/CDUDd90mJnEuQHHM6yWL+FCOuljiqrJK15YrtlVWCIsr4Zs0OMu4GnznNj37M17fJSaWjikM+oO9MnzT+HOiZ35thCGZAEXQPDID+wHS8mVTSZuFYyfbTPlVDqtixCJKPsbqEuOxu11bpIrHpFbxOBk7h1UVg9u81B7IALUcU3daWJAxBEbHpi+Zl7ECSCQBGdBYtwUMMnVBeeZOue7sjTukb2xL1hMyD4ieS6a1a8NudbUt/lH9yWfoGm8yxBqQ0f6BrpzzMa9AWp3HoMJV9FNcymoCvIL4a1geQK22ArbxQU5ZOZJoeW44I4Fp+L7v5nxA9W1H5JYLRyVOWhVLGq1X6UBXl+dZqVrUHk0F22sO0/x+gDeMeJtFFqpXKgq0SUJ/nUbDhumHxqBzmwqr0m4ddlSnklKLbmGWowpRgOLbWfnwawsR4hAbpY9v0zQomRdPho0Uzz1b7be4RPcMwUlBz/xoFT+9Qvntl1P465860IwFZxzHSmTjNbRTvd6ZlFalfw0VIuCyrGWRvaeUkwrg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR11MB3668.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(376002)(366004)(39860400002)(396003)(346002)(8676002)(66946007)(76116006)(19627235002)(84970400001)(66556008)(64756008)(71200400001)(478600001)(966005)(110136005)(316002)(55016003)(66446008)(66476007)(8936002)(52536014)(2906002)(5660300002)(38100700002)(122000001)(86362001)(33656002)(38070700005)(26005)(41300700001)(186003)(9686003)(6506007)(53546011)(7696005)(83380400001)(414714003)(473944003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?3s8PgLqVnRBxPHYOmSmsY+6hGCjlWmDmk5hF8QZZNDNZ4UC1bvbxlYAhGayZ?=
- =?us-ascii?Q?mECSqGM/9JT6BZ8xjpifFp3DVdph6RTAdR21nopjbUcwn+Vp9oVXAMOMeqsW?=
- =?us-ascii?Q?cDk225ah4GGPud1RXxvmX2zrRH+q85qZY6oIUsXVs5eDXKwEpyVCGEBdr2HJ?=
- =?us-ascii?Q?mPAJQOp4++f4A19GN3HTAvbasawN7/qN3cuGPYmOKdb5qHR9nTAlq+9ciPlM?=
- =?us-ascii?Q?GAQfgck2hPJAjsE/uMdg6cuzQ3mxWPCrC2NeN/Qc9W0aseKy0gKUnrdC7o8L?=
- =?us-ascii?Q?zSVR8rqDWHwAF9pt/7dHbM+sFAfOr7MDSMOXA34imc/fPbJKYNUq7LZgMAKW?=
- =?us-ascii?Q?cGDVapi67LqfqQTQTrIs46SxS5fGv+W+CKW54k3yQfXRhHGW4BPJ/Y2EhfY+?=
- =?us-ascii?Q?BAJejG9LNKhHwLLT94UU9LV9dsQwIZ+LrG8wFqmrPqjK6RlJUPUipeYNeYms?=
- =?us-ascii?Q?AUAytNCaTp2mmw1zx0WXe8SOAxNFDn9KD4DmikC2cFb+IR9kf4c59w5piN+8?=
- =?us-ascii?Q?iAJuQWCPI9hR5jCt5Y4mO/SLicv0eatDjillv5hwQ67o2ts3MvchcZvsnmVt?=
- =?us-ascii?Q?pGG15iQ/HZ49eoPaDUFVZ3g92tgoQaMvq7DMaZ0ZN2HX/U47QOn6nEaNBJty?=
- =?us-ascii?Q?CV0UphKxkWmo+n4Bz4EuVGMqKaCnrRTg9T5ahWVb2m1L2KcTnekdWnLPAtdG?=
- =?us-ascii?Q?fBT/WSOEpq5fcnuEFHOHTDYBh/gmHARq0leGB+94cETnR8wiXCQoRmDWZ4bi?=
- =?us-ascii?Q?BiCoNKBnssvjmOF4QbeI3HZhTpxyur2EDAp0VtAAuv4gRolwFz/vrzBAkp6P?=
- =?us-ascii?Q?nBQ+JnJymejE68wfiL4amaMGO8f6mq1BG27VeUf1mSEHtp7bNIyhcFrWkpk5?=
- =?us-ascii?Q?FNdkU3+fJwJBJw5THht8lgCA1mQxCUxY1u5O+HMoF57ejXFx8BgfmzSfp8ul?=
- =?us-ascii?Q?HIrf0JDpHUIUchR7w8aEL3LtOimN9GrZnKFxpsVGMNsZmGFIwJF/Pn8zDGeS?=
- =?us-ascii?Q?JiHCALVicA9o93OPiHRVOzC9TH1aqDaT9cJ0jglyLvm3wddkbUJXICsZjyAc?=
- =?us-ascii?Q?B/FfKUrf6xqXZnUvWkq6hfap1x4fK9SrdzZnsHtFbAXx5UgmlQDCHi5CJS5U?=
- =?us-ascii?Q?xdguWXNO0aeukKS+ZYKMxxmqBUoCZY2BrONWwKd+Cm07mGhwu2qJ4ceOJpwk?=
- =?us-ascii?Q?JvaD+RzLX4KLrQv/Acs3KggBqYEn4J97/RGTXk9FjGWt+AHdMMVW6prhp7xR?=
- =?us-ascii?Q?8aeLqMJtatR9Qdc1f2nuHJQlslH4Nc8jWwdQPjPOAjrxcm8nDB/Qr9nU+W3Y?=
- =?us-ascii?Q?xL2V5grlbzqjFOvNHSRdB88Rfx6WXHWIDUezDWUfF4Sx4v3FhlIp+BoiAa9C?=
- =?us-ascii?Q?rIIkuuQABeFvZ98GrGtTZ8jplt2cTdh5YKx6RWPsYu8CtebjQhZycSVYN7bD?=
- =?us-ascii?Q?/vvQt1+rveO5+cINSmoM9/OhB74sjln0fwDGYw/r9aK+I6dLOSrNx1QEyP+9?=
- =?us-ascii?Q?HlcZWeybeGg3tSsrGhyxI5MOuyvUQBbNn+mewDI02W4Ami8VnEqj2c6BA7iY?=
- =?us-ascii?Q?DEf87MRoE1tsrjuxID+bByVtF1A00WOt5UEKkCFh5pgn8n+DrnG4AattPWQZ?=
- =?us-ascii?Q?yA+4dokx/Km/QAbQhrpJ+vA=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Fri, 2 Sep 2022 04:32:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43149C0BEC
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 01:32:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662107526;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gVEKJqfyqM62jNy2YKZYtKZ/hwivLO59J+dFY7QJczE=;
+        b=CqdvbEbJMQ/ub4UN6v25deew6xPkmLNuT55fThWFq5yrLEpt0Py5hXOB8A2ohjZ2V1Y+4x
+        pV03QfDqMnYsGSxvaijoNo5qFJtIvMIdUmqL1j5MwiM7Q0Gu3uIfGjiIp4xVfC8Ea5jKvm
+        ecoDPu3ZubZNb84QAR/wr2B7+BKvgaw=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-120-DkTVzXBlPMmKL3EANJsAnQ-1; Fri, 02 Sep 2022 04:32:04 -0400
+X-MC-Unique: DkTVzXBlPMmKL3EANJsAnQ-1
+Received: by mail-wr1-f72.google.com with SMTP id o3-20020adfa103000000b0022514e8e99bso139726wro.19
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 01:32:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:subject:organization:from
+         :references:cc:to:content-language:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date;
+        bh=gVEKJqfyqM62jNy2YKZYtKZ/hwivLO59J+dFY7QJczE=;
+        b=VgNQpcDZ4jY+NEwIX88KDDQtAQ+VLqdLfYGFaBBS9RvEdaVr/zWM8ohaTYQRhwLVIT
+         tDMhujSpr7o2g+HV4zQNvQ9Furbh8IYjbgPoHdou7kIZr+VaEki96EUsyph2c6/vpbMx
+         LDfPd75xth0LyhAWsInB/reK2bJ/rlFc+9khlJaraRMdyZOfLq9pF7YYqLoOlRiRaAq7
+         mz7xb71JjgqRClr9OMzR+t3vbqVxUjAcLnKKLwvivyTnim3U+qnlssZmCwCV0Ex8ttul
+         SsYVEJ9fp0vVaHx4vIUg4yRXYLBz+HwZYBFo1tK+k/YhKU3QQwzs2s51jBaIfv/OXQF0
+         CwDQ==
+X-Gm-Message-State: ACgBeo3TOQC6q/gX5ci1riTcnUBRUwht1XNQ7U3zxkj2A7j24RVGlNgG
+        hpKXypxJgVhuWe4XoWW2ijEqU1QJ9LXt6rhtQwOh9eppLec5iceQVqQbep1BqdTKhijGNT7I3cC
+        bmOpHcrBLIh9mgkWZTbGwbZHW
+X-Received: by 2002:a5d:698e:0:b0:225:72d1:94c with SMTP id g14-20020a5d698e000000b0022572d1094cmr16086324wru.381.1662107523258;
+        Fri, 02 Sep 2022 01:32:03 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5cFRb/7wBrcvC2/EphgIHs2moSm/UDzURbuodmKzpv+CYxxWeH1D9/0odvgXjQ2vg0XprTkg==
+X-Received: by 2002:a5d:698e:0:b0:225:72d1:94c with SMTP id g14-20020a5d698e000000b0022572d1094cmr16086302wru.381.1662107522919;
+        Fri, 02 Sep 2022 01:32:02 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c714:4800:2077:1bf6:40e7:2833? (p200300cbc714480020771bf640e72833.dip0.t-ipconnect.de. [2003:cb:c714:4800:2077:1bf6:40e7:2833])
+        by smtp.gmail.com with ESMTPSA id z10-20020adfdf8a000000b002255eebf785sm921167wrl.89.2022.09.02.01.32.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Sep 2022 01:32:02 -0700 (PDT)
+Message-ID: <d71160d1-5a41-eae0-6405-898fe0a28696@redhat.com>
+Date:   Fri, 2 Sep 2022 10:32:01 +0200
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR11MB3668.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 385eadb1-a951-4435-586c-08da8cbd60bc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Sep 2022 08:30:22.5385
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: i2Zh9l+oh0a1U4thnQCokScyVpmD6tgxUteBmmlOuBBAcSC/mTbqhEnnXg/YiCrZnKEEQ9JxUQInNRRCjZPnEE6pcSx1lPcQTKyNTSNEyfHUw7oU+fB2nILsNJY1SjHq
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB2633
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Content-Language: en-US
+To:     "Tian, Kevin" <kevin.tian@intel.com>,
+        Alex Williamson <alex.williamson@redhat.com>
+Cc:     "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "lpivarc@redhat.com" <lpivarc@redhat.com>,
+        "Liu, Jingqi" <jingqi.liu@intel.com>,
+        "Lu, Baolu" <baolu.lu@intel.com>
+References: <166182871735.3518559.8884121293045337358.stgit@omen>
+ <BN9PR11MB527655973E2603E73F280DF48C7A9@BN9PR11MB5276.namprd11.prod.outlook.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH] vfio/type1: Unpin zero pages
+In-Reply-To: <BN9PR11MB527655973E2603E73F280DF48C7A9@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 02.09.22 10:24, Tian, Kevin wrote:
+> Hi, Alex,
+> 
+>> From: Alex Williamson <alex.williamson@redhat.com>
+>> Sent: Tuesday, August 30, 2022 11:06 AM
+>>
+>> There's currently a reference count leak on the zero page.  We increment
+>> the reference via pin_user_pages_remote(), but the page is later handled
+>> as an invalid/reserved page, therefore it's not accounted against the
+>> user and not unpinned by our put_pfn().
+>>
+>> Introducing special zero page handling in put_pfn() would resolve the
+>> leak, but without accounting of the zero page, a single user could
+>> still create enough mappings to generate a reference count overflow.
+>>
+>> The zero page is always resident, so for our purposes there's no reason
+>> to keep it pinned.  Therefore, add a loop to walk pages returned from
+>> pin_user_pages_remote() and unpin any zero pages.
+>>
+> 
+> We found an interesting issue on zero page and wonder whether we
+> should instead find a way to not use zero page in vfio pinning path.
+> 
+> The observation - the 'pc.bios' region (0xfffc0000) is always mapped
+> RO to zero page in the IOMMU page table even after the mapping in
+> the CPU page table has been changed after Qemu loads the guest
+> bios image into that region (which is mmap'ed as RW).
+> 
+> In reality this may not cause real problem as I don't expect any sane
+> usage would want to DMA read from the bios region. This is probably
+> the reason why nobody ever notes it.
+> 
+> But in concept it is incorrect.
+> 
+> Fixing Qemu to update/setup the VFIO mapping after loading the bios
+> image could mitigate this problem. But we never document such ABI
+> restriction on RO mappings and in concept the pinning semantics
+> should apply to all paths (RO in DMA and RW in CPU) which the
+> application uses to access the pinned memory hence the sequence
+> shouldn't matter from user p.o.v
+> 
+> And old Qemu/VMM still have this issue.
+> 
+> Having a notifier to implicitly fix the IOMMU mapping within the
+> kernel violates the semantics of pinning, and makes vfio page
+> accounting even more tricky.
+> 
+> So I wonder instead of continuing to fix trickiness around the zero
+> page whether it is a better idea to pursue allocating a normal
+> page from the beginning for pinned RO mappings?
+
+That's precisely what I am working. For example, that's required to get
+rid of FOLL_FORCE|FOLL_WRITE for taking a R/O pin as done by RDMA:
+
+See
+https://lore.kernel.org/all/5593cbb7-eb29-82f0-490e-dd72ceafff9b@redhat.com/
+for some more details.
 
 
-> -----Original Message-----
-> From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Sent: Friday, September 2, 2022 12:33 PM
-> To: kernel test robot <lkp@intel.com>; Kumaravel Thiagarajan - I21417
-> <Kumaravel.Thiagarajan@microchip.com>; kbuild-all@lists.01.org; linux-
-> kernel@vger.kernel.org
-> Subject: Re: [char-misc:char-misc-testing 20/24]
-> drivers/misc/mchp_pci1xxxx/mchp_pci1xxxx_gp.c:87:52: error:
-> 'PCI_IRQ_ALL_TYPES' undeclared
->=20
->=20
-> On Fri, Sep 02, 2022 at 06:13:10AM +0800, kernel test robot wrote:
-> > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-
-> misc.git char-misc-testing
-> > head:   51ea3f9e9017b47c15b37a200d8e81e36a169b70
-> > commit: 3f359bf61b6f65be474fbcdf557cd412f19d0f1d [20/24] misc:
-> microchip: pci1xxxx: load auxiliary bus driver for the PIO function in th=
-e multi-
-> function endpoint of pci1xxxx device.
-> > config: sh-allmodconfig
-> > (https://download.01.org/0day-
-> ci/archive/20220902/202209020641.mPiacQE
-> > P-lkp@intel.com/config)
-> > compiler: sh4-linux-gcc (GCC) 12.1.0
-> > reproduce (this is a W=3D1 build):
-> >         wget https://raw.githubusercontent.com/intel/lkp-
-> tests/master/sbin/make.cross -O ~/bin/make.cross
-> >         chmod +x ~/bin/make.cross
-> >         # https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-
-> misc.git/commit/?id=3D3f359bf61b6f65be474fbcdf557cd412f19d0f1d
-> >         git remote add char-misc
-> https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git
-> >         git fetch --no-tags char-misc char-misc-testing
-> >         git checkout 3f359bf61b6f65be474fbcdf557cd412f19d0f1d
-> >         # save the config file
-> >         mkdir build_dir && cp config build_dir/.config
-> >         COMPILER_INSTALL_PATH=3D$HOME/0day COMPILER=3Dgcc-12.1.0
-> > make.cross W=3D1 O=3Dbuild_dir ARCH=3Dsh SHELL=3D/bin/bash
-> > drivers/misc/mchp_pci1xxxx/
-> >
-> > If you fix the issue, kindly add following tag where applicable
-> > Reported-by: kernel test robot <lkp@intel.com>
-> >
-> > All error/warnings (new ones prefixed by >>):
-> >
-> >    drivers/misc/mchp_pci1xxxx/mchp_pci1xxxx_gp.c: In function
-> 'gp_aux_bus_probe':
-> > >> drivers/misc/mchp_pci1xxxx/mchp_pci1xxxx_gp.c:87:52: error:
-> > >> 'PCI_IRQ_ALL_TYPES' undeclared (first use in this function)
-> >       87 |         retval =3D pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ=
-_ALL_TYPES);
-> >          |                                                    ^~~~~~~~~=
-~~~~~~~~
->=20
-> Odd.
->=20
-> Ah, the driver needs to have a "depends on PCI" for the Kconfig file.
->=20
-> Kumaravel, can you send an add-on patch for this issue with the proper
-> "Reported-by:" line as asked for above?
-Greg, for the add-on patch, can I modify only the KConfig file which you ca=
-n apply to
-commit id: 3f359bf61b6f65be474fbcdf557cd412f19d0f1d of char-misc-testing?
+The concerns I discussed with Peter and Alex offline for VFIO is that we
+might end up charging more anon pages with that change to the MEMLOCK
+limit of the user and might degrade existing setups.
 
-Thank You.
+I do wonder if that's a real issue, though. One approach would be to
+warn the VFIO users and allow for slightly exceeding the MEMLOCK limit
+for a while. Of course, that only works if we assume that such pinned
+zeropages are only extremely rarely longterm-pinned for a single VM
+instance by VFIO.
 
-Regards,
-Kumar
+-- 
+Thanks,
+
+David / dhildenb
+
