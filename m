@@ -2,44 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E8E4ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:02:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AAF2C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:02:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238566AbiIBNCI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:02:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50796 "EHLO
+        id S238618AbiIBNCM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:02:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238402AbiIBM7w (ORCPT
+        with ESMTP id S238476AbiIBNAU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:59:52 -0400
+        Fri, 2 Sep 2022 09:00:20 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6746FFC32D;
-        Fri,  2 Sep 2022 05:40:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67CA8FC335;
+        Fri,  2 Sep 2022 05:40:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D69E3B82AE0;
-        Fri,  2 Sep 2022 12:40:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 184D4C433C1;
-        Fri,  2 Sep 2022 12:40:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2CBC9B82AC8;
+        Fri,  2 Sep 2022 12:39:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67E45C433D6;
+        Fri,  2 Sep 2022 12:39:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122404;
-        bh=B3TWZtAIrgKyArLCCITDfgSyhqaG2UKQiJWQ25NpFcU=;
+        s=korg; t=1662122357;
+        bh=bYlICM6Qgwhi5tAFWazWgh8mpqGEcWaF0Dp4ZqVvWFs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vL+h5qCV7nJP83IpSjfN3+aR5ss3V5R6vU9EK9RLzNpvablBJ0eEb137CAPQxRKpU
-         KmlmvZ9aTsv3J5onjV1yLLgTaGEZFdXH7BaXVMRd/nfGiWm+fdtx0otza2uT6PcgIe
-         Bz8PDPJj3Ln8C3rbmejVd0EwSzCah4O7kgr5UjaQ=
+        b=EVG1XBvkFHWwp4F5bXrTpIu9/H2gbQ/bHh6G+ytoEMd19ggt+Fa35dqImH6GgMc7M
+         DE/2E6QVpTGpafy69QqzgHAF+t+X5kAhMKPoCUxRVkE4wGpBDH8DXY9i1QZqBMBtMs
+         m/y01UtGtvQrQAd3jTBN/xZtpT4ThzkdsyPzhyoI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Sandeen <sandeen@redhat.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Dave Chinner <dchinner@redhat.com>,
-        Dave Chinner <david@fromorbit.com>,
-        Amir Goldstein <amir73il@gmail.com>
-Subject: [PATCH 5.10 35/37] xfs: revert "xfs: actually bump warning counts when we send warnings"
-Date:   Fri,  2 Sep 2022 14:19:57 +0200
-Message-Id: <20220902121400.268955285@linuxfoundation.org>
+        stable@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Ahern <dsahern@kernel.org>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Christian Brauner <brauner@kernel.org>, netdev@vger.kernel.org,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
+        Konstantin Khorenko <khorenko@virtuozzo.com>,
+        kernel@openvz.org, devel@openvz.org,
+        "Denis V. Lunev" <den@openvz.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 22/37] neigh: fix possible DoS due to net iface start/stop loop
+Date:   Fri,  2 Sep 2022 14:19:44 +0200
+Message-Id: <20220902121359.873244372@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121359.177846782@linuxfoundation.org>
 References: <20220902121359.177846782@linuxfoundation.org>
@@ -51,51 +60,129 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Sandeen <sandeen@redhat.com>
+From: Denis V. Lunev <den@openvz.org>
 
-commit bc37e4fb5cac2925b2e286b1f1d4fc2b519f7d92 upstream.
+[ Upstream commit 66ba215cb51323e4e55e38fd5f250e0fae0cbc94 ]
 
-This reverts commit 4b8628d57b725b32616965e66975fcdebe008fe7.
+Normal processing of ARP request (usually this is Ethernet broadcast
+packet) coming to the host is looking like the following:
+* the packet comes to arp_process() call and is passed through routing
+  procedure
+* the request is put into the queue using pneigh_enqueue() if
+  corresponding ARP record is not local (common case for container
+  records on the host)
+* the request is processed by timer (within 80 jiffies by default) and
+  ARP reply is sent from the same arp_process() using
+  NEIGH_CB(skb)->flags & LOCALLY_ENQUEUED condition (flag is set inside
+  pneigh_enqueue())
 
-XFS quota has had the concept of a "quota warning limit" since
-the earliest Irix implementation, but a mechanism for incrementing
-the warning counter was never implemented, as documented in the
-xfs_quota(8) man page. We do know from the historical archive that
-it was never incremented at runtime during quota reservation
-operations.
+And here the problem comes. Linux kernel calls pneigh_queue_purge()
+which destroys the whole queue of ARP requests on ANY network interface
+start/stop event through __neigh_ifdown().
 
-With this commit, the warning counter quickly increments for every
-allocation attempt after the user has crossed a quote soft
-limit threshold, and this in turn transitions the user to hard
-quota failures, rendering soft quota thresholds and timers useless.
-This was reported as a regression by users.
+This is actually not a problem within the original world as network
+interface start/stop was accessible to the host 'root' only, which
+could do more destructive things. But the world is changed and there
+are Linux containers available. Here container 'root' has an access
+to this API and could be considered as untrusted user in the hosting
+(container's) world.
 
-Because the intended behavior of this warning counter has never been
-understood or documented, and the result of this change is a regression
-in soft quota functionality, revert this commit to make soft quota
-limits and timers operable again.
+Thus there is an attack vector to other containers on node when
+container's root will endlessly start/stop interfaces. We have observed
+similar situation on a real production node when docker container was
+doing such activity and thus other containers on the node become not
+accessible.
 
-Fixes: 4b8628d57b72 ("xfs: actually bump warning counts when we send warnings)
-Signed-off-by: Eric Sandeen <sandeen@redhat.com>
-Reviewed-by: Darrick J. Wong <djwong@kernel.org>
-Reviewed-by: Dave Chinner <dchinner@redhat.com>
-Signed-off-by: Dave Chinner <david@fromorbit.com>
-Signed-off-by: Amir Goldstein <amir73il@gmail.com>
-Acked-by: Darrick J. Wong <djwong@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The patch proposed doing very simple thing. It drops only packets from
+the same namespace in the pneigh_queue_purge() where network interface
+state change is detected. This is enough to prevent the problem for the
+whole node preserving original semantics of the code.
+
+v2:
+	- do del_timer_sync() if queue is empty after pneigh_queue_purge()
+v3:
+	- rebase to net tree
+
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: David Ahern <dsahern@kernel.org>
+Cc: Yajun Deng <yajun.deng@linux.dev>
+Cc: Roopa Prabhu <roopa@nvidia.com>
+Cc: Christian Brauner <brauner@kernel.org>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
+Cc: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
+Cc: Konstantin Khorenko <khorenko@virtuozzo.com>
+Cc: kernel@openvz.org
+Cc: devel@openvz.org
+Investigated-by: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
+Signed-off-by: Denis V. Lunev <den@openvz.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/xfs/xfs_trans_dquot.c |    1 -
- 1 file changed, 1 deletion(-)
+ net/core/neighbour.c | 25 +++++++++++++++++--------
+ 1 file changed, 17 insertions(+), 8 deletions(-)
 
---- a/fs/xfs/xfs_trans_dquot.c
-+++ b/fs/xfs/xfs_trans_dquot.c
-@@ -615,7 +615,6 @@ xfs_dqresv_check(
- 			return QUOTA_NL_ISOFTLONGWARN;
- 		}
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index 52a1c8725337b..e7dcdad5876b1 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -280,14 +280,23 @@ static int neigh_del_timer(struct neighbour *n)
+ 	return 0;
+ }
  
--		res->warnings++;
- 		return QUOTA_NL_ISOFTWARN;
+-static void pneigh_queue_purge(struct sk_buff_head *list)
++static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
+ {
++	unsigned long flags;
+ 	struct sk_buff *skb;
+ 
+-	while ((skb = skb_dequeue(list)) != NULL) {
+-		dev_put(skb->dev);
+-		kfree_skb(skb);
++	spin_lock_irqsave(&list->lock, flags);
++	skb = skb_peek(list);
++	while (skb != NULL) {
++		struct sk_buff *skb_next = skb_peek_next(skb, list);
++		if (net == NULL || net_eq(dev_net(skb->dev), net)) {
++			__skb_unlink(skb, list);
++			dev_put(skb->dev);
++			kfree_skb(skb);
++		}
++		skb = skb_next;
  	}
++	spin_unlock_irqrestore(&list->lock, flags);
+ }
  
+ static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev,
+@@ -358,9 +367,9 @@ static int __neigh_ifdown(struct neigh_table *tbl, struct net_device *dev,
+ 	write_lock_bh(&tbl->lock);
+ 	neigh_flush_dev(tbl, dev, skip_perm);
+ 	pneigh_ifdown_and_unlock(tbl, dev);
+-
+-	del_timer_sync(&tbl->proxy_timer);
+-	pneigh_queue_purge(&tbl->proxy_queue);
++	pneigh_queue_purge(&tbl->proxy_queue, dev_net(dev));
++	if (skb_queue_empty_lockless(&tbl->proxy_queue))
++		del_timer_sync(&tbl->proxy_timer);
+ 	return 0;
+ }
+ 
+@@ -1743,7 +1752,7 @@ int neigh_table_clear(int index, struct neigh_table *tbl)
+ 	/* It is not clean... Fix it to unload IPv6 module safely */
+ 	cancel_delayed_work_sync(&tbl->gc_work);
+ 	del_timer_sync(&tbl->proxy_timer);
+-	pneigh_queue_purge(&tbl->proxy_queue);
++	pneigh_queue_purge(&tbl->proxy_queue, NULL);
+ 	neigh_ifdown(tbl, NULL);
+ 	if (atomic_read(&tbl->entries))
+ 		pr_crit("neighbour leakage\n");
+-- 
+2.35.1
+
 
 
