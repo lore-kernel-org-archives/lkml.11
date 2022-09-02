@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F58FC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:50:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6093ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:50:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237692AbiIBMuF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:50:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45356 "EHLO
+        id S237703AbiIBMuJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:50:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237893AbiIBMtJ (ORCPT
+        with ESMTP id S237837AbiIBMtA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:49:09 -0400
+        Fri, 2 Sep 2022 08:49:00 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E9DE2C42;
-        Fri,  2 Sep 2022 05:35:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25D4152E60;
+        Fri,  2 Sep 2022 05:35:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AEF41B829E6;
-        Fri,  2 Sep 2022 12:34:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11AC2C433D7;
-        Fri,  2 Sep 2022 12:33:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C238FB82A71;
+        Fri,  2 Sep 2022 12:33:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 173A8C433D6;
+        Fri,  2 Sep 2022 12:33:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122040;
-        bh=i55lToXpAh9hS7JvabK8GVqMdtFSaLb4wzTHL69zobM=;
+        s=korg; t=1662122037;
+        bh=QrJc/PcuDZ8Iu7xYsKO5cbixq/O3Dprx/WDWhp7RFWM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m+GjK0koSld1FK1DYNHnKeLbTJZS9LM5o1D/Wqhnps+vJJJcVwSd77PBzwGcKPcq4
-         jum/UxZATdgorvHCFcFgnA4+DfY6REBwHJ4oasXMxiCL2ShkSPToJFjjQbYldwlfF8
-         Y5fTA+z0uZ/HDVfBDEm/owkQtLUZnPULWVXUznsM=
+        b=qFSb9WL/hwK3GYhPoAiXsNkUO3199sEHynC1IcaVW4HH/Gl23Iwf7TS3oPu/rRHU5
+         BocNFT2VYnMsL9xF5Kk6PWzBr4MmOacC1d4dF7c1hSd+MUUtOXHDCkpTfebn3Eg+NE
+         SDUJP7BD4Xex6x3E97fnYaPjAWmUQhmBfyo4k8AE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Evan Quan <evan.quan@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 60/73] drm/amd/pm: add missing ->fini_microcode interface for Sienna Cichlid
-Date:   Fri,  2 Sep 2022 14:19:24 +0200
-Message-Id: <20220902121406.397935073@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 5.15 25/73] Bluetooth: L2CAP: Fix build errors in some archs
+Date:   Fri,  2 Sep 2022 14:18:49 +0200
+Message-Id: <20220902121405.280648453@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
 References: <20220902121404.435662285@linuxfoundation.org>
@@ -49,34 +49,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evan Quan <evan.quan@amd.com>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-[ Upstream commit 0a2d922a5618377cdf8fa476351362733ef55342 ]
+commit b840304fb46cdf7012722f456bce06f151b3e81b upstream.
 
-To avoid any potential memory leak.
+This attempts to fix the follow errors:
 
-Signed-off-by: Evan Quan <evan.quan@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+In function 'memcmp',
+    inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:347:9,
+    inlined from 'l2cap_global_chan_by_psm' at
+    net/bluetooth/l2cap_core.c:2003:15:
+./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp'
+specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
+   44 | #define __underlying_memcmp     __builtin_memcmp
+      |                                 ^
+./include/linux/fortify-string.h:420:16: note: in expansion of macro
+'__underlying_memcmp'
+  420 |         return __underlying_memcmp(p, q, size);
+      |                ^~~~~~~~~~~~~~~~~~~
+In function 'memcmp',
+    inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:347:9,
+    inlined from 'l2cap_global_chan_by_psm' at
+    net/bluetooth/l2cap_core.c:2004:15:
+./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp'
+specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
+   44 | #define __underlying_memcmp     __builtin_memcmp
+      |                                 ^
+./include/linux/fortify-string.h:420:16: note: in expansion of macro
+'__underlying_memcmp'
+  420 |         return __underlying_memcmp(p, q, size);
+      |                ^~~~~~~~~~~~~~~~~~~
+
+Fixes: 332f1795ca20 ("Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm regression")
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/bluetooth/l2cap_core.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
-index 918d5c7c2328b..79976921dc46f 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
-@@ -3915,6 +3915,7 @@ static const struct pptable_funcs sienna_cichlid_ppt_funcs = {
- 	.dump_pptable = sienna_cichlid_dump_pptable,
- 	.init_microcode = smu_v11_0_init_microcode,
- 	.load_microcode = smu_v11_0_load_microcode,
-+	.fini_microcode = smu_v11_0_fini_microcode,
- 	.init_smc_tables = sienna_cichlid_init_smc_tables,
- 	.fini_smc_tables = smu_v11_0_fini_smc_tables,
- 	.init_power = smu_v11_0_init_power,
--- 
-2.35.1
-
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -1992,11 +1992,11 @@ static struct l2cap_chan *l2cap_global_c
+ 			src_match = !bacmp(&c->src, src);
+ 			dst_match = !bacmp(&c->dst, dst);
+ 			if (src_match && dst_match) {
+-				c = l2cap_chan_hold_unless_zero(c);
+-				if (c) {
+-					read_unlock(&chan_list_lock);
+-					return c;
+-				}
++				if (!l2cap_chan_hold_unless_zero(c))
++					continue;
++
++				read_unlock(&chan_list_lock);
++				return c;
+ 			}
+ 
+ 			/* Closest match */
 
 
