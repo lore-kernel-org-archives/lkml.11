@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 088E2ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:55:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3869EC54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:55:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238134AbiIBMzG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:55:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46460 "EHLO
+        id S238155AbiIBMzK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:55:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238010AbiIBMx0 (ORCPT
+        with ESMTP id S237811AbiIBMxb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:53:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C214BF9940;
-        Fri,  2 Sep 2022 05:37:50 -0700 (PDT)
+        Fri, 2 Sep 2022 08:53:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D999FE3979;
+        Fri,  2 Sep 2022 05:38:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54AA2B82AE2;
-        Fri,  2 Sep 2022 12:36:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB6FCC433C1;
-        Fri,  2 Sep 2022 12:36:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DDF566217E;
+        Fri,  2 Sep 2022 12:37:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5FA4C433C1;
+        Fri,  2 Sep 2022 12:37:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122207;
-        bh=AyoUCDITYVxRiU7eJuWQT5v3RL+D8n4SQJt7lcoFtRw=;
+        s=korg; t=1662122258;
+        bh=4Mef6oIVxypHg+mAHZHx0JWOr5/CBtzWkSoMACY3YZE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sS940ZgcjqRgAZYhgTJU/bImAFp18vvIj2/qI5vchVbSGPwFGK9pNF9QkOrrC/8Tz
-         0RYyxLxX4jTgKwkGPprWW8Bjh2P32kKMsa0YZYiQj0cWnRqU17e1BahsC+LSNO8c5w
-         GyvtNZsMQSDb56y8m2YeoQiiffG/TiVxyuH9zAjs=
+        b=V7a+TT/xmchhADjHRmBzZTAFc8ALdcJ5XYw15Lf9Db6Z1Q+d1hE90zki3xunMHQgb
+         XV3TIALyEkQmbtxao9DhfFXCEge3bjCn8A/DOBsf1IpMOznW8HJHoiFBo7mo94BjZF
+         vkjtgNZRAQW9Df0W4yyR9TMKNRaDbq02mSNxWHaE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
-        Hyunchul Lee <hyc.lee@gmail.com>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 46/72] ksmbd: return STATUS_BAD_NETWORK_NAME error status if share is not configured
-Date:   Fri,  2 Sep 2022 14:19:22 +0200
-Message-Id: <20220902121406.281634426@linuxfoundation.org>
+        stable@vger.kernel.org, Akihiko Odaki <akihiko.odaki@gmail.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.19 22/72] HID: AMD_SFH: Add a DMI quirk entry for Chromebooks
+Date:   Fri,  2 Sep 2022 14:18:58 +0200
+Message-Id: <20220902121405.511661631@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
 References: <20220902121404.772492078@linuxfoundation.org>
@@ -50,52 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namjae Jeon <linkinjeon@kernel.org>
+From: Akihiko Odaki <akihiko.odaki@gmail.com>
 
-[ Upstream commit fe54833dc8d97ef387e86f7c80537d51c503ca75 ]
+commit adada3f4930ac084740ea340bd8e94028eba4f22 upstream.
 
-If share is not configured in smb.conf, smb2 tree connect should return
-STATUS_BAD_NETWORK_NAME instead of STATUS_BAD_NETWORK_PATH.
+Google Chromebooks use Chrome OS Embedded Controller Sensor Hub instead
+of Sensor Hub Fusion and leaves MP2 uninitialized, which disables all
+functionalities, even including the registers necessary for feature
+detections.
 
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
-Reviewed-by: Hyunchul Lee <hyc.lee@gmail.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The behavior was observed with Lenovo ThinkPad C13 Yoga.
+
+Signed-off-by: Akihiko Odaki <akihiko.odaki@gmail.com>
+Suggested-by: Mario Limonciello <mario.limonciello@amd.com>
+Acked-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ksmbd/mgmt/tree_connect.c | 2 +-
- fs/ksmbd/smb2pdu.c           | 3 ++-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ drivers/hid/amd-sfh-hid/amd_sfh_pcie.c |   18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/fs/ksmbd/mgmt/tree_connect.c b/fs/ksmbd/mgmt/tree_connect.c
-index 0d28e723a28c7..940385c6a9135 100644
---- a/fs/ksmbd/mgmt/tree_connect.c
-+++ b/fs/ksmbd/mgmt/tree_connect.c
-@@ -18,7 +18,7 @@
- struct ksmbd_tree_conn_status
- ksmbd_tree_conn_connect(struct ksmbd_session *sess, char *share_name)
+--- a/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
++++ b/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
+@@ -285,11 +285,29 @@ static int amd_sfh_irq_init(struct amd_m
+ 	return 0;
+ }
+ 
++static const struct dmi_system_id dmi_nodevs[] = {
++	{
++		/*
++		 * Google Chromebooks use Chrome OS Embedded Controller Sensor
++		 * Hub instead of Sensor Hub Fusion and leaves MP2
++		 * uninitialized, which disables all functionalities, even
++		 * including the registers necessary for feature detections.
++		 */
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Google"),
++		},
++	},
++	{ }
++};
++
+ static int amd_mp2_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
  {
--	struct ksmbd_tree_conn_status status = {-EINVAL, NULL};
-+	struct ksmbd_tree_conn_status status = {-ENOENT, NULL};
- 	struct ksmbd_tree_connect_response *resp = NULL;
- 	struct ksmbd_share_config *sc;
- 	struct ksmbd_tree_connect *tree_conn = NULL;
-diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
-index a9c33d15ca1fb..bbb3958b6469d 100644
---- a/fs/ksmbd/smb2pdu.c
-+++ b/fs/ksmbd/smb2pdu.c
-@@ -1930,8 +1930,9 @@ int smb2_tree_connect(struct ksmbd_work *work)
- 		rsp->hdr.Status = STATUS_SUCCESS;
- 		rc = 0;
- 		break;
-+	case -ENOENT:
- 	case KSMBD_TREE_CONN_STATUS_NO_SHARE:
--		rsp->hdr.Status = STATUS_BAD_NETWORK_PATH;
-+		rsp->hdr.Status = STATUS_BAD_NETWORK_NAME;
- 		break;
- 	case -ENOMEM:
- 	case KSMBD_TREE_CONN_STATUS_NOMEM:
--- 
-2.35.1
-
+ 	struct amd_mp2_dev *privdata;
+ 	int rc;
+ 
++	if (dmi_first_match(dmi_nodevs))
++		return -ENODEV;
++
+ 	privdata = devm_kzalloc(&pdev->dev, sizeof(*privdata), GFP_KERNEL);
+ 	if (!privdata)
+ 		return -ENOMEM;
 
 
