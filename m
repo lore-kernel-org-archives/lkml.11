@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E980EC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:30:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32A0DECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:30:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236676AbiIBOaS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:30:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51196 "EHLO
+        id S236158AbiIBOaY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:30:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235936AbiIBO1f (ORCPT
+        with ESMTP id S236098AbiIBO1g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:27:35 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17EA8168A07
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:29 -0700 (PDT)
+        Fri, 2 Sep 2022 10:27:36 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B975168A26
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
+        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=KetPcUlF1b8CoRduWYRVJ1Z0OAFAjWB3tdLqyvUvF+o=; b=Q+LN1KJ5tTML0ppwIjo9awpJFF
-        YTRMCTltV1xg0UBdjueEEpetKChLxj719aEN149U5fjpOJ0u6K0iRj9SHZrDIq+N9Sc/mnJfs8A2K
-        LG+UGD/IUcsVZ6boMmQxYRy+wzm76RZm0UlZJYqCz+eRWcXtXJVLe2MGuUHSDyDUwA9F2oEkHSNLH
-        D18MJfCo8IFZ4Njbxz8h6+7UEzQHr/qNDQh+KiZEKeUl0QZ503ZyRuA7g8wxTGmHwjBb1FOOwBSIM
-        2RByOfoO5Jp9VcsU4cylaaNE66DPHj06TezT/rTjFyo5Oli01hfPBrDCxKYSuUaQSBfyDYflPwWzB
-        xivfqgxg==;
+        bh=YUhA2B9hWTAdbvtvLfAUCL48qsFF8kF9euAYgBwVN7c=; b=F1sdS6J0B07JaNau9gs7zg9nAa
+        JFqYigGC2sVpUTdJG0Ry7PoQlkHW5sSmWOwYlDjzxi0d0ZM6ucwdxaOGxu5ED0CyjXB1eFdseUDqN
+        jwYnJJAj/nI/+x1Nn/1VIPrh3UMEkX7GGDXBG01mgtwTMBVmqY6RCMX/1y2nfHXvPnIECNItRa0ai
+        pYFOHwxuBnSyFVrowORsKnxV/Pfj5qX8j1TjDhEXp7dTB7qw+DNU+KCzRAEgHisdvG+FcsW8y+KXb
+        yEr7fHD9l8gWsNkHiG0DwPEbdj52ujSMHBOrxSeGgjq57exmwfsJS4w1PQL9B1AH467E0chEIDvyn
+        ZEur5Odg==;
 Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oU77M-008g8C-BV; Fri, 02 Sep 2022 13:53:57 +0000
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oU77M-0074T1-6d; Fri, 02 Sep 2022 13:53:56 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 26CC4301D06;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 00E8430069C;
         Fri,  2 Sep 2022 15:53:54 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id D5C952B8EF7F3; Fri,  2 Sep 2022 15:53:52 +0200 (CEST)
-Message-ID: <20220902130949.370354037@infradead.org>
+        id 3F8F32B077D23; Fri,  2 Sep 2022 15:53:52 +0200 (CEST)
+Message-ID: <20220902130947.190618587@infradead.org>
 User-Agent: quilt/0.66
-Date:   Fri, 02 Sep 2022 15:06:54 +0200
+Date:   Fri, 02 Sep 2022 15:06:33 +0200
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     Thomas Gleixner <tglx@linutronix.de>
 Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
@@ -59,7 +59,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
         Daniel Borkmann <daniel@iogearbox.net>,
         K Prateek Nayak <kprateek.nayak@amd.com>,
         Eric Dumazet <edumazet@google.com>
-Subject: [PATCH v2 29/59] objtool: Track init section
+Subject: [PATCH v2 08/59] x86/build: Ensure proper function alignment
 References: <20220902130625.217071627@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -67,62 +67,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Thomas Gleixner <tglx@linutronix.de>
 
-For future usage of .init.text exclusion track the init section in the
-instruction decoder and use the result in retpoline validation.
+The Intel Architectures Optimization Reference Manual explains that
+functions should be aligned at 16 bytes because for a lot of (Intel)
+uarchs the I-fetch width is 16 bytes. The AMD Software Optimization
+Guide (for recent chips) mentions a 32 byte I-fetch window but a 16
+byte decode window.
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Follow this advice and align functions to 16 bytes to optimize
+instruction delivery to decode and reduce front-end bottlenecks.
+
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- tools/objtool/check.c               |   17 ++++++++++-------
- tools/objtool/include/objtool/elf.h |    2 +-
- 2 files changed, 11 insertions(+), 8 deletions(-)
+ arch/x86/Kconfig.cpu              |    6 ++++++
+ arch/x86/Makefile                 |    4 ++++
+ arch/x86/include/asm/linkage.h    |    7 ++++---
+ include/asm-generic/vmlinux.lds.h |    7 ++++++-
+ 4 files changed, 20 insertions(+), 4 deletions(-)
 
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -380,6 +380,15 @@ static int decode_instructions(struct ob
- 		    !strncmp(sec->name, ".text.__x86.", 12))
- 			sec->noinstr = true;
+--- a/arch/x86/Kconfig.cpu
++++ b/arch/x86/Kconfig.cpu
+@@ -517,3 +517,9 @@ config CPU_SUP_VORTEX_32
+ 	  makes the kernel a tiny bit smaller.
  
-+		/*
-+		 * .init.text code is ran before userspace and thus doesn't
-+		 * strictly need retpolines, except for modules which are
-+		 * loaded late, they very much do need retpoline in their
-+		 * .init.text
-+		 */
-+		if (!strcmp(sec->name, ".init.text") && !opts.module)
-+			sec->init = true;
+ 	  If unsure, say N.
 +
- 		for (offset = 0; offset < sec->sh.sh_size; offset += insn->len) {
- 			insn = malloc(sizeof(*insn));
- 			if (!insn) {
-@@ -3720,13 +3729,7 @@ static int validate_retpoline(struct obj
- 		if (insn->retpoline_safe)
- 			continue;
++# Defined here so it is defined for UM too
++config FUNCTION_ALIGNMENT
++	int
++	default 16 if X86_64 || X86_ALIGNMENT_16
++	default 8
+--- a/arch/x86/Makefile
++++ b/arch/x86/Makefile
+@@ -84,6 +84,10 @@ else
+ KBUILD_CFLAGS += $(call cc-option,-fcf-protection=none)
+ endif
  
--		/*
--		 * .init.text code is ran before userspace and thus doesn't
--		 * strictly need retpolines, except for modules which are
--		 * loaded late, they very much do need retpoline in their
--		 * .init.text
--		 */
--		if (!strcmp(insn->sec->name, ".init.text") && !opts.module)
-+		if (insn->sec->init)
- 			continue;
++ifneq ($(CONFIG_DEBUG_FORCE_FUNCTION_ALIGN_64B),y)
++KBUILD_CFLAGS += -falign-functions=$(CONFIG_FUNCTION_ALIGNMENT)
++endif
++
+ ifeq ($(CONFIG_X86_32),y)
+         BITS := 32
+         UTS_MACHINE := i386
+--- a/arch/x86/include/asm/linkage.h
++++ b/arch/x86/include/asm/linkage.h
+@@ -14,9 +14,10 @@
  
- 		if (insn->type == INSN_RETURN) {
---- a/tools/objtool/include/objtool/elf.h
-+++ b/tools/objtool/include/objtool/elf.h
-@@ -38,7 +38,7 @@ struct section {
- 	Elf_Data *data;
- 	char *name;
- 	int idx;
--	bool changed, text, rodata, noinstr;
-+	bool changed, text, rodata, noinstr, init;
- };
+ #ifdef __ASSEMBLY__
  
- struct symbol {
+-#if defined(CONFIG_X86_64) || defined(CONFIG_X86_ALIGNMENT_16)
+-#define __ALIGN		.p2align 4, 0x90
+-#define __ALIGN_STR	__stringify(__ALIGN)
++#if CONFIG_FUNCTION_ALIGNMENT == 16
++#define __ALIGN			.p2align 4, 0x90
++#define __ALIGN_STR		__stringify(__ALIGN)
++#define FUNCTION_ALIGNMENT	16
+ #endif
+ 
+ #if defined(CONFIG_RETHUNK) && !defined(__DISABLE_EXPORTS) && !defined(BUILD_VDSO)
+--- a/include/asm-generic/vmlinux.lds.h
++++ b/include/asm-generic/vmlinux.lds.h
+@@ -82,7 +82,12 @@
+ #endif
+ 
+ /* Align . to a 8 byte boundary equals to maximum function alignment. */
+-#define ALIGN_FUNCTION()  . = ALIGN(8)
++#ifndef CONFIG_FUNCTION_ALIGNMENT
++#define __FUNCTION_ALIGNMENT	8
++#else
++#define __FUNCTION_ALIGNMENT	CONFIG_FUNCTION_ALIGNMENT
++#endif
++#define ALIGN_FUNCTION()  . = ALIGN(__FUNCTION_ALIGNMENT)
+ 
+ /*
+  * LD_DEAD_CODE_DATA_ELIMINATION option enables -fdata-sections, which
 
 
