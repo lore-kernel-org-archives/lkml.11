@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B917C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:51:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8169CECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:51:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236450AbiIBMvb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:51:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45476 "EHLO
+        id S237851AbiIBMvg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:51:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237777AbiIBMum (ORCPT
+        with ESMTP id S237785AbiIBMun (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:50:42 -0400
+        Fri, 2 Sep 2022 08:50:43 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF4FBF5CE8;
-        Fri,  2 Sep 2022 05:36:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C16E2F72EA;
+        Fri,  2 Sep 2022 05:36:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AA02CB82AAC;
-        Fri,  2 Sep 2022 12:25:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0002BC433C1;
-        Fri,  2 Sep 2022 12:25:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 05F2CB82A8B;
+        Fri,  2 Sep 2022 12:24:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50201C433C1;
+        Fri,  2 Sep 2022 12:24:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121557;
-        bh=xkYuqx3KLa0XCdCrelZKq/YQPOXAWHnoGd327J82GBY=;
+        s=korg; t=1662121486;
+        bh=BVmSj4j2lKWMzSNLk4z5AdM2bjhzmLxnEzZSY88b4KU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SmRgRH1apztUlKBu97XnaFwdS55I+tZ+syoXpPWaUQVRXMUZQbjmHC9vy+5ww8FZ7
-         ibolI4C0U2GlIYRtN7TqfL1WNP2RWJMUqy1vi0wPRXVm1MTwPqBLbgpJIL1QRt3GDD
-         9gBpfy9YcjMzSsZ+TXBVh5HmzZplttLjS/HBUp5w=
+        b=pljeTm/vK7m0na7EMDzPKf70UEtlK562dqIpGPRl98NV14rKUZ8mbEIJ86z1CW98J
+         okbmWAwOFCsVA+JQ8Plu1gSVU43Ui0qsZG5L7ytvKMJ7unIEBMWJ3WWHo5p9fkvEdo
+         nf0w9DLSRwoBuwPZAeEgrbk6gX8w3pOfM7E1y+N4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+77b432d57c4791183ed4@syzkaller.appspotmail.com,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Subject: [PATCH 4.19 46/56] media: pvrusb2: fix memory leak in pvr_probe
-Date:   Fri,  2 Sep 2022 14:19:06 +0200
-Message-Id: <20220902121401.999055471@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 23/56] net: Fix a data-race around sysctl_net_busy_poll.
+Date:   Fri,  2 Sep 2022 14:18:43 +0200
+Message-Id: <20220902121400.993054915@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
 References: <20220902121400.219861128@linuxfoundation.org>
@@ -51,36 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 945a9a8e448b65bec055d37eba58f711b39f66f0 upstream.
+[ Upstream commit c42b7cddea47503411bfb5f2f93a4154aaffa2d9 ]
 
-The error handling code in pvr2_hdw_create forgets to unregister the
-v4l2 device. When pvr2_hdw_create returns back to pvr2_context_create,
-it calls pvr2_context_destroy to destroy context, but mp->hdw is NULL,
-which leads to that pvr2_hdw_destroy directly returns.
+While reading sysctl_net_busy_poll, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-Fix this by adding v4l2_device_unregister to decrease the refcount of
-usb interface.
-
-Reported-by: syzbot+77b432d57c4791183ed4@syzkaller.appspotmail.com
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 060212928670 ("net: add low latency socket poll")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/pvrusb2/pvrusb2-hdw.c |    1 +
- 1 file changed, 1 insertion(+)
+ include/net/busy_poll.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-+++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-@@ -2602,6 +2602,7 @@ struct pvr2_hdw *pvr2_hdw_create(struct
- 		del_timer_sync(&hdw->encoder_run_timer);
- 		del_timer_sync(&hdw->encoder_wait_timer);
- 		flush_work(&hdw->workpoll);
-+		v4l2_device_unregister(&hdw->v4l2_dev);
- 		usb_free_urb(hdw->ctl_read_urb);
- 		usb_free_urb(hdw->ctl_write_urb);
- 		kfree(hdw->ctl_read_buffer);
+diff --git a/include/net/busy_poll.h b/include/net/busy_poll.h
+index c76a5e9894dac..8f42f6f3af86f 100644
+--- a/include/net/busy_poll.h
++++ b/include/net/busy_poll.h
+@@ -43,7 +43,7 @@ extern unsigned int sysctl_net_busy_poll __read_mostly;
+ 
+ static inline bool net_busy_loop_on(void)
+ {
+-	return sysctl_net_busy_poll;
++	return READ_ONCE(sysctl_net_busy_poll);
+ }
+ 
+ static inline bool sk_can_busy_loop(const struct sock *sk)
+-- 
+2.35.1
+
 
 
