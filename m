@@ -2,133 +2,340 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F29BFC6FA83
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:35:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A81B0ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:35:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229696AbiIBSfl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 14:35:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55270 "EHLO
+        id S229896AbiIBSfq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 14:35:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229869AbiIBSe2 (ORCPT
+        with ESMTP id S229826AbiIBSfg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 14:34:28 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DABFF110DA9;
-        Fri,  2 Sep 2022 11:26:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662143210; x=1693679210;
-  h=from:to:subject:date:message-id:in-reply-to:references:
-   mime-version:content-transfer-encoding;
-  bh=LnuYAt94YWSAPrjoHbzV8WP/hTfRRBDfaaIMJkQKpyg=;
-  b=nJARMmgLEGmdtKRJILrRTx82k8ID2zj+Q6zWaz8QY4ocwE0wlgOIZaxm
-   qX2K2py7JYChbU9227G2qdzSzEXIvoSVnW2k9j8u6x9glP1xT+M+SrP5Q
-   wGgqq3u7L6EvGTwaj2nd91dHgdvSymxg99b+J1FNPSuDy/HohPJ0Apauv
-   4r99YmPf4MG2iMY7RjPfTO4WbifNUIEnAZh1vfiv8nrWjBlAd0q72s+OL
-   ekahOGjXAk8DxxqKTKKejJ+T9aJWCiE3d4I2MVH6nCjBSKlgaps+Ggs4C
-   yRCFJJRv47F2aHSqUfctiRljmgacV1OLuQMO67wkHQbn/I1QyPwaSz5ws
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10458"; a="283034558"
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="283034558"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 11:26:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="681373079"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga004.fm.intel.com with ESMTP; 02 Sep 2022 11:26:47 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 512D0713; Fri,  2 Sep 2022 21:27:00 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Patrick Rudolph <patrick.rudolph@9elements.com>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 13/17] pinctrl: cy8c95x0: Make use of device properties
-Date:   Fri,  2 Sep 2022 21:26:46 +0300
-Message-Id: <20220902182650.83098-13-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220902182650.83098-1-andriy.shevchenko@linux.intel.com>
-References: <20220902182650.83098-1-andriy.shevchenko@linux.intel.com>
+        Fri, 2 Sep 2022 14:35:36 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C427926AE1
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 11:35:34 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id n17-20020a05600c501100b003a84bf9b68bso1901395wmr.3
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 11:35:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=niZAHKVh64gtpmzwpJTHnkg94O+WeGO3E9/49vCP0mA=;
+        b=KGaF25aS6brzj8URuVZeFP9rO1UyJxrpOFwN9UA4rbWoaVH9qCwhIHdYWTZJW0oAIp
+         xJBxiV2BIwxtaqraqmsYxbM26W3V0QZMaCfcl6tndme3rRpBW4CfQvCyM9L00UGZlAXb
+         EE7ntVWHkhQ5AFTLs2OY6Wmf7Hkzgn6+IZBwamDWRojcHvRAmSpecNr0IR9SQeizodRd
+         zEF0N8l+Eq2SX4pBHKxAuQHL/JCoNnCRIzavlId59NPkFXEuJ7dji93J4qJr8XvHuT2R
+         H0nquuF4spF/wwUlUA94bSY/jkvplhwtI4Sg4jfLLyclQGqkhHBOSq86K91DqTHKNbYj
+         uz/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=niZAHKVh64gtpmzwpJTHnkg94O+WeGO3E9/49vCP0mA=;
+        b=lUfpTvRLzVmATIhPQxgpwIJsRxQ/q5MfUvQ1k55LH/S2SPi3MjUnlLojZ+i9qf3O8n
+         umUI5oq8o936H6ewl9Bm+RqZ2x/ga3uo6LhszVIHglEORmwt94uqG/tqbN9tTLmL0VI0
+         Hpx8d0BegxzyAP0W3I6w90pO6IqqKRd1nDGUJBa89SRs/Grfjs/iZkWHpZ8QWDUUZEHF
+         BH01iYqJ4j8tMWnmCcSQdeYoRrEKf90qMslyBzX7q6U+KTO+AMgGzu1jstmh6f6F5JmW
+         TuRkJhlRw1xHL9ta212qH4ficaPPjtDRZYmjZx/2WE+iOi3j7576wDwt64MRUP3A5r2F
+         VjlA==
+X-Gm-Message-State: ACgBeo3Ni1kXMxzZu++/nhFRUnbtpH8P89S8R/TLmilF+ZvNNZ6yCb+C
+        26nXKtwZLNEbDu+fTKzAvRTRXQ==
+X-Google-Smtp-Source: AA6agR49lqN/61WJGMQqgdnr+8m4C2M0Bm2h9QER8PqOK2QKNltoy1SikmTcmNCAFPtPvWhSme52Zw==
+X-Received: by 2002:a05:600c:3d05:b0:3a5:dd21:e201 with SMTP id bh5-20020a05600c3d0500b003a5dd21e201mr3773404wmb.132.1662143733350;
+        Fri, 02 Sep 2022 11:35:33 -0700 (PDT)
+Received: from linaro.org ([94.52.112.99])
+        by smtp.gmail.com with ESMTPSA id m14-20020a5d56ce000000b00226d238be98sm2021494wrw.82.2022.09.02.11.35.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 11:35:32 -0700 (PDT)
+Date:   Fri, 2 Sep 2022 21:35:28 +0300
+From:   Abel Vesa <abel.vesa@linaro.org>
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+Cc:     abelvesa@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Peng Fan <peng.fan@nxp.com>, Ye Li <ye.li@nxp.com>,
+        Jacky Bai <ping.bai@nxp.com>
+Subject: Re: [PATCH V3 5/8] clk: imx: add i.MX93 clk gate
+Message-ID: <YxJM8GOMz8ngdnR2@linaro.org>
+References: <20220830033137.4149542-1-peng.fan@oss.nxp.com>
+ <20220830033137.4149542-6-peng.fan@oss.nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220830033137.4149542-6-peng.fan@oss.nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the module to be property provider agnostic and allow
-it to be used on non-OF platforms.
+On 22-08-30 11:31:34, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
+> 
+> i.MX93 LPCG is different from i.MX8M CCGR. Although imx_clk_hw_gate4_flags
+> is used here, it not strictly match i.MX93. i.MX93 has such design:
+>  - LPCG_DIRECT use BIT0 as on/off gate when LPCG_AUTHEN CPU_LPM is 0
+>  - LPCG_LPM_CUR use BIT[2:0] as on/off gate when LPCG_AUTHEN CPU_LPM is 1
+> 
+> The current implementation suppose CPU_LPM is 0, and use LPCG_DIRECT
+> BIT[1:0] as on/off gate. Although BIT1 is touched, actually BIT1 is
+> reserved.
+> 
+> And imx_clk_hw_gate4_flags use mask 0x3 to determine whether the clk
+> is enabled or not, but i.MX93 LPCG only use BIT0 to control when CPU_LPM
+> is 0. So clk disabled unused during kernel boot not able to gate off
+> the unused clocks.
+> 
+> To match i.MX93 LPCG, introduce imx93_clk_gate.
+> 
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> Reviewed-by: Ye Li <ye.li@nxp.com>
+> Reviewed-by: Jacky Bai <ping.bai@nxp.com>
 
-Add mod_devicetable.h include.
+I'm OK with it.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/pinctrl/Kconfig            |  2 +-
- drivers/pinctrl/pinctrl-cy8c95x0.c | 16 +++++++++-------
- 2 files changed, 10 insertions(+), 8 deletions(-)
+Reviewed-by: Abel Vesa <abel.vesa@linaro.org>
 
-diff --git a/drivers/pinctrl/Kconfig b/drivers/pinctrl/Kconfig
-index fc0e529e633f..c09562fbb1b7 100644
---- a/drivers/pinctrl/Kconfig
-+++ b/drivers/pinctrl/Kconfig
-@@ -137,7 +137,7 @@ config PINCTRL_BM1880
- 
- config PINCTRL_CY8C95X0
- 	tristate "Cypress CY8C95X0 I2C pinctrl and GPIO driver"
--	depends on I2C && OF
-+	depends on I2C
- 	select GPIOLIB
- 	select GPIOLIB_IRQCHIP
- 	select PINMUX
-diff --git a/drivers/pinctrl/pinctrl-cy8c95x0.c b/drivers/pinctrl/pinctrl-cy8c95x0.c
-index ea81b5ae27a6..699da63d9c39 100644
---- a/drivers/pinctrl/pinctrl-cy8c95x0.c
-+++ b/drivers/pinctrl/pinctrl-cy8c95x0.c
-@@ -13,15 +13,16 @@
- #include <linux/i2c.h>
- #include <linux/init.h>
- #include <linux/interrupt.h>
-+#include <linux/mod_devicetable.h>
- #include <linux/module.h>
--#include <linux/of.h>
--#include <linux/of_platform.h>
-+#include <linux/property.h>
-+#include <linux/regmap.h>
-+#include <linux/regulator/consumer.h>
-+
- #include <linux/pinctrl/pinctrl.h>
- #include <linux/pinctrl/pinconf.h>
- #include <linux/pinctrl/pinconf-generic.h>
- #include <linux/pinctrl/pinmux.h>
--#include <linux/regmap.h>
--#include <linux/regulator/consumer.h>
- 
- /* Fast access registers */
- #define CY8C95X0_INPUT		0x00
-@@ -1040,8 +1041,10 @@ static const struct pinctrl_ops cy8c95x0_pinctrl_ops = {
- 	.get_groups_count = cy8c95x0_pinctrl_get_groups_count,
- 	.get_group_name = cy8c95x0_pinctrl_get_group_name,
- 	.get_group_pins = cy8c95x0_pinctrl_get_group_pins,
-+#ifdef CONFIG_OF
- 	.dt_node_to_map = pinconf_generic_dt_node_to_map_pin,
- 	.dt_free_map = pinconf_generic_dt_free_map,
-+#endif
- 	.pin_dbg_show = cy8c95x0_pin_dbg_show,
- };
- 
-@@ -1245,9 +1248,8 @@ static int cy8c95x0_probe(struct i2c_client *client)
- 	chip->dev = &client->dev;
- 
- 	/* Set the device type */
--	if (client->dev.of_node)
--		chip->driver_data = (unsigned long)of_device_get_match_data(&client->dev);
--	else
-+	chip->driver_data = (unsigned long)device_get_match_data(&client->dev);
-+	if (!chip->driver_data)
- 		chip->driver_data = i2c_match_id(cy8c95x0_id, client)->driver_data;
- 
- 	if (!chip->driver_data)
--- 
-2.35.1
-
+> ---
+>  drivers/clk/imx/Makefile      |   2 +-
+>  drivers/clk/imx/clk-gate-93.c | 199 ++++++++++++++++++++++++++++++++++
+>  drivers/clk/imx/clk.h         |   4 +
+>  3 files changed, 204 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/clk/imx/clk-gate-93.c
+> 
+> diff --git a/drivers/clk/imx/Makefile b/drivers/clk/imx/Makefile
+> index 88b9b9285d22..89fe72327788 100644
+> --- a/drivers/clk/imx/Makefile
+> +++ b/drivers/clk/imx/Makefile
+> @@ -28,7 +28,7 @@ obj-$(CONFIG_CLK_IMX8MN) += clk-imx8mn.o
+>  obj-$(CONFIG_CLK_IMX8MP) += clk-imx8mp.o
+>  obj-$(CONFIG_CLK_IMX8MQ) += clk-imx8mq.o
+>  
+> -obj-$(CONFIG_CLK_IMX93) += clk-imx93.o
+> +obj-$(CONFIG_CLK_IMX93) += clk-imx93.o clk-gate-93.o
+>  
+>  obj-$(CONFIG_MXC_CLK_SCU) += clk-imx-scu.o clk-imx-lpcg-scu.o
+>  clk-imx-scu-$(CONFIG_CLK_IMX8QXP) += clk-scu.o clk-imx8qxp.o \
+> diff --git a/drivers/clk/imx/clk-gate-93.c b/drivers/clk/imx/clk-gate-93.c
+> new file mode 100644
+> index 000000000000..ceb56b290394
+> --- /dev/null
+> +++ b/drivers/clk/imx/clk-gate-93.c
+> @@ -0,0 +1,199 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+> +/*
+> + * Copyright 2022 NXP
+> + *
+> + * Peng Fan <peng.fan@nxp.com>
+> + */
+> +
+> +#include <linux/clk-provider.h>
+> +#include <linux/errno.h>
+> +#include <linux/export.h>
+> +#include <linux/io.h>
+> +#include <linux/iopoll.h>
+> +#include <linux/slab.h>
+> +
+> +#include "clk.h"
+> +
+> +#define DIRECT_OFFSET		0x0
+> +
+> +/*
+> + * 0b000 - LPCG will be OFF in any CPU mode.
+> + * 0b100 - LPCG will be ON in any CPU mode.
+> + */
+> +#define LPM_SETTING_OFF		0x0
+> +#define LPM_SETTING_ON		0x4
+> +
+> +#define LPM_CUR_OFFSET		0x1c
+> +
+> +#define AUTHEN_OFFSET		0x30
+> +#define CPULPM_EN		BIT(2)
+> +#define TZ_NS_SHIFT		9
+> +#define TZ_NS_MASK		BIT(9)
+> +
+> +#define WHITE_LIST_SHIFT	16
+> +
+> +struct imx93_clk_gate {
+> +	struct clk_hw hw;
+> +	void __iomem	*reg;
+> +	u32		bit_idx;
+> +	u32		val;
+> +	u32		mask;
+> +	spinlock_t	*lock;
+> +	unsigned int	*share_count;
+> +};
+> +
+> +#define to_imx93_clk_gate(_hw) container_of(_hw, struct imx93_clk_gate, hw)
+> +
+> +static void imx93_clk_gate_do_hardware(struct clk_hw *hw, bool enable)
+> +{
+> +	struct imx93_clk_gate *gate = to_imx93_clk_gate(hw);
+> +	u32 val;
+> +
+> +	val = readl(gate->reg + AUTHEN_OFFSET);
+> +	if (val & CPULPM_EN) {
+> +		val = enable ? LPM_SETTING_ON : LPM_SETTING_OFF;
+> +		writel(val, gate->reg + LPM_CUR_OFFSET);
+> +	} else {
+> +		val = readl(gate->reg + DIRECT_OFFSET);
+> +		val &= ~(gate->mask << gate->bit_idx);
+> +		if (enable)
+> +			val |= (gate->val & gate->mask) << gate->bit_idx;
+> +		writel(val, gate->reg + DIRECT_OFFSET);
+> +	}
+> +}
+> +
+> +static int imx93_clk_gate_enable(struct clk_hw *hw)
+> +{
+> +	struct imx93_clk_gate *gate = to_imx93_clk_gate(hw);
+> +	unsigned long flags;
+> +
+> +	spin_lock_irqsave(gate->lock, flags);
+> +
+> +	if (gate->share_count && (*gate->share_count)++ > 0)
+> +		goto out;
+> +
+> +	imx93_clk_gate_do_hardware(hw, true);
+> +out:
+> +	spin_unlock_irqrestore(gate->lock, flags);
+> +
+> +	return 0;
+> +}
+> +
+> +static void imx93_clk_gate_disable(struct clk_hw *hw)
+> +{
+> +	struct imx93_clk_gate *gate = to_imx93_clk_gate(hw);
+> +	unsigned long flags;
+> +
+> +	spin_lock_irqsave(gate->lock, flags);
+> +
+> +	if (gate->share_count) {
+> +		if (WARN_ON(*gate->share_count == 0))
+> +			goto out;
+> +		else if (--(*gate->share_count) > 0)
+> +			goto out;
+> +	}
+> +
+> +	imx93_clk_gate_do_hardware(hw, false);
+> +out:
+> +	spin_unlock_irqrestore(gate->lock, flags);
+> +}
+> +
+> +static int imx93_clk_gate_reg_is_enabled(struct imx93_clk_gate *gate)
+> +{
+> +	u32 val = readl(gate->reg + AUTHEN_OFFSET);
+> +
+> +	if (val & CPULPM_EN) {
+> +		val = readl(gate->reg + LPM_CUR_OFFSET);
+> +		if (val == LPM_SETTING_ON)
+> +			return 1;
+> +	} else {
+> +		val = readl(gate->reg);
+> +		if (((val >> gate->bit_idx) & gate->mask) == gate->val)
+> +			return 1;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int imx93_clk_gate_is_enabled(struct clk_hw *hw)
+> +{
+> +	struct imx93_clk_gate *gate = to_imx93_clk_gate(hw);
+> +	unsigned long flags;
+> +	int ret;
+> +
+> +	spin_lock_irqsave(gate->lock, flags);
+> +
+> +	ret = imx93_clk_gate_reg_is_enabled(gate);
+> +
+> +	spin_unlock_irqrestore(gate->lock, flags);
+> +
+> +	return ret;
+> +}
+> +
+> +static void imx93_clk_gate_disable_unused(struct clk_hw *hw)
+> +{
+> +	struct imx93_clk_gate *gate = to_imx93_clk_gate(hw);
+> +	unsigned long flags;
+> +
+> +	spin_lock_irqsave(gate->lock, flags);
+> +
+> +	if (!gate->share_count || *gate->share_count == 0)
+> +		imx93_clk_gate_do_hardware(hw, false);
+> +
+> +	spin_unlock_irqrestore(gate->lock, flags);
+> +}
+> +
+> +static const struct clk_ops imx93_clk_gate_ops = {
+> +	.enable = imx93_clk_gate_enable,
+> +	.disable = imx93_clk_gate_disable,
+> +	.disable_unused = imx93_clk_gate_disable_unused,
+> +	.is_enabled = imx93_clk_gate_is_enabled,
+> +};
+> +
+> +static const struct clk_ops imx93_clk_gate_ro_ops = {
+> +	.is_enabled = imx93_clk_gate_is_enabled,
+> +};
+> +
+> +struct clk_hw *imx93_clk_gate(struct device *dev, const char *name, const char *parent_name,
+> +			      unsigned long flags, void __iomem *reg, u32 bit_idx, u32 val,
+> +			      u32 mask, u32 domain_id, unsigned int *share_count)
+> +{
+> +	struct imx93_clk_gate *gate;
+> +	struct clk_hw *hw;
+> +	struct clk_init_data init;
+> +	int ret;
+> +	u32 authen;
+> +
+> +	gate = kzalloc(sizeof(struct imx93_clk_gate), GFP_KERNEL);
+> +	if (!gate)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	gate->reg = reg;
+> +	gate->lock = &imx_ccm_lock;
+> +	gate->bit_idx = bit_idx;
+> +	gate->val = val;
+> +	gate->mask = mask;
+> +	gate->share_count = share_count;
+> +
+> +	init.name = name;
+> +	init.ops = &imx93_clk_gate_ops;
+> +	init.flags = flags | CLK_SET_RATE_PARENT | CLK_OPS_PARENT_ENABLE;
+> +	init.parent_names = parent_name ? &parent_name : NULL;
+> +	init.num_parents = parent_name ? 1 : 0;
+> +
+> +	gate->hw.init = &init;
+> +	hw = &gate->hw;
+> +
+> +	authen = readl(reg + AUTHEN_OFFSET);
+> +	if (!(authen & TZ_NS_MASK) || !(authen & BIT(WHITE_LIST_SHIFT + domain_id)))
+> +		init.ops = &imx93_clk_gate_ro_ops;
+> +
+> +	ret = clk_hw_register(dev, hw);
+> +	if (ret) {
+> +		kfree(gate);
+> +		return ERR_PTR(ret);
+> +	}
+> +
+> +	return hw;
+> +}
+> +EXPORT_SYMBOL_GPL(imx93_clk_gate);
+> diff --git a/drivers/clk/imx/clk.h b/drivers/clk/imx/clk.h
+> index 396a5ea75083..dd49f90110e8 100644
+> --- a/drivers/clk/imx/clk.h
+> +++ b/drivers/clk/imx/clk.h
+> @@ -451,6 +451,10 @@ struct clk_hw *imx93_clk_composite_flags(const char *name,
+>  	imx93_clk_composite_flags(name, parent_names, num_parents, reg, domain_id \
+>  				  CLK_SET_RATE_NO_REPARENT | CLK_OPS_PARENT_ENABLE)
+>  
+> +struct clk_hw *imx93_clk_gate(struct device *dev, const char *name, const char *parent_name,
+> +			      unsigned long flags, void __iomem *reg, u32 bit_idx, u32 val,
+> +			      u32 mask, u32 domain_id, unsigned int *share_count);
+> +
+>  struct clk_hw *imx_clk_hw_divider_gate(const char *name, const char *parent_name,
+>  		unsigned long flags, void __iomem *reg, u8 shift, u8 width,
+>  		u8 clk_divider_flags, const struct clk_div_table *table,
+> -- 
+> 2.37.1
+> 
