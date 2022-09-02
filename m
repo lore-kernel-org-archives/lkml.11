@@ -2,110 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B785DECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:40:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E9B5C6FA82
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:41:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229907AbiIBSkN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 14:40:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44880 "EHLO
+        id S229939AbiIBSl4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 14:41:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229669AbiIBSkL (ORCPT
+        with ESMTP id S229914AbiIBSlz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 14:40:11 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE19E6E8AA;
-        Fri,  2 Sep 2022 11:40:09 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id gb36so5523580ejc.10;
-        Fri, 02 Sep 2022 11:40:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=DVxDeaXZfKNHhIDqZtli0aAYoHM/3xsPWidZamTX/6Y=;
-        b=APLqfOR9MAYorEatAahNmr8hGYTR8+l/WKnO2DMs1juMWCmu3b8Y7otG0f6qe29tRb
-         LwjPlcGqB7CRfQHDhVScHpFHMB3nA8SPEQB6tiriF1FhTT7PwmGzgNkwlPmduusrjLVj
-         fZ8bV4E9KgZYQ/6/xOYZxgAu5+EIpUMR5Nb3CLJdiJjHswLRgNDzjcoOtHPOJQdUn5zC
-         Bt9iU8Ge6KjSzCZDeWKYQdhYwmGCB8yOW+gXOv8UtskJZMulyWVLOpeJVe6jmPaBu+6Y
-         L4rvNpaUL9boZ/ajqNrRJx7xXXvSUg2SM93bbrYTtsCh9scySB9jehQrWqSSlEASR/DZ
-         9viw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=DVxDeaXZfKNHhIDqZtli0aAYoHM/3xsPWidZamTX/6Y=;
-        b=h5xUouE9TmnJOnV2ioYFauqXAAmzdlQ/OkgCQWt9fKC8ELlrG/jhxabI/qglHQbLjs
-         Q9NBGo0RMZgG3tnFKvjNxaTFyDNyAceiDu1Czp/F1XMJdwUDtipKnMgnmK4bkG5ANynm
-         bxi6j3oMqSkT+OkVCzw3RlblWZ+m+Uhtn4i+HgUW1867ViLcaaHuIYh/JXfujlsEknhW
-         zorr3FuK832YFChOybecZ1ugnrD1y0FJpuNKeOs/x1TmsHY9IuwC9cp+Vo4iMBLMmm0p
-         FOcdmNsvNM8qxWLfdW+LQCbnwWaEFUzRPee7MYYpZnYef7UYhZ3M4SD/JKcT8RGNiE5a
-         Jn6g==
-X-Gm-Message-State: ACgBeo1t8EMMt//rGqBVUsnpFMfJA7HH6Ss3XQ4bBioXZw3o6d9/dtX+
-        LXXovUk6uYhWgCPZJkVKXfo=
-X-Google-Smtp-Source: AA6agR4TdzcK7kxJ6ekgK4iUOwn/5DLcrn5tZ+5dkRcqyuUoaCXbD8bongQcSRFwxcdcj6AJ6camyQ==
-X-Received: by 2002:a17:906:8251:b0:741:7a62:2376 with SMTP id f17-20020a170906825100b007417a622376mr17971060ejx.689.1662144008166;
-        Fri, 02 Sep 2022 11:40:08 -0700 (PDT)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id 9-20020a170906210900b0073d61238ae1sm1572560ejt.83.2022.09.02.11.40.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 11:40:07 -0700 (PDT)
-Date:   Fri, 2 Sep 2022 21:40:04 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>
-Subject: Re: [PATCH net-next 0/9] DSA changes for multiple CPU ports (part 4)
-Message-ID: <20220902184004.6tpxo4vdwkqb3fso@skbuf>
-References: <20220830195932.683432-1-vladimir.oltean@nxp.com>
- <20220902103145.faccoawnaqh6cn3r@skbuf>
- <3da14763-b495-77eb-e059-b62e496ba7e7@gmail.com>
+        Fri, 2 Sep 2022 14:41:55 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 025871037F8;
+        Fri,  2 Sep 2022 11:41:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662144112; x=1693680112;
+  h=from:to:subject:date:message-id:in-reply-to:references:
+   mime-version:content-transfer-encoding;
+  bh=/on5oCP1KwPaqtBjm1JAAFKloDtpOWIhGehylfeYbQU=;
+  b=h4ExZRTYzIFsHdymt5Gyc9xTkhJ2KKLSq+FhyxTGbjltAwOjUBVrRK1H
+   lNwCLVC00M+5KUxVuM5CCBQ5wjanR5Q6vIlUZ6xZq041/TQykdn0Mr/Sa
+   blTvppmXOu/9vks20ZDVnqRZ7vN7DmqtctEEWAAUyz88zgHY+kkWkVRK5
+   IuekfJ1LT5yfs7wBM4E5mkcgCCHficBY49mq1Cn4VyvrH0pMqyBOhx6eH
+   BtK6CQ0YLgDiJ4FBVEwkJEsMwMUydzcbFyKvII+6pSbaPGY2Mj8GmxEqM
+   S+PKOGaO6yNLiR/Ps4PK2B1NiqsBWaR1vcCJpo8g6mfiDE8QNTHMuLTt7
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10458"; a="275796130"
+X-IronPort-AV: E=Sophos;i="5.93,285,1654585200"; 
+   d="scan'208";a="275796130"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 11:26:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="788745380"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga005.jf.intel.com with ESMTP; 02 Sep 2022 11:26:44 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id DF6CF41; Fri,  2 Sep 2022 21:26:59 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Patrick Rudolph <patrick.rudolph@9elements.com>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 02/17] pinctrl: cy8c95x0: Allow IRQ chip core to handle numbering
+Date:   Fri,  2 Sep 2022 21:26:35 +0300
+Message-Id: <20220902182650.83098-2-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220902182650.83098-1-andriy.shevchenko@linux.intel.com>
+References: <20220902182650.83098-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3da14763-b495-77eb-e059-b62e496ba7e7@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Sep 02, 2022 at 11:33:31AM -0700, Florian Fainelli wrote:
-> > at some point I was thinking we could change the way in which dsa_loop
-> > probes, and allow dynamic creation of such interfaces using RTM_NEWLINK;
-> > but looking closer at that, it's a bit more complicated, since we'd need
-> > to attach dsa_loop user ports to a virtual switch, and probe all ports
-> > at the same time rather than one by one.
-> 
-> Yes, not sure the custom netlink operations would be the preferred way of
-> doing that configuration, maybe module parameters and/or debugfs might just
-> do?
+No need to assign first line number for IRQ chip.
+Let IRQ core to decide.
 
-Yeah, or make dsa_loop OF-based and just insert a device tree overlay,
-something of that sort, I'd guess.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/pinctrl/pinctrl-cy8c95x0.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-So it's likely that we won't be extending the DSA rtnl_link_ops too much
-in the future. However, it's also likely that "writable iflink" isn't
-going to be very useful for other virtual netdevices except DSA, either.
-So the argument goes both ways. And while the writable iflink requires a
-new ndo operation, the IFLA_DSA_MASTER can be handled 100% within DSA.
+diff --git a/drivers/pinctrl/pinctrl-cy8c95x0.c b/drivers/pinctrl/pinctrl-cy8c95x0.c
+index 8bb01f852c54..521acfdeef38 100644
+--- a/drivers/pinctrl/pinctrl-cy8c95x0.c
++++ b/drivers/pinctrl/pinctrl-cy8c95x0.c
+@@ -1177,7 +1177,6 @@ static int cy8c95x0_irq_setup(struct cy8c95x0_pinctrl *chip, int irq)
+ 	girq->default_type = IRQ_TYPE_NONE;
+ 	girq->handler = handle_simple_irq;
+ 	girq->threaded = true;
+-	girq->first = 0;
+ 
+ 	ret = devm_request_threaded_irq(chip->dev, irq,
+ 					NULL, cy8c95x0_irq_handler,
+-- 
+2.35.1
 
-I don't know, I'm just rambling, I'm open to suggestions.
