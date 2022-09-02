@@ -2,93 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A12BEECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 17:28:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 597ABC001B5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 17:29:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237107AbiIBR2x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 13:28:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49144 "EHLO
+        id S236613AbiIBR3T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 13:29:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237089AbiIBR2g (ORCPT
+        with ESMTP id S235884AbiIBR3K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 13:28:36 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FDFBD75AE
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 10:28:32 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id y29so2601619pfq.0
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 10:28:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=KFNnGC2cvtFaF/K+nfKIMIDR7T43wT0YbieooabzRXA=;
-        b=MfnMsa7bwax5l49IFWWcAfdzO1d8+cY5Y5/oeEQmJqfTTp2eQf2A0lBcBIny66F8y3
-         Cv6+NtmjY/NZkWIFYp6GQ0Ze3G3OZi4dr1TnkfsIgTjUST0tR/usVW0+/vXztWhl+GBR
-         uPH044oR/rxlVme+HuDxOV/+SuKwgQjIg6bl7pcFG0zgpa4VhupKqR/dOZMp+ln6AV6J
-         enhppVTQpmRSLmjrOyN6aK2VUZ5J3DcljcBiRQBjvdGVy7KvoL0IiruZl652Fb24Qj2a
-         nX+s/9w/D6klvsG4VYHdv2Z4Mb0pSem+OUkprrw403wU4YgN9V8BSF/nRs9gfF0qHQxe
-         h6cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=KFNnGC2cvtFaF/K+nfKIMIDR7T43wT0YbieooabzRXA=;
-        b=pc7kHyQNjmvxLNG+282eHLRxx1Zglb4qV9C0w/dJxavO2jHyhtjh+c5YiCK3XgYSKG
-         cQ3bOmON6/rM2Q0y75yFTRE5OYd/tRC4dC+f4vqlOiEfBoM1ZLjvoTfQw944THUPbrwi
-         5OEsP19y8h6qRc8IBqb6sNMbWkqU/+bis9qakGZwoZ2iadAb4J7UFNyhTJxcJJErx4YW
-         LfAgTWzGXTtl6qOgCaxI/o9XlF7lsHeN/BD5u6Q+CLmGrMrRXrEgTo3XP/6a/D/ciK9/
-         Ef186HVbdFprgoDSOwY6yRhfUm4cZb+U0Z5DaHCOOfGa6Z3ksqjeswBHGHLPapCuB2Gh
-         TnIA==
-X-Gm-Message-State: ACgBeo2icZVFOiDUIRpU+8IjeZa6LsCvDX87dCjAXuoz3BmeXXxtJD6M
-        D2H8AZby9P+xqYYwKmGeZDc=
-X-Google-Smtp-Source: AA6agR6OA2dcieafkQySDHOEQBPo58v6Kj0Ob5AkV8IcH1H4nimMGGXC6SA80zrLh4WpqcKrJNFUJQ==
-X-Received: by 2002:a63:1725:0:b0:42b:4300:358 with SMTP id x37-20020a631725000000b0042b43000358mr31857828pgl.536.1662139711752;
-        Fri, 02 Sep 2022 10:28:31 -0700 (PDT)
-Received: from gmail.com ([2601:600:8500:5f14:d627:c51e:516e:a105])
-        by smtp.gmail.com with ESMTPSA id z188-20020a6233c5000000b00536aa488062sm2062877pfz.163.2022.09.02.10.28.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 10:28:31 -0700 (PDT)
-Date:   Fri, 2 Sep 2022 10:28:29 -0700
-From:   Andrei Vagin <avagin@gmail.com>
-To:     Alexey Izbyshev <izbyshev@ispras.ru>
-Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        Florian Weimer <fweimer@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Kees Cook <keescook@chromium.org>
-Subject: Re: Potentially undesirable interactions between vfork() and time
- namespaces
-Message-ID: <YxI9PbdWsCmJe1Pz@gmail.com>
-References: <YxAq2jYvGG8QOypu@gmail.com>
- <87czcfhsme.fsf@email.froward.int.ebiederm.org>
- <bdff6cf478fc29c80997a623a57dae5f@ispras.ru>
+        Fri, 2 Sep 2022 13:29:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 065A9F8F5F;
+        Fri,  2 Sep 2022 10:29:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C01BBB82CE8;
+        Fri,  2 Sep 2022 17:29:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B2AAC433D7;
+        Fri,  2 Sep 2022 17:28:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662139739;
+        bh=Y4zv07NX7Af0mypsr8VN1DC6DfzrXJ+O+npkp3h71Ho=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LSfjiyiqimzqCPXlykQvTii1/uNQQ7Sc0nX4lQOUJU8+WlKZvMf2cZq3MHoxgmq4r
+         /K1JSGy9NAlDgdvENO7vywavNy1sThPLkMDY0O33LoRCQd2yS04ulV1t3oT3p1HYIm
+         +8TOCMrfp83kQ+MXFmmfUwdty9RwrS0gv7qK06wtQCmyJVL8rdGLpx3jUIQLs7PZxT
+         9WgArCKNopqdnvzfzMKgQ2ResayQKDFrdfQx1K5hVeAwvuLjylq8zDOQ0RFjalhr1E
+         oUpsKbS7BFfUo8tYKv0kASHqEfH1F6CvDgtVHp1Lm+/CwX5nS0WKKLrwb1s0v513QH
+         Wa+1dC8/Inehg==
+Date:   Fri, 2 Sep 2022 22:58:54 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Pratyush Yadav <pratyush@kernel.org>,
+        linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2] dt-bindings: phy: Update Pratyush Yadav's email
+Message-ID: <YxI9ViXF7gMc5KcM@matsya>
+References: <20220816132131.75591-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=koi8-r
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <bdff6cf478fc29c80997a623a57dae5f@ispras.ru>
+In-Reply-To: <20220816132131.75591-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Sep 02, 2022 at 08:01:57PM +0300, Alexey Izbyshev wrote:
-> On 2022-09-01 21:11, Eric W. Biederman wrote:
+On 16-08-22, 16:21, Krzysztof Kozlowski wrote:
+> Emails to Pratyush Yadav bounce ("550 Invalid recipient"), so update to
+> match one in commit 92714596cdbe ("MAINTAINERS: Use my kernel.org
+> email").
 
-<snip>
+Applied, thanks
 
-> >  static int check_setns_flags(unsigned long flags)
-> >  {
-> >  	if (!flags || (flags & ~(CLONE_NEWNS | CLONE_NEWUTS | CLONE_NEWIPC |
-> > 
-> > 
-> > 
-> > To keep things from being too confusing it probably makes sense to
-> > rename the nsproxy variable from time_ns_for_children to
-> > time_ns_for_new_mm.  Likewise timens_on_fork can be renamed
-> > timens_on_new_mm.
-> > 
-> Do you imply renaming "/proc/[pid]/ns/time_for_children" as well, or will it
-> be preserved for compatibility?
-
-I don't think this is possible. It is used by a few tools already.
-
+-- 
+~Vinod
