@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26B9AECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:45:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EE7EECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:45:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236806AbiIBNpF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:45:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45674 "EHLO
+        id S237945AbiIBNpv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:45:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237822AbiIBNob (ORCPT
+        with ESMTP id S236909AbiIBNpN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:44:31 -0400
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A9F066A55
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:20:46 -0700 (PDT)
-Received: by mail-wr1-f49.google.com with SMTP id e20so2245185wri.13
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 06:20:46 -0700 (PDT)
+        Fri, 2 Sep 2022 09:45:13 -0400
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B8E5121403
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:21:15 -0700 (PDT)
+Received: by mail-wr1-f41.google.com with SMTP id e20so2245989wri.13
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 06:21:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=Fd4lSn+qZVzeO4qkwAmVHFeGiK8e6ML8+dOEILHHB/4=;
-        b=Y5fmg2CCmqTFkCJWckDRDOx1uahyv+g1TtzQ24yVBQvoNDz8BBceaGKn5TrsCXlPdm
-         0R16R3/D9RGVwmB6R5ug35KmOUiGMEFGvrJj5dMUioFSSuhhFZZOLv1BqqF/Z6uj6up4
-         JCnYyy5E3wbxtkwIxYTtDVz6EWnPYmXNWqf8kY1YBn4Q7qx9La8n00BnyLznQy6r4hRj
-         3UDtKOSNAODdD0uowmneP3z7FZkz6fUfyYYRw9QRsFJMDaDifMI6/4AqXf+xb8DFKoEe
-         iHqfbok1nAtAPsFz3Zuqi/Mm2DSEDzSxmvAYkOPslwgXR4p3s+m3EKgFZzOfwSxG5T/t
-         UWnw==
+        bh=+NJ6xKhiGbSOGo5cMoVPnj1TJxvE218kMGaZcoDwEd0=;
+        b=m/JPw4fBulwRDhBlmisCOmLjjV9F5cNSWJjavJyRZuUBnMdNxSvxn5aOGMkKguq7L7
+         oLD2t8+6yxTu1blyBmnaqlpwjFZwhijBdj4G99LCCFv1Pr5W8MGt+/8hfaYFbCtXRBia
+         hKSJaXEXbnMPxeUNEV1yPKwScVSRjU34sRi+fyIzqXh4ClW7ANBnoOzfN/2fDGjhNQ3J
+         CngPoHO8LFfdB2zUiM62oWycW87dkLaMOJWEjn8f6D8HfDwRA9eGEyo/oA6ixtKjXu78
+         TSw4MvXCtAU4e8wr/mrCcsqldn0ARmnjIL6JUHCn0M1/T4ULLuVuofIMgXA8aRCpDqu1
+         0TGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=Fd4lSn+qZVzeO4qkwAmVHFeGiK8e6ML8+dOEILHHB/4=;
-        b=36CeMGC+TgKrRnEEs3N3ztTtlCEvI9mRumflkvodQc3Mc+1Bffnrq6xoRD0y2PoHSU
-         mo3z857WX2TchyXQkt8wkLDmle6P6zH+iM/YC8RiPetTTBTIH0AcJtOG3bIxxVRBVXSx
-         FMMzm67lWloXqBZUwbJX9YxvvX80fnd8pWYsKArtknPLR0pExCOltXf8USsLjAfoyNnr
-         8pStaJTCmngrbif0hi35qYvxFvGuqFI7tYDc+sGzK3BBKRA/v83s2NrKLFdBWZMqQ7zU
-         TC0iPDjan4jhuwJ0PyC2F8m0udCEMLyD4FmYfrehRl0RhAXSqZx7t+oj3cuViKKYo22X
-         FHDA==
-X-Gm-Message-State: ACgBeo2oGp/yrDJMDPUdTabl0Nj5k5pAB5iP8Eh/TrglOUkEvgxPsPUO
-        6+au9FzQGHgz0xrT3J6gYDyV+g==
-X-Google-Smtp-Source: AA6agR5hvVENxFSh2gnwP8eA5w9X+QtN5NSpi56rnmJnWFXn5xD87WZ1MnKXYCOvXJ2XQH43RdlQFA==
-X-Received: by 2002:adf:fbc7:0:b0:220:6004:18ca with SMTP id d7-20020adffbc7000000b00220600418camr16867924wrs.632.1662124467681;
-        Fri, 02 Sep 2022 06:14:27 -0700 (PDT)
+        bh=+NJ6xKhiGbSOGo5cMoVPnj1TJxvE218kMGaZcoDwEd0=;
+        b=QufzBWOAQO5hJQj3YcCU0eMTl3k7HIxckBvWG2qqTr1/qojr93xEfLwGBp729DiGFd
+         r3oj4xzCv0boHG+HU395l9P3jB/+9M4xel1EUSyPbF9IDbxNhJIbYQDV6vOSRQHujruu
+         nXsYkcZYDzTT+ogdwrlgeU3NOe+5IDLa918yXx8wT8gX0nNAiW+g0nBYcP5UNpILB2kV
+         D95+0K8xGOl1umaV0kdhfGKpB1V3wJmPuSyOZwbOC73QhiUSWCC4ZsTl43wRGT4UlPEz
+         Sjgs2+z39GSIopnYdx/qfQkAE2KltEFynaYC8PFNCtkcQ39kJTiLEuRhuwB9cWzeld0W
+         mdzg==
+X-Gm-Message-State: ACgBeo0L5f3n0nv6Uq2cbSEgP3g69AgxVRpCXfYVxL4MpgQ0nXU0AY/V
+        qwJu8ksqNqJsJ1+va8aJbmDEaQ==
+X-Google-Smtp-Source: AA6agR5khwA9O39WiV5uyZO+cy8xHac71GpvkhSdkl6wlAbK5MCCDdhbahjorPKL4lXTWTohP7FFgQ==
+X-Received: by 2002:a05:6000:144:b0:226:da62:6d90 with SMTP id r4-20020a056000014400b00226da626d90mr14343238wrx.609.1662124481631;
+        Fri, 02 Sep 2022 06:14:41 -0700 (PDT)
 Received: from hackbox.lan ([94.52.112.99])
-        by smtp.gmail.com with ESMTPSA id v14-20020a5d43ce000000b002253fd19a6asm1766253wrr.18.2022.09.02.06.14.26
+        by smtp.gmail.com with ESMTPSA id v14-20020a5d43ce000000b002253fd19a6asm1766253wrr.18.2022.09.02.06.14.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 06:14:27 -0700 (PDT)
+        Fri, 02 Sep 2022 06:14:41 -0700 (PDT)
 From:   Abel Vesa <abel.vesa@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorande@qti.qualcomm.com>,
@@ -62,9 +62,9 @@ Cc:     Arnd Bergmann <arnd@arndb.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: [PATCH 05/14] misc: fastrpc: Add reserved mem support
-Date:   Fri,  2 Sep 2022 16:13:35 +0300
-Message-Id: <20220902131344.3029826-6-abel.vesa@linaro.org>
+Subject: [PATCH 14/14] misc: fastrpc: Add dma_mask to fastrpc_channel_ctx
+Date:   Fri,  2 Sep 2022 16:13:44 +0300
+Message-Id: <20220902131344.3029826-15-abel.vesa@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220902131344.3029826-1-abel.vesa@linaro.org>
 References: <20220902131344.3029826-1-abel.vesa@linaro.org>
@@ -74,38 +74,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The reserved mem support is needed for CMA heap support, which will be
-used by AUDIOPD.
+dma_set_mask_and_coherent only updates the mask to which the device
+dma_mask pointer points to. Add a dma_mask to the channel ctx and set
+the device dma_mask to point to that, otherwise the dma_set_mask will
+return an error and the dma_set_coherent_mask will be skipped too.
 
 Co-developed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
 ---
- drivers/misc/fastrpc.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/misc/fastrpc.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
-index 8d803ee33904..52271f51800d 100644
+index cd7c6cf269a1..3e0dbb5e9548 100644
 --- a/drivers/misc/fastrpc.c
 +++ b/drivers/misc/fastrpc.c
-@@ -19,6 +19,7 @@
- #include <linux/slab.h>
- #include <linux/qcom_scm.h>
- #include <uapi/misc/fastrpc.h>
-+#include <linux/of_reserved_mem.h>
+@@ -278,6 +278,7 @@ struct fastrpc_channel_ctx {
+ 	struct list_head invoke_interrupted_mmaps;
+ 	bool secure;
+ 	bool unsigned_support;
++	u64 dma_mask;
+ };
  
- #define ADSP_DOMAIN_ID (0)
- #define MDSP_DOMAIN_ID (1)
-@@ -2064,6 +2065,9 @@ static int fastrpc_rpmsg_probe(struct rpmsg_device *rpdev)
- 		return -EINVAL;
- 	}
+ struct fastrpc_device {
+@@ -2310,6 +2311,7 @@ static int fastrpc_rpmsg_probe(struct rpmsg_device *rpdev)
+ 	kref_init(&data->refcount);
  
-+	if (of_reserved_mem_device_init_by_idx(rdev, rdev->of_node, 0))
-+		dev_info(rdev, "no reserved DMA memory for FASTRPC\n");
-+
- 	vmcount = of_property_read_variable_u32_array(rdev->of_node,
- 				"qcom,vmids", &vmids[0], 0, FASTRPC_MAX_VMIDS);
- 	if (vmcount < 0)
+ 	dev_set_drvdata(&rpdev->dev, data);
++	rdev->dma_mask = &data->dma_mask;
+ 	dma_set_mask_and_coherent(rdev, DMA_BIT_MASK(32));
+ 	INIT_LIST_HEAD(&data->users);
+ 	INIT_LIST_HEAD(&data->invoke_interrupted_mmaps);
 -- 
 2.34.1
 
