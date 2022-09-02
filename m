@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F14FEC6FA82
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:44:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25819C6FA82
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:44:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236385AbiIBMo2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:44:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51408 "EHLO
+        id S237278AbiIBMoc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:44:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237369AbiIBMmo (ORCPT
+        with ESMTP id S237158AbiIBMmr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:42:44 -0400
+        Fri, 2 Sep 2022 08:42:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85DA8E094E;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8643FE9252;
         Fri,  2 Sep 2022 05:32:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1137DB82A94;
-        Fri,  2 Sep 2022 12:31:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71DADC433D6;
-        Fri,  2 Sep 2022 12:31:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E1D1AB82A91;
+        Fri,  2 Sep 2022 12:25:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BA52C433B5;
+        Fri,  2 Sep 2022 12:25:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121882;
-        bh=+OwaWvDm6s13idP12RWK5sAQ7wn0qKFIK/qWMx36jbg=;
+        s=korg; t=1662121530;
+        bh=IhVbyVuHrpBEk4YZR0s2ZpQoae/Jxu0YqRmfpMppHkg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TcX/Gn+DpruwKOjiewPLaO9pTOLxr2DypsSOaHSiCu1ZOS2OJkjVku0hPm9yef3M8
-         I+oYHhz1aCrZEk8t/2VK3IURG13Y8inQC8pMFaRk3LfJY4YrBfrIUJqGw2i5oyuItm
-         m0GP+B79xeQd9UiYBov5jxA1Ij7R6ugMr47PN280=
+        b=nDoKmnzndy05oxlT11L8XMrLTply5fHlVKmo8Nw6byxP9/J9AHuNbg24mgDTybgnN
+         aVTSSX7oMuDO0dToefMqF4OP+nb21c2oG2Crsb1R6OAeZ5KtgOUMvw/EIhZJjBHnYu
+         wmRrgw1dhf/Ft+WcP5z6gI7rGdCYz2DU5hZKZIwY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Abaci Robot <abaci@linux.alibaba.com>,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH 5.15 18/73] io_uring: Remove unused function req_ref_put
-Date:   Fri,  2 Sep 2022 14:18:42 +0200
-Message-Id: <20220902121405.058275058@linuxfoundation.org>
+        stable@vger.kernel.org, Hsin-Yi Wang <hsinyi@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Will Deacon <will@kernel.org>,
+        Michael Bestas <mkbestas@gmail.com>
+Subject: [PATCH 4.19 38/56] arm64: map FDT as RW for early_init_dt_scan()
+Date:   Fri,  2 Sep 2022 14:18:58 +0200
+Message-Id: <20220902121401.651699297@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
-References: <20220902121404.435662285@linuxfoundation.org>
+In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
+References: <20220902121400.219861128@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,41 +51,118 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+From: Hsin-Yi Wang <hsinyi@chromium.org>
 
-[ upstream commmit c84b8a3fef663933007e885535591b9d30bdc860 ]
+commit e112b032a72c78f15d0c803c5dc6be444c2e6c66 upstream.
 
-Fix the following clang warnings:
+Currently in arm64, FDT is mapped to RO before it's passed to
+early_init_dt_scan(). However, there might be some codes
+(eg. commit "fdt: add support for rng-seed") that need to modify FDT
+during init. Map FDT to RO after early fixups are done.
 
-fs/io_uring.c:1195:20: warning: unused function 'req_ref_put'
-[-Wunused-function].
-
-Fixes: aa43477b0402 ("io_uring: poll rework")
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Link: https://lore.kernel.org/r/20220113162005.3011-1-jiapeng.chong@linux.alibaba.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-[pavel: backport]
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Mike Rapoport <rppt@linux.ibm.com>
+Signed-off-by: Will Deacon <will@kernel.org>
+[mkbestas: fixed trivial conflicts for 4.19 backport]
+Signed-off-by: Michael Bestas <mkbestas@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/io_uring.c |    6 ------
- 1 file changed, 6 deletions(-)
+ arch/arm64/include/asm/mmu.h |    2 +-
+ arch/arm64/kernel/kaslr.c    |    5 +----
+ arch/arm64/kernel/setup.c    |    9 ++++++++-
+ arch/arm64/mm/mmu.c          |   15 +--------------
+ 4 files changed, 11 insertions(+), 20 deletions(-)
 
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -1155,12 +1155,6 @@ static inline bool req_ref_put_and_test(
- 	return atomic_dec_and_test(&req->refs);
+--- a/arch/arm64/include/asm/mmu.h
++++ b/arch/arm64/include/asm/mmu.h
+@@ -98,7 +98,7 @@ extern void init_mem_pgprot(void);
+ extern void create_pgd_mapping(struct mm_struct *mm, phys_addr_t phys,
+ 			       unsigned long virt, phys_addr_t size,
+ 			       pgprot_t prot, bool page_mappings_only);
+-extern void *fixmap_remap_fdt(phys_addr_t dt_phys);
++extern void *fixmap_remap_fdt(phys_addr_t dt_phys, int *size, pgprot_t prot);
+ extern void mark_linear_text_alias_ro(void);
+ 
+ #endif	/* !__ASSEMBLY__ */
+--- a/arch/arm64/kernel/kaslr.c
++++ b/arch/arm64/kernel/kaslr.c
+@@ -65,9 +65,6 @@ out:
+ 	return default_cmdline;
  }
  
--static inline void req_ref_put(struct io_kiocb *req)
+-extern void *__init __fixmap_remap_fdt(phys_addr_t dt_phys, int *size,
+-				       pgprot_t prot);
+-
+ /*
+  * This routine will be executed with the kernel mapped at its default virtual
+  * address, and if it returns successfully, the kernel will be remapped, and
+@@ -96,7 +93,7 @@ u64 __init kaslr_early_init(u64 dt_phys)
+ 	 * attempt at mapping the FDT in setup_machine()
+ 	 */
+ 	early_fixmap_init();
+-	fdt = __fixmap_remap_fdt(dt_phys, &size, PAGE_KERNEL);
++	fdt = fixmap_remap_fdt(dt_phys, &size, PAGE_KERNEL);
+ 	if (!fdt)
+ 		return 0;
+ 
+--- a/arch/arm64/kernel/setup.c
++++ b/arch/arm64/kernel/setup.c
+@@ -183,9 +183,13 @@ static void __init smp_build_mpidr_hash(
+ 
+ static void __init setup_machine_fdt(phys_addr_t dt_phys)
+ {
+-	void *dt_virt = fixmap_remap_fdt(dt_phys);
++	int size;
++	void *dt_virt = fixmap_remap_fdt(dt_phys, &size, PAGE_KERNEL);
+ 	const char *name;
+ 
++	if (dt_virt)
++		memblock_reserve(dt_phys, size);
++
+ 	if (!dt_virt || !early_init_dt_scan(dt_virt)) {
+ 		pr_crit("\n"
+ 			"Error: invalid device tree blob at physical address %pa (virtual address 0x%p)\n"
+@@ -197,6 +201,9 @@ static void __init setup_machine_fdt(phy
+ 			cpu_relax();
+ 	}
+ 
++	/* Early fixups are done, map the FDT as read-only now */
++	fixmap_remap_fdt(dt_phys, &size, PAGE_KERNEL_RO);
++
+ 	name = of_flat_dt_get_machine_name();
+ 	if (!name)
+ 		return;
+--- a/arch/arm64/mm/mmu.c
++++ b/arch/arm64/mm/mmu.c
+@@ -859,7 +859,7 @@ void __set_fixmap(enum fixed_addresses i
+ 	}
+ }
+ 
+-void *__init __fixmap_remap_fdt(phys_addr_t dt_phys, int *size, pgprot_t prot)
++void *__init fixmap_remap_fdt(phys_addr_t dt_phys, int *size, pgprot_t prot)
+ {
+ 	const u64 dt_virt_base = __fix_to_virt(FIX_FDT);
+ 	int offset;
+@@ -912,19 +912,6 @@ void *__init __fixmap_remap_fdt(phys_add
+ 	return dt_virt;
+ }
+ 
+-void *__init fixmap_remap_fdt(phys_addr_t dt_phys)
 -{
--	WARN_ON_ONCE(!(req->flags & REQ_F_REFCOUNT));
--	WARN_ON_ONCE(req_ref_put_and_test(req));
+-	void *dt_virt;
+-	int size;
+-
+-	dt_virt = __fixmap_remap_fdt(dt_phys, &size, PAGE_KERNEL_RO);
+-	if (!dt_virt)
+-		return NULL;
+-
+-	memblock_reserve(dt_phys, size);
+-	return dt_virt;
 -}
 -
- static inline void req_ref_get(struct io_kiocb *req)
+ int __init arch_ioremap_pud_supported(void)
  {
- 	WARN_ON_ONCE(!(req->flags & REQ_F_REFCOUNT));
+ 	/*
 
 
