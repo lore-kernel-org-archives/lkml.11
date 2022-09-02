@@ -2,98 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82469ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 22:06:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98087ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 22:07:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229983AbiIBWGk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 18:06:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42412 "EHLO
+        id S231560AbiIBWHV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 18:07:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230291AbiIBWGh (ORCPT
+        with ESMTP id S231538AbiIBWHS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 18:06:37 -0400
-Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B50FAC68
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 15:06:37 -0700 (PDT)
-Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-11e9a7135easo8081578fac.6
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 15:06:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=9qX6YCyjku8qBakOUeq0M8NNGw+W8PvXfjDjCS9/wbw=;
-        b=J29oYpZsXnj37dG8L9ul3xK8uzaagnFAZ/npfTNYvlZ1WyVC/t2c8ADpzlX6xQCfx3
-         LZ7EHrnc1moUFJtS6TZtaS01SKRT+m4tOcdP+X5NhctzdpQKxv4ZrNRUXn2V9rJ4/Upo
-         m+M2pfEclBg6hoS274KVBR9cEkMmQTxFrc1K4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=9qX6YCyjku8qBakOUeq0M8NNGw+W8PvXfjDjCS9/wbw=;
-        b=gSf0NVbUnhiKIXJNUE8OpniOrVFCRCej8SGQqypjLBlf9GzCA4MhigXz5PwZ3qQkcz
-         cAKe9auI9z6Muy/DX69F/b9VaDfvXyd2ByQ3hOGinv7Iv4FPIo+BwYS6UvIztp225qQU
-         6nKnBk5BIErzsHIYD7F5omsVSAM2+9rY87zHv8mZ4AXahzd6nKkErT+WxybRxVMdbP9S
-         FxiR1P5rmynt45lPrar2pf7L/O7wxWBEW6MDZl2rV2LTUOOivSh3soI6qpa145OlhHA1
-         5DVUhagZqUhLxRF2CWObQLCT6gPnmjdL/15jeRwX9woOV9wpTh/EDLZSZnO0QL+l2mVh
-         0Uhw==
-X-Gm-Message-State: ACgBeo3MggunxDcUlNtKGro/u04sqo9eBVmlCk+1Ih/ObUsGfKUnmAx1
-        QZJ+g+h1Nv2IgUKbJKFCAOhqPg==
-X-Google-Smtp-Source: AA6agR5kxnVqV73hZs6Gu7xLKLu1xRYo2knIa65HIfeDbG8oCQdGVG3qYJ6GjYIobLQP4/gTaxU8aA==
-X-Received: by 2002:a05:6808:58:b0:343:2a77:cdc7 with SMTP id v24-20020a056808005800b003432a77cdc7mr2686420oic.160.1662156396366;
-        Fri, 02 Sep 2022 15:06:36 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id n26-20020a4ac71a000000b0044528e04cdasm1096776ooq.23.2022.09.02.15.06.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Sep 2022 15:06:35 -0700 (PDT)
-Message-ID: <567c27f4-643d-6134-f8a1-d77c51061eac@linuxfoundation.org>
-Date:   Fri, 2 Sep 2022 16:06:33 -0600
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 5.15 00/73] 5.15.65-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220902121404.435662285@linuxfoundation.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Fri, 2 Sep 2022 18:07:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2C1CFE054;
+        Fri,  2 Sep 2022 15:07:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EF1561E0B;
+        Fri,  2 Sep 2022 22:07:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B2868C433D6;
+        Fri,  2 Sep 2022 22:07:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662156436;
+        bh=OuOB4qF336Z0pTWQDjueuyIoEnMcKV4j5qiFMCruXbI=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=cVrFM+IxuPcYkv0NyAnjlhouXWPFJQAOHpPpLWmWUmxPNyFucal9Y07PJ+mnyf/xF
+         S9ogL2yF2XFQ72MLkBSGfy9bGyc1wfgaSTeSjNTdd5pA8XK6yOChq/LOHE+BVCLFW3
+         xhTBfbazptLR99Duiuvr4pFmmyLBvolSUP3AeEHNklMyy0+aYNwy4Zo/4GUXt0aMFh
+         iekJwklCMMyq/XcKDEsNgzZrFZp3KDbSKb5ca/5PubCayRGKk6xd9BPVYXHues9J9g
+         tcqP11NnlKJ1ITgfiVEj05R2bpyZUsC7lSFTeyRxJhqRELOxpdi6zxELusYhNK5jwq
+         4Gq4ykZxGBPxw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9E774E924E4;
+        Fri,  2 Sep 2022 22:07:16 +0000 (UTC)
+Subject: Re: [GIT PULL] MMC fixes for v6.0-rc4
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220902095113.499331-1-ulf.hansson@linaro.org>
+References: <20220902095113.499331-1-ulf.hansson@linaro.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220902095113.499331-1-ulf.hansson@linaro.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/ulfh/mmc.git tags/mmc-v6.0-rc2
+X-PR-Tracked-Commit-Id: 63f1560930e4e1c4f6279b8ae715c9841fe1a6d3
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: b307e704574bd4187d4f46212e7ea8189b53f9ab
+Message-Id: <166215643664.30372.12644831645226908131.pr-tracker-bot@kernel.org>
+Date:   Fri, 02 Sep 2022 22:07:16 +0000
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     Linus <torvalds@linux-foundation.org>, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 9/2/22 06:18, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.65 release.
-> There are 73 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Sun, 04 Sep 2022 12:13:47 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.65-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+The pull request you sent on Fri,  2 Sep 2022 11:51:13 +0200:
 
-Compiled and booted on my test system. No dmesg regressions.
+> git://git.kernel.org/pub/scm/linux/kernel/git/ulfh/mmc.git tags/mmc-v6.0-rc2
 
-Tested-by: Shuah Khan <skhan@linuxfoundation.org>
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/b307e704574bd4187d4f46212e7ea8189b53f9ab
 
-thanks,
--- Shuah
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
