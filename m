@@ -2,80 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A13CC001B5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:31:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDDBDC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:31:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236283AbiIBPbf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 11:31:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32988 "EHLO
+        id S236695AbiIBPbp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 11:31:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235900AbiIBPbE (ORCPT
+        with ESMTP id S236395AbiIBPbL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 11:31:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B72DEEF1D
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 08:12:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E942661ED1
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 15:12:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 059E0C433D6;
-        Fri,  2 Sep 2022 15:12:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662131552;
-        bh=iQV0UtvNqJy1fdVQmW025M78GOmVWquCHJiS7nGRwKU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=irm7AVNsKa89ntN7Y2LSJe9M/ZxnSpqDlBZv7Kv99r/g4xU82Nmv5mLxb+zROds6u
-         oBQAMMFOki5+gq9og1zCxNNj7JBT+VOt84/QTMg0CvmTPKG5H6YYOrjhKLijir1rJH
-         cGqvoCkRVw0z8gaPF7Es2TyLVN3fRhEdFOtSeUpvKSWIikqSUC5ZAxEtmi+9KFtpdT
-         YT1j8nXkllRolXZZM0fxabABcuxvZJjPdywFJmmQSUQbpSY8mDxiLR0ekrq1Wqu3sB
-         7byOp29GSm1iQJA8tKocek2ylHNInGxsN8l6LxRyp54bVj/wC2rFAmBunuEuAD9CC6
-         DAAoRDh7lOlpA==
-Date:   Fri, 2 Sep 2022 08:12:30 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Josh Poimboeuf <jpoimboe@kernel.org>, llvm@lists.linux.dev,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: Re: [jpoimboe:s390 2/2] Unsupported relocation type: 26
-Message-ID: <YxIdXugKymRtV9zW@dev-arch.thelio-3990X>
-References: <202209021319.l7dwyum7-lkp@intel.com>
+        Fri, 2 Sep 2022 11:31:11 -0400
+Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58BF2F23C9;
+        Fri,  2 Sep 2022 08:12:41 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.143])
+        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4MK1ZS1Rw6zKL17;
+        Fri,  2 Sep 2022 23:10:56 +0800 (CST)
+Received: from k01.huawei.com (unknown [10.67.174.197])
+        by APP3 (Coremail) with SMTP id _Ch0CgBn4UhlHRJja8YAAQ--.58277S2;
+        Fri, 02 Sep 2022 23:12:39 +0800 (CST)
+From:   Xu Kuohai <xukuohai@huaweicloud.com>
+To:     bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>
+Subject: [PATCH bpf-next 0/2] Jit BPF_CALL to direct call when possible
+Date:   Fri,  2 Sep 2022 11:20:40 -0400
+Message-Id: <20220902152043.721806-1-xukuohai@huaweicloud.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202209021319.l7dwyum7-lkp@intel.com>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: _Ch0CgBn4UhlHRJja8YAAQ--.58277S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrtrW3ZF15KFW7Kr1ftr13urg_yoW3Jrb_GF
+        WxAFy7A343ZFyUAasYya97AFy8KrWDtr18AFn0qrZ7t34ftw4DAry8XFWkX3WUXrWjkFyr
+        Cwsrur48tr1Y9jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUb7AYFVCjjxCrM7AC8VAFwI0_Xr0_Wr1l1xkIjI8I6I8E6xAIw20E
+        Y4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwV
+        A0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0cI8IcVCY1x02
+        67AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxV
+        AFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2
+        j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7x
+        kEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACI402YVCY1x02628vn2kIc2xKxwCF04k20xvY
+        0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I
+        0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_GFv_WrylIxkGc2Ij64vIr41lIxAI
+        cVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcV
+        CF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280
+        aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7IU13rcDUUUUU==
+X-CM-SenderInfo: 50xn30hkdlqx5xdzvxpfor3voofrz/
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Sep 02, 2022 at 01:51:11PM +0800, kernel test robot wrote:
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jpoimboe/linux.git s390
-> head:   fa09ffb73e4d64424faef5988a1e993317db77c5
-> commit: fa09ffb73e4d64424faef5988a1e993317db77c5 [2/2] s390: Compile relocatable kernel without -fPIE
-> config: s390-randconfig-r044-20220901
-> compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project c55b41d5199d2394dd6cdb8f52180d8b81d809d4)
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # install s390 cross compiling tool for clang build
->         # apt-get install binutils-s390x-linux-gnu
->         # https://git.kernel.org/pub/scm/linux/kernel/git/jpoimboe/linux.git/commit/?id=fa09ffb73e4d64424faef5988a1e993317db77c5
->         git remote add jpoimboe https://git.kernel.org/pub/scm/linux/kernel/git/jpoimboe/linux.git
->         git fetch --no-tags jpoimboe s390
->         git checkout fa09ffb73e4d64424faef5988a1e993317db77c5
->         # save the config file
->         mkdir build_dir && cp config build_dir/.config
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
-> 
-> If you fix the issue, kindly add following tag where applicable
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All errors (new ones prefixed by >>):
-> 
-> >> Unsupported relocation type: 26
+Currently BPF_CALL is always jited to indirect call, but when target is
+in the range of direct call, a BPF_CALL can be jited to direct call.
 
-Looks like 26 is R_390_GOTENT according to
-https://github.com/llvm/llvm-project/blob/ee761374f797a47919ec8f9f49f9b8b1b20573e8/llvm/include/llvm/BinaryFormat/ELFRelocs/SystemZ.def.
+For example, the following BPF_CALL
 
-Cheers,
-Nathan
+    call __htab_map_lookup_elem
+
+is always jited to an indirect call:
+
+    mov     x10, #0xffffffffffff18f4
+    movk    x10, #0x821, lsl #16
+    movk    x10, #0x8000, lsl #32
+    blr     x10
+
+When the target is in the range of a direct call, it can be jited to:
+
+    bl      0xfffffffffd33bc98
+
+This patchset does such jit.
+
+Xu Kuohai (2):
+  bpf, arm64: Jit BPF_CALL to direct call when possible
+  bpf, arm64: Eliminate false -EFBIG error in bpf trampoline
+
+ arch/arm64/net/bpf_jit_comp.c | 136 ++++++++++++++++++++++------------
+ 1 file changed, 87 insertions(+), 49 deletions(-)
+
+-- 
+2.30.2
+
