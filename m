@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6093ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:50:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A07ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:50:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237703AbiIBMuJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:50:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41704 "EHLO
+        id S237725AbiIBMuN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:50:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237837AbiIBMtA (ORCPT
+        with ESMTP id S237955AbiIBMtS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:49:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25D4152E60;
-        Fri,  2 Sep 2022 05:35:22 -0700 (PDT)
+        Fri, 2 Sep 2022 08:49:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FF23D9EB8;
+        Fri,  2 Sep 2022 05:35:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C238FB82A71;
-        Fri,  2 Sep 2022 12:33:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 173A8C433D6;
-        Fri,  2 Sep 2022 12:33:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DA15621BE;
+        Fri,  2 Sep 2022 12:33:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22FCFC433D7;
+        Fri,  2 Sep 2022 12:33:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122037;
-        bh=QrJc/PcuDZ8Iu7xYsKO5cbixq/O3Dprx/WDWhp7RFWM=;
+        s=korg; t=1662122005;
+        bh=tU0CSPW7Wpbx9znL3/33fzBgj7xdlhoFpnuci/3+y14=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qFSb9WL/hwK3GYhPoAiXsNkUO3199sEHynC1IcaVW4HH/Gl23Iwf7TS3oPu/rRHU5
-         BocNFT2VYnMsL9xF5Kk6PWzBr4MmOacC1d4dF7c1hSd+MUUtOXHDCkpTfebn3Eg+NE
-         SDUJP7BD4Xex6x3E97fnYaPjAWmUQhmBfyo4k8AE=
+        b=mgAiT8lY4PdGEGVnjhzfkA97digmZn1R/GkAAQ1hnZ3j9fsjDC3NBHQ8v1tPGwXQV
+         pxpIfBx+ECP87/VcDFIky9OXhM/ek1gkQJy7HIFzWZUoqoXevg3jbrUKz9ZbpMSgME
+         nXzw/nTVXfaq8mvDf4hWxSzjTTtDI2gKe501/qQ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 5.15 25/73] Bluetooth: L2CAP: Fix build errors in some archs
-Date:   Fri,  2 Sep 2022 14:18:49 +0200
-Message-Id: <20220902121405.280648453@linuxfoundation.org>
+        stable@vger.kernel.org, Alvin Lee <alvin.lee2@amd.com>,
+        Tom Chung <chiahsuan.chung@amd.com>,
+        Fudong Wang <Fudong.Wang@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 55/73] drm/amd/display: clear optc underflow before turn off odm clock
+Date:   Fri,  2 Sep 2022 14:19:19 +0200
+Message-Id: <20220902121406.250816449@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
 References: <20220902121404.435662285@linuxfoundation.org>
@@ -49,63 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Fudong Wang <Fudong.Wang@amd.com>
 
-commit b840304fb46cdf7012722f456bce06f151b3e81b upstream.
+[ Upstream commit b2a93490201300a749ad261b5c5d05cb50179c44 ]
 
-This attempts to fix the follow errors:
+[Why]
+After ODM clock off, optc underflow bit will be kept there always and clear not work.
+We need to clear that before clock off.
 
-In function 'memcmp',
-    inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:347:9,
-    inlined from 'l2cap_global_chan_by_psm' at
-    net/bluetooth/l2cap_core.c:2003:15:
-./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp'
-specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
-   44 | #define __underlying_memcmp     __builtin_memcmp
-      |                                 ^
-./include/linux/fortify-string.h:420:16: note: in expansion of macro
-'__underlying_memcmp'
-  420 |         return __underlying_memcmp(p, q, size);
-      |                ^~~~~~~~~~~~~~~~~~~
-In function 'memcmp',
-    inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:347:9,
-    inlined from 'l2cap_global_chan_by_psm' at
-    net/bluetooth/l2cap_core.c:2004:15:
-./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp'
-specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
-   44 | #define __underlying_memcmp     __builtin_memcmp
-      |                                 ^
-./include/linux/fortify-string.h:420:16: note: in expansion of macro
-'__underlying_memcmp'
-  420 |         return __underlying_memcmp(p, q, size);
-      |                ^~~~~~~~~~~~~~~~~~~
+[How]
+Clear that if have when clock off.
 
-Fixes: 332f1795ca20 ("Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm regression")
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Alvin Lee <alvin.lee2@amd.com>
+Acked-by: Tom Chung <chiahsuan.chung@amd.com>
+Signed-off-by: Fudong Wang <Fudong.Wang@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/l2cap_core.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -1992,11 +1992,11 @@ static struct l2cap_chan *l2cap_global_c
- 			src_match = !bacmp(&c->src, src);
- 			dst_match = !bacmp(&c->dst, dst);
- 			if (src_match && dst_match) {
--				c = l2cap_chan_hold_unless_zero(c);
--				if (c) {
--					read_unlock(&chan_list_lock);
--					return c;
--				}
-+				if (!l2cap_chan_hold_unless_zero(c))
-+					continue;
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c
+index 37848f4577b18..92fee47278e5a 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c
+@@ -480,6 +480,11 @@ void optc1_enable_optc_clock(struct timing_generator *optc, bool enable)
+ 				OTG_CLOCK_ON, 1,
+ 				1, 1000);
+ 	} else  {
 +
-+				read_unlock(&chan_list_lock);
-+				return c;
- 			}
- 
- 			/* Closest match */
++		//last chance to clear underflow, otherwise, it will always there due to clock is off.
++		if (optc->funcs->is_optc_underflow_occurred(optc) == true)
++			optc->funcs->clear_optc_underflow(optc);
++
+ 		REG_UPDATE_2(OTG_CLOCK_CONTROL,
+ 				OTG_CLOCK_GATE_DIS, 0,
+ 				OTG_CLOCK_EN, 0);
+-- 
+2.35.1
+
 
 
