@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07743C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:43:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11C33ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:43:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237393AbiIBMnT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:43:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42104 "EHLO
+        id S237324AbiIBMnZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:43:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237318AbiIBMmj (ORCPT
+        with ESMTP id S237329AbiIBMml (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:42:39 -0400
+        Fri, 2 Sep 2022 08:42:41 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E73D8E0977;
-        Fri,  2 Sep 2022 05:32:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E314FE1905;
+        Fri,  2 Sep 2022 05:31:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CC221B82A71;
-        Fri,  2 Sep 2022 12:30:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F5C7C433C1;
-        Fri,  2 Sep 2022 12:30:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1A368B82ACB;
+        Fri,  2 Sep 2022 12:31:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31583C433D6;
+        Fri,  2 Sep 2022 12:31:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121832;
-        bh=CYocRxnz1Q2occNBGqNuJHPdbqfC1qOmQ5bjGwLPrzM=;
+        s=korg; t=1662121879;
+        bh=hWS56J5SOYpwU33w7s/8BvGrLv5RhnaHNAMeUil2Fn8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EDD4xuVRvPrZ9rZBRRoNumWB+xHk0AzaE8WEDhLVjGK+63MXVKQjoGBx7aUx9e8TP
-         7HIL81eKaVlORdNtUsHdoliYQeFwC0KO0VF/2di6s49sWtWayVeINmPWcHQ6h+deqt
-         Eo7U6so3zsxbUBvuYD+er7vx98o/1iXJwU/K7vyg=
+        b=IdHXly19B8+/uqIdimcPRWzO/g3YPnjdBRCtLszKNKWov0SX/LFIhBbTRIc8OJ/Ey
+         c6BLOkY+vK/6nej0AoO12P4ORp5LUsZLaWS36D9D7uPonOoFADpWDslAL6oYBDoUZJ
+         yE0L+SrnV4gJhU6xWUsV011L86YTgokhxnCbcF9Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
-        Yang Jihong <yangjihong1@huawei.com>
-Subject: [PATCH 5.4 59/77] ftrace: Fix NULL pointer dereference in is_ftrace_trampoline when ftrace is dead
-Date:   Fri,  2 Sep 2022 14:19:08 +0200
-Message-Id: <20220902121405.639095304@linuxfoundation.org>
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 17/73] io_uring: poll rework
+Date:   Fri,  2 Sep 2022 14:18:41 +0200
+Message-Id: <20220902121405.027368381@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
-References: <20220902121403.569927325@linuxfoundation.org>
+In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
+References: <20220902121404.435662285@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,93 +48,800 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Jihong <yangjihong1@huawei.com>
+From: Pavel Begunkov <asml.silence@gmail.com>
 
-commit c3b0f72e805f0801f05fa2aa52011c4bfc694c44 upstream.
+[ upstream commmit aa43477b040251f451db0d844073ac00a8ab66ee ]
 
-ftrace_startup does not remove ops from ftrace_ops_list when
-ftrace_startup_enable fails:
+It's not possible to go forward with the current state of io_uring
+polling, we need a more straightforward and easier synchronisation.
+There are a lot of problems with how it is at the moment, including
+missing events on rewait.
 
-register_ftrace_function
-  ftrace_startup
-    __register_ftrace_function
-      ...
-      add_ftrace_ops(&ftrace_ops_list, ops)
-      ...
-    ...
-    ftrace_startup_enable // if ftrace failed to modify, ftrace_disabled is set to 1
-    ...
-  return 0 // ops is in the ftrace_ops_list.
+The main idea here is to introduce a notion of request ownership while
+polling, no one but the owner can modify any part but ->poll_refs of
+struct io_kiocb, that grants us protection against all sorts of races.
 
-When ftrace_disabled = 1, unregister_ftrace_function simply returns without doing anything:
-unregister_ftrace_function
-  ftrace_shutdown
-    if (unlikely(ftrace_disabled))
-            return -ENODEV;  // return here, __unregister_ftrace_function is not executed,
-                             // as a result, ops is still in the ftrace_ops_list
-    __unregister_ftrace_function
-    ...
+Main users of such exclusivity are poll task_work handler, so before
+queueing a tw one should have/acquire ownership, which will be handed
+off to the tw handler.
+The other user is __io_arm_poll_handler() do initial poll arming. It
+starts taking the ownership, so tw handlers won't be run until it's
+released later in the function after vfs_poll. note: also prevents
+races in __io_queue_proc().
+Poll wake/etc. may not be able to get ownership, then they need to
+increase the poll refcount and the task_work should notice it and retry
+if necessary, see io_poll_check_events().
+There is also IO_POLL_CANCEL_FLAG flag to notify that we want to kill
+request.
 
-If ops is dynamically allocated, it will be free later, in this case,
-is_ftrace_trampoline accesses NULL pointer:
+It makes cancellations more reliable, enables double multishot polling,
+fixes double poll rewait, fixes missing poll events and fixes another
+bunch of races.
 
-is_ftrace_trampoline
-  ftrace_ops_trampoline
-    do_for_each_ftrace_op(op, ftrace_ops_list) // OOPS! op may be NULL!
+Even though it adds some overhead for new refcounting, and there are a
+couple of nice performance wins:
+- no req->refs refcounting for poll requests anymore
+- if the data is already there (once measured for some test to be 1-2%
+  of all apoll requests), it removes it doesn't add atomics and removes
+  spin_lock/unlock pair.
+- works well with multishots, we don't do remove from queue / add to
+  queue for each new poll event.
 
-Syzkaller reports as follows:
-[ 1203.506103] BUG: kernel NULL pointer dereference, address: 000000000000010b
-[ 1203.508039] #PF: supervisor read access in kernel mode
-[ 1203.508798] #PF: error_code(0x0000) - not-present page
-[ 1203.509558] PGD 800000011660b067 P4D 800000011660b067 PUD 130fb8067 PMD 0
-[ 1203.510560] Oops: 0000 [#1] SMP KASAN PTI
-[ 1203.511189] CPU: 6 PID: 29532 Comm: syz-executor.2 Tainted: G    B   W         5.10.0 #8
-[ 1203.512324] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
-[ 1203.513895] RIP: 0010:is_ftrace_trampoline+0x26/0xb0
-[ 1203.514644] Code: ff eb d3 90 41 55 41 54 49 89 fc 55 53 e8 f2 00 fd ff 48 8b 1d 3b 35 5d 03 e8 e6 00 fd ff 48 8d bb 90 00 00 00 e8 2a 81 26 00 <48> 8b ab 90 00 00 00 48 85 ed 74 1d e8 c9 00 fd ff 48 8d bb 98 00
-[ 1203.518838] RSP: 0018:ffffc900012cf960 EFLAGS: 00010246
-[ 1203.520092] RAX: 0000000000000000 RBX: 000000000000007b RCX: ffffffff8a331866
-[ 1203.521469] RDX: 0000000000000000 RSI: 0000000000000008 RDI: 000000000000010b
-[ 1203.522583] RBP: 0000000000000000 R08: 0000000000000000 R09: ffffffff8df18b07
-[ 1203.523550] R10: fffffbfff1be3160 R11: 0000000000000001 R12: 0000000000478399
-[ 1203.524596] R13: 0000000000000000 R14: ffff888145088000 R15: 0000000000000008
-[ 1203.525634] FS:  00007f429f5f4700(0000) GS:ffff8881daf00000(0000) knlGS:0000000000000000
-[ 1203.526801] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 1203.527626] CR2: 000000000000010b CR3: 0000000170e1e001 CR4: 00000000003706e0
-[ 1203.528611] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[ 1203.529605] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-Therefore, when ftrace_startup_enable fails, we need to rollback registration
-process and remove ops from ftrace_ops_list.
-
-Link: https://lkml.kernel.org/r/20220818032659.56209-1-yangjihong1@huawei.com
-
-Suggested-by: Steven Rostedt <rostedt@goodmis.org>
-Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+Link: https://lore.kernel.org/r/6b652927c77ed9580ea4330ac5612f0e0848c946.1639605189.git.asml.silence@gmail.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+[pavel: backport]
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/ftrace.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ fs/io_uring.c |  527 +++++++++++++++++++++++++---------------------------------
+ 1 file changed, 228 insertions(+), 299 deletions(-)
 
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -2732,6 +2732,16 @@ int ftrace_startup(struct ftrace_ops *op
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -486,8 +486,6 @@ struct io_poll_iocb {
+ 	struct file			*file;
+ 	struct wait_queue_head		*head;
+ 	__poll_t			events;
+-	bool				done;
+-	bool				canceled;
+ 	struct wait_queue_entry		wait;
+ };
  
- 	ftrace_startup_enable(command);
+@@ -885,6 +883,9 @@ struct io_kiocb {
+ 
+ 	/* store used ubuf, so we can prevent reloading */
+ 	struct io_mapped_ubuf		*imu;
++	/* stores selected buf, valid IFF REQ_F_BUFFER_SELECTED is set */
++	struct io_buffer		*kbuf;
++	atomic_t			poll_refs;
+ };
+ 
+ struct io_tctx_node {
+@@ -5318,6 +5319,25 @@ struct io_poll_table {
+ 	int error;
+ };
+ 
++#define IO_POLL_CANCEL_FLAG	BIT(31)
++#define IO_POLL_REF_MASK	((1u << 20)-1)
++
++/*
++ * If refs part of ->poll_refs (see IO_POLL_REF_MASK) is 0, it's free. We can
++ * bump it and acquire ownership. It's disallowed to modify requests while not
++ * owning it, that prevents from races for enqueueing task_work's and b/w
++ * arming poll and wakeups.
++ */
++static inline bool io_poll_get_ownership(struct io_kiocb *req)
++{
++	return !(atomic_fetch_inc(&req->poll_refs) & IO_POLL_REF_MASK);
++}
++
++static void io_poll_mark_cancelled(struct io_kiocb *req)
++{
++	atomic_or(IO_POLL_CANCEL_FLAG, &req->poll_refs);
++}
++
+ static struct io_poll_iocb *io_poll_get_double(struct io_kiocb *req)
+ {
+ 	/* pure poll stashes this in ->async_data, poll driven retry elsewhere */
+@@ -5346,8 +5366,6 @@ static void io_init_poll_iocb(struct io_
+ 			      wait_queue_func_t wake_func)
+ {
+ 	poll->head = NULL;
+-	poll->done = false;
+-	poll->canceled = false;
+ #define IO_POLL_UNMASK	(EPOLLERR|EPOLLHUP|EPOLLNVAL|EPOLLRDHUP)
+ 	/* mask in events that we always want/need */
+ 	poll->events = events | IO_POLL_UNMASK;
+@@ -5355,161 +5373,168 @@ static void io_init_poll_iocb(struct io_
+ 	init_waitqueue_func_entry(&poll->wait, wake_func);
+ }
+ 
+-static int __io_async_wake(struct io_kiocb *req, struct io_poll_iocb *poll,
+-			   __poll_t mask, io_req_tw_func_t func)
++static inline void io_poll_remove_entry(struct io_poll_iocb *poll)
+ {
+-	/* for instances that support it check for an event match first: */
+-	if (mask && !(mask & poll->events))
+-		return 0;
+-
+-	trace_io_uring_task_add(req->ctx, req->opcode, req->user_data, mask);
++	struct wait_queue_head *head = poll->head;
+ 
++	spin_lock_irq(&head->lock);
+ 	list_del_init(&poll->wait.entry);
++	poll->head = NULL;
++	spin_unlock_irq(&head->lock);
++}
+ 
+-	req->result = mask;
+-	req->io_task_work.func = func;
++static void io_poll_remove_entries(struct io_kiocb *req)
++{
++	struct io_poll_iocb *poll = io_poll_get_single(req);
++	struct io_poll_iocb *poll_double = io_poll_get_double(req);
+ 
+-	/*
+-	 * If this fails, then the task is exiting. When a task exits, the
+-	 * work gets canceled, so just cancel this request as well instead
+-	 * of executing it. We can't safely execute it anyway, as we may not
+-	 * have the needed state needed for it anyway.
+-	 */
+-	io_req_task_work_add(req);
+-	return 1;
++	if (poll->head)
++		io_poll_remove_entry(poll);
++	if (poll_double && poll_double->head)
++		io_poll_remove_entry(poll_double);
+ }
+ 
+-static bool io_poll_rewait(struct io_kiocb *req, struct io_poll_iocb *poll)
+-	__acquires(&req->ctx->completion_lock)
++/*
++ * All poll tw should go through this. Checks for poll events, manages
++ * references, does rewait, etc.
++ *
++ * Returns a negative error on failure. >0 when no action require, which is
++ * either spurious wakeup or multishot CQE is served. 0 when it's done with
++ * the request, then the mask is stored in req->result.
++ */
++static int io_poll_check_events(struct io_kiocb *req)
+ {
+ 	struct io_ring_ctx *ctx = req->ctx;
++	struct io_poll_iocb *poll = io_poll_get_single(req);
++	int v;
+ 
+ 	/* req->task == current here, checking PF_EXITING is safe */
+ 	if (unlikely(req->task->flags & PF_EXITING))
+-		WRITE_ONCE(poll->canceled, true);
+-
+-	if (!req->result && !READ_ONCE(poll->canceled)) {
+-		struct poll_table_struct pt = { ._key = poll->events };
++		io_poll_mark_cancelled(req);
+ 
+-		req->result = vfs_poll(req->file, &pt) & poll->events;
+-	}
++	do {
++		v = atomic_read(&req->poll_refs);
+ 
+-	spin_lock(&ctx->completion_lock);
+-	if (!req->result && !READ_ONCE(poll->canceled)) {
+-		add_wait_queue(poll->head, &poll->wait);
+-		return true;
+-	}
++		/* tw handler should be the owner, and so have some references */
++		if (WARN_ON_ONCE(!(v & IO_POLL_REF_MASK)))
++			return 0;
++		if (v & IO_POLL_CANCEL_FLAG)
++			return -ECANCELED;
+ 
+-	return false;
+-}
++		if (!req->result) {
++			struct poll_table_struct pt = { ._key = poll->events };
+ 
+-static void io_poll_remove_double(struct io_kiocb *req)
+-	__must_hold(&req->ctx->completion_lock)
+-{
+-	struct io_poll_iocb *poll = io_poll_get_double(req);
++			req->result = vfs_poll(req->file, &pt) & poll->events;
++		}
+ 
+-	lockdep_assert_held(&req->ctx->completion_lock);
++		/* multishot, just fill an CQE and proceed */
++		if (req->result && !(poll->events & EPOLLONESHOT)) {
++			__poll_t mask = mangle_poll(req->result & poll->events);
++			bool filled;
++
++			spin_lock(&ctx->completion_lock);
++			filled = io_fill_cqe_aux(ctx, req->user_data, mask,
++						 IORING_CQE_F_MORE);
++			io_commit_cqring(ctx);
++			spin_unlock(&ctx->completion_lock);
++			if (unlikely(!filled))
++				return -ECANCELED;
++			io_cqring_ev_posted(ctx);
++		} else if (req->result) {
++			return 0;
++		}
+ 
+-	if (poll && poll->head) {
+-		struct wait_queue_head *head = poll->head;
++		/*
++		 * Release all references, retry if someone tried to restart
++		 * task_work while we were executing it.
++		 */
++	} while (atomic_sub_return(v & IO_POLL_REF_MASK, &req->poll_refs));
+ 
+-		spin_lock_irq(&head->lock);
+-		list_del_init(&poll->wait.entry);
+-		if (poll->wait.private)
+-			req_ref_put(req);
+-		poll->head = NULL;
+-		spin_unlock_irq(&head->lock);
+-	}
++	return 1;
+ }
+ 
+-static bool __io_poll_complete(struct io_kiocb *req, __poll_t mask)
+-	__must_hold(&req->ctx->completion_lock)
++static void io_poll_task_func(struct io_kiocb *req, bool *locked)
+ {
+ 	struct io_ring_ctx *ctx = req->ctx;
+-	unsigned flags = IORING_CQE_F_MORE;
+-	int error;
++	int ret;
++
++	ret = io_poll_check_events(req);
++	if (ret > 0)
++		return;
+ 
+-	if (READ_ONCE(req->poll.canceled)) {
+-		error = -ECANCELED;
+-		req->poll.events |= EPOLLONESHOT;
++	if (!ret) {
++		req->result = mangle_poll(req->result & req->poll.events);
+ 	} else {
+-		error = mangle_poll(mask);
++		req->result = ret;
++		req_set_fail(req);
+ 	}
+-	if (req->poll.events & EPOLLONESHOT)
+-		flags = 0;
+ 
+-	if (!(flags & IORING_CQE_F_MORE)) {
+-		io_fill_cqe_req(req, error, flags);
+-	} else if (!io_fill_cqe_aux(ctx, req->user_data, error, flags)) {
+-		req->poll.events |= EPOLLONESHOT;
+-		flags = 0;
+-	}
+-	return !(flags & IORING_CQE_F_MORE);
++	io_poll_remove_entries(req);
++	spin_lock(&ctx->completion_lock);
++	hash_del(&req->hash_node);
++	spin_unlock(&ctx->completion_lock);
++	io_req_complete_post(req, req->result, 0);
+ }
+ 
+-static void io_poll_task_func(struct io_kiocb *req, bool *locked)
++static void io_apoll_task_func(struct io_kiocb *req, bool *locked)
+ {
+ 	struct io_ring_ctx *ctx = req->ctx;
++	int ret;
+ 
+-	if (io_poll_rewait(req, &req->poll)) {
+-		spin_unlock(&ctx->completion_lock);
+-	} else {
+-		bool done;
++	ret = io_poll_check_events(req);
++	if (ret > 0)
++		return;
+ 
+-		if (req->poll.done) {
+-			spin_unlock(&ctx->completion_lock);
+-			return;
+-		}
+-		done = __io_poll_complete(req, req->result);
+-		if (done) {
+-			io_poll_remove_double(req);
+-			hash_del(&req->hash_node);
+-			req->poll.done = true;
+-		} else {
+-			req->result = 0;
+-			add_wait_queue(req->poll.head, &req->poll.wait);
+-		}
+-		io_commit_cqring(ctx);
+-		spin_unlock(&ctx->completion_lock);
+-		io_cqring_ev_posted(ctx);
++	io_poll_remove_entries(req);
++	spin_lock(&ctx->completion_lock);
++	hash_del(&req->hash_node);
++	spin_unlock(&ctx->completion_lock);
+ 
+-		if (done)
+-			io_put_req(req);
+-	}
++	if (!ret)
++		io_req_task_submit(req, locked);
++	else
++		io_req_complete_failed(req, ret);
++}
++
++static void __io_poll_execute(struct io_kiocb *req, int mask)
++{
++	req->result = mask;
++	if (req->opcode == IORING_OP_POLL_ADD)
++		req->io_task_work.func = io_poll_task_func;
++	else
++		req->io_task_work.func = io_apoll_task_func;
++
++	trace_io_uring_task_add(req->ctx, req->opcode, req->user_data, mask);
++	io_req_task_work_add(req);
++}
++
++static inline void io_poll_execute(struct io_kiocb *req, int res)
++{
++	if (io_poll_get_ownership(req))
++		__io_poll_execute(req, res);
+ }
+ 
+-static int io_poll_double_wake(struct wait_queue_entry *wait, unsigned mode,
+-			       int sync, void *key)
++static void io_poll_cancel_req(struct io_kiocb *req)
++{
++	io_poll_mark_cancelled(req);
++	/* kick tw, which should complete the request */
++	io_poll_execute(req, 0);
++}
++
++static int io_poll_wake(struct wait_queue_entry *wait, unsigned mode, int sync,
++			void *key)
+ {
+ 	struct io_kiocb *req = wait->private;
+-	struct io_poll_iocb *poll = io_poll_get_single(req);
++	struct io_poll_iocb *poll = container_of(wait, struct io_poll_iocb,
++						 wait);
+ 	__poll_t mask = key_to_poll(key);
+-	unsigned long flags;
+ 
+-	/* for instances that support it check for an event match first: */
++	/* for instances that support it check for an event match first */
+ 	if (mask && !(mask & poll->events))
+ 		return 0;
+-	if (!(poll->events & EPOLLONESHOT))
+-		return poll->wait.func(&poll->wait, mode, sync, key);
+ 
+-	list_del_init(&wait->entry);
+-
+-	if (poll->head) {
+-		bool done;
+-
+-		spin_lock_irqsave(&poll->head->lock, flags);
+-		done = list_empty(&poll->wait.entry);
+-		if (!done)
+-			list_del_init(&poll->wait.entry);
+-		/* make sure double remove sees this as being gone */
+-		wait->private = NULL;
+-		spin_unlock_irqrestore(&poll->head->lock, flags);
+-		if (!done) {
+-			/* use wait func handler, so it matches the rq type */
+-			poll->wait.func(&poll->wait, mode, sync, key);
+-		}
+-	}
+-	req_ref_put(req);
++	if (io_poll_get_ownership(req))
++		__io_poll_execute(req, mask);
+ 	return 1;
+ }
+ 
+@@ -5525,10 +5550,10 @@ static void __io_queue_proc(struct io_po
+ 	 * if this happens.
+ 	 */
+ 	if (unlikely(pt->nr_entries)) {
+-		struct io_poll_iocb *poll_one = poll;
++		struct io_poll_iocb *first = poll;
+ 
+ 		/* double add on the same waitqueue head, ignore */
+-		if (poll_one->head == head)
++		if (first->head == head)
+ 			return;
+ 		/* already have a 2nd entry, fail a third attempt */
+ 		if (*poll_ptr) {
+@@ -5537,25 +5562,19 @@ static void __io_queue_proc(struct io_po
+ 			pt->error = -EINVAL;
+ 			return;
+ 		}
+-		/*
+-		 * Can't handle multishot for double wait for now, turn it
+-		 * into one-shot mode.
+-		 */
+-		if (!(poll_one->events & EPOLLONESHOT))
+-			poll_one->events |= EPOLLONESHOT;
++
+ 		poll = kmalloc(sizeof(*poll), GFP_ATOMIC);
+ 		if (!poll) {
+ 			pt->error = -ENOMEM;
+ 			return;
+ 		}
+-		io_init_poll_iocb(poll, poll_one->events, io_poll_double_wake);
+-		req_ref_get(req);
+-		poll->wait.private = req;
++		io_init_poll_iocb(poll, first->events, first->wait.func);
+ 		*poll_ptr = poll;
+ 	}
+ 
+ 	pt->nr_entries++;
+ 	poll->head = head;
++	poll->wait.private = req;
+ 
+ 	if (poll->events & EPOLLEXCLUSIVE)
+ 		add_wait_queue_exclusive(head, &poll->wait);
+@@ -5563,61 +5582,24 @@ static void __io_queue_proc(struct io_po
+ 		add_wait_queue(head, &poll->wait);
+ }
+ 
+-static void io_async_queue_proc(struct file *file, struct wait_queue_head *head,
++static void io_poll_queue_proc(struct file *file, struct wait_queue_head *head,
+ 			       struct poll_table_struct *p)
+ {
+ 	struct io_poll_table *pt = container_of(p, struct io_poll_table, pt);
+-	struct async_poll *apoll = pt->req->apoll;
+-
+-	__io_queue_proc(&apoll->poll, pt, head, &apoll->double_poll);
+-}
+-
+-static void io_async_task_func(struct io_kiocb *req, bool *locked)
+-{
+-	struct async_poll *apoll = req->apoll;
+-	struct io_ring_ctx *ctx = req->ctx;
+-
+-	trace_io_uring_task_run(req->ctx, req, req->opcode, req->user_data);
+-
+-	if (io_poll_rewait(req, &apoll->poll)) {
+-		spin_unlock(&ctx->completion_lock);
+-		return;
+-	}
+-
+-	hash_del(&req->hash_node);
+-	io_poll_remove_double(req);
+-	apoll->poll.done = true;
+-	spin_unlock(&ctx->completion_lock);
+-
+-	if (!READ_ONCE(apoll->poll.canceled))
+-		io_req_task_submit(req, locked);
+-	else
+-		io_req_complete_failed(req, -ECANCELED);
+-}
+-
+-static int io_async_wake(struct wait_queue_entry *wait, unsigned mode, int sync,
+-			void *key)
+-{
+-	struct io_kiocb *req = wait->private;
+-	struct io_poll_iocb *poll = &req->apoll->poll;
+ 
+-	trace_io_uring_poll_wake(req->ctx, req->opcode, req->user_data,
+-					key_to_poll(key));
+-
+-	return __io_async_wake(req, poll, key_to_poll(key), io_async_task_func);
++	__io_queue_proc(&pt->req->poll, pt, head,
++			(struct io_poll_iocb **) &pt->req->async_data);
+ }
+ 
+-static __poll_t __io_arm_poll_handler(struct io_kiocb *req,
+-				      struct io_poll_iocb *poll,
+-				      struct io_poll_table *ipt, __poll_t mask,
+-				      wait_queue_func_t wake_func)
+-	__acquires(&ctx->completion_lock)
++static int __io_arm_poll_handler(struct io_kiocb *req,
++				 struct io_poll_iocb *poll,
++				 struct io_poll_table *ipt, __poll_t mask)
+ {
+ 	struct io_ring_ctx *ctx = req->ctx;
+-	bool cancel = false;
++	int v;
+ 
+ 	INIT_HLIST_NODE(&req->hash_node);
+-	io_init_poll_iocb(poll, mask, wake_func);
++	io_init_poll_iocb(poll, mask, io_poll_wake);
+ 	poll->file = req->file;
+ 	poll->wait.private = req;
+ 
+@@ -5626,31 +5608,54 @@ static __poll_t __io_arm_poll_handler(st
+ 	ipt->error = 0;
+ 	ipt->nr_entries = 0;
  
 +	/*
-+	 * If ftrace is in an undefined state, we just remove ops from list
-+	 * to prevent the NULL pointer, instead of totally rolling it back and
-+	 * free trampoline, because those actions could cause further damage.
++	 * Take the ownership to delay any tw execution up until we're done
++	 * with poll arming. see io_poll_get_ownership().
 +	 */
-+	if (unlikely(ftrace_disabled)) {
-+		__unregister_ftrace_function(ops);
-+		return -ENODEV;
-+	}
++	atomic_set(&req->poll_refs, 1);
+ 	mask = vfs_poll(req->file, &ipt->pt) & poll->events;
+-	if (unlikely(!ipt->nr_entries) && !ipt->error)
+-		ipt->error = -EINVAL;
 +
- 	ops->flags &= ~FTRACE_OPS_FL_ADDING;
++	if (mask && (poll->events & EPOLLONESHOT)) {
++		io_poll_remove_entries(req);
++		/* no one else has access to the req, forget about the ref */
++		return mask;
++	}
++	if (!mask && unlikely(ipt->error || !ipt->nr_entries)) {
++		io_poll_remove_entries(req);
++		if (!ipt->error)
++			ipt->error = -EINVAL;
++		return 0;
++	}
  
+ 	spin_lock(&ctx->completion_lock);
+-	if (ipt->error || (mask && (poll->events & EPOLLONESHOT)))
+-		io_poll_remove_double(req);
+-	if (likely(poll->head)) {
+-		spin_lock_irq(&poll->head->lock);
+-		if (unlikely(list_empty(&poll->wait.entry))) {
+-			if (ipt->error)
+-				cancel = true;
+-			ipt->error = 0;
+-			mask = 0;
+-		}
+-		if ((mask && (poll->events & EPOLLONESHOT)) || ipt->error)
+-			list_del_init(&poll->wait.entry);
+-		else if (cancel)
+-			WRITE_ONCE(poll->canceled, true);
+-		else if (!poll->done) /* actually waiting for an event */
+-			io_poll_req_insert(req);
+-		spin_unlock_irq(&poll->head->lock);
++	io_poll_req_insert(req);
++	spin_unlock(&ctx->completion_lock);
++
++	if (mask) {
++		/* can't multishot if failed, just queue the event we've got */
++		if (unlikely(ipt->error || !ipt->nr_entries))
++			poll->events |= EPOLLONESHOT;
++		__io_poll_execute(req, mask);
++		return 0;
+ 	}
+ 
+-	return mask;
++	/*
++	 * Release ownership. If someone tried to queue a tw while it was
++	 * locked, kick it off for them.
++	 */
++	v = atomic_dec_return(&req->poll_refs);
++	if (unlikely(v & IO_POLL_REF_MASK))
++		__io_poll_execute(req, 0);
++	return 0;
++}
++
++static void io_async_queue_proc(struct file *file, struct wait_queue_head *head,
++			       struct poll_table_struct *p)
++{
++	struct io_poll_table *pt = container_of(p, struct io_poll_table, pt);
++	struct async_poll *apoll = pt->req->apoll;
++
++	__io_queue_proc(&apoll->poll, pt, head, &apoll->double_poll);
+ }
+ 
+ enum {
+@@ -5665,7 +5670,8 @@ static int io_arm_poll_handler(struct io
+ 	struct io_ring_ctx *ctx = req->ctx;
+ 	struct async_poll *apoll;
+ 	struct io_poll_table ipt;
+-	__poll_t ret, mask = EPOLLONESHOT | POLLERR | POLLPRI;
++	__poll_t mask = EPOLLONESHOT | POLLERR | POLLPRI;
++	int ret;
+ 
+ 	if (!req->file || !file_can_poll(req->file))
+ 		return IO_APOLL_ABORTED;
+@@ -5692,11 +5698,8 @@ static int io_arm_poll_handler(struct io
+ 	req->apoll = apoll;
+ 	req->flags |= REQ_F_POLLED;
+ 	ipt.pt._qproc = io_async_queue_proc;
+-	io_req_set_refcount(req);
+ 
+-	ret = __io_arm_poll_handler(req, &apoll->poll, &ipt, mask,
+-					io_async_wake);
+-	spin_unlock(&ctx->completion_lock);
++	ret = __io_arm_poll_handler(req, &apoll->poll, &ipt, mask);
+ 	if (ret || ipt.error)
+ 		return ret ? IO_APOLL_READY : IO_APOLL_ABORTED;
+ 
+@@ -5705,43 +5708,6 @@ static int io_arm_poll_handler(struct io
+ 	return IO_APOLL_OK;
+ }
+ 
+-static bool __io_poll_remove_one(struct io_kiocb *req,
+-				 struct io_poll_iocb *poll, bool do_cancel)
+-	__must_hold(&req->ctx->completion_lock)
+-{
+-	bool do_complete = false;
+-
+-	if (!poll->head)
+-		return false;
+-	spin_lock_irq(&poll->head->lock);
+-	if (do_cancel)
+-		WRITE_ONCE(poll->canceled, true);
+-	if (!list_empty(&poll->wait.entry)) {
+-		list_del_init(&poll->wait.entry);
+-		do_complete = true;
+-	}
+-	spin_unlock_irq(&poll->head->lock);
+-	hash_del(&req->hash_node);
+-	return do_complete;
+-}
+-
+-static bool io_poll_remove_one(struct io_kiocb *req)
+-	__must_hold(&req->ctx->completion_lock)
+-{
+-	bool do_complete;
+-
+-	io_poll_remove_double(req);
+-	do_complete = __io_poll_remove_one(req, io_poll_get_single(req), true);
+-
+-	if (do_complete) {
+-		req_set_fail(req);
+-		io_fill_cqe_req(req, -ECANCELED, 0);
+-		io_commit_cqring(req->ctx);
+-		io_put_req_deferred(req);
+-	}
+-	return do_complete;
+-}
+-
+ /*
+  * Returns true if we found and killed one or more poll requests
+  */
+@@ -5750,7 +5716,8 @@ static bool io_poll_remove_all(struct io
+ {
+ 	struct hlist_node *tmp;
+ 	struct io_kiocb *req;
+-	int posted = 0, i;
++	bool found = false;
++	int i;
+ 
+ 	spin_lock(&ctx->completion_lock);
+ 	for (i = 0; i < (1U << ctx->cancel_hash_bits); i++) {
+@@ -5758,16 +5725,14 @@ static bool io_poll_remove_all(struct io
+ 
+ 		list = &ctx->cancel_hash[i];
+ 		hlist_for_each_entry_safe(req, tmp, list, hash_node) {
+-			if (io_match_task_safe(req, tsk, cancel_all))
+-				posted += io_poll_remove_one(req);
++			if (io_match_task_safe(req, tsk, cancel_all)) {
++				io_poll_cancel_req(req);
++				found = true;
++			}
+ 		}
+ 	}
+ 	spin_unlock(&ctx->completion_lock);
+-
+-	if (posted)
+-		io_cqring_ev_posted(ctx);
+-
+-	return posted != 0;
++	return found;
+ }
+ 
+ static struct io_kiocb *io_poll_find(struct io_ring_ctx *ctx, __u64 sqe_addr,
+@@ -5788,19 +5753,26 @@ static struct io_kiocb *io_poll_find(str
+ 	return NULL;
+ }
+ 
++static bool io_poll_disarm(struct io_kiocb *req)
++	__must_hold(&ctx->completion_lock)
++{
++	if (!io_poll_get_ownership(req))
++		return false;
++	io_poll_remove_entries(req);
++	hash_del(&req->hash_node);
++	return true;
++}
++
+ static int io_poll_cancel(struct io_ring_ctx *ctx, __u64 sqe_addr,
+ 			  bool poll_only)
+ 	__must_hold(&ctx->completion_lock)
+ {
+-	struct io_kiocb *req;
++	struct io_kiocb *req = io_poll_find(ctx, sqe_addr, poll_only);
+ 
+-	req = io_poll_find(ctx, sqe_addr, poll_only);
+ 	if (!req)
+ 		return -ENOENT;
+-	if (io_poll_remove_one(req))
+-		return 0;
+-
+-	return -EALREADY;
++	io_poll_cancel_req(req);
++	return 0;
+ }
+ 
+ static __poll_t io_poll_parse_events(const struct io_uring_sqe *sqe,
+@@ -5850,23 +5822,6 @@ static int io_poll_update_prep(struct io
  	return 0;
+ }
+ 
+-static int io_poll_wake(struct wait_queue_entry *wait, unsigned mode, int sync,
+-			void *key)
+-{
+-	struct io_kiocb *req = wait->private;
+-	struct io_poll_iocb *poll = &req->poll;
+-
+-	return __io_async_wake(req, poll, key_to_poll(key), io_poll_task_func);
+-}
+-
+-static void io_poll_queue_proc(struct file *file, struct wait_queue_head *head,
+-			       struct poll_table_struct *p)
+-{
+-	struct io_poll_table *pt = container_of(p, struct io_poll_table, pt);
+-
+-	__io_queue_proc(&pt->req->poll, pt, head, (struct io_poll_iocb **) &pt->req->async_data);
+-}
+-
+ static int io_poll_add_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
+ {
+ 	struct io_poll_iocb *poll = &req->poll;
+@@ -5888,57 +5843,31 @@ static int io_poll_add_prep(struct io_ki
+ static int io_poll_add(struct io_kiocb *req, unsigned int issue_flags)
+ {
+ 	struct io_poll_iocb *poll = &req->poll;
+-	struct io_ring_ctx *ctx = req->ctx;
+ 	struct io_poll_table ipt;
+-	__poll_t mask;
+-	bool done;
++	int ret;
+ 
+ 	ipt.pt._qproc = io_poll_queue_proc;
+ 
+-	mask = __io_arm_poll_handler(req, &req->poll, &ipt, poll->events,
+-					io_poll_wake);
+-
+-	if (mask) { /* no async, we'd stolen it */
+-		ipt.error = 0;
+-		done = __io_poll_complete(req, mask);
+-		io_commit_cqring(req->ctx);
+-	}
+-	spin_unlock(&ctx->completion_lock);
+-
+-	if (mask) {
+-		io_cqring_ev_posted(ctx);
+-		if (done)
+-			io_put_req(req);
+-	}
+-	return ipt.error;
++	ret = __io_arm_poll_handler(req, &req->poll, &ipt, poll->events);
++	ret = ret ?: ipt.error;
++	if (ret)
++		__io_req_complete(req, issue_flags, ret, 0);
++	return 0;
+ }
+ 
+ static int io_poll_update(struct io_kiocb *req, unsigned int issue_flags)
+ {
+ 	struct io_ring_ctx *ctx = req->ctx;
+ 	struct io_kiocb *preq;
+-	bool completing;
+ 	int ret2, ret = 0;
+ 
+ 	spin_lock(&ctx->completion_lock);
+ 	preq = io_poll_find(ctx, req->poll_update.old_user_data, true);
+-	if (!preq) {
+-		ret = -ENOENT;
+-fail:
++	if (!preq || !io_poll_disarm(preq)) {
+ 		spin_unlock(&ctx->completion_lock);
++		ret = preq ? -EALREADY : -ENOENT;
+ 		goto out;
+ 	}
+-	io_poll_remove_double(preq);
+-	/*
+-	 * Don't allow racy completion with singleshot, as we cannot safely
+-	 * update those. For multishot, if we're racing with completion, just
+-	 * let completion re-add it.
+-	 */
+-	completing = !__io_poll_remove_one(preq, &preq->poll, false);
+-	if (completing && (preq->poll.events & EPOLLONESHOT)) {
+-		ret = -EALREADY;
+-		goto fail;
+-	}
+ 	spin_unlock(&ctx->completion_lock);
+ 
+ 	if (req->poll_update.update_events || req->poll_update.update_user_data) {
 
 
