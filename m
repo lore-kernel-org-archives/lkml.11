@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3F88C6FA82
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:49:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91BE4ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:49:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236080AbiIBMtj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:49:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44146 "EHLO
+        id S237579AbiIBMtp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:49:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237405AbiIBMsU (ORCPT
+        with ESMTP id S237511AbiIBMsW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:48:20 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CE33357CC;
-        Fri,  2 Sep 2022 05:34:57 -0700 (PDT)
+        Fri, 2 Sep 2022 08:48:22 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A47B62B26E;
+        Fri,  2 Sep 2022 05:34:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B91BACE2E1A;
-        Fri,  2 Sep 2022 12:33:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B16F7C433D6;
-        Fri,  2 Sep 2022 12:33:15 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C53E0CE2E62;
+        Fri,  2 Sep 2022 12:33:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B90EC433D6;
+        Fri,  2 Sep 2022 12:33:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121996;
-        bh=VqUFmf3dgywGA5D28W+viP+k0XEn9NNB/QalNgf6nw8=;
+        s=korg; t=1662121987;
+        bh=SyZxkN536emHlfRPKFXLiTJECtkswNze8N1oB7xv+rQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w81wIb3gyhKe3nTCjb5kcmqe7ei6VMnEI3Wbh4xoMEX6TdiUYotX+VId0qH+Z5WaY
-         Vxdf8We2fnDmh5wBbPNaL6XiI1Em/vCt31F6cpelInNQF18yRBD+JQALkVKTwdgQpT
-         rJQ8K8IRGodFQBJ3X37YfRrdBWTK4lyU8ViUW9w4=
+        b=1vS3RJBmOUgUwABhz02bAGLJgKdwPbbrpToiWDVgpK7TyKYkwAIiMMz5EERZ5ggvS
+         OgaxnWP9hLB8+cV9eVOyuPRFx52nUaSrzYaHnqZlrl5YQ/i/Mbm7HvHOZv51v9zs3s
+         ja5H6CXtng2vacahWgbCsKA5iCzhlE9R52L6f6lc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anthony Koo <Anthony.Koo@amd.com>,
-        Tom Chung <chiahsuan.chung@amd.com>,
-        Leo Ma <hanghong.ma@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org,
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 53/73] drm/amd/display: Fix HDMI VSIF V3 incorrect issue
-Date:   Fri,  2 Sep 2022 14:19:17 +0200
-Message-Id: <20220902121406.193792439@linuxfoundation.org>
+Subject: [PATCH 5.15 50/73] fs/ntfs3: Fix work with fragmented xattr
+Date:   Fri,  2 Sep 2022 14:19:14 +0200
+Message-Id: <20220902121406.096863980@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
 References: <20220902121404.435662285@linuxfoundation.org>
@@ -52,75 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leo Ma <hanghong.ma@amd.com>
+From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 
-[ Upstream commit 0591183699fceeafb4c4141072d47775de83ecfb ]
+[ Upstream commit 42f86b1226a42bfc79a7125af435432ad4680a32 ]
 
-[Why]
-Reported from customer the checksum in AMD VSIF V3 is incorrect and
-causing blank screen issue.
+In some cases xattr is too fragmented,
+so we need to load it before writing.
 
-[How]
-Fix the packet length issue on AMD HDMI VSIF V3.
-
-Reviewed-by: Anthony Koo <Anthony.Koo@amd.com>
-Acked-by: Tom Chung <chiahsuan.chung@amd.com>
-Signed-off-by: Leo Ma <hanghong.ma@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../drm/amd/display/modules/freesync/freesync.c   | 15 +++------------
- 1 file changed, 3 insertions(+), 12 deletions(-)
+ fs/ntfs3/xattr.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/display/modules/freesync/freesync.c b/drivers/gpu/drm/amd/display/modules/freesync/freesync.c
-index b99aa232bd8b1..4bee6d018bfa9 100644
---- a/drivers/gpu/drm/amd/display/modules/freesync/freesync.c
-+++ b/drivers/gpu/drm/amd/display/modules/freesync/freesync.c
-@@ -567,10 +567,6 @@ static void build_vrr_infopacket_data_v1(const struct mod_vrr_params *vrr,
- 	 * Note: We should never go above the field rate of the mode timing set.
- 	 */
- 	infopacket->sb[8] = (unsigned char)((vrr->max_refresh_in_uhz + 500000) / 1000000);
--
--	/* FreeSync HDR */
--	infopacket->sb[9] = 0;
--	infopacket->sb[10] = 0;
- }
+diff --git a/fs/ntfs3/xattr.c b/fs/ntfs3/xattr.c
+index e8bfa709270d1..4652b97969957 100644
+--- a/fs/ntfs3/xattr.c
++++ b/fs/ntfs3/xattr.c
+@@ -118,7 +118,7 @@ static int ntfs_read_ea(struct ntfs_inode *ni, struct EA_FULL **ea,
  
- static void build_vrr_infopacket_data_v3(const struct mod_vrr_params *vrr,
-@@ -638,10 +634,6 @@ static void build_vrr_infopacket_data_v3(const struct mod_vrr_params *vrr,
+ 		run_init(&run);
  
- 	/* PB16 : Reserved bits 7:1, FixedRate bit 0 */
- 	infopacket->sb[16] = (vrr->state == VRR_STATE_ACTIVE_FIXED) ? 1 : 0;
--
--	//FreeSync HDR
--	infopacket->sb[9] = 0;
--	infopacket->sb[10] = 0;
- }
- 
- static void build_vrr_infopacket_fs2_data(enum color_transfer_func app_tf,
-@@ -726,8 +718,7 @@ static void build_vrr_infopacket_header_v2(enum signal_type signal,
- 		/* HB2  = [Bits 7:5 = 0] [Bits 4:0 = Length = 0x09] */
- 		infopacket->hb2 = 0x09;
- 
--		*payload_size = 0x0A;
--
-+		*payload_size = 0x09;
- 	} else if (dc_is_dp_signal(signal)) {
- 
- 		/* HEADER */
-@@ -776,9 +767,9 @@ static void build_vrr_infopacket_header_v3(enum signal_type signal,
- 		infopacket->hb1 = version;
- 
- 		/* HB2  = [Bits 7:5 = 0] [Bits 4:0 = Length] */
--		*payload_size = 0x10;
--		infopacket->hb2 = *payload_size - 1; //-1 for checksum
-+		infopacket->hb2 = 0x10;
- 
-+		*payload_size = 0x10;
- 	} else if (dc_is_dp_signal(signal)) {
- 
- 		/* HEADER */
+-		err = attr_load_runs(attr_ea, ni, &run, NULL);
++		err = attr_load_runs_range(ni, ATTR_EA, NULL, 0, &run, 0, size);
+ 		if (!err)
+ 			err = ntfs_read_run_nb(sbi, &run, 0, ea_p, size, NULL);
+ 		run_close(&run);
+@@ -443,6 +443,11 @@ static noinline int ntfs_set_ea(struct inode *inode, const char *name,
+ 		/* Delete xattr, ATTR_EA */
+ 		ni_remove_attr_le(ni, attr, mi, le);
+ 	} else if (attr->non_res) {
++		err = attr_load_runs_range(ni, ATTR_EA, NULL, 0, &ea_run, 0,
++					   size);
++		if (err)
++			goto out;
++
+ 		err = ntfs_sb_write_run(sbi, &ea_run, 0, ea_all, size, 0);
+ 		if (err)
+ 			goto out;
 -- 
 2.35.1
 
