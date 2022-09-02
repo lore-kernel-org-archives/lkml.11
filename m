@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 887E2C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:35:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 566A6C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:35:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236927AbiIBMfW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:35:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55478 "EHLO
+        id S236939AbiIBMf1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:35:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236957AbiIBMdy (ORCPT
+        with ESMTP id S236982AbiIBMd5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:33:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9DBFE395D;
-        Fri,  2 Sep 2022 05:28:17 -0700 (PDT)
+        Fri, 2 Sep 2022 08:33:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FEC1D6324;
+        Fri,  2 Sep 2022 05:28:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8772062160;
-        Fri,  2 Sep 2022 12:28:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6473EC433D7;
-        Fri,  2 Sep 2022 12:28:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0CC0AB82AA6;
+        Fri,  2 Sep 2022 12:25:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 412A7C433D7;
+        Fri,  2 Sep 2022 12:25:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121687;
-        bh=RiliGPSZwKdFTnul30LcNjErRFxYycneIXzWkkJauHU=;
+        s=korg; t=1662121527;
+        bh=O2wktyySvoBAnlLSaIcIBia5ZLZZO3UuY8hVjRz1L0g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fGTKDkDe/2a07v4r8vFl3Z2ZKWGUiRi0BX2EcSM+53H5DwMNqGrA5v6UojIhvmhIr
-         tXiBhrm795DF7wih5wTOb5KvBALQ5pbd2tSFZl2UygaIx66ML9EWHL2RRX9p7qIBqU
-         v7fxB+1oOvE24wr5GXof7jSod1/z6mpdOqHRMAeM=
+        b=wrmJRd3SVo8UhAhyYUmlHl6swuUxmwo/IBtcfMe/+9w3ABZt9lsIzp8oeWJCx9DwK
+         wuX8J1mvHPK1XRkqd64fNThUUt+xhgqSBWonVaQIeHta0tOpJ2LBMhJXGlh7kSfmPF
+         uM8yKHTbcErk5Gyonl6Ud96KyTnVO8FYVMPBOMao=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 33/77] net: Fix a data-race around netdev_budget_usecs.
-Date:   Fri,  2 Sep 2022 14:18:42 +0200
-Message-Id: <20220902121404.739072097@linuxfoundation.org>
+        Jann Horn <jannh@google.com>
+Subject: [PATCH 4.19 37/56] mm: Force TLB flush for PFNMAP mappings before unlink_file_vma()
+Date:   Fri,  2 Sep 2022 14:18:57 +0200
+Message-Id: <20220902121401.602810819@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
-References: <20220902121403.569927325@linuxfoundation.org>
+In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
+References: <20220902121400.219861128@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,36 +47,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Jann Horn <jannh@google.com>
 
-[ Upstream commit fa45d484c52c73f79db2c23b0cdfc6c6455093ad ]
+commit b67fbebd4cf980aecbcc750e1462128bffe8ae15 upstream.
 
-While reading netdev_budget_usecs, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+Some drivers rely on having all VMAs through which a PFN might be
+accessible listed in the rmap for correctness.
+However, on X86, it was possible for a VMA with stale TLB entries
+to not be listed in the rmap.
 
-Fixes: 7acf8a1e8a28 ("Replace 2 jiffies with sysctl netdev_budget_usecs to enable softirq tuning")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This was fixed in mainline with
+commit b67fbebd4cf9 ("mmu_gather: Force tlb-flush VM_PFNMAP vmas"),
+but that commit relies on preceding refactoring in
+commit 18ba064e42df3 ("mmu_gather: Let there be one tlb_{start,end}_vma()
+implementation") and commit 1e9fdf21a4339 ("mmu_gather: Remove per arch
+tlb_{start,end}_vma()").
+
+This patch provides equivalent protection without needing that
+refactoring, by forcing a TLB flush between removing PTEs in
+unmap_vmas() and the call to unlink_file_vma() in free_pgtables().
+
+[This is a stable-specific rewrite of the upstream commit!]
+Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/dev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ mm/mmap.c |   12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 7c19e672dde84..25b4fe06fbb4e 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -6393,7 +6393,7 @@ static __latent_entropy void net_rx_action(struct softirq_action *h)
- {
- 	struct softnet_data *sd = this_cpu_ptr(&softnet_data);
- 	unsigned long time_limit = jiffies +
--		usecs_to_jiffies(netdev_budget_usecs);
-+		usecs_to_jiffies(READ_ONCE(netdev_budget_usecs));
- 	int budget = READ_ONCE(netdev_budget);
- 	LIST_HEAD(list);
- 	LIST_HEAD(repoll);
--- 
-2.35.1
-
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -2572,6 +2572,18 @@ static void unmap_region(struct mm_struc
+ 	tlb_gather_mmu(&tlb, mm, start, end);
+ 	update_hiwater_rss(mm);
+ 	unmap_vmas(&tlb, vma, start, end);
++
++	/*
++	 * Ensure we have no stale TLB entries by the time this mapping is
++	 * removed from the rmap.
++	 * Note that we don't have to worry about nested flushes here because
++	 * we're holding the mm semaphore for removing the mapping - so any
++	 * concurrent flush in this region has to be coming through the rmap,
++	 * and we synchronize against that using the rmap lock.
++	 */
++	if ((vma->vm_flags & (VM_PFNMAP|VM_MIXEDMAP)) != 0)
++		tlb_flush_mmu(&tlb);
++
+ 	free_pgtables(&tlb, vma, prev ? prev->vm_end : FIRST_USER_ADDRESS,
+ 				 next ? next->vm_start : USER_PGTABLES_CEILING);
+ 	tlb_finish_mmu(&tlb, start, end);
 
 
