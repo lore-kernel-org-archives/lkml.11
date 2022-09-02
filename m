@@ -2,122 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A0A7C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 11:31:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86C8AC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 11:32:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235069AbiIBLbv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 07:31:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45746 "EHLO
+        id S235803AbiIBLcW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 07:32:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236146AbiIBLbX (ORCPT
+        with ESMTP id S235849AbiIBLbw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 07:31:23 -0400
-Received: from smtp.domeneshop.no (smtp.domeneshop.no [IPv6:2a01:5b40:0:3005::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 337C28E0EA
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 04:28:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=tronnes.org
-        ; s=ds202112; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=3P4G0s8jHHnMDuhy8+v0Q+ixmj390VbhdMQwj5y5Wjc=; b=bZtQWi7EyAVPLA42Rzf8cb5JdM
-        G/3PyoSsE4+TzQ45xyyuvyIG/+TEOpTWEC9Otb+gWl6o0joUn+Fb2soBCKyda0m/awdEZrUKc7uak
-        z51s4DGVhtB++KNaE9LcvK41LZ+PM5S/HiBly41wGr52SLb4ElQBdb5IssVAsOaMMzlyCEgKM7B4P
-        wiVGMqooxE9e6urqnga+WXRKxxZVYoGuxulJw2ZV1V29cJpJe+yW0s0LvhhpPHIehl5vgWFClYJI4
-        xk9vQt5rQTEuzB79xm1Vd+fefkG8uvdSATf2/klQmygxH9N0KRAJEPTZEgVWsKx0Q385qyG2Lyz62
-        t3IxvyDQ==;
-Received: from [2a01:799:961:d200:cca0:57ac:c55d:a485] (port=64065)
-        by smtp.domeneshop.no with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <noralf@tronnes.org>)
-        id 1oU4qX-0004pl-Pv; Fri, 02 Sep 2022 13:28:25 +0200
-Message-ID: <020d44e6-884b-a817-8265-3461638cac71@tronnes.org>
-Date:   Fri, 2 Sep 2022 13:28:16 +0200
+        Fri, 2 Sep 2022 07:31:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0AF7326C1;
+        Fri,  2 Sep 2022 04:30:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3AA94B82A75;
+        Fri,  2 Sep 2022 11:30:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D6FB9C43470;
+        Fri,  2 Sep 2022 11:30:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662118217;
+        bh=CGqOiSS0/qFFblTPDZ50LIjsyYMsTcjW/vrcS8WzGk8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=RMibcfaoYXpqGtptupqzPRCtA7Way8KlStqoSSlin2aX7INJ+7wq7i1hzWUGvdEHW
+         y3sfjj0dN6k//e5xbgJZ8sYCi3J3YrZtbujG6NlkGZCA+2yUqygGnTzCeRFCZS4cUl
+         UjZNBrDz3vwB/jjGk6Nd62wEF4hrDXo6YhFCQNwZQTNeiCkDoZm0odpO9nb+ovLivw
+         uipPWMkEckXU+c+2nsUwBZpx8vmwHE9HJMwoUlThgPPuBZiiMCdB9w8iQQJAjEHZfo
+         jIhyMe7f/4xxIKGfoNEjW3ZvuFZhzjGHZx2+t+BusQrlPsAVV9SB2DoY546xLhMV+n
+         ieYwo3MTPBf4A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BDCB2E924E6;
+        Fri,  2 Sep 2022 11:30:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v2 00/41] drm: Analog TV Improvements
-To:     Maxime Ripard <maxime@cerno.tech>,
-        Maxime Ripard <mripard@kernel.org>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        David Airlie <airlied@linux.ie>, Chen-Yu Tsai <wens@csie.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Lyude Paul <lyude@redhat.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Karol Herbst <kherbst@redhat.com>,
-        Emma Anholt <emma@anholt.net>, Daniel Vetter <daniel@ffwll.ch>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Dom Cobley <dom@raspberrypi.com>
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Phil Elwell <phil@raspberrypi.com>,
-        intel-gfx@lists.freedesktop.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        nouveau@lists.freedesktop.org, linux-sunxi@lists.linux.dev,
-        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
-References: <20220728-rpi-analog-tv-properties-v2-0-459522d653a7@cerno.tech>
- <24e09a29-6d04-3b1e-63ce-cd3c31d350e2@tronnes.org>
-From:   =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
-In-Reply-To: <24e09a29-6d04-3b1e-63ce-cd3c31d350e2@tronnes.org>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/6] net: ipa: use IDs to track transaction state
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166211821777.29115.5588215360001640373.git-patchwork-notify@kernel.org>
+Date:   Fri, 02 Sep 2022 11:30:17 +0000
+References: <20220831224017.377745-1-elder@linaro.org>
+In-Reply-To: <20220831224017.377745-1-elder@linaro.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, mka@chromium.org, evgreen@chromium.org,
+        bjorn.andersson@linaro.org, quic_cpratapa@quicinc.com,
+        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
+        quic_subashab@quicinc.com, elder@kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello:
+
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Wed, 31 Aug 2022 17:40:11 -0500 you wrote:
+> This series is the first of three groups of changes that simplify
+> the way the IPA driver tracks the state of its transactions.
+> 
+> Each GSI channel has a fixed number of transactions allocated at
+> initialization time.  The number allocated matches the number of
+> TREs in the transfer ring associated with the channel.  This is
+> because the transfer ring limits the number of transfers that can
+> ever be underway, and in the worst case, each transaction represents
+> a single TRE.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,1/6] net: ipa: use an array for transactions
+    (no matching commit)
+  - [net-next,2/6] net: ipa: track allocated transactions with an ID
+    https://git.kernel.org/netdev/net-next/c/41e2a2c054b8
+  - [net-next,3/6] net: ipa: track committed transactions with an ID
+    https://git.kernel.org/netdev/net-next/c/fc95d958e27d
+  - [net-next,4/6] net: ipa: track pending transactions with an ID
+    https://git.kernel.org/netdev/net-next/c/eeff7c14e08c
+  - [net-next,5/6] net: ipa: track completed transactions with an ID
+    https://git.kernel.org/netdev/net-next/c/949cd0b5c296
+  - [net-next,6/6] net: ipa: track polled transactions with an ID
+    https://git.kernel.org/netdev/net-next/c/fd3bd0398a0d
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-Den 01.09.2022 21.35, skrev Noralf Trønnes:
-> 
-> 
-> I have finally found a workaround for my kernel hangs.
-> 
-> Dom had a look at my kernel and found that the VideoCore was fine, and
-> he said this:
-> 
->> That suggests cause of lockup was on arm side rather than VC side.
->>
->> But it's hard to diagnose further. Once you've had a peripheral not
->> respond, the AXI bus locks up and no further operations are possible.
->> Usual causes of this are required clocks being stopped or domains
->> disabled and then trying to access the hardware.
->>
-> 
-> So when I got this on my 64-bit build:
-> 
-> [  166.702171] SError Interrupt on CPU1, code 0x00000000bf000002 -- SError
-> [  166.702187] CPU: 1 PID: 8 Comm: kworker/u8:0 Tainted: G        W
->     5.19.0-rc6-00096-gba7973977976-dirty #1
-> [  166.702200] Hardware name: Raspberry Pi 4 Model B Rev 1.1 (DT)
-> [  166.702206] Workqueue: events_freezable_power_ thermal_zone_device_check
-> [  166.702231] pstate: 200000c5 (nzCv daIF -PAN -UAO -TCO -DIT -SSBS
-> BTYPE=--)
-> [  166.702242] pc : regmap_mmio_read32le+0x10/0x28
-> [  166.702261] lr : regmap_mmio_read+0x44/0x70
-> ...
-> [  166.702606]  bcm2711_get_temp+0x58/0xb0 [bcm2711_thermal]
-> 
-> I wondered if that reg read was stalled due to a clock being stopped.
-> 
-> Lo and behold, disabling runtime pm and keeping the vec clock running
-> all the time fixed it[1].
-> 
-> I don't know what the problem is, but at least I can now test this patchset.
-> 
-> [1] https://gist.github.com/notro/23b984e7fa05cfbda2db50a421cac065
-> 
-
-It turns out I didn't have to disable runtime pm:
-https://gist.github.com/notro/0adcfcb12460b54e54458afe11dc8ea2
-
-Noralf.
