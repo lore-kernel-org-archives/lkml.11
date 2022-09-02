@@ -2,200 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26DC5ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:12:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFF7EC54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:14:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238751AbiIBNM5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:12:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55498 "EHLO
+        id S236550AbiIBNN6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:13:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236600AbiIBNMd (ORCPT
+        with ESMTP id S238560AbiIBNNN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:12:33 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D56136178
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 05:49:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662122989; x=1693658989;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=sEybCS4mScmRq/7ZHkgu/VTiC8pHNgRzrbEQEElBsGA=;
-  b=HDCfkdWcjAZ9pFlsJA5QMwiCYBd2pkZtgyzGgqsWyvURb7IYVSg191hW
-   hOpG8WExKTcJ/0pw/SdQ6KQyRbTzqXqF8HgwqkkJ13H8MB/0+n+wj4ldq
-   maSHYeotafcjLg6IO4rFMMAz02NXYgqg1GOOpuI9DBlBGRBn3QNr39GRC
-   8tPgjERpdTvAtgyEI0ott8H12wlDOJzaajOPKGgqaqYDFBPh/HJK3x1jQ
-   54UEotZwtD6PjvdYRlT4dCGXhoP/N+b7FRLo2UhQWTYB7drCwzrT6TLNq
-   RP4aNsFUtNeq9WBSURI7aLs5zzAoOfSGgc/QDOTz81H7cxbZij58POLvN
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="357688356"
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="357688356"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 05:48:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="738854346"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga004.jf.intel.com with ESMTP; 02 Sep 2022 05:48:05 -0700
-Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 2 Sep 2022 05:47:59 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Fri, 2 Sep 2022 05:47:59 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.171)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Fri, 2 Sep 2022 05:47:58 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GdxZGP6o8NmtO/w4tsvB88kxwkpYQNxAlNfgydunRJLYJhFmKkl/RQ4QybzZatRqSrRg1a4XwZEATX+0Ntl+J10yqQbyv2iEMG9IsdSn/lPP85wkfWZ9U7tKwBZdb4ZqyXEosUBNlP+AWC2PdS3SM9Wa5K28gioRQWw9pV2p6vyMmsMoOSX8FHVapYkCgtUOFCQZ5uhdouxvqjh9DxAXrfhqf08fS2FZ/1+ko0sAGZBtUo86pq0GOwwQcHSZBfFQoWQMJcnEKIHkCgtoEIA9JEEAtXhJqzFr0ZxRtR1rn1C4iuhCHvhrXSI5bgNNafyNINYbthqqhix+6rCERiCOAg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EkCzUpSgXDolO4LUP0Xs1lt9HVy/n+m+9Zx81CWRH1k=;
- b=aPZQTe+oet6tUHNoIjdF8dj7B9+VpTBAjg8DH4jnO2bwq+w8LLcxge6QFBba8ehu4wbYSpvCg53Yd4fltCcCAT7OqKBVe3R3Uz6hfa6eTHcEzkuCCc9OC46w64eyEdEBMFF/Ta2rcvUXm5SsFto50NJJ+d+4umCki9lYlkYRMjCnpIU7OBrUmhUEKUGKReJ2gkFtqXfPNLyHhEWewbmJMMwD+9su6aUypKDd/ALLWE7CqOWB4Umyi4IjcT8NXbOgHNbh6Ua8hZcyra4tE/S7D6bmmAExrtiq+UTebdi1B36yBXl73NTC6PK9HicZq0pRqiyYGjQBNlj2IpAsY9jIKQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DS0PR11MB6375.namprd11.prod.outlook.com (2603:10b6:8:c9::21) by
- SA0PR11MB4751.namprd11.prod.outlook.com (2603:10b6:806:73::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5588.10; Fri, 2 Sep 2022 12:47:57 +0000
-Received: from DS0PR11MB6375.namprd11.prod.outlook.com
- ([fe80::f9e1:f470:f60f:fb02]) by DS0PR11MB6375.namprd11.prod.outlook.com
- ([fe80::f9e1:f470:f60f:fb02%7]) with mapi id 15.20.5566.015; Fri, 2 Sep 2022
- 12:47:57 +0000
-Message-ID: <2410bc5e-4278-ed69-c57a-868ec01ada21@intel.com>
-Date:   Fri, 2 Sep 2022 14:47:47 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.2.0
-Subject: Re: [PATCH v4 1/2] lib/string_helpers: Introduce
- parse_int_array_user()
-Content-Language: en-US
-To:     =?UTF-8?Q?Amadeusz_S=c5=82awi=c5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>,
-        <alsa-devel@alsa-project.org>, <broonie@kernel.org>
-CC:     <tiwai@suse.com>, <perex@perex.cz>,
-        <pierre-louis.bossart@linux.intel.com>, <hdegoede@redhat.com>,
-        <lgirdwood@gmail.com>, <kai.vehmanen@linux.intel.com>,
-        <peter.ujfalusi@linux.intel.com>,
-        <ranjani.sridharan@linux.intel.com>,
-        <yung-chuan.liao@linux.intel.com>, <willy@infradead.org>,
-        <linux-kernel@vger.kernel.org>, <andy@kernel.org>,
-        <intel-poland@eclists.intel.com>, <andy.shevchenko@gmail.com>
-References: <20220902122928.632602-1-cezary.rojewski@intel.com>
- <20220902122928.632602-2-cezary.rojewski@intel.com>
- <e48ffb56-f220-adf5-87ca-1826397f2e7f@linux.intel.com>
-From:   Cezary Rojewski <cezary.rojewski@intel.com>
-In-Reply-To: <e48ffb56-f220-adf5-87ca-1826397f2e7f@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR0P281CA0142.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:96::15) To DS0PR11MB6375.namprd11.prod.outlook.com
- (2603:10b6:8:c9::21)
+        Fri, 2 Sep 2022 09:13:13 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3829A98CBB;
+        Fri,  2 Sep 2022 05:50:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A76D2CE2E6C;
+        Fri,  2 Sep 2022 12:40:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE09DC433C1;
+        Fri,  2 Sep 2022 12:40:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662122426;
+        bh=5I5WgbFR00KcFPgxXOaC3z7i3XsVwy5EdHXJcG36H14=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=0gGWY16J7zQDvbbNDGz/bP3+ay63C4pqEbY3khHgBshJhR1MkeSM3WL+mCvVTBFFN
+         XGGyrKxiS9YaE21FwH4Iin7iAX2B38D05BfxPKUY76Y76RHjQQ8bBAKyNaAFhr24v/
+         Gsa6Kfvve6b6jXRtfUIX8SyX6AXBp6YVI4LEoP2k=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Wen Gu <guwen@linux.alibaba.com>,
+        Hawkins Jiawei <yin31149@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        syzbot+5f26f85569bd179c18ce@syzkaller.appspotmail.com
+Subject: [PATCH 5.10 13/37] net: fix refcount bug in sk_psock_get (2)
+Date:   Fri,  2 Sep 2022 14:19:35 +0200
+Message-Id: <20220902121359.580930358@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220902121359.177846782@linuxfoundation.org>
+References: <20220902121359.177846782@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f1820fd4-8577-4781-98c5-08da8ce15c3e
-X-MS-TrafficTypeDiagnostic: SA0PR11MB4751:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nvIaSebmoNBbxHpshviN0ApSA+9GHUE7MDHpuMkE86sdHjN9CWyXFGdmKVMJIOk2/cS+OJ/z1RojJS5uKTiiOzCXpjwAV1GnhvbvoiURtTTkejuIuKi8myPPsNPxDFZdZguV7KGWn1jKfdnTEsrWTkzyOnlfQqyaLFJTQGdtt02A/HIx3MvZmPZRsiCD/9zynkUeEIUG7fBJjuHWCDHCeZE9svRRhbvKk3zB4os1Vt0h+ql65cJnoYvKxM5GAmd/8gmWOyCYHskEEK+LPhH+qluL1X9cIP0qMCHLTasH28nbgyQY6ubItt5nJ7tWiXqf7nmqkhRbTDfp0QKYvN5quF/Q+O4JECw5XFXBUz5RnTk0LbaGG1tBJoOWiiHYOKMsJ98KstBwJsV/9ZNq8eZUrlR/AH/RwgNQALxU9D3/0e4YzFxJc8/JLocJ0EvRk6QOTj0YMA+rWmomRi5CQ2G+33171JYHBw55jQoMhqjXA6XRlp0u4lV/zs6Pr4ydlrf54oBiUAFRIzc1yLogPFChY/+cIlt0PXGENIn2nbzN3mLeODF56Tm6yyMGLoIdPAOqaUdjAHx5jAqNDcyPOjT7s8o/mYtwudH2twvkQ3PiDhLcwm1h4o3h1UIEnNL9d3ldH19bQaS/u6p09O7N83WJtHuEkqmRlfdtckjV3+nUOFH8VnQNUNvf3A1v2vzxSV48jzHhAUJ96AycoX59o4roH5bgud8mhBDrSI8Pmh3mnFLJ3WV+3duc4seMBuVZ9gysubCGhl6plOPMUZ7HXHNleOu1Y6ggquOgi1fvj4i/9HE=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB6375.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(39860400002)(346002)(376002)(366004)(136003)(8936002)(5660300002)(6486002)(41300700001)(6666004)(186003)(53546011)(2906002)(4744005)(44832011)(7416002)(2616005)(66556008)(316002)(26005)(36756003)(6512007)(6506007)(82960400001)(66574015)(83380400001)(38100700002)(8676002)(31686004)(66476007)(4326008)(66946007)(478600001)(31696002)(86362001)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NnY1Wmo2dmszL2d5UTZHc0xrTHovV0NYcDc4c1ppQytCdE1KYWdISEpMaVZO?=
- =?utf-8?B?Y2dJMWRPTlc3Q2hKWlZTZU92MG1kVG93aG93TG9oaEw2T2QyUm00WFdyYkZU?=
- =?utf-8?B?RmVkbzJGNTU0UDVpQ0pHeExJc2diNCtVSWN4WHdQZWV1bTJDdUY4bmlEMUQv?=
- =?utf-8?B?Z1BEMFg4ZEppdS9NaHZacWNOMHhWK2VPdWpNRUw2dklCUWkzcHFkQTZKQytF?=
- =?utf-8?B?UGYxOVFEZnMraU9abkJBSjJBRWlMT3RKeVZCYk01N1JBZFQ3RTU2Qm5hRXkw?=
- =?utf-8?B?a3ZxU0puRnJxNDROam5ubWhURXFodGR5V0xnbFl3Y2ZFRklmcDJrWHJ4Mjhz?=
- =?utf-8?B?K2JUOHg1dXkvcXIwN0hqSkRXNjFmVTRrRytYd3h6cmxhdklNRTF3QUlMa1J3?=
- =?utf-8?B?Y0ZSQy93MmlnYVppZ094NWtHTXRYLzNKdmlTMHgrZTIxZWNwTnJYOXhiZFp4?=
- =?utf-8?B?SVZJeCswVmNSL01pbURIQkRJNWJqbndMODA1R29wZFJjVW1QRGR2bWVHTGhj?=
- =?utf-8?B?dklWRDNnY3B5cXFreFZXUG1uOGkvaEtBa21XeVlSNWRGN09WODNrMkFSZzlo?=
- =?utf-8?B?VUZJRXN3Y0QyMFVXNHMzMWVqVWRyVUZiakZlTDFxQ0YzRjExbFZxcTJmN1Vy?=
- =?utf-8?B?VmluQWN2aWZCQ3VhU1lyOGk4clZWZnJtSThUTzdKVVJCRUFYUlEzdlh3anps?=
- =?utf-8?B?RTFoR0szWnF5anNQRzJadHFLYXlmRUQzVGZHcWt5anQvT2dDVXhldUlveGtO?=
- =?utf-8?B?aFJib042U0s0K3o3TEpqa1RTTmUvVFptMVIrSTlGSFBXYUtHMitMR3FxS3NE?=
- =?utf-8?B?UWZaYW1HaVhrbEtZT3B3cUl5ck42a0hCN2pDMFNEc2FXYjBJQnNRREZEWGk4?=
- =?utf-8?B?K3ZEdHNsbjVCUm5ZbFVKMUR5SW1nRGVlbXZybFpGWkZsYjhkMm04R1cvSWFI?=
- =?utf-8?B?WmhaZm5qN1Y3OHpCVUZMZ0ZzTEU5RG5pa0o0UTBOcXh4QURXeU1xSEVDaFZN?=
- =?utf-8?B?Q3krVkN2dG9ObnlrTFFJdU1FT3lzMnpjYVJ1Sk1jcGR3TDNobWNKRm8rRVdq?=
- =?utf-8?B?YldwaThxZXFDeVVMYVNVQjVBbDh3YW9keWlYWHNOMlQ3bjJFM3NXNlY0UEwz?=
- =?utf-8?B?S0JCRGI1bUV1ZTNXcERpYXBjaDZXR3F2UHZUS2hnQndLM29WVDhBRnE4UGpD?=
- =?utf-8?B?dzRWZlgwUmZRQ1pPWmNjZnNvdG15K0NMaFNEUlpjajFUSEpuUEYzZEt0aXlT?=
- =?utf-8?B?NlZyLyt6R0lCbWY3NkhvL242ZnRGem0vY2ZQRlRWdzhRTEJVMS9aTEQ5SEtP?=
- =?utf-8?B?Q3lxeU4zaXhWYUFFbG1pNWpzL0pKU1ZDcmV1OFdsYmVxd2tYbTNoMGdoYzV0?=
- =?utf-8?B?emZ1UVFkOWQ2RzRQNXVQSDg2ZE1mZUxHdW1KaFg0a2RaV3NseW0walFtd01q?=
- =?utf-8?B?MElFbGJVdS90UzBRclJTc1hidUFmYWY5dWVTVnJVSFI1RVpUcUI0ZisrMC9E?=
- =?utf-8?B?R3l6aGdhWHoxeTNTc3BhMExHdnlBZUdBc0hQMmRXLy9HOHlkKy9kNVVINU1x?=
- =?utf-8?B?bnZabnBRS2EwbU5zNVVvdWh2bUY4cWk2a2I2Tm9BUlRCRWh6MjVPY1A1SG9H?=
- =?utf-8?B?QmhLRUpxV0VOQlM1RmdPcWNTdFJOeHIwa2h4WklpSGRTc1p6RmdQQ1JkNFZs?=
- =?utf-8?B?N3I4ZVVBVG5RMVdSTnRmWHRpMXd2YTAyYmQ2OFJnalNLVTNNQloxTC9tT21U?=
- =?utf-8?B?TEF5b0V6YW5xWlFsUGF5VStYc1ZVN0lwZkczaXoyc1l6UWl0SVI5aWorUXg3?=
- =?utf-8?B?blpDS1JTbVpFeTBFbHRLR0krYjUzc0xWc1ZCcTYxMDNydmo4SnJTVUh2TzZh?=
- =?utf-8?B?dVBIK2FZdzhmZmtpTDFkSm5Ra0RQRjJzaWZBUmg4SFQwNWtoMThVQVBjRTJ5?=
- =?utf-8?B?MUlEUjEyYVVRNGpoY0o1anlEMmwrU1BHVkxnTkJhTXd1aDZjNjgvU0NiMWVB?=
- =?utf-8?B?V3RGNU9yMXc3STd0ZjF3elV1VlRmU0NRUmVpYk1RUmU5WUx5U3RFcHZqVmhR?=
- =?utf-8?B?RzhjOEd6RG4raG1uZ3d6bFIvblV5T09jUTAwMnlPZ3Njd0Z1WWRKdTdMcWtl?=
- =?utf-8?B?S0xZcWFRU0czVHZWNEVHSmcvb2xrK0NlSjlna0lVSWtBbTFTNkNjRVRuU2dv?=
- =?utf-8?B?NkE9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: f1820fd4-8577-4781-98c5-08da8ce15c3e
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB6375.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Sep 2022 12:47:57.0576
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: A92N4LQINyvdBV1lKnwUtZO88AsJAfHLmLahtcU/sLvJA93gBi3idKC1jOzkl10vdcXioIeouMng7uPCAjN0CcLC8BV2eDGNzzaD7dQmF/U=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR11MB4751
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-09-02 2:23 PM, Amadeusz Sławiński wrote:
-> On 9/2/2022 2:29 PM, Cezary Rojewski wrote:
+From: Hawkins Jiawei <yin31149@gmail.com>
 
-...
+commit 2a0133723f9ebeb751cfce19f74ec07e108bef1f upstream.
 
->> +/**
->> + * parse_int_array_user - Split string into a sequence of integers
->> + * @from:    The user space buffer to read from
->> + * @ppos:    The current position in the buffer
-> 
-> There is no such parameter?
-> 
->> + * @count:    The maximum number of bytes to read
->> + * @tkns:    Returned pointer to sequence of integers
-> 
-> s/tkns/array/ ?
-> 
->> + *
->> + * On success @tkns is allocated and initialized with a sequence of
-> 
-> ditto
-> 
->> + * integers extracted from the @from plus an additional element that
->> + * begins the sequence and specifies the integers count.
->> + *
->> + * Caller takes responsibility for freeing @tkns when it is no longer
-> 
-> ditto
-> 
->> + * needed.
->> + */
->> +int parse_int_array_user(const char __user *from, size_t count, int 
->> **array)
+Syzkaller reports refcount bug as follows:
+------------[ cut here ]------------
+refcount_t: saturated; leaking memory.
+WARNING: CPU: 1 PID: 3605 at lib/refcount.c:19 refcount_warn_saturate+0xf4/0x1e0 lib/refcount.c:19
+Modules linked in:
+CPU: 1 PID: 3605 Comm: syz-executor208 Not tainted 5.18.0-syzkaller-03023-g7e062cda7d90 #0
+ <TASK>
+ __refcount_add_not_zero include/linux/refcount.h:163 [inline]
+ __refcount_inc_not_zero include/linux/refcount.h:227 [inline]
+ refcount_inc_not_zero include/linux/refcount.h:245 [inline]
+ sk_psock_get+0x3bc/0x410 include/linux/skmsg.h:439
+ tls_data_ready+0x6d/0x1b0 net/tls/tls_sw.c:2091
+ tcp_data_ready+0x106/0x520 net/ipv4/tcp_input.c:4983
+ tcp_data_queue+0x25f2/0x4c90 net/ipv4/tcp_input.c:5057
+ tcp_rcv_state_process+0x1774/0x4e80 net/ipv4/tcp_input.c:6659
+ tcp_v4_do_rcv+0x339/0x980 net/ipv4/tcp_ipv4.c:1682
+ sk_backlog_rcv include/net/sock.h:1061 [inline]
+ __release_sock+0x134/0x3b0 net/core/sock.c:2849
+ release_sock+0x54/0x1b0 net/core/sock.c:3404
+ inet_shutdown+0x1e0/0x430 net/ipv4/af_inet.c:909
+ __sys_shutdown_sock net/socket.c:2331 [inline]
+ __sys_shutdown_sock net/socket.c:2325 [inline]
+ __sys_shutdown+0xf1/0x1b0 net/socket.c:2343
+ __do_sys_shutdown net/socket.c:2351 [inline]
+ __se_sys_shutdown net/socket.c:2349 [inline]
+ __x64_sys_shutdown+0x50/0x70 net/socket.c:2349
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+ </TASK>
 
-Ack. Will send an update shortly.
+During SMC fallback process in connect syscall, kernel will
+replaces TCP with SMC. In order to forward wakeup
+smc socket waitqueue after fallback, kernel will sets
+clcsk->sk_user_data to origin smc socket in
+smc_fback_replace_callbacks().
+
+Later, in shutdown syscall, kernel will calls
+sk_psock_get(), which treats the clcsk->sk_user_data
+as psock type, triggering the refcnt warning.
+
+So, the root cause is that smc and psock, both will use
+sk_user_data field. So they will mismatch this field
+easily.
+
+This patch solves it by using another bit(defined as
+SK_USER_DATA_PSOCK) in PTRMASK, to mark whether
+sk_user_data points to a psock object or not.
+This patch depends on a PTRMASK introduced in commit f1ff5ce2cd5e
+("net, sk_msg: Clear sk_user_data pointer on clone if tagged").
+
+For there will possibly be more flags in the sk_user_data field,
+this patch also refactor sk_user_data flags code to be more generic
+to improve its maintainability.
+
+Reported-and-tested-by: syzbot+5f26f85569bd179c18ce@syzkaller.appspotmail.com
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
+Acked-by: Wen Gu <guwen@linux.alibaba.com>
+Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/linux/skmsg.h |    3 +-
+ include/net/sock.h    |   68 +++++++++++++++++++++++++++++++++++---------------
+ net/core/skmsg.c      |    4 ++
+ 3 files changed, 53 insertions(+), 22 deletions(-)
+
+--- a/include/linux/skmsg.h
++++ b/include/linux/skmsg.h
+@@ -281,7 +281,8 @@ static inline void sk_msg_sg_copy_clear(
+ 
+ static inline struct sk_psock *sk_psock(const struct sock *sk)
+ {
+-	return rcu_dereference_sk_user_data(sk);
++	return __rcu_dereference_sk_user_data_with_flags(sk,
++							 SK_USER_DATA_PSOCK);
+ }
+ 
+ static inline void sk_psock_queue_msg(struct sk_psock *psock,
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -527,14 +527,26 @@ enum sk_pacing {
+ 	SK_PACING_FQ		= 2,
+ };
+ 
+-/* Pointer stored in sk_user_data might not be suitable for copying
+- * when cloning the socket. For instance, it can point to a reference
+- * counted object. sk_user_data bottom bit is set if pointer must not
+- * be copied.
++/* flag bits in sk_user_data
++ *
++ * - SK_USER_DATA_NOCOPY:      Pointer stored in sk_user_data might
++ *   not be suitable for copying when cloning the socket. For instance,
++ *   it can point to a reference counted object. sk_user_data bottom
++ *   bit is set if pointer must not be copied.
++ *
++ * - SK_USER_DATA_BPF:         Mark whether sk_user_data field is
++ *   managed/owned by a BPF reuseport array. This bit should be set
++ *   when sk_user_data's sk is added to the bpf's reuseport_array.
++ *
++ * - SK_USER_DATA_PSOCK:       Mark whether pointer stored in
++ *   sk_user_data points to psock type. This bit should be set
++ *   when sk_user_data is assigned to a psock object.
+  */
+ #define SK_USER_DATA_NOCOPY	1UL
+-#define SK_USER_DATA_BPF	2UL	/* Managed by BPF */
+-#define SK_USER_DATA_PTRMASK	~(SK_USER_DATA_NOCOPY | SK_USER_DATA_BPF)
++#define SK_USER_DATA_BPF	2UL
++#define SK_USER_DATA_PSOCK	4UL
++#define SK_USER_DATA_PTRMASK	~(SK_USER_DATA_NOCOPY | SK_USER_DATA_BPF |\
++				  SK_USER_DATA_PSOCK)
+ 
+ /**
+  * sk_user_data_is_nocopy - Test if sk_user_data pointer must not be copied
+@@ -547,24 +559,40 @@ static inline bool sk_user_data_is_nocop
+ 
+ #define __sk_user_data(sk) ((*((void __rcu **)&(sk)->sk_user_data)))
+ 
++/**
++ * __rcu_dereference_sk_user_data_with_flags - return the pointer
++ * only if argument flags all has been set in sk_user_data. Otherwise
++ * return NULL
++ *
++ * @sk: socket
++ * @flags: flag bits
++ */
++static inline void *
++__rcu_dereference_sk_user_data_with_flags(const struct sock *sk,
++					  uintptr_t flags)
++{
++	uintptr_t sk_user_data = (uintptr_t)rcu_dereference(__sk_user_data(sk));
++
++	WARN_ON_ONCE(flags & SK_USER_DATA_PTRMASK);
++
++	if ((sk_user_data & flags) == flags)
++		return (void *)(sk_user_data & SK_USER_DATA_PTRMASK);
++	return NULL;
++}
++
+ #define rcu_dereference_sk_user_data(sk)				\
++	__rcu_dereference_sk_user_data_with_flags(sk, 0)
++#define __rcu_assign_sk_user_data_with_flags(sk, ptr, flags)		\
+ ({									\
+-	void *__tmp = rcu_dereference(__sk_user_data((sk)));		\
+-	(void *)((uintptr_t)__tmp & SK_USER_DATA_PTRMASK);		\
+-})
+-#define rcu_assign_sk_user_data(sk, ptr)				\
+-({									\
+-	uintptr_t __tmp = (uintptr_t)(ptr);				\
+-	WARN_ON_ONCE(__tmp & ~SK_USER_DATA_PTRMASK);			\
+-	rcu_assign_pointer(__sk_user_data((sk)), __tmp);		\
+-})
+-#define rcu_assign_sk_user_data_nocopy(sk, ptr)				\
+-({									\
+-	uintptr_t __tmp = (uintptr_t)(ptr);				\
+-	WARN_ON_ONCE(__tmp & ~SK_USER_DATA_PTRMASK);			\
++	uintptr_t __tmp1 = (uintptr_t)(ptr),				\
++		  __tmp2 = (uintptr_t)(flags);				\
++	WARN_ON_ONCE(__tmp1 & ~SK_USER_DATA_PTRMASK);			\
++	WARN_ON_ONCE(__tmp2 & SK_USER_DATA_PTRMASK);			\
+ 	rcu_assign_pointer(__sk_user_data((sk)),			\
+-			   __tmp | SK_USER_DATA_NOCOPY);		\
++			   __tmp1 | __tmp2);				\
+ })
++#define rcu_assign_sk_user_data(sk, ptr)				\
++	__rcu_assign_sk_user_data_with_flags(sk, ptr, 0)
+ 
+ /*
+  * SK_CAN_REUSE and SK_NO_REUSE on a socket mean that the socket is OK
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -612,7 +612,9 @@ struct sk_psock *sk_psock_init(struct so
+ 	sk_psock_set_state(psock, SK_PSOCK_TX_ENABLED);
+ 	refcount_set(&psock->refcnt, 1);
+ 
+-	rcu_assign_sk_user_data_nocopy(sk, psock);
++	__rcu_assign_sk_user_data_with_flags(sk, psock,
++					     SK_USER_DATA_NOCOPY |
++					     SK_USER_DATA_PSOCK);
+ 	sock_hold(sk);
+ 
+ out:
 
 
-Regards,
-Czarek
