@@ -2,53 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AAF2C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:02:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D3DDECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:02:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238618AbiIBNCM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:02:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45896 "EHLO
+        id S238623AbiIBNCS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:02:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238476AbiIBNAU (ORCPT
+        with ESMTP id S238478AbiIBNAU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 09:00:20 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67CA8FC335;
-        Fri,  2 Sep 2022 05:40:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66416FC33E;
+        Fri,  2 Sep 2022 05:41:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2CBC9B82AC8;
-        Fri,  2 Sep 2022 12:39:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67E45C433D6;
-        Fri,  2 Sep 2022 12:39:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B131B82AE2;
+        Fri,  2 Sep 2022 12:40:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7980EC433C1;
+        Fri,  2 Sep 2022 12:40:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122357;
-        bh=bYlICM6Qgwhi5tAFWazWgh8mpqGEcWaF0Dp4ZqVvWFs=;
+        s=korg; t=1662122417;
+        bh=SGi+1RnrP8fPAFe7dJvXJ1AlUmwFWSRiimkwKEE5VSA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EVG1XBvkFHWwp4F5bXrTpIu9/H2gbQ/bHh6G+ytoEMd19ggt+Fa35dqImH6GgMc7M
-         DE/2E6QVpTGpafy69QqzgHAF+t+X5kAhMKPoCUxRVkE4wGpBDH8DXY9i1QZqBMBtMs
-         m/y01UtGtvQrQAd3jTBN/xZtpT4ThzkdsyPzhyoI=
+        b=HdneWD+ijrP7PIxXd6zgHi9mJp8FNLFJ8cXWOaknJ/sHIR2BkClW1M+qDGZJebUv9
+         +yZ2+W9arpm5kOI7yYEU9/ZHNCrI74E2ItdeiM81RMVDIGue0ZA23/Biqx/XTgJeHd
+         NJM0oX5ZEEObI/q17nkmY7yf74enGbt0sUPacHbI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Ahern <dsahern@kernel.org>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Christian Brauner <brauner@kernel.org>, netdev@vger.kernel.org,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
-        Konstantin Khorenko <khorenko@virtuozzo.com>,
-        kernel@openvz.org, devel@openvz.org,
-        "Denis V. Lunev" <den@openvz.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 22/37] neigh: fix possible DoS due to net iface start/stop loop
-Date:   Fri,  2 Sep 2022 14:19:44 +0200
-Message-Id: <20220902121359.873244372@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+10e27961f4da37c443b2@syzkaller.appspotmail.com,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Vivek Kasireddy <vivek.kasireddy@intel.com>
+Subject: [PATCH 5.10 10/37] udmabuf: Set the DMA mask for the udmabuf device (v2)
+Date:   Fri,  2 Sep 2022 14:19:32 +0200
+Message-Id: <20220902121359.496209507@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121359.177846782@linuxfoundation.org>
 References: <20220902121359.177846782@linuxfoundation.org>
@@ -60,129 +50,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Denis V. Lunev <den@openvz.org>
+From: Vivek Kasireddy <vivek.kasireddy@intel.com>
 
-[ Upstream commit 66ba215cb51323e4e55e38fd5f250e0fae0cbc94 ]
+commit 9e9fa6a9198b767b00f48160800128e83a038f9f upstream.
 
-Normal processing of ARP request (usually this is Ethernet broadcast
-packet) coming to the host is looking like the following:
-* the packet comes to arp_process() call and is passed through routing
-  procedure
-* the request is put into the queue using pneigh_enqueue() if
-  corresponding ARP record is not local (common case for container
-  records on the host)
-* the request is processed by timer (within 80 jiffies by default) and
-  ARP reply is sent from the same arp_process() using
-  NEIGH_CB(skb)->flags & LOCALLY_ENQUEUED condition (flag is set inside
-  pneigh_enqueue())
+If the DMA mask is not set explicitly, the following warning occurs
+when the userspace tries to access the dma-buf via the CPU as
+reported by syzbot here:
 
-And here the problem comes. Linux kernel calls pneigh_queue_purge()
-which destroys the whole queue of ARP requests on ANY network interface
-start/stop event through __neigh_ifdown().
+WARNING: CPU: 1 PID: 3595 at kernel/dma/mapping.c:188
+__dma_map_sg_attrs+0x181/0x1f0 kernel/dma/mapping.c:188
+Modules linked in:
+CPU: 0 PID: 3595 Comm: syz-executor249 Not tainted
+5.17.0-rc2-syzkaller-00316-g0457e5153e0e #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
+Google 01/01/2011
+RIP: 0010:__dma_map_sg_attrs+0x181/0x1f0 kernel/dma/mapping.c:188
+Code: 00 00 00 00 00 fc ff df 48 c1 e8 03 80 3c 10 00 75 71 4c 8b 3d c0
+83 b5 0d e9 db fe ff ff e8 b6 0f 13 00 0f 0b e8 af 0f 13 00 <0f> 0b 45
+   31 e4 e9 54 ff ff ff e8 a0 0f 13 00 49 8d 7f 50 48 b8 00
+RSP: 0018:ffffc90002a07d68 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: ffff88807e25e2c0 RSI: ffffffff81649e91 RDI: ffff88801b848408
+RBP: ffff88801b848000 R08: 0000000000000002 R09: ffff88801d86c74f
+R10: ffffffff81649d72 R11: 0000000000000001 R12: 0000000000000002
+R13: ffff88801d86c680 R14: 0000000000000001 R15: 0000000000000000
+FS:  0000555556e30300(0000) GS:ffff8880b9d00000(0000)
+knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000200000cc CR3: 000000001d74a000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ dma_map_sgtable+0x70/0xf0 kernel/dma/mapping.c:264
+ get_sg_table.isra.0+0xe0/0x160 drivers/dma-buf/udmabuf.c:72
+ begin_cpu_udmabuf+0x130/0x1d0 drivers/dma-buf/udmabuf.c:126
+ dma_buf_begin_cpu_access+0xfd/0x1d0 drivers/dma-buf/dma-buf.c:1164
+ dma_buf_ioctl+0x259/0x2b0 drivers/dma-buf/dma-buf.c:363
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:874 [inline]
+ __se_sys_ioctl fs/ioctl.c:860 [inline]
+ __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:860
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f62fcf530f9
+Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89
+f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01
+f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffe3edab9b8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f62fcf530f9
+RDX: 0000000020000200 RSI: 0000000040086200 RDI: 0000000000000006
+RBP: 00007f62fcf170e0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f62fcf17170
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
 
-This is actually not a problem within the original world as network
-interface start/stop was accessible to the host 'root' only, which
-could do more destructive things. But the world is changed and there
-are Linux containers available. Here container 'root' has an access
-to this API and could be considered as untrusted user in the hosting
-(container's) world.
+v2: Dont't forget to deregister if DMA mask setup fails.
 
-Thus there is an attack vector to other containers on node when
-container's root will endlessly start/stop interfaces. We have observed
-similar situation on a real production node when docker container was
-doing such activity and thus other containers on the node become not
-accessible.
-
-The patch proposed doing very simple thing. It drops only packets from
-the same namespace in the pneigh_queue_purge() where network interface
-state change is detected. This is enough to prevent the problem for the
-whole node preserving original semantics of the code.
-
-v2:
-	- do del_timer_sync() if queue is empty after pneigh_queue_purge()
-v3:
-	- rebase to net tree
-
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: David Ahern <dsahern@kernel.org>
-Cc: Yajun Deng <yajun.deng@linux.dev>
-Cc: Roopa Prabhu <roopa@nvidia.com>
-Cc: Christian Brauner <brauner@kernel.org>
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-Cc: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-Cc: Konstantin Khorenko <khorenko@virtuozzo.com>
-Cc: kernel@openvz.org
-Cc: devel@openvz.org
-Investigated-by: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-Signed-off-by: Denis V. Lunev <den@openvz.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: syzbot+10e27961f4da37c443b2@syzkaller.appspotmail.com
+Cc: Gerd Hoffmann <kraxel@redhat.com>
+Signed-off-by: Vivek Kasireddy <vivek.kasireddy@intel.com>
+Link: http://patchwork.freedesktop.org/patch/msgid/20220520205235.3687336-1-vivek.kasireddy@intel.com
+Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/neighbour.c | 25 +++++++++++++++++--------
- 1 file changed, 17 insertions(+), 8 deletions(-)
+ drivers/dma-buf/udmabuf.c |   18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index 52a1c8725337b..e7dcdad5876b1 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -280,14 +280,23 @@ static int neigh_del_timer(struct neighbour *n)
- 	return 0;
- }
+--- a/drivers/dma-buf/udmabuf.c
++++ b/drivers/dma-buf/udmabuf.c
+@@ -327,7 +327,23 @@ static struct miscdevice udmabuf_misc =
  
--static void pneigh_queue_purge(struct sk_buff_head *list)
-+static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
+ static int __init udmabuf_dev_init(void)
  {
-+	unsigned long flags;
- 	struct sk_buff *skb;
- 
--	while ((skb = skb_dequeue(list)) != NULL) {
--		dev_put(skb->dev);
--		kfree_skb(skb);
-+	spin_lock_irqsave(&list->lock, flags);
-+	skb = skb_peek(list);
-+	while (skb != NULL) {
-+		struct sk_buff *skb_next = skb_peek_next(skb, list);
-+		if (net == NULL || net_eq(dev_net(skb->dev), net)) {
-+			__skb_unlink(skb, list);
-+			dev_put(skb->dev);
-+			kfree_skb(skb);
-+		}
-+		skb = skb_next;
- 	}
-+	spin_unlock_irqrestore(&list->lock, flags);
+-	return misc_register(&udmabuf_misc);
++	int ret;
++
++	ret = misc_register(&udmabuf_misc);
++	if (ret < 0) {
++		pr_err("Could not initialize udmabuf device\n");
++		return ret;
++	}
++
++	ret = dma_coerce_mask_and_coherent(udmabuf_misc.this_device,
++					   DMA_BIT_MASK(64));
++	if (ret < 0) {
++		pr_err("Could not setup DMA mask for udmabuf device\n");
++		misc_deregister(&udmabuf_misc);
++		return ret;
++	}
++
++	return 0;
  }
  
- static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev,
-@@ -358,9 +367,9 @@ static int __neigh_ifdown(struct neigh_table *tbl, struct net_device *dev,
- 	write_lock_bh(&tbl->lock);
- 	neigh_flush_dev(tbl, dev, skip_perm);
- 	pneigh_ifdown_and_unlock(tbl, dev);
--
--	del_timer_sync(&tbl->proxy_timer);
--	pneigh_queue_purge(&tbl->proxy_queue);
-+	pneigh_queue_purge(&tbl->proxy_queue, dev_net(dev));
-+	if (skb_queue_empty_lockless(&tbl->proxy_queue))
-+		del_timer_sync(&tbl->proxy_timer);
- 	return 0;
- }
- 
-@@ -1743,7 +1752,7 @@ int neigh_table_clear(int index, struct neigh_table *tbl)
- 	/* It is not clean... Fix it to unload IPv6 module safely */
- 	cancel_delayed_work_sync(&tbl->gc_work);
- 	del_timer_sync(&tbl->proxy_timer);
--	pneigh_queue_purge(&tbl->proxy_queue);
-+	pneigh_queue_purge(&tbl->proxy_queue, NULL);
- 	neigh_ifdown(tbl, NULL);
- 	if (atomic_read(&tbl->entries))
- 		pr_crit("neighbour leakage\n");
--- 
-2.35.1
-
+ static void __exit udmabuf_dev_exit(void)
 
 
