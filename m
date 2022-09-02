@@ -2,83 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB8EAC6FA86
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:19:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AFE5ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:28:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229710AbiIBST5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 14:19:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56230 "EHLO
+        id S229506AbiIBS2s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 14:28:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229729AbiIBSTx (ORCPT
+        with ESMTP id S229437AbiIBS2p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 14:19:53 -0400
-Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB3B558B64;
-        Fri,  2 Sep 2022 11:19:51 -0700 (PDT)
-Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-11eb44f520dso6658121fac.10;
-        Fri, 02 Sep 2022 11:19:51 -0700 (PDT)
+        Fri, 2 Sep 2022 14:28:45 -0400
+Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62AC8110DBB;
+        Fri,  2 Sep 2022 11:28:44 -0700 (PDT)
+Received: by mail-qk1-x734.google.com with SMTP id f14so2442312qkm.0;
+        Fri, 02 Sep 2022 11:28:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=C7n7jfdbJFI5Vm0yNWU5Z8SS+ha0I414B1SOkH7t1Zw=;
+        b=JgIx0TtrujVvuv6Ybn/45+xAsZwIV9ZysjvT8jcrSQkH02pGwLdYHthruF3dDZnVq2
+         ZzCIIvVU/PJ7u4QE0gu3Iolaf24pTeV9pVjI0WzfLgstgYdS/OWkXxv/R9afpQBRE0t5
+         G8zipqCZwmMKqakVawwIjBqFbfmTNy1lJTg7fRK9B6oO/HcoOu9ocGwnRvH1qHZi3UjR
+         KXtUvPjd3o7yxn4oZELMk7/a5fUxtuvujbu/1rPUCZI6Qwfe+Z2WJPDZR+2pY5AfVnkW
+         yQuwVuT/5Pi9CDCZxHtaghZ2NWimqSAU1wo3j1Te6cJ6k/uWeXmABmAPESXNRa/6oVIl
+         TQZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=DFYj3SzmCSDPlkEMmdzkWyN5W3U24WerlpydHPBUtDY=;
-        b=bNU3fVUaRreSii84DwM62FmQok25C8MdFA1cxTAzsmEjyFXMzK6DBhFahDx1ijMhja
-         0tnSoN7gMKnCkhXxcz42fNZNReHjfRBP7WHzcVoFS6DAJ8E17iREXRGvT6tGO3KcopPS
-         9SdxJAGS35kaM7wXCQCTL7Rv8KNo4EqeLso8TfFwum7Khn9za9pVJTLN9nl7i9O/9992
-         jF+q3ikXF8upjJ0YMRnODbPHdf6E/WoO4BZ+Hr1mu+ULN+w0vD6DYhUuHjU6qP9Zmu9P
-         4Bib8hf2Kru0D3xh32KhhZafRla9NaLklundn0kofP9iOfQMql5tK3Tlg5pauOAPE19m
-         ZBcQ==
-X-Gm-Message-State: ACgBeo0/TMRM1bCixrb9ysTERfrAcNBXcjgDcWnUWwZ9JE8sGwtyWELq
-        0UHiBWgnyZoPaexCl+1guw==
-X-Google-Smtp-Source: AA6agR7NieM49Immp0yg7zhLlvCYsYHzsJ8oBKkIeFWd8pV9cIX90lhfljoXMzPYm2bpuDTyyvOK3A==
-X-Received: by 2002:a05:6870:8090:b0:122:7289:bd59 with SMTP id q16-20020a056870809000b001227289bd59mr2954932oab.284.1662142790802;
-        Fri, 02 Sep 2022 11:19:50 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id 22-20020aca0916000000b00344adbc3492sm1238492oij.24.2022.09.02.11.19.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 11:19:50 -0700 (PDT)
-Received: (nullmailer pid 173081 invoked by uid 1000);
-        Fri, 02 Sep 2022 18:19:49 -0000
-Date:   Fri, 2 Sep 2022 13:19:49 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Irui Wang <irui.wang@mediatek.com>
-Cc:     linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, maoguang.meng@mediatek.com,
-        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        nicolas.dufresne@collabora.com,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        Tzung-Bi Shih <tzungbi@chromium.org>,
-        kyrie wu <kyrie.wu@mediatek.com>,
-        angelogioacchino.delregno@collabora.com,
-        Tomasz Figa <tfiga@chromium.org>, linux-kernel@vger.kernel.org,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>, wenst@chromium.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>, xia.jiang@mediatek.com
-Subject: Re: [V13,1/7] dt-bindings: mediatek: Add mediatek, mt8195-jpgenc
- compatible
-Message-ID: <20220902181949.GA173040-robh@kernel.org>
-References: <20220826092956.10340-1-irui.wang@mediatek.com>
- <20220826092956.10340-2-irui.wang@mediatek.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=C7n7jfdbJFI5Vm0yNWU5Z8SS+ha0I414B1SOkH7t1Zw=;
+        b=ATXszTrYCp7fFaXBk3QYZcq0BnKyL/wkISEtKvp18Am0lT0JyxJDZUHoBVSK4TFLHY
+         JF4Eq1qAk9VPlILy+3Al4/VmCjFuHMD7tCFo5onqQYK5YLHzB7BRR7M6sxufwdidc4jw
+         H18aSfY/aHmQHqphyDAltTTjyTs67FiVUHcc1i0gW04Fiu7u+Xm6PXJe7cTA4L8+cxwy
+         qT3VWgJR3tExuhb1ZMmxWyIWmwyyUJX/FUhxd7e6cMU0KLD3VCOwP7BjinTpK2hsl76h
+         4TbL+DmhouLv3Q1oXa5rFOQ1lwjAhPMAVajmRXMTDxcp1FAndjb+lqISX0DQm67nIfKB
+         JJXQ==
+X-Gm-Message-State: ACgBeo0fdW3ahmC25SeIDrUPRIiUnLQWXiteyqCVETOZUUuIUteC8I32
+        3uVj7FKhA3CUiZX7OzYK/t4=
+X-Google-Smtp-Source: AA6agR4TOSEeBjzFmpb7Pq+0rou1pako/N5GECa6GzR6sl52ULOJWWa5WNvZH2d9YFthKimG75eCTw==
+X-Received: by 2002:a37:2d07:0:b0:6bc:1512:9868 with SMTP id t7-20020a372d07000000b006bc15129868mr24670155qkh.433.1662143323398;
+        Fri, 02 Sep 2022 11:28:43 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id fp5-20020a05622a508500b0031e9ab4e4cesm1411048qtb.26.2022.09.02.11.28.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Sep 2022 11:28:42 -0700 (PDT)
+Message-ID: <db7fa466-00cf-f0f3-7427-7f213c3e4594@gmail.com>
+Date:   Fri, 2 Sep 2022 11:28:40 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220826092956.10340-2-irui.wang@mediatek.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Subject: Re: [PATCH 5.19 00/72] 5.19.7-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220902121404.772492078@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 26 Aug 2022 17:29:50 +0800, Irui Wang wrote:
-> From: kyrie wu <kyrie.wu@mediatek.com>
-> 
-> Add mediatek,mt8195-jpgenc compatible to binding document.
-> 
-> Signed-off-by: kyrie wu <kyrie.wu@mediatek.com>
-> Signed-off-by: irui wang <irui.wang@mediatek.com>
-> ---
->  .../media/mediatek,mt8195-jpegenc.yaml        | 147 ++++++++++++++++++
->  1 file changed, 147 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/media/mediatek,mt8195-jpegenc.yaml
-> 
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+
+On 9/2/2022 5:18 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.19.7 release.
+> There are 72 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Sun, 04 Sep 2022 12:13:47 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.19.7-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.19.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels, build tested on 
+BMIPS_GENERIC:
+
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
