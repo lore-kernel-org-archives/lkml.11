@@ -2,86 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB475ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:08:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACFD4C6FA82
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:09:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234742AbiIBSF3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 14:05:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54464 "EHLO
+        id S229457AbiIBSJZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 14:09:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235787AbiIBSCW (ORCPT
+        with ESMTP id S229530AbiIBSJP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 14:02:22 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 410F9FC300
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 11:02:20 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id u9so5393500ejy.5
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 11:02:19 -0700 (PDT)
+        Fri, 2 Sep 2022 14:09:15 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD3C1037E2
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 11:09:14 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id nc14so5431548ejc.4
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 11:09:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linux-foundation.org; s=google;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date;
-        bh=QKpkWBalvPcb442osnnmCYBtgf+3QmIQOcwDZjeT1XA=;
-        b=dsa1YI4NznjoRJXq3MFUUdbE1YgDGmKLbc0hUoxfmfACIE2so67f0eRAppF+OuzxZd
-         4vUsNBd4F7DnG8k2LcpqE8jT5oGli0nX7iEPux7+C5OHWMcBpfk1mk80If8HMYfmI2BO
-         BDvMUw1V7EBKxmpPu1bNs+fUqiKtQAu7LKGz4=
+        bh=JyntNzc9hzuaj3nr0osrxHTy6k2DuFd1979TPD9JLwg=;
+        b=EVMKlGRoqiBowwUsR9klBSlEZmEf3zkPBbmydY3GxU04Pu2Ha912oAzUDBIwtGfKCk
+         U7fppUa0DMBas23VtkV/KbNCX+cjHmzpAXb30xBC0MiMF/kx5S9MIjgDqSNnU2z5jcOz
+         RJytNCQ5Xb3iBta1IgGsesmANWTFy3p6ZY0ho=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=QKpkWBalvPcb442osnnmCYBtgf+3QmIQOcwDZjeT1XA=;
-        b=WVbog1IbuJOA3DvbkZpQPim+rXUuEXvFvpuJIC4OoW6PU8FmYK12hSZSBnN6vTyB/r
-         h0gE4yzEYHrUZX6UqZqQ0+eIlKGUaXAOqlC4fZGEgX49Rkrqx2EfwSd32uT4znXjXFa9
-         SM9BCiyBERMAC/fAtiZHQ+1npWq1j0jOww5cB6+HgdiG95WmWFYl5yoeVhU8Hdm3sOCS
-         N4FUvl5SdkTLyeh5dIzALT8RmLzxryh53a/aJ5V772jKmIHNeZ+FohBfxROkGIaZFwtE
-         ucOtnvALixSAJS9JyxARH8Nazbv7V73WvS7MlM7R/VFQouTOXiPjfRkR7NNV+ecFRrmH
-         wMQg==
-X-Gm-Message-State: ACgBeo0RJ4rZCgX5r716z+OMLSMrVFlmvN3G0n2Jak7gAab9k8hMrOzu
-        0ejZV3nvrRRTjvRiMow34SdYoZmTPADT9EisNaU=
-X-Google-Smtp-Source: AA6agR5IB+G+i9/zhLxm9SFc6bH2aMmmtF5BkEpuMBVtwNTpnYUcT/jwM+ScWKZ+L6q0+H5is0KLDQ==
-X-Received: by 2002:a17:907:728d:b0:73d:693c:738 with SMTP id dt13-20020a170907728d00b0073d693c0738mr27838061ejc.134.1662141737871;
-        Fri, 02 Sep 2022 11:02:17 -0700 (PDT)
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com. [209.85.128.53])
-        by smtp.gmail.com with ESMTPSA id la8-20020a170907780800b00741383c1c5bsm1548022ejc.196.2022.09.02.11.02.16
+        bh=JyntNzc9hzuaj3nr0osrxHTy6k2DuFd1979TPD9JLwg=;
+        b=AxrVQoteZTawT2JrLiOqrdbOkmm15iU6xZ++eaJdS5oUu0de/4ngvfdTvXTIKIuTUC
+         JJekQzdzDY9wIqpc8IUYDWMImLNZkJ2rUPF552pLOx2SOABrre8dAMIve5A9Icav5MRu
+         Nx/RJmuWly/BBupx4t/GooJcluv0I0PZSugRvgWFcCU/lkyU59/pyx9k3gSpdWUy+gr9
+         UQi02YBZMcQhhDh8odSSKdoFMgberVUfz15n7rups5O+VaqiFoMT7rC2I4758RVvQORD
+         v/ETaB2e9DsUe+4ubRrLtw5AXldwSHuiA+Ee+rr30W4NCvCpdgPk3iKQjUt6AExXh5Gh
+         eUGg==
+X-Gm-Message-State: ACgBeo2QVmAj+sJhZV4+wzLOFod4HUlnxlU/BrGoVVn0cRm3YUe0mh6t
+        GTrAm93aIHelTiNTdItN9HwGuEsK+uw3jTP7fvg=
+X-Google-Smtp-Source: AA6agR4sZ0EHn4VwLT/dnrsncfM2zqveg9J8TpTg/ESNv4PHWssvJY//SkGogkpc0uOfxy2KtmVUfA==
+X-Received: by 2002:a17:907:3e81:b0:726:9615:d14d with SMTP id hs1-20020a1709073e8100b007269615d14dmr27368960ejc.517.1662142152895;
+        Fri, 02 Sep 2022 11:09:12 -0700 (PDT)
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com. [209.85.221.53])
+        by smtp.gmail.com with ESMTPSA id d10-20020a1709061f4a00b0073dc5bb7c32sm1579801ejk.64.2022.09.02.11.09.11
         for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Sep 2022 11:02:17 -0700 (PDT)
-Received: by mail-wm1-f53.google.com with SMTP id k6-20020a05600c1c8600b003a54ecc62f6so1849824wms.5
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 11:02:16 -0700 (PDT)
-X-Received: by 2002:a05:600c:657:b0:3a5:e4e6:ee24 with SMTP id
- p23-20020a05600c065700b003a5e4e6ee24mr3569551wmm.68.1662141736590; Fri, 02
- Sep 2022 11:02:16 -0700 (PDT)
+        Fri, 02 Sep 2022 11:09:11 -0700 (PDT)
+Received: by mail-wr1-f53.google.com with SMTP id k9so3332288wri.0
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 11:09:11 -0700 (PDT)
+X-Received: by 2002:a5d:6248:0:b0:222:cd3b:94c8 with SMTP id
+ m8-20020a5d6248000000b00222cd3b94c8mr18487105wrv.97.1662142150888; Fri, 02
+ Sep 2022 11:09:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <YxIht+ev+gXsF6ZD@kroah.com>
-In-Reply-To: <YxIht+ev+gXsF6ZD@kroah.com>
+References: <20220902130625.217071627@infradead.org> <20220902130947.190618587@infradead.org>
+ <CAHk-=whdvPcHmH5eG+FUrbQw1e-05n__EWobMqbxcCTP7dtZAg@mail.gmail.com> <YxI+K8Y+f/FHSQCU@hirez.programming.kicks-ass.net>
+In-Reply-To: <YxI+K8Y+f/FHSQCU@hirez.programming.kicks-ass.net>
 From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 2 Sep 2022 11:02:00 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whnNO4T9PHNC1DT35sROGNK_geKL0Q_EjZH=0sLoACPHw@mail.gmail.com>
-Message-ID: <CAHk-=whnNO4T9PHNC1DT35sROGNK_geKL0Q_EjZH=0sLoACPHw@mail.gmail.com>
-Subject: Re: [GIT PULL] Driver core fixes for 6.0-rc4
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Saravana Kannan <saravanak@google.com>
+Date:   Fri, 2 Sep 2022 11:08:54 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjRLehUO=u8HDJGRFv+wz7hakSc=z6eTg547pAmb0UKHg@mail.gmail.com>
+Message-ID: <CAHk-=wjRLehUO=u8HDJGRFv+wz7hakSc=z6eTg547pAmb0UKHg@mail.gmail.com>
+Subject: Re: [PATCH v2 08/59] x86/build: Ensure proper function alignment
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+        x86@kernel.org, Tim Chen <tim.c.chen@linux.intel.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Andrew Cooper <Andrew.Cooper3@citrix.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Johannes Wikner <kwikner@ethz.ch>,
+        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
+        Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
+        Joao Moreira <joao.moreira@intel.com>,
+        Joseph Nuzman <joseph.nuzman@intel.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Juergen Gross <jgross@suse.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        K Prateek Nayak <kprateek.nayak@amd.com>,
+        Eric Dumazet <edumazet@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Sep 2, 2022 at 8:31 AM Greg KH <gregkh@linuxfoundation.org> wrote:
+On Fri, Sep 2, 2022 at 10:32 AM Peter Zijlstra <peterz@infradead.org> wrote:
 >
->   git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git tags/driver-core-6.0-rc4
+> There is a DEBUG case that increases the thing to 32.
 
-Entirely unrelated to this pull request, but since the diffstat made
-that "drivers/base/dd.c" file stand out, I tried to look at what the
-history of that odd name is.
+Well, but that should be part of the Kconfig rules too.
 
-And it's not obvious to me.
+In fact, I think that argues for moving that FUNCTION_ALIGNMENT into
+the generic Kconfig, since we already have that much hackier debug
+thing there.
 
-Very strange filename. Should it perhaps be named "device.c" or
-"probe.c" or something more descriptive?
+That would then get rid of the conditional in asm-generic too, and get
+rid of the horrid hack in the main Makefile as well.
 
-Not a huge deal, more of a passing thought inspired by that diffstat.
+I love how commit cf536e185869 ("Makefile: extend 32B aligned debug
+option to 64B aligned") took that previous random debug entry and just
+made it 64B instead of 32B. What a crock that all is.
+
+Let's just do this right.
+
+             Linus
+
 
                Linus
