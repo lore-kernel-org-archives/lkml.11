@@ -2,44 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B77CBECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:34:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A65F0ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:34:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236820AbiIBMeV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:34:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54790 "EHLO
+        id S236839AbiIBMe0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:34:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236814AbiIBMdI (ORCPT
+        with ESMTP id S236585AbiIBMdM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:33:08 -0400
+        Fri, 2 Sep 2022 08:33:12 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC0422D1F2;
-        Fri,  2 Sep 2022 05:27:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03587DEA58;
+        Fri,  2 Sep 2022 05:27:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5AABBB82A9B;
-        Fri,  2 Sep 2022 12:27:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BF4CC433C1;
-        Fri,  2 Sep 2022 12:27:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B04BB82AB3;
+        Fri,  2 Sep 2022 12:27:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C443DC433D6;
+        Fri,  2 Sep 2022 12:27:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121650;
-        bh=pmq28BXMj4Tdpb6qQ51Uy3s38O2jMo6EChWRxf7GiOo=;
+        s=korg; t=1662121662;
+        bh=clthHZEoZSss9EqN16KFL/fAvVHFjGWtR6Z/Pce8wIc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZXGDSvTKMBtjqBOC6RTCM3rbECMrRzvYA+IDIidOZb104lx1/dK7gwywq5WWg9i7i
-         XDXNUByyQqxFpW1NM3fgr4Rym8YVyYVR2PmlJcKjL2JQOCvsvx1rnDzv4zz/zqtALp
-         3BMC1/qQOIYoYrCHiG+5AGc4pTYM66lFfOjnGHIU=
+        b=WXoJYHpusRdt5/0wp2MQnqv3/swldNZ49jF4jCkqsAwOGh+tat0m6ZlXbyAVLtocg
+         v0yU0oQSM/4dD+uJ4zPX7DnxgKWwUsRYSK0oQPFkT3vfRk6u11I3xatMWBuBySNtlI
+         Q4YUVhdZFrYRx+vSeD6sKvnTJiz0V1jPo+E5WZH4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
-        syzkaller <syzkaller@googlegroups.com>,
-        Florian Westphal <fw@strlen.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 20/77] netfilter: ebtables: reject blobs that dont provide all entry points
-Date:   Fri,  2 Sep 2022 14:18:29 +0200
-Message-Id: <20220902121404.317136695@linuxfoundation.org>
+        Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: [PATCH 5.4 06/77] Revert "selftests/bpf: Fix test_align verifier log patterns"
+Date:   Fri,  2 Sep 2022 14:18:15 +0200
+Message-Id: <20220902121403.832779905@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
 References: <20220902121403.569927325@linuxfoundation.org>
@@ -51,165 +47,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
-[ Upstream commit 7997eff82828304b780dc0a39707e1946d6f1ebf ]
+This partially reverts commit 6a9b3f0f3bad4ca6421f8c20e1dde9839699db0f.
+The upstream commit addresses multiple verifier changes, only one of
+which was backported to v5.4. Therefore only keep the relevant changes
+and revert the others.
 
-Harshit Mogalapalli says:
- In ebt_do_table() function dereferencing 'private->hook_entry[hook]'
- can lead to NULL pointer dereference. [..] Kernel panic:
-
-general protection fault, probably for non-canonical address 0xdffffc0000000005: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
-[..]
-RIP: 0010:ebt_do_table+0x1dc/0x1ce0
-Code: 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 5c 16 00 00 48 b8 00 00 00 00 00 fc ff df 49 8b 6c df 08 48 8d 7d 2c 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 88
-[..]
-Call Trace:
- nf_hook_slow+0xb1/0x170
- __br_forward+0x289/0x730
- maybe_deliver+0x24b/0x380
- br_flood+0xc6/0x390
- br_dev_xmit+0xa2e/0x12c0
-
-For some reason ebtables rejects blobs that provide entry points that are
-not supported by the table, but what it should instead reject is the
-opposite: blobs that DO NOT provide an entry point supported by the table.
-
-t->valid_hooks is the bitmask of hooks (input, forward ...) that will see
-packets.  Providing an entry point that is not support is harmless
-(never called/used), but the inverse isn't: it results in a crash
-because the ebtables traverser doesn't expect a NULL blob for a location
-its receiving packets for.
-
-Instead of fixing all the individual checks, do what iptables is doing and
-reject all blobs that differ from the expected hooks.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Reported-by: syzkaller <syzkaller@googlegroups.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/netfilter_bridge/ebtables.h | 4 ----
- net/bridge/netfilter/ebtable_broute.c     | 8 --------
- net/bridge/netfilter/ebtable_filter.c     | 8 --------
- net/bridge/netfilter/ebtable_nat.c        | 8 --------
- net/bridge/netfilter/ebtables.c           | 8 +-------
- 5 files changed, 1 insertion(+), 35 deletions(-)
+ tools/testing/selftests/bpf/test_align.c |   14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/include/linux/netfilter_bridge/ebtables.h b/include/linux/netfilter_bridge/ebtables.h
-index db472c9cd8e9d..f0d846df3a424 100644
---- a/include/linux/netfilter_bridge/ebtables.h
-+++ b/include/linux/netfilter_bridge/ebtables.h
-@@ -94,10 +94,6 @@ struct ebt_table {
- 	struct ebt_replace_kernel *table;
- 	unsigned int valid_hooks;
- 	rwlock_t lock;
--	/* e.g. could be the table explicitly only allows certain
--	 * matches, targets, ... 0 == let it in */
--	int (*check)(const struct ebt_table_info *info,
--	   unsigned int valid_hooks);
- 	/* the data used by the kernel */
- 	struct ebt_table_info *private;
- 	struct module *me;
-diff --git a/net/bridge/netfilter/ebtable_broute.c b/net/bridge/netfilter/ebtable_broute.c
-index 32bc2821027f3..57f91efce0f73 100644
---- a/net/bridge/netfilter/ebtable_broute.c
-+++ b/net/bridge/netfilter/ebtable_broute.c
-@@ -36,18 +36,10 @@ static struct ebt_replace_kernel initial_table = {
- 	.entries	= (char *)&initial_chain,
+--- a/tools/testing/selftests/bpf/test_align.c
++++ b/tools/testing/selftests/bpf/test_align.c
+@@ -475,10 +475,10 @@ static struct bpf_align_test tests[] = {
+ 			 */
+ 			{7, "R5_w=inv(id=0,smin_value=-9223372036854775806,smax_value=9223372036854775806,umin_value=2,umax_value=18446744073709551614,var_off=(0x2; 0xfffffffffffffffc)"},
+ 			/* Checked s>=0 */
+-			{9, "R5=inv(id=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
++			{9, "R5=inv(id=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc))"},
+ 			/* packet pointer + nonnegative (4n+2) */
+-			{11, "R6_w=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
+-			{13, "R4_w=pkt(id=1,off=4,r=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
++			{11, "R6_w=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc))"},
++			{13, "R4_w=pkt(id=1,off=4,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc))"},
+ 			/* NET_IP_ALIGN + (4n+2) == (4n), alignment is fine.
+ 			 * We checked the bounds, but it might have been able
+ 			 * to overflow if the packet pointer started in the
+@@ -486,7 +486,7 @@ static struct bpf_align_test tests[] = {
+ 			 * So we did not get a 'range' on R6, and the access
+ 			 * attempt will fail.
+ 			 */
+-			{15, "R6_w=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
++			{15, "R6_w=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc))"},
+ 		}
+ 	},
+ 	{
+@@ -580,18 +580,18 @@ static struct bpf_align_test tests[] = {
+ 			/* Adding 14 makes R6 be (4n+2) */
+ 			{11, "R6_w=inv(id=0,umin_value=14,umax_value=74,var_off=(0x2; 0x7c))"},
+ 			/* Subtracting from packet pointer overflows ubounds */
+-			{13, "R5_w=pkt(id=1,off=0,r=8,umin_value=18446744073709551542,umax_value=18446744073709551602,var_off=(0xffffffffffffff82; 0x7c)"},
++			{13, "R5_w=pkt(id=1,off=0,r=8,umin_value=18446744073709551542,umax_value=18446744073709551602,var_off=(0xffffffffffffff82; 0x7c))"},
+ 			/* New unknown value in R7 is (4n), >= 76 */
+ 			{15, "R7_w=inv(id=0,umin_value=76,umax_value=1096,var_off=(0x0; 0x7fc))"},
+ 			/* Adding it to packet pointer gives nice bounds again */
+-			{16, "R5_w=pkt(id=2,off=0,r=0,umin_value=2,umax_value=1082,var_off=(0x2; 0xfffffffc)"},
++			{16, "R5_w=pkt(id=2,off=0,r=0,umin_value=2,umax_value=1082,var_off=(0x2; 0x7fc))"},
+ 			/* At the time the word size load is performed from R5,
+ 			 * its total fixed offset is NET_IP_ALIGN + reg->off (0)
+ 			 * which is 2.  Then the variable offset is (4n+2), so
+ 			 * the total offset is 4-byte aligned and meets the
+ 			 * load's requirements.
+ 			 */
+-			{20, "R5=pkt(id=2,off=0,r=4,umin_value=2,umax_value=1082,var_off=(0x2; 0xfffffffc)"},
++			{20, "R5=pkt(id=2,off=0,r=4,umin_value=2,umax_value=1082,var_off=(0x2; 0x7fc))"},
+ 		},
+ 	},
  };
- 
--static int check(const struct ebt_table_info *info, unsigned int valid_hooks)
--{
--	if (valid_hooks & ~(1 << NF_BR_BROUTING))
--		return -EINVAL;
--	return 0;
--}
--
- static const struct ebt_table broute_table = {
- 	.name		= "broute",
- 	.table		= &initial_table,
- 	.valid_hooks	= 1 << NF_BR_BROUTING,
--	.check		= check,
- 	.me		= THIS_MODULE,
- };
- 
-diff --git a/net/bridge/netfilter/ebtable_filter.c b/net/bridge/netfilter/ebtable_filter.c
-index bcf982e12f16b..7f2e620f4978f 100644
---- a/net/bridge/netfilter/ebtable_filter.c
-+++ b/net/bridge/netfilter/ebtable_filter.c
-@@ -43,18 +43,10 @@ static struct ebt_replace_kernel initial_table = {
- 	.entries	= (char *)initial_chains,
- };
- 
--static int check(const struct ebt_table_info *info, unsigned int valid_hooks)
--{
--	if (valid_hooks & ~FILTER_VALID_HOOKS)
--		return -EINVAL;
--	return 0;
--}
--
- static const struct ebt_table frame_filter = {
- 	.name		= "filter",
- 	.table		= &initial_table,
- 	.valid_hooks	= FILTER_VALID_HOOKS,
--	.check		= check,
- 	.me		= THIS_MODULE,
- };
- 
-diff --git a/net/bridge/netfilter/ebtable_nat.c b/net/bridge/netfilter/ebtable_nat.c
-index 0d092773f8161..1743a105485c4 100644
---- a/net/bridge/netfilter/ebtable_nat.c
-+++ b/net/bridge/netfilter/ebtable_nat.c
-@@ -43,18 +43,10 @@ static struct ebt_replace_kernel initial_table = {
- 	.entries	= (char *)initial_chains,
- };
- 
--static int check(const struct ebt_table_info *info, unsigned int valid_hooks)
--{
--	if (valid_hooks & ~NAT_VALID_HOOKS)
--		return -EINVAL;
--	return 0;
--}
--
- static const struct ebt_table frame_nat = {
- 	.name		= "nat",
- 	.table		= &initial_table,
- 	.valid_hooks	= NAT_VALID_HOOKS,
--	.check		= check,
- 	.me		= THIS_MODULE,
- };
- 
-diff --git a/net/bridge/netfilter/ebtables.c b/net/bridge/netfilter/ebtables.c
-index d9375c52f50e6..ddb988c339c17 100644
---- a/net/bridge/netfilter/ebtables.c
-+++ b/net/bridge/netfilter/ebtables.c
-@@ -999,8 +999,7 @@ static int do_replace_finish(struct net *net, struct ebt_replace *repl,
- 		goto free_iterate;
- 	}
- 
--	/* the table doesn't like it */
--	if (t->check && (ret = t->check(newinfo, repl->valid_hooks)))
-+	if (repl->valid_hooks != t->valid_hooks)
- 		goto free_unlock;
- 
- 	if (repl->num_counters && repl->num_counters != t->private->nentries) {
-@@ -1193,11 +1192,6 @@ int ebt_register_table(struct net *net, const struct ebt_table *input_table,
- 	if (ret != 0)
- 		goto free_chainstack;
- 
--	if (table->check && table->check(newinfo, table->valid_hooks)) {
--		ret = -EINVAL;
--		goto free_chainstack;
--	}
--
- 	table->private = newinfo;
- 	rwlock_init(&table->lock);
- 	mutex_lock(&ebt_mutex);
--- 
-2.35.1
-
 
 
