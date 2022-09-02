@@ -2,70 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 184C0C6FA83
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:46:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D28F2C6FA81
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235947AbiIBIqx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 04:46:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57674 "EHLO
+        id S235994AbiIBIrK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 04:47:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235494AbiIBIqX (ORCPT
+        with ESMTP id S235971AbiIBIqe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 04:46:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF8A350185;
-        Fri,  2 Sep 2022 01:45:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CEE56213E;
-        Fri,  2 Sep 2022 08:45:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BA4EC433D6;
-        Fri,  2 Sep 2022 08:45:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662108348;
-        bh=kbaCecPotDdfCJr5Dvy6j775i+9NGxyQBBveQhDxUkg=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=FFc60zQhtX/ckgYR8qZNwM+3zwo2uzEmpl3EpMqhFftGWcKqGtSzMonlTgwWso1qT
-         hkRJhpH+MZjUVZ3MksGbpN4UvhYuR5jQuL/SICCq2X/mX4K1se08XB8CMtfdqHsgMb
-         3qsMZUS36TpM4wq9x33PEl3Wr6V6X1f2vqpIcJEpSaLo0i/LLWi8jfBSp860VE2umm
-         wb6KNeoDvELzWSE5a/W8OGkguYNFd2HAyTjFXX5Brh1MnT9/jH3OaOXACmvNr1G9Tw
-         iYb1MwrWrCS23S5InPI/UkfcaFaFRT68ZFE1WZeqyRgg1zMxzckiamwpL79Sq55DCf
-         Q/UpqalyiMXeQ==
-Content-Type: text/plain; charset="utf-8"
+        Fri, 2 Sep 2022 04:46:34 -0400
+Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EDAD1E0;
+        Fri,  2 Sep 2022 01:46:19 -0700 (PDT)
+Received: by mail-qt1-f175.google.com with SMTP id x5so946831qtv.9;
+        Fri, 02 Sep 2022 01:46:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=+efSmKPMaUF86xAxusmh16dSBB12tESjJF0BtlEmxmw=;
+        b=jPzqRRuor7SJ7HMvNwdj3I+k1mi2CwIxHu+GyMnLqU2SUopDKdMdeR3eZukJfkvlP/
+         ibwxGeX2ZuaQAGhxiFaMVW5sGllSbsmy+0fRz9DcdcCevizh/QNoqmZfvtzDfP6srvV+
+         6E2qNnWIzwPKs5TCfSzMmA1uh25AqsJu20IYO1+t05DcGuPFmATud0fWUOGbgVxccxzA
+         0ygeWfYjwzy1VjadbpB9nDTjC+a2SHXGP1GtelFzVFuwL1iQfGl06VZX5XDZf0vGgktA
+         8b6dU5htMtqgK7LIIeElE+3V5+5Ez7ksj1lRzMdJJ+EurFz/lPaTUozsXVBh3ZD270yw
+         AKow==
+X-Gm-Message-State: ACgBeo2k7FAWXwHusG3zJlOSNHtjtOTj8ruzRb6e2i+TDUPAnmhVUdFF
+        1L4ge6HQDiC6ALzusvIqpDOqG46JYM3x7g==
+X-Google-Smtp-Source: AA6agR7Qvn/DQB3kq2qlQU2CbMq3/chM20GUAOdh/1wLHBdLYyHsm0xTcDcbLWGdA8HRsVasKS3Z3Q==
+X-Received: by 2002:a05:622a:1ba9:b0:343:786c:3bb1 with SMTP id bp41-20020a05622a1ba900b00343786c3bb1mr26766823qtb.125.1662108378489;
+        Fri, 02 Sep 2022 01:46:18 -0700 (PDT)
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com. [209.85.128.176])
+        by smtp.gmail.com with ESMTPSA id u4-20020a05620a0c4400b006bc1512986esm994628qki.97.2022.09.02.01.46.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Sep 2022 01:46:18 -0700 (PDT)
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-33dc345ad78so10211467b3.3;
+        Fri, 02 Sep 2022 01:46:17 -0700 (PDT)
+X-Received: by 2002:a81:83c8:0:b0:341:4b7b:3d9e with SMTP id
+ t191-20020a8183c8000000b003414b7b3d9emr18102137ywf.47.1662108377701; Fri, 02
+ Sep 2022 01:46:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH -next v2] wifi: rtw88: add missing destroy_workqueue() on
- error path in rtw_core_init()
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220826023817.3908255-1-yangyingliang@huawei.com>
-References: <20220826023817.3908255-1-yangyingliang@huawei.com>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-wireless@vger.kernel.org>, <tony0620emma@gmail.com>,
-        <phhuang@realtek.com>
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <166210834567.24345.3696506856732369743.kvalo@kernel.org>
-Date:   Fri,  2 Sep 2022 08:45:47 +0000 (UTC)
+References: <20220829215128.5983-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <963693d9-6016-f279-a543-22e9be802d87@linaro.org>
+In-Reply-To: <963693d9-6016-f279-a543-22e9be802d87@linaro.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 2 Sep 2022 10:46:06 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdX2a3uR-Hq9S3DkfrTir_9nPmw56QovxLN1fMgJ+1yxEg@mail.gmail.com>
+Message-ID: <CAMuHMdX2a3uR-Hq9S3DkfrTir_9nPmw56QovxLN1fMgJ+1yxEg@mail.gmail.com>
+Subject: Re: [PATCH] arm64: dts: renesas: Drop clock-names property from RPC node
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Yang Yingliang <yangyingliang@huawei.com> wrote:
+Hi Krzysztof,
 
-> Add the missing destroy_workqueue() before return from rtw_core_init()
-> in error path.
-> 
-> Fixes: fe101716c7c9 ("rtw88: replace tx tasklet with work queue")
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+On Tue, Aug 30, 2022 at 11:19 AM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+> On 30/08/2022 00:51, Lad Prabhakar wrote:
+> > With 'unevaluatedProperties' support implemented, there's a number of
+> > warnings when running dtbs_check:
+> >
+> > arch/arm64/boot/dts/renesas/r8a774b1-hihope-rzg2n-rev2-ex-idk-1110wr.dtb: spi@ee200000: Unevaluated properties are not allowed ('clock-names' was unexpected)
+> >       From schema: Documentation/devicetree/bindings/memory-controllers/renesas,rpc-if.yaml
+> >
+> > The main problem is that SoC DTSI's are including clock-names, whereas the
+> > renesas,rpc-if.yaml has 'unevaluatedProperties: false'. So just drop
+> > clock-names property from the SoC DTSI's.
+>
+> This is not the main problem. The main problem is that bindings do not
+> allow clock-names. Commit msg should reflect that.
 
-Patch applied to wireless-next.git, thanks.
+Thank you, I'm amending the commit message.
 
-b0ea758b30bb wifi: rtw88: add missing destroy_workqueue() on error path in rtw_core_init()
+Gr{oetje,eeting}s,
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220826023817.3908255-1-yangyingliang@huawei.com/
+                        Geert
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
