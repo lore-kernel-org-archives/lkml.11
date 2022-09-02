@@ -2,48 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D496C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:32:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D8F2C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:32:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236721AbiIBMcM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:32:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36280 "EHLO
+        id S236729AbiIBMcP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:32:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236628AbiIBMbP (ORCPT
+        with ESMTP id S236566AbiIBMbT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:31:15 -0400
+        Fri, 2 Sep 2022 08:31:19 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B80E1175;
-        Fri,  2 Sep 2022 05:26:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 159C4E1146;
+        Fri,  2 Sep 2022 05:26:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 09147B82A99;
-        Fri,  2 Sep 2022 12:26:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0399AC433C1;
-        Fri,  2 Sep 2022 12:26:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2F52DB82AA7;
+        Fri,  2 Sep 2022 12:26:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 766CEC433D7;
+        Fri,  2 Sep 2022 12:26:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121583;
-        bh=1KM/L/AVOcdvlhOc7dPdNWAYlLV6rRm6CHHomf69T9k=;
+        s=korg; t=1662121565;
+        bh=X5zm/3ACRpIb6zzS26kH/5/nDg/MHI/i3VZuY3Du/z8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JiRqLriCZeb2j0gtd3KzTxkQ2vKKItTm4AanF6Cymc2Grxe8Z5aL+TVS/vXLGcH96
-         WQFuZDUIYQVAwCtUI7EioNRspzoJYiiI0Vs8zGgAU++Sf+B0+6fjCamsbaXCnsB9zz
-         +tGPd+ySBj+CTPhA4JwReYI0dOtO97fJR4eNakoQ=
+        b=QF3KZvyayJ1h8bp9xG4K/63DxVQ8ZmsnsTmDL1Fy0Epug1chKPyJ1QixGhzprP9FX
+         AY8GQeq6w1p7oXZg/VIQktKUOs6XRriVqm5kxq41aInSJNsvj/qA8AWGIxU7maEa5e
+         FVF8bw+krJMcCJbkC3n/+B7jQKhlZY+BFKtUQo3o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Ayushman Dutta <ayudutta@amazon.com>,
-        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Wang Nan <wangnan0@huawei.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 4.19 55/56] kprobes: dont call disarm_kprobe() for disabled kprobes
-Date:   Fri,  2 Sep 2022 14:19:15 +0200
-Message-Id: <20220902121402.375765582@linuxfoundation.org>
+        stable@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        Yang Jihong <yangjihong1@huawei.com>
+Subject: [PATCH 4.19 49/56] ftrace: Fix NULL pointer dereference in is_ftrace_trampoline when ftrace is dead
+Date:   Fri,  2 Sep 2022 14:19:09 +0200
+Message-Id: <20220902121402.128688274@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
 References: <20220902121400.219861128@linuxfoundation.org>
@@ -55,150 +48,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Yang Jihong <yangjihong1@huawei.com>
 
-commit 9c80e79906b4ca440d09e7f116609262bb747909 upstream.
+commit c3b0f72e805f0801f05fa2aa52011c4bfc694c44 upstream.
 
-The assumption in __disable_kprobe() is wrong, and it could try to disarm
-an already disarmed kprobe and fire the WARN_ONCE() below. [0]  We can
-easily reproduce this issue.
+ftrace_startup does not remove ops from ftrace_ops_list when
+ftrace_startup_enable fails:
 
-1. Write 0 to /sys/kernel/debug/kprobes/enabled.
+register_ftrace_function
+  ftrace_startup
+    __register_ftrace_function
+      ...
+      add_ftrace_ops(&ftrace_ops_list, ops)
+      ...
+    ...
+    ftrace_startup_enable // if ftrace failed to modify, ftrace_disabled is set to 1
+    ...
+  return 0 // ops is in the ftrace_ops_list.
 
-  # echo 0 > /sys/kernel/debug/kprobes/enabled
+When ftrace_disabled = 1, unregister_ftrace_function simply returns without doing anything:
+unregister_ftrace_function
+  ftrace_shutdown
+    if (unlikely(ftrace_disabled))
+            return -ENODEV;  // return here, __unregister_ftrace_function is not executed,
+                             // as a result, ops is still in the ftrace_ops_list
+    __unregister_ftrace_function
+    ...
 
-2. Run execsnoop.  At this time, one kprobe is disabled.
+If ops is dynamically allocated, it will be free later, in this case,
+is_ftrace_trampoline accesses NULL pointer:
 
-  # /usr/share/bcc/tools/execsnoop &
-  [1] 2460
-  PCOMM            PID    PPID   RET ARGS
+is_ftrace_trampoline
+  ftrace_ops_trampoline
+    do_for_each_ftrace_op(op, ftrace_ops_list) // OOPS! op may be NULL!
 
-  # cat /sys/kernel/debug/kprobes/list
-  ffffffff91345650  r  __x64_sys_execve+0x0    [FTRACE]
-  ffffffff91345650  k  __x64_sys_execve+0x0    [DISABLED][FTRACE]
+Syzkaller reports as follows:
+[ 1203.506103] BUG: kernel NULL pointer dereference, address: 000000000000010b
+[ 1203.508039] #PF: supervisor read access in kernel mode
+[ 1203.508798] #PF: error_code(0x0000) - not-present page
+[ 1203.509558] PGD 800000011660b067 P4D 800000011660b067 PUD 130fb8067 PMD 0
+[ 1203.510560] Oops: 0000 [#1] SMP KASAN PTI
+[ 1203.511189] CPU: 6 PID: 29532 Comm: syz-executor.2 Tainted: G    B   W         5.10.0 #8
+[ 1203.512324] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+[ 1203.513895] RIP: 0010:is_ftrace_trampoline+0x26/0xb0
+[ 1203.514644] Code: ff eb d3 90 41 55 41 54 49 89 fc 55 53 e8 f2 00 fd ff 48 8b 1d 3b 35 5d 03 e8 e6 00 fd ff 48 8d bb 90 00 00 00 e8 2a 81 26 00 <48> 8b ab 90 00 00 00 48 85 ed 74 1d e8 c9 00 fd ff 48 8d bb 98 00
+[ 1203.518838] RSP: 0018:ffffc900012cf960 EFLAGS: 00010246
+[ 1203.520092] RAX: 0000000000000000 RBX: 000000000000007b RCX: ffffffff8a331866
+[ 1203.521469] RDX: 0000000000000000 RSI: 0000000000000008 RDI: 000000000000010b
+[ 1203.522583] RBP: 0000000000000000 R08: 0000000000000000 R09: ffffffff8df18b07
+[ 1203.523550] R10: fffffbfff1be3160 R11: 0000000000000001 R12: 0000000000478399
+[ 1203.524596] R13: 0000000000000000 R14: ffff888145088000 R15: 0000000000000008
+[ 1203.525634] FS:  00007f429f5f4700(0000) GS:ffff8881daf00000(0000) knlGS:0000000000000000
+[ 1203.526801] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 1203.527626] CR2: 000000000000010b CR3: 0000000170e1e001 CR4: 00000000003706e0
+[ 1203.528611] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[ 1203.529605] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
-3. Write 1 to /sys/kernel/debug/kprobes/enabled, which changes
-   kprobes_all_disarmed to false but does not arm the disabled kprobe.
+Therefore, when ftrace_startup_enable fails, we need to rollback registration
+process and remove ops from ftrace_ops_list.
 
-  # echo 1 > /sys/kernel/debug/kprobes/enabled
+Link: https://lkml.kernel.org/r/20220818032659.56209-1-yangjihong1@huawei.com
 
-  # cat /sys/kernel/debug/kprobes/list
-  ffffffff91345650  r  __x64_sys_execve+0x0    [FTRACE]
-  ffffffff91345650  k  __x64_sys_execve+0x0    [DISABLED][FTRACE]
-
-4. Kill execsnoop, when __disable_kprobe() calls disarm_kprobe() for the
-   disabled kprobe and hits the WARN_ONCE() in __disarm_kprobe_ftrace().
-
-  # fg
-  /usr/share/bcc/tools/execsnoop
-  ^C
-
-Actually, WARN_ONCE() is fired twice, and __unregister_kprobe_top() misses
-some cleanups and leaves the aggregated kprobe in the hash table.  Then,
-__unregister_trace_kprobe() initialises tk->rp.kp.list and creates an
-infinite loop like this.
-
-  aggregated kprobe.list -> kprobe.list -.
-                                     ^    |
-                                     '.__.'
-
-In this situation, these commands fall into the infinite loop and result
-in RCU stall or soft lockup.
-
-  cat /sys/kernel/debug/kprobes/list : show_kprobe_addr() enters into the
-                                       infinite loop with RCU.
-
-  /usr/share/bcc/tools/execsnoop : warn_kprobe_rereg() holds kprobe_mutex,
-                                   and __get_valid_kprobe() is stuck in
-				   the loop.
-
-To avoid the issue, make sure we don't call disarm_kprobe() for disabled
-kprobes.
-
-[0]
-Failed to disarm kprobe-ftrace at __x64_sys_execve+0x0/0x40 (error -2)
-WARNING: CPU: 6 PID: 2460 at kernel/kprobes.c:1130 __disarm_kprobe_ftrace.isra.19 (kernel/kprobes.c:1129)
-Modules linked in: ena
-CPU: 6 PID: 2460 Comm: execsnoop Not tainted 5.19.0+ #28
-Hardware name: Amazon EC2 c5.2xlarge/, BIOS 1.0 10/16/2017
-RIP: 0010:__disarm_kprobe_ftrace.isra.19 (kernel/kprobes.c:1129)
-Code: 24 8b 02 eb c1 80 3d c4 83 f2 01 00 75 d4 48 8b 75 00 89 c2 48 c7 c7 90 fa 0f 92 89 04 24 c6 05 ab 83 01 e8 e4 94 f0 ff <0f> 0b 8b 04 24 eb b1 89 c6 48 c7 c7 60 fa 0f 92 89 04 24 e8 cc 94
-RSP: 0018:ffff9e6ec154bd98 EFLAGS: 00010282
-RAX: 0000000000000000 RBX: ffffffff930f7b00 RCX: 0000000000000001
-RDX: 0000000080000001 RSI: ffffffff921461c5 RDI: 00000000ffffffff
-RBP: ffff89c504286da8 R08: 0000000000000000 R09: c0000000fffeffff
-R10: 0000000000000000 R11: ffff9e6ec154bc28 R12: ffff89c502394e40
-R13: ffff89c502394c00 R14: ffff9e6ec154bc00 R15: 0000000000000000
-FS:  00007fe800398740(0000) GS:ffff89c812d80000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000c00057f010 CR3: 0000000103b54006 CR4: 00000000007706e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-PKRU: 55555554
-Call Trace:
-<TASK>
- __disable_kprobe (kernel/kprobes.c:1716)
- disable_kprobe (kernel/kprobes.c:2392)
- __disable_trace_kprobe (kernel/trace/trace_kprobe.c:340)
- disable_trace_kprobe (kernel/trace/trace_kprobe.c:429)
- perf_trace_event_unreg.isra.2 (./include/linux/tracepoint.h:93 kernel/trace/trace_event_perf.c:168)
- perf_kprobe_destroy (kernel/trace/trace_event_perf.c:295)
- _free_event (kernel/events/core.c:4971)
- perf_event_release_kernel (kernel/events/core.c:5176)
- perf_release (kernel/events/core.c:5186)
- __fput (fs/file_table.c:321)
- task_work_run (./include/linux/sched.h:2056 (discriminator 1) kernel/task_work.c:179 (discriminator 1))
- exit_to_user_mode_prepare (./include/linux/resume_user_mode.h:49 kernel/entry/common.c:169 kernel/entry/common.c:201)
- syscall_exit_to_user_mode (./arch/x86/include/asm/jump_label.h:55 ./arch/x86/include/asm/nospec-branch.h:384 ./arch/x86/include/asm/entry-common.h:94 kernel/entry/common.c:133 kernel/entry/common.c:296)
- do_syscall_64 (arch/x86/entry/common.c:87)
- entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
-RIP: 0033:0x7fe7ff210654
-Code: 15 79 89 20 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb be 0f 1f 00 8b 05 9a cd 20 00 48 63 ff 85 c0 75 11 b8 03 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 3a f3 c3 48 83 ec 18 48 89 7c 24 08 e8 34 fc
-RSP: 002b:00007ffdbd1d3538 EFLAGS: 00000246 ORIG_RAX: 0000000000000003
-RAX: 0000000000000000 RBX: 0000000000000008 RCX: 00007fe7ff210654
-RDX: 0000000000000000 RSI: 0000000000002401 RDI: 0000000000000008
-RBP: 0000000000000000 R08: 94ae31d6fda838a4 R0900007fe8001c9d30
-R10: 00007ffdbd1d34b0 R11: 0000000000000246 R12: 00007ffdbd1d3600
-R13: 0000000000000000 R14: fffffffffffffffc R15: 00007ffdbd1d3560
-</TASK>
-
-Link: https://lkml.kernel.org/r/20220813020509.90805-1-kuniyu@amazon.com
-Fixes: 69d54b916d83 ("kprobes: makes kprobes/enabled works correctly for optimized kprobes.")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Reported-by: Ayushman Dutta <ayudutta@amazon.com>
-Cc: "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>
-Cc: Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Masami Hiramatsu <mhiramat@kernel.org>
-Cc: Wang Nan <wangnan0@huawei.com>
-Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc: Kuniyuki Iwashima <kuni1840@gmail.com>
-Cc: Ayushman Dutta <ayudutta@amazon.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Suggested-by: Steven Rostedt <rostedt@goodmis.org>
+Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/kprobes.c |    9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ kernel/trace/ftrace.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/kernel/kprobes.c
-+++ b/kernel/kprobes.c
-@@ -1709,11 +1709,12 @@ static struct kprobe *__disable_kprobe(s
- 		/* Try to disarm and disable this/parent probe */
- 		if (p == orig_p || aggr_kprobe_disabled(orig_p)) {
- 			/*
--			 * If kprobes_all_disarmed is set, orig_p
--			 * should have already been disarmed, so
--			 * skip unneed disarming process.
-+			 * Don't be lazy here.  Even if 'kprobes_all_disarmed'
-+			 * is false, 'orig_p' might not have been armed yet.
-+			 * Note arm_all_kprobes() __tries__ to arm all kprobes
-+			 * on the best effort basis.
- 			 */
--			if (!kprobes_all_disarmed) {
-+			if (!kprobes_all_disarmed && !kprobe_disabled(orig_p)) {
- 				ret = disarm_kprobe(orig_p, true);
- 				if (ret) {
- 					p->flags &= ~KPROBE_FLAG_DISABLED;
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -2748,6 +2748,16 @@ static int ftrace_startup(struct ftrace_
+ 
+ 	ftrace_startup_enable(command);
+ 
++	/*
++	 * If ftrace is in an undefined state, we just remove ops from list
++	 * to prevent the NULL pointer, instead of totally rolling it back and
++	 * free trampoline, because those actions could cause further damage.
++	 */
++	if (unlikely(ftrace_disabled)) {
++		__unregister_ftrace_function(ops);
++		return -ENODEV;
++	}
++
+ 	ops->flags &= ~FTRACE_OPS_FL_ADDING;
+ 
+ 	return 0;
 
 
