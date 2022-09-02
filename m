@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69763C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:45:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26B9AECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:45:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237989AbiIBNo7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:44:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41486 "EHLO
+        id S236806AbiIBNpF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:45:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237814AbiIBNoa (ORCPT
+        with ESMTP id S237822AbiIBNob (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:44:30 -0400
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0F05CE486
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:20:49 -0700 (PDT)
-Received: by mail-wm1-f42.google.com with SMTP id n23-20020a7bc5d7000000b003a62f19b453so3322563wmk.3
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 06:20:49 -0700 (PDT)
+        Fri, 2 Sep 2022 09:44:31 -0400
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A9F066A55
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:20:46 -0700 (PDT)
+Received: by mail-wr1-f49.google.com with SMTP id e20so2245185wri.13
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 06:20:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=+dqtA1vC5bbu7+19eRzEcb3GPd6mCeJ5uJ0I2dFRg1s=;
-        b=QBMPARjxuSFYr4rlCJC3iBEX6OolvdebZ7bi1B64NgzQgYcSoyXWcxa2Yksze5Oo+3
-         to8AbiMwCqApS7ijj38F20R8G1oIVwuW+oydeQHzJ9GmHirioZ271fsKRSUmS5SczfNR
-         Ttq2/guTH0rn4TTtIghQjQkpt0CaIFa4nbv65UEWhg4N4lUlAHNkb7CHbvdIbjT8cTjM
-         c+2AKV4YZn7e6NHEIn2o7K6ayt3Imhq17IEuowSRbnWHrpap2eB1ZoKUkJrFncLox+Uk
-         kUd4NsSkn8Wot3aW2vGCVge8kQ25YrpXbdmRsNhNo1l7Fh98O1KnlCNdA0wOd1667ocI
-         FT0A==
+        bh=Fd4lSn+qZVzeO4qkwAmVHFeGiK8e6ML8+dOEILHHB/4=;
+        b=Y5fmg2CCmqTFkCJWckDRDOx1uahyv+g1TtzQ24yVBQvoNDz8BBceaGKn5TrsCXlPdm
+         0R16R3/D9RGVwmB6R5ug35KmOUiGMEFGvrJj5dMUioFSSuhhFZZOLv1BqqF/Z6uj6up4
+         JCnYyy5E3wbxtkwIxYTtDVz6EWnPYmXNWqf8kY1YBn4Q7qx9La8n00BnyLznQy6r4hRj
+         3UDtKOSNAODdD0uowmneP3z7FZkz6fUfyYYRw9QRsFJMDaDifMI6/4AqXf+xb8DFKoEe
+         iHqfbok1nAtAPsFz3Zuqi/Mm2DSEDzSxmvAYkOPslwgXR4p3s+m3EKgFZzOfwSxG5T/t
+         UWnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=+dqtA1vC5bbu7+19eRzEcb3GPd6mCeJ5uJ0I2dFRg1s=;
-        b=4As0qS5VlW7bUL1llSmVVN9KJZV4EL2Eh6+WXSyNRK/+F9kMsI+Coe3CdT1ekQndD5
-         Lwwf+UqhEy2kciWAFuqrT1dRwXYseokNzLb1dUmKp3YHXJZqj4QwmgK21PPJOiKxvBhy
-         PG6pKsMj/g4Ekkvmg7xtBi5GbiFu1CT+PjjV+Xz798FXQuk0GlUf6oMFjY9tJitcMSwf
-         FrseHAXpO3FvcN1pLBrU3k3ocKcY72xKGx/CcXSUR5pYOHaiEEN7DPwmU4C2gvmaDLuM
-         hiqoZ4KhF27n2WQwM3IRltVzp2KYzxegQGrap5CBJs9CWCdfRAh/b8PE3j0wzPzRqRqA
-         mpeQ==
-X-Gm-Message-State: ACgBeo2P/UkpZ6aIGALb/KOQ9l8V20vOdA0mBVHL8G5DHcRNHknod9cF
-        XZNICdDCJpB7/nhpueiDoWQ5kA==
-X-Google-Smtp-Source: AA6agR5Nz5S9Ybqg0GPy/k7BTb2Rrf+PXdlDuY6zxWSuJ4VN/lLB1tl8BsOVV93tuPLawi389z0E0Q==
-X-Received: by 2002:a05:600c:3d05:b0:3a5:dd21:e201 with SMTP id bh5-20020a05600c3d0500b003a5dd21e201mr2831703wmb.132.1662124476833;
-        Fri, 02 Sep 2022 06:14:36 -0700 (PDT)
+        bh=Fd4lSn+qZVzeO4qkwAmVHFeGiK8e6ML8+dOEILHHB/4=;
+        b=36CeMGC+TgKrRnEEs3N3ztTtlCEvI9mRumflkvodQc3Mc+1Bffnrq6xoRD0y2PoHSU
+         mo3z857WX2TchyXQkt8wkLDmle6P6zH+iM/YC8RiPetTTBTIH0AcJtOG3bIxxVRBVXSx
+         FMMzm67lWloXqBZUwbJX9YxvvX80fnd8pWYsKArtknPLR0pExCOltXf8USsLjAfoyNnr
+         8pStaJTCmngrbif0hi35qYvxFvGuqFI7tYDc+sGzK3BBKRA/v83s2NrKLFdBWZMqQ7zU
+         TC0iPDjan4jhuwJ0PyC2F8m0udCEMLyD4FmYfrehRl0RhAXSqZx7t+oj3cuViKKYo22X
+         FHDA==
+X-Gm-Message-State: ACgBeo2oGp/yrDJMDPUdTabl0Nj5k5pAB5iP8Eh/TrglOUkEvgxPsPUO
+        6+au9FzQGHgz0xrT3J6gYDyV+g==
+X-Google-Smtp-Source: AA6agR5hvVENxFSh2gnwP8eA5w9X+QtN5NSpi56rnmJnWFXn5xD87WZ1MnKXYCOvXJ2XQH43RdlQFA==
+X-Received: by 2002:adf:fbc7:0:b0:220:6004:18ca with SMTP id d7-20020adffbc7000000b00220600418camr16867924wrs.632.1662124467681;
+        Fri, 02 Sep 2022 06:14:27 -0700 (PDT)
 Received: from hackbox.lan ([94.52.112.99])
-        by smtp.gmail.com with ESMTPSA id v14-20020a5d43ce000000b002253fd19a6asm1766253wrr.18.2022.09.02.06.14.35
+        by smtp.gmail.com with ESMTPSA id v14-20020a5d43ce000000b002253fd19a6asm1766253wrr.18.2022.09.02.06.14.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 06:14:36 -0700 (PDT)
+        Fri, 02 Sep 2022 06:14:27 -0700 (PDT)
 From:   Abel Vesa <abel.vesa@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorande@qti.qualcomm.com>,
@@ -62,9 +62,9 @@ Cc:     Arnd Bergmann <arnd@arndb.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: [PATCH 11/14] misc: fastrpc: Safekeep mmaps on interrupted invoke
-Date:   Fri,  2 Sep 2022 16:13:41 +0300
-Message-Id: <20220902131344.3029826-12-abel.vesa@linaro.org>
+Subject: [PATCH 05/14] misc: fastrpc: Add reserved mem support
+Date:   Fri,  2 Sep 2022 16:13:35 +0300
+Message-Id: <20220902131344.3029826-6-abel.vesa@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220902131344.3029826-1-abel.vesa@linaro.org>
 References: <20220902131344.3029826-1-abel.vesa@linaro.org>
@@ -74,102 +74,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the userspace daemon is killed in the middle of an invoke (e.g.
-audiopd listerner invoke), we need to skip the unmapping on device
-release, otherwise the DSP will crash. So lets safekeep all the maps
-only if there is in invoke interrupted, by attaching them to the channel
-context (which is resident until RPMSG driver is removed), and restore
-them back to the fastrpc user on the next device open call.
+The reserved mem support is needed for CMA heap support, which will be
+used by AUDIOPD.
 
+Co-developed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
 ---
- drivers/misc/fastrpc.c | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+ drivers/misc/fastrpc.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
-index 2c656da4ca5e..41eabdf0a256 100644
+index 8d803ee33904..52271f51800d 100644
 --- a/drivers/misc/fastrpc.c
 +++ b/drivers/misc/fastrpc.c
-@@ -275,6 +275,7 @@ struct fastrpc_channel_ctx {
- 	struct fastrpc_device *secure_fdevice;
- 	struct fastrpc_device *fdevice;
- 	struct fastrpc_buf *remote_heap;
-+	struct list_head invoke_interrupted_mmaps;
- 	bool secure;
- 	bool unsigned_support;
- };
-@@ -1114,6 +1115,26 @@ static int fastrpc_invoke_send(struct fastrpc_session_ctx *sctx,
+@@ -19,6 +19,7 @@
+ #include <linux/slab.h>
+ #include <linux/qcom_scm.h>
+ #include <uapi/misc/fastrpc.h>
++#include <linux/of_reserved_mem.h>
  
- }
- 
-+static void fastrpc_invoke_interrupted_restore_mmaps(struct fastrpc_user *fl)
-+{
-+	struct fastrpc_buf *buf, *b;
-+
-+	list_for_each_entry_safe(buf, b, &fl->cctx->invoke_interrupted_mmaps, node) {
-+		list_del(&buf->node);
-+		list_add(&buf->node, &fl->mmaps);
-+	}
-+}
-+
-+static void fastrpc_invoke_interrupted_save_mmaps(struct fastrpc_user *fl)
-+{
-+	struct fastrpc_buf *buf, *b;
-+
-+	list_for_each_entry_safe(buf, b, &fl->mmaps, node) {
-+		list_del(&buf->node);
-+		list_add_tail(&buf->node, &fl->cctx->invoke_interrupted_mmaps);
-+	}
-+}
-+
- static int fastrpc_internal_invoke(struct fastrpc_user *fl,  u32 kernel,
- 				   u32 handle, u32 sc,
- 				   struct fastrpc_invoke_args *args)
-@@ -1182,6 +1203,9 @@ static int fastrpc_internal_invoke(struct fastrpc_user *fl,  u32 kernel,
- 		fastrpc_context_put(ctx);
+ #define ADSP_DOMAIN_ID (0)
+ #define MDSP_DOMAIN_ID (1)
+@@ -2064,6 +2065,9 @@ static int fastrpc_rpmsg_probe(struct rpmsg_device *rpdev)
+ 		return -EINVAL;
  	}
  
-+	if (err == -ERESTARTSYS)
-+		fastrpc_invoke_interrupted_save_mmaps(fl);
++	if (of_reserved_mem_device_init_by_idx(rdev, rdev->of_node, 0))
++		dev_info(rdev, "no reserved DMA memory for FASTRPC\n");
 +
- 	if (err)
- 		dev_dbg(fl->sctx->dev, "Error: Invoke Failed %d\n", err);
- 
-@@ -1551,6 +1575,8 @@ static int fastrpc_device_open(struct inode *inode, struct file *filp)
- 		return -EBUSY;
- 	}
- 
-+	fastrpc_invoke_interrupted_restore_mmaps(fl);
-+
- 	spin_lock_irqsave(&cctx->lock, flags);
- 	list_add_tail(&fl->user, &cctx->users);
- 	spin_unlock_irqrestore(&cctx->lock, flags);
-@@ -2268,6 +2294,7 @@ static int fastrpc_rpmsg_probe(struct rpmsg_device *rpdev)
- 	dev_set_drvdata(&rpdev->dev, data);
- 	dma_set_mask_and_coherent(rdev, DMA_BIT_MASK(32));
- 	INIT_LIST_HEAD(&data->users);
-+	INIT_LIST_HEAD(&data->invoke_interrupted_mmaps);
- 	spin_lock_init(&data->lock);
- 	idr_init(&data->ctx_idr);
- 	data->domain_id = domain_id;
-@@ -2292,6 +2319,7 @@ static void fastrpc_notify_users(struct fastrpc_user *user)
- static void fastrpc_rpmsg_remove(struct rpmsg_device *rpdev)
- {
- 	struct fastrpc_channel_ctx *cctx = dev_get_drvdata(&rpdev->dev);
-+	struct fastrpc_buf *buf, *b;
- 	struct fastrpc_user *user;
- 	unsigned long flags;
- 
-@@ -2306,6 +2334,9 @@ static void fastrpc_rpmsg_remove(struct rpmsg_device *rpdev)
- 	if (cctx->secure_fdevice)
- 		misc_deregister(&cctx->secure_fdevice->miscdev);
- 
-+	list_for_each_entry_safe(buf, b, &cctx->invoke_interrupted_mmaps, node)
-+		list_del(&buf->node);
-+
- 	if (cctx->remote_heap)
- 		fastrpc_buf_free(cctx->remote_heap);
- 
+ 	vmcount = of_property_read_variable_u32_array(rdev->of_node,
+ 				"qcom,vmids", &vmids[0], 0, FASTRPC_MAX_VMIDS);
+ 	if (vmcount < 0)
 -- 
 2.34.1
 
