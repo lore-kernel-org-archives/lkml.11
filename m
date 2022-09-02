@@ -2,44 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6282C54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:52:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26232ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:52:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237894AbiIBMwD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:52:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43576 "EHLO
+        id S237900AbiIBMwJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:52:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236137AbiIBMvR (ORCPT
+        with ESMTP id S237748AbiIBMvT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:51:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 505F5F826C;
-        Fri,  2 Sep 2022 05:36:58 -0700 (PDT)
+        Fri, 2 Sep 2022 08:51:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0E5C3C8CB;
+        Fri,  2 Sep 2022 05:37:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1178AB82ACD;
-        Fri,  2 Sep 2022 12:35:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B88CC433D6;
-        Fri,  2 Sep 2022 12:35:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D228862181;
+        Fri,  2 Sep 2022 12:27:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEDA4C433C1;
+        Fri,  2 Sep 2022 12:27:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122106;
-        bh=Uk4hLiPJocqiO6tbAqBSSCacJn6LjD8UNbJhRkRruFM=;
+        s=korg; t=1662121668;
+        bh=qObAQRL9jDvbNVUCBg+ifDtMBYI49zFZuQMYlD9sB0w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mgOhocRfLFDENL3l2CU/RcjtHIldn+oyUSnpoff+Tcl+/6cBKNe2UvA2Tn7UNzYSc
-         6FbyrZ0bKCmRRAP8BFXt/nWGipPAGeF13cKsukp3Fm0DOazOyW0HxZ6F7NINU41MvX
-         E5P47FGnXPlE9o9ctO6uFlfdZbqk+C0aBAK2g3FY=
+        b=ulBxUM9WwWTEWnorfkHoueEPatANFVlg/vjgnskDfmIYcnOh/S/aWD3M3ZEuLEZzt
+         FQmv1pOBNOGFiDFJ1E/k2/rY/uOOtt1CjcOQdUyWenhbExgQc5/Lq26EhSpO12jTNa
+         4eloWoKlCq3U0tuiykcrvET//ZJN5Ml3Plv0VPtk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Letu Ren <fantasquex@gmail.com>, Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.19 15/72] fbdev: fb_pm2fb: Avoid potential divide by zero error
-Date:   Fri,  2 Sep 2022 14:18:51 +0200
-Message-Id: <20220902121405.285931536@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "srivatsab@vmware.com, srivatsa@csail.mit.edu, akaher@vmware.com,
+        amakhalov@vmware.com, vsirnapalli@vmware.com, sturlapati@vmware.com,
+        bordoloih@vmware.com, keerthanak@vmware.com, Ankit Jain" 
+        <ankitja@vmware.com>, Mark Simmons <msimmons@redhat.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Ankit Jain <ankitja@vmware.com>
+Subject: [PATCH 5.4 08/77] sched/deadline: Unthrottle PI boosted threads while enqueuing
+Date:   Fri,  2 Sep 2022 14:18:17 +0200
+Message-Id: <20220902121403.891470207@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
-References: <20220902121404.772492078@linuxfoundation.org>
+In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
+References: <20220902121403.569927325@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,47 +55,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Letu Ren <fantasquex@gmail.com>
+From: Daniel Bristot de Oliveira <bristot@redhat.com>
 
-commit 19f953e7435644b81332dd632ba1b2d80b1e37af upstream.
+commit feff2e65efd8d84cf831668e182b2ce73c604bbb upstream.
 
-In `do_fb_ioctl()` of fbmem.c, if cmd is FBIOPUT_VSCREENINFO, var will be
-copied from user, then go through `fb_set_var()` and
-`info->fbops->fb_check_var()` which could may be `pm2fb_check_var()`.
-Along the path, `var->pixclock` won't be modified. This function checks
-whether reciprocal of `var->pixclock` is too high. If `var->pixclock` is
-zero, there will be a divide by zero error. So, it is necessary to check
-whether denominator is zero to avoid crash. As this bug is found by
-Syzkaller, logs are listed below.
+stress-ng has a test (stress-ng --cyclic) that creates a set of threads
+under SCHED_DEADLINE with the following parameters:
 
-divide error in pm2fb_check_var
-Call Trace:
- <TASK>
- fb_set_var+0x367/0xeb0 drivers/video/fbdev/core/fbmem.c:1015
- do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1110
- fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1189
+    dl_runtime   =  10000 (10 us)
+    dl_deadline  = 100000 (100 us)
+    dl_period    = 100000 (100 us)
 
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Letu Ren <fantasquex@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+These parameters are very aggressive. When using a system without HRTICK
+set, these threads can easily execute longer than the dl_runtime because
+the throttling happens with 1/HZ resolution.
+
+During the main part of the test, the system works just fine because
+the workload does not try to run over the 10 us. The problem happens at
+the end of the test, on the exit() path. During exit(), the threads need
+to do some cleanups that require real-time mutex locks, mainly those
+related to memory management, resulting in this scenario:
+
+Note: locks are rt_mutexes...
+ ------------------------------------------------------------------------
+    TASK A:		TASK B:				TASK C:
+    activation
+							activation
+			activation
+
+    lock(a): OK!	lock(b): OK!
+    			<overrun runtime>
+    			lock(a)
+    			-> block (task A owns it)
+			  -> self notice/set throttled
+ +--<			  -> arm replenished timer
+ |    			switch-out
+ |    							lock(b)
+ |    							-> <C prio > B prio>
+ |    							-> boost TASK B
+ |  unlock(a)						switch-out
+ |  -> handle lock a to B
+ |    -> wakeup(B)
+ |      -> B is throttled:
+ |        -> do not enqueue
+ |     switch-out
+ |
+ |
+ +---------------------> replenishment timer
+			-> TASK B is boosted:
+			  -> do not enqueue
+ ------------------------------------------------------------------------
+
+BOOM: TASK B is runnable but !enqueued, holding TASK C: the system
+crashes with hung task C.
+
+This problem is avoided by removing the throttle state from the boosted
+thread while boosting it (by TASK A in the example above), allowing it to
+be queued and run boosted.
+
+The next replenishment will take care of the runtime overrun, pushing
+the deadline further away. See the "while (dl_se->runtime <= 0)" on
+replenish_dl_entity() for more information.
+
+Reported-by: Mark Simmons <msimmons@redhat.com>
+Signed-off-by: Daniel Bristot de Oliveira <bristot@redhat.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Juri Lelli <juri.lelli@redhat.com>
+Tested-by: Mark Simmons <msimmons@redhat.com>
+Link: https://lkml.kernel.org/r/5076e003450835ec74e6fa5917d02c4fa41687e6.1600170294.git.bristot@redhat.com
+[Ankit: Regenerated the patch for v5.4.y]
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/pm2fb.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ kernel/sched/deadline.c |   21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
---- a/drivers/video/fbdev/pm2fb.c
-+++ b/drivers/video/fbdev/pm2fb.c
-@@ -617,6 +617,11 @@ static int pm2fb_check_var(struct fb_var
- 		return -EINVAL;
- 	}
- 
-+	if (!var->pixclock) {
-+		DPRINTK("pixclock is zero\n");
-+		return -EINVAL;
-+	}
-+
- 	if (PICOS2KHZ(var->pixclock) > PM2_MAX_PIXCLOCK) {
- 		DPRINTK("pixclock too high (%ldKHz)\n",
- 			PICOS2KHZ(var->pixclock));
+--- a/kernel/sched/deadline.c
++++ b/kernel/sched/deadline.c
+@@ -1484,6 +1484,27 @@ static void enqueue_task_dl(struct rq *r
+ 	 */
+ 	if (pi_task && dl_prio(pi_task->normal_prio) && p->dl.dl_boosted) {
+ 		pi_se = &pi_task->dl;
++		/*
++		 * Because of delays in the detection of the overrun of a
++		 * thread's runtime, it might be the case that a thread
++		 * goes to sleep in a rt mutex with negative runtime. As
++		 * a consequence, the thread will be throttled.
++		 *
++		 * While waiting for the mutex, this thread can also be
++		 * boosted via PI, resulting in a thread that is throttled
++		 * and boosted at the same time.
++		 *
++		 * In this case, the boost overrides the throttle.
++		 */
++		if (p->dl.dl_throttled) {
++			/*
++			 * The replenish timer needs to be canceled. No
++			 * problem if it fires concurrently: boosted threads
++			 * are ignored in dl_task_timer().
++			 */
++			hrtimer_try_to_cancel(&p->dl.dl_timer);
++			p->dl.dl_throttled = 0;
++		}
+ 	} else if (!dl_prio(p->normal_prio)) {
+ 		/*
+ 		 * Special case in which we have a !SCHED_DEADLINE task
 
 
