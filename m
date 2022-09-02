@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7222C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:22:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16984C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:22:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236200AbiIBMWn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:22:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46584 "EHLO
+        id S236108AbiIBMWr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:22:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235826AbiIBMVP (ORCPT
+        with ESMTP id S235922AbiIBMVP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 08:21:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF10A9265;
-        Fri,  2 Sep 2022 05:21:14 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F058B9E6A2;
+        Fri,  2 Sep 2022 05:21:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C2185620E6;
-        Fri,  2 Sep 2022 12:21:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7F5DC433C1;
-        Fri,  2 Sep 2022 12:21:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C093620C5;
+        Fri,  2 Sep 2022 12:21:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88058C433D6;
+        Fri,  2 Sep 2022 12:21:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121273;
-        bh=EjhUaWhI2U+NFj+HyzZDRmEuXJdOa2MKK3y3jt7QK4M=;
+        s=korg; t=1662121264;
+        bh=YpPCSFJZjYQX+u7yAHu3e5lF3mBjH9JLx9Fx7DDAunA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wCCVqAdBKwmPnvAsvIiImcg/Vs5f9yWFr2/i1TcqNa9rFY8Q2Fxf188yFjZ6YvZgZ
-         cpU7Dt38cfj0mI8J8IAhenEnr888pKw1+R0qs/nrl9vaqGGaEzWenTYJM0Lg2fUiKr
-         mnCGGAu0pi81skmRqXPYS6npJUNkKTketOftNtsY=
+        b=iZ5Y2bX0WPSpHnGJRJrnyLoQVZr61q5R5ihLyuAxXyMw1H4BwF9YXOuol4g5DyPks
+         S/GOooeUrttlTb3hxGK5UGWauC3dnvDIkSTmMHCc18XpWFl79sKJVgg20V5wVaW/gB
+         KADJjxjZZeq57XQ1pdyQTseEbnEt7SicJIgFzh20=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 28/31] s390/hypfs: avoid error message under KVM
-Date:   Fri,  2 Sep 2022 14:18:54 +0200
-Message-Id: <20220902121357.770385533@linuxfoundation.org>
+Subject: [PATCH 4.9 10/31] net: Fix a data-race around sysctl_net_busy_read.
+Date:   Fri,  2 Sep 2022 14:18:36 +0200
+Message-Id: <20220902121357.135932728@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121356.732130937@linuxfoundation.org>
 References: <20220902121356.732130937@linuxfoundation.org>
@@ -51,58 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 7b6670b03641ac308aaa6fa2e6f964ac993b5ea3 ]
+[ Upstream commit e59ef36f0795696ab229569c153936bfd068d21c ]
 
-When booting under KVM the following error messages are issued:
+While reading sysctl_net_busy_read, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-hypfs.7f5705: The hardware system does not support hypfs
-hypfs.7a79f0: Initialization of hypfs failed with rc=-61
-
-Demote the severity of first message from "error" to "info" and issue
-the second message only in other error cases.
-
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Acked-by: Heiko Carstens <hca@linux.ibm.com>
-Acked-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220620094534.18967-1-jgross@suse.com
-[arch/s390/hypfs/hypfs_diag.c changed description]
-Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
+Fixes: 2d48d67fa8cd ("net: poll/select low latency socket support")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/hypfs/hypfs_diag.c | 2 +-
- arch/s390/hypfs/inode.c      | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ net/core/sock.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/s390/hypfs/hypfs_diag.c b/arch/s390/hypfs/hypfs_diag.c
-index 794bebb43d23d..64448c0998eb5 100644
---- a/arch/s390/hypfs/hypfs_diag.c
-+++ b/arch/s390/hypfs/hypfs_diag.c
-@@ -436,7 +436,7 @@ __init int hypfs_diag_init(void)
- 	int rc;
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 1845a37d9f7e1..e4b28c10901ec 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2508,7 +2508,7 @@ void sock_init_data(struct socket *sock, struct sock *sk)
  
- 	if (diag204_probe()) {
--		pr_err("The hardware system does not support hypfs\n");
-+		pr_info("The hardware system does not support hypfs\n");
- 		return -ENODATA;
- 	}
- 	if (diag204_info_type == DIAG204_INFO_EXT) {
-diff --git a/arch/s390/hypfs/inode.c b/arch/s390/hypfs/inode.c
-index 224aeda1e8ccf..d73d2d001a620 100644
---- a/arch/s390/hypfs/inode.c
-+++ b/arch/s390/hypfs/inode.c
-@@ -493,9 +493,9 @@ static int __init hypfs_init(void)
- 	hypfs_vm_exit();
- fail_hypfs_diag_exit:
- 	hypfs_diag_exit();
-+	pr_err("Initialization of hypfs failed with rc=%i\n", rc);
- fail_dbfs_exit:
- 	hypfs_dbfs_exit();
--	pr_err("Initialization of hypfs failed with rc=%i\n", rc);
- 	return rc;
- }
+ #ifdef CONFIG_NET_RX_BUSY_POLL
+ 	sk->sk_napi_id		=	0;
+-	sk->sk_ll_usec		=	sysctl_net_busy_read;
++	sk->sk_ll_usec		=	READ_ONCE(sysctl_net_busy_read);
+ #endif
  
+ 	sk->sk_max_pacing_rate = ~0U;
 -- 
 2.35.1
 
