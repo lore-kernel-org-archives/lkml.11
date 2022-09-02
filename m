@@ -2,96 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56586C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:38:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EBBFC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:38:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236583AbiIBMi2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:38:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40236 "EHLO
+        id S237112AbiIBMic (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:38:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237084AbiIBMhs (ORCPT
+        with ESMTP id S237085AbiIBMhs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 08:37:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2050A10FF;
-        Fri,  2 Sep 2022 05:29:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D9076211C;
-        Fri,  2 Sep 2022 12:23:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76E96C433D7;
-        Fri,  2 Sep 2022 12:23:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121402;
-        bh=c38qPjBlwIU12u9Uk9yjYbiD99ZrXmEcOmC9gitduTY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fqttkCobkVthfNQpMlcz/MgOtRr3YoPpZVHIsbyHxM29Q45QXdxtrIb5TU1iJdcbE
-         mICdr+t5XhsHvOMBUj4oaif9YxwFROyX/hPTY68BSQ6DtE38oQNrOhsBOdnDzzOn06
-         G0I6t/63niYKsJ3pVOd7BuUWCKA387TVk91KscNA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mahesh Bandewar <maheshb@google.com>,
-        Sainath Grandhi <sainath.grandhi@intel.com>,
-        =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 08/42] net: ipvtap - add __init/__exit annotations to module init/exit funcs
-Date:   Fri,  2 Sep 2022 14:18:32 +0200
-Message-Id: <20220902121359.087699818@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121358.773776406@linuxfoundation.org>
-References: <20220902121358.773776406@linuxfoundation.org>
-User-Agent: quilt/0.67
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1DEC2FC
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 05:19:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662121184; x=1693657184;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=fS3Zg6CR41DlCRJ3YlObPpVsOET9vzxsmZZDS1sOMxU=;
+  b=SH/scYvvmnMCUsLpGS8cvXdETz61DaPLMRCCwWxQ0Innso3urnAiF9La
+   62BRhlDaqh8dpkJo9ICeEmbLWps7M6YRzJLSURpLG9GCEW+EOHXJ4otTX
+   82ZHsrerHCxaNxOGH+oAZAYzDSGb/+AKLM0ahyAj9kt5laTo2qFferDJh
+   utT2VqwU7M1aAqVFQKNxKz2ASOxj4OIWZiWy4c/0ANcpYYpxFrg0eXDB0
+   CquqgYSa/qHU/L19Up/Lm20GbqOX0H+3G/qzI8n+/qVVRA77TOALtZCcI
+   2/tmHoHtXslpBFR1YUnBtvbeP8N2u93HBMS7rtRAJdUx4tz5PldWuKn7f
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="295974597"
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="295974597"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 05:19:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="563946986"
+Received: from crojewsk-ctrl.igk.intel.com ([10.102.9.28])
+  by orsmga003.jf.intel.com with ESMTP; 02 Sep 2022 05:19:40 -0700
+From:   Cezary Rojewski <cezary.rojewski@intel.com>
+To:     alsa-devel@alsa-project.org, broonie@kernel.org
+Cc:     tiwai@suse.com, perex@perex.cz,
+        amadeuszx.slawinski@linux.intel.com,
+        pierre-louis.bossart@linux.intel.com, hdegoede@redhat.com,
+        lgirdwood@gmail.com, kai.vehmanen@linux.intel.com,
+        peter.ujfalusi@linux.intel.com, ranjani.sridharan@linux.intel.com,
+        yung-chuan.liao@linux.intel.com, willy@infradead.org,
+        linux-kernel@vger.kernel.org, andy@kernel.org,
+        intel-poland@eclists.intel.com, andy.shevchenko@gmail.com,
+        Cezary Rojewski <cezary.rojewski@intel.com>
+Subject: [PATCH v4 0/2] lib/string_helpers: Introduce parse_int_array_user()
+Date:   Fri,  2 Sep 2022 14:29:26 +0200
+Message-Id: <20220902122928.632602-1-cezary.rojewski@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej Żenczykowski <maze@google.com>
+Continuation of recent upstream discussion [1] regarding user string
+tokenization.
 
-[ Upstream commit 4b2e3a17e9f279325712b79fb01d1493f9e3e005 ]
+First, parse_int_array_user() is introduced to allow for splitting
+specified user string into a sequence of integers. Makes use of
+get_options() internally so the parsing logic is not duplicated.
 
-Looks to have been left out in an oversight.
+With that done, redundant parts of the sound driver are removed.
 
-Cc: Mahesh Bandewar <maheshb@google.com>
-Cc: Sainath Grandhi <sainath.grandhi@intel.com>
-Fixes: 235a9d89da97 ('ipvtap: IP-VLAN based tap driver')
-Signed-off-by: Maciej Żenczykowski <maze@google.com>
-Link: https://lore.kernel.org/r/20220821130808.12143-1-zenczykowski@gmail.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ipvlan/ipvtap.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Originally similar functionality was added for the SOF sound driver. As
+more users are on the horizon, it is desirable to update existing
+string_helpers code and provide a unified solution.
 
-diff --git a/drivers/net/ipvlan/ipvtap.c b/drivers/net/ipvlan/ipvtap.c
-index 0bcc07f346c3e..2e517e30c5ac1 100644
---- a/drivers/net/ipvlan/ipvtap.c
-+++ b/drivers/net/ipvlan/ipvtap.c
-@@ -193,7 +193,7 @@ static struct notifier_block ipvtap_notifier_block __read_mostly = {
- 	.notifier_call	= ipvtap_device_event,
- };
- 
--static int ipvtap_init(void)
-+static int __init ipvtap_init(void)
- {
- 	int err;
- 
-@@ -227,7 +227,7 @@ static int ipvtap_init(void)
- }
- module_init(ipvtap_init);
- 
--static void ipvtap_exit(void)
-+static void __exit ipvtap_exit(void)
- {
- 	rtnl_link_unregister(&ipvtap_link_ops);
- 	unregister_netdevice_notifier(&ipvtap_notifier_block);
+
+Changes in v4:
+- renamed the function to parse_int_array_user()
+- at the name several local variable names have been reworded to match
+  the above
+
+Changes in v3:
+- relocated tokenize_user_input() implementation to string_helpers as
+  requested by Matthew
+
+Changes in v2:
+- reused get_options() so no parsing logic is duplicated
+- simplified __user variant with help of memdup_user_nul()
+  Both suggested by Andy, thanks for thourough review
+
+
+[1]: https://lore.kernel.org/alsa-devel/20220707091301.1282291-1-cezary.rojewski@intel.com/
+
+
+Cezary Rojewski (2):
+  lib/string_helpers: Introduce parse_int_array_user()
+  ASoC: SOF: Remove strsplit_u32() and tokenize_input()
+
+ include/linux/string_helpers.h    |   2 +
+ lib/string_helpers.c              |  45 +++++++++++++
+ sound/soc/sof/sof-client-probes.c | 104 ++++++------------------------
+ 3 files changed, 65 insertions(+), 86 deletions(-)
+
 -- 
-2.35.1
-
-
+2.25.1
 
