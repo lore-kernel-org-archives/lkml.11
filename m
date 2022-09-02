@@ -2,175 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F75DC001B5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:18:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4019C001B5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:19:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235949AbiIBPSx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 11:18:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37936 "EHLO
+        id S236458AbiIBPTN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 11:19:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235745AbiIBPST (ORCPT
+        with ESMTP id S236778AbiIBPSq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 11:18:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6714D810;
-        Fri,  2 Sep 2022 07:51:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 84FA8B82C4E;
-        Fri,  2 Sep 2022 14:51:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 333CBC433C1;
-        Fri,  2 Sep 2022 14:51:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662130279;
-        bh=4Hkr87g3PnzCLM9ZxFNQa5qADO4ZTPUXVLBqOM+przo=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=h89XrqJuOXVQ4/8j/RjAq2NaBhz3+B4MWMgpH+S85BBgwuJpO7HMyGFtHxu9/UISb
-         Ooo9ElCQqawa3/ew19xm+Tz8ntL2NNlg5mAxSK0mq26A0evpSb4NxGfhghyXeznQXl
-         /aHP8dyeitoacHRZMR1sxLILr14GNLypUZxk2V5lEPeSv+9Ou0tnxKyOviLCLvJGqH
-         nCTIO4INBz1uA6d8Mp3wUvJL8ixuaiePPI1AhxbL4ojKFomWDsXe4zwK1IqJNXOipd
-         sHAb2Ql5+ML2QYQ8EHQtg0orVkUV23sLA/WQA20OOSIVe1Qav+eGismKrmZ/GiiczB
-         WC/lWgSOFhgew==
-Received: by mail-vk1-f174.google.com with SMTP id w129so1073449vkg.10;
-        Fri, 02 Sep 2022 07:51:19 -0700 (PDT)
-X-Gm-Message-State: ACgBeo1WSC1wHxzO0oslDPREe9xoTEs1WcPm2keKBbt+VAnl2sqGh1g6
-        SHbT5SqCZW83jQQF6tBE3o8RNcG3hij2kubHDg==
-X-Google-Smtp-Source: AA6agR7gPR2eoNK8OlOt6H6YcAAUxzaXErLPZTaQL7XqzgtAc9mBmf8rXIp3NGDWwMeU3NPODBPf4sb4u9Hs3ebXLSY=
-X-Received: by 2002:a05:6122:d86:b0:37d:3fe:df43 with SMTP id
- bc6-20020a0561220d8600b0037d03fedf43mr10496067vkb.15.1662130278184; Fri, 02
- Sep 2022 07:51:18 -0700 (PDT)
+        Fri, 2 Sep 2022 11:18:46 -0400
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E15223845B;
+        Fri,  2 Sep 2022 07:51:45 -0700 (PDT)
+Received: (Authenticated sender: gregory.clement@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id F38F51BF218;
+        Fri,  2 Sep 2022 14:51:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1662130304;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xclzXnMYmVfvBNVyfFnKWw9O2ZLmh2rrfaJFl9XWajc=;
+        b=pAvxH9rh1NPVqP6/k/KyNjguhfKVfrq/eIsFKdJbtsXXSjPWWPYI5oqg9ug2BXruXSSL32
+        P1LLyQOSckSihX8Uac2e9mPEVMs093uOg7zRF/B/0D17hTG2ATx/mpLbuO7L1PNOMWsXRu
+        drKoOYKZUtSN31CurNlfs7kjRJkridCFYtL+VaoaTl17ID3m+bWEeVYgzfPDGSNQ1DGMdf
+        d1KhMV7el5VIDxlDtfDm7iX1jveolzZkxlE/dpLYaEpob4DeihnTK4EqarsJilVPM6ohSA
+        jH/qlMRkw58QYofHFyIr7DzqITS4mcCabYAQ7dJqBxihuKcTRZg44iju0Cwrvw==
+From:   Gregory CLEMENT <gregory.clement@bootlin.com>
+To:     Pali =?utf-8?Q?Roh=C3=A1r?= <pali@kernel.org>,
+        Marek =?utf-8?Q?Beh?= =?utf-8?Q?=C3=BAn?= <kabel@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 00/10] ARM: dts: mvebu: Add definitions for PCIe
+ legacy INTx interrupts
+In-Reply-To: <20220817165034.ymmha6swsi5iju27@pali>
+References: <20220712164108.30262-1-kabel@kernel.org>
+ <20220817165034.ymmha6swsi5iju27@pali>
+Date:   Fri, 02 Sep 2022 16:51:41 +0200
+Message-ID: <87r10tesn6.fsf@BL-laptop>
 MIME-Version: 1.0
-References: <20220823145649.3118479-4-robh@kernel.org> <13083804.uLZWGnKmhe@kista>
-In-Reply-To: <13083804.uLZWGnKmhe@kista>
-From:   Rob Herring <robh@kernel.org>
-Date:   Fri, 2 Sep 2022 09:51:07 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqJTgrSZcKNr1ky5LAXRQbj3MADMpCCYVC26rcZvzwY1Xw@mail.gmail.com>
-Message-ID: <CAL_JsqJTgrSZcKNr1ky5LAXRQbj3MADMpCCYVC26rcZvzwY1Xw@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: mfd: Add missing (unevaluated|additional)Properties
- on child nodes
-To:     =?UTF-8?Q?Jernej_=C5=A0krabec?= <jernej.skrabec@gmail.com>
-Cc:     Lee Jones <lee@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Samuel Holland <samuel@sholland.org>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Robert Jones <rjones@gateworks.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        - <patches@opensource.cirrus.com>,
-        Steve Twiss <stwiss.opensource@diasemi.com>,
-        Chris Zhong <zyw@rock-chips.com>,
-        Zhang Qing <zhangqing@rock-chips.com>,
-        Alistair Francis <alistair@alistair23.me>,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Renner Berthing <kernel@esmil.dk>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        devicetree@vger.kernel.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-sunxi@lists.linux.dev,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        "moderated list:ARM/STM32 ARCHITECTURE" 
-        <linux-stm32@st-md-mailman.stormreply.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 3:49 PM Jernej =C5=A0krabec <jernej.skrabec@gmail.c=
-om> wrote:
->
-> Dne torek, 23. avgust 2022 ob 16:56:35 CEST je Rob Herring napisal(a):
-> > In order to ensure only documented properties are present, node schemas
-> > must have unevaluatedProperties or additionalProperties set to false
-> > (typically).
-> >
-> > Signed-off-by: Rob Herring <robh@kernel.org>
-> > ---
-> >  .../mfd/allwinner,sun6i-a31-prcm.yaml         | 40 +++++++++++++++++++
-> >  .../mfd/allwinner,sun8i-a23-prcm.yaml         | 10 +++++
-> >  .../bindings/mfd/cirrus,lochnagar.yaml        |  5 +++
-> >  .../devicetree/bindings/mfd/dlg,da9063.yaml   |  7 ++--
-> >  .../bindings/mfd/gateworks-gsc.yaml           |  5 ++-
-> >  .../bindings/mfd/maxim,max14577.yaml          |  1 +
-> >  .../bindings/mfd/maxim,max77843.yaml          |  1 +
-> >  .../bindings/mfd/rockchip,rk817.yaml          |  2 +
-> >  .../bindings/mfd/silergy,sy7636a.yaml         |  1 +
-> >  .../bindings/mfd/st,stm32-lptimer.yaml        |  4 ++
-> >  .../bindings/mfd/st,stm32-timers.yaml         |  3 ++
-> >  .../devicetree/bindings/mfd/st,stmfx.yaml     |  1 +
-> >  .../bindings/mfd/stericsson,ab8500.yaml       | 22 ++++++++++
-> >  .../devicetree/bindings/mfd/ti,tps65086.yaml  |  1 +
-> >  .../bindings/mfd/x-powers,axp152.yaml         |  1 +
-> >  15 files changed, 100 insertions(+), 4 deletions(-)
-> >
-> > diff --git
-> > a/Documentation/devicetree/bindings/mfd/allwinner,sun6i-a31-prcm.yaml
-> > b/Documentation/devicetree/bindings/mfd/allwinner,sun6i-a31-prcm.yaml i=
-ndex
-> > d131759ccaf3..021d33cb3dd6 100644
-> > --- a/Documentation/devicetree/bindings/mfd/allwinner,sun6i-a31-prcm.ya=
-ml
-> > +++ b/Documentation/devicetree/bindings/mfd/allwinner,sun6i-a31-prcm.ya=
-ml
-> > @@ -22,6 +22,7 @@ properties:
-> >  patternProperties:
-> >    "^.*_(clk|rst)$":
-> >      type: object
-> > +    unevaluatedProperties: false
-> >
-> >      properties:
-> >        compatible:
-> > @@ -34,6 +35,45 @@ patternProperties:
-> >            - fixed-factor-clock
-> >
-> >      allOf:
-> > +      - if:
-> > +          properties:
-> > +            compatible:
-> > +              contains:
-> > +                const: fixed-factor-clock
-> > +
-> > +        then:
-> > +          $ref: /schemas/clock/fixed-factor-clock.yaml#
-> > +
-> > +      - if:
-> > +          properties:
-> > +            compatible:
-> > +              contains:
-> > +                const: allwinner,sun4i-a10-mod0-clk
-> > +
-> > +        then:
-> > +          properties:
-> > +            "#clock-cells":
-> > +              const: 0
-> > +
-> > +            # Already checked in the main schema
-> > +            compatible: true
-> > +
-> > +            clocks:
-> > +              maxItems: 2
->
-> Last time node with allwinner,sun4i-a10-mod0-clk compatible was used, it =
-had 3
-> clocks. See:
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/a=
-rch/
-> arm/boot/dts/sun4i-a10.dtsi?id=3Df18698e1c66338b902de386e4ad97b8b1b9d999d=
-#n406
+Hello,
 
-Humm, we already have constraints in
-bindings/clock/allwinner,sun4i-a10-mod0-clk.yaml. I'll just make it
-'clocks: true' here instead.
+> Hello! What is state of these patches? I see no response for more than
+> month.
 
-Rob
+Actually I didn't received the second version of the series, but I
+manged to find it in lore and so I applied it on mvebu/dt
+
+Thanks,
+
+Gregory
+
+
+>
+> On Tuesday 12 July 2022 18:40:58 Marek Beh=C3=BAn wrote:
+>> As suggested by Gregory [1] (although he suggested it only for armada
+>> 380), add definitions for PCIe legacy INTx interrupts into every DTS
+>> file used by the pci-mvebu.c controller driver.
+>>=20
+>> It was tested on 88F6820 (A385) and 88F6281 (Kirkwood) SoCs.
+>>=20
+>> [1] https://lore.kernel.org/linux-arm-kernel/87wnhxjxlq.fsf@BL-laptop/
+>>=20
+>> Changes since v1:
+>> - dropped armada-385 patch, which was already applied
+>> - added commit messages
+>>=20
+>> Pali Roh=C3=A1r (10):
+>>   ARM: dts: kirkwood: Add definitions for PCIe legacy INTx interrupts
+>>   ARM: dts: dove: Add definitions for PCIe legacy INTx interrupts
+>>   ARM: dts: armada-370.dtsi: Add definitions for PCIe legacy INTx
+>>     interrupts
+>>   ARM: dts: armada-xp-98dx3236.dtsi: Add definitions for PCIe legacy
+>>     INTx interrupts
+>>   ARM: dts: armada-xp-mv78230.dtsi: Add definitions for PCIe legacy INTx
+>>     interrupts
+>>   ARM: dts: armada-xp-mv78260.dtsi: Add definitions for PCIe legacy INTx
+>>     interrupts
+>>   ARM: dts: armada-xp-mv78460.dtsi: Add definitions for PCIe legacy INTx
+>>     interrupts
+>>   ARM: dts: armada-375.dtsi: Add definitions for PCIe legacy INTx
+>>     interrupts
+>>   ARM: dts: armada-380.dtsi: Add definitions for PCIe legacy INTx
+>>     interrupts
+>>   ARM: dts: armada-39x.dtsi: Add definitions for PCIe legacy INTx
+>>     interrupts
+>>=20
+>>  arch/arm/boot/dts/armada-370.dtsi         |  28 ++++-
+>>  arch/arm/boot/dts/armada-375.dtsi         |  28 ++++-
+>>  arch/arm/boot/dts/armada-380.dtsi         |  42 ++++++-
+>>  arch/arm/boot/dts/armada-39x.dtsi         |  56 +++++++--
+>>  arch/arm/boot/dts/armada-xp-98dx3236.dtsi |  14 ++-
+>>  arch/arm/boot/dts/armada-xp-mv78230.dtsi  |  70 +++++++++--
+>>  arch/arm/boot/dts/armada-xp-mv78260.dtsi  | 126 ++++++++++++++++---
+>>  arch/arm/boot/dts/armada-xp-mv78460.dtsi  | 140 ++++++++++++++++++----
+>>  arch/arm/boot/dts/dove.dtsi               |  28 ++++-
+>>  arch/arm/boot/dts/kirkwood-6192.dtsi      |  14 ++-
+>>  arch/arm/boot/dts/kirkwood-6281.dtsi      |  14 ++-
+>>  arch/arm/boot/dts/kirkwood-6282.dtsi      |  28 ++++-
+>>  arch/arm/boot/dts/kirkwood-98dx4122.dtsi  |  14 ++-
+>>  13 files changed, 516 insertions(+), 86 deletions(-)
+>>=20
+>> --=20
+>> 2.35.1
+>>=20
+
+--=20
+Gregory Clement, Bootlin
+Embedded Linux and Kernel engineering
+http://bootlin.com
