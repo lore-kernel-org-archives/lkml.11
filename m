@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5841ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:06:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E559C54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:06:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238703AbiIBNGG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:06:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38428 "EHLO
+        id S238667AbiIBNG3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:06:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238644AbiIBNE5 (ORCPT
+        with ESMTP id S238580AbiIBNGB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:04:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 883BF1123B5;
-        Fri,  2 Sep 2022 05:43:22 -0700 (PDT)
+        Fri, 2 Sep 2022 09:06:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C7EBEA8AD;
+        Fri,  2 Sep 2022 05:43:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 225BC6215A;
-        Fri,  2 Sep 2022 12:35:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D059C433D6;
-        Fri,  2 Sep 2022 12:35:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 085A862194;
+        Fri,  2 Sep 2022 12:31:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1B37C433D6;
+        Fri,  2 Sep 2022 12:31:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122129;
-        bh=IC0Xcmb1kumLQWLiI4eJziIM3Bb2aDtDDQkA3g87UtU=;
+        s=korg; t=1662121892;
+        bh=exs1M14G2hFHIOYMQ8AYApY+iIFCvLSFnU0OjU75pHQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xbC8GQra80jAdf+wJ2iZS0FbMAJu01/GGlGEG5kKC4XY2irQWR+aPXStBi/Bujxyy
-         uNDAlYWI84koikYFjl07UgUHTS9/hd7kQw4s87BhfiSObDfuBgUFKtEPizqcsiy0sq
-         AjkcaTIWVNR5hu4JqCGCnVwAvC+PjcVIs8uNyg5E=
+        b=xD5hvNG0pn5RpVX/G8wsHM8LOHvXZ5dMcEWmxQUiK4zHfjK2R9inNbdA3DrQYaRDh
+         +NEK2E66o24zNDCXCSqgG5eGYzWkXtlKh0TeTlER/TObxU608iOQ2TuTjt5BZlnyZj
+         bJ71LFazFacGTIMFnGJoGVueb8qrQ1om66YrUnbI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Steev Klimaszewski <steev@kali.org>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.19 21/72] HID: add Lenovo Yoga C630 battery quirk
-Date:   Fri,  2 Sep 2022 14:18:57 +0200
-Message-Id: <20220902121405.483023351@linuxfoundation.org>
+        Jens Axboe <axboe@kernel.dk>,
+        Pavel Begunkov <asml.silence@gmail.com>
+Subject: [PATCH 5.15 20/73] io_uring: bump poll refs to full 31-bits
+Date:   Fri,  2 Sep 2022 14:18:44 +0200
+Message-Id: <20220902121405.123856088@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
-References: <20220902121404.772492078@linuxfoundation.org>
+In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
+References: <20220902121404.435662285@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,45 +48,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steev Klimaszewski <steev@kali.org>
+From: Jens Axboe <axboe@kernel.dk>
 
-commit 3a47fa7b14c7d9613909a844aba27f99d3c58634 upstream.
+[ upstream commmit e2c0cb7c0cc72939b61a7efee376206725796625 ]
 
-Similar to the Surface Go devices, the Elantech touchscreen/digitizer in
-the Lenovo Yoga C630 mistakenly reports the battery of the stylus, and
-always reports an empty battery.
+The previous commit:
 
-Apply the HID_BATTERY_QUIRK_IGNORE quirk to ignore this battery and
-prevent the erroneous low battery warnings.
+1bc84c40088 ("io_uring: remove poll entry from list when canceling all")
 
-Signed-off-by: Steev Klimaszewski <steev@kali.org>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+removed a potential overflow condition for the poll references. They
+are currently limited to 20-bits, even if we have 31-bits available. The
+upper bit is used to mark for cancelation.
+
+Bump the poll ref space to 31-bits, making that kind of situation much
+harder to trigger in general. We'll separately add overflow checking
+and handling.
+
+Fixes: aa43477b0402 ("io_uring: poll rework")
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+[pavel: backport]
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/hid-ids.h   |    1 +
- drivers/hid/hid-input.c |    2 ++
- 2 files changed, 3 insertions(+)
+ fs/io_uring.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/hid/hid-ids.h
-+++ b/drivers/hid/hid-ids.h
-@@ -414,6 +414,7 @@
- #define USB_DEVICE_ID_ASUS_UX550_TOUCHSCREEN	0x2706
- #define I2C_DEVICE_ID_SURFACE_GO_TOUCHSCREEN	0x261A
- #define I2C_DEVICE_ID_SURFACE_GO2_TOUCHSCREEN	0x2A1C
-+#define I2C_DEVICE_ID_LENOVO_YOGA_C630_TOUCHSCREEN	0x279F
- 
- #define USB_VENDOR_ID_ELECOM		0x056e
- #define USB_DEVICE_ID_ELECOM_BM084	0x0061
---- a/drivers/hid/hid-input.c
-+++ b/drivers/hid/hid-input.c
-@@ -383,6 +383,8 @@ static const struct hid_device_id hid_ba
- 	  HID_BATTERY_QUIRK_IGNORE },
- 	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_SURFACE_GO2_TOUCHSCREEN),
- 	  HID_BATTERY_QUIRK_IGNORE },
-+	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_LENOVO_YOGA_C630_TOUCHSCREEN),
-+	  HID_BATTERY_QUIRK_IGNORE },
- 	{}
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -5314,7 +5314,7 @@ struct io_poll_table {
  };
  
+ #define IO_POLL_CANCEL_FLAG	BIT(31)
+-#define IO_POLL_REF_MASK	((1u << 20)-1)
++#define IO_POLL_REF_MASK	GENMASK(30, 0)
+ 
+ /*
+  * If refs part of ->poll_refs (see IO_POLL_REF_MASK) is 0, it's free. We can
 
 
