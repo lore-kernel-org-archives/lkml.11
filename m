@@ -2,87 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3B85C54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 07:52:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FB0FC54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 07:52:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234788AbiIBHwD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 03:52:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40772 "EHLO
+        id S235343AbiIBHw3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 03:52:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235297AbiIBHwB (ORCPT
+        with ESMTP id S233557AbiIBHw1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 03:52:01 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD4B0B5A5E;
-        Fri,  2 Sep 2022 00:52:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=3wmDkHV8HYzOWhuknNT6kESrRfuVs+ZalyBRjyshycQ=; b=QOPYTLQQBdugxke0Jed5tVajAz
-        BHPcuU41BYkmsix8MMuJUralRZ3s0p+44/b3ai+cSnTWEw1Gx9mur7o9Ms2j7PzjxJ5QyvBrAMeDf
-        Fh9w3eCylClGKxuqaLtvAqJVbHRnqdJvQh4KRWzc6wmrt/ax6BPlHpLRLsy1myKQcs4xt5HljQDIK
-        gvaG6z+LHA3AMZR6TKAaSx90YNElwX3eF0tLzTjKjjTma64WahqyKGk9Sgm25QgMVqbgq6FG6iUMk
-        SdmCWero8BR0uy5sSyKM3rpnQAREjnY5thyFMsYtsOy9p30NuzvO/v3UOcRnsGSN8q3waHtImiccj
-        vnyGe4yA==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oU1So-008cEY-St; Fri, 02 Sep 2022 07:51:43 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 2F7BB30010B;
-        Fri,  2 Sep 2022 09:51:42 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id E75CB2B852D7E; Fri,  2 Sep 2022 09:51:41 +0200 (CEST)
-Date:   Fri, 2 Sep 2022 09:51:41 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Sami Tolvanen <samitolvanen@google.com>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>, X86 ML <x86@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-hardening@vger.kernel.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH v4 00/21] KCFI support
-Message-ID: <YxG2DUEBnIpAMKF2@hirez.programming.kicks-ass.net>
-References: <20220830233129.30610-1-samitolvanen@google.com>
- <YxEh+pLyOyPalW1u@dev-arch.thelio-3990X>
- <CABCJKucP5nXGiCTTCEPUGYo5Z9A9qaQkJ6_kXTOfw-o-=TYH0g@mail.gmail.com>
+        Fri, 2 Sep 2022 03:52:27 -0400
+Received: from mail-vk1-xa2f.google.com (mail-vk1-xa2f.google.com [IPv6:2607:f8b0:4864:20::a2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 605B8B6D2A
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 00:52:24 -0700 (PDT)
+Received: by mail-vk1-xa2f.google.com with SMTP id i67so624330vkb.2
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 00:52:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date;
+        bh=pqlsslotLMD/btH53knPgAVkKUlxlnVr4A921sVHYas=;
+        b=aEgk6pJz59lujSkyYSWCJK38qiDqla2V1GaTw1ZiLAAzZBMFy+iMH78dvKX532Il/b
+         neBsF8OM8Uwfo+ZhTQJzvOEQ9zficHhsJ+JWQIWdajXJQZGA6HpIe1pjdzNlrfKwQP4A
+         QpOh9IfpKil7/RrALgHtLnrcaqq5KRb0UXzCgT/qQyCCmmo1pvtN9jppi0U4fkR7gnTi
+         x9lTEemzelgldZetXv1t6DjN80g5hwWChyGwQ1mRmBsmWNTFgG5ZY4JLLcxRhGqGO8QW
+         UPGOPjmtDnt09eo9EGGrcsYLePi1mgSAc0osgIbceruzdg9veBw2MeBLZ4cibfc3JKHP
+         0xKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=pqlsslotLMD/btH53knPgAVkKUlxlnVr4A921sVHYas=;
+        b=0NNQrbsahakoR2jIEykYdUTLXfox+pyWxoLqNNTZjPUTeetYDt2XR1wvUViaOv8GEe
+         vSC03xrR/fl+baIeMTtOs5RQDXMzTRXXd9B80df66w5/keN5OXpzhEt5Hq/lx7R3b1Zn
+         wV20R6n38MvYrJvmznbUrzrVp9Ii54SD3xJeuTIhA7I1sXmtmSulIlPYfp8AnlXrQqVJ
+         FNH23RjpE89OKJDzCPE5Z/9qEm31xGG44Tz3fpynrPKKAo3yA8nQHyDMCJP66vNEu/kE
+         RVMeH1BpHaba89jV+rXxsd7MCjPAGZ5LTUkUHwlzhDgQ82pFNy6pYAQLRi2d/VAXaIC8
+         OzPA==
+X-Gm-Message-State: ACgBeo27fZrEGg362ACCylytSgahHcPV04g8dlUqru+p1EijK+Ti4GvZ
+        kpU2rzeWvn+hnUMjIt346Gr9i1unVLWyICifIpooMQ==
+X-Google-Smtp-Source: AA6agR4nZ0EQZlnyggzdXbc7DyTCbse9fU0U75lWI+RJR+KF4HIVoTQ+PgRGaDZgBJTeRM90lDwoRABzUu5vyfcZ3qc=
+X-Received: by 2002:a1f:b248:0:b0:377:aa0c:941 with SMTP id
+ b69-20020a1fb248000000b00377aa0c0941mr10401933vkf.37.1662105143265; Fri, 02
+ Sep 2022 00:52:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CABCJKucP5nXGiCTTCEPUGYo5Z9A9qaQkJ6_kXTOfw-o-=TYH0g@mail.gmail.com>
+References: <20220901124210.591994-1-mairacanal@riseup.net>
+In-Reply-To: <20220901124210.591994-1-mairacanal@riseup.net>
+From:   David Gow <davidgow@google.com>
+Date:   Fri, 2 Sep 2022 15:52:11 +0800
+Message-ID: <CABVgOSn+03ACbVUQgRPZxLSB5ujU7qVCReP-UsGXrZC+i0C_UQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] drm/tests: Split drm_framebuffer_create_test into
+ parameterized tests
+To:     =?UTF-8?B?TWHDrXJhIENhbmFs?= <mairacanal@riseup.net>
+Cc:     Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
+        Tales Aparecida <tales.aparecida@gmail.com>, mwen@igalia.com,
+        andrealmeid@riseup.net, siqueirajordao@riseup.net,
+        Trevor Woerner <twoerner@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Arthur Grillo <arthur.grillo@usp.br>,
+        michal.winiarski@intel.com,
+        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        dri-devel@lists.freedesktop.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 01, 2022 at 05:33:29PM -0700, Sami Tolvanen wrote:
+On Thu, Sep 1, 2022 at 8:44 PM Ma=C3=ADra Canal <mairacanal@riseup.net> wro=
+te:
+>
+> The igt_check_drm_framebuffer_create is based on a loop that executes
+> tests for all createbuffer_tests test cases. This could be better
+> represented by parameterized tests, provided by KUnit.
+>
+> So, convert the igt_check_drm_framebuffer_create into parameterized tests=
+.
+>
+> Signed-off-by: Ma=C3=ADra Canal <mairacanal@riseup.net>
+> Reviewed-by: Micha=C5=82 Winiarski <michal.winiarski@intel.com>
+> ---
+> v1 -> v2: https://lore.kernel.org/dri-devel/20220830211603.191734-1-maira=
+canal@riseup.net/
+> - Use .init for mock_drm_device instead of a global variable. (Micha=C5=
+=82 Winiarski)
+> ---
 
-> > I do see a few new objtool warnings as well:
-> >
-> > vmlinux.o: warning: objtool: apply_relocate_add+0x34: relocation to !ENDBR: memcpy+0x0
-> > vmlinux.o: warning: objtool: ___ksymtab+__memcpy+0x0: data relocation to !ENDBR: memcpy+0x0
-> > vmlinux.o: warning: objtool: ___ksymtab+memcpy+0x0: data relocation to !ENDBR: memcpy+0x0
-> 
-> That's interesting. I can only reproduce this warning with
-> allmodconfig+LTO, even though the relocation exists in all builds (the
-> code makes an indirect call to memcpy) and memcpy (aliased to
-> __memcpy) doesn't start with endbr. I'll have to take a closer look at
-> why this warning only appears with LTO.
+This looks good to me, and worked well here.
 
-From just looking at the patches I'd say patch #19 breaks it. IIRC you
-forgot to make the SYM_TYPED_FUNC things emit ENDBR.
+Reviewed-by: David Gow <davidgow@google.com>
 
-Look at how x86/asm/linkage.h is overriding SYM_FUNC_START*().
+Cheers,
+-- David
 
-You might have the same bug vs ARM64 BTI, they do the same thing.
+>  drivers/gpu/drm/tests/drm_framebuffer_test.c | 45 ++++++++++++--------
+>  1 file changed, 27 insertions(+), 18 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/tests/drm_framebuffer_test.c b/drivers/gpu/d=
+rm/tests/drm_framebuffer_test.c
+> index ec7a08ba4056..564794917784 100644
+> --- a/drivers/gpu/drm/tests/drm_framebuffer_test.c
+> +++ b/drivers/gpu/drm/tests/drm_framebuffer_test.c
+> @@ -25,7 +25,7 @@ struct drm_framebuffer_test {
+>         const char *name;
+>  };
+>
+> -static struct drm_framebuffer_test createbuffer_tests[] =3D {
+> +static const struct drm_framebuffer_test drm_framebuffer_create_cases[] =
+=3D {
+
+FYI: It shouldn't be _necessary_ to namespace this, though I quite
+like it personally. I definitely approve of the const, though.
+
+>  { .buffer_created =3D 1, .name =3D "ABGR8888 normal sizes",
+>         .cmd =3D { .width =3D 600, .height =3D 600, .pixel_format =3D DRM=
+_FORMAT_ABGR8888,
+>                  .handles =3D { 1, 0, 0 }, .pitches =3D { 4 * 600, 0, 0 }=
+,
+> @@ -330,43 +330,52 @@ static struct drm_mode_config_funcs mock_config_fun=
+cs =3D {
+>         .fb_create =3D fb_create_mock,
+>  };
+>
+> -static struct drm_device mock_drm_device =3D {
+> -       .mode_config =3D {
+> +static int drm_framebuffer_test_init(struct kunit *test)
+> +{
+> +       struct drm_device *mock;
+> +
+> +       mock =3D kunit_kzalloc(test, sizeof(*mock), GFP_KERNEL);
+> +       KUNIT_ASSERT_NOT_ERR_OR_NULL(test, mock);
+> +
+> +       mock->mode_config =3D (struct drm_mode_config) {
+>                 .min_width =3D MIN_WIDTH,
+>                 .max_width =3D MAX_WIDTH,
+>                 .min_height =3D MIN_HEIGHT,
+>                 .max_height =3D MAX_HEIGHT,
+>                 .funcs =3D &mock_config_funcs,
+> -       },
+> -};
+> +       };
+>
+> -static int execute_drm_mode_fb_cmd2(struct drm_mode_fb_cmd2 *r)
+> +       test->priv =3D mock;
+> +       return 0;
+> +}
+> +
+> +static void test_drm_framebuffer_create(struct kunit *test)
+>  {
+> +       const struct drm_framebuffer_test *params =3D test->param_value;
+> +       struct drm_device *mock =3D test->priv;
+>         int buffer_created =3D 0;
+>
+> -       mock_drm_device.dev_private =3D &buffer_created;
+> -       drm_internal_framebuffer_create(&mock_drm_device, r, NULL);
+> -       return buffer_created;
+> +       mock->dev_private =3D &buffer_created;
+> +       drm_internal_framebuffer_create(mock, &params->cmd, NULL);
+> +       KUNIT_EXPECT_EQ(test, params->buffer_created, buffer_created);
+>  }
+>
+> -static void igt_check_drm_framebuffer_create(struct kunit *test)
+> +static void drm_framebuffer_test_to_desc(const struct drm_framebuffer_te=
+st *t, char *desc)
+>  {
+> -       int i =3D 0;
+> -
+> -       for (i =3D 0; i < ARRAY_SIZE(createbuffer_tests); i++) {
+> -               KUNIT_EXPECT_EQ_MSG(test, createbuffer_tests[i].buffer_cr=
+eated,
+> -                                   execute_drm_mode_fb_cmd2(&createbuffe=
+r_tests[i].cmd),
+> -                    "Test %d: \"%s\" failed\n", i, createbuffer_tests[i]=
+.name);
+> -       }
+> +       strcpy(desc, t->name);
+>  }
+>
+> +KUNIT_ARRAY_PARAM(drm_framebuffer_create, drm_framebuffer_create_cases,
+> +                 drm_framebuffer_test_to_desc);
+> +
+>  static struct kunit_case drm_framebuffer_tests[] =3D {
+> -       KUNIT_CASE(igt_check_drm_framebuffer_create),
+> +       KUNIT_CASE_PARAM(test_drm_framebuffer_create, drm_framebuffer_cre=
+ate_gen_params),
+>         { }
+>  };
+>
+>  static struct kunit_suite drm_framebuffer_test_suite =3D {
+>         .name =3D "drm_framebuffer",
+> +       .init =3D drm_framebuffer_test_init,
+>         .test_cases =3D drm_framebuffer_tests,
+>  };
+>
+> --
+> 2.37.2
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "KUnit Development" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to kunit-dev+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgi=
+d/kunit-dev/20220901124210.591994-1-mairacanal%40riseup.net.
