@@ -2,254 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC38FC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:18:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 380B2C54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:21:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237506AbiIBOS1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:18:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57234 "EHLO
+        id S235577AbiIBOVF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:21:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238066AbiIBOSD (ORCPT
+        with ESMTP id S236221AbiIBOUq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:18:03 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A223715F8AE
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:43:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662126228; x=1693662228;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=wbf36R8tPwDs/lN78MtL72HqGQOsM+BzFflTRh5/SCE=;
-  b=SovRfZchk8ZNmqfTFJ0BMvXvq55Zi6fUlwq+TUB3wXW0wshens7jLcna
-   gZIH7jjPoTrVttHY2GjdLR2my+eZ/uFQnLM/gSIrjo7Z+U8AfQptsu65f
-   VZc/RdLGZo1+TyGiP6EDfC43TuUDEjoMbu8OO/k/f1uYvW1cLI5RGQPE/
-   5TSLVJ5WDBCAgV7hv4cPfTDmcvR1cGz44ufyegCE2GHqDEZkmoAW+l3al
-   tfio9+KgxvRRitQP3Y7b/QCJA5VvN2YVh7jhzpREToolTAS8iI/JInRWg
-   TQe8KD+pzJob0yZuO+m+2U4bLfoB8F9fjrBlRhhmIRc528Oppkb9i0F98
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="297264235"
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="297264235"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 06:23:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="674352589"
-Received: from crojewsk-ctrl.igk.intel.com ([10.102.9.28])
-  by fmsmga008.fm.intel.com with ESMTP; 02 Sep 2022 06:23:17 -0700
-From:   Cezary Rojewski <cezary.rojewski@intel.com>
-To:     alsa-devel@alsa-project.org, broonie@kernel.org
-Cc:     tiwai@suse.com, perex@perex.cz,
-        amadeuszx.slawinski@linux.intel.com,
-        pierre-louis.bossart@linux.intel.com, hdegoede@redhat.com,
-        lgirdwood@gmail.com, kai.vehmanen@linux.intel.com,
-        peter.ujfalusi@linux.intel.com, ranjani.sridharan@linux.intel.com,
-        yung-chuan.liao@linux.intel.com, willy@infradead.org,
-        linux-kernel@vger.kernel.org, andy@kernel.org,
-        intel-poland@eclists.intel.com, andy.shevchenko@gmail.com,
-        Cezary Rojewski <cezary.rojewski@intel.com>
-Subject: [PATCH v5 2/2] ASoC: SOF: Remove strsplit_u32() and tokenize_input()
-Date:   Fri,  2 Sep 2022 15:32:56 +0200
-Message-Id: <20220902133256.789165-3-cezary.rojewski@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220902133256.789165-1-cezary.rojewski@intel.com>
-References: <20220902133256.789165-1-cezary.rojewski@intel.com>
+        Fri, 2 Sep 2022 10:20:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C5A5F5492;
+        Fri,  2 Sep 2022 06:46:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3BFFCB82932;
+        Fri,  2 Sep 2022 13:41:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 493B8C433D7;
+        Fri,  2 Sep 2022 13:41:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662126077;
+        bh=mMsRtna7E2z9yafUmLhJ8p87GPEczi5fo98BTKfwIco=;
+        h=From:To:Cc:Subject:Date:From;
+        b=eLVzjJONXoo8OGfXvkJO/fJjsYzzdITadgxk8ikrhygJH9eKtYJEI+/MsTcCQWDip
+         haeSkZgAQ23q1vlNRBH3sKO42ogw3EOpeQ+xsDBdFWomx+DGGtB394XZPX68InjmhV
+         SVOKCWRaFxne7aZS2tXbZrgqBJB0obRmSqRB7G1U=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     mw@semihalf.com, linux@armlinux.org.uk
+Cc:     linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        stable <stable@kernel.org>
+Subject: [PATCH net] net: mvpp2: debugfs: fix memory leak when using debugfs_lookup()
+Date:   Fri,  2 Sep 2022 15:41:11 +0200
+Message-Id: <20220902134111.280657-1-gregkh@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1587; i=gregkh@linuxfoundation.org; h=from:subject; bh=mMsRtna7E2z9yafUmLhJ8p87GPEczi5fo98BTKfwIco=; b=owGbwMvMwCRo6H6F97bub03G02pJDMlC7N+1l744lmtYcNF3dt+enDnioWdZXk+e/qah/BNngY1c rubHjlgWBkEmBlkxRZYv23iO7q84pOhlaHsaZg4rE8gQBi5OAZjIbSaG+Vmftpw5W8G02yRh3RL2D4 Xs/yetrGSYp8bLes56zqsNN2dn8Vwuz+oOEDaSAAA=
+X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make use of global integer-array parsing helper instead of the internal
-one as both serve same purpose. With that, both strsplit_u32() and
-tokenize_input() become unused so remove them.
+When calling debugfs_lookup() the result must have dput() called on it,
+otherwise the memory will leak over time.  Fix this up to be much
+simpler logic and only create the root debugfs directory once when the
+driver is first accessed.  That resolves the memory leak and makes
+things more obvious as to what the intent is.
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Cezary Rojewski <cezary.rojewski@intel.com>
+Cc: Marcin Wojtas <mw@semihalf.com>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org
+Cc: stable <stable@kernel.org>
+Fixes: 21da57a23125 ("net: mvpp2: add a debugfs interface for the Header Parser")
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/sof/sof-client-probes.c | 104 ++++++------------------------
- 1 file changed, 18 insertions(+), 86 deletions(-)
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/sof/sof-client-probes.c b/sound/soc/sof/sof-client-probes.c
-index eb246b823461..aad7fdc665d7 100644
---- a/sound/soc/sof/sof-client-probes.c
-+++ b/sound/soc/sof/sof-client-probes.c
-@@ -12,6 +12,8 @@
- #include <linux/debugfs.h>
- #include <linux/module.h>
- #include <linux/pm_runtime.h>
-+#include <linux/string_helpers.h>
-+
- #include <sound/soc.h>
- #include <sound/sof/header.h>
- #include "sof-client.h"
-@@ -410,79 +412,6 @@ static const struct snd_compress_ops sof_probes_compressed_ops = {
- 	.copy = sof_probes_compr_copy,
- };
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
+index 4a3baa7e0142..0eec05d905eb 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
+@@ -700,10 +700,10 @@ void mvpp2_dbgfs_cleanup(struct mvpp2 *priv)
  
--/**
-- * strsplit_u32 - Split string into sequence of u32 tokens
-- * @buf:	String to split into tokens.
-- * @delim:	String containing delimiter characters.
-- * @tkns:	Returned u32 sequence pointer.
-- * @num_tkns:	Returned number of tokens obtained.
-- */
--static int strsplit_u32(char *buf, const char *delim, u32 **tkns, size_t *num_tkns)
--{
--	char *s;
--	u32 *data, *tmp;
--	size_t count = 0;
--	size_t cap = 32;
--	int ret = 0;
--
--	*tkns = NULL;
--	*num_tkns = 0;
--	data = kcalloc(cap, sizeof(*data), GFP_KERNEL);
--	if (!data)
--		return -ENOMEM;
--
--	while ((s = strsep(&buf, delim)) != NULL) {
--		ret = kstrtouint(s, 0, data + count);
--		if (ret)
--			goto exit;
--		if (++count >= cap) {
--			cap *= 2;
--			tmp = krealloc(data, cap * sizeof(*data), GFP_KERNEL);
--			if (!tmp) {
--				ret = -ENOMEM;
--				goto exit;
--			}
--			data = tmp;
--		}
--	}
--
--	if (!count)
--		goto exit;
--	*tkns = kmemdup(data, count * sizeof(*data), GFP_KERNEL);
--	if (!(*tkns)) {
--		ret = -ENOMEM;
--		goto exit;
--	}
--	*num_tkns = count;
--
--exit:
--	kfree(data);
--	return ret;
--}
--
--static int tokenize_input(const char __user *from, size_t count,
--			  loff_t *ppos, u32 **tkns, size_t *num_tkns)
--{
--	char *buf;
--	int ret;
--
--	buf = kmalloc(count + 1, GFP_KERNEL);
--	if (!buf)
--		return -ENOMEM;
--
--	ret = simple_write_to_buffer(buf, count, ppos, from, count);
--	if (ret != count) {
--		ret = ret >= 0 ? -EIO : ret;
--		goto exit;
--	}
--
--	buf[count] = '\0';
--	ret = strsplit_u32(buf, ",", tkns, num_tkns);
--exit:
--	kfree(buf);
--	return ret;
--}
--
- static ssize_t sof_probes_dfs_points_read(struct file *file, char __user *to,
- 					  size_t count, loff_t *ppos)
+ void mvpp2_dbgfs_init(struct mvpp2 *priv, const char *name)
  {
-@@ -548,8 +477,8 @@ sof_probes_dfs_points_write(struct file *file, const char __user *from,
- 	struct sof_probes_priv *priv = cdev->data;
- 	struct device *dev = &cdev->auxdev.dev;
- 	struct sof_probe_point_desc *desc;
--	size_t num_tkns, bytes;
--	u32 *tkns;
-+	u32 num_elems, *array;
-+	size_t bytes;
- 	int ret, err;
+-	struct dentry *mvpp2_dir, *mvpp2_root;
++	static struct dentry *mvpp2_root;
++	struct dentry *mvpp2_dir;
+ 	int ret, i;
  
- 	if (priv->extractor_stream_tag == SOF_PROBES_INVALID_NODE_ID) {
-@@ -557,16 +486,18 @@ sof_probes_dfs_points_write(struct file *file, const char __user *from,
- 		return -ENOENT;
- 	}
- 
--	ret = tokenize_input(from, count, ppos, &tkns, &num_tkns);
-+	ret = parse_int_array_user(from, count, (int **)&array);
- 	if (ret < 0)
- 		return ret;
--	bytes = sizeof(*tkns) * num_tkns;
--	if (!num_tkns || (bytes % sizeof(*desc))) {
-+
-+	num_elems = *array;
-+	bytes = sizeof(*array) * num_elems;
-+	if (!num_elems || (bytes % sizeof(*desc))) {
- 		ret = -EINVAL;
- 		goto exit;
- 	}
- 
--	desc = (struct sof_probe_point_desc *)tkns;
-+	desc = (struct sof_probe_point_desc *)&array[1];
- 
- 	ret = pm_runtime_resume_and_get(dev);
- 	if (ret < 0 && ret != -EACCES) {
-@@ -583,7 +514,7 @@ sof_probes_dfs_points_write(struct file *file, const char __user *from,
- 	if (err < 0)
- 		dev_err_ratelimited(dev, "debugfs write failed to idle %d\n", err);
- exit:
--	kfree(tkns);
-+	kfree(array);
- 	return ret;
- }
- 
-@@ -603,8 +534,7 @@ sof_probes_dfs_points_remove_write(struct file *file, const char __user *from,
- 	struct sof_client_dev *cdev = file->private_data;
- 	struct sof_probes_priv *priv = cdev->data;
- 	struct device *dev = &cdev->auxdev.dev;
--	size_t num_tkns;
--	u32 *tkns;
-+	u32 num_elems, *array;
- 	int ret, err;
- 
- 	if (priv->extractor_stream_tag == SOF_PROBES_INVALID_NODE_ID) {
-@@ -612,10 +542,12 @@ sof_probes_dfs_points_remove_write(struct file *file, const char __user *from,
- 		return -ENOENT;
- 	}
- 
--	ret = tokenize_input(from, count, ppos, &tkns, &num_tkns);
-+	ret = parse_int_array_user(from, count, (int **)&array);
- 	if (ret < 0)
- 		return ret;
--	if (!num_tkns) {
-+
-+	num_elems = *array;
-+	if (!num_elems) {
- 		ret = -EINVAL;
- 		goto exit;
- 	}
-@@ -626,7 +558,7 @@ sof_probes_dfs_points_remove_write(struct file *file, const char __user *from,
- 		goto exit;
- 	}
- 
--	ret = sof_probes_points_remove(cdev, tkns, num_tkns);
-+	ret = sof_probes_points_remove(cdev, &array[1], num_elems);
- 	if (!ret)
- 		ret = count;
- 
-@@ -635,7 +567,7 @@ sof_probes_dfs_points_remove_write(struct file *file, const char __user *from,
- 	if (err < 0)
- 		dev_err_ratelimited(dev, "debugfs write failed to idle %d\n", err);
- exit:
--	kfree(tkns);
-+	kfree(array);
- 	return ret;
- }
+-	mvpp2_root = debugfs_lookup(MVPP2_DRIVER_NAME, NULL);
+ 	if (!mvpp2_root)
+ 		mvpp2_root = debugfs_create_dir(MVPP2_DRIVER_NAME, NULL);
  
 -- 
-2.25.1
+2.37.3
 
