@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75189C54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:50:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CB70C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:50:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237801AbiIBMuu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:50:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47536 "EHLO
+        id S237807AbiIBMu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237602AbiIBMtt (ORCPT
+        with ESMTP id S237603AbiIBMtt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 08:49:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 078D1E39A5;
-        Fri,  2 Sep 2022 05:36:00 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B43B8F47FF;
+        Fri,  2 Sep 2022 05:36:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CBB3AB81CCF;
-        Fri,  2 Sep 2022 12:33:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D95E0C433D7;
-        Fri,  2 Sep 2022 12:33:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 26896620DF;
+        Fri,  2 Sep 2022 12:36:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B65BC433D7;
+        Fri,  2 Sep 2022 12:36:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122024;
-        bh=NCkrkN/a7jHje8w1I7Ub415KcgGU7rYcKhygD8WxETo=;
+        s=korg; t=1662122170;
+        bh=FwyuntaLgn+eoGAnS9FQ02m+oQ3R1jprZuuwFj9k02A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BMV6+TkdDbiuoipI13S+kWVn26Zjf1Hhp+Tc4qi8fmrr1CAKmJajdAl72A1NNrJ1I
-         bonxs3Kr/axr4kI9mGURpYKeFXuPDiz1v3Drpc/WMQhKUpil+IcwxDjpRBFCEC6DdU
-         LmWbEcMIeBawP/nO2Iv9o3edYTtA41Tdvt4ZkvyA=
+        b=O/WfIfYt19DOuUciIHx7QGhfiXyB4Ofy4eoI9oZNeFmNzVwKh8uWE7x+b25GhFQhZ
+         0T+fA4ewYKsGw3zwL8p990lB6Abi4heg+cQjcGwyo7omRZQTzvzWyaT8ohAO6sgpmx
+         HDeGbEhBLyfXLMalD/5tbl1Iw9XBJmdjLI6t2kkM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Wen Gu <guwen@linux.alibaba.com>,
-        Hawkins Jiawei <yin31149@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        syzbot+5f26f85569bd179c18ce@syzkaller.appspotmail.com
-Subject: [PATCH 5.15 31/73] net: fix refcount bug in sk_psock_get (2)
-Date:   Fri,  2 Sep 2022 14:18:55 +0200
-Message-Id: <20220902121405.463164532@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexandre Vicenzi <alexandre.vicenzi@suse.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 35/72] rtla: Fix tracer name
+Date:   Fri,  2 Sep 2022 14:19:11 +0200
+Message-Id: <20220902121405.945249417@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
-References: <20220902121404.435662285@linuxfoundation.org>
+In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
+References: <20220902121404.772492078@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,192 +50,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hawkins Jiawei <yin31149@gmail.com>
+From: Alexandre Vicenzi <alexandre.vicenzi@suse.com>
 
-commit 2a0133723f9ebeb751cfce19f74ec07e108bef1f upstream.
+[ Upstream commit f1432cd24c240cedf78c0d026631e3b10052c8e1 ]
 
-Syzkaller reports refcount bug as follows:
-------------[ cut here ]------------
-refcount_t: saturated; leaking memory.
-WARNING: CPU: 1 PID: 3605 at lib/refcount.c:19 refcount_warn_saturate+0xf4/0x1e0 lib/refcount.c:19
-Modules linked in:
-CPU: 1 PID: 3605 Comm: syz-executor208 Not tainted 5.18.0-syzkaller-03023-g7e062cda7d90 #0
- <TASK>
- __refcount_add_not_zero include/linux/refcount.h:163 [inline]
- __refcount_inc_not_zero include/linux/refcount.h:227 [inline]
- refcount_inc_not_zero include/linux/refcount.h:245 [inline]
- sk_psock_get+0x3bc/0x410 include/linux/skmsg.h:439
- tls_data_ready+0x6d/0x1b0 net/tls/tls_sw.c:2091
- tcp_data_ready+0x106/0x520 net/ipv4/tcp_input.c:4983
- tcp_data_queue+0x25f2/0x4c90 net/ipv4/tcp_input.c:5057
- tcp_rcv_state_process+0x1774/0x4e80 net/ipv4/tcp_input.c:6659
- tcp_v4_do_rcv+0x339/0x980 net/ipv4/tcp_ipv4.c:1682
- sk_backlog_rcv include/net/sock.h:1061 [inline]
- __release_sock+0x134/0x3b0 net/core/sock.c:2849
- release_sock+0x54/0x1b0 net/core/sock.c:3404
- inet_shutdown+0x1e0/0x430 net/ipv4/af_inet.c:909
- __sys_shutdown_sock net/socket.c:2331 [inline]
- __sys_shutdown_sock net/socket.c:2325 [inline]
- __sys_shutdown+0xf1/0x1b0 net/socket.c:2343
- __do_sys_shutdown net/socket.c:2351 [inline]
- __se_sys_shutdown net/socket.c:2349 [inline]
- __x64_sys_shutdown+0x50/0x70 net/socket.c:2349
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
- </TASK>
+The correct tracer name is timerlat and not timelat.
 
-During SMC fallback process in connect syscall, kernel will
-replaces TCP with SMC. In order to forward wakeup
-smc socket waitqueue after fallback, kernel will sets
-clcsk->sk_user_data to origin smc socket in
-smc_fback_replace_callbacks().
+Link: https://lore.kernel.org/linux-trace-devel/20220808180343.22262-1-alexandre.vicenzi@suse.com
 
-Later, in shutdown syscall, kernel will calls
-sk_psock_get(), which treats the clcsk->sk_user_data
-as psock type, triggering the refcnt warning.
-
-So, the root cause is that smc and psock, both will use
-sk_user_data field. So they will mismatch this field
-easily.
-
-This patch solves it by using another bit(defined as
-SK_USER_DATA_PSOCK) in PTRMASK, to mark whether
-sk_user_data points to a psock object or not.
-This patch depends on a PTRMASK introduced in commit f1ff5ce2cd5e
-("net, sk_msg: Clear sk_user_data pointer on clone if tagged").
-
-For there will possibly be more flags in the sk_user_data field,
-this patch also refactor sk_user_data flags code to be more generic
-to improve its maintainability.
-
-Reported-and-tested-by: syzbot+5f26f85569bd179c18ce@syzkaller.appspotmail.com
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
-Acked-by: Wen Gu <guwen@linux.alibaba.com>
-Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
-Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Alexandre Vicenzi <alexandre.vicenzi@suse.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/skmsg.h |    3 +-
- include/net/sock.h    |   68 +++++++++++++++++++++++++++++++++++---------------
- net/core/skmsg.c      |    4 ++
- 3 files changed, 53 insertions(+), 22 deletions(-)
+ Documentation/tools/rtla/rtla-timerlat-hist.rst | 2 +-
+ tools/tracing/rtla/src/timerlat_hist.c          | 2 +-
+ tools/tracing/rtla/src/timerlat_top.c           | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
---- a/include/linux/skmsg.h
-+++ b/include/linux/skmsg.h
-@@ -283,7 +283,8 @@ static inline void sk_msg_sg_copy_clear(
+diff --git a/Documentation/tools/rtla/rtla-timerlat-hist.rst b/Documentation/tools/rtla/rtla-timerlat-hist.rst
+index e12eae1f33019..6bf7f0ca45564 100644
+--- a/Documentation/tools/rtla/rtla-timerlat-hist.rst
++++ b/Documentation/tools/rtla/rtla-timerlat-hist.rst
+@@ -33,7 +33,7 @@ EXAMPLE
+ =======
+ In the example below, **rtla timerlat hist** is set to run for *10* minutes,
+ in the cpus *0-4*, *skipping zero* only lines. Moreover, **rtla timerlat
+-hist** will change the priority of the *timelat* threads to run under
++hist** will change the priority of the *timerlat* threads to run under
+ *SCHED_DEADLINE* priority, with a *10us* runtime every *1ms* period. The
+ *1ms* period is also passed to the *timerlat* tracer::
  
- static inline struct sk_psock *sk_psock(const struct sock *sk)
- {
--	return rcu_dereference_sk_user_data(sk);
-+	return __rcu_dereference_sk_user_data_with_flags(sk,
-+							 SK_USER_DATA_PSOCK);
- }
+diff --git a/tools/tracing/rtla/src/timerlat_hist.c b/tools/tracing/rtla/src/timerlat_hist.c
+index f3ec628f5e519..4b48af8a83096 100644
+--- a/tools/tracing/rtla/src/timerlat_hist.c
++++ b/tools/tracing/rtla/src/timerlat_hist.c
+@@ -892,7 +892,7 @@ int timerlat_hist_main(int argc, char *argv[])
+ 	return_value = 0;
  
- static inline void sk_psock_set_state(struct sk_psock *psock,
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -543,14 +543,26 @@ enum sk_pacing {
- 	SK_PACING_FQ		= 2,
- };
+ 	if (trace_is_off(&tool->trace, &record->trace)) {
+-		printf("rtla timelat hit stop tracing\n");
++		printf("rtla timerlat hit stop tracing\n");
+ 		if (params->trace_output) {
+ 			printf("  Saving trace to %s\n", params->trace_output);
+ 			save_trace_to_file(record->trace.inst, params->trace_output);
+diff --git a/tools/tracing/rtla/src/timerlat_top.c b/tools/tracing/rtla/src/timerlat_top.c
+index 35452a1d45e9f..3342719352222 100644
+--- a/tools/tracing/rtla/src/timerlat_top.c
++++ b/tools/tracing/rtla/src/timerlat_top.c
+@@ -687,7 +687,7 @@ int timerlat_top_main(int argc, char *argv[])
+ 	return_value = 0;
  
--/* Pointer stored in sk_user_data might not be suitable for copying
-- * when cloning the socket. For instance, it can point to a reference
-- * counted object. sk_user_data bottom bit is set if pointer must not
-- * be copied.
-+/* flag bits in sk_user_data
-+ *
-+ * - SK_USER_DATA_NOCOPY:      Pointer stored in sk_user_data might
-+ *   not be suitable for copying when cloning the socket. For instance,
-+ *   it can point to a reference counted object. sk_user_data bottom
-+ *   bit is set if pointer must not be copied.
-+ *
-+ * - SK_USER_DATA_BPF:         Mark whether sk_user_data field is
-+ *   managed/owned by a BPF reuseport array. This bit should be set
-+ *   when sk_user_data's sk is added to the bpf's reuseport_array.
-+ *
-+ * - SK_USER_DATA_PSOCK:       Mark whether pointer stored in
-+ *   sk_user_data points to psock type. This bit should be set
-+ *   when sk_user_data is assigned to a psock object.
-  */
- #define SK_USER_DATA_NOCOPY	1UL
--#define SK_USER_DATA_BPF	2UL	/* Managed by BPF */
--#define SK_USER_DATA_PTRMASK	~(SK_USER_DATA_NOCOPY | SK_USER_DATA_BPF)
-+#define SK_USER_DATA_BPF	2UL
-+#define SK_USER_DATA_PSOCK	4UL
-+#define SK_USER_DATA_PTRMASK	~(SK_USER_DATA_NOCOPY | SK_USER_DATA_BPF |\
-+				  SK_USER_DATA_PSOCK)
- 
- /**
-  * sk_user_data_is_nocopy - Test if sk_user_data pointer must not be copied
-@@ -563,24 +575,40 @@ static inline bool sk_user_data_is_nocop
- 
- #define __sk_user_data(sk) ((*((void __rcu **)&(sk)->sk_user_data)))
- 
-+/**
-+ * __rcu_dereference_sk_user_data_with_flags - return the pointer
-+ * only if argument flags all has been set in sk_user_data. Otherwise
-+ * return NULL
-+ *
-+ * @sk: socket
-+ * @flags: flag bits
-+ */
-+static inline void *
-+__rcu_dereference_sk_user_data_with_flags(const struct sock *sk,
-+					  uintptr_t flags)
-+{
-+	uintptr_t sk_user_data = (uintptr_t)rcu_dereference(__sk_user_data(sk));
-+
-+	WARN_ON_ONCE(flags & SK_USER_DATA_PTRMASK);
-+
-+	if ((sk_user_data & flags) == flags)
-+		return (void *)(sk_user_data & SK_USER_DATA_PTRMASK);
-+	return NULL;
-+}
-+
- #define rcu_dereference_sk_user_data(sk)				\
-+	__rcu_dereference_sk_user_data_with_flags(sk, 0)
-+#define __rcu_assign_sk_user_data_with_flags(sk, ptr, flags)		\
- ({									\
--	void *__tmp = rcu_dereference(__sk_user_data((sk)));		\
--	(void *)((uintptr_t)__tmp & SK_USER_DATA_PTRMASK);		\
--})
--#define rcu_assign_sk_user_data(sk, ptr)				\
--({									\
--	uintptr_t __tmp = (uintptr_t)(ptr);				\
--	WARN_ON_ONCE(__tmp & ~SK_USER_DATA_PTRMASK);			\
--	rcu_assign_pointer(__sk_user_data((sk)), __tmp);		\
--})
--#define rcu_assign_sk_user_data_nocopy(sk, ptr)				\
--({									\
--	uintptr_t __tmp = (uintptr_t)(ptr);				\
--	WARN_ON_ONCE(__tmp & ~SK_USER_DATA_PTRMASK);			\
-+	uintptr_t __tmp1 = (uintptr_t)(ptr),				\
-+		  __tmp2 = (uintptr_t)(flags);				\
-+	WARN_ON_ONCE(__tmp1 & ~SK_USER_DATA_PTRMASK);			\
-+	WARN_ON_ONCE(__tmp2 & SK_USER_DATA_PTRMASK);			\
- 	rcu_assign_pointer(__sk_user_data((sk)),			\
--			   __tmp | SK_USER_DATA_NOCOPY);		\
-+			   __tmp1 | __tmp2);				\
- })
-+#define rcu_assign_sk_user_data(sk, ptr)				\
-+	__rcu_assign_sk_user_data_with_flags(sk, ptr, 0)
- 
- /*
-  * SK_CAN_REUSE and SK_NO_REUSE on a socket mean that the socket is OK
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -731,7 +731,9 @@ struct sk_psock *sk_psock_init(struct so
- 	sk_psock_set_state(psock, SK_PSOCK_TX_ENABLED);
- 	refcount_set(&psock->refcnt, 1);
- 
--	rcu_assign_sk_user_data_nocopy(sk, psock);
-+	__rcu_assign_sk_user_data_with_flags(sk, psock,
-+					     SK_USER_DATA_NOCOPY |
-+					     SK_USER_DATA_PSOCK);
- 	sock_hold(sk);
- 
- out:
+ 	if (trace_is_off(&top->trace, &record->trace)) {
+-		printf("rtla timelat hit stop tracing\n");
++		printf("rtla timerlat hit stop tracing\n");
+ 		if (params->trace_output) {
+ 			printf("  Saving trace to %s\n", params->trace_output);
+ 			save_trace_to_file(record->trace.inst, params->trace_output);
+-- 
+2.35.1
+
 
 
