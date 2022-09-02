@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83AE0C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:24:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38768ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:24:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236172AbiIBMX6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:23:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49228 "EHLO
+        id S235994AbiIBMYD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:24:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236237AbiIBMXG (ORCPT
+        with ESMTP id S236170AbiIBMX2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:23:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB69D87E0;
-        Fri,  2 Sep 2022 05:21:54 -0700 (PDT)
+        Fri, 2 Sep 2022 08:23:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD7FCD7D1C;
+        Fri,  2 Sep 2022 05:22:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D0E00620ED;
-        Fri,  2 Sep 2022 12:21:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEBF2C433C1;
-        Fri,  2 Sep 2022 12:21:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 93556B82A90;
+        Fri,  2 Sep 2022 12:21:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06C78C433D6;
+        Fri,  2 Sep 2022 12:21:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121300;
-        bh=X2kyHRGmPFA4IG7DMX7lJ498RS9kJ6XcbHqpncdeLrk=;
+        s=korg; t=1662121318;
+        bh=Bi0ABI74ESUXiqnoSRA0ryB3HjbA2c0pqm592zv7Yr8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1Aw3XBgfwTPJpXaX3MBwXEOlqqqik8ZfAybFJx2CO6JcTzqE8mBpsdU41OWEgmUo6
-         z0251/s3SxmvohcMgM/rmuRNPOB/HbS/6RWClecfx3g8QcywPyS1MYK706luHrFyFJ
-         q0rliq4MXp6fCQbMMvddrfSbZZ6ExkyyZVgQBK/c=
+        b=lzixKoH1bMHnIBDuJH6I5F9le8MIPnL8ubtZfiI7GrVAy9lx4NaB4eSYIxdGVEljF
+         Ak8GSZ0lRYulUMMcCNNIrJZntbe8FWjCbwDQDi5dnSqd5B/XUthP8ZL8eIlL2RNPzq
+         JP2wHN9WD7NU0F7QgDONBzhX01DjLpLMLR0MJOYI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Letu Ren <fantasquex@gmail.com>, Helge Deller <deller@gmx.de>
-Subject: [PATCH 4.9 25/31] fbdev: fb_pm2fb: Avoid potential divide by zero error
-Date:   Fri,  2 Sep 2022 14:18:51 +0200
-Message-Id: <20220902121357.673526487@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 4.14 03/42] pinctrl: amd: Dont save/restore interrupt status and wake status bits
+Date:   Fri,  2 Sep 2022 14:18:27 +0200
+Message-Id: <20220902121358.902125369@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121356.732130937@linuxfoundation.org>
-References: <20220902121356.732130937@linuxfoundation.org>
+In-Reply-To: <20220902121358.773776406@linuxfoundation.org>
+References: <20220902121358.773776406@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,47 +50,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Letu Ren <fantasquex@gmail.com>
+From: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
 
-commit 19f953e7435644b81332dd632ba1b2d80b1e37af upstream.
+commit b8c824a869f220c6b46df724f85794349bafbf23 upstream.
 
-In `do_fb_ioctl()` of fbmem.c, if cmd is FBIOPUT_VSCREENINFO, var will be
-copied from user, then go through `fb_set_var()` and
-`info->fbops->fb_check_var()` which could may be `pm2fb_check_var()`.
-Along the path, `var->pixclock` won't be modified. This function checks
-whether reciprocal of `var->pixclock` is too high. If `var->pixclock` is
-zero, there will be a divide by zero error. So, it is necessary to check
-whether denominator is zero to avoid crash. As this bug is found by
-Syzkaller, logs are listed below.
+Saving/restoring interrupt and wake status bits across suspend can
+cause the suspend to fail if an IRQ is serviced across the
+suspend cycle.
 
-divide error in pm2fb_check_var
-Call Trace:
- <TASK>
- fb_set_var+0x367/0xeb0 drivers/video/fbdev/core/fbmem.c:1015
- do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1110
- fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1189
-
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Letu Ren <fantasquex@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
+Fixes: 79d2c8bede2c ("pinctrl/amd: save pin registers over suspend/resume")
+Link: https://lore.kernel.org/r/20220613064127.220416-3-Basavaraj.Natikar@amd.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/pm2fb.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/pinctrl/pinctrl-amd.c |   11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
---- a/drivers/video/fbdev/pm2fb.c
-+++ b/drivers/video/fbdev/pm2fb.c
-@@ -614,6 +614,11 @@ static int pm2fb_check_var(struct fb_var
- 		return -EINVAL;
+--- a/drivers/pinctrl/pinctrl-amd.c
++++ b/drivers/pinctrl/pinctrl-amd.c
+@@ -753,6 +753,7 @@ int amd_gpio_suspend(struct device *dev)
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct amd_gpio *gpio_dev = platform_get_drvdata(pdev);
+ 	struct pinctrl_desc *desc = gpio_dev->pctrl->desc;
++	unsigned long flags;
+ 	int i;
+ 
+ 	for (i = 0; i < desc->npins; i++) {
+@@ -761,7 +762,9 @@ int amd_gpio_suspend(struct device *dev)
+ 		if (!amd_gpio_should_save(gpio_dev, pin))
+ 			continue;
+ 
+-		gpio_dev->saved_regs[i] = readl(gpio_dev->base + pin*4);
++		raw_spin_lock_irqsave(&gpio_dev->lock, flags);
++		gpio_dev->saved_regs[i] = readl(gpio_dev->base + pin * 4) & ~PIN_IRQ_PENDING;
++		raw_spin_unlock_irqrestore(&gpio_dev->lock, flags);
  	}
  
-+	if (!var->pixclock) {
-+		DPRINTK("pixclock is zero\n");
-+		return -EINVAL;
-+	}
-+
- 	if (PICOS2KHZ(var->pixclock) > PM2_MAX_PIXCLOCK) {
- 		DPRINTK("pixclock too high (%ldKHz)\n",
- 			PICOS2KHZ(var->pixclock));
+ 	return 0;
+@@ -772,6 +775,7 @@ int amd_gpio_resume(struct device *dev)
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct amd_gpio *gpio_dev = platform_get_drvdata(pdev);
+ 	struct pinctrl_desc *desc = gpio_dev->pctrl->desc;
++	unsigned long flags;
+ 	int i;
+ 
+ 	for (i = 0; i < desc->npins; i++) {
+@@ -780,7 +784,10 @@ int amd_gpio_resume(struct device *dev)
+ 		if (!amd_gpio_should_save(gpio_dev, pin))
+ 			continue;
+ 
+-		writel(gpio_dev->saved_regs[i], gpio_dev->base + pin*4);
++		raw_spin_lock_irqsave(&gpio_dev->lock, flags);
++		gpio_dev->saved_regs[i] |= readl(gpio_dev->base + pin * 4) & PIN_IRQ_PENDING;
++		writel(gpio_dev->saved_regs[i], gpio_dev->base + pin * 4);
++		raw_spin_unlock_irqrestore(&gpio_dev->lock, flags);
+ 	}
+ 
+ 	return 0;
 
 
