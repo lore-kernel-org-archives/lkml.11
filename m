@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 355D1C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 02:19:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86D7AECAAD3
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 02:19:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235313AbiIBCTL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 22:19:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59460 "EHLO
+        id S235270AbiIBCTP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 22:19:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232221AbiIBCSQ (ORCPT
+        with ESMTP id S234971AbiIBCSR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 22:18:16 -0400
+        Thu, 1 Sep 2022 22:18:17 -0400
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5312AA3EA;
-        Thu,  1 Sep 2022 19:18:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6C966CF59;
+        Thu,  1 Sep 2022 19:18:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662085095; x=1693621095;
+  t=1662085096; x=1693621096;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=gFAtLr34ysA/aw7FXhfNAobiH3GISmSUXQkg/JKR0jI=;
-  b=ja/tChZ50sfjsZ3lipW3jgOKgHA8uBK3yTv3RZNkt6EIJ/SH+HztzP0j
-   3+hw3dkS4hHrUwCuIe0MsYXU7KMaFtUrFFG1ZVUBfXOo1hDq2pgchpLAR
-   8qNAWdEGeXR5zAfyso5suwEp7dhNmMpuYf1/AkNCiASU9blBurYo7nZc8
-   6HJIjeDdj6XxPY9HUtFehtvP9b5D6kruAyGhC47ugKgt2hxwFHQogkrbN
-   ryC+N3+KtvswaXv15J1HaCIr25kp/OE4z3OcxoqUBFsflWQw4kbfbiS2K
-   EYDY3/GiPWBRPWZ2lR5F2NsiMIedv2rJN8Jrp0A4rD8FtXP+rUzfs7Awe
+  bh=SMjdWioevXsL9hkzrGjUoKydVmgpqxCcZj+UHebmQzs=;
+  b=OrtC9xShCCBdYDiFXyuEt7kZnqrxbAe1aCKBpxvHrfUyvD+sf83gbedY
+   ZuddY8/asvDRUt1ag6miIqvNOdeiGjjUGss7xek7MVGXEJps+AoPzS14/
+   4sqPAZ49FhFjoTK6i+91S/5zU9tnNbm9wLbwOGZE6Mt7u1hR5VZDUFfsZ
+   yh9C+f1r3sOPlIXwcWc0xl1LniAzwKYmp2lUywNrYW9FsuFPSmMDJpySf
+   D4tUvFvNmjVDDrCxqpT3ZI7mMBbZqzPFmWVZRF3gP3T/ewt3nY5nPVBY9
+   M5QxBMQ+I3LSZLAUBsP7JY/6bRTcPPSHNnJD2I624mkIPBMGvEqaJceBo
    w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="297157847"
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="297157851"
 X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
-   d="scan'208";a="297157847"
+   d="scan'208";a="297157851"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 19:18:15 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 19:18:16 -0700
 X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
-   d="scan'208";a="608835628"
+   d="scan'208";a="608835637"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 19:18:15 -0700
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 19:18:16 -0700
 From:   isaku.yamahata@intel.com
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
         Paolo Bonzini <pbonzini@redhat.com>,
@@ -54,9 +54,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Huacai Chen <chenhuacai@kernel.org>,
         Dave Hansen <dave.hansen@linux.intel.com>,
         Borislav Petkov <bp@alien8.de>
-Subject: [PATCH v3 10/22] KVM: Drop kvm_count_lock and instead protect kvm_usage_count with kvm_lock
-Date:   Thu,  1 Sep 2022 19:17:45 -0700
-Message-Id: <20212af31729ba27e29c3856b78975c199b5365c.1662084396.git.isaku.yamahata@intel.com>
+Subject: [PATCH v3 12/22] KVM: x86: Move TSC fixup logic to KVM arch resume callback
+Date:   Thu,  1 Sep 2022 19:17:47 -0700
+Message-Id: <52c8cafec868861963ceb182a9f5ae372b5d8204.1662084396.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1662084396.git.isaku.yamahata@intel.com>
 References: <cover.1662084396.git.isaku.yamahata@intel.com>
@@ -68,163 +68,71 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-Because kvm_count_lock unnecessarily complicates the KVM locking convention
-Drop kvm_count_lock and instead protect kvm_usage_count with kvm_lock for
-simplicity.
-
-Opportunistically add some comments on locking.
+commit 0dd6a6edb012 ("KVM: Dont mark TSC unstable due to S4 suspend") made
+use of kvm_arch_hardware_enable() callback to detect that TSC goes backward
+due to S4 suspend.  It has to check it only when resuming from S4. Not
+every time virtualization hardware ennoblement.  Move the logic to
+kvm_arch_resume() callback.
 
 Suggested-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- Documentation/virt/kvm/locking.rst | 14 +++++-------
- virt/kvm/kvm_main.c                | 34 ++++++++++++++++++++----------
- 2 files changed, 28 insertions(+), 20 deletions(-)
+ arch/x86/kvm/x86.c | 27 ++++++++++++++++-----------
+ 1 file changed, 16 insertions(+), 11 deletions(-)
 
-diff --git a/Documentation/virt/kvm/locking.rst b/Documentation/virt/kvm/locking.rst
-index 845a561629f1..8957e32aa724 100644
---- a/Documentation/virt/kvm/locking.rst
-+++ b/Documentation/virt/kvm/locking.rst
-@@ -216,15 +216,11 @@ time it will be set using the Dirty tracking mechanism described above.
- :Type:		mutex
- :Arch:		any
- :Protects:	- vm_list
--
--``kvm_count_lock``
--^^^^^^^^^^^^^^^^^^
--
--:Type:		raw_spinlock_t
--:Arch:		any
--:Protects:	- hardware virtualization enable/disable
--:Comment:	'raw' because hardware enabling/disabling must be atomic /wrt
--		migration.
-+                - kvm_usage_count
-+                - hardware virtualization enable/disable
-+:Comment:	Use cpus_read_lock() for hardware virtualization enable/disable
-+                because hardware enabling/disabling must be atomic /wrt
-+                migration.  The lock order is cpus lock => kvm_lock.
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 68def7ca224a..f5f4d8eed588 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -11835,18 +11835,30 @@ void kvm_vcpu_deliver_sipi_vector(struct kvm_vcpu *vcpu, u8 vector)
+ EXPORT_SYMBOL_GPL(kvm_vcpu_deliver_sipi_vector);
  
- ``kvm->mn_invalidate_lock``
- ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index fc55447c4dba..082d5dbc8d7f 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -100,7 +100,6 @@ EXPORT_SYMBOL_GPL(halt_poll_ns_shrink);
-  */
- 
- DEFINE_MUTEX(kvm_lock);
--static DEFINE_RAW_SPINLOCK(kvm_count_lock);
- LIST_HEAD(vm_list);
- 
- static cpumask_var_t cpus_hardware_enabled;
-@@ -4996,6 +4995,8 @@ static void hardware_enable_nolock(void *caller_name)
- 	int cpu = raw_smp_processor_id();
- 	int r;
- 
-+	WARN_ON_ONCE(preemptible());
+ int kvm_arch_hardware_enable(void)
++{
++	return static_call(kvm_x86_hardware_enable)();
++}
 +
- 	if (cpumask_test_cpu(cpu, cpus_hardware_enabled))
- 		return;
- 
-@@ -5019,7 +5020,7 @@ static int kvm_online_cpu(unsigned int cpu)
- 	if (ret)
- 		return ret;
- 
--	raw_spin_lock(&kvm_count_lock);
-+	mutex_lock(&kvm_lock);
- 	/*
- 	 * Abort the CPU online process if hardware virtualization cannot
- 	 * be enabled. Otherwise running VMs would encounter unrecoverable
-@@ -5034,7 +5035,7 @@ static int kvm_online_cpu(unsigned int cpu)
- 			ret = -EIO;
- 		}
- 	}
--	raw_spin_unlock(&kvm_count_lock);
-+	mutex_unlock(&kvm_lock);
- 	return ret;
- }
- 
-@@ -5042,6 +5043,8 @@ static void hardware_disable_nolock(void *junk)
- {
- 	int cpu = raw_smp_processor_id();
- 
-+	WARN_ON_ONCE(preemptible());
++void kvm_arch_hardware_disable(void)
++{
++	static_call(kvm_x86_hardware_disable)();
++	drop_user_return_notifiers();
++}
 +
- 	if (!cpumask_test_cpu(cpu, cpus_hardware_enabled))
- 		return;
- 	cpumask_clear_cpu(cpu, cpus_hardware_enabled);
-@@ -5050,10 +5053,10 @@ static void hardware_disable_nolock(void *junk)
- 
- static int kvm_offline_cpu(unsigned int cpu)
++void kvm_arch_resume(int usage_count)
  {
--	raw_spin_lock(&kvm_count_lock);
-+	mutex_lock(&kvm_lock);
- 	if (kvm_usage_count)
- 		hardware_disable_nolock(NULL);
--	raw_spin_unlock(&kvm_count_lock);
-+	mutex_unlock(&kvm_lock);
- 	return 0;
- }
+ 	struct kvm *kvm;
+ 	struct kvm_vcpu *vcpu;
+ 	unsigned long i;
+-	int ret;
+ 	u64 local_tsc;
+ 	u64 max_tsc = 0;
+ 	bool stable, backwards_tsc = false;
  
-@@ -5068,9 +5071,11 @@ static void hardware_disable_all_nolock(void)
+-	ret = static_call(kvm_x86_hardware_enable)();
+-	if (ret != 0)
+-		return ret;
++	if (!usage_count)
++		return;
++
++	if (kvm_arch_hardware_enable())
++		return;
  
- static void hardware_disable_all(void)
- {
--	raw_spin_lock(&kvm_count_lock);
-+	cpus_read_lock();
-+	mutex_lock(&kvm_lock);
- 	hardware_disable_all_nolock();
--	raw_spin_unlock(&kvm_count_lock);
-+	mutex_unlock(&kvm_lock);
-+	cpus_read_unlock();
- }
- 
- static int hardware_enable_all(void)
-@@ -5088,7 +5093,7 @@ static int hardware_enable_all(void)
- 	 * Disable CPU hotplug to prevent this case from happening.
- 	 */
- 	cpus_read_lock();
--	raw_spin_lock(&kvm_count_lock);
-+	mutex_lock(&kvm_lock);
- 
- 	kvm_usage_count++;
- 	if (kvm_usage_count == 1) {
-@@ -5101,7 +5106,7 @@ static int hardware_enable_all(void)
+ 	local_tsc = rdtsc();
+ 	stable = !kvm_check_tsc_unstable();
+@@ -11921,13 +11933,6 @@ int kvm_arch_hardware_enable(void)
  		}
+ 
  	}
- 
--	raw_spin_unlock(&kvm_count_lock);
-+	mutex_unlock(&kvm_lock);
- 	cpus_read_unlock();
- 
- 	return r;
-@@ -5708,8 +5713,15 @@ static void kvm_init_debug(void)
- 
- static int kvm_suspend(void)
- {
--	if (kvm_usage_count)
-+	/*
-+	 * The caller ensures that CPU hotlug is disabled by
-+	 * cpu_hotplug_disable() and other CPUs are offlined.  No need for
-+	 * locking.
-+	 */
-+	if (kvm_usage_count) {
-+		lockdep_assert_not_held(&kvm_lock);
- 		hardware_disable_nolock(NULL);
-+	}
- 	return 0;
+-	return 0;
+-}
+-
+-void kvm_arch_hardware_disable(void)
+-{
+-	static_call(kvm_x86_hardware_disable)();
+-	drop_user_return_notifiers();
  }
  
-@@ -5723,7 +5735,7 @@ static void kvm_resume(void)
- 		return; /* FIXME: disable KVM */
- 
- 	if (kvm_usage_count) {
--		lockdep_assert_not_held(&kvm_count_lock);
-+		lockdep_assert_not_held(&kvm_lock);
- 		hardware_enable_nolock((void *)__func__);
- 	}
- }
+ static inline void kvm_ops_update(struct kvm_x86_init_ops *ops)
 -- 
 2.25.1
 
