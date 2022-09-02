@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18125C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:23:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83AE0C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:24:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236299AbiIBMXz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:23:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49124 "EHLO
+        id S236172AbiIBMX6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:23:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236214AbiIBMWs (ORCPT
+        with ESMTP id S236237AbiIBMXG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:22:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1F59D7D2A;
-        Fri,  2 Sep 2022 05:21:51 -0700 (PDT)
+        Fri, 2 Sep 2022 08:23:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB69D87E0;
+        Fri,  2 Sep 2022 05:21:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C21036210A;
-        Fri,  2 Sep 2022 12:21:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3CDAC433C1;
-        Fri,  2 Sep 2022 12:21:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D0E00620ED;
+        Fri,  2 Sep 2022 12:21:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEBF2C433C1;
+        Fri,  2 Sep 2022 12:21:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121306;
-        bh=OMHiNt1YikKt3MUFMW0UMBSOVzf0m8ARmas6rDbfFeU=;
+        s=korg; t=1662121300;
+        bh=X2kyHRGmPFA4IG7DMX7lJ498RS9kJ6XcbHqpncdeLrk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D9bS/9FG+81bOlMjS+ioTazyPt5pjaYgx/TyvoBQVFVtqw0MevKNjXgM62AcLrKXU
-         7FQpL8ESnJTmGitdaSY0jAlPwti0AK2XAqfEuhv+uxeyZrVz1YVKgz35s9qID6YvOy
-         v63Leg1H8DK5MCvOFJ/Pgw2/wQiChA8nnox+RfkA=
+        b=1Aw3XBgfwTPJpXaX3MBwXEOlqqqik8ZfAybFJx2CO6JcTzqE8mBpsdU41OWEgmUo6
+         z0251/s3SxmvohcMgM/rmuRNPOB/HbS/6RWClecfx3g8QcywPyS1MYK706luHrFyFJ
+         q0rliq4MXp6fCQbMMvddrfSbZZ6ExkyyZVgQBK/c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hsin-Yi Wang <hsinyi@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Will Deacon <will@kernel.org>,
-        Michael Bestas <mkbestas@gmail.com>
-Subject: [PATCH 4.9 27/31] arm64: map FDT as RW for early_init_dt_scan()
-Date:   Fri,  2 Sep 2022 14:18:53 +0200
-Message-Id: <20220902121357.730656291@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Letu Ren <fantasquex@gmail.com>, Helge Deller <deller@gmx.de>
+Subject: [PATCH 4.9 25/31] fbdev: fb_pm2fb: Avoid potential divide by zero error
+Date:   Fri,  2 Sep 2022 14:18:51 +0200
+Message-Id: <20220902121357.673526487@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121356.732130937@linuxfoundation.org>
 References: <20220902121356.732130937@linuxfoundation.org>
@@ -51,116 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hsin-Yi Wang <hsinyi@chromium.org>
+From: Letu Ren <fantasquex@gmail.com>
 
-commit e112b032a72c78f15d0c803c5dc6be444c2e6c66 upstream.
+commit 19f953e7435644b81332dd632ba1b2d80b1e37af upstream.
 
-Currently in arm64, FDT is mapped to RO before it's passed to
-early_init_dt_scan(). However, there might be some codes
-(eg. commit "fdt: add support for rng-seed") that need to modify FDT
-during init. Map FDT to RO after early fixups are done.
+In `do_fb_ioctl()` of fbmem.c, if cmd is FBIOPUT_VSCREENINFO, var will be
+copied from user, then go through `fb_set_var()` and
+`info->fbops->fb_check_var()` which could may be `pm2fb_check_var()`.
+Along the path, `var->pixclock` won't be modified. This function checks
+whether reciprocal of `var->pixclock` is too high. If `var->pixclock` is
+zero, there will be a divide by zero error. So, it is necessary to check
+whether denominator is zero to avoid crash. As this bug is found by
+Syzkaller, logs are listed below.
 
-Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Reviewed-by: Mike Rapoport <rppt@linux.ibm.com>
-Signed-off-by: Will Deacon <will@kernel.org>
-[mkbestas: fixed trivial conflicts for 4.9 backport]
-Signed-off-by: Michael Bestas <mkbestas@gmail.com>
+divide error in pm2fb_check_var
+Call Trace:
+ <TASK>
+ fb_set_var+0x367/0xeb0 drivers/video/fbdev/core/fbmem.c:1015
+ do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1110
+ fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1189
+
+Reported-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Letu Ren <fantasquex@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/include/asm/mmu.h |    2 +-
- arch/arm64/kernel/kaslr.c    |    5 +----
- arch/arm64/kernel/setup.c    |    9 ++++++++-
- arch/arm64/mm/mmu.c          |   15 +--------------
- 4 files changed, 11 insertions(+), 20 deletions(-)
+ drivers/video/fbdev/pm2fb.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/arch/arm64/include/asm/mmu.h
-+++ b/arch/arm64/include/asm/mmu.h
-@@ -90,7 +90,7 @@ extern void init_mem_pgprot(void);
- extern void create_pgd_mapping(struct mm_struct *mm, phys_addr_t phys,
- 			       unsigned long virt, phys_addr_t size,
- 			       pgprot_t prot, bool allow_block_mappings);
--extern void *fixmap_remap_fdt(phys_addr_t dt_phys);
-+extern void *fixmap_remap_fdt(phys_addr_t dt_phys, int *size, pgprot_t prot);
- 
- #endif	/* !__ASSEMBLY__ */
- #endif
---- a/arch/arm64/kernel/kaslr.c
-+++ b/arch/arm64/kernel/kaslr.c
-@@ -65,9 +65,6 @@ out:
- 	return default_cmdline;
- }
- 
--extern void *__init __fixmap_remap_fdt(phys_addr_t dt_phys, int *size,
--				       pgprot_t prot);
--
- /*
-  * This routine will be executed with the kernel mapped at its default virtual
-  * address, and if it returns successfully, the kernel will be remapped, and
-@@ -96,7 +93,7 @@ u64 __init kaslr_early_init(u64 dt_phys,
- 	 * attempt at mapping the FDT in setup_machine()
- 	 */
- 	early_fixmap_init();
--	fdt = __fixmap_remap_fdt(dt_phys, &size, PAGE_KERNEL);
-+	fdt = fixmap_remap_fdt(dt_phys, &size, PAGE_KERNEL);
- 	if (!fdt)
- 		return 0;
- 
---- a/arch/arm64/kernel/setup.c
-+++ b/arch/arm64/kernel/setup.c
-@@ -178,7 +178,11 @@ static void __init smp_build_mpidr_hash(
- 
- static void __init setup_machine_fdt(phys_addr_t dt_phys)
- {
--	void *dt_virt = fixmap_remap_fdt(dt_phys);
-+	int size;
-+	void *dt_virt = fixmap_remap_fdt(dt_phys, &size, PAGE_KERNEL);
-+
-+	if (dt_virt)
-+		memblock_reserve(dt_phys, size);
- 
- 	if (!dt_virt || !early_init_dt_scan(dt_virt)) {
- 		pr_crit("\n"
-@@ -191,6 +195,9 @@ static void __init setup_machine_fdt(phy
- 			cpu_relax();
+--- a/drivers/video/fbdev/pm2fb.c
++++ b/drivers/video/fbdev/pm2fb.c
+@@ -614,6 +614,11 @@ static int pm2fb_check_var(struct fb_var
+ 		return -EINVAL;
  	}
  
-+	/* Early fixups are done, map the FDT as read-only now */
-+	fixmap_remap_fdt(dt_phys, &size, PAGE_KERNEL_RO);
++	if (!var->pixclock) {
++		DPRINTK("pixclock is zero\n");
++		return -EINVAL;
++	}
 +
- 	dump_stack_set_arch_desc("%s (DT)", of_flat_dt_get_machine_name());
- }
- 
---- a/arch/arm64/mm/mmu.c
-+++ b/arch/arm64/mm/mmu.c
-@@ -718,7 +718,7 @@ void __set_fixmap(enum fixed_addresses i
- 	}
- }
- 
--void *__init __fixmap_remap_fdt(phys_addr_t dt_phys, int *size, pgprot_t prot)
-+void *__init fixmap_remap_fdt(phys_addr_t dt_phys, int *size, pgprot_t prot)
- {
- 	const u64 dt_virt_base = __fix_to_virt(FIX_FDT);
- 	int offset;
-@@ -771,19 +771,6 @@ void *__init __fixmap_remap_fdt(phys_add
- 	return dt_virt;
- }
- 
--void *__init fixmap_remap_fdt(phys_addr_t dt_phys)
--{
--	void *dt_virt;
--	int size;
--
--	dt_virt = __fixmap_remap_fdt(dt_phys, &size, PAGE_KERNEL_RO);
--	if (!dt_virt)
--		return NULL;
--
--	memblock_reserve(dt_phys, size);
--	return dt_virt;
--}
--
- int __init arch_ioremap_pud_supported(void)
- {
- 	/*
+ 	if (PICOS2KHZ(var->pixclock) > PM2_MAX_PIXCLOCK) {
+ 		DPRINTK("pixclock too high (%ldKHz)\n",
+ 			PICOS2KHZ(var->pixclock));
 
 
