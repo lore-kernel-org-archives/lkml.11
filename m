@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 724EAECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:26:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3521AC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:26:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236444AbiIBM0h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:26:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48540 "EHLO
+        id S236408AbiIBM0n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:26:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236344AbiIBMZy (ORCPT
+        with ESMTP id S236188AbiIBMZ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:25:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B668C6CFD;
-        Fri,  2 Sep 2022 05:23:33 -0700 (PDT)
+        Fri, 2 Sep 2022 08:25:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C6EBDD4F2;
+        Fri,  2 Sep 2022 05:23:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A6730B82A95;
-        Fri,  2 Sep 2022 12:23:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F14E5C433D7;
-        Fri,  2 Sep 2022 12:23:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FB93620B2;
+        Fri,  2 Sep 2022 12:22:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 678BBC433D7;
+        Fri,  2 Sep 2022 12:22:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121384;
-        bh=JQFNrQh+IOFH4m7hcCdP9BS4HmO5CZMsPhFqdg8qEUM=;
+        s=korg; t=1662121345;
+        bh=sbCg1g3fJ94m2Mzmxtkol3ZLqiQazqlhif8LhQ0yo+0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Avs4sQn4mL4uVvR5niIJEwQMM+JOz0yvBVyexFEcEkbfQ2/tAmV3oma1un647elCf
-         DgTeJ5NRdRChw5bcANkB0cbo2b2JLSFB0dP+9XHSd6sNUSCOGhHnP9vaA9Yejc/OdP
-         RwrQrmBPzfRjXzINYl2TZhNJ2BiAUfi6FTKmMMkE=
+        b=mqXqmB/SM7yjRExrSkyPt8SlSsDaNQUTf43K7dS+F/Qt39DQ0bPXq8EhuiaPv9yVv
+         /eY6VnFycQDLWVE36uMu1xQrKw4Pf6DkIfL4PIM7T12Pg0huxDLC6hH1quvnKBswYu
+         SCM1rIeK2lgaE7T8OJa/yLBkckRtGAe2PIah3dNM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 4.14 32/42] Bluetooth: L2CAP: Fix build errors in some archs
-Date:   Fri,  2 Sep 2022 14:18:56 +0200
-Message-Id: <20220902121359.904649476@linuxfoundation.org>
+        stable@vger.kernel.org, Steve Payne <spayne@aurora.tech>,
+        Ilya Evenbach <ievenbach@aurora.tech>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH 4.14 20/42] ixgbe: stop resetting SYSTIME in ixgbe_ptp_start_cyclecounter
+Date:   Fri,  2 Sep 2022 14:18:44 +0200
+Message-Id: <20220902121359.495054214@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121358.773776406@linuxfoundation.org>
 References: <20220902121358.773776406@linuxfoundation.org>
@@ -49,63 +52,137 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Jacob Keller <jacob.e.keller@intel.com>
 
-commit b840304fb46cdf7012722f456bce06f151b3e81b upstream.
+[ Upstream commit 25d7a5f5a6bb15a2dae0a3f39ea5dda215024726 ]
 
-This attempts to fix the follow errors:
+The ixgbe_ptp_start_cyclecounter is intended to be called whenever the
+cyclecounter parameters need to be changed.
 
-In function 'memcmp',
-    inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:347:9,
-    inlined from 'l2cap_global_chan_by_psm' at
-    net/bluetooth/l2cap_core.c:2003:15:
-./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp'
-specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
-   44 | #define __underlying_memcmp     __builtin_memcmp
-      |                                 ^
-./include/linux/fortify-string.h:420:16: note: in expansion of macro
-'__underlying_memcmp'
-  420 |         return __underlying_memcmp(p, q, size);
-      |                ^~~~~~~~~~~~~~~~~~~
-In function 'memcmp',
-    inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:347:9,
-    inlined from 'l2cap_global_chan_by_psm' at
-    net/bluetooth/l2cap_core.c:2004:15:
-./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp'
-specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
-   44 | #define __underlying_memcmp     __builtin_memcmp
-      |                                 ^
-./include/linux/fortify-string.h:420:16: note: in expansion of macro
-'__underlying_memcmp'
-  420 |         return __underlying_memcmp(p, q, size);
-      |                ^~~~~~~~~~~~~~~~~~~
+Since commit a9763f3cb54c ("ixgbe: Update PTP to support X550EM_x
+devices"), this function has cleared the SYSTIME registers and reset the
+TSAUXC DISABLE_SYSTIME bit.
 
-Fixes: 332f1795ca20 ("Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm regression")
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+While these need to be cleared during ixgbe_ptp_reset, it is wrong to clear
+them during ixgbe_ptp_start_cyclecounter. This function may be called
+during both reset and link status change. When link changes, the SYSTIME
+counter is still operating normally, but the cyclecounter should be updated
+to account for the possibly changed parameters.
+
+Clearing SYSTIME when link changes causes the timecounter to jump because
+the cycle counter now reads zero.
+
+Extract the SYSTIME initialization out to a new function and call this
+during ixgbe_ptp_reset. This prevents the timecounter adjustment and avoids
+an unnecessary reset of the current time.
+
+This also restores the original SYSTIME clearing that occurred during
+ixgbe_ptp_reset before the commit above.
+
+Reported-by: Steve Payne <spayne@aurora.tech>
+Reported-by: Ilya Evenbach <ievenbach@aurora.tech>
+Fixes: a9763f3cb54c ("ixgbe: Update PTP to support X550EM_x devices")
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/l2cap_core.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c | 59 +++++++++++++++-----
+ 1 file changed, 46 insertions(+), 13 deletions(-)
 
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -1826,11 +1826,11 @@ static struct l2cap_chan *l2cap_global_c
- 			src_match = !bacmp(&c->src, src);
- 			dst_match = !bacmp(&c->dst, dst);
- 			if (src_match && dst_match) {
--				c = l2cap_chan_hold_unless_zero(c);
--				if (c) {
--					read_unlock(&chan_list_lock);
--					return c;
--				}
-+				if (!l2cap_chan_hold_unless_zero(c))
-+					continue;
-+
-+				read_unlock(&chan_list_lock);
-+				return c;
- 			}
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
+index 86d6924a2b714..ad51b521e693a 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
+@@ -1090,7 +1090,6 @@ void ixgbe_ptp_start_cyclecounter(struct ixgbe_adapter *adapter)
+ 	struct cyclecounter cc;
+ 	unsigned long flags;
+ 	u32 incval = 0;
+-	u32 tsauxc = 0;
+ 	u32 fuse0 = 0;
  
- 			/* Closest match */
+ 	/* For some of the boards below this mask is technically incorrect.
+@@ -1125,18 +1124,6 @@ void ixgbe_ptp_start_cyclecounter(struct ixgbe_adapter *adapter)
+ 	case ixgbe_mac_x550em_a:
+ 	case ixgbe_mac_X550:
+ 		cc.read = ixgbe_ptp_read_X550;
+-
+-		/* enable SYSTIME counter */
+-		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMR, 0);
+-		IXGBE_WRITE_REG(hw, IXGBE_SYSTIML, 0);
+-		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMH, 0);
+-		tsauxc = IXGBE_READ_REG(hw, IXGBE_TSAUXC);
+-		IXGBE_WRITE_REG(hw, IXGBE_TSAUXC,
+-				tsauxc & ~IXGBE_TSAUXC_DISABLE_SYSTIME);
+-		IXGBE_WRITE_REG(hw, IXGBE_TSIM, IXGBE_TSIM_TXTS);
+-		IXGBE_WRITE_REG(hw, IXGBE_EIMS, IXGBE_EIMS_TIMESYNC);
+-
+-		IXGBE_WRITE_FLUSH(hw);
+ 		break;
+ 	case ixgbe_mac_X540:
+ 		cc.read = ixgbe_ptp_read_82599;
+@@ -1168,6 +1155,50 @@ void ixgbe_ptp_start_cyclecounter(struct ixgbe_adapter *adapter)
+ 	spin_unlock_irqrestore(&adapter->tmreg_lock, flags);
+ }
+ 
++/**
++ * ixgbe_ptp_init_systime - Initialize SYSTIME registers
++ * @adapter: the ixgbe private board structure
++ *
++ * Initialize and start the SYSTIME registers.
++ */
++static void ixgbe_ptp_init_systime(struct ixgbe_adapter *adapter)
++{
++	struct ixgbe_hw *hw = &adapter->hw;
++	u32 tsauxc;
++
++	switch (hw->mac.type) {
++	case ixgbe_mac_X550EM_x:
++	case ixgbe_mac_x550em_a:
++	case ixgbe_mac_X550:
++		tsauxc = IXGBE_READ_REG(hw, IXGBE_TSAUXC);
++
++		/* Reset SYSTIME registers to 0 */
++		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMR, 0);
++		IXGBE_WRITE_REG(hw, IXGBE_SYSTIML, 0);
++		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMH, 0);
++
++		/* Reset interrupt settings */
++		IXGBE_WRITE_REG(hw, IXGBE_TSIM, IXGBE_TSIM_TXTS);
++		IXGBE_WRITE_REG(hw, IXGBE_EIMS, IXGBE_EIMS_TIMESYNC);
++
++		/* Activate the SYSTIME counter */
++		IXGBE_WRITE_REG(hw, IXGBE_TSAUXC,
++				tsauxc & ~IXGBE_TSAUXC_DISABLE_SYSTIME);
++		break;
++	case ixgbe_mac_X540:
++	case ixgbe_mac_82599EB:
++		/* Reset SYSTIME registers to 0 */
++		IXGBE_WRITE_REG(hw, IXGBE_SYSTIML, 0);
++		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMH, 0);
++		break;
++	default:
++		/* Other devices aren't supported */
++		return;
++	};
++
++	IXGBE_WRITE_FLUSH(hw);
++}
++
+ /**
+  * ixgbe_ptp_reset
+  * @adapter: the ixgbe private board structure
+@@ -1194,6 +1225,8 @@ void ixgbe_ptp_reset(struct ixgbe_adapter *adapter)
+ 
+ 	ixgbe_ptp_start_cyclecounter(adapter);
+ 
++	ixgbe_ptp_init_systime(adapter);
++
+ 	spin_lock_irqsave(&adapter->tmreg_lock, flags);
+ 	timecounter_init(&adapter->hw_tc, &adapter->hw_cc,
+ 			 ktime_to_ns(ktime_get_real()));
+-- 
+2.35.1
+
 
 
