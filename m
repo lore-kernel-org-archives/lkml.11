@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69B63C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:33:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2DE3C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:33:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236209AbiIBOc4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:32:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58254 "EHLO
+        id S236636AbiIBOdE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:33:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238084AbiIBO2s (ORCPT
+        with ESMTP id S238114AbiIBO2s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 10:28:48 -0400
 Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB85321E0E
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3295115712
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=iyMt99aEuDsmq01H4vnoTwNVsujF1AlFYZo6vxM6wm8=; b=LOWPcYwarw+3cR9biYHzY8+3n9
-        kDt4l2BqObOIEE42ww5YWvoAHWXnVNiHZcyH8tX4otV6HVDEDUNy80sNYb3YhMAAJH5wJnxuaMmyO
-        Ya98irsbhLBT/Q1eEk/1hH3Z50RVLK/H9qn0fvAf+cQSMpx/QPWWJeNkx+f6oNhBehouVd1LE56/4
-        ru+bSagREjMxpOwgT/nlrLmRd4Y1TCd4GaFeny9yPBThpMtBW7SLFlCgF9ighH1i+KRyGi4HnBary
-        7Wf1FWBqpCKKwT3KNF8a7S0OKLD7pLOc99kfPGcqxULEEb3wBchmpebiZufEuTpiZOi4eIjZTLvBF
-        C0E4qUyQ==;
+        bh=KqaDozNK5h/Os0p9USJOHPsjw+JZHJxcCJnx+VmNqrU=; b=Jy3Utsp5uuyNaCGPnPEy/dqGuA
+        PV0cwwIU05WOMxlcE6wY99LUbZtN5FAnx85xzdMUFQA8NQJWpTxj6WGFaMMYleA+sM0Sg2gjuNzvL
+        CiSFytTxlMQTnOAnlSjoMECb5BStw8uXLLkOuWMm+6tAJReD2yOxhFt9fiULdy+NuUL/6FKKgd7Ys
+        KeqSaDjhyW+i+p+nP5yxayS2necTt3nDyKWGb2yNjNERHdGNcd/A80OMVd6+vD2L2HDHWMA1Y54sP
+        JBtIE/dDpNtQIJWJRD84veIHKwgeVtGWBCU2iwh3QTOxBNY6CHSPQcVEA+t+Z4geY9WyxNMqwyeY1
+        yNSAZK0A==;
 Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
         by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oU77K-008g7o-Ua; Fri, 02 Sep 2022 13:53:55 +0000
+        id 1oU77M-008g8M-WC; Fri, 02 Sep 2022 13:53:58 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 00EC5300779;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 34DD9302911;
         Fri,  2 Sep 2022 15:53:54 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 432242B1A6BC9; Fri,  2 Sep 2022 15:53:52 +0200 (CEST)
-Message-ID: <20220902130947.295146217@infradead.org>
+        id 1E0DE2B8EF7FB; Fri,  2 Sep 2022 15:53:53 +0200 (CEST)
+Message-ID: <20220902130950.205726504@infradead.org>
 User-Agent: quilt/0.66
-Date:   Fri, 02 Sep 2022 15:06:34 +0200
+Date:   Fri, 02 Sep 2022 15:07:02 +0200
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     Thomas Gleixner <tglx@linutronix.de>
 Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
@@ -59,7 +59,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
         Daniel Borkmann <daniel@iogearbox.net>,
         K Prateek Nayak <kprateek.nayak@amd.com>,
         Eric Dumazet <edumazet@google.com>
-Subject: [PATCH v2 09/59] x86/asm: Ensure proper function alignment
+Subject: [PATCH v2 37/59] x86/putuser: Provide room for padding
 References: <20220902130625.217071627@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -69,70 +69,133 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Thomas Gleixner <tglx@linutronix.de>
 
-With the compiler now aligning functions to 16 bytes, make sure the
-assmbler does the same. Change the SYM_FUNC_START*() variants to have
-matching alignment.
-
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/x86/include/asm/linkage.h |   23 +++++++++++++++--------
- 1 file changed, 15 insertions(+), 8 deletions(-)
+ arch/x86/lib/putuser.S |   62 ++++++++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 49 insertions(+), 13 deletions(-)
 
---- a/arch/x86/include/asm/linkage.h
-+++ b/arch/x86/include/asm/linkage.h
-@@ -12,13 +12,20 @@
- #define asmlinkage CPP_ASMLINKAGE __attribute__((regparm(0)))
- #endif /* CONFIG_X86_32 */
- 
--#ifdef __ASSEMBLY__
-+#if CONFIG_FUNCTION_ALIGNMENT == 8
-+#define __ALIGN			.p2align 3, 0x90;
-+#elif CONFIG_FUNCTION_ALIGNMENT == 16
-+#define __ALIGN			.p2align 4, 0x90;
-+#else
-+# error Unsupported function alignment
-+#endif
- 
--#if CONFIG_FUNCTION_ALIGNMENT == 16
--#define __ALIGN			.p2align 4, 0x90
- #define __ALIGN_STR		__stringify(__ALIGN)
--#define FUNCTION_ALIGNMENT	16
--#endif
-+#define ASM_FUNC_ALIGN		__ALIGN_STR
-+#define __FUNC_ALIGN		__ALIGN
-+#define SYM_F_ALIGN		__FUNC_ALIGN
+--- a/arch/x86/lib/putuser.S
++++ b/arch/x86/lib/putuser.S
+@@ -47,8 +47,6 @@ SYM_FUNC_START(__put_user_1)
+ 	LOAD_TASK_SIZE_MINUS_N(0)
+ 	cmp %_ASM_BX,%_ASM_CX
+ 	jae .Lbad_put_user
+-SYM_INNER_LABEL(__put_user_nocheck_1, SYM_L_GLOBAL)
+-	ENDBR
+ 	ASM_STAC
+ 1:	movb %al,(%_ASM_CX)
+ 	xor %ecx,%ecx
+@@ -56,54 +54,87 @@ SYM_INNER_LABEL(__put_user_nocheck_1, SY
+ 	RET
+ SYM_FUNC_END(__put_user_1)
+ EXPORT_SYMBOL(__put_user_1)
 +
-+#ifdef __ASSEMBLY__
++SYM_FUNC_START(__put_user_nocheck_1)
++	ENDBR
++	ASM_STAC
++2:	movb %al,(%_ASM_CX)
++	xor %ecx,%ecx
++	ASM_CLAC
++	RET
++SYM_FUNC_END(__put_user_nocheck_1)
+ EXPORT_SYMBOL(__put_user_nocheck_1)
  
- #if defined(CONFIG_RETHUNK) && !defined(__DISABLE_EXPORTS) && !defined(BUILD_VDSO)
- #define RET	jmp __x86_return_thunk
-@@ -46,7 +53,7 @@
+ SYM_FUNC_START(__put_user_2)
+ 	LOAD_TASK_SIZE_MINUS_N(1)
+ 	cmp %_ASM_BX,%_ASM_CX
+ 	jae .Lbad_put_user
+-SYM_INNER_LABEL(__put_user_nocheck_2, SYM_L_GLOBAL)
+-	ENDBR
+ 	ASM_STAC
+-2:	movw %ax,(%_ASM_CX)
++3:	movw %ax,(%_ASM_CX)
+ 	xor %ecx,%ecx
+ 	ASM_CLAC
+ 	RET
+ SYM_FUNC_END(__put_user_2)
+ EXPORT_SYMBOL(__put_user_2)
++
++SYM_FUNC_START(__put_user_nocheck_2)
++	ENDBR
++	ASM_STAC
++4:	movw %ax,(%_ASM_CX)
++	xor %ecx,%ecx
++	ASM_CLAC
++	RET
++SYM_FUNC_END(__put_user_nocheck_2)
+ EXPORT_SYMBOL(__put_user_nocheck_2)
  
- /* SYM_FUNC_START -- use for global functions */
- #define SYM_FUNC_START(name)				\
--	SYM_START(name, SYM_L_GLOBAL, SYM_A_ALIGN)	\
-+	SYM_START(name, SYM_L_GLOBAL, SYM_F_ALIGN)	\
- 	ENDBR
+ SYM_FUNC_START(__put_user_4)
+ 	LOAD_TASK_SIZE_MINUS_N(3)
+ 	cmp %_ASM_BX,%_ASM_CX
+ 	jae .Lbad_put_user
+-SYM_INNER_LABEL(__put_user_nocheck_4, SYM_L_GLOBAL)
+-	ENDBR
+ 	ASM_STAC
+-3:	movl %eax,(%_ASM_CX)
++5:	movl %eax,(%_ASM_CX)
+ 	xor %ecx,%ecx
+ 	ASM_CLAC
+ 	RET
+ SYM_FUNC_END(__put_user_4)
+ EXPORT_SYMBOL(__put_user_4)
++
++SYM_FUNC_START(__put_user_nocheck_4)
++	ENDBR
++	ASM_STAC
++6:	movl %eax,(%_ASM_CX)
++	xor %ecx,%ecx
++	ASM_CLAC
++	RET
++SYM_FUNC_END(__put_user_nocheck_4)
+ EXPORT_SYMBOL(__put_user_nocheck_4)
  
- /* SYM_FUNC_START_NOALIGN -- use for global functions, w/o alignment */
-@@ -56,7 +63,7 @@
+ SYM_FUNC_START(__put_user_8)
+ 	LOAD_TASK_SIZE_MINUS_N(7)
+ 	cmp %_ASM_BX,%_ASM_CX
+ 	jae .Lbad_put_user
+-SYM_INNER_LABEL(__put_user_nocheck_8, SYM_L_GLOBAL)
+-	ENDBR
+ 	ASM_STAC
+-4:	mov %_ASM_AX,(%_ASM_CX)
++7:	mov %_ASM_AX,(%_ASM_CX)
+ #ifdef CONFIG_X86_32
+-5:	movl %edx,4(%_ASM_CX)
++8:	movl %edx,4(%_ASM_CX)
+ #endif
+ 	xor %ecx,%ecx
+ 	ASM_CLAC
+ 	RET
+ SYM_FUNC_END(__put_user_8)
+ EXPORT_SYMBOL(__put_user_8)
++
++SYM_FUNC_START(__put_user_nocheck_8)
++	ENDBR
++	ASM_STAC
++9:	mov %_ASM_AX,(%_ASM_CX)
++#ifdef CONFIG_X86_32
++10:	movl %edx,4(%_ASM_CX)
++#endif
++	xor %ecx,%ecx
++	ASM_CLAC
++	RET
++SYM_FUNC_END(__put_user_nocheck_8)
+ EXPORT_SYMBOL(__put_user_nocheck_8)
  
- /* SYM_FUNC_START_LOCAL -- use for local functions */
- #define SYM_FUNC_START_LOCAL(name)			\
--	SYM_START(name, SYM_L_LOCAL, SYM_A_ALIGN)	\
-+	SYM_START(name, SYM_L_LOCAL, SYM_F_ALIGN)	\
- 	ENDBR
- 
- /* SYM_FUNC_START_LOCAL_NOALIGN -- use for local functions, w/o alignment */
-@@ -66,7 +73,7 @@
- 
- /* SYM_FUNC_START_WEAK -- use for weak functions */
- #define SYM_FUNC_START_WEAK(name)			\
--	SYM_START(name, SYM_L_WEAK, SYM_A_ALIGN)	\
-+	SYM_START(name, SYM_L_WEAK, SYM_F_ALIGN)	\
- 	ENDBR
- 
- /* SYM_FUNC_START_WEAK_NOALIGN -- use for weak functions, w/o alignment */
+ SYM_CODE_START_LOCAL(.Lbad_put_user_clac)
+@@ -117,6 +148,11 @@ SYM_CODE_END(.Lbad_put_user_clac)
+ 	_ASM_EXTABLE_UA(2b, .Lbad_put_user_clac)
+ 	_ASM_EXTABLE_UA(3b, .Lbad_put_user_clac)
+ 	_ASM_EXTABLE_UA(4b, .Lbad_put_user_clac)
+-#ifdef CONFIG_X86_32
+ 	_ASM_EXTABLE_UA(5b, .Lbad_put_user_clac)
++	_ASM_EXTABLE_UA(6b, .Lbad_put_user_clac)
++	_ASM_EXTABLE_UA(7b, .Lbad_put_user_clac)
++	_ASM_EXTABLE_UA(9b, .Lbad_put_user_clac)
++#ifdef CONFIG_X86_32
++	_ASM_EXTABLE_UA(8b, .Lbad_put_user_clac)
++	_ASM_EXTABLE_UA(10b, .Lbad_put_user_clac)
+ #endif
 
 
