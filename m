@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61F00ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:55:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E9A2ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:55:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238180AbiIBMzP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:55:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55338 "EHLO
+        id S238190AbiIBMzT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:55:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238021AbiIBMxb (ORCPT
+        with ESMTP id S238044AbiIBMxj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:53:31 -0400
+        Fri, 2 Sep 2022 08:53:39 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 440AEE58B1;
-        Fri,  2 Sep 2022 05:38:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0A4B69;
+        Fri,  2 Sep 2022 05:38:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 979AAB82A8B;
-        Fri,  2 Sep 2022 12:37:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09A69C433C1;
-        Fri,  2 Sep 2022 12:37:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 93926B82AE6;
+        Fri,  2 Sep 2022 12:37:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB80DC433C1;
+        Fri,  2 Sep 2022 12:37:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122239;
-        bh=lV7mb2d2P7zCPfmJmyz0dYwCOsfkfJLOefpZXPPvb/4=;
+        s=korg; t=1662122242;
+        bh=MOj0Ic4N15HWpDxWQhM6QmWUotzFLYKuIljYUisKX/0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v575zYHYD0O6KL2SP9qdf9VRff1zVb7D7ghqntoQ0EuOaTsUXD9QfTczk7SEEPMDF
-         XwGbFKl8Ib9mf5CSMGDL6aLIUHFbTHbKSMI/gwhUNkWSqtgRh9PbnOXLleHjxWey1m
-         D0RqqlYvjfSyg38LD/JBKXkrWxwAUgqnqXYQgzVM=
+        b=KAQE73gxu0lxMgXTRjAyrWCbcAqI3Z+0uDPyGuWGkKj9i5E/9KvXgLaqfaN6iBdp3
+         PdbFmh89SC7bvp1+7YLbv8YFqNucgTlwOHF7FxGnpMIsQ8cswezoyK+2VQsFB4OI52
+         1lFD3D3UcjhyW4XJIPKuV/pZfpSmmXTbPj4dy0/E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Michael=20H=C3=BCbner?= <michaelh.95@t-online.de>,
+        stable@vger.kernel.org, Even Xu <even.xu@intel.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
         Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.19 26/72] HID: thrustmaster: Add sparco wheel and fix array length
-Date:   Fri,  2 Sep 2022 14:19:02 +0200
-Message-Id: <20220902121405.660611157@linuxfoundation.org>
+Subject: [PATCH 5.19 27/72] HID: intel-ish-hid: ipc: Add Meteor Lake PCI device ID
+Date:   Fri,  2 Sep 2022 14:19:03 +0200
+Message-Id: <20220902121405.692956847@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
 References: <20220902121404.772492078@linuxfoundation.org>
@@ -49,37 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Hübner <michaelh.95@t-online.de>
+From: Even Xu <even.xu@intel.com>
 
-commit d9a17651f3749e69890db57ca66e677dfee70829 upstream.
+commit 467249a7dff68451868ca79696aef69764193a8a upstream.
 
-Add device id for the Sparco R383 Mod wheel.
+Add device ID of Meteor Lake P into ishtp support list.
 
-Fix wheel info array length to match actual wheel count present in the array.
-
-Signed-off-by: Michael Hübner <michaelh.95@t-online.de>
+Signed-off-by: Even Xu <even.xu@intel.com>
+Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/hid-thrustmaster.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/hid/intel-ish-hid/ipc/hw-ish.h  |    1 +
+ drivers/hid/intel-ish-hid/ipc/pci-ish.c |    1 +
+ 2 files changed, 2 insertions(+)
 
---- a/drivers/hid/hid-thrustmaster.c
-+++ b/drivers/hid/hid-thrustmaster.c
-@@ -67,12 +67,13 @@ static const struct tm_wheel_info tm_whe
- 	{0x0200, 0x0005, "Thrustmaster T300RS (Missing Attachment)"},
- 	{0x0206, 0x0005, "Thrustmaster T300RS"},
- 	{0x0209, 0x0005, "Thrustmaster T300RS (Open Wheel Attachment)"},
-+	{0x020a, 0x0005, "Thrustmaster T300RS (Sparco R383 Mod)"},
- 	{0x0204, 0x0005, "Thrustmaster T300 Ferrari Alcantara Edition"},
- 	{0x0002, 0x0002, "Thrustmaster T500RS"}
- 	//{0x0407, 0x0001, "Thrustmaster TMX"}
+--- a/drivers/hid/intel-ish-hid/ipc/hw-ish.h
++++ b/drivers/hid/intel-ish-hid/ipc/hw-ish.h
+@@ -32,6 +32,7 @@
+ #define ADL_P_DEVICE_ID		0x51FC
+ #define ADL_N_DEVICE_ID		0x54FC
+ #define RPL_S_DEVICE_ID		0x7A78
++#define MTL_P_DEVICE_ID		0x7E45
+ 
+ #define	REVISION_ID_CHT_A0	0x6
+ #define	REVISION_ID_CHT_Ax_SI	0x0
+--- a/drivers/hid/intel-ish-hid/ipc/pci-ish.c
++++ b/drivers/hid/intel-ish-hid/ipc/pci-ish.c
+@@ -43,6 +43,7 @@ static const struct pci_device_id ish_pc
+ 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, ADL_P_DEVICE_ID)},
+ 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, ADL_N_DEVICE_ID)},
+ 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, RPL_S_DEVICE_ID)},
++	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MTL_P_DEVICE_ID)},
+ 	{0, }
  };
- 
--static const uint8_t tm_wheels_infos_length = 4;
-+static const uint8_t tm_wheels_infos_length = 7;
- 
- /*
-  * This structs contains (in little endian) the response data
+ MODULE_DEVICE_TABLE(pci, ish_pci_tbl);
 
 
