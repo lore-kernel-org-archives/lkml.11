@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62EE3C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:31:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD62AC54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:31:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236685AbiIBMbm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:31:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35424 "EHLO
+        id S236172AbiIBMb5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:31:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236430AbiIBMbK (ORCPT
+        with ESMTP id S236490AbiIBMbM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:31:10 -0400
+        Fri, 2 Sep 2022 08:31:12 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0B33D4778;
-        Fri,  2 Sep 2022 05:26:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EA29DF4C4;
+        Fri,  2 Sep 2022 05:26:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 457CFB829B6;
-        Fri,  2 Sep 2022 12:24:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E6BEC433C1;
-        Fri,  2 Sep 2022 12:24:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9ED90B82AA1;
+        Fri,  2 Sep 2022 12:26:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13D7BC433C1;
+        Fri,  2 Sep 2022 12:26:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121478;
-        bh=W7P9K7FzgMUNUKNsBnmBsRhOguERmdhPslUkvp9BVQs=;
+        s=korg; t=1662121568;
+        bh=V9A0EwG/aX+YjLSOdCVioJulTU+wCxpArl6ri0QFYpM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x8TQL3ah3G8pxgBRKUuAYimZmJzELApyIQWUdEma+E+s4bCgIGGHGuVVooboM+oIV
-         svImbDota7HWOhsgp7r1M6lWGigmEV76tsBwh+MiRUv5qh4MVhHgI0o/zi40QfCtox
-         DSNcbEbph82UW60xKqe3Eg0adilzKwa+AZi5Gm4I=
+        b=mSaChuOCAkDo1f5pATIeKK7BsTnW1GkgMOjzEYn4f8lLR+aLr/vdTsXoIBypKuBls
+         Udq6xfEQ/qK57itFwNo931Z9LLM2YpowufxWZk6bCo+PfXZjd3N6NtZPH7eMR5ruCE
+         5ddZjLcj6wip51VuteK9B0gImBUhuubhhhN3Ynzw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 20/56] net: Fix data-races around netdev_tstamp_prequeue.
-Date:   Fri,  2 Sep 2022 14:18:40 +0200
-Message-Id: <20220902121400.882884721@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Michal Hocko <mhocko@suse.com>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 4.19 50/56] mm/rmap: Fix anon_vma->degree ambiguity leading to double-reuse
+Date:   Fri,  2 Sep 2022 14:19:10 +0200
+Message-Id: <20220902121402.169377412@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
 References: <20220902121400.219861128@linuxfoundation.org>
@@ -49,63 +50,168 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Jann Horn <jannh@google.com>
 
-[ Upstream commit 61adf447e38664447526698872e21c04623afb8e ]
+commit 2555283eb40df89945557273121e9393ef9b542b upstream.
 
-While reading netdev_tstamp_prequeue, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its readers.
+anon_vma->degree tracks the combined number of child anon_vmas and VMAs
+that use the anon_vma as their ->anon_vma.
 
-Fixes: 3b098e2d7c69 ("net: Consistent skb timestamping")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+anon_vma_clone() then assumes that for any anon_vma attached to
+src->anon_vma_chain other than src->anon_vma, it is impossible for it to
+be a leaf node of the VMA tree, meaning that for such VMAs ->degree is
+elevated by 1 because of a child anon_vma, meaning that if ->degree
+equals 1 there are no VMAs that use the anon_vma as their ->anon_vma.
+
+This assumption is wrong because the ->degree optimization leads to leaf
+nodes being abandoned on anon_vma_clone() - an existing anon_vma is
+reused and no new parent-child relationship is created.  So it is
+possible to reuse an anon_vma for one VMA while it is still tied to
+another VMA.
+
+This is an issue because is_mergeable_anon_vma() and its callers assume
+that if two VMAs have the same ->anon_vma, the list of anon_vmas
+attached to the VMAs is guaranteed to be the same.  When this assumption
+is violated, vma_merge() can merge pages into a VMA that is not attached
+to the corresponding anon_vma, leading to dangling page->mapping
+pointers that will be dereferenced during rmap walks.
+
+Fix it by separately tracking the number of child anon_vmas and the
+number of VMAs using the anon_vma as their ->anon_vma.
+
+Fixes: 7a3ef208e662 ("mm: prevent endless growth of anon_vma hierarchy")
+Cc: stable@kernel.org
+Acked-by: Michal Hocko <mhocko@suse.com>
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
+Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/dev.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ include/linux/rmap.h |    7 +++++--
+ mm/rmap.c            |   31 +++++++++++++++++--------------
+ 2 files changed, 22 insertions(+), 16 deletions(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 6ee4390863fbe..d5bef2bb0b7c8 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4474,7 +4474,7 @@ static int netif_rx_internal(struct sk_buff *skb)
- {
- 	int ret;
+--- a/include/linux/rmap.h
++++ b/include/linux/rmap.h
+@@ -39,12 +39,15 @@ struct anon_vma {
+ 	atomic_t refcount;
  
--	net_timestamp_check(netdev_tstamp_prequeue, skb);
-+	net_timestamp_check(READ_ONCE(netdev_tstamp_prequeue), skb);
+ 	/*
+-	 * Count of child anon_vmas and VMAs which points to this anon_vma.
++	 * Count of child anon_vmas. Equals to the count of all anon_vmas that
++	 * have ->parent pointing to this one, including itself.
+ 	 *
+ 	 * This counter is used for making decision about reusing anon_vma
+ 	 * instead of forking new one. See comments in function anon_vma_clone.
+ 	 */
+-	unsigned degree;
++	unsigned long num_children;
++	/* Count of VMAs whose ->anon_vma pointer points to this object. */
++	unsigned long num_active_vmas;
  
- 	trace_netif_rx(skb);
+ 	struct anon_vma *parent;	/* Parent of this anon_vma */
  
-@@ -4794,7 +4794,7 @@ static int __netif_receive_skb_core(struct sk_buff **pskb, bool pfmemalloc,
- 	int ret = NET_RX_DROP;
- 	__be16 type;
+--- a/mm/rmap.c
++++ b/mm/rmap.c
+@@ -82,7 +82,8 @@ static inline struct anon_vma *anon_vma_
+ 	anon_vma = kmem_cache_alloc(anon_vma_cachep, GFP_KERNEL);
+ 	if (anon_vma) {
+ 		atomic_set(&anon_vma->refcount, 1);
+-		anon_vma->degree = 1;	/* Reference for first vma */
++		anon_vma->num_children = 0;
++		anon_vma->num_active_vmas = 0;
+ 		anon_vma->parent = anon_vma;
+ 		/*
+ 		 * Initialise the anon_vma root to point to itself. If called
+@@ -190,6 +191,7 @@ int __anon_vma_prepare(struct vm_area_st
+ 		anon_vma = anon_vma_alloc();
+ 		if (unlikely(!anon_vma))
+ 			goto out_enomem_free_avc;
++		anon_vma->num_children++; /* self-parent link for new root */
+ 		allocated = anon_vma;
+ 	}
  
--	net_timestamp_check(!netdev_tstamp_prequeue, skb);
-+	net_timestamp_check(!READ_ONCE(netdev_tstamp_prequeue), skb);
+@@ -199,8 +201,7 @@ int __anon_vma_prepare(struct vm_area_st
+ 	if (likely(!vma->anon_vma)) {
+ 		vma->anon_vma = anon_vma;
+ 		anon_vma_chain_link(vma, avc, anon_vma);
+-		/* vma reference or self-parent link for new root */
+-		anon_vma->degree++;
++		anon_vma->num_active_vmas++;
+ 		allocated = NULL;
+ 		avc = NULL;
+ 	}
+@@ -279,19 +280,19 @@ int anon_vma_clone(struct vm_area_struct
+ 		anon_vma_chain_link(dst, avc, anon_vma);
  
- 	trace_netif_receive_skb(skb);
+ 		/*
+-		 * Reuse existing anon_vma if its degree lower than two,
+-		 * that means it has no vma and only one anon_vma child.
++		 * Reuse existing anon_vma if it has no vma and only one
++		 * anon_vma child.
+ 		 *
+-		 * Do not chose parent anon_vma, otherwise first child
+-		 * will always reuse it. Root anon_vma is never reused:
++		 * Root anon_vma is never reused:
+ 		 * it has self-parent reference and at least one child.
+ 		 */
+-		if (!dst->anon_vma && anon_vma != src->anon_vma &&
+-				anon_vma->degree < 2)
++		if (!dst->anon_vma &&
++		    anon_vma->num_children < 2 &&
++		    anon_vma->num_active_vmas == 0)
+ 			dst->anon_vma = anon_vma;
+ 	}
+ 	if (dst->anon_vma)
+-		dst->anon_vma->degree++;
++		dst->anon_vma->num_active_vmas++;
+ 	unlock_anon_vma_root(root);
+ 	return 0;
  
-@@ -5146,7 +5146,7 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
- {
- 	int ret;
+@@ -341,6 +342,7 @@ int anon_vma_fork(struct vm_area_struct
+ 	anon_vma = anon_vma_alloc();
+ 	if (!anon_vma)
+ 		goto out_error;
++	anon_vma->num_active_vmas++;
+ 	avc = anon_vma_chain_alloc(GFP_KERNEL);
+ 	if (!avc)
+ 		goto out_error_free_anon_vma;
+@@ -361,7 +363,7 @@ int anon_vma_fork(struct vm_area_struct
+ 	vma->anon_vma = anon_vma;
+ 	anon_vma_lock_write(anon_vma);
+ 	anon_vma_chain_link(vma, avc, anon_vma);
+-	anon_vma->parent->degree++;
++	anon_vma->parent->num_children++;
+ 	anon_vma_unlock_write(anon_vma);
  
--	net_timestamp_check(netdev_tstamp_prequeue, skb);
-+	net_timestamp_check(READ_ONCE(netdev_tstamp_prequeue), skb);
+ 	return 0;
+@@ -393,7 +395,7 @@ void unlink_anon_vmas(struct vm_area_str
+ 		 * to free them outside the lock.
+ 		 */
+ 		if (RB_EMPTY_ROOT(&anon_vma->rb_root.rb_root)) {
+-			anon_vma->parent->degree--;
++			anon_vma->parent->num_children--;
+ 			continue;
+ 		}
  
- 	if (skb_defer_rx_timestamp(skb))
- 		return NET_RX_SUCCESS;
-@@ -5176,7 +5176,7 @@ static void netif_receive_skb_list_internal(struct list_head *head)
+@@ -401,7 +403,7 @@ void unlink_anon_vmas(struct vm_area_str
+ 		anon_vma_chain_free(avc);
+ 	}
+ 	if (vma->anon_vma)
+-		vma->anon_vma->degree--;
++		vma->anon_vma->num_active_vmas--;
+ 	unlock_anon_vma_root(root);
  
- 	INIT_LIST_HEAD(&sublist);
- 	list_for_each_entry_safe(skb, next, head, list) {
--		net_timestamp_check(netdev_tstamp_prequeue, skb);
-+		net_timestamp_check(READ_ONCE(netdev_tstamp_prequeue), skb);
- 		skb_list_del_init(skb);
- 		if (!skb_defer_rx_timestamp(skb))
- 			list_add_tail(&skb->list, &sublist);
--- 
-2.35.1
-
+ 	/*
+@@ -412,7 +414,8 @@ void unlink_anon_vmas(struct vm_area_str
+ 	list_for_each_entry_safe(avc, next, &vma->anon_vma_chain, same_vma) {
+ 		struct anon_vma *anon_vma = avc->anon_vma;
+ 
+-		VM_WARN_ON(anon_vma->degree);
++		VM_WARN_ON(anon_vma->num_children);
++		VM_WARN_ON(anon_vma->num_active_vmas);
+ 		put_anon_vma(anon_vma);
+ 
+ 		list_del(&avc->same_vma);
 
 
