@@ -2,92 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8167FECAAD3
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 01:01:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 020F9ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 01:01:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235276AbiIBBBu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 21:01:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55980 "EHLO
+        id S234982AbiIBBBz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 21:01:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235184AbiIBBBJ (ORCPT
+        with ESMTP id S235034AbiIBBBQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 21:01:09 -0400
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77F28A59A7;
-        Thu,  1 Sep 2022 18:00:59 -0700 (PDT)
-Subject: Re: [PATCH -next 2/3] md/raid10: convert resync_lock to use seqlock
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1662080457;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=u7yAk3VxuKsLyw3p8RI9MaAyfnhE92URrz7dok6zTmk=;
-        b=r/3L/CJXqUjk7tUdlFTR7a8Ot2uYLZ8hw4MOvErI29cFz8cWZyOYUQp5eL0ym5Rtg8CIru
-        3PFZMgb3d+J+h5gzAVF3gaqWG/jRZIEJhmdxSfyRoSD7dTZw/mi13E6mHbjxd7h71cMI7m
-        vlmOWZkjGksba7d5LUuCo/NU1/uapJs=
-To:     Logan Gunthorpe <logang@deltatee.com>,
-        Yu Kuai <yukuai1@huaweicloud.com>, song@kernel.org
-Cc:     linux-raid@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yukuai3@huawei.com, yi.zhang@huawei.com
-References: <20220829131502.165356-1-yukuai1@huaweicloud.com>
- <20220829131502.165356-3-yukuai1@huaweicloud.com>
- <04128618-962f-fd4e-64a9-09ecf7f83776@deltatee.com>
- <917c01c1-1e2b-66f9-69f1-ed706b7ffc8f@linux.dev>
- <cd0170a7-86ab-ebb3-0aed-93b2e18be432@deltatee.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Guoqing Jiang <guoqing.jiang@linux.dev>
-Message-ID: <8b21f188-78ef-edbb-d2eb-3a9d74a6e84d@linux.dev>
-Date:   Fri, 2 Sep 2022 09:00:54 +0800
+        Thu, 1 Sep 2022 21:01:16 -0400
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3B4C550B3
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 18:01:05 -0700 (PDT)
+Received: from localhost.localdomain (unknown [182.2.38.99])
+        by gnuweeb.org (Postfix) with ESMTPSA id B3CD380C15;
+        Fri,  2 Sep 2022 01:01:01 +0000 (UTC)
+X-GW-Data: lPqxHiMPbJw1wb7CM9QUryAGzr0yq5atzVDdxTR0iA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1662080465;
+        bh=vShv+hxcQ7QcSMBl3vGKbL5wp9p4RgG0QrNvZWcvci8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PnO9tAhWPSTQ3dilR+VckCrmrIrKBALDGVSOGeSJe+0US5Z4ceO+s09TZhluZsLVU
+         OWV0pCIZgNXWORmaZHJBS7ltxPnq4xGYHhiRmxKwlE7oOtCzJwySnlBiXpB7CmgFRH
+         lelxTHvx7SqC6TOtm+Ch7dUPxvhr8+Zy4z4j9MMFzVAmVwtmvM/ohQ1w4zvgn32kxd
+         pBZufE9p64YaF8r2d4KWeRGdogQkm5h0rDSuKAcplCMM6g8clGey0MdHDkxwPPBW5c
+         GCC7S2ktXaMlY0DNO0WjeN5jOtcBUsZYiCTq1MkvixKdaNuhoWLVt/bdrk0OIJppRj
+         VHQFnnfqxKYxg==
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        Dylan Yudaken <dylany@fb.com>,
+        Facebook Kernel Team <kernel-team@fb.com>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Kanna Scarlet <knscarlet@gnuweeb.org>,
+        Muhammad Rizki <kiizuha@gnuweeb.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        io-uring Mailing List <io-uring@vger.gnuweeb.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: [PATCH liburing v1 11/12] t/232c93d07b74: Don't use a static port number
+Date:   Fri,  2 Sep 2022 07:59:45 +0700
+Message-Id: <20220902005825.2484023-12-ammar.faizi@intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220902005825.2484023-1-ammar.faizi@intel.com>
+References: <20220902005825.2484023-1-ammar.faizi@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <cd0170a7-86ab-ebb3-0aed-93b2e18be432@deltatee.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
 
+Don't use a static port number. It might already be in use, resulting
+in a test failure. Use an ephemeral port to make this test reliable.
 
-On 9/2/22 8:56 AM, Logan Gunthorpe wrote:
->
-> On 2022-09-01 18:49, Guoqing Jiang wrote:
->>
->> On 9/2/22 2:41 AM, Logan Gunthorpe wrote:
->>> Hi,
->>>
->>> On 2022-08-29 07:15, Yu Kuai wrote:
->>>> From: Yu Kuai <yukuai3@huawei.com>
->>>>
->>>> Currently, wait_barrier() will hold 'resync_lock' to read
->>>> 'conf->barrier',
->>>> and io can't be dispatched until 'barrier' is dropped.
->>>>
->>>> Since holding the 'barrier' is not common, convert 'resync_lock' to use
->>>> seqlock so that holding lock can be avoided in fast path.
->>>>
->>>> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
->>> I've found some lockdep issues starting with this patch in md-next while
->>> running mdadm tests (specifically 00raid10 when run about 10 times in a
->>> row).
->>>
->>> I've seen a couple different lock dep errors. The first seems to be
->>> reproducible on this patch, then it possibly changes to the second on
->>> subsequent patches. Not sure exactly.
->> That's why I said "try mdadm test suites too to avoid regression." ...
-> You may have to run it multiple times, a single run tends not to catch
-> all errors. I had to loop the noted test 10 times to be sure I hit this
-> every time when I did the simple bisect.
->
-> And ensure that all the debug options are on when you run it (take a
-> look at the Kernel Hacking section in menuconfig). You won't hit this
-> bug without at least CONFIG_PROVE_LOCKING=y.
+Cc: Dylan Yudaken <dylany@fb.com>
+Cc: Facebook Kernel Team <kernel-team@fb.com>
+Cc: Pavel Begunkov <asml.silence@gmail.com>
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+---
+ test/232c93d07b74.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-Yes,  we definitely need to enable the option to test change for locking 
-stuffs.
+diff --git a/test/232c93d07b74.c b/test/232c93d07b74.c
+index c99491f..74cc063 100644
+--- a/test/232c93d07b74.c
++++ b/test/232c93d07b74.c
+@@ -17,31 +17,30 @@
+ #include <unistd.h>
+ #include <sys/socket.h>
+ #include <sys/un.h>
+ #include <netinet/tcp.h>
+ #include <netinet/in.h>
+ #include <arpa/inet.h>
+ 
+ #include "helpers.h"
+ #include "liburing.h"
+ 
+ #define RECV_BUFF_SIZE 2
+ #define SEND_BUFF_SIZE 3
+ 
+-#define PORT	0x1234
+-
+ struct params {
+ 	int tcp;
+ 	int non_blocking;
++	__be16 bind_port;
+ };
+ 
+ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+ pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+ int rcv_ready = 0;
+ 
+ static void set_rcv_ready(void)
+ {
+ 	pthread_mutex_lock(&mutex);
+ 
+ 	rcv_ready = 1;
+ 	pthread_cond_signal(&cond);
+ 
+@@ -67,30 +66,29 @@ static void *rcv(void *arg)
+ 	if (p->tcp) {
+ 		int val = 1;
+                 
+ 
+ 		s0 = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_TCP);
+ 		res = setsockopt(s0, SOL_SOCKET, SO_REUSEPORT, &val, sizeof(val));
+ 		assert(res != -1);
+ 		res = setsockopt(s0, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val));
+ 		assert(res != -1);
+ 
+ 		struct sockaddr_in addr;
+ 
+ 		addr.sin_family = AF_INET;
+-		addr.sin_port = htons(PORT);
+ 		addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+-		res = bind(s0, (struct sockaddr *) &addr, sizeof(addr));
+-		assert(res != -1);
++		assert(t_bind_ephemeral_port(s0, &addr) == 0);
++		p->bind_port = addr.sin_port;
+ 	} else {
+ 		s0 = socket(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
+ 		assert(s0 != -1);
+ 
+ 		struct sockaddr_un addr;
+ 		memset(&addr, 0, sizeof(addr));
+ 
+ 		addr.sun_family = AF_UNIX;
+ 		memcpy(addr.sun_path, "\0sock", 6);
+ 		res = bind(s0, (struct sockaddr *) &addr, sizeof(addr));
+ 		assert(res != -1);
+ 	}
+ 	res = listen(s0, 128);
+@@ -182,27 +180,27 @@ static void *snd(void *arg)
+ 
+ 	wait_for_rcv_ready();
+ 
+ 	if (p->tcp) {
+ 		int val = 1;
+ 
+ 		s0 = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_TCP);
+ 		ret = setsockopt(s0, IPPROTO_TCP, TCP_NODELAY, &val, sizeof(val));
+ 		assert(ret != -1);
+ 
+ 		struct sockaddr_in addr;
+ 
+ 		addr.sin_family = AF_INET;
+-		addr.sin_port = htons(PORT);
++		addr.sin_port = p->bind_port;
+ 		addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+ 		ret = connect(s0, (struct sockaddr*) &addr, sizeof(addr));
+ 		assert(ret != -1);
+ 	} else {
+ 		s0 = socket(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
+ 		assert(s0 != -1);
+ 
+ 		struct sockaddr_un addr;
+ 		memset(&addr, 0, sizeof(addr));
+ 
+ 		addr.sun_family = AF_UNIX;
+ 		memcpy(addr.sun_path, "\0sock", 6);
+ 		ret = connect(s0, (struct sockaddr*) &addr, sizeof(addr));
+-- 
+Ammar Faizi
 
-Thanks,
-Guoqing
