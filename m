@@ -2,87 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3EB1ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:17:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E242C001B5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:18:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236225AbiIBPRm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 11:17:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60896 "EHLO
+        id S235853AbiIBPSa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 11:18:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236391AbiIBPRJ (ORCPT
+        with ESMTP id S236446AbiIBPRy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 11:17:09 -0400
-Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B56EC28717
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 07:49:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=aZ+oBpeo8JsuvtNdwggGcqsSE9afnliueCxoJZqBN7U=; b=RAadmeaUeYbulm9czRnwLyIs2I
-        WGb29yXZX4DZLJGpVl2nRhLsckXMLIiJSJVrV6LFl8X+wPJuomJYZh1vQggraP9Pdnhv/gGikP9Qu
-        th93zu2WpmdgXVac6wraItw1t1YbqW67M1jYL6VtttTEynEM/urS1xL7pSpQMAmKGMg9Iq//2Ggcq
-        P1w0VkeNNhKdGxuOVfjUmje02hm0DZPe3MHA6LEi4L94zZuNE7sFbdwjoT9d4oHoLNJYGTmYKucF1
-        Vy1wm7IRZ1IdAVc1VgIHfAJqFW2dcQV7w2VzMj3Y5UCeoGZSdlw5jrpv1pvVp53LTEpSQ6l/LSVyC
-        +Bp2YXWw==;
-Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
-        id 1oU7z5-00BMvU-LF;
-        Fri, 02 Sep 2022 14:49:27 +0000
-Date:   Fri, 2 Sep 2022 15:49:27 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Kuyo Chang <kuyo.chang@mediatek.com>, major.chen@samsung.com,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        wsd_upstream@mediatek.com, hongfei.tang@samsung.com,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH 1/1] sched/debug: fix dentry leak in
- update_sched_domain_debugfs
-Message-ID: <YxIX96nUnwz56fte@ZenIV>
-References: <20220902031518.1116-1-kuyo.chang@mediatek.com>
- <YxGUBzp9C7kcNgps@kroah.com>
- <5ce45c874d6a05ca69abed3961d413c4a4360e79.camel@mediatek.com>
- <YxGpp/+lWSzwpVLZ@kroah.com>
- <f14e71182ebf1520aeede06afb44af49ec6128a0.camel@mediatek.com>
- <YxHI2sRgF2gqYcHk@kroah.com>
+        Fri, 2 Sep 2022 11:17:54 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36005A61C1;
+        Fri,  2 Sep 2022 07:50:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662130231; x=1693666231;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=IfcmcDyZGedEV2F81LC74u+mbSHwKTFMejAo0aMOmFk=;
+  b=mj98jTD9NDVUknPCke903QAUVjR/5p1g609LZ5eVuG3jrnMKWuKrhjs1
+   QLSOHPqw4iGF76HgTnFvwvmLpgrrXQR7iV5IhgpjoyoEjClX+B0J4/GCe
+   NyfFXTjG0BAgaOtNTDlYStQNco12VryVvG87pNWp8mO8Iqj5nAR2nHH+J
+   tpyIdUYV59VcRsbGZAiSDuv9SFskuUBwvonGV1IfZv2LUGuyXLHnViajm
+   0aWBI+W0E0SGitGgZ5nEoSq70HYJYZSxy1EnvHkiSPZL1X1R1Kv1TuEPs
+   CC5407yXHjG8RRqk7PpugvbZ/6lfHBMyfwm0C/jC7vy0cyCNYGyRmXtfW
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10458"; a="282981858"
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="282981858"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 07:50:30 -0700
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="642930461"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.42.34])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 07:50:27 -0700
+Message-ID: <2fd9b620-e9a8-9cd9-1b4a-6b13d829b2ae@intel.com>
+Date:   Fri, 2 Sep 2022 17:50:22 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YxHI2sRgF2gqYcHk@kroah.com>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: perf top -p broken for multithreaded processes since 5.19
+Content-Language: en-US
+To:     =?UTF-8?B?VG9tw6HFoSBUcm5rYQ==?= <trnka@scm.com>
+Cc:     linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>
+References: <10137382.nUPlyArG6x@mintaka.ncbr.muni.cz>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <10137382.nUPlyArG6x@mintaka.ncbr.muni.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Sep 02, 2022 at 11:11:54AM +0200, Greg Kroah-Hartman wrote:
+On 2/09/22 17:46, Tomáš Trnka wrote:
+> Hello,
+> 
+> A bug in perf v5.19 and newer completely breaks monitoring multithreaded
+> processes using "perf top -p". The tool fails to start with "Failed to mmap
+> with 22 (Invalid argument)". It still seems to work fine on single-threaded
+> processes. "perf record" is also unaffected.
 
-> +/**
-> + * debugfs_lookup_and_remove - lookup a directory or file and recursively remove it
-> + * @name: a pointer to a string containing the name of the item to look up.
-> + * @parent: a pointer to the parent dentry of the item.
-> + *
-> + * This is the equlivant of doing something like
-> + * debugfs_remove(debugfs_lookup(..)) but with the proper reference counting
-> + * handled for the directory being looked up.
-> + */
-> +void debugfs_lookup_and_remove(const char *name, struct dentry *parent)
-> +{
-> +	struct dentry *dentry;
-> +
-> +	dentry = debugfs_lookup(name, parent);
-> +	if (IS_ERR_OR_NULL(dentry))
-> +		return;
+It has been reported here:
 
-	Could somebody explain how could that return ERR_PTR()?
-
-Incidentally, IS_ERR_OR_NULL is almost always a sign of bad interface - or
-that of lazy cargo-culting.  Please, don't propagate that garbage... ;-/
+	https://bugzilla.kernel.org/show_bug.cgi?id=216441
