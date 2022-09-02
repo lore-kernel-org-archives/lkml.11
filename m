@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E070AECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:07:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56CA7C54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:07:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238912AbiIBOHX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:07:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52934 "EHLO
+        id S238821AbiIBOH3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:07:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238791AbiIBOHG (ORCPT
+        with ESMTP id S238388AbiIBOHK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:07:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A806F581;
+        Fri, 2 Sep 2022 10:07:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E6E6201B8;
         Fri,  2 Sep 2022 06:35:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 71C46B829D6;
-        Fri,  2 Sep 2022 12:36:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6DDFC433C1;
-        Fri,  2 Sep 2022 12:36:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 532CEB82AA1;
+        Fri,  2 Sep 2022 12:38:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91D9CC433C1;
+        Fri,  2 Sep 2022 12:38:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122189;
-        bh=ZoVWxiV6tSXb+yCLgJf3kun5VLXRinvydEgmuqqfpP0=;
+        s=korg; t=1662122315;
+        bh=C0kRf5bfCnAeS9Hjj1AXvIeKcZDY5VMANtibcHCCYZQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pUd5HmwAj4KXC9gHK2/AVouWInXpza65L4Nt1qjsAlo/s02h5Zu/sjI99yyBA/0eW
-         VTKJiwfjGAQsrrekDHXjr3tXDqZ5ASK3t+dQyb9+2trm6Yjulc9/O5RsBWcbijYukw
-         dmR6l5Af1eJ9mhjJ/g5ZO1alV/ZPPh3xqcL5qN7I=
+        b=JCOw1pAMEnG/Nb0wKOg+H7CkFVyh130rp/HWJ5hw2dv7hEsxewZ2xBkDqc82jojQz
+         MyKtgK+/M4BoutZCuWaT8C9cBNcZjxfl4jCeshiiM3K3sbMq5asA9Uc2VqAi0q0MVq
+         /oqjh6n9anvhuQO8ZbEZ7h+aljfwiGpFGqrocb0k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alvin Lee <alvin.lee2@amd.com>,
-        Tom Chung <chiahsuan.chung@amd.com>,
-        Fudong Wang <Fudong.Wang@amd.com>,
+        stable@vger.kernel.org, Aric Cyr <Aric.Cyr@amd.com>,
+        Brian Chang <Brian.Chang@amd.com>,
+        Ilya Bakoulin <Ilya.Bakoulin@amd.com>,
         Daniel Wheeler <daniel.wheeler@amd.com>,
         Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 41/72] drm/amd/display: clear optc underflow before turn off odm clock
-Date:   Fri,  2 Sep 2022 14:19:17 +0200
-Message-Id: <20220902121406.118493253@linuxfoundation.org>
+Subject: [PATCH 5.19 55/72] drm/amd/display: Fix pixel clock programming
+Date:   Fri,  2 Sep 2022 14:19:31 +0200
+Message-Id: <20220902121406.569076375@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
 References: <20220902121404.772492078@linuxfoundation.org>
@@ -52,43 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fudong Wang <Fudong.Wang@amd.com>
+From: Ilya Bakoulin <Ilya.Bakoulin@amd.com>
 
-[ Upstream commit b2a93490201300a749ad261b5c5d05cb50179c44 ]
+[ Upstream commit 04fb918bf421b299feaee1006e82921d7d381f18 ]
 
 [Why]
-After ODM clock off, optc underflow bit will be kept there always and clear not work.
-We need to clear that before clock off.
+Some pixel clock values could cause HDMI TMDS SSCPs to be misaligned
+between different HDMI lanes when using YCbCr420 10-bit pixel format.
+
+BIOS functions for transmitter/encoder control take pixel clock in kHz
+increments, whereas the function for setting the pixel clock is in 100Hz
+increments. Setting pixel clock to a value that is not on a kHz boundary
+will cause the issue.
 
 [How]
-Clear that if have when clock off.
+Round pixel clock down to nearest kHz in 10/12-bpc cases.
 
-Reviewed-by: Alvin Lee <alvin.lee2@amd.com>
-Acked-by: Tom Chung <chiahsuan.chung@amd.com>
-Signed-off-by: Fudong Wang <Fudong.Wang@amd.com>
+Reviewed-by: Aric Cyr <Aric.Cyr@amd.com>
+Acked-by: Brian Chang <Brian.Chang@amd.com>
+Signed-off-by: Ilya Bakoulin <Ilya.Bakoulin@amd.com>
 Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c
-index b1671b00ce405..2349977b0abb2 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c
-@@ -464,6 +464,11 @@ void optc1_enable_optc_clock(struct timing_generator *optc, bool enable)
- 				OTG_CLOCK_ON, 1,
- 				1, 1000);
- 	} else  {
-+
-+		//last chance to clear underflow, otherwise, it will always there due to clock is off.
-+		if (optc->funcs->is_optc_underflow_occurred(optc) == true)
-+			optc->funcs->clear_optc_underflow(optc);
-+
- 		REG_UPDATE_2(OTG_CLOCK_CONTROL,
- 				OTG_CLOCK_GATE_DIS, 0,
- 				OTG_CLOCK_EN, 0);
+diff --git a/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c b/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c
+index 845aa8a1027d8..c4040adb88b03 100644
+--- a/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c
++++ b/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c
+@@ -545,9 +545,11 @@ static void dce112_get_pix_clk_dividers_helper (
+ 		switch (pix_clk_params->color_depth) {
+ 		case COLOR_DEPTH_101010:
+ 			actual_pixel_clock_100hz = (actual_pixel_clock_100hz * 5) >> 2;
++			actual_pixel_clock_100hz -= actual_pixel_clock_100hz % 10;
+ 			break;
+ 		case COLOR_DEPTH_121212:
+ 			actual_pixel_clock_100hz = (actual_pixel_clock_100hz * 6) >> 2;
++			actual_pixel_clock_100hz -= actual_pixel_clock_100hz % 10;
+ 			break;
+ 		case COLOR_DEPTH_161616:
+ 			actual_pixel_clock_100hz = actual_pixel_clock_100hz * 2;
 -- 
 2.35.1
 
