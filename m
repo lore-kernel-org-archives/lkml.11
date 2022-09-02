@@ -2,147 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 602F4C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:38:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE570C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:38:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237122AbiIBMh6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:37:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54282 "EHLO
+        id S237128AbiIBMiE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:38:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237096AbiIBMhV (ORCPT
+        with ESMTP id S237048AbiIBMhW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:37:21 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 188A662DF
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 05:19:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662121194; x=1693657194;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=iito/a+ymZLPMsxae6Mq4cZS1ef+cun+eIfLQGc3m4I=;
-  b=XHnE2BlyUKK7kyvmzMDwujYhOQOXV+XXBz7r7j1pLW1fBZFgDC1wDHhd
-   TsZ3tyllsOq0skKf4sSQGAAVzkd30L2EvNUgLDCbHAB1luHKfKjkp6H56
-   WGJ+a5WeM1sYD+jU9QTSjkx/SrcXhUrHmKAglqpGNvQaDZmooOZYZ2KQw
-   /0Ewb/8oM5Y9Pw/N+BSfkD0SFQocfXDL9MIp9JV1aeAiV2geHornaCg1O
-   fl1P4zH0tPt69sWwqHvxlavBabSO2q+H+aKc/DcPPQE8bqqBRT1aFxmdO
-   wjgDo5im+JDbfXzaGIqia/7Do6b74PXSuuIPpoNVQSK6/E1zkCIsACRNs
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="275712444"
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="275712444"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 05:19:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="563946995"
-Received: from crojewsk-ctrl.igk.intel.com ([10.102.9.28])
-  by orsmga003.jf.intel.com with ESMTP; 02 Sep 2022 05:19:49 -0700
-From:   Cezary Rojewski <cezary.rojewski@intel.com>
-To:     alsa-devel@alsa-project.org, broonie@kernel.org
-Cc:     tiwai@suse.com, perex@perex.cz,
-        amadeuszx.slawinski@linux.intel.com,
-        pierre-louis.bossart@linux.intel.com, hdegoede@redhat.com,
-        lgirdwood@gmail.com, kai.vehmanen@linux.intel.com,
-        peter.ujfalusi@linux.intel.com, ranjani.sridharan@linux.intel.com,
-        yung-chuan.liao@linux.intel.com, willy@infradead.org,
-        linux-kernel@vger.kernel.org, andy@kernel.org,
-        intel-poland@eclists.intel.com, andy.shevchenko@gmail.com,
-        Cezary Rojewski <cezary.rojewski@intel.com>
-Subject: [PATCH v4 1/2] lib/string_helpers: Introduce parse_int_array_user()
-Date:   Fri,  2 Sep 2022 14:29:27 +0200
-Message-Id: <20220902122928.632602-2-cezary.rojewski@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220902122928.632602-1-cezary.rojewski@intel.com>
-References: <20220902122928.632602-1-cezary.rojewski@intel.com>
+        Fri, 2 Sep 2022 08:37:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3585D196;
+        Fri,  2 Sep 2022 05:29:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 932E0B82A9A;
+        Fri,  2 Sep 2022 12:23:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB62AC433C1;
+        Fri,  2 Sep 2022 12:23:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662121387;
+        bh=6gPjV9rlOUbTsXIzcLSSToBwAPpGY0Nzgw13d+QBlOI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=AJlSrDYKFXmKPk7bfDG1VCJkMBOeE5CjzX9uSEB7tY4OV5a2ZaHsGaarVSDfMQCDJ
+         Ia1vVnes1RrdR1540AhjmePEahOhL+Bzn3leb3qrHS7ldvaSY/qIGAn+BbS9Ptqomv
+         PvfSgX2YFvKqWIdihoNkFM44pFNUNf3jNybGTwck=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        syzbot+77b432d57c4791183ed4@syzkaller.appspotmail.com,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH 4.14 33/42] media: pvrusb2: fix memory leak in pvr_probe
+Date:   Fri,  2 Sep 2022 14:18:57 +0200
+Message-Id: <20220902121359.933312834@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220902121358.773776406@linuxfoundation.org>
+References: <20220902121358.773776406@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add new helper function to allow for splitting specified user string
-into a sequence of integers. Internally it makes use of get_options() so
-the returned sequence contains the integers extracted plus an additional
-element that begins the sequence and specifies the integers count.
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Cezary Rojewski <cezary.rojewski@intel.com>
+commit 945a9a8e448b65bec055d37eba58f711b39f66f0 upstream.
+
+The error handling code in pvr2_hdw_create forgets to unregister the
+v4l2 device. When pvr2_hdw_create returns back to pvr2_context_create,
+it calls pvr2_context_destroy to destroy context, but mp->hdw is NULL,
+which leads to that pvr2_hdw_destroy directly returns.
+
+Fix this by adding v4l2_device_unregister to decrease the refcount of
+usb interface.
+
+Reported-by: syzbot+77b432d57c4791183ed4@syzkaller.appspotmail.com
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/string_helpers.h |  2 ++
- lib/string_helpers.c           | 45 ++++++++++++++++++++++++++++++++++
- 2 files changed, 47 insertions(+)
+ drivers/media/usb/pvrusb2/pvrusb2-hdw.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/linux/string_helpers.h b/include/linux/string_helpers.h
-index 4d72258d42fd..dc2e726fd820 100644
---- a/include/linux/string_helpers.h
-+++ b/include/linux/string_helpers.h
-@@ -21,6 +21,8 @@ enum string_size_units {
- void string_get_size(u64 size, u64 blk_size, enum string_size_units units,
- 		     char *buf, int len);
- 
-+int parse_int_array_user(const char __user *from, size_t count, int **array);
-+
- #define UNESCAPE_SPACE		BIT(0)
- #define UNESCAPE_OCTAL		BIT(1)
- #define UNESCAPE_HEX		BIT(2)
-diff --git a/lib/string_helpers.c b/lib/string_helpers.c
-index 5ed3beb066e6..d0c8f6ecf84c 100644
---- a/lib/string_helpers.c
-+++ b/lib/string_helpers.c
-@@ -131,6 +131,51 @@ void string_get_size(u64 size, u64 blk_size, const enum string_size_units units,
- }
- EXPORT_SYMBOL(string_get_size);
- 
-+/**
-+ * parse_int_array_user - Split string into a sequence of integers
-+ * @from:	The user space buffer to read from
-+ * @ppos:	The current position in the buffer
-+ * @count:	The maximum number of bytes to read
-+ * @tkns:	Returned pointer to sequence of integers
-+ *
-+ * On success @tkns is allocated and initialized with a sequence of
-+ * integers extracted from the @from plus an additional element that
-+ * begins the sequence and specifies the integers count.
-+ *
-+ * Caller takes responsibility for freeing @tkns when it is no longer
-+ * needed.
-+ */
-+int parse_int_array_user(const char __user *from, size_t count, int **array)
-+{
-+	int *ints, nints;
-+	char *buf;
-+	int ret = 0;
-+
-+	buf = memdup_user_nul(from, count);
-+	if (IS_ERR(buf))
-+		return PTR_ERR(buf);
-+
-+	get_options(buf, 0, &nints);
-+	if (!nints) {
-+		ret = -ENOENT;
-+		goto free_buf;
-+	}
-+
-+	ints = kcalloc(nints + 1, sizeof(*ints), GFP_KERNEL);
-+	if (!ints) {
-+		ret = -ENOMEM;
-+		goto free_buf;
-+	}
-+
-+	get_options(buf, nints + 1, ints);
-+	*array = ints;
-+
-+free_buf:
-+	kfree(buf);
-+	return ret;
-+}
-+EXPORT_SYMBOL(parse_int_array_user);
-+
- static bool unescape_space(char **src, char **dst)
- {
- 	char *p = *dst, *q = *src;
--- 
-2.25.1
+--- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
++++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
+@@ -2604,6 +2604,7 @@ struct pvr2_hdw *pvr2_hdw_create(struct
+ 		del_timer_sync(&hdw->encoder_run_timer);
+ 		del_timer_sync(&hdw->encoder_wait_timer);
+ 		flush_work(&hdw->workpoll);
++		v4l2_device_unregister(&hdw->v4l2_dev);
+ 		usb_free_urb(hdw->ctl_read_urb);
+ 		usb_free_urb(hdw->ctl_write_urb);
+ 		kfree(hdw->ctl_read_buffer);
+
 
