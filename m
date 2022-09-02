@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF6FEC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:31:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02FFDC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:31:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234101AbiIBObt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:31:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53922 "EHLO
+        id S230151AbiIBObz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:31:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236087AbiIBO2K (ORCPT
+        with ESMTP id S236233AbiIBO2X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:28:10 -0400
+        Fri, 2 Sep 2022 10:28:23 -0400
 Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D82D1581A7
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B26421581B0
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=GdUExkZCCimaetm5TM7oIFdVp9RGBizt5Yv4RZaDQ/c=; b=HCop2yMRhmWyUiLz3VPIMxOlW2
-        6JILmVaX9kfOQXqxiYcEB2bXhi/LOkbY7uIqoSpWRrR0UsrxdAWRuRz53VMtOcIEvLmM4afs7CPIW
-        V26u8+C7dmrHAYUCgOiZ1qT7HRWhA8L0bU6jxMzQ0bR7PyRmK/6t/uare5PRjG9gsplC6HRXNifhE
-        XHM7XE/gsC6lmk/UUQhlw6hjjw1DnbriW30+I+mnBU3sAlLhYVnyHdwyiEmuyJdarTMJKBCQYK3mm
-        mmMlKQxwYGx3Q9XsRah77dNz03kU9+2etkRkjCEwCN9qi3mSDtL4/tWVgjUVk+qoeiJCABuvkMuh0
-        feRMSgzQ==;
+        bh=As36aOynrXCL6dT8N1wy2coxxgtaR4tVqpdPjpxHvf0=; b=kjTSLkd/P+fdyZjg399uKw+EGo
+        CSWOkWq5DKnZWYHurFbojMrZv9hZj5KLLCU5y2YPn6kshTXLME4QRISfxYKO3u3Os15zHTzMFNJ1s
+        SddqLTxjWgiaGda3p/tngBwPkZ0pr5d2J1QXQcb37Gkx7wuTcT0JITg+xvsKTciHrMJyo0hiA99CA
+        fY3M1o8LNnyzbXxIf2c+pCufN9Kogi0KQ0mcESLbzSulhAMzjhE2LsMW1rsdxf1uYAIWkNhdtS0AM
+        vtlHiSH+JXzYAugGvmBEq9SWDf+Xl7FfyWV5xGoIpWUJ33dHsUd4NP0Qa4ggo9Hu4uqLCsXPjlgtY
+        VAlhCj4Q==;
 Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
         by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oU77Q-008g9I-Vc; Fri, 02 Sep 2022 13:54:03 +0000
+        id 1oU77O-008g8f-NU; Fri, 02 Sep 2022 13:54:02 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 4A457302E1D;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 469E4302DFA;
         Fri,  2 Sep 2022 15:53:54 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id DFCD42B8EFB67; Fri,  2 Sep 2022 15:53:53 +0200 (CEST)
-Message-ID: <20220902130952.478910269@infradead.org>
+        id 9B0972B8EFB5E; Fri,  2 Sep 2022 15:53:53 +0200 (CEST)
+Message-ID: <20220902130951.751096802@infradead.org>
 User-Agent: quilt/0.66
-Date:   Fri, 02 Sep 2022 15:07:24 +0200
+Date:   Fri, 02 Sep 2022 15:07:17 +0200
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     Thomas Gleixner <tglx@linutronix.de>
 Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
@@ -59,7 +59,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
         Daniel Borkmann <daniel@iogearbox.net>,
         K Prateek Nayak <kprateek.nayak@amd.com>,
         Eric Dumazet <edumazet@google.com>
-Subject: [PATCH v2 59/59] x86/retbleed: Add call depth tracking mitigation
+Subject: [PATCH v2 52/59] static_call: Add call depth tracking support
 References: <20220902130625.217071627@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -67,123 +67,153 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Peter Zijlstra <peterz@infradead.org>
 
-The fully secure mitigation for RSB underflow on Intel SKL CPUs is IBRS,
-which inflicts up to 30% penalty for pathological syscall heavy work loads.
+When indirect calls are switched to direct calls then it has to be ensured
+that the call target is not the function, but the call thunk when call
+depth tracking is enabled. But static calls are available before call
+thunks have been set up.
 
-Software based call depth tracking and RSB refill is not perfect, but
-reduces the attack surface massively. The penalty for the pathological case
-is about 8% which is still annoying but definitely more palatable than IBRS.
+Ensure a second run through the static call patching code after call thunks
+have been created. When call thunks are not enabled this has no side
+effects.
 
-Add a retbleed=stuff command line option to enable the call depth tracking
-and software refill of the RSB.
-
-This gives admins a choice. IBeeRS are safe and cause headaches, call depth
-tracking is considered to be s(t)ufficiently safe.
-
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/x86/kernel/cpu/bugs.c |   32 ++++++++++++++++++++++++++++++--
- 1 file changed, 30 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/alternative.h |    5 +++++
+ arch/x86/kernel/callthunks.c       |   18 ++++++++++++++++++
+ arch/x86/kernel/static_call.c      |    1 +
+ include/linux/static_call.h        |    2 ++
+ kernel/static_call_inline.c        |   23 ++++++++++++++++++-----
+ 5 files changed, 44 insertions(+), 5 deletions(-)
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -787,6 +787,7 @@ enum retbleed_mitigation {
- 	RETBLEED_MITIGATION_IBPB,
- 	RETBLEED_MITIGATION_IBRS,
- 	RETBLEED_MITIGATION_EIBRS,
-+	RETBLEED_MITIGATION_STUFF,
- };
+--- a/arch/x86/include/asm/alternative.h
++++ b/arch/x86/include/asm/alternative.h
+@@ -91,11 +91,16 @@ struct callthunk_sites {
+ extern void callthunks_patch_builtin_calls(void);
+ extern void callthunks_patch_module_calls(struct callthunk_sites *sites,
+ 					  struct module *mod);
++extern void *callthunks_translate_call_dest(void *dest);
+ #else
+ static __always_inline void callthunks_patch_builtin_calls(void) {}
+ static __always_inline void
+ callthunks_patch_module_calls(struct callthunk_sites *sites,
+ 			      struct module *mod) {}
++static __always_inline void *callthunks_translate_call_dest(void *dest)
++{
++	return dest;
++}
+ #endif
  
- enum retbleed_mitigation_cmd {
-@@ -794,6 +795,7 @@ enum retbleed_mitigation_cmd {
- 	RETBLEED_CMD_AUTO,
- 	RETBLEED_CMD_UNRET,
- 	RETBLEED_CMD_IBPB,
-+	RETBLEED_CMD_STUFF,
- };
+ #ifdef CONFIG_SMP
+--- a/arch/x86/kernel/callthunks.c
++++ b/arch/x86/kernel/callthunks.c
+@@ -6,6 +6,7 @@
+ #include <linux/kallsyms.h>
+ #include <linux/memory.h>
+ #include <linux/moduleloader.h>
++#include <linux/static_call.h>
  
- static const char * const retbleed_strings[] = {
-@@ -802,6 +804,7 @@ static const char * const retbleed_strin
- 	[RETBLEED_MITIGATION_IBPB]	= "Mitigation: IBPB",
- 	[RETBLEED_MITIGATION_IBRS]	= "Mitigation: IBRS",
- 	[RETBLEED_MITIGATION_EIBRS]	= "Mitigation: Enhanced IBRS",
-+	[RETBLEED_MITIGATION_STUFF]	= "Mitigation: Stuffing",
- };
+ #include <asm/alternative.h>
+ #include <asm/asm-offsets.h>
+@@ -270,10 +271,27 @@ void __init callthunks_patch_builtin_cal
+ 	pr_info("Setting up call depth tracking\n");
+ 	mutex_lock(&text_mutex);
+ 	callthunks_setup(&cs, &builtin_coretext);
++	static_call_force_reinit();
+ 	thunks_initialized = true;
+ 	mutex_unlock(&text_mutex);
+ }
  
- static enum retbleed_mitigation retbleed_mitigation __ro_after_init =
-@@ -831,6 +834,8 @@ static int __init retbleed_parse_cmdline
- 			retbleed_cmd = RETBLEED_CMD_UNRET;
- 		} else if (!strcmp(str, "ibpb")) {
- 			retbleed_cmd = RETBLEED_CMD_IBPB;
-+		} else if (!strcmp(str, "stuff")) {
-+			retbleed_cmd = RETBLEED_CMD_STUFF;
- 		} else if (!strcmp(str, "nosmt")) {
- 			retbleed_nosmt = true;
- 		} else {
-@@ -879,6 +884,21 @@ static void __init retbleed_select_mitig
- 		}
- 		break;
- 
-+	case RETBLEED_CMD_STUFF:
-+		if (IS_ENABLED(CONFIG_CALL_DEPTH_TRACKING) &&
-+		    spectre_v2_enabled == SPECTRE_V2_RETPOLINE) {
-+			retbleed_mitigation = RETBLEED_MITIGATION_STUFF;
++void *callthunks_translate_call_dest(void *dest)
++{
++	void *target;
 +
-+		} else {
-+			if (IS_ENABLED(CONFIG_CALL_DEPTH_TRACKING))
-+				pr_err("WARNING: retbleed=stuff depends on spectre_v2=retpoline\n");
-+			else
-+				pr_err("WARNING: kernel not compiled with CALL_DEPTH_TRACKING.\n");
++	lockdep_assert_held(&text_mutex);
 +
-+			goto do_cmd_auto;
-+		}
-+		break;
++	if (!thunks_initialized || skip_addr(dest))
++		return dest;
 +
- do_cmd_auto:
- 	case RETBLEED_CMD_AUTO:
- 	default:
-@@ -916,6 +936,12 @@ static void __init retbleed_select_mitig
- 		mitigate_smt = true;
- 		break;
++	if (!is_coretext(NULL, dest))
++		return dest;
++
++	target = patch_dest(dest, false);
++	return target ? : dest;
++}
++
+ #ifdef CONFIG_MODULES
+ void noinline callthunks_patch_module_calls(struct callthunk_sites *cs,
+ 					    struct module *mod)
+--- a/arch/x86/kernel/static_call.c
++++ b/arch/x86/kernel/static_call.c
+@@ -34,6 +34,7 @@ static void __ref __static_call_transfor
  
-+	case RETBLEED_MITIGATION_STUFF:
-+		setup_force_cpu_cap(X86_FEATURE_RETHUNK);
-+		setup_force_cpu_cap(X86_FEATURE_CALL_DEPTH);
-+		x86_set_skl_return_thunk();
-+		break;
+ 	switch (type) {
+ 	case CALL:
++		func = callthunks_translate_call_dest(func);
+ 		code = text_gen_insn(CALL_INSN_OPCODE, insn, func);
+ 		if (func == &__static_call_return0) {
+ 			emulate = code;
+--- a/include/linux/static_call.h
++++ b/include/linux/static_call.h
+@@ -162,6 +162,8 @@ extern void arch_static_call_transform(v
+ 
+ extern int __init static_call_init(void);
+ 
++extern void static_call_force_reinit(void);
 +
- 	default:
- 		break;
+ struct static_call_mod {
+ 	struct static_call_mod *next;
+ 	struct module *mod; /* for vmlinux, mod == NULL */
+--- a/kernel/static_call_inline.c
++++ b/kernel/static_call_inline.c
+@@ -15,7 +15,18 @@ extern struct static_call_site __start_s
+ extern struct static_call_tramp_key __start_static_call_tramp_key[],
+ 				    __stop_static_call_tramp_key[];
+ 
+-static bool static_call_initialized;
++static int static_call_initialized;
++
++/*
++ * Must be called before early_initcall() to be effective.
++ */
++void static_call_force_reinit(void)
++{
++	if (WARN_ON_ONCE(!static_call_initialized))
++		return;
++
++	static_call_initialized++;
++}
+ 
+ /* mutex to protect key modules/sites */
+ static DEFINE_MUTEX(static_call_mutex);
+@@ -475,7 +486,8 @@ int __init static_call_init(void)
+ {
+ 	int ret;
+ 
+-	if (static_call_initialized)
++	/* See static_call_force_reinit(). */
++	if (static_call_initialized == 1)
+ 		return 0;
+ 
+ 	cpus_read_lock();
+@@ -490,11 +502,12 @@ int __init static_call_init(void)
+ 		BUG();
  	}
-@@ -926,7 +952,7 @@ static void __init retbleed_select_mitig
  
- 	/*
- 	 * Let IBRS trump all on Intel without affecting the effects of the
--	 * retbleed= cmdline option.
-+	 * retbleed= cmdline option except for call depth based stuffing
- 	 */
- 	if (boot_cpu_data.x86_vendor == X86_VENDOR_INTEL) {
- 		switch (spectre_v2_enabled) {
-@@ -939,7 +965,8 @@ static void __init retbleed_select_mitig
- 			retbleed_mitigation = RETBLEED_MITIGATION_EIBRS;
- 			break;
- 		default:
--			pr_err(RETBLEED_INTEL_MSG);
-+			if (retbleed_mitigation != RETBLEED_MITIGATION_STUFF)
-+				pr_err(RETBLEED_INTEL_MSG);
- 		}
- 	}
- 
-@@ -1413,6 +1440,7 @@ static void __init spectre_v2_select_mit
- 		if (IS_ENABLED(CONFIG_CPU_IBRS_ENTRY) &&
- 		    boot_cpu_has_bug(X86_BUG_RETBLEED) &&
- 		    retbleed_cmd != RETBLEED_CMD_OFF &&
-+		    retbleed_cmd != RETBLEED_CMD_STUFF &&
- 		    boot_cpu_has(X86_FEATURE_IBRS) &&
- 		    boot_cpu_data.x86_vendor == X86_VENDOR_INTEL) {
- 			mode = SPECTRE_V2_IBRS;
+-	static_call_initialized = true;
+-
+ #ifdef CONFIG_MODULES
+-	register_module_notifier(&static_call_module_nb);
++	if (!static_call_initialized)
++		register_module_notifier(&static_call_module_nb);
+ #endif
++
++	static_call_initialized = 1;
+ 	return 0;
+ }
+ early_initcall(static_call_init);
 
 
