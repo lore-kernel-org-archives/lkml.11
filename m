@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D590ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:12:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B094ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:12:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238738AbiIBNMC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:12:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54486 "EHLO
+        id S238747AbiIBNMG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:12:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238790AbiIBNLk (ORCPT
+        with ESMTP id S236072AbiIBNLn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:11:40 -0400
+        Fri, 2 Sep 2022 09:11:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9190F3ECD1;
-        Fri,  2 Sep 2022 05:48:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92C12120F9E;
+        Fri,  2 Sep 2022 05:48:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B237C620DF;
-        Fri,  2 Sep 2022 12:39:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C05ADC433C1;
-        Fri,  2 Sep 2022 12:39:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E3BC362191;
+        Fri,  2 Sep 2022 12:29:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00055C433C1;
+        Fri,  2 Sep 2022 12:29:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122367;
-        bh=m9vXiS0wVCsyjRG1863RIyfzqmzDF4v8y0kU38y9bBc=;
+        s=korg; t=1662121773;
+        bh=VAG5GdEg7FqIlZauGvChtJWSA4hc+7rDVvVB3fLDugo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=omKcVDKF7+g1EvOjlInbwvwM004hauvnibjA7t7MhMEkELDWGGHcJbXxvAHkes78e
-         L/qjOJTNdhyNPoN+3hYOdIoWJ2XJaOoFkhHkOIsi3W8opuSDuLqvlpOWRICd9vjqns
-         pD/aRehQ5hNu5sUTnOAW6cqbxpBp16452azOdG9g=
+        b=HltL6vOalS9VMcX7OmS7ywEaDHpDSIBMnw0lfAJEEvBYReNuQVsMIztVCPnlm5KJ6
+         VRVkr67p7lsR6O2xGMKbafw6nMR/LLpuJ3vvjUyLz31ioZEyzylbPmAhbOfxscjRre
+         rjn0JaC6ZMkeyn3fK/KNAAbUfsZ+uAXcHWoldQg4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 5.10 07/37] Bluetooth: L2CAP: Fix build errors in some archs
-Date:   Fri,  2 Sep 2022 14:19:29 +0200
-Message-Id: <20220902121359.409183770@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 29/77] net: Fix a data-race around sysctl_tstamp_allow_data.
+Date:   Fri,  2 Sep 2022 14:18:38 +0200
+Message-Id: <20220902121404.611613476@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121359.177846782@linuxfoundation.org>
-References: <20220902121359.177846782@linuxfoundation.org>
+In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
+References: <20220902121403.569927325@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,63 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit b840304fb46cdf7012722f456bce06f151b3e81b upstream.
+[ Upstream commit d2154b0afa73c0159b2856f875c6b4fe7cf6a95e ]
 
-This attempts to fix the follow errors:
+While reading sysctl_tstamp_allow_data, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its reader.
 
-In function 'memcmp',
-    inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:347:9,
-    inlined from 'l2cap_global_chan_by_psm' at
-    net/bluetooth/l2cap_core.c:2003:15:
-./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp'
-specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
-   44 | #define __underlying_memcmp     __builtin_memcmp
-      |                                 ^
-./include/linux/fortify-string.h:420:16: note: in expansion of macro
-'__underlying_memcmp'
-  420 |         return __underlying_memcmp(p, q, size);
-      |                ^~~~~~~~~~~~~~~~~~~
-In function 'memcmp',
-    inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:347:9,
-    inlined from 'l2cap_global_chan_by_psm' at
-    net/bluetooth/l2cap_core.c:2004:15:
-./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp'
-specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
-   44 | #define __underlying_memcmp     __builtin_memcmp
-      |                                 ^
-./include/linux/fortify-string.h:420:16: note: in expansion of macro
-'__underlying_memcmp'
-  420 |         return __underlying_memcmp(p, q, size);
-      |                ^~~~~~~~~~~~~~~~~~~
-
-Fixes: 332f1795ca20 ("Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm regression")
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: b245be1f4db1 ("net-timestamp: no-payload only sysctl")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/l2cap_core.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ net/core/skbuff.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -1988,11 +1988,11 @@ static struct l2cap_chan *l2cap_global_c
- 			src_match = !bacmp(&c->src, src);
- 			dst_match = !bacmp(&c->dst, dst);
- 			if (src_match && dst_match) {
--				c = l2cap_chan_hold_unless_zero(c);
--				if (c) {
--					read_unlock(&chan_list_lock);
--					return c;
--				}
-+				if (!l2cap_chan_hold_unless_zero(c))
-+					continue;
-+
-+				read_unlock(&chan_list_lock);
-+				return c;
- 			}
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 5bdb3cd20d619..c9fe2c0b8cae3 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -4564,7 +4564,7 @@ static bool skb_may_tx_timestamp(struct sock *sk, bool tsonly)
+ {
+ 	bool ret;
  
- 			/* Closest match */
+-	if (likely(sysctl_tstamp_allow_data || tsonly))
++	if (likely(READ_ONCE(sysctl_tstamp_allow_data) || tsonly))
+ 		return true;
+ 
+ 	read_lock_bh(&sk->sk_callback_lock);
+-- 
+2.35.1
+
 
 
