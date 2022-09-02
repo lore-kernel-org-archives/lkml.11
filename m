@@ -2,83 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4EB2C54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:52:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E3F6C54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:52:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233539AbiIBNw0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:52:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46988 "EHLO
+        id S238134AbiIBNwb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:52:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236787AbiIBNvz (ORCPT
+        with ESMTP id S238259AbiIBNwA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:51:55 -0400
+        Fri, 2 Sep 2022 09:52:00 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA6BAC12E1;
-        Fri,  2 Sep 2022 06:26:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4CC0139D53;
+        Fri,  2 Sep 2022 06:26:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A55F9B829B6;
-        Fri,  2 Sep 2022 12:29:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDCC9C433D6;
-        Fri,  2 Sep 2022 12:29:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 113E9B82B52;
+        Fri,  2 Sep 2022 13:25:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CFE6C433C1;
+        Fri,  2 Sep 2022 13:25:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121776;
-        bh=gdQ/KPd8CRekFKLKlOAVuXZbutNkpThhu5T6EwGvljg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BeDybXvKbhG4/IKgYCw0SxZp925A7hDJOvLGaR1tDIsukLZNkK7PVeAaWpv3424cv
-         Nb3nfI0ZLPhZoXp1dlLu/MfTv/Xcq6fFf/l8Iyaya3AqjMJ1nhnrQP+lFgGfBWyTWh
-         hgKcw2J+22BSynalx88FhpzeefW2HixjKyfPgyIw=
+        s=korg; t=1662125113;
+        bh=P47PCuy0b6sjxqQyA4e/eNhGPyUNXr9Ohfa1FHwdEbo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GXgRa4X58KPDpke2OHKTTsw9CmD0ohAmE9l2+HfbtkI6/SxOs4Y3MdzOGcN8t7SjM
+         r20K8eFqEIt0FdeiHQ/WnRF+/B5KZsRCXyN0sE+K6hYt+LsVNixjZr2MaTvTj9CJr2
+         9jo/Dxrh4Ibtkk3Mc3YbaTuRLsBn8t+P6jdT7YlY=
+Date:   Fri, 2 Sep 2022 15:25:10 +0200
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 30/77] net: Fix a data-race around sysctl_net_busy_poll.
-Date:   Fri,  2 Sep 2022 14:18:39 +0200
-Message-Id: <20220902121404.640131055@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
-References: <20220902121403.569927325@linuxfoundation.org>
-User-Agent: quilt/0.67
+To:     Abel Vesa <abel.vesa@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorande@qti.qualcomm.com>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Amol Maheshwari <amahesh@qti.qualcomm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Ekansh Gupta <ekangupt@qti.qualcomm.com>,
+        Arnd Bergmann <arnd@arndb.de>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Ola Jeppsson <ola@snap.com>
+Subject: Re: [PATCH 01/14] misc: fastrpc: Fix use-after-free and race in
+ fastrpc_map_find
+Message-ID: <YxIENg1AalM46bpi@kroah.com>
+References: <20220902131344.3029826-1-abel.vesa@linaro.org>
+ <20220902131344.3029826-2-abel.vesa@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220902131344.3029826-2-abel.vesa@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+On Fri, Sep 02, 2022 at 04:13:31PM +0300, Abel Vesa wrote:
+> Currently, there is a race window between the point when the mutex is
+> unlocked in fastrpc_map_lookup and the reference count increasing
+> (fastrpc_map_get) in fastrpc_map_find, which can also lead to
+> use-after-free.
+> 
+> So lets merge fastrpc_map_find into fastrpc_map_lookup which allows us
+> to both protect the maps list by also taking the &fl->lock spinlock and
+> the reference count, since the spinlock will be released only after.
+> Add take_ref argument to make this suitable for all callers.
+> 
+> Co-developed-by: Ola Jeppsson <ola@snap.com>
+> Signed-off-by: Ola Jeppsson <ola@snap.com>
+> Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
+> ---
+>  drivers/misc/fastrpc.c | 41 +++++++++++++++++++++--------------------
+>  1 file changed, 21 insertions(+), 20 deletions(-)
 
-[ Upstream commit c42b7cddea47503411bfb5f2f93a4154aaffa2d9 ]
+What commit does this fix?  Should it go to stable trees?
 
-While reading sysctl_net_busy_poll, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+Try splitting this series up into 2, one for 6.0-final with bugfixes to
+resolve issues found, and the next one on top of that for new features.
 
-Fixes: 060212928670 ("net: add low latency socket poll")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- include/net/busy_poll.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+thanks,
 
-diff --git a/include/net/busy_poll.h b/include/net/busy_poll.h
-index 9899b9af7f22f..16258c0c7319e 100644
---- a/include/net/busy_poll.h
-+++ b/include/net/busy_poll.h
-@@ -31,7 +31,7 @@ extern unsigned int sysctl_net_busy_poll __read_mostly;
- 
- static inline bool net_busy_loop_on(void)
- {
--	return sysctl_net_busy_poll;
-+	return READ_ONCE(sysctl_net_busy_poll);
- }
- 
- static inline bool sk_can_busy_loop(const struct sock *sk)
--- 
-2.35.1
-
-
-
+greg k-h
