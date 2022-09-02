@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0D32ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:49:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19451C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237614AbiIBMtu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:49:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56190 "EHLO
+        id S237632AbiIBMtx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:49:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236077AbiIBMs2 (ORCPT
+        with ESMTP id S237714AbiIBMsi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:48:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CA9C356F1;
-        Fri,  2 Sep 2022 05:34:57 -0700 (PDT)
+        Fri, 2 Sep 2022 08:48:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DABC8A00ED;
+        Fri,  2 Sep 2022 05:35:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B24E5621EC;
-        Fri,  2 Sep 2022 12:34:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9A8DC433D6;
-        Fri,  2 Sep 2022 12:34:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 77766B829E8;
+        Fri,  2 Sep 2022 12:33:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4C0CC433D6;
+        Fri,  2 Sep 2022 12:33:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122097;
-        bh=GnataGiAFSX5NG5nekK6YOQLkPP8Hse4ndp5l0psnBA=;
+        s=korg; t=1662122018;
+        bh=xIwGVScQaB9wNQuwUy6UEhNULReYG68Iz9QNMVFlI5Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vqV0trct8Wfq9mPEo2C6P8VI0DYax7Ka69IDVf3d0pgD3BGowlbowrX0jc36BSy9e
-         q58Lo4CN7G5cggQG3xOgXLcYDkEmWgQiIXs5AJIe6ah3nmw/4Ge4ZgSMWWZzW9+GjM
-         RoVaekIa+pMl5VGqWTCHuNZsCOn3wetmNsRorE2Y=
+        b=z2uCC8q/bxvUvOTg6f5Ct2wqrBztC+rj4gXMs3Mm+NlBoZRMZhmjDhotDyzBdUPIu
+         4DD+eLYRivPmuRgdrmcubPbtGcyJ4VgwG636+zJ1LdhsaSzJZG3Pzy10/aVEaFqzyw
+         IVdt1Qh32uMQdGA1EXe3JNmbYKsZIJKXRp65EdRY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        syzbot+b0de012ceb1e2a97891b@syzkaller.appspotmail.com
-Subject: [PATCH 5.19 12/72] USB: gadget: Fix use-after-free Read in usb_udc_uevent()
-Date:   Fri,  2 Sep 2022 14:18:48 +0200
-Message-Id: <20220902121405.199084223@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+77b432d57c4791183ed4@syzkaller.appspotmail.com,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH 5.15 29/73] media: pvrusb2: fix memory leak in pvr_probe
+Date:   Fri,  2 Sep 2022 14:18:53 +0200
+Message-Id: <20220902121405.402086771@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
-References: <20220902121404.772492078@linuxfoundation.org>
+In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
+References: <20220902121404.435662285@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,77 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alan Stern <stern@rowland.harvard.edu>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-commit 2191c00855b03aa59c20e698be713d952d51fc18 upstream.
+commit 945a9a8e448b65bec055d37eba58f711b39f66f0 upstream.
 
-The syzbot fuzzer found a race between uevent callbacks and gadget
-driver unregistration that can cause a use-after-free bug:
+The error handling code in pvr2_hdw_create forgets to unregister the
+v4l2 device. When pvr2_hdw_create returns back to pvr2_context_create,
+it calls pvr2_context_destroy to destroy context, but mp->hdw is NULL,
+which leads to that pvr2_hdw_destroy directly returns.
 
----------------------------------------------------------------
-BUG: KASAN: use-after-free in usb_udc_uevent+0x11f/0x130
-drivers/usb/gadget/udc/core.c:1732
-Read of size 8 at addr ffff888078ce2050 by task udevd/2968
+Fix this by adding v4l2_device_unregister to decrease the refcount of
+usb interface.
 
-CPU: 1 PID: 2968 Comm: udevd Not tainted 5.19.0-rc4-next-20220628-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google
-06/29/2022
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description mm/kasan/report.c:317 [inline]
- print_report.cold+0x2ba/0x719 mm/kasan/report.c:433
- kasan_report+0xbe/0x1f0 mm/kasan/report.c:495
- usb_udc_uevent+0x11f/0x130 drivers/usb/gadget/udc/core.c:1732
- dev_uevent+0x290/0x770 drivers/base/core.c:2424
----------------------------------------------------------------
-
-The bug occurs because usb_udc_uevent() dereferences udc->driver but
-does so without acquiring the udc_lock mutex, which protects this
-field.  If the gadget driver is unbound from the udc concurrently with
-uevent processing, the driver structure may be accessed after it has
-been deallocated.
-
-To prevent the race, we make sure that the routine holds the mutex
-around the racing accesses.
-
-Link: <https://lore.kernel.org/all/0000000000004de90405a719c951@google.com>
-CC: stable@vger.kernel.org # fc274c1e9973
-Reported-and-tested-by: syzbot+b0de012ceb1e2a97891b@syzkaller.appspotmail.com
-Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-Link: https://lore.kernel.org/r/YtlrnhHyrHsSky9m@rowland.harvard.edu
+Reported-by: syzbot+77b432d57c4791183ed4@syzkaller.appspotmail.com
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/gadget/udc/core.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/media/usb/pvrusb2/pvrusb2-hdw.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/usb/gadget/udc/core.c b/drivers/usb/gadget/udc/core.c
-index 7886497253cc..cafcf260394c 100644
---- a/drivers/usb/gadget/udc/core.c
-+++ b/drivers/usb/gadget/udc/core.c
-@@ -1728,13 +1728,14 @@ static int usb_udc_uevent(struct device *dev, struct kobj_uevent_env *env)
- 		return ret;
- 	}
- 
--	if (udc->driver) {
-+	mutex_lock(&udc_lock);
-+	if (udc->driver)
- 		ret = add_uevent_var(env, "USB_UDC_DRIVER=%s",
- 				udc->driver->function);
--		if (ret) {
--			dev_err(dev, "failed to add uevent USB_UDC_DRIVER\n");
--			return ret;
--		}
-+	mutex_unlock(&udc_lock);
-+	if (ret) {
-+		dev_err(dev, "failed to add uevent USB_UDC_DRIVER\n");
-+		return ret;
- 	}
- 
- 	return 0;
--- 
-2.37.2
-
+--- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
++++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
+@@ -2610,6 +2610,7 @@ struct pvr2_hdw *pvr2_hdw_create(struct
+ 		del_timer_sync(&hdw->encoder_run_timer);
+ 		del_timer_sync(&hdw->encoder_wait_timer);
+ 		flush_work(&hdw->workpoll);
++		v4l2_device_unregister(&hdw->v4l2_dev);
+ 		usb_free_urb(hdw->ctl_read_urb);
+ 		usb_free_urb(hdw->ctl_write_urb);
+ 		kfree(hdw->ctl_read_buffer);
 
 
