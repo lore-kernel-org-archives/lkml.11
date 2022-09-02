@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BE81C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:12:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC612C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:12:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238915AbiIBOMB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:12:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53672 "EHLO
+        id S238958AbiIBOMH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:12:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238868AbiIBOLk (ORCPT
+        with ESMTP id S238877AbiIBOLl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:11:40 -0400
+        Fri, 2 Sep 2022 10:11:41 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 39742BC25
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:39:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 92A111181D
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:39:48 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2DB97153B;
-        Fri,  2 Sep 2022 05:40:56 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6E7FC1596;
+        Fri,  2 Sep 2022 05:41:02 -0700 (PDT)
 Received: from usa.arm.com (e103737-lin.cambridge.arm.com [10.1.197.49])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id A67AC3F766;
-        Fri,  2 Sep 2022 05:40:48 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id E59503F766;
+        Fri,  2 Sep 2022 05:40:54 -0700 (PDT)
 From:   Sudeep Holla <sudeep.holla@arm.com>
 To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         op-tee@lists.trustedfirmware.org
@@ -31,9 +31,9 @@ Cc:     Sudeep Holla <sudeep.holla@arm.com>,
         Valentin Laurent <valentin.laurent@trustonic.com>,
         Lukas Hanel <lukas.hanel@trustonic.com>,
         Coboy Chen <coboy.chen@mediatek.com>
-Subject: [PATCH v2 05/10] firmware: arm_ffa: Use FFA_FEATURES to detect if native versions are supported
-Date:   Fri,  2 Sep 2022 13:40:27 +0100
-Message-Id: <20220902124032.788488-6-sudeep.holla@arm.com>
+Subject: [PATCH v2 09/10] firmware: arm_ffa: Set up 32bit execution mode flag using partiion property
+Date:   Fri,  2 Sep 2022 13:40:31 +0100
+Message-Id: <20220902124032.788488-10-sudeep.holla@arm.com>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902124032.788488-1-sudeep.holla@arm.com>
 References: <20220902124032.788488-1-sudeep.holla@arm.com>
@@ -43,86 +43,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, the ffa_dev->mode_32bit is use to detect if the native 64-bit
-or 32-bit versions of FF-A ABI needs to be used. However for the FF-A
-memory ABIs, it is not dependent on the ffa_device(i.e. the partition)
-itself, but the partition manager(SPM).
+FF-A v1.1 adds a flag in the partition properties to indicate if the
+partition runs in the AArch32 or AArch64 execution state. Use the same
+to set-up the 32-bit execution flag mode in the ffa_dev automatically
+and ignore any requests to do the same from the ffa_driver.
 
-So, the FFA_FEATURES can be use to detect if the native 64bit ABIs are
-supported or not and appropriate calls can be made based on that.
-
-Use FFA_FEATURES to detect if native versions of MEM_LEND or MEM_SHARE
-are implemented and make of the same to use native memory ABIs later on.
-
-Reviewed-by: Jens Wiklander <jens.wiklander@linaro.org>
 Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
 ---
- drivers/firmware/arm_ffa/driver.c | 22 ++++++++++++++++------
- 1 file changed, 16 insertions(+), 6 deletions(-)
+ drivers/firmware/arm_ffa/driver.c | 13 ++++++++++++-
+ include/linux/arm_ffa.h           |  2 ++
+ 2 files changed, 14 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/firmware/arm_ffa/driver.c b/drivers/firmware/arm_ffa/driver.c
-index 81b8d578b6ea..37a8ee304508 100644
+index dd6ab2f81580..dbbe15592173 100644
 --- a/drivers/firmware/arm_ffa/driver.c
 +++ b/drivers/firmware/arm_ffa/driver.c
-@@ -163,6 +163,7 @@ struct ffa_drv_info {
- 	struct mutex tx_lock; /* lock to protect Tx buffer */
- 	void *rx_buffer;
- 	void *tx_buffer;
-+	bool mem_ops_native;
- };
- 
- static struct ffa_drv_info *drv_info;
-@@ -597,6 +598,13 @@ static int ffa_features(u32 func_feat_id, u32 input_props,
+@@ -647,11 +647,19 @@ static int ffa_partition_info_get(const char *uuid_str,
  	return 0;
  }
  
-+static void ffa_set_up_mem_ops_native_flag(void)
+-static void ffa_mode_32bit_set(struct ffa_device *dev)
++static void _ffa_mode_32bit_set(struct ffa_device *dev)
+ {
+ 	dev->mode_32bit = true;
+ }
+ 
++static void ffa_mode_32bit_set(struct ffa_device *dev)
 +{
-+	if (!ffa_features(FFA_FN_NATIVE(MEM_LEND), 0, NULL, NULL) ||
-+	    !ffa_features(FFA_FN_NATIVE(MEM_SHARE), 0, NULL, NULL))
-+		drv_info->mem_ops_native = true;
++	if (drv_info->version > FFA_VERSION_1_0)
++		return;
++
++	_ffa_mode_32bit_set(dev);
 +}
 +
- static u32 ffa_api_version_get(void)
+ static int ffa_sync_send_receive(struct ffa_device *dev,
+ 				 struct ffa_send_direct_data *data)
  {
- 	return drv_info->version;
-@@ -638,10 +646,10 @@ static int ffa_sync_send_receive(struct ffa_device *dev,
- static int
- ffa_memory_share(struct ffa_device *dev, struct ffa_mem_ops_args *args)
- {
--	if (dev->mode_32bit)
--		return ffa_memory_ops(FFA_MEM_SHARE, args);
-+	if (drv_info->mem_ops_native)
-+		return ffa_memory_ops(FFA_FN_NATIVE(MEM_SHARE), args);
- 
--	return ffa_memory_ops(FFA_FN_NATIVE(MEM_SHARE), args);
-+	return ffa_memory_ops(FFA_MEM_SHARE, args);
- }
- 
- static int
-@@ -654,10 +662,10 @@ ffa_memory_lend(struct ffa_device *dev, struct ffa_mem_ops_args *args)
- 	 * however on systems without a hypervisor the responsibility
- 	 * falls to the calling kernel driver to prevent access.
- 	 */
--	if (dev->mode_32bit)
--		return ffa_memory_ops(FFA_MEM_LEND, args);
-+	if (drv_info->mem_ops_native)
-+		return ffa_memory_ops(FFA_FN_NATIVE(MEM_LEND), args);
- 
--	return ffa_memory_ops(FFA_FN_NATIVE(MEM_LEND), args);
-+	return ffa_memory_ops(FFA_MEM_LEND, args);
- }
- 
- static const struct ffa_dev_ops ffa_ops = {
-@@ -768,6 +776,8 @@ static int __init ffa_init(void)
- 
- 	ffa_setup_partitions();
- 
-+	ffa_set_up_mem_ops_native_flag();
+@@ -743,6 +751,9 @@ static void ffa_setup_partitions(void)
+ 			       __func__, tpbuf->id);
+ 			continue;
+ 		}
 +
- 	return 0;
- free_pages:
- 	if (drv_info->tx_buffer)
++		if (tpbuf->properties & FFA_PARTITION_AARCH64_EXEC)
++			_ffa_mode_32bit_set(ffa_dev);
+ 	}
+ 	kfree(pbuf);
+ }
+diff --git a/include/linux/arm_ffa.h b/include/linux/arm_ffa.h
+index 09567ffd1f49..5964b6104996 100644
+--- a/include/linux/arm_ffa.h
++++ b/include/linux/arm_ffa.h
+@@ -106,6 +106,8 @@ struct ffa_partition_info {
+ #define FFA_PARTITION_DIRECT_SEND	BIT(1)
+ /* partition can send and receive indirect messages. */
+ #define FFA_PARTITION_INDIRECT_MSG	BIT(2)
++/* partition runs in the AArch64 execution state. */
++#define FFA_PARTITION_AARCH64_EXEC	BIT(8)
+ 	u32 properties;
+ 	u32 uuid[4];
+ };
 -- 
 2.37.3
 
