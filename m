@@ -2,60 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37775ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 05:09:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E7FFC6FA81
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 05:15:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231544AbiIBFJ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 01:09:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39182 "EHLO
+        id S229514AbiIBFPY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 01:15:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229528AbiIBFJZ (ORCPT
+        with ESMTP id S229528AbiIBFPU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 01:09:25 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E43BCB5E60
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 22:09:24 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id q3so962791pjg.3
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 22:09:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date;
-        bh=PmZ+jeHheCTitnwYvU2IM5Mh5fQ9dWuFRDxNtLNgxGM=;
-        b=kGybGFCn0r9hnHDD+XlTAUGy+rtoNiikm2mL5bvqn+0h4z1q4yzz3Ns7ajlCHdrdD7
-         g0dI/EU/xfSodqQS67E+p+MEscy/R40NUQ6JBx/HWVFnHy3NznELkLnyoGTOVzfThNfN
-         XtUV1XgOogkXv8XVLpMF05vdye3kpjHgo0mQCxh2ik+qs/Fir1/o/Fs0PIyRUbXul2GF
-         WpSSXSA+kfvF8yT/K0X1P7doQGU6kb6+o2xNezqlefMyIE6/nIfSKGiucjP/yRhloqs7
-         J42GoAmP2NFJbOIkChC90ot3MlQapEROsuhYzYMwxk2VNmJGTAj+NBikTfRICRZDlX2v
-         B4gQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=PmZ+jeHheCTitnwYvU2IM5Mh5fQ9dWuFRDxNtLNgxGM=;
-        b=ocrOqE8wEg/jUvcYbV9SZBegRhmlfI/X9v46Wbj9tn5ikhaKOg/E/DS7zi8YzLOW0g
-         0nhvoOmj7AnydElnMHHVe3w0IXSZUt86LzQpDTRPime2tvSAncYdHyvYyptPU1xaR1+S
-         cEPkrRCGAuIc+2ZoaeDNkln8XqHvuvFnaVuLGtGBcPfPRVcafQt1Ls1HMgnawJ9sIVSJ
-         7VdPLH6O3WvT10ILrMEAdmRXTV8/knF+KNwvKIlpaC/LboRxoB3CJNb4sXgAc+fMhAiO
-         kFHsl6wjjKT5Ib0c6ACa/74NWpsCvYBzcu3BKrRyfIxM7VTufmgtlioxm5WJbIG0ZLEj
-         ynxQ==
-X-Gm-Message-State: ACgBeo0u8U7o3uUOe/SgucmIqN+7M+7YmpYuFucW4jkB/abwLcKW7iJA
-        yD7j5x6aR1UwFUz19Kz25852yf+bWY/AcxpH2jwNyQ==
-X-Google-Smtp-Source: AA6agR4GqC333D5J7oqjHPpAb5xShJJ+b+rwcZLQGvuq6reZtSV2d3zGioXXI/2CJ1KNCtxqT/JIReg7dxj+9v2Mqek=
-X-Received: by 2002:a17:90b:3142:b0:1fa:f533:3191 with SMTP id
- ip2-20020a17090b314200b001faf5333191mr2851172pjb.193.1662095364249; Thu, 01
- Sep 2022 22:09:24 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220830081736.119281-1-aneesh.kumar@linux.ibm.com>
- <87tu5rzigc.fsf@yhuang6-desk2.ccr.corp.intel.com> <ad19e105-9290-922d-59e6-e6813a30f5f0@linux.ibm.com>
- <87pmgezkhp.fsf@yhuang6-desk2.ccr.corp.intel.com>
-In-Reply-To: <87pmgezkhp.fsf@yhuang6-desk2.ccr.corp.intel.com>
-From:   Wei Xu <weixugc@google.com>
-Date:   Thu, 1 Sep 2022 22:09:13 -0700
-Message-ID: <CAAPL-u8MEs04DkHy6kaS788VjdYZZjAYOgzMnioOzDXbc0ZhhQ@mail.gmail.com>
-Subject: Re: [PATCH v3 updated] mm/demotion: Expose memory tier details via sysfs
-To:     "Huang, Ying" <ying.huang@intel.com>
+        Fri, 2 Sep 2022 01:15:20 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9F371EEE9
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 22:15:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662095717; x=1693631717;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version:content-transfer-encoding;
+  bh=adnEXD0tkhnpUb2vVIUHy9ABTJXPeGcyJ1wC7h/5gBM=;
+  b=NmXNHYdsbrxnPTY3tmxUQSy/A74G4h1e1/k2POr338dXPnEwsLksMF6E
+   8AsKxwdXLYH0AfuqqeXsH5bBWcOMnTCm5lrC/+bD+9Tfj1OWXTdNNUcdu
+   AgQssfeNQaYsBXO3rJ8Myuwn6OLzdqNt5vQWcqz+fIQ776aYzXgdU9NQ9
+   lcHFiap3Tgmy/GNFzanJvTikYBlMLfgx+EfqAKFNjyQsiANvToYudlkUq
+   pVNUA4fzs/d1eKifQwO/eGf6RaUEIRjv5zI2AvWBzYjHPF7HVqRkZZnww
+   0y+2ksFXd6GRwT3Oen7pVfCykpVYajfXHed4eZBsWAplo0OCVQC8OPPeG
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="297179083"
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="297179083"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 22:15:17 -0700
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="941152563"
+Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.238.208.55])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 22:15:13 -0700
+From:   "Huang, Ying" <ying.huang@intel.com>
+To:     Wei Xu <weixugc@google.com>
 Cc:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>,
         Johannes Weiner <hannes@cmpxchg.org>,
         Linux MM <linux-mm@kvack.org>,
@@ -72,106 +55,127 @@ Cc:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>,
         Dan Williams <dan.j.williams@intel.com>,
         jvgediya.oss@gmail.com, Bharata B Rao <bharata@amd.com>,
         Greg Thelen <gthelen@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH v3 updated] mm/demotion: Expose memory tier details via
+ sysfs
+In-Reply-To: <CAAPL-u8MEs04DkHy6kaS788VjdYZZjAYOgzMnioOzDXbc0ZhhQ@mail.gmail.com>
+        (Wei Xu's message of "Thu, 1 Sep 2022 22:09:13 -0700")
+References: <20220830081736.119281-1-aneesh.kumar@linux.ibm.com>
+        <87tu5rzigc.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <ad19e105-9290-922d-59e6-e6813a30f5f0@linux.ibm.com>
+        <87pmgezkhp.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <CAAPL-u8MEs04DkHy6kaS788VjdYZZjAYOgzMnioOzDXbc0ZhhQ@mail.gmail.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+Date:   Fri, 02 Sep 2022 13:15:04 +0800
+Message-ID: <87k06mz7af.fsf@yhuang6-desk2.ccr.corp.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 1, 2022 at 5:33 PM Huang, Ying <ying.huang@intel.com> wrote:
->
-> Aneesh Kumar K V <aneesh.kumar@linux.ibm.com> writes:
->
-> > On 9/1/22 12:31 PM, Huang, Ying wrote:
-> >> "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
-> >>
-> >>> This patch adds /sys/devices/virtual/memory_tiering/ where all memory=
- tier
-> >>> related details can be found. All allocated memory tiers will be list=
-ed
-> >>> there as /sys/devices/virtual/memory_tiering/memory_tierN/
-> >>>
-> >>> The nodes which are part of a specific memory tier can be listed via
-> >>> /sys/devices/virtual/memory_tiering/memory_tierN/nodes
-> >>
-> >> I think "memory_tier" is a better subsystem/bus name than
-> >> memory_tiering.  Because we have a set of memory_tierN devices inside.
-> >> "memory_tier" sounds more natural.  I know this is subjective, just my
-> >> preference.
-> >>
-> >>>
-> >>> A directory hierarchy looks like
-> >>> :/sys/devices/virtual/memory_tiering$ tree memory_tier4/
-> >>> memory_tier4/
-> >>> =E2=94=9C=E2=94=80=E2=94=80 nodes
-> >>> =E2=94=9C=E2=94=80=E2=94=80 subsystem -> ../../../../bus/memory_tieri=
-ng
-> >>> =E2=94=94=E2=94=80=E2=94=80 uevent
-> >>>
-> >>> All toptier nodes are listed via
-> >>> /sys/devices/virtual/memory_tiering/toptier_nodes
-> >>>
-> >>> :/sys/devices/virtual/memory_tiering$ cat toptier_nodes
-> >>> 0,2
-> >>> :/sys/devices/virtual/memory_tiering$ cat memory_tier4/nodes
-> >>> 0,2
-> >>
-> >> I don't think that it is a good idea to show toptier information in us=
-er
-> >> space interface.  Because it is just a in kernel implementation
-> >> details.  Now, we only promote pages from !toptier to toptier.  But
-> >> there may be multiple memory tiers in toptier and !toptier, we may
-> >> change the implementation in the future.  For example, we may promote
-> >> pages from DRAM to HBM in the future.
-> >>
-> >
-> >
-> > In the case you describe above and others, we will always have a list o=
-f
-> > NUMA nodes from which memory promotion is not done.
-> > /sys/devices/virtual/memory_tiering/toptier_nodes shows that list.
->
-> I don't think we will need that interface if we don't restrict promotion
-> in the future.  For example, he can just check the memory tier with
-> smallest number.
->
-> TBH, I don't know why do we need that interface.  What is it for?  We
-> don't want to expose unnecessary information to restrict our in kernel
-> implementation in the future.
->
-> So, please remove that interface at least before we discussing it
-> thoroughly.
+Wei Xu <weixugc@google.com> writes:
 
-I have asked for this interface to allow the userspace to query a list
-of top-tier nodes as the targets of userspace-driven promotions.  The
-idea is that demotion can gradually go down tier by tier, but we
-promote hot pages directly to the top-tier and bypass the immediate
-tiers.
-
-Certainly, this can be viewed as a policy choice.  Given that now we
-have a clearly defined memory tier hierarchy in sysfs and the
-toptier_nodes content can be constructed from this memory tier
-hierarchy and other information from the node sysfs interfaces, I am
-fine if we want to remove toptier_nodes and keep the current memory
-tier sysfs interfaces to the minimal.
-
-Wei Xu
-
-> >> Do we need a way to show the default memory tier in sysfs?  That is, t=
-he
-> >> memory tier that the DRAM nodes belong to.
-> >>
-> >
-> > I will hold adding that until we have support for modifying memory tier=
- details from
-> > userspace. That is when userspace would want to know about the default =
-memory tier.
-> >
-> > For now, the user interface is a simpler hierarchy of memory tiers, it'=
-s associated
-> > nodes and the list of nodes from which promotion is not done.
+> On Thu, Sep 1, 2022 at 5:33 PM Huang, Ying <ying.huang@intel.com> wrote:
+>>
+>> Aneesh Kumar K V <aneesh.kumar@linux.ibm.com> writes:
+>>
+>> > On 9/1/22 12:31 PM, Huang, Ying wrote:
+>> >> "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
+>> >>
+>> >>> This patch adds /sys/devices/virtual/memory_tiering/ where all memor=
+y tier
+>> >>> related details can be found. All allocated memory tiers will be lis=
+ted
+>> >>> there as /sys/devices/virtual/memory_tiering/memory_tierN/
+>> >>>
+>> >>> The nodes which are part of a specific memory tier can be listed via
+>> >>> /sys/devices/virtual/memory_tiering/memory_tierN/nodes
+>> >>
+>> >> I think "memory_tier" is a better subsystem/bus name than
+>> >> memory_tiering.  Because we have a set of memory_tierN devices inside.
+>> >> "memory_tier" sounds more natural.  I know this is subjective, just my
+>> >> preference.
+>> >>
+>> >>>
+>> >>> A directory hierarchy looks like
+>> >>> :/sys/devices/virtual/memory_tiering$ tree memory_tier4/
+>> >>> memory_tier4/
+>> >>> =E2=94=9C=E2=94=80=E2=94=80 nodes
+>> >>> =E2=94=9C=E2=94=80=E2=94=80 subsystem -> ../../../../bus/memory_tier=
+ing
+>> >>> =E2=94=94=E2=94=80=E2=94=80 uevent
+>> >>>
+>> >>> All toptier nodes are listed via
+>> >>> /sys/devices/virtual/memory_tiering/toptier_nodes
+>> >>>
+>> >>> :/sys/devices/virtual/memory_tiering$ cat toptier_nodes
+>> >>> 0,2
+>> >>> :/sys/devices/virtual/memory_tiering$ cat memory_tier4/nodes
+>> >>> 0,2
+>> >>
+>> >> I don't think that it is a good idea to show toptier information in u=
+ser
+>> >> space interface.  Because it is just a in kernel implementation
+>> >> details.  Now, we only promote pages from !toptier to toptier.  But
+>> >> there may be multiple memory tiers in toptier and !toptier, we may
+>> >> change the implementation in the future.  For example, we may promote
+>> >> pages from DRAM to HBM in the future.
+>> >>
+>> >
+>> >
+>> > In the case you describe above and others, we will always have a list =
+of
+>> > NUMA nodes from which memory promotion is not done.
+>> > /sys/devices/virtual/memory_tiering/toptier_nodes shows that list.
+>>
+>> I don't think we will need that interface if we don't restrict promotion
+>> in the future.  For example, he can just check the memory tier with
+>> smallest number.
+>>
+>> TBH, I don't know why do we need that interface.  What is it for?  We
+>> don't want to expose unnecessary information to restrict our in kernel
+>> implementation in the future.
+>>
+>> So, please remove that interface at least before we discussing it
+>> thoroughly.
 >
-> OK.
+> I have asked for this interface to allow the userspace to query a list
+> of top-tier nodes as the targets of userspace-driven promotions.  The
+> idea is that demotion can gradually go down tier by tier, but we
+> promote hot pages directly to the top-tier and bypass the immediate
+> tiers.
 >
-> Best Regards,
-> Huang, Ying
+> Certainly, this can be viewed as a policy choice.
+
+Yes.  It's possible for us to change this in the future.
+
+> Given that now we have a clearly defined memory tier hierarchy in
+> sysfs and the toptier_nodes content can be constructed from this
+> memory tier hierarchy and other information from the node sysfs
+> interfaces, I am fine if we want to remove toptier_nodes and keep the
+> current memory tier sysfs interfaces to the minimal.
+
+Thanks!
+
+Best Regards,
+Huang, Ying
+
+>> >> Do we need a way to show the default memory tier in sysfs?  That is, =
+the
+>> >> memory tier that the DRAM nodes belong to.
+>> >>
+>> >
+>> > I will hold adding that until we have support for modifying memory tie=
+r details from
+>> > userspace. That is when userspace would want to know about the default=
+ memory tier.
+>> >
+>> > For now, the user interface is a simpler hierarchy of memory tiers, it=
+'s associated
+>> > nodes and the list of nodes from which promotion is not done.
+>>
+>> OK.
+>>
+>> Best Regards,
+>> Huang, Ying
