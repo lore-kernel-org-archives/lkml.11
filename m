@@ -2,99 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC354ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 03:26:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CC95ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 03:27:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234042AbiIBD0o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 23:26:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35930 "EHLO
+        id S235121AbiIBD1e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 23:27:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231936AbiIBD0h (ORCPT
+        with ESMTP id S231936AbiIBD1c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 23:26:37 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B37D3796A6
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 20:26:36 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id w139so643273pfc.13
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 20:26:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=s6bst2A0kCUrqDNhcQ/B6E8Aii0yys2KniBEwPWQ3OM=;
-        b=V6tNgyVKRSrrQ0mQrbqdGQWb/KuJ0IygBc8Ge8Fw+9ANh7bRUfUgCIf9pHXYUMKXTW
-         CCxrHeif6nsL984E4fJF4jw0vhc1eYa9FfZjczRtcwwXJi6thTO3W8eHDoQlMeR9kpz9
-         ra60yV1HeUzvL7GiKX3nmomtmr42wOpGJqIIqMszIf9hkvTPBcXLVa9eO+RFx2QF3Y57
-         syifW/LzQOEYCn6zlf6NBNXOgRT8JGxBYoE+VXbOrtw5v+VYrwFXSDG3n5SX+4KB5OKX
-         oAhlB9YEtVS6pwcorCxBtIrT1oiesQnlJ571Wj5aGLzsDeL/TrY0TxtQuTH3Q3pBSGFZ
-         TQ6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=s6bst2A0kCUrqDNhcQ/B6E8Aii0yys2KniBEwPWQ3OM=;
-        b=O55WtwKq2Lx29U0fO/6UuG/DSeVY4442hXk+ajM25YIJWigWKVORQuhw+Iax5REx2z
-         6ggfG5EMjwsTQSsrGY40+cAInxi6aBmodyYIPTD+i4iP4JJVgtRnz0Jwc7ealazoPbAT
-         YlrIXcRFK66fw7rZ1zakXsKIKn0dAdr45rxw6RXIH3A67Li5M79B81emaphIuh2Rj7Vp
-         DhOyFr36tg2HQk8Ow2ds5p7s/oFYmsc6R4BhHAmFqj5F4p+/a2P2ra8SgYCq48OvXi23
-         1+tfYwPzCE5sUevh5dQBN55iDdGBd513Ucu3yJQSatA/FCld4uAngopxvZ4ly0oHgwGA
-         zwZg==
-X-Gm-Message-State: ACgBeo12JJEq+ZCQ+7Q6XiXUN1fsMoIlpOEg7j9Q5SJn4gQStIqyTuEf
-        729fx29cvyObiBVPP6GvbBY=
-X-Google-Smtp-Source: AA6agR6cREVojBGB71x07geLCkz3NPUB311Jho7jljv31lYg3l61ezbzSqw7GphLcpVmvUtCBY5deg==
-X-Received: by 2002:a05:6a00:2291:b0:539:d5b8:4ecc with SMTP id f17-20020a056a00229100b00539d5b84eccmr15866104pfe.79.1662089196077;
-        Thu, 01 Sep 2022 20:26:36 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id k5-20020a63d845000000b0042a713dd68csm306538pgj.53.2022.09.01.20.26.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 20:26:35 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: lu.fengchang@zte.com.cn
-To:     Larry.Finger@lwfinger.net
-Cc:     phil@philpotter.co.uk, paskripkin@gmail.com,
-        gregkh@linuxfoundation.org, straube.linux@gmail.com,
-        martin@kaiser.cx, lu.fengchang@zte.com.cn, makvihas@gmail.com,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Zeal-Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] Driver: r8188eu: Remove the unneeded result variable Return 0 instead of storing it in another redundant variable.
-Date:   Fri,  2 Sep 2022 03:26:28 +0000
-Message-Id: <20220902032628.316333-1-lu.fengchang@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 1 Sep 2022 23:27:32 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B58C27B7AB
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 20:27:31 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id E799E20A75;
+        Fri,  2 Sep 2022 03:27:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1662089249; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GL6+2GXh/2nFgXmYIP+TgmK2lf7e53/uu6BPJeJrYkk=;
+        b=c2i8KzQ8CjCNmeiqeCs2dkxyL0C7tsH9J57mAqVWbpvn6qdyGJtR/dzoQr7P00J0OCRZYZ
+        2/x4ovmo8ydfg0Iu2pjVMGKdDM7dBIpdVhJUdtTP83c6MTWZMa6HRO6M2JD6YQNxBz122B
+        jXP0U9NzA6LZ3I1IPVOhssxRtUw8ddY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1662089249;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GL6+2GXh/2nFgXmYIP+TgmK2lf7e53/uu6BPJeJrYkk=;
+        b=4SFs+r8yuGPkKxb3Xezd3fRsc8GETcgz1nzpv2C3yPqUYycX0jwFIRKlcrTmYnnZUHb7VU
+        eAo5XuVJcmlVC/AA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3D49B13328;
+        Fri,  2 Sep 2022 03:27:29 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id zr8aDCF4EWO9DAAAMHmgww
+        (envelope-from <osalvador@suse.de>); Fri, 02 Sep 2022 03:27:29 +0000
+Date:   Fri, 2 Sep 2022 05:27:27 +0200
+From:   Oscar Salvador <osalvador@suse.de>
+To:     Marco Elver <elver@google.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Michal Hocko <mhocko@suse.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Eric Dumazet <edumazet@google.com>,
+        Waiman Long <longman@redhat.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>, kasan-dev@googlegroups.com
+Subject: Re: [PATCH 1/3] lib/stackdepot: Add a refcount field in stack_record
+Message-ID: <YxF4H5tu9cl9ePMD@localhost.localdomain>
+References: <20220901044249.4624-1-osalvador@suse.de>
+ <20220901044249.4624-2-osalvador@suse.de>
+ <YxBsWu36eqUw03Dy@elver.google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YxBsWu36eqUw03Dy@elver.google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: lufengchang <lu.fengchang@zte.com.cn>
+On Thu, Sep 01, 2022 at 10:24:58AM +0200, Marco Elver wrote:
+> On Thu, Sep 01, 2022 at 06:42AM +0200, Oscar Salvador wrote:
+> >  include/linux/stackdepot.h | 13 ++++++-
+> >  lib/stackdepot.c           | 79 +++++++++++++++++++++++++++++++-------
+> >  mm/kasan/common.c          |  3 +-
+> 
+> +Cc other kasan maintainers
 
-Reported-by: Zeal-Robot <zealci@zte.com.cn>
-Signed-off-by: lufengchang <lu.fengchang@zte.com.cn>
----
- drivers/staging/r8188eu/hal/rtl8188eu_xmit.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Yeah, sorry about that, I should have CCed you guys.
 
-diff --git a/drivers/staging/r8188eu/hal/rtl8188eu_xmit.c b/drivers/staging/r8188eu/hal/rtl8188eu_xmit.c
-index 8e4a5acc0b18..6d1f56d1f9d7 100644
---- a/drivers/staging/r8188eu/hal/rtl8188eu_xmit.c
-+++ b/drivers/staging/r8188eu/hal/rtl8188eu_xmit.c
-@@ -149,7 +149,6 @@ static void fill_txdesc_phy(struct pkt_attrib *pattrib, __le32 *pdw)
- 
- static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bagg_pkt)
- {
--	int	pull = 0;
- 	uint	qsel;
- 	u8 data_rate, pwr_status, offset;
- 	struct adapter		*adapt = pxmitframe->padapter;
-@@ -295,7 +294,7 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
- 	ODM_SetTxAntByTxInfo_88E(&haldata->odmpriv, pmem, pattrib->mac_id);
- 
- 	rtl8188eu_cal_txdesc_chksum(ptxdesc);
--	return pull;
-+	return 0;
- }
- 
- /* for non-agg data frame or  management frame */
+> > +typedef enum stack_action {
+> > +	STACK_ACTION_NONE,
+> > +	STACK_ACTION_INC,
+> > +}stack_action_t;
+> > +
+> 
+> missing space after '}'. But please no unnecessary typedef, just 'enum
+> stack_action' (and spelling out 'enum stack_action' elsewhere) is just
+> fine.
+
+Sure, will re-name it.
+
+> 
+> This is in the global namespace, so I'd call this
+> stack_depot_action+STACK_DEPOT_ACTION_*.
+> 
+> However, .._ACTION_INC doesn't really say what's incremented. As an
+> analog to stack_depot_dec_count(), perhaps .._ACTION_COUNT?
+
+I guess we can go "STACK_DEPOT_ACTION_COUNT", or "STACK_DEPOT_ACTION_REF_INC",
+but the latter seems rather baroque for my taste.
+
+> In general it'd be nicer if there was stack_depot_inc_count() instead of
+> this additional argument, but I see that for performance reasons you
+> might not like that?
+
+Yes, the first prototypes didn't have this stack_action_t thing,
+but that implied that we had to look for the stack twice
+in the __set_page_owner() case.
+
+This way we only do that in the __reset_page_owner() case.
+
+So yes, it's a trade-off performance vs LOC.
+
+> > --- a/lib/stackdepot.c
+> > +++ b/lib/stackdepot.c
+> > @@ -63,6 +63,7 @@ struct stack_record {
+> >  	u32 hash;			/* Hash in the hastable */
+> >  	u32 size;			/* Number of frames in the stack */
+> >  	union handle_parts handle;
+> > +	refcount_t count;		/* Number of the same repeated stacks */
+> 
+> This will increase stack_record size for every user, even if they don't
+> care about the count.
+> 
+> Is there a way to store this out-of-line somewhere?
+
+That would require having some kind of e.g: dynamic struct and allocating
+new links to stacks as they were created and increase the refcount there.
+
+But that would be too much of complexity, I think.
+
+As I read in your other thread, we can probably live with that, but
+it is worth spelling out in the changelog.
+
+> > +void stack_depot_dec_count(depot_stack_handle_t handle)
+> > +{
+> > +	struct stack_record *stack = NULL;
+> > +
+> > +	stack = stack_depot_getstack(handle);
+> > +	if (stack) {
+> > +	/*
+> > +	 * page_owner creates some stacks via create_dummy_stack().
+> > +	 * We are not interested in those, so make sure we only decrement
+> > +	 * "valid" stacks.
+> > +	 */
+> 
+> Comment indent is wrong.
+
+Will fix it.
+
+Thanks for taking the time to review the code Marco!
+
+
 -- 
-2.25.1
-
+Oscar Salvador
+SUSE Labs
