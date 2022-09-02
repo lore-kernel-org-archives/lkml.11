@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81F4DC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:26:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 724EAECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:26:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236373AbiIBM0f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:26:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48408 "EHLO
+        id S236444AbiIBM0h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:26:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236170AbiIBMZw (ORCPT
+        with ESMTP id S236344AbiIBMZy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:25:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FD25D3448;
-        Fri,  2 Sep 2022 05:23:28 -0700 (PDT)
+        Fri, 2 Sep 2022 08:25:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B668C6CFD;
+        Fri,  2 Sep 2022 05:23:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 510FBB82A98;
-        Fri,  2 Sep 2022 12:22:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FCF5C433D6;
-        Fri,  2 Sep 2022 12:22:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6730B82A95;
+        Fri,  2 Sep 2022 12:23:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F14E5C433D7;
+        Fri,  2 Sep 2022 12:23:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121349;
-        bh=BMQq+XVOq16fiD117B6x9rrAbs3XfQzw3IPiWDPqzlM=;
+        s=korg; t=1662121384;
+        bh=JQFNrQh+IOFH4m7hcCdP9BS4HmO5CZMsPhFqdg8qEUM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k98pZMiX/xotA2hQ+7pgESch6InwX8at3M2ddZAMxQdYAFb9z7DphPqODvl0foCsR
-         AIXAridBcMMCYnF9AX2sk7UcWVtUUiV9i5StDS6pccEJEcJT7b5Wy68UY8K+N849A5
-         QIMXANw1WoFTBCJTLXgWDFjPkATM2Lcvn2YjN9r0=
+        b=Avs4sQn4mL4uVvR5niIJEwQMM+JOz0yvBVyexFEcEkbfQ2/tAmV3oma1un647elCf
+         DgTeJ5NRdRChw5bcANkB0cbo2b2JLSFB0dP+9XHSd6sNUSCOGhHnP9vaA9Yejc/OdP
+         RwrQrmBPzfRjXzINYl2TZhNJ2BiAUfi6FTKmMMkE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
-        Filipe Manana <fdmanana@suse.com>,
-        Goldwyn Rodrigues <rgoldwyn@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 4.14 21/42] btrfs: check if root is readonly while setting security xattr
-Date:   Fri,  2 Sep 2022 14:18:45 +0200
-Message-Id: <20220902121359.542722507@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 4.14 32/42] Bluetooth: L2CAP: Fix build errors in some archs
+Date:   Fri,  2 Sep 2022 14:18:56 +0200
+Message-Id: <20220902121359.904649476@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121358.773776406@linuxfoundation.org>
 References: <20220902121358.773776406@linuxfoundation.org>
@@ -50,60 +49,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Goldwyn Rodrigues <rgoldwyn@suse.de>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-commit b51111271b0352aa596c5ae8faf06939e91b3b68 upstream.
+commit b840304fb46cdf7012722f456bce06f151b3e81b upstream.
 
-For a filesystem which has btrfs read-only property set to true, all
-write operations including xattr should be denied. However, security
-xattr can still be changed even if btrfs ro property is true.
+This attempts to fix the follow errors:
 
-This happens because xattr_permission() does not have any restrictions
-on security.*, system.*  and in some cases trusted.* from VFS and
-the decision is left to the underlying filesystem. See comments in
-xattr_permission() for more details.
+In function 'memcmp',
+    inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:347:9,
+    inlined from 'l2cap_global_chan_by_psm' at
+    net/bluetooth/l2cap_core.c:2003:15:
+./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp'
+specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
+   44 | #define __underlying_memcmp     __builtin_memcmp
+      |                                 ^
+./include/linux/fortify-string.h:420:16: note: in expansion of macro
+'__underlying_memcmp'
+  420 |         return __underlying_memcmp(p, q, size);
+      |                ^~~~~~~~~~~~~~~~~~~
+In function 'memcmp',
+    inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:347:9,
+    inlined from 'l2cap_global_chan_by_psm' at
+    net/bluetooth/l2cap_core.c:2004:15:
+./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp'
+specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
+   44 | #define __underlying_memcmp     __builtin_memcmp
+      |                                 ^
+./include/linux/fortify-string.h:420:16: note: in expansion of macro
+'__underlying_memcmp'
+  420 |         return __underlying_memcmp(p, q, size);
+      |                ^~~~~~~~~~~~~~~~~~~
 
-This patch checks if the root is read-only before performing the set
-xattr operation.
-
-Testcase:
-
-  DEV=/dev/vdb
-  MNT=/mnt
-
-  mkfs.btrfs -f $DEV
-  mount $DEV $MNT
-  echo "file one" > $MNT/f1
-
-  setfattr -n "security.one" -v 2 $MNT/f1
-  btrfs property set /mnt ro true
-
-  setfattr -n "security.one" -v 1 $MNT/f1
-
-  umount $MNT
-
-CC: stable@vger.kernel.org # 4.9+
-Reviewed-by: Qu Wenruo <wqu@suse.com>
-Reviewed-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: Goldwyn Rodrigues <rgoldwyn@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: 332f1795ca20 ("Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm regression")
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/xattr.c |    3 +++
- 1 file changed, 3 insertions(+)
+ net/bluetooth/l2cap_core.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
---- a/fs/btrfs/xattr.c
-+++ b/fs/btrfs/xattr.c
-@@ -378,6 +378,9 @@ static int btrfs_xattr_handler_get(const
- 				   struct dentry *unused, struct inode *inode,
- 				   const char *name, void *buffer, size_t size)
- {
-+	if (btrfs_root_readonly(BTRFS_I(inode)->root))
-+		return -EROFS;
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -1826,11 +1826,11 @@ static struct l2cap_chan *l2cap_global_c
+ 			src_match = !bacmp(&c->src, src);
+ 			dst_match = !bacmp(&c->dst, dst);
+ 			if (src_match && dst_match) {
+-				c = l2cap_chan_hold_unless_zero(c);
+-				if (c) {
+-					read_unlock(&chan_list_lock);
+-					return c;
+-				}
++				if (!l2cap_chan_hold_unless_zero(c))
++					continue;
 +
- 	name = xattr_full_name(handler, name);
- 	return __btrfs_getxattr(inode, name, buffer, size);
- }
++				read_unlock(&chan_list_lock);
++				return c;
+ 			}
+ 
+ 			/* Closest match */
 
 
