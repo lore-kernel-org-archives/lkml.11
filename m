@@ -2,67 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B16DC6FA82
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:30:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2D61C6FA82
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:30:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229965AbiIBSa3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 14:30:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44282 "EHLO
+        id S229761AbiIBSae (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 14:30:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229803AbiIBSaM (ORCPT
+        with ESMTP id S229701AbiIBSaM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 14:30:12 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCE4B58DD4;
-        Fri,  2 Sep 2022 11:30:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C7145C366
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 11:30:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 42D07B82D06;
+        by ams.source.kernel.org (Postfix) with ESMTPS id ADCFFB82D07
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 18:30:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 60ADAC4347C;
         Fri,  2 Sep 2022 18:30:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E4F94C433C1;
-        Fri,  2 Sep 2022 18:30:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662143407;
-        bh=fPTOYsY/aQ4XYnEtunBVsdoTQdDZO9iQJvgnd1sZsCQ=;
+        s=k20201202; t=1662143408;
+        bh=VZL7x4fiFihyUNnHvWEbZ16JY0mId6o3BwIXs348NE4=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=HctiSs6E+5cUtRYjmpBZtRpvBXYeyHjEu2evkGKNJWmc033EO0lygNM641tKsRW26
-         9ISBRmbSNpBUqi3Yh0+VD9XxGyAjr7RJndFVyPh3yC69ig8sR9bgR/YXME36p03aBs
-         bswVd66cc6vo8y3LAcPYC6LnAgLvJUdgFQFfHs/7HPFdBUauqodwbcTl0RX1+SLief
-         juxHUEbQjmnyDJY7/cuX92Y7QgfkJUvrGaqAGjsRh5RNXHr0mWqRnAaExz0vZyQKFM
-         Sx4Vd9F22g30qOsdlnr1LXw5lP6Mbd0NHjzgnjl1WLSzPSHd0a+zs+JcD9wugAnnFj
-         kG9rXSmHet5aA==
+        b=FRdA0JbpdR4LsEd0sVj9NOwSo81vTUSa/g4Tx5B3TtVh9BkSP1+mO1+kKMMAJVcgT
+         5U4MkyRMMHA6PslMSGj5l0xFzgammXpxKYQDNxhffKJtCtAa7oxoMlZHDgoV1n0jKU
+         XRcZD3bC95KVQlkHPnDtAHGvmflUikAAty0jjzCGWOjnK+nq+axTS7oF477AK0hCkq
+         ZdHr7IaxU2DdkT4HajOoDo1YuUR3HKWs9GNToAaynwkhcqlWds+V8QvFchdGPAAthi
+         H9dbEgRqpt41Mo2rBnS3JsenWiwcV+oFdvEwz5u61cJmcSL+ZmwKF8whMnNWZNESuv
+         ocE9993/rt/FQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D19EBC73FE0;
-        Fri,  2 Sep 2022 18:30:07 +0000 (UTC)
-Subject: Re: [GIT PULL] platform-drivers-x86 for 6.0-2
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 485CDC395DB;
+        Fri,  2 Sep 2022 18:30:08 +0000 (UTC)
+Subject: Re: [GIT PULL] Char/Misc driver fixes for 6.0-rc4
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <3766fb4c-d7fa-564c-abeb-c746cdf12526@redhat.com>
-References: <3766fb4c-d7fa-564c-abeb-c746cdf12526@redhat.com>
+In-Reply-To: <YxIgXZNrSK+us7Vi@kroah.com>
+References: <YxIgXZNrSK+us7Vi@kroah.com>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <3766fb4c-d7fa-564c-abeb-c746cdf12526@redhat.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git tags/platform-drivers-x86-v6.0-2
-X-PR-Tracked-Commit-Id: 647e82dbf85124697be59a4b4cf00c0d38177dcb
+X-PR-Tracked-Message-Id: <YxIgXZNrSK+us7Vi@kroah.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git tags/char-misc-6.0-rc4
+X-PR-Tracked-Commit-Id: 0f022aaac9ff2ceff683231b43923c650c90b47e
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 1a2f6a3722a7c127817af24efb309e5bf70afe36
-Message-Id: <166214340785.20636.11027527328160784886.pr-tracker-bot@kernel.org>
-Date:   Fri, 02 Sep 2022 18:30:07 +0000
-To:     Hans de Goede <hdegoede@redhat.com>
+X-PR-Merge-Commit-Id: ffb384c269dce238c588e0e8e3a85c0ec098a904
+Message-Id: <166214340828.20636.14025568612912092514.pr-tracker-bot@kernel.org>
+Date:   Fri, 02 Sep 2022 18:30:08 +0000
+To:     Greg KH <gregkh@linuxfoundation.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Mark Gross <mgross@linux.intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        platform-driver-x86@vger.kernel.org
+        Andrew Morton <akpm@linux-foundation.org>,
+        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Thu, 1 Sep 2022 18:43:30 +0200:
+The pull request you sent on Fri, 2 Sep 2022 17:25:17 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git tags/platform-drivers-x86-v6.0-2
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git tags/char-misc-6.0-rc4
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/1a2f6a3722a7c127817af24efb309e5bf70afe36
+https://git.kernel.org/torvalds/c/ffb384c269dce238c588e0e8e3a85c0ec098a904
 
 Thank you!
 
