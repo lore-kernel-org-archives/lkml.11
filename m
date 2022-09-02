@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26059C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:32:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B341BECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:32:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236269AbiIBMcY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:32:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36672 "EHLO
+        id S236753AbiIBMc2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:32:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236581AbiIBMbV (ORCPT
+        with ESMTP id S236594AbiIBMb0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:31:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5197DD4F2;
-        Fri,  2 Sep 2022 05:26:56 -0700 (PDT)
+        Fri, 2 Sep 2022 08:31:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4BB3E115C;
+        Fri,  2 Sep 2022 05:26:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1AB5AB82A9D;
-        Fri,  2 Sep 2022 12:24:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64127C433D7;
-        Fri,  2 Sep 2022 12:24:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ECD40B82AB3;
+        Fri,  2 Sep 2022 12:26:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44462C433D6;
+        Fri,  2 Sep 2022 12:26:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121483;
-        bh=CROEDo68RWPkTAbO5thz1/SfBjbZ4MSLhLylUDNIiPs=;
+        s=korg; t=1662121580;
+        bh=Hj38pyWanDvKQObSmn2HNMLU/27HD7DpIs7cUPJS0/M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QgMJTOfMh1vqRaI8Io8PQdoD/JkAlUFyxKb+2yc5gnYCCzPzR/p+U5grrlE4IkfsB
-         wOgJgSHLXObvg3tTuULeBtFc3Ym8LQcghmjs4hNn1ovcwAh5+RSHmXEIB0VXGUrrv2
-         aGbJKuCw2uxpC6HR1x/Pde7RpojNx+UGdWV+m58I=
+        b=slGGRvcRiQ1ce2qZOjkTYWcSAIuJ3KigTox6BGaASvqndXD9LzJCmuTgcAb0O+4C3
+         Yhcu9mjxAoCcz+ClA8SqXSrigo8HtRf05dBnbLgnunfA7JzoqQSwKTv+fuqaloG2g1
+         m1dKh4avFhxuhYgGrkeou3RVHmhXd/wj11qcqt1M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
+        Florian Westphal <fw@strlen.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 22/56] net: Fix a data-race around sysctl_tstamp_allow_data.
-Date:   Fri,  2 Sep 2022 14:18:42 +0200
-Message-Id: <20220902121400.952264237@linuxfoundation.org>
+Subject: [PATCH 4.19 54/56] netfilter: conntrack: NF_CONNTRACK_PROCFS should no longer default to y
+Date:   Fri,  2 Sep 2022 14:19:14 +0200
+Message-Id: <20220902121402.335598665@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
 References: <20220902121400.219861128@linuxfoundation.org>
@@ -49,34 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
 
-[ Upstream commit d2154b0afa73c0159b2856f875c6b4fe7cf6a95e ]
+[ Upstream commit aa5762c34213aba7a72dc58e70601370805fa794 ]
 
-While reading sysctl_tstamp_allow_data, it can be changed
-concurrently.  Thus, we need to add READ_ONCE() to its reader.
+NF_CONNTRACK_PROCFS was marked obsolete in commit 54b07dca68557b09
+("netfilter: provide config option to disable ancient procfs parts") in
+v3.3.
 
-Fixes: b245be1f4db1 ("net-timestamp: no-payload only sysctl")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/skbuff.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/netfilter/Kconfig | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index c623c129d0ab6..e0be1f8651bbe 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -4377,7 +4377,7 @@ static bool skb_may_tx_timestamp(struct sock *sk, bool tsonly)
- {
- 	bool ret;
+diff --git a/net/netfilter/Kconfig b/net/netfilter/Kconfig
+index 56cddadb65d0c..92e0514f624fa 100644
+--- a/net/netfilter/Kconfig
++++ b/net/netfilter/Kconfig
+@@ -117,7 +117,6 @@ config NF_CONNTRACK_ZONES
  
--	if (likely(sysctl_tstamp_allow_data || tsonly))
-+	if (likely(READ_ONCE(sysctl_tstamp_allow_data) || tsonly))
- 		return true;
- 
- 	read_lock_bh(&sk->sk_callback_lock);
+ config NF_CONNTRACK_PROCFS
+ 	bool "Supply CT list in procfs (OBSOLETE)"
+-	default y
+ 	depends on PROC_FS
+ 	---help---
+ 	This option enables for the list of known conntrack entries
 -- 
 2.35.1
 
