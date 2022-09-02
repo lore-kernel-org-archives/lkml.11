@@ -2,95 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB7F9ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:44:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 415E1C6FA87
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:44:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237894AbiIBNnc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:43:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42686 "EHLO
+        id S236006AbiIBNoJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:44:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235956AbiIBNnH (ORCPT
+        with ESMTP id S237877AbiIBNna (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:43:07 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5B0A0FF0
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:19:52 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BA7641516;
-        Fri,  2 Sep 2022 06:03:17 -0700 (PDT)
-Received: from [10.57.16.88] (unknown [10.57.16.88])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D90B73F766;
-        Fri,  2 Sep 2022 06:03:09 -0700 (PDT)
-Message-ID: <54e034aa-4012-e6f1-c0f3-325d8fe0f4c1@arm.com>
-Date:   Fri, 2 Sep 2022 14:03:07 +0100
+        Fri, 2 Sep 2022 09:43:30 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09139220D1;
+        Fri,  2 Sep 2022 06:20:04 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id e18so2682539edj.3;
+        Fri, 02 Sep 2022 06:20:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=Yflm318cdjKKS5Aq2XfV+05wBq9c0y5FzGJjH2Yk41k=;
+        b=Jkbt1v21G9Rxye/+N0o+IPOTj+CuYxmmfaK+N29VNl/9G+1qxjAcFRWyz3WKpt8fpG
+         0En1J4aPdQ1j2H/JkICRxNolwWhc7d9MxiK5bbehVLVvF8EGNqKn5KzTWDUAYuveOo/E
+         qEa14Xcww3Atx3eBw4lCvL/p5wjoVzdVALga1VjNQPIiTEvuZDSxnwKWheAwkcKWIt3q
+         lXcu6daCRI2nPoTmhpOea4xE7vXlBqojB4Q/nOhggO/jOpeLVC0vZvbxzBd6889QFMfV
+         M8UmLmatw9W+2wmJl6NTPcgsrA+qmPMEJ/OHrt/x4Ot9be4MAcLFtojgME9F/vYiaUlZ
+         3eFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=Yflm318cdjKKS5Aq2XfV+05wBq9c0y5FzGJjH2Yk41k=;
+        b=jyQ5qfrsuJdSt8Y18OlpT3zSpmKo2cj0l10Dmi6XID87WCD7Lk57ZsJuXDzFJfPD8o
+         pCysIfxMVMmE2/mCKIsIZe+Wx/mDESS63EN3C9rVvmUkTYFNEtKQBZQs7hvhCBk3i8D5
+         n2I4xL3I/msK0sIY0XbbAKG1h05fAeTb8ml7CgiSj3vRVqPpwGJzlPgZt9+tzpMdTpn3
+         cGzY30t7A2C1aQmi0H+m13JzN0WLcQPlucYeyMCPxyezgp/6MwUgneeMBGispMIDC6sE
+         Ki4dH7uPNlbLFNrcw+YMPAFxkEwe+gGeJyt1iowxjspAUKFjMw7dQmQFkQf3QzfcwEmS
+         rMsQ==
+X-Gm-Message-State: ACgBeo0rvfVPGXba4QasNKpon0DbPKQkCQpnMrVhXH8mOwd2gZLk7myb
+        dU3mfIcqC9hjJ8C2gaZU7So=
+X-Google-Smtp-Source: AA6agR4OiTkdRvW0jcLpeFu+OQUHUqFNbN72o5cyjawWba6U+tMSbT/7lYfLOeesYk2FIldmbW4ZIw==
+X-Received: by 2002:aa7:cb56:0:b0:447:8d82:729b with SMTP id w22-20020aa7cb56000000b004478d82729bmr33697090edt.342.1662124707233;
+        Fri, 02 Sep 2022 06:18:27 -0700 (PDT)
+Received: from [10.17.0.13] ([37.120.217.82])
+        by smtp.gmail.com with ESMTPSA id bt14-20020a0564020a4e00b004462849aa06sm1484643edb.5.2022.09.02.06.18.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Sep 2022 06:18:26 -0700 (PDT)
+Message-ID: <312ede16-f0a9-9b9e-a0d6-fb6e37d9f1bb@gmail.com>
+Date:   Fri, 2 Sep 2022 15:18:25 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] coresight: cti-sysfs: Mark coresight_cti_reg_store() as
- __maybe_unused
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 0/4] firmware: Add support for Qualcomm UEFI Secure
+ Application
 Content-Language: en-US
-To:     Nathan Chancellor <nathan@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>
-Cc:     Mike Leach <mike.leach@linaro.org>, Leo Yan <leo.yan@linaro.org>,
-        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <20220901195055.1932340-1-nathan@kernel.org>
-From:   James Clark <james.clark@arm.com>
-In-Reply-To: <20220901195055.1932340-1-nathan@kernel.org>
-Content-Type: text/plain; charset=UTF-8
+To:     Sumit Garg <sumit.garg@linaro.org>
+Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Steev Klimaszewski <steev@kali.org>,
+        Shawn Guo <shawn.guo@linaro.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-arm-msm@vger.kernel.org, linux-efi@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Ard Biesheuvel <ardb@kernel.org>
+References: <20220723224949.1089973-1-luzmaximilian@gmail.com>
+ <dfd07f84-c4bd-a18c-2263-49f999f2934c@linaro.org>
+ <f42539d0-c2a3-a2b2-c35b-b7a5904b376f@gmail.com>
+ <db00f6a9-263d-9c47-486e-7080ffc5b3c9@linaro.org>
+From:   Maximilian Luz <luzmaximilian@gmail.com>
+In-Reply-To: <db00f6a9-263d-9c47-486e-7080ffc5b3c9@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi,
 
-
-On 01/09/2022 20:50, Nathan Chancellor wrote:
-> When building without CONFIG_CORESIGHT_CTI_INTEGRATION_REGS, there is a
-> warning about coresight_cti_reg_store() being unused in the file:
+On 9/2/22 09:26, Sumit Garg wrote:
+> Hi Maximilian,
 > 
->   drivers/hwtracing/coresight/coresight-cti-sysfs.c:184:16: warning: 'coresight_cti_reg_store' defined but not used [-Wunused-function]
->     184 | static ssize_t coresight_cti_reg_store(struct device *dev,
->         |                ^~~~~~~~~~~~~~~~~~~~~~~
-> 
-> This is expected as coresight_cti_reg_store() is only used in the
-> coresight_cti_reg_rw macro, which is only used in a block guarded by
-> CONFIG_CORESIGHT_CTI_INTEGRATION_REGS. Mark coresight_cti_reg_store() as
-> __maybe_unused to clearly indicate that the function may be unused
-> depending on the configuration.
+> On 02/08/22 18:52, Maximilian Luz wrote:
 
-It would also be possible to fix this by wrapping the definitions in
-#ifdef CONFIG_CORESIGHT_CTI_INTEGRATION_REGS. That way the maybe_unused
-isn't needed and it's a bit cleaner.
+[...]
 
-Either way, thanks for the fix.
+>> Thanks for this information! So as far as I understand it, this is currently an
+>> interface to user-space only, i.e. does not allow in-kernel drivers for apps?
+> 
+> The Linux TEE framework already provides an in-kernel interface to TEE as well via TEE bus [1]. There are already multiple kernel drivers [2] [3] [4] [5] [6] [7] using it. So an EFI driver can be an addition to that.
+> 
+> Now coming on to TEE implementations, the drivers I mentioned are based on OP-TEE where devices are queried/enumerated during OP-TEE probe here [8]. So in similar manner QTEE smcinvoke driver should be able to register devices on the TEE bus.
+> 
+> [1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/staging/tee.rst#n56
+> 
+> [2] drivers/char/tpm/tpm_ftpm_tee.c
+> 
+> [3] drivers/char/hw_random/optee-rng.c
+> 
+> [4] drivers/firmware/arm_scmi/optee.c
+> 
+> [5] security/keys/trusted-keys/trusted_tee.c
+> 
+> [6] drivers/firmware/broadcom/tee_bnxt_fw.c
+> 
+> [7] drivers/rtc/rtc-optee.c
+> 
+> [8] drivers/tee/optee/device.c
 
-Reviewed-by: James Clark <james.clark@arm.com>
+Thanks for those links!
 
-> 
-> Fixes: fbca79e55429 ("coresight: cti-sysfs: Re-use same functions for similar sysfs register accessors")
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-> ---
->  drivers/hwtracing/coresight/coresight-cti-sysfs.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/hwtracing/coresight/coresight-cti-sysfs.c b/drivers/hwtracing/coresight/coresight-cti-sysfs.c
-> index 478b8d38b744..6d59c815ecf5 100644
-> --- a/drivers/hwtracing/coresight/coresight-cti-sysfs.c
-> +++ b/drivers/hwtracing/coresight/coresight-cti-sysfs.c
-> @@ -181,9 +181,9 @@ static ssize_t coresight_cti_reg_show(struct device *dev,
->  }
->  
->  /* Write registers with power check only (no enable check). */
-> -static ssize_t coresight_cti_reg_store(struct device *dev,
-> -				       struct device_attribute *attr,
-> -				       const char *buf, size_t size)
-> +static __maybe_unused ssize_t coresight_cti_reg_store(struct device *dev,
-> +						      struct device_attribute *attr,
-> +						      const char *buf, size_t size)
->  {
->  	struct cti_drvdata *drvdata = dev_get_drvdata(dev->parent);
->  	struct cs_off_attribute *cti_attr = container_of(attr, struct cs_off_attribute, attr);
-> 
-> base-commit: 0a98181f805058773961c5ab3172ecf1bf1ed0e1
+I think it would indeed be good if we could make it work via that
+interface and I guess that should generally be possible. As far as I can
+see, the biggest problem might be that the current firmware doesn't seem
+to use UUIDs, so I guess we might need to emulate them somehow.
+
+It would be great if someone with some actual knowledge of the firmware
+used on those devices could have a look at this and provide some
+insights.
+
+My plan for now is to hold off on the UEFI variable driver until we have
+a (proper) TEE driver, which unfortunately might be a bit out of my
+depth. I'm happy to help out in any way I can though.
+
+Regards,
+Max
