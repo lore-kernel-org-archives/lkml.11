@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADAC8ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:35:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F797C54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:35:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236846AbiIBMfj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:35:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55170 "EHLO
+        id S236626AbiIBMfz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:35:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237041AbiIBMeI (ORCPT
+        with ESMTP id S236036AbiIBMeL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:34:08 -0400
+        Fri, 2 Sep 2022 08:34:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F670D8E27;
-        Fri,  2 Sep 2022 05:28:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D9C9E3988;
+        Fri,  2 Sep 2022 05:28:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9732762176;
-        Fri,  2 Sep 2022 12:26:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4F19C433D6;
-        Fri,  2 Sep 2022 12:26:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7075562136;
+        Fri,  2 Sep 2022 12:26:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74338C433D6;
+        Fri,  2 Sep 2022 12:26:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121563;
-        bh=4xJJOHqLzP7spsbVN3XdLsPg6PaX12EVx7PC1XKrqDs=;
+        s=korg; t=1662121586;
+        bh=lmIPIPSBVldjHAb2BCMXUesAoUg65FxjM5NXsjyYyYo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bVaaHGNPwJLVpFoy2C5DeH/WHZrmVypz3qS+wh0bUa4IDNmrhUtRPsp/1DKQzMEHJ
-         80EEGTTqtb30vezG8Z1CpJpTH3Gk6jSLyoT5Xg5wAtG6VjWveAa1Nn6LRA1LYryPhz
-         GnD+l5piFSUtJK3pFwTB/8Wl54KuZKHCSHXtLYwc=
+        b=jpS8S7ZluCYrSrZnrOGexXXkhM2hrWJbB6HQ3NffLql60Sp3TMTUJzlkVePUYEQNE
+         P82dBLC4c8cje+l00TB7FNLwQaMA59UrthLFOURBZOQDndTji8Zjd1BmZFnz/Fmmjy
+         r/8XB5CFWMBlCO/3tdY8W9iF5x8XlxKLhEeb3bgs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Letu Ren <fantasquex@gmail.com>, Helge Deller <deller@gmx.de>
-Subject: [PATCH 4.19 48/56] fbdev: fb_pm2fb: Avoid potential divide by zero error
-Date:   Fri,  2 Sep 2022 14:19:08 +0200
-Message-Id: <20220902121402.079452796@linuxfoundation.org>
+        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
+        Filipe Manana <fdmanana@suse.com>,
+        Goldwyn Rodrigues <rgoldwyn@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 4.19 29/56] btrfs: check if root is readonly while setting security xattr
+Date:   Fri,  2 Sep 2022 14:18:49 +0200
+Message-Id: <20220902121401.248191627@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
 References: <20220902121400.219861128@linuxfoundation.org>
@@ -48,47 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Letu Ren <fantasquex@gmail.com>
+From: Goldwyn Rodrigues <rgoldwyn@suse.de>
 
-commit 19f953e7435644b81332dd632ba1b2d80b1e37af upstream.
+commit b51111271b0352aa596c5ae8faf06939e91b3b68 upstream.
 
-In `do_fb_ioctl()` of fbmem.c, if cmd is FBIOPUT_VSCREENINFO, var will be
-copied from user, then go through `fb_set_var()` and
-`info->fbops->fb_check_var()` which could may be `pm2fb_check_var()`.
-Along the path, `var->pixclock` won't be modified. This function checks
-whether reciprocal of `var->pixclock` is too high. If `var->pixclock` is
-zero, there will be a divide by zero error. So, it is necessary to check
-whether denominator is zero to avoid crash. As this bug is found by
-Syzkaller, logs are listed below.
+For a filesystem which has btrfs read-only property set to true, all
+write operations including xattr should be denied. However, security
+xattr can still be changed even if btrfs ro property is true.
 
-divide error in pm2fb_check_var
-Call Trace:
- <TASK>
- fb_set_var+0x367/0xeb0 drivers/video/fbdev/core/fbmem.c:1015
- do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1110
- fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1189
+This happens because xattr_permission() does not have any restrictions
+on security.*, system.*  and in some cases trusted.* from VFS and
+the decision is left to the underlying filesystem. See comments in
+xattr_permission() for more details.
 
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Letu Ren <fantasquex@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+This patch checks if the root is read-only before performing the set
+xattr operation.
+
+Testcase:
+
+  DEV=/dev/vdb
+  MNT=/mnt
+
+  mkfs.btrfs -f $DEV
+  mount $DEV $MNT
+  echo "file one" > $MNT/f1
+
+  setfattr -n "security.one" -v 2 $MNT/f1
+  btrfs property set /mnt ro true
+
+  setfattr -n "security.one" -v 1 $MNT/f1
+
+  umount $MNT
+
+CC: stable@vger.kernel.org # 4.9+
+Reviewed-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: Goldwyn Rodrigues <rgoldwyn@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/pm2fb.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ fs/btrfs/xattr.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/video/fbdev/pm2fb.c
-+++ b/drivers/video/fbdev/pm2fb.c
-@@ -616,6 +616,11 @@ static int pm2fb_check_var(struct fb_var
- 		return -EINVAL;
- 	}
- 
-+	if (!var->pixclock) {
-+		DPRINTK("pixclock is zero\n");
-+		return -EINVAL;
-+	}
+--- a/fs/btrfs/xattr.c
++++ b/fs/btrfs/xattr.c
+@@ -369,6 +369,9 @@ static int btrfs_xattr_handler_set(const
+ 				   const char *name, const void *buffer,
+ 				   size_t size, int flags)
+ {
++	if (btrfs_root_readonly(BTRFS_I(inode)->root))
++		return -EROFS;
 +
- 	if (PICOS2KHZ(var->pixclock) > PM2_MAX_PIXCLOCK) {
- 		DPRINTK("pixclock too high (%ldKHz)\n",
- 			PICOS2KHZ(var->pixclock));
+ 	name = xattr_full_name(handler, name);
+ 	return btrfs_setxattr(NULL, inode, name, buffer, size, flags);
+ }
 
 
