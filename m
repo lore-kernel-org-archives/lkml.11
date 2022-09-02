@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 878D0ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:21:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F6C2ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:21:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235673AbiIBMVl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:21:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46582 "EHLO
+        id S235614AbiIBMVt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:21:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235631AbiIBMVO (ORCPT
+        with ESMTP id S235774AbiIBMVO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 08:21:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73053422F9;
-        Fri,  2 Sep 2022 05:20:30 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 356754D251;
+        Fri,  2 Sep 2022 05:20:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F351B82A8F;
-        Fri,  2 Sep 2022 12:20:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 744F8C433D6;
-        Fri,  2 Sep 2022 12:20:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C4B0A620C5;
+        Fri,  2 Sep 2022 12:20:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B36C9C433D6;
+        Fri,  2 Sep 2022 12:20:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121227;
-        bh=AIEknmOfKkXVC+4GIuxKJQWEsOndGqgmkeZKzfxZG0Y=;
+        s=korg; t=1662121231;
+        bh=01KB4X1Lm1hVLMRWDMNTi4UfXBMeRJrbmHAD7ql4puc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sbrmJn45UlO3L5NUL7wHw6dctQCQoUHdozH/GaZE+6yE7EeNLkKH+wWaTf9Va8+zX
-         4lWkomIWsn5Hpknz+u1wEFccvrR+Mdw304UAjaPlBkEG89+giatWl8//XBUARPW4Xw
-         dd4esO1I+NEtB6JCNtfW0Ff4hocsyCRQW9h9Y0Xs=
+        b=Hp61bOcixj5vpfUlgf+qrtdlFMcYZjJ4T/sDBTfDCAt3GVaa0JQlmIy9rXVrQUExP
+         R8Y3zhyjfqBt+Xcvy9vyclOh8bRVRjadAz28v4HCqyFFFGKGQVcsW4Na5/DHZ+uuOY
+         LiZ4cYfeRdWM2N9uzaqPvR1JSkn8dUso2DnFS5Qw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
-        Filipe Manana <fdmanana@suse.com>,
-        Goldwyn Rodrigues <rgoldwyn@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 4.9 13/31] btrfs: check if root is readonly while setting security xattr
-Date:   Fri,  2 Sep 2022 14:18:39 +0200
-Message-Id: <20220902121357.243832041@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Siddh Raman Pant <code@siddh.me>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
+        syzbot+a8e049cd3abd342936b6@syzkaller.appspotmail.com
+Subject: [PATCH 4.9 14/31] loop: Check for overflow while configuring loop
+Date:   Fri,  2 Sep 2022 14:18:40 +0200
+Message-Id: <20220902121357.276618508@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121356.732130937@linuxfoundation.org>
 References: <20220902121356.732130937@linuxfoundation.org>
@@ -50,60 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Goldwyn Rodrigues <rgoldwyn@suse.de>
+From: Siddh Raman Pant <code@siddh.me>
 
-commit b51111271b0352aa596c5ae8faf06939e91b3b68 upstream.
+commit c490a0b5a4f36da3918181a8acdc6991d967c5f3 upstream.
 
-For a filesystem which has btrfs read-only property set to true, all
-write operations including xattr should be denied. However, security
-xattr can still be changed even if btrfs ro property is true.
+The userspace can configure a loop using an ioctl call, wherein
+a configuration of type loop_config is passed (see lo_ioctl()'s
+case on line 1550 of drivers/block/loop.c). This proceeds to call
+loop_configure() which in turn calls loop_set_status_from_info()
+(see line 1050 of loop.c), passing &config->info which is of type
+loop_info64*. This function then sets the appropriate values, like
+the offset.
 
-This happens because xattr_permission() does not have any restrictions
-on security.*, system.*  and in some cases trusted.* from VFS and
-the decision is left to the underlying filesystem. See comments in
-xattr_permission() for more details.
+loop_device has lo_offset of type loff_t (see line 52 of loop.c),
+which is typdef-chained to long long, whereas loop_info64 has
+lo_offset of type __u64 (see line 56 of include/uapi/linux/loop.h).
 
-This patch checks if the root is read-only before performing the set
-xattr operation.
+The function directly copies offset from info to the device as
+follows (See line 980 of loop.c):
+	lo->lo_offset = info->lo_offset;
 
-Testcase:
+This results in an overflow, which triggers a warning in iomap_iter()
+due to a call to iomap_iter_done() which has:
+	WARN_ON_ONCE(iter->iomap.offset > iter->pos);
 
-  DEV=/dev/vdb
-  MNT=/mnt
+Thus, check for negative value during loop_set_status_from_info().
 
-  mkfs.btrfs -f $DEV
-  mount $DEV $MNT
-  echo "file one" > $MNT/f1
+Bug report: https://syzkaller.appspot.com/bug?id=c620fe14aac810396d3c3edc9ad73848bf69a29e
 
-  setfattr -n "security.one" -v 2 $MNT/f1
-  btrfs property set /mnt ro true
-
-  setfattr -n "security.one" -v 1 $MNT/f1
-
-  umount $MNT
-
-CC: stable@vger.kernel.org # 4.9+
-Reviewed-by: Qu Wenruo <wqu@suse.com>
-Reviewed-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: Goldwyn Rodrigues <rgoldwyn@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Reported-and-tested-by: syzbot+a8e049cd3abd342936b6@syzkaller.appspotmail.com
+Cc: stable@vger.kernel.org
+Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Signed-off-by: Siddh Raman Pant <code@siddh.me>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220823160810.181275-1-code@siddh.me
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/xattr.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/block/loop.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/fs/btrfs/xattr.c
-+++ b/fs/btrfs/xattr.c
-@@ -375,6 +375,9 @@ static int btrfs_xattr_handler_get(const
- 				   struct dentry *unused, struct inode *inode,
- 				   const char *name, void *buffer, size_t size)
- {
-+	if (btrfs_root_readonly(BTRFS_I(inode)->root))
-+		return -EROFS;
+--- a/drivers/block/loop.c
++++ b/drivers/block/loop.c
+@@ -1202,6 +1202,11 @@ loop_get_status(struct loop_device *lo,
+ 	info->lo_rdevice = huge_encode_dev(lo->lo_device ? stat.rdev : stat.dev);
+ 	info->lo_offset = lo->lo_offset;
+ 	info->lo_sizelimit = lo->lo_sizelimit;
 +
- 	name = xattr_full_name(handler, name);
- 	return __btrfs_getxattr(inode, name, buffer, size);
- }
++	/* loff_t vars have been assigned __u64 */
++	if (lo->lo_offset < 0 || lo->lo_sizelimit < 0)
++		return -EOVERFLOW;
++
+ 	info->lo_flags = lo->lo_flags;
+ 	memcpy(info->lo_file_name, lo->lo_file_name, LO_NAME_SIZE);
+ 	memcpy(info->lo_crypt_name, lo->lo_crypt_name, LO_NAME_SIZE);
 
 
