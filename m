@@ -2,138 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDB4AC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:38:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 773EEC6FA82
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:38:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237417AbiIBNi0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:38:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54616 "EHLO
+        id S237576AbiIBNia (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:38:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237411AbiIBNhx (ORCPT
+        with ESMTP id S236255AbiIBNh4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:37:53 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BB2DD9EA7
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:15:49 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id d5so1223744wms.5
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 06:15:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=WnO3+Tq5eMt/+enVaGVDJlIeL9+c7akKx/S/wlTJFkE=;
-        b=UmXkXiwbZYjdT1WWoa7TKGadkVKY+Z0QEU4eN3/HPr+dBvch18rB7LORSO6U0qgg+1
-         iv1AD9sH+8629kWvpUNRkrY61edccstQiHE1xWfotzbYsVjbK0dlOdpSZaGDxcr7NNaJ
-         UszPAp4JYEnf9348BU5RfzuNr8LHRkvfbda2kTxXkTrud+6f0zIOair+yeV/5ECgbsgJ
-         SblmDu6yZIDpVkfr2wsq5bINUhNNs5LyoMrH4iLlduSpXOVtep/NSjcyy+vILzZZlhpO
-         nbnXF6HsBNS3OSunJ+QldSM+D5bg1bzg/lX9xNsbOh/UL8GVK0RweP/AlSvD/1hAOXZL
-         U3wQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=WnO3+Tq5eMt/+enVaGVDJlIeL9+c7akKx/S/wlTJFkE=;
-        b=T6gTWI5zodjnJw4Jxx1pILCWBRg4z2DLc6Ff1ylgo3hVLGmNVnftcmYe0+NUzMszlV
-         qBmo1UOiO1Vm+6H8pEgSwD9czN0i7HqzXsbGmIme7c8xxbjgWhzVXhZUwpi1w/Qt1TCP
-         1Mv94qATQUlLSfnyh6AKIn4Ml5hacRf/oosiucPXz+mQugFks2OWqDvaVnPY5gBUa+7t
-         HkZKO6EUBDQ39pX1sQ9AELdr1waqvOO5RQJVapMbzjNBJm7xXIsSIk9HVZ/HrEiZTzur
-         XEnyBqVZUJb8pxPB5jGbwXioPa8AotKxVAlpdxF1mw09L5fLYUDJaapVQfO7qZVBH/TR
-         doXQ==
-X-Gm-Message-State: ACgBeo0LDOIRtv0+BNf+jQceWmfKZdWe/sOQ8GNS7ir40yYxP2m3XPNx
-        VrxS7m3uGQ6I8RJhZ3+d0GbDeg==
-X-Google-Smtp-Source: AA6agR4PCzGvdorz12vZVArhdEpd8kAlXYH6pzoxUJ+7Z6gc+c/oA5WHjwLjcdtwlpRE8DkJB/Yb8A==
-X-Received: by 2002:a05:600c:4f43:b0:3a6:2335:f5de with SMTP id m3-20020a05600c4f4300b003a62335f5demr2880057wmq.109.1662124462878;
-        Fri, 02 Sep 2022 06:14:22 -0700 (PDT)
-Received: from hackbox.lan ([94.52.112.99])
-        by smtp.gmail.com with ESMTPSA id v14-20020a5d43ce000000b002253fd19a6asm1766253wrr.18.2022.09.02.06.14.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 06:14:22 -0700 (PDT)
-From:   Abel Vesa <abel.vesa@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorande@qti.qualcomm.com>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Amol Maheshwari <amahesh@qti.qualcomm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Ekansh Gupta <ekangupt@qti.qualcomm.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Ola Jeppsson <ola@snap.com>
-Subject: [PATCH 02/14] misc: fastrpc: Don't remove map on creater_process and device_release
-Date:   Fri,  2 Sep 2022 16:13:32 +0300
-Message-Id: <20220902131344.3029826-3-abel.vesa@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220902131344.3029826-1-abel.vesa@linaro.org>
-References: <20220902131344.3029826-1-abel.vesa@linaro.org>
+        Fri, 2 Sep 2022 09:37:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43D8F124872;
+        Fri,  2 Sep 2022 06:16:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BC034621EC;
+        Fri,  2 Sep 2022 12:36:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BECE6C433C1;
+        Fri,  2 Sep 2022 12:36:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662122201;
+        bh=qPtMQN6i7xa1IWnEibQFMTsGeomTP4hM3LBvwPWuPms=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=U2jlOZHXz8AA371DAKf5q5T4a/s6WJ7G+oS9VoXACN3U6+Pfzbk+9OMFUMxFzjHym
+         2S+lxB9b31Z2gJ+VHaFhsLjVzr+2qHlZm/xYe0bHlO2203ViRIy5NBhB3+YvxRsI/z
+         B1a2zeON6/2oYpq82p23u/9oApXbyIhzPQNA92ns=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Xiaogang Chen <Xiaogang.Chen@amd.com>
+Subject: [PATCH 5.19 44/72] drm/amdkfd: Handle restart of kfd_ioctl_wait_events
+Date:   Fri,  2 Sep 2022 14:19:20 +0200
+Message-Id: <20220902121406.223114522@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
+References: <20220902121404.772492078@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Do not remove the map from the list on error path in
-fastrpc_init_create_process, instead call fastrpc_map_put, to avoid
-use-after-free. Do not remove it on fastrpc_device_release either,
-call fastrpc_map_put instead.
+From: Felix Kuehling <Felix.Kuehling@amd.com>
 
-The fastrpc_free_map is the only proper place to remove the map.
-This is called only after the reference count is 0.
+[ Upstream commit bea9a56afbc4b5a41ea579b8b0dc5e189b439504 ]
 
-Co-developed-by: Ola Jeppsson <ola@snap.com>
-Signed-off-by: Ola Jeppsson <ola@snap.com>
-Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
+When kfd_ioctl_wait_events needs to restart due to a signal, we need to
+update the timeout to account for the time already elapsed. We also need
+to undo auto_reset of events that have signaled already, so that the
+restarted ioctl will be able to count those signals again.
+
+This fixes infinite hangs when kfd_ioctl_wait_events is interrupted by a
+signal.
+
+Signed-off-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Reviewed-and-tested-by: Xiaogang Chen <Xiaogang.Chen@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/fastrpc.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_chardev.c |  2 +-
+ drivers/gpu/drm/amd/amdkfd/kfd_events.c  | 24 ++++++++++++------------
+ drivers/gpu/drm/amd/amdkfd/kfd_priv.h    |  2 +-
+ 3 files changed, 14 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
-index 0c816a11eeec..50c17f5da3a8 100644
---- a/drivers/misc/fastrpc.c
-+++ b/drivers/misc/fastrpc.c
-@@ -316,6 +316,13 @@ static void fastrpc_free_map(struct kref *ref)
- 		dma_buf_put(map->buf);
- 	}
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c b/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c
+index 1c7016958d6d9..bfca17ca399c6 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c
+@@ -814,7 +814,7 @@ static int kfd_ioctl_wait_events(struct file *filp, struct kfd_process *p,
+ 	err = kfd_wait_on_events(p, args->num_events,
+ 			(void __user *)args->events_ptr,
+ 			(args->wait_for_all != 0),
+-			args->timeout, &args->wait_result);
++			&args->timeout, &args->wait_result);
  
-+	if (map->fl) {
-+		spin_lock(&map->fl->lock);
-+		list_del(&map->node);
-+		spin_unlock(&map->fl->lock);
-+		map->fl = NULL;
-+	}
-+
- 	kfree(map);
+ 	return err;
+ }
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_events.c b/drivers/gpu/drm/amd/amdkfd/kfd_events.c
+index 4df9c36146ba9..cbc20d779e5aa 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_events.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_events.c
+@@ -895,7 +895,8 @@ static long user_timeout_to_jiffies(uint32_t user_timeout_ms)
+ 	return msecs_to_jiffies(user_timeout_ms) + 1;
  }
  
-@@ -1266,12 +1273,7 @@ static int fastrpc_init_create_process(struct fastrpc_user *fl,
- 	fl->init_mem = NULL;
- 	fastrpc_buf_free(imem);
- err_alloc:
--	if (map) {
--		spin_lock(&fl->lock);
--		list_del(&map->node);
--		spin_unlock(&fl->lock);
--		fastrpc_map_put(map);
--	}
-+	fastrpc_map_put(map);
- err:
- 	kfree(args);
+-static void free_waiters(uint32_t num_events, struct kfd_event_waiter *waiters)
++static void free_waiters(uint32_t num_events, struct kfd_event_waiter *waiters,
++			 bool undo_auto_reset)
+ {
+ 	uint32_t i;
  
-@@ -1347,10 +1349,8 @@ static int fastrpc_device_release(struct inode *inode, struct file *file)
- 		fastrpc_context_put(ctx);
- 	}
+@@ -904,6 +905,9 @@ static void free_waiters(uint32_t num_events, struct kfd_event_waiter *waiters)
+ 			spin_lock(&waiters[i].event->lock);
+ 			remove_wait_queue(&waiters[i].event->wq,
+ 					  &waiters[i].wait);
++			if (undo_auto_reset && waiters[i].activated &&
++			    waiters[i].event && waiters[i].event->auto_reset)
++				set_event(waiters[i].event);
+ 			spin_unlock(&waiters[i].event->lock);
+ 		}
  
--	list_for_each_entry_safe(map, m, &fl->maps, node) {
--		list_del(&map->node);
-+	list_for_each_entry_safe(map, m, &fl->maps, node)
- 		fastrpc_map_put(map);
--	}
+@@ -912,7 +916,7 @@ static void free_waiters(uint32_t num_events, struct kfd_event_waiter *waiters)
  
- 	list_for_each_entry_safe(buf, b, &fl->mmaps, node) {
- 		list_del(&buf->node);
+ int kfd_wait_on_events(struct kfd_process *p,
+ 		       uint32_t num_events, void __user *data,
+-		       bool all, uint32_t user_timeout_ms,
++		       bool all, uint32_t *user_timeout_ms,
+ 		       uint32_t *wait_result)
+ {
+ 	struct kfd_event_data __user *events =
+@@ -921,7 +925,7 @@ int kfd_wait_on_events(struct kfd_process *p,
+ 	int ret = 0;
+ 
+ 	struct kfd_event_waiter *event_waiters = NULL;
+-	long timeout = user_timeout_to_jiffies(user_timeout_ms);
++	long timeout = user_timeout_to_jiffies(*user_timeout_ms);
+ 
+ 	event_waiters = alloc_event_waiters(num_events);
+ 	if (!event_waiters) {
+@@ -971,15 +975,11 @@ int kfd_wait_on_events(struct kfd_process *p,
+ 		}
+ 
+ 		if (signal_pending(current)) {
+-			/*
+-			 * This is wrong when a nonzero, non-infinite timeout
+-			 * is specified. We need to use
+-			 * ERESTARTSYS_RESTARTBLOCK, but struct restart_block
+-			 * contains a union with data for each user and it's
+-			 * in generic kernel code that I don't want to
+-			 * touch yet.
+-			 */
+ 			ret = -ERESTARTSYS;
++			if (*user_timeout_ms != KFD_EVENT_TIMEOUT_IMMEDIATE &&
++			    *user_timeout_ms != KFD_EVENT_TIMEOUT_INFINITE)
++				*user_timeout_ms = jiffies_to_msecs(
++					max(0l, timeout-1));
+ 			break;
+ 		}
+ 
+@@ -1020,7 +1020,7 @@ int kfd_wait_on_events(struct kfd_process *p,
+ 					       event_waiters, events);
+ 
+ out_unlock:
+-	free_waiters(num_events, event_waiters);
++	free_waiters(num_events, event_waiters, ret == -ERESTARTSYS);
+ 	mutex_unlock(&p->event_mutex);
+ out:
+ 	if (ret)
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_priv.h b/drivers/gpu/drm/amd/amdkfd/kfd_priv.h
+index 2585d6e61d422..c6eec54b8102f 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_priv.h
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_priv.h
+@@ -1314,7 +1314,7 @@ void kfd_event_free_process(struct kfd_process *p);
+ int kfd_event_mmap(struct kfd_process *process, struct vm_area_struct *vma);
+ int kfd_wait_on_events(struct kfd_process *p,
+ 		       uint32_t num_events, void __user *data,
+-		       bool all, uint32_t user_timeout_ms,
++		       bool all, uint32_t *user_timeout_ms,
+ 		       uint32_t *wait_result);
+ void kfd_signal_event_interrupt(u32 pasid, uint32_t partial_id,
+ 				uint32_t valid_id_bits);
 -- 
-2.34.1
+2.35.1
+
+
 
