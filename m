@@ -2,68 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3E2AECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:30:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F28BC6FA82
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:30:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229731AbiIBSaW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 14:30:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45298 "EHLO
+        id S229929AbiIBSaZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 14:30:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229791AbiIBSaM (ORCPT
+        with ESMTP id S229786AbiIBSaL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 14:30:12 -0400
+        Fri, 2 Sep 2022 14:30:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED9C5927C
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8666C3DBDC
         for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 11:30:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B693862220
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 67D3A6224A
         for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 18:30:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8770EC43141;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2E8B8C433D6;
         Fri,  2 Sep 2022 18:30:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1662143408;
-        bh=c5hR3Z7saE4Kmnb1TXqeVV1zbeuFYjbQ2muN/mtDcdo=;
+        bh=uxtdPZ3fhiB32CN6nbo1e241h48rcaxhnJhuHSq44Kg=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=I3G5O3ty93uzE/CqsWCA17TG+Dp3brQQudxjVKe1cm8whwNajIkbW0qyHRjsvw0N0
-         4sHJ4IwSvjMmPxpYkqY5kyo2BJiPTd5j3rrYgJv947zvs9FeQPu4FS1ZXp3DsumHSU
-         M9FjR9K+le3nm+t54pbZzArl1jwYiqqxZVTAuKt4gFKbcEuf0gqrNyOUV8VY6bNAkw
-         RKdZLCj30PwhLksRnf9vodCNeGg4i6cModthPud+JwVqrf83QwNs7Wi/2thPsZrUz2
-         xFbAzbFedNLCdsMNrEgtEYGiMg8ySxTZBvYdYeeOPpUV3ggMEL9CU0ntDz8GpbJHb7
-         9c6RL+QeZe8hw==
+        b=JsmyMdm/OCZasRgIKltLzOd2aR7qjYkECF5pgFbcOYBxNPFcsqs8EKZqmZx5YAObR
+         IDDRaiWtYlCkFdICtNuAoX83Ep5Zwm+cLbstWeRdM0UYNOc2aypPx26BsZUr8k2G6e
+         c/BRlkAE5yADatuQQtx5VwOAvpTp9rrdjHmrsCoD2a1bPCVb2IKiFwbh2GFa32giPQ
+         zuUr34Rr2S2L+5gvWPWuhijahQKSJQFNS0RDemJIiNO45iptgOuIaHfFDAW0vfBtDb
+         akX3Xar67svDhd7bQ05OnpRnmQ64acWeI2ZTlF4ErnmKQcLFgTJs8B+G2l/etnk2TJ
+         2r3U+QktrIKYA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 740F6C73FE0;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1C5F3C73FE0;
         Fri,  2 Sep 2022 18:30:08 +0000 (UTC)
-Subject: Re: [GIT PULL] Driver core fixes for 6.0-rc4
+Subject: Re: [GIT PULL] arm64 fixes for -rc4
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YxIht+ev+gXsF6ZD@kroah.com>
-References: <YxIht+ev+gXsF6ZD@kroah.com>
+In-Reply-To: <20220902111204.GA25902@willie-the-truck>
+References: <20220902111204.GA25902@willie-the-truck>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YxIht+ev+gXsF6ZD@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git tags/driver-core-6.0-rc4
-X-PR-Tracked-Commit-Id: 789bba82f63c3e81dce426ba457fc7905b30ac6e
+X-PR-Tracked-Message-Id: <20220902111204.GA25902@willie-the-truck>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git tags/arm64-fixes
+X-PR-Tracked-Commit-Id: 5fbc49cef91916140a305f22f7430e9a7ea0c6b4
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 0b3acd1cc0222953035d18176b1e4aa06624fd6e
-Message-Id: <166214340846.20636.8844058236120920137.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: cf3488fa25cdfdd220dcc927ca30ea7256b037e0
+Message-Id: <166214340811.20636.1316986216638306178.pr-tracker-bot@kernel.org>
 Date:   Fri, 02 Sep 2022 18:30:08 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Saravana Kannan <saravanak@google.com>
+To:     Will Deacon <will@kernel.org>
+Cc:     torvalds@linux-foundation.org, catalin.marinas@arm.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel-team@android.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 2 Sep 2022 17:31:03 +0200:
+The pull request you sent on Fri, 2 Sep 2022 12:12:05 +0100:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git tags/driver-core-6.0-rc4
+> git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git tags/arm64-fixes
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/0b3acd1cc0222953035d18176b1e4aa06624fd6e
+https://git.kernel.org/torvalds/c/cf3488fa25cdfdd220dcc927ca30ea7256b037e0
 
 Thank you!
 
