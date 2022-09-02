@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADBD3ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:40:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 638F1C54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:40:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237207AbiIBMki (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:40:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41076 "EHLO
+        id S236435AbiIBMke (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:40:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237176AbiIBMim (ORCPT
+        with ESMTP id S237159AbiIBMik (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:38:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FED250063;
-        Fri,  2 Sep 2022 05:30:23 -0700 (PDT)
+        Fri, 2 Sep 2022 08:38:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD3543C158;
+        Fri,  2 Sep 2022 05:30:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A4A00B82AA1;
-        Fri,  2 Sep 2022 12:28:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0432DC433C1;
-        Fri,  2 Sep 2022 12:28:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AEC462199;
+        Fri,  2 Sep 2022 12:29:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DD7BC433C1;
+        Fri,  2 Sep 2022 12:29:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121714;
-        bh=WyLP5ydkN6YSnIDeflr0Opmd73Mf9jckl4YO+rrhNWc=;
+        s=korg; t=1662121788;
+        bh=1Af/KZluRD62q3Ql9fAk8hIRWupKOXszYwrxm9YQVXg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ReEw3j/c+ZjjcFWWHHLPPhuOn4+JHFMCFZUADtOzXB3l4uHErzWtXMuc7/2hrqCz1
-         yWf8bagSXpTXEI+4AKAeybz2ANrSEZRTJBoSWObmYEPXsZnbLFnmj3SKCuec1Nyx4e
-         UjhJL+hW9e1R+b+EpJS+Iugmi567sOrKeDRJtWx4=
+        b=av0rmupL6z5cRMN478TMd92qCdmD2Ky9xpKnrYnpez7HVSUpAUyLhVfuuAD2gSZxK
+         LzemsM6owWamHN9bwFqy15ZrdDT0pnlATum+HJtzOwDEGffLkcArVUt2C86BtjY2A8
+         j1xZkUjubis7A/tAmenltdbCb7KOI+bwnQ01ijpY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Siddh Raman Pant <code@siddh.me>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
-        syzbot+a8e049cd3abd342936b6@syzkaller.appspotmail.com
-Subject: [PATCH 5.4 41/77] loop: Check for overflow while configuring loop
-Date:   Fri,  2 Sep 2022 14:18:50 +0200
-Message-Id: <20220902121405.014969652@linuxfoundation.org>
+        stable@vger.kernel.org, Alvin Lee <alvin.lee2@amd.com>,
+        Tom Chung <chiahsuan.chung@amd.com>,
+        Fudong Wang <Fudong.Wang@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 66/77] drm/amd/display: clear optc underflow before turn off odm clock
+Date:   Fri,  2 Sep 2022 14:19:15 +0200
+Message-Id: <20220902121405.875909156@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
 References: <20220902121403.569927325@linuxfoundation.org>
@@ -51,59 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Siddh Raman Pant <code@siddh.me>
+From: Fudong Wang <Fudong.Wang@amd.com>
 
-commit c490a0b5a4f36da3918181a8acdc6991d967c5f3 upstream.
+[ Upstream commit b2a93490201300a749ad261b5c5d05cb50179c44 ]
 
-The userspace can configure a loop using an ioctl call, wherein
-a configuration of type loop_config is passed (see lo_ioctl()'s
-case on line 1550 of drivers/block/loop.c). This proceeds to call
-loop_configure() which in turn calls loop_set_status_from_info()
-(see line 1050 of loop.c), passing &config->info which is of type
-loop_info64*. This function then sets the appropriate values, like
-the offset.
+[Why]
+After ODM clock off, optc underflow bit will be kept there always and clear not work.
+We need to clear that before clock off.
 
-loop_device has lo_offset of type loff_t (see line 52 of loop.c),
-which is typdef-chained to long long, whereas loop_info64 has
-lo_offset of type __u64 (see line 56 of include/uapi/linux/loop.h).
+[How]
+Clear that if have when clock off.
 
-The function directly copies offset from info to the device as
-follows (See line 980 of loop.c):
-	lo->lo_offset = info->lo_offset;
-
-This results in an overflow, which triggers a warning in iomap_iter()
-due to a call to iomap_iter_done() which has:
-	WARN_ON_ONCE(iter->iomap.offset > iter->pos);
-
-Thus, check for negative value during loop_set_status_from_info().
-
-Bug report: https://syzkaller.appspot.com/bug?id=c620fe14aac810396d3c3edc9ad73848bf69a29e
-
-Reported-and-tested-by: syzbot+a8e049cd3abd342936b6@syzkaller.appspotmail.com
-Cc: stable@vger.kernel.org
-Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Signed-off-by: Siddh Raman Pant <code@siddh.me>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220823160810.181275-1-code@siddh.me
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Alvin Lee <alvin.lee2@amd.com>
+Acked-by: Tom Chung <chiahsuan.chung@amd.com>
+Signed-off-by: Fudong Wang <Fudong.Wang@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/loop.c |    5 +++++
+ drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c | 5 +++++
  1 file changed, 5 insertions(+)
 
---- a/drivers/block/loop.c
-+++ b/drivers/block/loop.c
-@@ -1397,6 +1397,11 @@ loop_get_status(struct loop_device *lo,
- 	info->lo_number = lo->lo_number;
- 	info->lo_offset = lo->lo_offset;
- 	info->lo_sizelimit = lo->lo_sizelimit;
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c
+index e74a07d03fde9..4b0200e96eb77 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c
+@@ -425,6 +425,11 @@ void optc1_enable_optc_clock(struct timing_generator *optc, bool enable)
+ 				OTG_CLOCK_ON, 1,
+ 				1, 1000);
+ 	} else  {
 +
-+	/* loff_t vars have been assigned __u64 */
-+	if (lo->lo_offset < 0 || lo->lo_sizelimit < 0)
-+		return -EOVERFLOW;
++		//last chance to clear underflow, otherwise, it will always there due to clock is off.
++		if (optc->funcs->is_optc_underflow_occurred(optc) == true)
++			optc->funcs->clear_optc_underflow(optc);
 +
- 	info->lo_flags = lo->lo_flags;
- 	memcpy(info->lo_file_name, lo->lo_file_name, LO_NAME_SIZE);
- 	memcpy(info->lo_crypt_name, lo->lo_crypt_name, LO_NAME_SIZE);
+ 		REG_UPDATE_2(OTG_CLOCK_CONTROL,
+ 				OTG_CLOCK_GATE_DIS, 0,
+ 				OTG_CLOCK_EN, 0);
+-- 
+2.35.1
+
 
 
