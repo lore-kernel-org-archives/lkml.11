@@ -2,94 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53CDCC54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 16:09:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B39FECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 16:09:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236939AbiIBQJF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 12:09:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55986 "EHLO
+        id S236590AbiIBQJJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 12:09:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237466AbiIBQIV (ORCPT
+        with ESMTP id S236676AbiIBQIa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 12:08:21 -0400
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A406B12BC29;
-        Fri,  2 Sep 2022 09:02:00 -0700 (PDT)
-Received: by mail-qt1-x82c.google.com with SMTP id r6so1795255qtx.6;
-        Fri, 02 Sep 2022 09:02:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=hr32zQkQAMFpdycV9mqRMwFDXvtj260nxYs/HAKXI+Q=;
-        b=FhUCkkvqrme+DUmZztWDxyW9DDj+wrSYyrTFVf4UOHfjt09QSg+oA/zzJNoJPf+vyr
-         qycjjscw4FyzNAXtPfCnpN+CDD2dYbkqVu3vPD4Xb4S0c6l0OA2qGV8FK6Wdv298NFud
-         glz52AYRgM4/3r3agyXbpN/vCngSK24rs+wqcXevLqSkFzvlRU0ZmTsI+SAcAZUVg/eJ
-         0/nb2md1U7wDRVfeWb67FirxksK1zPCp/z1UkAcazvP/pGU+Gh6VGqn3fWigL3mWSL8g
-         cHiL1Lsdms4LjZj4J4bWxGZnXeSmszU1GS/SL5HUHqw5aA+XiT/hGM2T3D/fnHpjJyEU
-         svjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=hr32zQkQAMFpdycV9mqRMwFDXvtj260nxYs/HAKXI+Q=;
-        b=aS2yHDoYjCXz6O8px7jrgjufiGGbmengVExz5u1956glL9PCBX3jXfHKSckPYTpdfW
-         FPhSjvhzPUlSdmRB+bal2FbcEzMoLNiamf0Buq13tyAlZj76DbSvq9MTzhJdYaZkVjcD
-         EXBvL6lFpjDkjXsBVCCepQ7WRxhAbDwaS+FNT+jlDdY3akzftGBbCBCPMTqDkSIXVS3y
-         Zkb+slDVrRVs7A1JmGyOD0qzK1dKy33d6ji07XMw7YPj4rM3kZF0iK3A5+41goRtrOCw
-         kd4IBkiyj3sNmfhnFRfdCjQuk6B8sdx4Iock9BglHUzvd+GL8hI784/HE2RPBHokcMby
-         lwkw==
-X-Gm-Message-State: ACgBeo3QIInAJsih+x3xhNHwN/0+5V/7jKCDNQjWdwhx35XSNdCnHnFZ
-        FBR/aDqY90F/l7jlszuW7OU=
-X-Google-Smtp-Source: AA6agR73e8UxlvuT6qwwN5qmS8H+HvmUVahNMtcaO5mwrZ77r6fYQfeOKWR7E9FlRFnVvW5xjf4QKQ==
-X-Received: by 2002:a05:622a:40e:b0:343:7769:5895 with SMTP id n14-20020a05622a040e00b0034377695895mr29463186qtx.467.1662134476733;
-        Fri, 02 Sep 2022 09:01:16 -0700 (PDT)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id w2-20020ac87182000000b00342f960d26esm1206063qto.15.2022.09.02.09.01.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Sep 2022 09:01:16 -0700 (PDT)
-Message-ID: <dce48f19-ff7d-981e-90bb-9005bf2fbd9a@gmail.com>
-Date:   Fri, 2 Sep 2022 09:01:13 -0700
+        Fri, 2 Sep 2022 12:08:30 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92D7E5C371;
+        Fri,  2 Sep 2022 09:02:06 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4MK2gg4ZZFz9snC;
+        Fri,  2 Sep 2022 18:00:31 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id MUIy-zOaIPw6; Fri,  2 Sep 2022 18:00:31 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4MK2gg3q9dz9sm9;
+        Fri,  2 Sep 2022 18:00:31 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 5AA538B788;
+        Fri,  2 Sep 2022 18:00:31 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id qvrKzFyidLhW; Fri,  2 Sep 2022 18:00:31 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.232.39])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 121068B787;
+        Fri,  2 Sep 2022 18:00:31 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 282G0KcR2222673
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Fri, 2 Sep 2022 18:00:20 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 282G0JPg2222669;
+        Fri, 2 Sep 2022 18:00:19 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        kernel test robot <lkp@intel.com>,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH v2 1/2] powerpc/math_emu/efp: Include module.h
+Date:   Fri,  2 Sep 2022 18:00:08 +0200
+Message-Id: <8403854a4c187459b2f4da3537f51227b70b9223.1662134272.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [Patch net-next 2/3] net: dsa: microchip: lan937x: clear the
- POR_READY_INT status bit
-Content-Language: en-US
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Tristram Ha <Tristram.Ha@microchip.com>
-References: <20220902103210.10743-1-arun.ramadoss@microchip.com>
- <20220902103210.10743-3-arun.ramadoss@microchip.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220902103210.10743-3-arun.ramadoss@microchip.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1662134391; l=1490; i=christophe.leroy@csgroup.eu; s=20211009; h=from:subject:message-id; bh=OKSJgYFuo/pdrg21F1+qHF8xOtYyQ469CIxgwgwXZmQ=; b=FMOOZ6cKULkqjKWE4gecv3etG4gXrdePUI9ZtYcccbtVZDgu+YkpuvpZSzmPnQjcD3gnzkzxgZtc cqsvhrvpAHKgxZQTY7rJZSOb1PSKdoMD4KVjdtF5TN0kwmRVZeLL
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Nathan Chancellor <nathan@kernel.org>
 
+When building with a recent version of clang, there are a couple of
+errors around the call to module_init():
 
-On 9/2/2022 3:32 AM, Arun Ramadoss wrote:
-> In the lan937x_reset_switch(), it masks all the switch and port
-> registers. In the Global_Int_status register, POR ready bit is write 1
-> to clear bit and all other bits are read only. So, this patch clear the
-> por_ready_int status bit by writing 1.
-> 
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+  arch/powerpc/math-emu/math_efp.c:927:1: error: type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int [-Wimplicit-int]
+  module_init(spe_mathemu_init);
+  ^
+  int
+  arch/powerpc/math-emu/math_efp.c:927:13: error: a parameter list without types is only allowed in a function definition
+  module_init(spe_mathemu_init);
+              ^
+  2 errors generated.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+module_init() is a macro, which is not getting expanded because module.h
+is not included in this file. Add the include so that the macro can
+expand properly, clearing up the build failure.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Fixes: ac6f120369ff ("powerpc/85xx: Workaroudn e500 CPU erratum A005")
+[chleroy: added fixes tag]
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ arch/powerpc/math-emu/math_efp.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/powerpc/math-emu/math_efp.c b/arch/powerpc/math-emu/math_efp.c
+index 39b84e7452e1..aa3bb8da1cb9 100644
+--- a/arch/powerpc/math-emu/math_efp.c
++++ b/arch/powerpc/math-emu/math_efp.c
+@@ -17,6 +17,7 @@
+ 
+ #include <linux/types.h>
+ #include <linux/prctl.h>
++#include <linux/module.h>
+ 
+ #include <linux/uaccess.h>
+ #include <asm/reg.h>
 -- 
-Florian
+2.37.1
+
