@@ -2,71 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3446BECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:49:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81AABECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:49:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236072AbiIBOtB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:49:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58422 "EHLO
+        id S236996AbiIBOtX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:49:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237015AbiIBOsQ (ORCPT
+        with ESMTP id S237266AbiIBOst (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:48:16 -0400
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0F8F4910;
-        Fri,  2 Sep 2022 07:09:03 -0700 (PDT)
-Received: (Authenticated sender: gregory.clement@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 57206C000A;
-        Fri,  2 Sep 2022 14:09:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1662127742;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=RwleTND+oOvh2FdL5+oLza0mQuVU2huCMJekGo8cmFU=;
-        b=iMcvnnJectwUQ4XiTcrylv5Pa3IwDxZzYx1X+kow2ahuIUc6EI2JV9Y4o1U5Ir/Aq2aLcy
-        xjJo6S2na70zyMrDD58uV0nJwrRNAi2DkKK9Y+ZV6ijw3eukXpDTQTjktRs4LHE8Uon9xy
-        Xz4TR+JREgqSAfOV3gTCQAIaDfB2+A/1G5Iz30KNDXX9V/7PNTkNcMJqz7bUGFtgpNwvmv
-        H8J5cltfpRfFanV/qj3Wm4UTWOFkhKpbt4XrhP7WxiZsPz/9Ct5AypWttcZs+JWqZ6th85
-        uJJYH8vov/x+yHQ5k/yzdX/wpVqwexpJZxNRmG6ioYGFZjUf6JFsSPRP4VlWEw==
-From:   Gregory CLEMENT <gregory.clement@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Pali =?utf-8?Q?Roh=C3=A1r?= <pali@kernel.org>
-Subject: Re: [PATCH] MAINTAINERS: ARM: marvell: include bindings
-In-Reply-To: <YvKSrD3kG3rnozju@lunn.ch>
-References: <20220809055729.19242-1-krzysztof.kozlowski@linaro.org>
- <YvKSrD3kG3rnozju@lunn.ch>
-Date:   Fri, 02 Sep 2022 16:08:59 +0200
-Message-ID: <875yi5g96s.fsf@BL-laptop>
+        Fri, 2 Sep 2022 10:48:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C680BC8A;
+        Fri,  2 Sep 2022 07:10:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4CD59B82A92;
+        Fri,  2 Sep 2022 12:23:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A298EC433D7;
+        Fri,  2 Sep 2022 12:23:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662121412;
+        bh=Rk1WS9y8pDkFDaZEbT9tCSSI1OHbxBTz6GYp05s8Cmk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qUZE1iyPh0x1hi+d3AgTW1NbKZu7WgLkQQwjULaN0P57ozIucvIHMU05khKUyR42o
+         Eu46crq2aa52HtBYir0h1CPpXqWXl6y7ay4NQoWmoOH0oaPym/1YKtf73zKGtPgtS0
+         f/GGucZ8N5JuFlJb6imFD8Pv8ZOCt0/ig7pxolXg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 11/42] netfilter: nft_payload: do not truncate csum_offset and csum_type
+Date:   Fri,  2 Sep 2022 14:18:35 +0200
+Message-Id: <20220902121359.205058135@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220902121358.773776406@linuxfoundation.org>
+References: <20220902121358.773776406@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Andrew Lunn <andrew@lunn.ch> writes:
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-> On Tue, Aug 09, 2022 at 08:57:29AM +0300, Krzysztof Kozlowski wrote:
->> Include top-level Marvell bindings in Marvell maintainer entries.
->> 
->> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+[ Upstream commit 7044ab281febae9e2fa9b0b247693d6026166293 ]
 
-Acked-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+Instead report ERANGE if csum_offset is too long, and EOPNOTSUPP if type
+is not support.
 
-Gregory
->
->     Andrew
+Fixes: 7ec3f7b47b8d ("netfilter: nft_payload: add packet mangling support")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/netfilter/nft_payload.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
 
+diff --git a/net/netfilter/nft_payload.c b/net/netfilter/nft_payload.c
+index 04b9df9e39554..5732b32ab9320 100644
+--- a/net/netfilter/nft_payload.c
++++ b/net/netfilter/nft_payload.c
+@@ -332,6 +332,8 @@ static int nft_payload_set_init(const struct nft_ctx *ctx,
+ 				const struct nlattr * const tb[])
+ {
+ 	struct nft_payload_set *priv = nft_expr_priv(expr);
++	u32 csum_offset, csum_type = NFT_PAYLOAD_CSUM_NONE;
++	int err;
+ 
+ 	priv->base        = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_BASE]));
+ 	priv->offset      = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_OFFSET]));
+@@ -339,11 +341,15 @@ static int nft_payload_set_init(const struct nft_ctx *ctx,
+ 	priv->sreg        = nft_parse_register(tb[NFTA_PAYLOAD_SREG]);
+ 
+ 	if (tb[NFTA_PAYLOAD_CSUM_TYPE])
+-		priv->csum_type =
+-			ntohl(nla_get_be32(tb[NFTA_PAYLOAD_CSUM_TYPE]));
+-	if (tb[NFTA_PAYLOAD_CSUM_OFFSET])
+-		priv->csum_offset =
+-			ntohl(nla_get_be32(tb[NFTA_PAYLOAD_CSUM_OFFSET]));
++		csum_type = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_CSUM_TYPE]));
++	if (tb[NFTA_PAYLOAD_CSUM_OFFSET]) {
++		err = nft_parse_u32_check(tb[NFTA_PAYLOAD_CSUM_OFFSET], U8_MAX,
++					  &csum_offset);
++		if (err < 0)
++			return err;
++
++		priv->csum_offset = csum_offset;
++	}
+ 	if (tb[NFTA_PAYLOAD_CSUM_FLAGS]) {
+ 		u32 flags;
+ 
+@@ -354,13 +360,14 @@ static int nft_payload_set_init(const struct nft_ctx *ctx,
+ 		priv->csum_flags = flags;
+ 	}
+ 
+-	switch (priv->csum_type) {
++	switch (csum_type) {
+ 	case NFT_PAYLOAD_CSUM_NONE:
+ 	case NFT_PAYLOAD_CSUM_INET:
+ 		break;
+ 	default:
+ 		return -EOPNOTSUPP;
+ 	}
++	priv->csum_type = csum_type;
+ 
+ 	return nft_validate_register_load(priv->sreg, priv->len);
+ }
 -- 
-Gregory Clement, Bootlin
-Embedded Linux and Kernel engineering
-http://bootlin.com
+2.35.1
+
+
+
