@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1CAFC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:28:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0EB9C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:28:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235903AbiIBO2y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:28:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50232 "EHLO
+        id S236045AbiIBO26 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:28:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235494AbiIBO1Z (ORCPT
+        with ESMTP id S236470AbiIBO11 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:27:25 -0400
+        Fri, 2 Sep 2022 10:27:27 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 193D8145C70
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 198DF145C40
         for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=7BSAeKLrm7gxwtIhgZeIusnS5RkuLU2DoTkgdYtznEo=; b=sN5bJJTrDllOzx0dNSRWQNV/dJ
-        Qo2dgkQd586esW/wXN/Bf7mHrv5xzgo5Z+8JtqK8/CZ9pnt0bYL1nZdWA9K44XLVu24M6o26QGOGZ
-        Wl/lApotklkM033Q1HkvprM9bJ7aKeovRuPXpgLQsoX71zGkF4jVQEo2r9x9AVank2G41uQe0O//1
-        vUlKcewrjWkviEgqaEF+NSoAq2l5G2yqNjMahffWrKVKocgSidFeGJf1ZbFE7gZ3jnqhbhgLqsxAp
-        eEAdQReNsqgIYD9kIDzQ9y26yMyTZsuXJHjNCE7pWz/WMcUzd22OZXpfVB+o7BSKbV4aiGIu1jvll
-        eCovXtxA==;
+        bh=3pHERFsmuK61/aX42Un1sPpA4i778m0NUaKcblu/jsE=; b=MiQrGmnSSmUN+m3AY8XVrIIMxA
+        Ij4T3rSxtjKMDZBHu+f20DFMXl61hxKfBVmxDXHQ1yqV0hvL6YL6tM9eHnGYvW4S564sPN5gD0K5+
+        HGfmoRt7l9LXJx8RN+LpCVbQbAfDOCKoT68U2FP7lpcJfzANHAjiHhRO46G4IXIM9qqC1R8jyNV5b
+        799JT+RF1RFpU+ZU6gCUc0Dj2jgrhsqzMZASKaipMxT+Zufr8oeI3oVBtyYsjldqBZ+rcdZTU5icv
+        lcbC/ePpgr2rY7I8DXLE0ozcUhWTYwrTOr8JM6xrU3CJvSdApR5wpFS1UuBsjW0yOY7tDYIG2n2+U
+        uNySeT+w==;
 Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
         by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oU77L-0074Su-I0; Fri, 02 Sep 2022 13:53:55 +0000
+        id 1oU77N-0074TK-KB; Fri, 02 Sep 2022 13:53:57 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 5231C3002A3;
-        Fri,  2 Sep 2022 15:53:52 +0200 (CEST)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 26CE7301D1E;
+        Fri,  2 Sep 2022 15:53:54 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 1732725E26380; Fri,  2 Sep 2022 15:53:52 +0200 (CEST)
-Message-ID: <20220902130946.457567054@infradead.org>
+        id C4A3F2B8EF7F1; Fri,  2 Sep 2022 15:53:52 +0200 (CEST)
+Message-ID: <20220902130949.166343269@infradead.org>
 User-Agent: quilt/0.66
-Date:   Fri, 02 Sep 2022 15:06:26 +0200
+Date:   Fri, 02 Sep 2022 15:06:52 +0200
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     Thomas Gleixner <tglx@linutronix.de>
 Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
@@ -59,7 +59,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
         Daniel Borkmann <daniel@iogearbox.net>,
         K Prateek Nayak <kprateek.nayak@amd.com>,
         Eric Dumazet <edumazet@google.com>
-Subject: [PATCH v2 01/59] x86/paravirt: Ensure proper alignment
+Subject: [PATCH v2 27/59] x86/softirq: Move softirq pending next to current task
 References: <20220902130625.217071627@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -69,51 +69,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Thomas Gleixner <tglx@linutronix.de>
 
-The entries in the .parainstr sections are 8 byte aligned and the
-corresponding C struct makes the array offset 16 bytes.
+Another hot variable which is strict per CPU and benefits from
+being in the same cache line.
 
-Though the pushed entries are only using 12 bytes. .parainstr_end is
-therefore 4 bytes short.
-
-That works by chance because it's only used in a loop:
-
-     for (p = start; p < end; p++)
-
-But this falls flat when calculating the number of elements:
-
-    n = end - start
-
-That's obviously off by one.
-
-Ensure that the gap is filled and the last entry is occupying 16 bytes.
-
-Cc: Juergen Gross <jgross@suse.com>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/x86/include/asm/paravirt.h       |    1 +
- arch/x86/include/asm/paravirt_types.h |    1 +
- 2 files changed, 2 insertions(+)
+ arch/x86/include/asm/current.h |    1 +
+ arch/x86/include/asm/hardirq.h |    3 ++-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
---- a/arch/x86/include/asm/paravirt.h
-+++ b/arch/x86/include/asm/paravirt.h
-@@ -743,6 +743,7 @@ extern void default_banner(void);
- 	 word 771b;				\
- 	 .byte ptype;				\
- 	 .byte 772b-771b;			\
-+	 _ASM_ALIGN;				\
- 	.popsection
+--- a/arch/x86/include/asm/current.h
++++ b/arch/x86/include/asm/current.h
+@@ -19,6 +19,7 @@ struct pcpu_hot {
+ 			int			cpu_number;
+ 			unsigned long		top_of_stack;
+ 			void			*hardirq_stack_ptr;
++			u16			softirq_pending;
+ #ifdef CONFIG_X86_64
+ 			bool			hardirq_stack_inuse;
+ #else
+--- a/arch/x86/include/asm/hardirq.h
++++ b/arch/x86/include/asm/hardirq.h
+@@ -3,9 +3,9 @@
+ #define _ASM_X86_HARDIRQ_H
  
+ #include <linux/threads.h>
++#include <asm/current.h>
  
---- a/arch/x86/include/asm/paravirt_types.h
-+++ b/arch/x86/include/asm/paravirt_types.h
-@@ -294,6 +294,7 @@ extern struct paravirt_patch_template pv
- 	"  .byte " type "\n"				\
- 	"  .byte 772b-771b\n"				\
- 	"  .short " clobber "\n"			\
-+	_ASM_ALIGN "\n"					\
- 	".popsection\n"
+ typedef struct {
+-	u16	     __softirq_pending;
+ #if IS_ENABLED(CONFIG_KVM_INTEL)
+ 	u8	     kvm_cpu_l1tf_flush_l1d;
+ #endif
+@@ -60,6 +60,7 @@ extern u64 arch_irq_stat_cpu(unsigned in
+ extern u64 arch_irq_stat(void);
+ #define arch_irq_stat		arch_irq_stat
  
- /* Generate patchable code, with the default asm parameters. */
++#define local_softirq_pending_ref       pcpu_hot.softirq_pending
+ 
+ #if IS_ENABLED(CONFIG_KVM_INTEL)
+ static inline void kvm_set_cpu_l1tf_flush_l1d(void)
 
 
