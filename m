@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89929ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:00:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25FAAECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:00:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238434AbiIBNAE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:00:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51244 "EHLO
+        id S238446AbiIBNAK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:00:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238503AbiIBM6y (ORCPT
+        with ESMTP id S238521AbiIBM66 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:58:54 -0400
+        Fri, 2 Sep 2022 08:58:58 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B977E52FF3;
-        Fri,  2 Sep 2022 05:40:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 994CE100B;
+        Fri,  2 Sep 2022 05:40:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6038BB82A99;
-        Fri,  2 Sep 2022 12:38:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94894C433C1;
-        Fri,  2 Sep 2022 12:38:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 275BDB82A8B;
+        Fri,  2 Sep 2022 12:39:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CCAAC433D6;
+        Fri,  2 Sep 2022 12:39:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122324;
-        bh=nKLyEYkuJbbO4xhPz9cjO9niiSLIKKfhqIwlxrgCWTo=;
+        s=korg; t=1662122379;
+        bh=bZOdvd7tVKQAveBefOzuydtnXtRslrZSGWeFKUZsUMM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DS5GU5G46URqjC6+7JGdHmleuSOIsv9o8axWrW1jtGtWbSq+Upo+gUGTGPiC3tPBZ
-         4PY38XLxDT6pCLFsDvujFHhMPP3oaiJ4DvbDbvB253z3QxmGIcjlOZZfDwLZt/+3OX
-         8HNco6k8r63Yc4ZRnx4SDck7OvLSCefrTk70KFyg=
+        b=fmp8wl9nHotw2Q17jcQvcocvl00L7elzppSlCY7wYZ/nDhGEnCR5RPfS+eZvkGcAI
+         UPWi0YuI4ptSBw80Ye2+OCtW+nyq/S2JV57Yquc3xG6Y0VIGZzSnJmQYUlWK7hBic4
+         pNyUgeyjKbR0jHD+tTZMoWcqUJELu0aEwHQMyFUY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Hutchings <ben@decadent.org.uk>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.10 03/37] x86/nospec: Fix i386 RSB stuffing
-Date:   Fri,  2 Sep 2022 14:19:25 +0200
-Message-Id: <20220902121359.280247994@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 28/37] lib/vdso: Mark do_hres_timens() and do_coarse_timens() __always_inline()
+Date:   Fri,  2 Sep 2022 14:19:50 +0200
+Message-Id: <20220902121400.049401850@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121359.177846782@linuxfoundation.org>
 References: <20220902121359.177846782@linuxfoundation.org>
@@ -48,50 +52,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit 332924973725e8cdcc783c175f68cf7e162cb9e5 upstream.
+[ Upstream commit 58efe9f696cf908f40d6672aeca81cb2ad2bc762 ]
 
-Turns out that i386 doesn't unconditionally have LFENCE, as such the
-loop in __FILL_RETURN_BUFFER isn't actually speculation safe on such
-chips.
+In the same spirit as commit c966533f8c6c ("lib/vdso: Mark do_hres()
+and do_coarse() as __always_inline"), mark do_hres_timens() and
+do_coarse_timens() __always_inline.
 
-Fixes: ba6e31af2be9 ("x86/speculation: Add LFENCE to RSB fill sequence")
-Reported-by: Ben Hutchings <ben@decadent.org.uk>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/Yv9tj9vbQ9nNlXoY@worktop.programming.kicks-ass.net
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The measurement below in on a non timens process, ie on the fastest path.
+
+On powerpc32, without the patch:
+
+clock-gettime-monotonic-raw:    vdso: 1155 nsec/call
+clock-gettime-monotonic-coarse:    vdso: 813 nsec/call
+clock-gettime-monotonic:    vdso: 1076 nsec/call
+
+With the patch:
+
+clock-gettime-monotonic-raw:    vdso: 1100 nsec/call
+clock-gettime-monotonic-coarse:    vdso: 667 nsec/call
+clock-gettime-monotonic:    vdso: 1025 nsec/call
+
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Vincenzo Frascino <vincenzo.frascino@arm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/90dcf45ebadfd5a07f24241551c62f619d1cb930.1617209142.git.christophe.leroy@csgroup.eu
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/nospec-branch.h |   12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ lib/vdso/gettimeofday.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -50,6 +50,7 @@
-  * the optimal version — two calls, each with their own speculation
-  * trap should their return address end up getting used, in a loop.
-  */
-+#ifdef CONFIG_X86_64
- #define __FILL_RETURN_BUFFER(reg, nr)			\
- 	mov	$(nr/2), reg;				\
- 771:							\
-@@ -60,6 +61,17 @@
- 	jnz	771b;					\
- 	/* barrier for jnz misprediction */		\
- 	lfence;
-+#else
-+/*
-+ * i386 doesn't unconditionally have LFENCE, as such it can't
-+ * do a loop.
-+ */
-+#define __FILL_RETURN_BUFFER(reg, nr)			\
-+	.rept nr;					\
-+	__FILL_RETURN_SLOT;				\
-+	.endr;						\
-+	add	$(BITS_PER_LONG/8) * nr, %_ASM_SP;
-+#endif
+diff --git a/lib/vdso/gettimeofday.c b/lib/vdso/gettimeofday.c
+index 2919f16981404..c6f6dee087460 100644
+--- a/lib/vdso/gettimeofday.c
++++ b/lib/vdso/gettimeofday.c
+@@ -46,8 +46,8 @@ static inline bool vdso_cycles_ok(u64 cycles)
+ #endif
  
- /*
-  * Stuff a single RSB slot.
+ #ifdef CONFIG_TIME_NS
+-static int do_hres_timens(const struct vdso_data *vdns, clockid_t clk,
+-			  struct __kernel_timespec *ts)
++static __always_inline int do_hres_timens(const struct vdso_data *vdns, clockid_t clk,
++					  struct __kernel_timespec *ts)
+ {
+ 	const struct vdso_data *vd = __arch_get_timens_vdso_data();
+ 	const struct timens_offset *offs = &vdns->offset[clk];
+@@ -97,8 +97,8 @@ static __always_inline const struct vdso_data *__arch_get_timens_vdso_data(void)
+ 	return NULL;
+ }
+ 
+-static int do_hres_timens(const struct vdso_data *vdns, clockid_t clk,
+-			  struct __kernel_timespec *ts)
++static __always_inline int do_hres_timens(const struct vdso_data *vdns, clockid_t clk,
++					  struct __kernel_timespec *ts)
+ {
+ 	return -EINVAL;
+ }
+@@ -159,8 +159,8 @@ static __always_inline int do_hres(const struct vdso_data *vd, clockid_t clk,
+ }
+ 
+ #ifdef CONFIG_TIME_NS
+-static int do_coarse_timens(const struct vdso_data *vdns, clockid_t clk,
+-			    struct __kernel_timespec *ts)
++static __always_inline int do_coarse_timens(const struct vdso_data *vdns, clockid_t clk,
++					    struct __kernel_timespec *ts)
+ {
+ 	const struct vdso_data *vd = __arch_get_timens_vdso_data();
+ 	const struct vdso_timestamp *vdso_ts = &vd->basetime[clk];
+@@ -188,8 +188,8 @@ static int do_coarse_timens(const struct vdso_data *vdns, clockid_t clk,
+ 	return 0;
+ }
+ #else
+-static int do_coarse_timens(const struct vdso_data *vdns, clockid_t clk,
+-			    struct __kernel_timespec *ts)
++static __always_inline int do_coarse_timens(const struct vdso_data *vdns, clockid_t clk,
++					    struct __kernel_timespec *ts)
+ {
+ 	return -1;
+ }
+-- 
+2.35.1
+
 
 
