@@ -2,61 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 251FEC54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 07:47:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF7B0C54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 07:48:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235430AbiIBHrb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 03:47:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32982 "EHLO
+        id S235461AbiIBHsT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 03:48:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233577AbiIBHra (ORCPT
+        with ESMTP id S235313AbiIBHsR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 03:47:30 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31739A5728
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 00:47:28 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id l5so1248567pjy.5
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 00:47:27 -0700 (PDT)
+        Fri, 2 Sep 2022 03:48:17 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAA65A1D6E;
+        Fri,  2 Sep 2022 00:48:16 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id r69so1297662pgr.2;
+        Fri, 02 Sep 2022 00:48:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date;
-        bh=O5drL3tAwNsZuuAws6oA878DUgPxdjCv6y4Z6HAJN3M=;
-        b=fKW0bTjhzFkn1V45eoCOxsP+I3Encq3CAoZLyoX9vtjX2mH499OeRTZumtDAgN7z1N
-         HaPK4G4jwRyW0/fIHEuwk1sBpvTomwpQ6tSDzcRbqu+bc4i1GnBjfzWN3lrPW519+eg3
-         eqUEnHx7R18BlqgwPFdI7QU9fSWmbhzVoANUJpvpUlyuln83vwXk9Ai3uLMEfZe/rQSN
-         U2+PpUkAMzQgKAcKnQxkktcKAO94+14oGnP8GCB0j4pqzE3VDnOBX7UvA5NoXJxFDDAq
-         pCiz5k1/wRDqaxGHcygDHpmipXcy2ICqDYnLqhW9cm38zPD5QitMxagH0MA7nWT5jPov
-         WrHA==
+        bh=M+fD8FD5+7TDwDC6zAvoE0sCYdDhCFrxXlMrBZifOxM=;
+        b=A5V0pbkqwQx0stbYGz0ZUwDlgAMJqcBrTtkKVn7KAd1zhyM4/Efp2XpNox9kmDJ9JO
+         kUcB0J2ZK8CiR+iDJh4dq+Y7SGbdI22z0XfUDY0OJxm7mOCbUmfkQUnLAjsX25ZT1ubz
+         dqXlqWzFOKnggz923HP1JX3/ROhpCga0S9Ppl9+VQLZ6dqqt7Nw7Dq9+H3HGuG9JHDjr
+         dtYvXnlj8P5Zaoc6Y/FifTDEoZbgcGI1756ggo25mR2f6uka2NgL5FNEZvHUtHZbiynD
+         p99ltZevNXFxuNG5vWZW71lNXjyo71pIPKRoe9xNXIeqVt+RXYXml3pvymqkUw20mR+T
+         M52Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=O5drL3tAwNsZuuAws6oA878DUgPxdjCv6y4Z6HAJN3M=;
-        b=DUzrAKV0nKju0/AFXlNWPy/azU37DxilaxkCc893h9MA03/STHzlEO40TPuRluUmEe
-         eU0AMOdUYpcvvKvi1bYySNB7QsmC/FXwzb5GFBEX3TAnYcvfRDAa/LN2dm1hLuLglM+t
-         2HKBaGhvq3vjj5iS0tCVGkKTJ/b+FT5+ubqHSewACyDRlfSMcG/OSBbEcBBunooyuZvL
-         OvhC9ocvm3iq+sxCdS42vSBE1T/wlkfh4/ajM2EhjXeOoL/VYUbzKrDFFeK/V24RFmx4
-         6jzC/MWfCV+0HHoo8Cxm5WEYTeokxUmQPNAX+4L16CFom4upAAC9fXvQwB1o11tl2YZk
-         F71Q==
-X-Gm-Message-State: ACgBeo0GoQPFjPqWIphTeH3R5UbOMazWEoLJimzG9JZ/sJC2rRrsNmoW
-        m4kvGOSL2Cj8ghjWEzKCI5TBToA9McDLDQ==
-X-Google-Smtp-Source: AA6agR7s648bDWnCalW73DXjRaBnJ56sgGVrPDUyZ0yMO2ijyXph3wuS6gIEW6k3MASO44p0na7N7g==
-X-Received: by 2002:a17:902:e88d:b0:175:3e0e:168d with SMTP id w13-20020a170902e88d00b001753e0e168dmr12865466plg.160.1662104846716;
-        Fri, 02 Sep 2022 00:47:26 -0700 (PDT)
-Received: from localhost.localdomain (lily-optiplex-3070.dynamic.ucsd.edu. [2607:f720:1300:3033::1:4dd])
-        by smtp.googlemail.com with ESMTPSA id q3-20020aa78423000000b0052d87b76d12sm964108pfn.68.2022.09.02.00.47.25
+        bh=M+fD8FD5+7TDwDC6zAvoE0sCYdDhCFrxXlMrBZifOxM=;
+        b=YlPJ4AtZOqN/ylCxHrooVFRymj5XeEtYtQbBTlSVJ389vlw/mDBp0+E8H7EK1TG7fI
+         lq52IUfm1JkUr0hDHUbve84LEXcVWUxkX36qKiZnqJonkL5ecKjPDkwOAHuUU9+cCWV9
+         ADlfYduVk08BojxurhdQ9wPRpQ6DLci8VEenOSw4Yi2xB5Qlf0hQVylhZwx/81P1AMDW
+         J3dxIIM4QeOhF3+aS7obGYmYxVDPS1FvGEjYY9k0i49ahaKnaT1k3S8CRJG4/cQxHBlC
+         JRaU3uSXxnSVxN6CVmRsVH+NFOT3qD9c9l5unJj7ywu/9/t4ymclsnPoHTlrNY3oiQK8
+         dMew==
+X-Gm-Message-State: ACgBeo2KeqoRbjaZ5f1my2wahKvQa3Tbk5cBcClIDwN2vub9DTpN3fnZ
+        kun4I07lU4DAt9vuWuBRX09qLpmSHq4=
+X-Google-Smtp-Source: AA6agR4a9HbQFBgaX1xpz2+hcOxbmCixu3pSM4Ye+5Zl5li6Mu12y4rCUC9WkUMnV3T47ZuUXZUmng==
+X-Received: by 2002:aa7:92d8:0:b0:537:acbf:5e85 with SMTP id k24-20020aa792d8000000b00537acbf5e85mr34639862pfa.61.1662104896493;
+        Fri, 02 Sep 2022 00:48:16 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id az11-20020a056a02004b00b004296719538esm780208pgb.40.2022.09.02.00.48.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 00:47:25 -0700 (PDT)
-From:   Li Zhong <floridsleeves@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     peterz@infradead.org, jpoimboe@kernel.org, jbaron@akamai.com,
-        rostedt@goodmis.org, ardb@kernel.org, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com, Li Zhong <floridsleeves@gmail.com>
-Subject: [PATCH v1] arch/x86/kernel: check the return value of insn_decode_kernel()
-Date:   Fri,  2 Sep 2022 00:47:06 -0700
-Message-Id: <20220902074706.2211252-1-floridsleeves@gmail.com>
+        Fri, 02 Sep 2022 00:48:16 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: zhang.songyi@zte.com.cn
+To:     clm@fb.com
+Cc:     josef@toxicpanda.com, dsterba@suse.com,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        zhang songyi <zhang.songyi@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next] btrfs: Remove the unneeded result variable
+Date:   Fri,  2 Sep 2022 07:48:10 +0000
+Message-Id: <20220902074810.319914-1-zhang.songyi@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -64,31 +65,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-insn_decode() could fail and the insn.length could be invalid. So we
-need to check the return value first.
+From: zhang songyi <zhang.songyi@zte.com.cn>
 
-Signed-off-by: Li Zhong <floridsleeves@gmail.com>
+Return the sysfs_emit() directly instead of storing it in another
+redundant variable.
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: zhang songyi <zhang.songyi@zte.com.cn>
 ---
- arch/x86/kernel/jump_label.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ fs/btrfs/sysfs.c | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
-diff --git a/arch/x86/kernel/jump_label.c b/arch/x86/kernel/jump_label.c
-index f5b8ef02d172..3ecaf0cc71d0 100644
---- a/arch/x86/kernel/jump_label.c
-+++ b/arch/x86/kernel/jump_label.c
-@@ -20,9 +20,10 @@
- int arch_jump_entry_size(struct jump_entry *entry)
+diff --git a/fs/btrfs/sysfs.c b/fs/btrfs/sysfs.c
+index 41f191682ad1..6268dade57d7 100644
+--- a/fs/btrfs/sysfs.c
++++ b/fs/btrfs/sysfs.c
+@@ -839,11 +839,8 @@ static ssize_t btrfs_sinfo_bg_reclaim_threshold_show(struct kobject *kobj,
+ 						     char *buf)
  {
- 	struct insn insn = {};
-+	int ret;
+ 	struct btrfs_space_info *space_info = to_space_info(kobj);
+-	ssize_t ret;
+-
+-	ret = sysfs_emit(buf, "%d\n", READ_ONCE(space_info->bg_reclaim_threshold));
  
--	insn_decode_kernel(&insn, (void *)jump_entry_code(entry));
--	BUG_ON(insn.length != 2 && insn.length != 5);
-+	ret = insn_decode_kernel(&insn, (void *)jump_entry_code(entry));
-+	BUG_ON(ret < 0 || insn.length != 2 && insn.length != 5);
- 
- 	return insn.length;
+-	return ret;
++	return sysfs_emit(buf, "%d\n", READ_ONCE(space_info->bg_reclaim_threshold));
  }
+ 
+ static ssize_t btrfs_sinfo_bg_reclaim_threshold_store(struct kobject *kobj,
+@@ -1205,11 +1202,8 @@ static ssize_t btrfs_bg_reclaim_threshold_show(struct kobject *kobj,
+ 					       char *buf)
+ {
+ 	struct btrfs_fs_info *fs_info = to_fs_info(kobj);
+-	ssize_t ret;
+-
+-	ret = sysfs_emit(buf, "%d\n", READ_ONCE(fs_info->bg_reclaim_threshold));
+ 
+-	return ret;
++	return sysfs_emit(buf, "%d\n", READ_ONCE(fs_info->bg_reclaim_threshold));
+ }
+ 
+ static ssize_t btrfs_bg_reclaim_threshold_store(struct kobject *kobj,
 -- 
 2.25.1
+
 
