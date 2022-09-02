@@ -2,241 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BB46ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 10:55:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D946C6FA87
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 11:00:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235482AbiIBKy7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 06:54:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56808 "EHLO
+        id S233262AbiIBLAT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 07:00:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235858AbiIBKyl (ORCPT
+        with ESMTP id S230436AbiIBLAQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 06:54:41 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C887CAC5A
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 03:54:32 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id p8-20020a17090ad30800b001fdfc8c7567so7396344pju.1
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 03:54:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=l4+dx0/DUjpRvb0jfu2V1EYJ8pnYiC4nCrgUYZUGywU=;
-        b=tMZC6ljQ/8gi9Jph6jESoxaGzBhUEKBu46ntA4lY1CAjffDzI68/+QKa8mWhfaY+QS
-         H6Hdkl5udm0HIOJIVg1gb1BhiE1dz90rQbQ6fBuF+DocdTMwUirhIB4f09RuhIc/62x6
-         ty1a0xQSRgl97M8YG/zN4kcx4RODxhXLmNsk26nYWSuYBlzN6CQpjZVvYyR3eqKaOu5B
-         Y/XaJfZ91xpqbDUzrAJg4yHkp7BTZQJsvZnj63QDu9081EC9fF/X1lJporKqY/rEaYtx
-         UTCalW+4S+hXWiiqMgfJtPHSkP/+OqMFYiVrEzUeTMFTjtLak3MyHuzrHusfYkE7wfqM
-         jbBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=l4+dx0/DUjpRvb0jfu2V1EYJ8pnYiC4nCrgUYZUGywU=;
-        b=6lEIJQQDxqq61a+f1oqFnelVPxb/exfrmedVkvpg46Sk1GwU9mxtmdwm+zmj9/rj1X
-         hIGeTU3/RanfPuRFira66AQRMtpkC4+BQSPX5Ht+D89aTuWsvKw8IfNgkVYiWSZXv59l
-         wVyQhGOuPL3a6IgSjqOrNoLEd8fQHAENYs/3nvakIv4NK440mISqQ15YXBYK8XbLUPtO
-         YRNK+leqGcBfXDhuHa557PnDlm3VVUnXnaabl20Axcj5Qfa1vFexzncF8VZV7tmyixAt
-         xxg07XTsiuX7zSzBKNMEoZLs9rQZwnQRjaMvQ3t9geSTcTiyXm5/x6sKwtmg42uHMev3
-         xMug==
-X-Gm-Message-State: ACgBeo0Fvt7ULUjbnOvlFy3cgb/OOmPbZux19YsCBu1Y8fzpoEhHKRHa
-        Cv/knKm9p3pNohs4kyIrRZp9yw==
-X-Google-Smtp-Source: AA6agR5ys7kCNuYBLszHsMp707kVrAarVSZrzYdKxepFPo9Ogdt9dOBDXKfD0986/w+xjOMoXqlXOQ==
-X-Received: by 2002:a17:902:8e88:b0:172:d1f8:efcb with SMTP id bg8-20020a1709028e8800b00172d1f8efcbmr34060235plb.27.1662116071906;
-        Fri, 02 Sep 2022 03:54:31 -0700 (PDT)
-Received: from C02G705SMD6V.bytedance.net ([61.120.150.76])
-        by smtp.gmail.com with ESMTPSA id e4-20020a63d944000000b0041b29fd0626sm1128681pgj.88.2022.09.02.03.54.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 03:54:31 -0700 (PDT)
-From:   Jia Zhu <zhujia.zj@bytedance.com>
-To:     linux-erofs@lists.ozlabs.org, xiang@kernel.org, chao@kernel.org
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yinxin.x@bytedance.com, jefflexu@linux.alibaba.com,
-        huyue2@coolpad.com, Jia Zhu <zhujia.zj@bytedance.com>
-Subject: [PATCH V2 5/5] erofs: support fscache based shared domain
-Date:   Fri,  2 Sep 2022 18:53:05 +0800
-Message-Id: <20220902105305.79687-6-zhujia.zj@bytedance.com>
-X-Mailer: git-send-email 2.32.1 (Apple Git-133)
-In-Reply-To: <20220902105305.79687-1-zhujia.zj@bytedance.com>
-References: <20220902105305.79687-1-zhujia.zj@bytedance.com>
+        Fri, 2 Sep 2022 07:00:16 -0400
+Received: from SHSQR01.spreadtrum.com (unknown [222.66.158.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3AA83B954
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 04:00:11 -0700 (PDT)
+Received: from SHSend.spreadtrum.com (bjmbx01.spreadtrum.com [10.0.64.7])
+        by SHSQR01.spreadtrum.com with ESMTPS id 282AxQN9047151
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NO);
+        Fri, 2 Sep 2022 18:59:26 +0800 (CST)
+        (envelope-from zhaoyang.huang@unisoc.com)
+Received: from bj03382pcu.spreadtrum.com (10.0.74.65) by
+ BJMBX01.spreadtrum.com (10.0.64.7) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.23; Fri, 2 Sep 2022 18:59:26 +0800
+From:   "zhaoyang.huang" <zhaoyang.huang@unisoc.com>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Zhaoyang Huang <huangzhaoyang@gmail.com>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>, <ke.wang@unisoc.com>
+Subject: [Resend RFC PATCH] mm: introduce __GFP_TRACKLEAK to track in-kernel allocation
+Date:   Fri, 2 Sep 2022 18:59:07 +0800
+Message-ID: <1662116347-17649-1-git-send-email-zhaoyang.huang@unisoc.com>
+X-Mailer: git-send-email 1.9.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.0.74.65]
+X-ClientProxiedBy: SHCAS03.spreadtrum.com (10.0.1.207) To
+ BJMBX01.spreadtrum.com (10.0.64.7)
+X-MAIL: SHSQR01.spreadtrum.com 282AxQN9047151
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Several erofs filesystems can belong to one domain, and data blobs can
-be shared among these erofs filesystems of same domain.
+From: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
 
-Users could specify domain_id mount option to create or join into a domain.
+Kthread and drivers could fetch memory via alloc_pages directly which make them
+hard to debug when leaking. Solve this by introducing __GFP_TRACELEAK and reuse
+kmemleak mechanism which unified most of kernel cosuming pages into kmemleak.
 
-Signed-off-by: Jia Zhu <zhujia.zj@bytedance.com>
+Signed-off-by: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
 ---
- fs/erofs/fscache.c  | 73 +++++++++++++++++++++++++++++++++++++++++++++
- fs/erofs/internal.h | 12 ++++++++
- fs/erofs/super.c    | 10 +++++--
- 3 files changed, 93 insertions(+), 2 deletions(-)
+ include/linux/gfp.h        | 4 +++-
+ include/linux/page-flags.h | 3 +++
+ mm/kmemleak.c              | 2 +-
+ mm/page_alloc.c            | 6 ++++++
+ 4 files changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
-index 439dd3cc096a..c01845808ede 100644
---- a/fs/erofs/fscache.c
-+++ b/fs/erofs/fscache.c
-@@ -559,12 +559,27 @@ int erofs_fscache_register_cookie(struct super_block *sb,
- void erofs_fscache_unregister_cookie(struct erofs_fscache **fscache)
- {
- 	struct erofs_fscache *ctx = *fscache;
-+	struct erofs_domain *domain;
+diff --git a/include/linux/gfp.h b/include/linux/gfp.h
+index 2d2ccae..081ab54 100644
+--- a/include/linux/gfp.h
++++ b/include/linux/gfp.h
+@@ -68,6 +68,7 @@
+ #else
+ #define ___GFP_NOLOCKDEP	0
+ #endif
++#define ___GFP_TRACKLEAK	0x10000000u
+ /* If the above are modified, __GFP_BITS_SHIFT may need updating */
  
- 	if (!ctx)
- 		return;
-+	domain = ctx->domain;
-+	if (domain) {
-+		mutex_lock(&domain->mutex);
-+		/* Cookie is still in use */
-+		if (atomic_read(&ctx->anon_inode->i_count) > 1) {
-+			iput(ctx->anon_inode);
-+			mutex_unlock(&domain->mutex);
-+			return;
-+		}
-+		iput(ctx->anon_inode);
-+		kfree(ctx->name);
-+		mutex_unlock(&domain->mutex);
-+	}
+ /*
+@@ -259,12 +260,13 @@
+ #define __GFP_SKIP_ZERO ((__force gfp_t)___GFP_SKIP_ZERO)
+ #define __GFP_SKIP_KASAN_UNPOISON ((__force gfp_t)___GFP_SKIP_KASAN_UNPOISON)
+ #define __GFP_SKIP_KASAN_POISON   ((__force gfp_t)___GFP_SKIP_KASAN_POISON)
++#define __GFP_TRACKLEAK   ((__force gfp_t)___GFP_TRACKLEAK)
  
- 	fscache_unuse_cookie(ctx->cookie, NULL, NULL);
- 	fscache_relinquish_cookie(ctx->cookie, false);
-+	erofs_fscache_domain_put(domain);
- 	ctx->cookie = NULL;
+ /* Disable lockdep for GFP context tracking */
+ #define __GFP_NOLOCKDEP ((__force gfp_t)___GFP_NOLOCKDEP)
  
- 	iput(ctx->inode);
-@@ -609,3 +624,61 @@ void erofs_fscache_unregister_fs(struct super_block *sb)
- 	sbi->volume = NULL;
- 	sbi->domain = NULL;
- }
-+
-+static int erofs_fscache_domain_init_cookie(struct super_block *sb,
-+		struct erofs_fscache **fscache, char *name, bool need_inode)
-+{
-+	int ret;
-+	struct inode *inode;
-+	struct erofs_fscache *ctx;
-+	struct erofs_sb_info *sbi = EROFS_SB(sb);
-+	struct erofs_domain *domain = sbi->domain;
-+
-+	ret = erofs_fscache_register_cookie(sb, &ctx, name, need_inode);
-+	if (ret)
-+		return ret;
-+
-+	ctx->name = kstrdup(name, GFP_KERNEL);
-+	if (!ctx->name)
-+		return -ENOMEM;
-+
-+	inode = new_inode(erofs_pseudo_mnt->mnt_sb);
-+	if (!inode) {
-+		kfree(ctx->name);
-+		return -ENOMEM;
-+	}
-+
-+	ctx->domain = domain;
-+	ctx->anon_inode = inode;
-+	inode->i_private = ctx;
-+	erofs_fscache_domain_get(domain);
-+	*fscache = ctx;
-+	return 0;
-+}
-+
-+int erofs_domain_register_cookie(struct super_block *sb,
-+	struct erofs_fscache **fscache, char *name, bool need_inode)
-+{
-+	int err;
-+	struct inode *inode;
-+	struct erofs_fscache *ctx;
-+	struct erofs_sb_info *sbi = EROFS_SB(sb);
-+	struct erofs_domain *domain = sbi->domain;
-+	struct super_block *psb = erofs_pseudo_mnt->mnt_sb;
-+
-+	mutex_lock(&domain->mutex);
-+	list_for_each_entry(inode, &psb->s_inodes, i_sb_list) {
-+		ctx = inode->i_private;
-+		if (!ctx)
-+			continue;
-+		if (!strcmp(ctx->name, name)) {
-+			*fscache = ctx;
-+			igrab(inode);
-+			mutex_unlock(&domain->mutex);
-+			return 0;
-+		}
-+	}
-+	err = erofs_fscache_domain_init_cookie(sb, fscache, name, need_inode);
-+	mutex_unlock(&domain->mutex);
-+	return err;
-+}
-diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
-index 2790c93ffb83..efa4f4ad77cc 100644
---- a/fs/erofs/internal.h
-+++ b/fs/erofs/internal.h
-@@ -110,6 +110,9 @@ struct erofs_domain {
- struct erofs_fscache {
- 	struct fscache_cookie *cookie;
- 	struct inode *inode;
-+	struct inode *anon_inode;
-+	struct erofs_domain *domain;
-+	char *name;
- };
+ /* Room for N __GFP_FOO bits */
+-#define __GFP_BITS_SHIFT (27 + IS_ENABLED(CONFIG_LOCKDEP))
++#define __GFP_BITS_SHIFT (28 + IS_ENABLED(CONFIG_LOCKDEP))
+ #define __GFP_BITS_MASK ((__force gfp_t)((1 << __GFP_BITS_SHIFT) - 1))
  
- struct erofs_sb_info {
-@@ -625,6 +628,9 @@ int erofs_fscache_register_domain(struct super_block *sb);
- int erofs_fscache_register_cookie(struct super_block *sb,
- 				  struct erofs_fscache **fscache,
- 				  char *name, bool need_inode);
-+int erofs_domain_register_cookie(struct super_block *sb,
-+				  struct erofs_fscache **fscache,
-+				  char *name, bool need_inode);
- void erofs_fscache_unregister_cookie(struct erofs_fscache **fscache);
+ /**
+diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
+index e66f7aa..ef0f814 100644
+--- a/include/linux/page-flags.h
++++ b/include/linux/page-flags.h
+@@ -942,6 +942,7 @@ static inline bool is_page_hwpoison(struct page *page)
+ #define PG_offline	0x00000100
+ #define PG_table	0x00000200
+ #define PG_guard	0x00000400
++#define PG_trackleak	0x00000800
  
- extern const struct address_space_operations erofs_fscache_access_aops;
-@@ -646,6 +652,12 @@ static inline int erofs_fscache_register_cookie(struct super_block *sb,
- {
- 	return -EOPNOTSUPP;
- }
-+static inline int erofs_domain_register_cookie(struct super_block *sb,
-+						struct erofs_fscache **fscache,
-+						char *name, bool need_inode)
-+{
-+	return -EOPNOTSUPP;
-+}
+ #define PageType(page, flag)						\
+ 	((page->page_type & (PAGE_TYPE_BASE | flag)) == PAGE_TYPE_BASE)
+@@ -1012,6 +1013,8 @@ static inline int page_has_type(struct page *page)
+  */
+ PAGE_TYPE_OPS(Guard, guard)
  
- static inline void erofs_fscache_unregister_cookie(struct erofs_fscache **fscache)
- {
-diff --git a/fs/erofs/super.c b/fs/erofs/super.c
-index 667a78f0ee70..11c5ba84567c 100644
---- a/fs/erofs/super.c
-+++ b/fs/erofs/super.c
-@@ -245,8 +245,12 @@ static int erofs_init_device(struct erofs_buf *buf, struct super_block *sb,
++PAGE_TYPE_OPS(Trackleak, trackleak)
++
+ extern bool is_free_buddy_page(struct page *page);
+ 
+ PAGEFLAG(Isolated, isolated, PF_ANY);
+diff --git a/mm/kmemleak.c b/mm/kmemleak.c
+index 422f28f..a182f5d 100644
+--- a/mm/kmemleak.c
++++ b/mm/kmemleak.c
+@@ -1471,7 +1471,7 @@ static void kmemleak_scan(void)
+ 			if (page_zone(page) != zone)
+ 				continue;
+ 			/* only scan if page is in use */
+-			if (page_count(page) == 0 || PageReserved(page))
++			if (page_count(page) == 0)
+ 				continue;
+ 			scan_block(page, page + 1, NULL);
+ 			if (!(pfn & 63))
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index e008a3d..d8995c6 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -1361,6 +1361,8 @@ static __always_inline bool free_pages_prepare(struct page *page,
+ 		page->mapping = NULL;
+ 	if (memcg_kmem_enabled() && PageMemcgKmem(page))
+ 		__memcg_kmem_uncharge_page(page, order);
++	if (PageTrackleak(page))
++		kmemleak_free(page);
+ 	if (check_free)
+ 		bad += check_free_page(page);
+ 	if (bad)
+@@ -5444,6 +5446,10 @@ struct page *__alloc_pages(gfp_t gfp, unsigned int order, int preferred_nid,
+ 		__free_pages(page, order);
+ 		page = NULL;
  	}
++	if (gfp & __GFP_TRACKLEAK) {
++		kmemleak_alloc(page_address(page), PAGE_SIZE << order, 1, gfp & ~__GFP_TRACKLEAK);
++		__SetPageTrackleak(page);
++	}
  
- 	if (erofs_is_fscache_mode(sb)) {
--		ret = erofs_fscache_register_cookie(sb, &dif->fscache,
--				dif->path, false);
-+		if (sbi->opt.domain_id)
-+			ret = erofs_domain_register_cookie(sb, &dif->fscache, dif->path,
-+					false);
-+		else
-+			ret = erofs_fscache_register_cookie(sb, &dif->fscache, dif->path,
-+					false);
- 		if (ret)
- 			return ret;
- 	} else {
-@@ -726,6 +730,8 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
- 			err = erofs_fscache_register_domain(sb);
- 			if (err)
- 				return err;
-+			err = erofs_domain_register_cookie(sb, &sbi->s_fscache,
-+					sbi->opt.fsid, true);
- 		} else {
- 			err = erofs_fscache_register_fs(sb);
- 			if (err)
+ 	trace_mm_page_alloc(page, order, alloc_gfp, ac.migratetype);
+ 
 -- 
-2.20.1
+1.9.1
 
