@@ -2,124 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E65FECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:53:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8096ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:53:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230142AbiIBSw6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 14:52:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41514 "EHLO
+        id S230150AbiIBSxK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 14:53:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230125AbiIBSww (ORCPT
+        with ESMTP id S230152AbiIBSxG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 14:52:52 -0400
+        Fri, 2 Sep 2022 14:53:06 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D15F7DDAA2
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 11:52:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AD0A105B6F
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 11:53:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662144771;
+        s=mimecast20190719; t=1662144782;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=k4TiRf0SYDNoIr2Qg83a5142/XxU9MROZO10TeEUAQY=;
-        b=OZghKZpxvhjcu06PFznu4/hJPJ+P6pNG+e2SA6ieuN8c5Ekuf0OEokQd7dX1ZB5TQewDYn
-        yZBg+AGcbLfZMrhb08MoqzWGTNwtO7AJXK0U9C2fMnkgRyFzWu7ok8iqOD8Zi+0PFCD+oz
-        J3ALmaCDcBeq9PQ/tthfAXyAAccVRyE=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=uLJN7/BLiss15VoCQRispsUH3s6wfzk4G5XVQwrvZI0=;
+        b=Z3aPh5M3FVS3jPgl9t5XzSw0T/n1SvfyQh6BaITZLWYnmZEA/lAMccmLVl7uMOcdrQuKrv
+        Jp3AjQsU3zIpximqMiE6XlJ9APE0rgfQIK9y4JXATb6fu19a2ScrP1fAWC0AUmmwNUaio7
+        sbVEVAgGsG2FRdbxW/KpBfflKiwgIWk=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-281-vYkckQSFPyariCF_idGNmg-1; Fri, 02 Sep 2022 14:52:47 -0400
-X-MC-Unique: vYkckQSFPyariCF_idGNmg-1
-Received: by mail-wm1-f69.google.com with SMTP id n7-20020a1c2707000000b003a638356355so1555182wmn.2
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 11:52:47 -0700 (PDT)
+ us-mta-665-c-YbB_U2Pc24vjX_KEYZdw-1; Fri, 02 Sep 2022 14:52:30 -0400
+X-MC-Unique: c-YbB_U2Pc24vjX_KEYZdw-1
+Received: by mail-qv1-f70.google.com with SMTP id oo7-20020a056214450700b00499144ac01dso1832306qvb.13
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 11:52:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date;
-        bh=k4TiRf0SYDNoIr2Qg83a5142/XxU9MROZO10TeEUAQY=;
-        b=04DSaygmbYDmwxrhUGqS5zCB/ZmkEUUHJuEa2ncX+iaXGQzMhy2X+plWdH/nBlLxp9
-         XfVXhZZhQHYJz9V+wn1NngZJxmTaSQgMqCWSPZ6ilQqMx/JtCSFbd4X9UctYBn5hlPRe
-         jviy1famwCmhowvgPD35Q+BGweNcbcU8mZfdNZwIynEFeY2i6yD74OAtZAwOTlzSK5OJ
-         42H/dINTixr2Kq4CJaY3SYr6TC0ExQ9Aq7drVOJZSEdX9TvuEWakPuPS9BFn+UNdcxAW
-         3Q+KQK/SgwLs+IFvRdsPU4yEPsOzu/F69yJ0m7Jo4qRM94g//5rMCLxdta2Ubg3h3l9j
-         k0Hg==
-X-Gm-Message-State: ACgBeo3vlmO6m0bB6JkFGF8K313KEFO6iju1sDMFmI+GdiRx6iqpnctC
-        RIi/O1goi57+M50MQ7+iARXxu9nXJDc7EBxg0efQoJgU2eAV3msCS/U9SF0yVNCh+JnXg10jC8C
-        HUZMOWTrShcuTQ+ZTmFHWh0la
-X-Received: by 2002:a5d:40cd:0:b0:225:7425:fac1 with SMTP id b13-20020a5d40cd000000b002257425fac1mr19658354wrq.30.1662144766610;
-        Fri, 02 Sep 2022 11:52:46 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4m3+y82b79Pf+1VPmj4J4yz70TJmSB+VPJmpDbZTLR4/wtAfynWCAurYqCUT7Y7G5Q5TLdcA==
-X-Received: by 2002:a5d:40cd:0:b0:225:7425:fac1 with SMTP id b13-20020a5d40cd000000b002257425fac1mr19658336wrq.30.1662144766329;
-        Fri, 02 Sep 2022 11:52:46 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c714:4800:2077:1bf6:40e7:2833? (p200300cbc714480020771bf640e72833.dip0.t-ipconnect.de. [2003:cb:c714:4800:2077:1bf6:40e7:2833])
-        by smtp.gmail.com with ESMTPSA id n18-20020a05600c501200b003a32251c3f9sm10099660wmr.5.2022.09.02.11.52.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Sep 2022 11:52:45 -0700 (PDT)
-Message-ID: <323fdb0f-c5a5-e0e5-1ff4-ab971bc295cc@redhat.com>
-Date:   Fri, 2 Sep 2022 20:52:44 +0200
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=uLJN7/BLiss15VoCQRispsUH3s6wfzk4G5XVQwrvZI0=;
+        b=BeorH4fMoMVRZeefLkhiuWaXclnfNsEtxWteuUsgX8REuE9Yvmv9iFvQrzFYwOvBGB
+         KwmjrhyfrbJzHe173yjr8TfJRWtrgVsgXx2skdcVSlWkQHN903AC9JRqy2OfneC0xbJD
+         B2NGg/fWF8cTfI/3Q6XBaoGDvP6oP+pUU8xx2eyqYk2vPPPvwU0f40+Edxs3wFDjhERe
+         x8kjeqGsL49aWu6sulofx85ckwYEJJjnGKwY46I90IaTxFw0z3BDAzNwLjURqCCn7+p4
+         jVOpLObUvUqnaKfUeCYVm0PIVhb36evHH56Ai3G9j7pfkPquSNX4duKfprUNb/tmRRpr
+         HRSA==
+X-Gm-Message-State: ACgBeo1SLa8coFzJ89O14D06PPMm4ZBat42qdCFDVkPV3OEVj1/wfhiU
+        8gYzCX9ew1rbZBQwoP8YHhBzO6OmTTzYE2QMW8Id9wAtpHRO8xPbdbs++GkZ4kfcMjzqfsjGBun
+        bgoj94o1pg4L+YQSd6gWe1tiV
+X-Received: by 2002:a0c:9d46:0:b0:476:ff07:3fe7 with SMTP id n6-20020a0c9d46000000b00476ff073fe7mr30933305qvf.15.1662144750214;
+        Fri, 02 Sep 2022 11:52:30 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7aZwLqxASsgLyT6pr2oLxtShydapkDDS6erqpAYgTyjpgPuDnQlYnCVVNVGOO0dY0TwHgdKg==
+X-Received: by 2002:a0c:9d46:0:b0:476:ff07:3fe7 with SMTP id n6-20020a0c9d46000000b00476ff073fe7mr30933279qvf.15.1662144749987;
+        Fri, 02 Sep 2022 11:52:29 -0700 (PDT)
+Received: from halaneylaptop.redhat.com ([2600:1700:1ff0:d0e0::48])
+        by smtp.gmail.com with ESMTPSA id j4-20020ac874c4000000b0031ef0081d77sm1403168qtr.79.2022.09.02.11.52.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 11:52:29 -0700 (PDT)
+From:   Andrew Halaney <ahalaney@redhat.com>
+To:     agross@kernel.org, andersson@kernel.org,
+        konrad.dybcio@somainline.org, lgirdwood@gmail.com,
+        broonie@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, dianders@chromium.org,
+        johan@kernel.org, Andrew Halaney <ahalaney@redhat.com>
+Subject: [PATCH 2/3] regulator: dt-bindings: qcom,rpmh: Specify supply property
+Date:   Fri,  2 Sep 2022 13:51:47 -0500
+Message-Id: <20220902185148.635292-3-ahalaney@redhat.com>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220902185148.635292-1-ahalaney@redhat.com>
+References: <20220902185148.635292-1-ahalaney@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH] hugetlb: simplify hugetlb handling in follow_page_mask
-Content-Language: en-US
-To:     Mike Kravetz <mike.kravetz@oracle.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        inuxppc-dev@lists.ozlabs.org, linux-ia64@vger.kernel.org,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>,
-        Naoya Horiguchi <naoya.horiguchi@linux.dev>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>
-References: <20220829234053.159158-1-mike.kravetz@oracle.com>
- <608934d4-466d-975e-6458-34a91ccb4669@redhat.com> <Yw5AOZ/Kc5f3UP+s@monkey>
- <Yw6Bpsow+gUMlHCU@monkey> <739dc825-ece3-a59f-adc5-65861676e0ae@redhat.com>
- <YxJQfGSsbXd3W4m/@monkey>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <YxJQfGSsbXd3W4m/@monkey>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->>> Adding Christophe on Cc:
->>>
->>> Christophe do you know if is_hugepd is true for all hugetlb entries, not
->>> just hugepd?
->>>
->>> On systems without hugepd entries, I guess ptdump skips all hugetlb entries.
->>> Sigh!
->>
->> IIUC, the idea of ptdump_walk_pgd() is to dump page tables even outside
->> VMAs (for debugging purposes?).
->>
->> I cannot convince myself that that's a good idea when only holding the
->> mmap lock in read mode, because we can just see page tables getting
->> freed concurrently e.g., during concurrent munmap() ... while holding
->> the mmap lock in read we may only walk inside VMA boundaries.
->>
->> That then raises the questions if we're only calling this on special MMs
->> (e.g., init_mm) whereby we cannot really see concurrent munmap() and
->> where we shouldn't have hugetlb mappings or hugepd entries.
->>
-> 
-> This is going to require a little more thought.
-> 
-> Since Baolin's patch for stable releases is moving forward, I want to
-> get the cleanup provided by this patch in ASAP.  So, I am going to rebase
-> this patch on Baolin's with the other fixups.
-> 
-> Will come back to this cleanup later.
+The top level RPMh nodes have a supply property, make sure to specify it
+so the patternProperties later that are keyed off of the PMIC version
+are properly honored. Without this, and the dt-binding containing
+additionalProperties: false, you will see the following when running
+make dt_binding_check:
 
-Sure, no need to do it all at once (I was just bringing it up while
-thinking about it).
+      DTEX    Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.example.dts
+      DTC     Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.example.dtb
+      CHECK   Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.example.dtb
+    /mnt/extrassd/git/linux-next/Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.example.dtb: pm8998-rpmh-regulators: 'vdd-l7-l12-l14-l15-supply' does not match any of the regexes: '^(smps|ldo|lvs)[0-9]+$', 'pinctrl-[0-9]+'
+            From schema: /mnt/extrassd/git/linux-next/Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.yaml
 
+That supply pattern is intended to be considered correct for the
+qcom,pm8998-rpmh-regulators compatible, and is no longer complained
+about with the supply property described.
+
+Unfortunately this pattern is wide enough that it no longer complains
+when you bork the expected supply for a compatible. I.e. for
+qcom,pm8998-rpmh-regulators, if I change the example usage in the
+binding to:
+
+        vdd-l0-l12-l14-l15-supply = <&pm8998_s5>;
+
+I get no warning, when really it should be of the pattern:
+
+        vdd-l7-l12-l14-l15-supply = <&pm8998_s5>;
+
+Signed-off-by: Andrew Halaney <ahalaney@redhat.com>
+---
+ .../devicetree/bindings/regulator/qcom,rpmh-regulator.yaml     | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.yaml b/Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.yaml
+index b3fd60b21610..86265b513de3 100644
+--- a/Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.yaml
++++ b/Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.yaml
+@@ -106,6 +106,9 @@ patternProperties:
+     $ref: "regulator.yaml#"
+     description: smps/ldo regulator nodes(s).
+ 
++  ".*-supply$":
++    description: Input supply phandle(s) for this node
++
+ additionalProperties: false
+ 
+ required:
 -- 
-Thanks,
-
-David / dhildenb
+2.37.2
 
