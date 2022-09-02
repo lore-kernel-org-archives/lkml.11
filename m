@@ -2,84 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92C9FC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:51:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 936EBECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:51:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238224AbiIBNvs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:51:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38944 "EHLO
+        id S232840AbiIBNvy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:51:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235709AbiIBNvX (ORCPT
+        with ESMTP id S236787AbiIBNv1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:51:23 -0400
+        Fri, 2 Sep 2022 09:51:27 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F0FC2773;
-        Fri,  2 Sep 2022 06:25:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB2662982F;
+        Fri,  2 Sep 2022 06:25:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B0921B82B29;
-        Fri,  2 Sep 2022 13:19:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AF7EC433D6;
-        Fri,  2 Sep 2022 13:18:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662124742;
-        bh=jWqEiknW8RwuhPMRa9jUaXySZbEvtLL9Yky5wfGrb2k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CgrtUwKx+JuYZ38FAteb2DXrh+F0UcLIBdeuhxvNzY5928n8PaIpn3q77LQr4qCHL
-         ufuqPYJNK9IxEECrIo0oKB6t1lyEmwqfhyB4eDr5bn+es+0oJke7lZFF1ZXH3DxMyY
-         eR7T4NUy7Lv9wastzberTfJtkNnCLDlUd29Z/inInUQL3oml7lkiiBaipHfRjBqYoB
-         YFHOafnNmeDDW9Ef91fmX+d6UrPVV/IHWmE1zYbSzyjALYyGa97QhOaK5g02MlA7y5
-         nd14HhDgvbWcRNQAhT0iHCoQj5xW5IeqcEyqAR27avB13lk8S5QgWQ21yVWlvnIQMV
-         HDrED6OjVQgew==
-Date:   Fri, 2 Sep 2022 21:09:45 +0800
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Conor.Dooley@microchip.com
-Cc:     paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, anup@brainfault.org, atishp@atishpatra.org,
-        bigeasy@linutronix.de, tglx@linutronix.de, rostedt@goodmis.org,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, kvm-riscv@lists.infradead.org
-Subject: Re: [PATCH v2 0/5] riscv: add PREEMPT_RT support
-Message-ID: <YxIAmT2X9TU1CZhC@xhacker>
-References: <20220831175920.2806-1-jszhang@kernel.org>
- <4488b1ec-aa34-4be5-3b9b-c65f052f5270@microchip.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4846EB829E7;
+        Fri,  2 Sep 2022 12:33:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95FF9C433D7;
+        Fri,  2 Sep 2022 12:33:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662121990;
+        bh=Anhl2QGuM9FhBcz0l6zuTOPT3o4b337e8YDFCN4lQio=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FBsnhpfnxy1D5rV4p/zl7uHChDuKMd3z2QJ3y43SdvbEeOL2RZndiasjMR+r5y/dz
+         uUkz5hlbiYMPDbMqnbPtW3lI8geWwkmKkj9H+m747SJ+uPtRnkXr/Zr+fSKmT+AQWt
+         hyffGlOY6I8QLA2oZJforlK9fZPfrtThXCGyBANY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 51/73] ASoC: sh: rz-ssi: Improve error handling in rz_ssi_probe() error path
+Date:   Fri,  2 Sep 2022 14:19:15 +0200
+Message-Id: <20220902121406.124483008@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
+References: <20220902121404.435662285@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <4488b1ec-aa34-4be5-3b9b-c65f052f5270@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 01, 2022 at 04:41:52PM +0000, Conor.Dooley@microchip.com wrote:
-> On 31/08/2022 18:59, Jisheng Zhang wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > 
-> > This series is to add PREEMPT_RT support to riscv:
-> > patch1 adds the missing number of signal exits in vCPU stat
-> > patch2 switches to the generic guest entry infrastructure
-> > patch3 select HAVE_POSIX_CPU_TIMERS_TASK_WORK which is a requirement for
-> > RT
-> > patch4 adds lazy preempt support
-> > patch5 allows to enable PREEMPT_RT
-> > 
-> 
-> What version of the preempt_rt patch did you test this with?
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-v6.0-rc1 + v6.0-rc1-rt patch
+[ Upstream commit c75ed9f54ce8d349fee557f2b471a4d637ed2a6b ]
 
-> 
-> Maybe I am missing something, but I gave this a whirl with
-> v6.0-rc3 + v6.0-rc3-rt5 & was meant by a bunch of complaints.
-> I am not familiar with the preempt_rt patch, so I am not sure what
-> level of BUG()s or WARNING()s are to be expected, but I saw a fair
-> few...
+We usually do cleanup in reverse order of init. Currently in case of
+error rz_ssi_release_dma_channels() done in the reverse order. This
+patch improves error handling in rz_ssi_probe() error path.
 
-Could you please provide corresponding log? Usually, this means there's
-a bug in related drivers, so it's better to fix them now rather than
-wait for RT patches mainlined.
+While at it, use "goto cleanup" style to reduce code duplication.
 
-PS: which HW are you using?
+Reported-by: Pavel Machek <pavel@denx.de>
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Link: https://lore.kernel.org/r/20220728092612.38858-1-biju.das.jz@bp.renesas.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ sound/soc/sh/rz-ssi.c | 26 +++++++++++++++-----------
+ 1 file changed, 15 insertions(+), 11 deletions(-)
 
-Thanks
+diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c
+index 6d794eaaf4c39..2e33a1fa0a6f4 100644
+--- a/sound/soc/sh/rz-ssi.c
++++ b/sound/soc/sh/rz-ssi.c
+@@ -1022,32 +1022,36 @@ static int rz_ssi_probe(struct platform_device *pdev)
+ 
+ 	ssi->rstc = devm_reset_control_get_exclusive(&pdev->dev, NULL);
+ 	if (IS_ERR(ssi->rstc)) {
+-		rz_ssi_release_dma_channels(ssi);
+-		return PTR_ERR(ssi->rstc);
++		ret = PTR_ERR(ssi->rstc);
++		goto err_reset;
+ 	}
+ 
+ 	reset_control_deassert(ssi->rstc);
+ 	pm_runtime_enable(&pdev->dev);
+ 	ret = pm_runtime_resume_and_get(&pdev->dev);
+ 	if (ret < 0) {
+-		rz_ssi_release_dma_channels(ssi);
+-		pm_runtime_disable(ssi->dev);
+-		reset_control_assert(ssi->rstc);
+-		return dev_err_probe(ssi->dev, ret, "pm_runtime_resume_and_get failed\n");
++		dev_err(&pdev->dev, "pm_runtime_resume_and_get failed\n");
++		goto err_pm;
+ 	}
+ 
+ 	ret = devm_snd_soc_register_component(&pdev->dev, &rz_ssi_soc_component,
+ 					      rz_ssi_soc_dai,
+ 					      ARRAY_SIZE(rz_ssi_soc_dai));
+ 	if (ret < 0) {
+-		rz_ssi_release_dma_channels(ssi);
+-
+-		pm_runtime_put(ssi->dev);
+-		pm_runtime_disable(ssi->dev);
+-		reset_control_assert(ssi->rstc);
+ 		dev_err(&pdev->dev, "failed to register snd component\n");
++		goto err_snd_soc;
+ 	}
+ 
++	return 0;
++
++err_snd_soc:
++	pm_runtime_put(ssi->dev);
++err_pm:
++	pm_runtime_disable(ssi->dev);
++	reset_control_assert(ssi->rstc);
++err_reset:
++	rz_ssi_release_dma_channels(ssi);
++
+ 	return ret;
+ }
+ 
+-- 
+2.35.1
+
+
+
