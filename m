@@ -2,77 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0F6EC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:15:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E159FECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:16:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237728AbiIBOPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56442 "EHLO
+        id S236980AbiIBOQC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:16:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237531AbiIBOPO (ORCPT
+        with ESMTP id S236905AbiIBOPe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:15:14 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 770AB1612B0
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:42:18 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oU6Ue-0007Vc-Hz; Fri, 02 Sep 2022 15:13:56 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oU6Ub-003VMy-JO; Fri, 02 Sep 2022 15:13:55 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oU6Uc-006elE-DD; Fri, 02 Sep 2022 15:13:54 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v4 1/3] dt-bindings: iio: adc: ti,tsc2046: add vref-supply property
-Date:   Fri,  2 Sep 2022 15:13:50 +0200
-Message-Id: <20220902131352.1586599-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        Fri, 2 Sep 2022 10:15:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE75914D458
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:42:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1A418B82AA1
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 13:37:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D85FC433D7;
+        Fri,  2 Sep 2022 13:37:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662125854;
+        bh=jzG0D03+vxrGLGIs+YSm8b2wkD8dPvpWfTaQQGIfuUQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=2ViCa0hSTALym2d7H6yIqIwgR8f1Cxi4K31j+6jsXg+w1JHIOCKWKLXjg1VZvqhcg
+         ftRrqkTVmSIvwGK11JY5lSt1cKLALoA2oxNjjkp7XBYrB0hmbvV9VvaDwxTJgn5oXE
+         O/5IXY5ow7hYMnDanucblQbpuWYVpwLfxi7TIOe0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     tudor.ambarus@microchip.com, pratyush@kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michael Walle <michael@walle.cc>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-mtd@lists.infradead.org, stable <stable@kernel.org>
+Subject: [PATCH] mtd: spi-nor: fix memory leak when using debugfs_lookup()
+Date:   Fri,  2 Sep 2022 15:37:24 +0200
+Message-Id: <20220902133724.278133-1-gregkh@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1455; i=gregkh@linuxfoundation.org; h=from:subject; bh=jzG0D03+vxrGLGIs+YSm8b2wkD8dPvpWfTaQQGIfuUQ=; b=owGbwMvMwCRo6H6F97bub03G02pJDMlC7EJ2v/4aB/pOcFJJuSPvsO+F/9TH8iail28bPHKyMTx9 VaCyI5aFQZCJQVZMkeXLNp6j+ysOKXoZ2p6GmcPKBDKEgYtTACZSdZ5hQevH1PPLlYxy/TfemvtXde 7U2z+8zjHMZMyf/qdsnvzMS3uCPF/bH1p8iOtQHQA=
+X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add property for the voltage reference supply.
+When calling debugfs_lookup() the result must have dput() called on it,
+otherwise the memory will leak over time.  Fix this up to be much
+simpler logic and only create the root debugfs directory once when the
+driver is first accessed.  That resolves the memory leak and makes
+things more obvious as to what the intent is.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: Tudor Ambarus <tudor.ambarus@microchip.com>
+Cc: Pratyush Yadav <pratyush@kernel.org>
+Cc: Michael Walle <michael@walle.cc>
+Cc: Miquel Raynal <miquel.raynal@bootlin.com>
+Cc: Richard Weinberger <richard@nod.at>
+Cc: Vignesh Raghavendra <vigneshr@ti.com>
+Cc: linux-mtd@lists.infradead.org
+Cc: stable <stable@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/iio/adc/ti,tsc2046.yaml | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/mtd/spi-nor/debugfs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/ti,tsc2046.yaml b/Documentation/devicetree/bindings/iio/adc/ti,tsc2046.yaml
-index 601d69971d84a..7faf12b1598b9 100644
---- a/Documentation/devicetree/bindings/iio/adc/ti,tsc2046.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/ti,tsc2046.yaml
-@@ -25,6 +25,9 @@ properties:
+diff --git a/drivers/mtd/spi-nor/debugfs.c b/drivers/mtd/spi-nor/debugfs.c
+index df76cb5de3f9..3aab595e82d1 100644
+--- a/drivers/mtd/spi-nor/debugfs.c
++++ b/drivers/mtd/spi-nor/debugfs.c
+@@ -228,11 +228,11 @@ static void spi_nor_debugfs_unregister(void *data)
  
-   spi-max-frequency: true
+ void spi_nor_debugfs_register(struct spi_nor *nor)
+ {
+-	struct dentry *rootdir, *d;
++	static struct dentry *rootdir;
++	struct dentry *d;
+ 	int ret;
  
-+  vref-supply:
-+    description: Optional supply of the reference voltage
-+
-   "#io-channel-cells":
-     const: 1
+ 	/* Create rootdir once. Will never be deleted again. */
+-	rootdir = debugfs_lookup(SPI_NOR_DEBUGFS_ROOT, NULL);
+ 	if (!rootdir)
+ 		rootdir = debugfs_create_dir(SPI_NOR_DEBUGFS_ROOT, NULL);
  
 -- 
-2.30.2
+2.37.3
 
