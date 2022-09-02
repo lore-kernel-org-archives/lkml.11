@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BA8BECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 09:52:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF397C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 09:53:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229602AbiIBJw5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 05:52:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60212 "EHLO
+        id S235606AbiIBJxC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 05:53:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235697AbiIBJwm (ORCPT
+        with ESMTP id S235701AbiIBJwm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 05:52:42 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4675182D19
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 02:52:36 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id y3so2830171ejc.1
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 02:52:35 -0700 (PDT)
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3660CD124C
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 02:52:38 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id b16so1966553edd.4
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 02:52:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=ThDb76+kZEC72ISvvHs25TvHqgP2beNaL5wxY8n7dsc=;
-        b=NUjfOq9/5L6JJV9vJslddUmeS7AaRFkr6sq7xI5oNDsccB2aIuvLHNuJMg4wyof+oE
-         7eK1TW/8FULpKamlM2neerduzBjYzxCGh3lNa389TOkGOZgtmJnFPMxghfdXhO/Y4z8i
-         zDoHTUFvq8k8z0GQ/0KQedD84hZ7wDSCI0Ec/3Qr+aREoxLvqNArcapuzeI9OQXbiDJI
-         P0yYoSpuU/JKHzF1Ln8zPAiqDupoId6KnskqbWRSPzrnovkk3nGnjoTKhti74M279vD2
-         CY1xutNtVilPSitlh/dWJjBi82mbFFOGvBgqKrW62bqYJRqLdH5Y+tdoGCFdobv5eSyV
-         77SA==
+        bh=ey0K4wQnhegdgAeyU9dIk00TcYC9S5EHVHT72Ibu5sU=;
+        b=oADDvJMm0G3cTIlJG7zJ3VyZ7WisOx61oK8b5QI5OcqUY9fdTFAky58nZ3d4UmX3x+
+         42OepF39qhDu6/WTH9IdodwDYDVQvYzybbQjNP+Yyj8EY9FRm920lb7jlJDrpAc2RYiq
+         O3zD1OH6ON1sdMnbZdzVIUZrvYjrjRcmlQIV3JqjGDiB055mNJXEZ2xRudpTCstpJfyp
+         oHVjERJDdlTN3pdtCXepRsapJKpyC0Zs95jVuDCGJ5EgZAeJB2zaBXTex7m+LQs/CuxM
+         OqXvC1OY3/aqNOSG9fiE0hFSZ3ACcxuP+vIasFVcCoPB3zu1UKtgYUnVG11F1GCuaawA
+         eh2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=ThDb76+kZEC72ISvvHs25TvHqgP2beNaL5wxY8n7dsc=;
-        b=nrPIPzxpRs27s59A8WLRXm3DehFy+78whYGUueQORqev13AXtUCWxrpPrzfztcSENK
-         vLDnC3TWWrKjhTwACMaz5Yqwnb4Wzf+EVJH64ZxWQfmgRQq8vyVyKAJs6t4rdrgAfreZ
-         xt0QNzZH8fyms1hkPqAKLfuqMaWZKnZMkrMeFl5ohmOtrphqhr1ERh8sPXxkMfNPa6xY
-         v30/iswEfToujO0MXW1g0seuUT/wM3I0++cYdC5dvQwXMkzRn/1d1PlkC1BH57H87o26
-         felo42+MrAT0STo8F5U4agaGnsOyfLtFHKsZsBMohW9wxvoaYQlSYJtttF0a4JoyA7Hi
-         u69g==
-X-Gm-Message-State: ACgBeo3tPkwFX9vr7IZquwh3icqLLlqQAQO0s4w99HOmcboMgdrnBAm4
-        Uzl+4KSLS8629UiIhgn2nL31/zTBcN0=
-X-Google-Smtp-Source: AA6agR5zCoNE6sH+KYkTSJ2nPQ/wNsIebIEN4dcGZhqUWHmM/Uy+L1R5TGLi9CJOyVZmVMrYjw1Kxg==
-X-Received: by 2002:a17:907:9620:b0:730:d5f4:d448 with SMTP id gb32-20020a170907962000b00730d5f4d448mr26586297ejc.45.1662112354552;
-        Fri, 02 Sep 2022 02:52:34 -0700 (PDT)
+        bh=ey0K4wQnhegdgAeyU9dIk00TcYC9S5EHVHT72Ibu5sU=;
+        b=gb91BJ4n9YYfeguJRHqoDxD9A1wPutEeidqhE01KRYS3LVRe1pGF7YH2tG+ssjQvfj
+         wenUpllhOmtx8M1dNmHitGEDgIPNdbgLtkf2WnWcYFxtKgPw5aPorwjzISahYxy9E5vP
+         vuejpo7SADbH5HmbLNDwFLf6QhN0Z8Ciduq1YMKr2afP3L4SCxImVO3tdvIU2unnRXES
+         KTftkuA3pARvqcWn4bp2rNrNlCJUTjMCAALQmsr0HMZ0ralKHlWO40vktZXdLHj3Uj6x
+         MdPVqW7LZB0XoFx896ZRZZNE5PV88cRpWx+xglAsAk5verIWec3QtT4R+pNmI3EVe5OU
+         qabA==
+X-Gm-Message-State: ACgBeo2YfNsevQ7hTlW+EzVCHZ2bWXf7lGOiWApxozHojaWEt/BRa1yX
+        krRFGwHUL5Yt4XHGuXUND68=
+X-Google-Smtp-Source: AA6agR5R1BncknwGK1xi0WV/APgOv2OQIdbs7lZp4U4k5D5NiNrxABPmB9Vzieel1NVMX8gt4bE47g==
+X-Received: by 2002:a05:6402:34c6:b0:43d:8cea:76c0 with SMTP id w6-20020a05640234c600b0043d8cea76c0mr33115562edc.268.1662112356261;
+        Fri, 02 Sep 2022 02:52:36 -0700 (PDT)
 Received: from localhost.localdomain (ip-217-105-46-83.ip.prioritytelecom.net. [217.105.46.83])
-        by smtp.gmail.com with ESMTPSA id h6-20020a170906828600b0073d6234ceebsm959601ejx.160.2022.09.02.02.52.33
+        by smtp.gmail.com with ESMTPSA id h6-20020a170906828600b0073d6234ceebsm959601ejx.160.2022.09.02.02.52.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 02:52:34 -0700 (PDT)
+        Fri, 02 Sep 2022 02:52:35 -0700 (PDT)
 From:   Nam Cao <namcaov@gmail.com>
 To:     Larry.Finger@lwfinger.net, gregkh@linuxfoundation.org,
         hdegoede@redhat.com
 Cc:     namcaov@gmail.com, linux-kernel@vger.kernel.org,
         linux-staging@lists.linux.dev
-Subject: [PATCH 01/10] staging: rtl8723bs: delete rtw_setdatarate_cmd
-Date:   Fri,  2 Sep 2022 11:51:51 +0200
-Message-Id: <bfc4c5c9aec8b026fd3cf092354d508881d790fc.1662111798.git.namcaov@gmail.com>
+Subject: [PATCH 03/10] staging: rtl8723bs: remove rtw_change_ifname
+Date:   Fri,  2 Sep 2022 11:51:53 +0200
+Message-Id: <975cd771e5b6573b84b31690895d140cbdaeb5e2.1662111798.git.namcaov@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1662111798.git.namcaov@gmail.com>
 References: <cover.1662111798.git.namcaov@gmail.com>
@@ -66,66 +66,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove function rtw_setdatarate_cmd because it is not used.
+Delete function rtw_change_ifname because it is not used.
 
 Signed-off-by: Nam Cao <namcaov@gmail.com>
 ---
- drivers/staging/rtl8723bs/core/rtw_cmd.c    | 29 ---------------------
- drivers/staging/rtl8723bs/include/rtw_cmd.h |  1 -
- 2 files changed, 30 deletions(-)
+ drivers/staging/rtl8723bs/include/drv_types.h |  2 -
+ .../staging/rtl8723bs/os_dep/osdep_service.c  | 50 -------------------
+ 2 files changed, 52 deletions(-)
 
-diff --git a/drivers/staging/rtl8723bs/core/rtw_cmd.c b/drivers/staging/rtl8723bs/core/rtw_cmd.c
-index b4170f64d118..a5e66b9868ad 100644
---- a/drivers/staging/rtl8723bs/core/rtw_cmd.c
-+++ b/drivers/staging/rtl8723bs/core/rtw_cmd.c
-@@ -593,35 +593,6 @@ u8 rtw_sitesurvey_cmd(struct adapter  *padapter, struct ndis_802_11_ssid *ssid,
- 	return res;
+diff --git a/drivers/staging/rtl8723bs/include/drv_types.h b/drivers/staging/rtl8723bs/include/drv_types.h
+index 0bbbdebdf157..bb4650f0b297 100644
+--- a/drivers/staging/rtl8723bs/include/drv_types.h
++++ b/drivers/staging/rtl8723bs/include/drv_types.h
+@@ -493,8 +493,6 @@ static inline u8 *myid(struct eeprom_priv *peepriv)
+ 
+ #include <rtw_btcoex.h>
+ 
+-int rtw_change_ifname(struct adapter *padapter, const char *ifname);
+-
+ extern char *rtw_initmac;
+ extern int rtw_mc2u_disable;
+ extern int rtw_ht_enable;
+diff --git a/drivers/staging/rtl8723bs/os_dep/osdep_service.c b/drivers/staging/rtl8723bs/os_dep/osdep_service.c
+index 4fbfa75c05d7..f09c1324c39c 100644
+--- a/drivers/staging/rtl8723bs/os_dep/osdep_service.c
++++ b/drivers/staging/rtl8723bs/os_dep/osdep_service.c
+@@ -108,56 +108,6 @@ void rtw_free_netdev(struct net_device *netdev)
+ 	return;
  }
  
--u8 rtw_setdatarate_cmd(struct adapter *padapter, u8 *rateset)
+-int rtw_change_ifname(struct adapter *padapter, const char *ifname)
 -{
--	struct cmd_obj *ph2c;
--	struct setdatarate_parm *pbsetdataratepara;
--	struct cmd_priv *pcmdpriv = &padapter->cmdpriv;
--	u8 res = _SUCCESS;
+-	struct net_device *pnetdev;
+-	struct net_device *cur_pnetdev;
+-	struct rereg_nd_name_data *rereg_priv;
+-	int ret;
 -
--	ph2c = rtw_zmalloc(sizeof(struct cmd_obj));
--	if (!ph2c) {
--		res = _FAIL;
--		goto exit;
+-	if (!padapter)
+-		goto error;
+-
+-	cur_pnetdev = padapter->pnetdev;
+-	rereg_priv = &padapter->rereg_nd_name_priv;
+-
+-	/* free the old_pnetdev */
+-	if (rereg_priv->old_pnetdev) {
+-		free_netdev(rereg_priv->old_pnetdev);
+-		rereg_priv->old_pnetdev = NULL;
 -	}
 -
--	pbsetdataratepara = rtw_zmalloc(sizeof(struct setdatarate_parm));
--	if (!pbsetdataratepara) {
--		kfree(ph2c);
--		res = _FAIL;
--		goto exit;
--	}
+-	if (!rtnl_is_locked())
+-		unregister_netdev(cur_pnetdev);
+-	else
+-		unregister_netdevice(cur_pnetdev);
 -
--	init_h2fwcmd_w_parm_no_rsp(ph2c, pbsetdataratepara, GEN_CMD_CODE(_SetDataRate));
--	pbsetdataratepara->mac_id = 5;
--	memcpy(pbsetdataratepara->datarates, rateset, NumRates);
+-	rereg_priv->old_pnetdev = cur_pnetdev;
 -
--	res = rtw_enqueue_cmd(pcmdpriv, ph2c);
--exit:
--	return res;
+-	pnetdev = rtw_init_netdev(padapter);
+-	if (!pnetdev)
+-		goto error;
+-
+-	SET_NETDEV_DEV(pnetdev, dvobj_to_dev(adapter_to_dvobj(padapter)));
+-
+-	rtw_init_netdev_name(pnetdev, ifname);
+-
+-	eth_hw_addr_set(pnetdev, padapter->eeprompriv.mac_addr);
+-
+-	if (!rtnl_is_locked())
+-		ret = register_netdev(pnetdev);
+-	else
+-		ret = register_netdevice(pnetdev);
+-
+-	if (ret != 0)
+-		goto error;
+-
+-	return 0;
+-
+-error:
+-	return -1;
 -}
 -
- void rtw_getbbrfreg_cmdrsp_callback(struct adapter *padapter,  struct cmd_obj *pcmd)
+ void rtw_buf_free(u8 **buf, u32 *buf_len)
  {
- 	/* rtw_free_cmd_obj(pcmd); */
-diff --git a/drivers/staging/rtl8723bs/include/rtw_cmd.h b/drivers/staging/rtl8723bs/include/rtw_cmd.h
-index 1bf030cbbbbe..0af8215e2f2f 100644
---- a/drivers/staging/rtl8723bs/include/rtw_cmd.h
-+++ b/drivers/staging/rtl8723bs/include/rtw_cmd.h
-@@ -591,7 +591,6 @@ extern u8 rtw_clearstakey_cmd(struct adapter *padapter, struct sta_info *sta, u8
- extern u8 rtw_joinbss_cmd(struct adapter *padapter, struct wlan_network *pnetwork);
- u8 rtw_disassoc_cmd(struct adapter *padapter, u32 deauth_timeout_ms, bool enqueue);
- extern u8 rtw_setopmode_cmd(struct adapter  *padapter, enum ndis_802_11_network_infrastructure networktype, bool enqueue);
--extern u8 rtw_setdatarate_cmd(struct adapter  *padapter, u8 *rateset);
- extern u8 rtw_setrfintfs_cmd(struct adapter  *padapter, u8 mode);
- 
- extern u8 rtw_gettssi_cmd(struct adapter  *padapter, u8 offset, u8 *pval);
+ 	if (!buf || !buf_len)
 -- 
 2.25.1
 
