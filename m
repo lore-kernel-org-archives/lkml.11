@@ -2,111 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F912ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 16:44:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 098CAC001B5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 16:45:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236498AbiIBQoa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 12:44:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44654 "EHLO
+        id S236534AbiIBQp3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 12:45:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236504AbiIBQo1 (ORCPT
+        with ESMTP id S235835AbiIBQp0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 12:44:27 -0400
-Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FE92F826E
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 09:44:26 -0700 (PDT)
-Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-11eab59db71so5980976fac.11
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 09:44:26 -0700 (PDT)
+        Fri, 2 Sep 2022 12:45:26 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A782FD51;
+        Fri,  2 Sep 2022 09:45:25 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id f14so2212674qkm.0;
+        Fri, 02 Sep 2022 09:45:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=jlxUk3azGy/EzfPrVt/ZaELMrYWactKPSNiRuIa74ck=;
-        b=Xp4Qc4d3GxGOeTK6v7NtSdUReBaopEPOMaWHpXj/uzu9JQK/jpmpI3SJeoYxsGYKsp
-         qy95k4AD+TVU2j0IUxwCtaykKPkBI3nXvOv+IOBCmx++fiU2GgNyufogGlww0mlyuIqh
-         x2Z0L/jqra5Cs/BXT0bLYZMl+OsHGN0wy7mGdbiGmiwR1XCiVUzVb5YoIMA0EmjwZlS4
-         Ug9hIJegIX20zNzYRiVRKMNbiIR8cQ7qDxFOjxRKLOhxdYkYThpi8F1r0bMV1MRjPWgw
-         eQKTT8XmSupthtYOcAu3hXQt/0IFIrzZ79q2GrBWiaWsTQbwk2d/o3yuIdstpIGiQuZ3
-         d19A==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=29oZcoY2q46tLwUZQFlwRfSOAvKJ/1ARLsojbCZzUIE=;
+        b=ZUskE6+2avARgePDn3wyMZKTjzJgc6lCmVbVSJcUXMQuXyMmA50n/YqlwvYYFYglBP
+         9Qt8M7lmFQQiBaBjSPXPfzTcHt5V0HveD1rU7erMMedLCDD6SzuslxqAkI8scOaqF8ZS
+         3m3XdzWVN9hqxy/XSAuqml5TMpqNrJQJTKaWDNHqyYFvMRhBR0zyxiwtNWh0oekMP4CE
+         h1tN3K0QTMK7lTGryeEKFW2ktOyXYpRbb4bJFZ1BbV05e/adQyoO7zQvESrK+4l83hT+
+         N7iZqPXKBjSnLUqRpuL3nch3N1HAfVn6SRjFv4qcdtcVFwiSzFgEac2FKjsjukyouV1E
+         Ve1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=jlxUk3azGy/EzfPrVt/ZaELMrYWactKPSNiRuIa74ck=;
-        b=t7gBjTk/wW+aO7R2MYDXhd7VJvDTdv0i9GNavdxPYGPKt4VrCb+IkVr4GWnjLj2V4n
-         jdr/0ixLdkHe2tYFEkG6a/4rOpW37Wrm6cBOzQNsJ+xmq7peXMbge9ohoXwArUvNC1ZA
-         VZ4PqDDn6RIFGZn4gF0lzYKjXnMOtIrahbnhP0CtfSlw0lpfboTpV3QEpcHokgKpEEjq
-         3uJrp+rY3LltkuqWUHvAeAcFKpWBMSV3QavhF+kTthZX+xHHQTb98O5yRKSx3hfTtbFR
-         xqwdRproBXujP6qXT6iIGTWJwkCj/6eeRiSsvxFoZh442COXTDXX0viRzvWJuFXYtLGa
-         eANQ==
-X-Gm-Message-State: ACgBeo34bHNGwS4Mml2SGaQck4olFQp351S0aH8l7r0mPe3+yowOU20K
-        w9EIhmCkiB8UQLH1J8Fw5sA=
-X-Google-Smtp-Source: AA6agR4AkPjdTiVT1q1D8S+9i814inn8vtV7CADNh/TTbo4jKHbm/tpSC2wT76G9/4UJNSH3Wr7gLA==
-X-Received: by 2002:a05:6808:124f:b0:345:775b:d5bf with SMTP id o15-20020a056808124f00b00345775bd5bfmr2238049oiv.217.1662137065376;
-        Fri, 02 Sep 2022 09:44:25 -0700 (PDT)
-Received: from localhost ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id y12-20020a4a980c000000b0044afd53b102sm811860ooi.36.2022.09.02.09.44.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 09:44:25 -0700 (PDT)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Yury Norov <yury.norov@gmail.com>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH RFC] x86/apic: skip cpu slot reservation logic on boot in case of NR_CPUS == 1
-Date:   Fri,  2 Sep 2022 09:42:11 -0700
-Message-Id: <20220902164211.1425982-1-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=29oZcoY2q46tLwUZQFlwRfSOAvKJ/1ARLsojbCZzUIE=;
+        b=p1ktmVIn2BYERAKl6chrw9HJx/oc2EXZgFzKugboMtpjWXgRSHHc1Nl3GVQLOYjUAm
+         lDVXWD/9fii+k2y0PnQJwCGAUrfk0ovnIqQfWkfeqA5QfR0f8wDSwwfVR8hfIiwMInNh
+         D/Rx51wud4apn+HxynNewt/BBTltEKGYM5Mm377rcjVuDWjp87wnoiPz+7HWs7hORPyw
+         g4rkKefv2L81eXGlrZPozGFP7rO2H/eH54PlbVD9ik278JmzveN7Jac+rHK92/rj3cim
+         zsXmoXaqzzX7wHpGGmXHGtV0RMISZ/REBVpZFYWrKPqY3DiLPnsR9fr7HIWpAzPXKGT6
+         rKCw==
+X-Gm-Message-State: ACgBeo0mdiQ9MO1HFzoCjmgUR5HbEUOoD3J0gYcsosmXUeZIQRNfR8rf
+        5oM8/N+F7jcVAd0JqVTxoU2IHckPJRA=
+X-Google-Smtp-Source: AA6agR5xxB2RpH6Y3YWpALTdAUEGu1Hhp+5pBoEY9ywcGNWg77Sc3DFw1HNPISVB8w/E3BbCptS8+Q==
+X-Received: by 2002:a05:620a:198a:b0:6be:73ae:bbc2 with SMTP id bm10-20020a05620a198a00b006be73aebbc2mr22412053qkb.394.1662137124729;
+        Fri, 02 Sep 2022 09:45:24 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id k18-20020ac81412000000b003445b83de67sm1277705qtj.3.2022.09.02.09.45.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Sep 2022 09:45:23 -0700 (PDT)
+Message-ID: <df379546-8439-cd18-b882-181542c28882@gmail.com>
+Date:   Fri, 2 Sep 2022 09:45:21 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Subject: Re: [PATCH 4.9 00/31] 4.9.327-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220902121356.732130937@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220902121356.732130937@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-generic_processor_info() ensures that there's always a room for boot-cpu
-in phys_cpu_present_map. This logic is unneeded when there's a single CPU
-in the system, and it makes smatch warning when aliasing nr_cpu_ids to
-NR_CPUS in this patch:
 
-https://www.spinics.net/lists/kernel/msg4493525.html
 
-smatch warnings:
-arch/x86/kernel/apic/apic.c:2437 generic_processor_info() warn: always true condition '(num_processors >= (1) - 1) =>
-+(0-u32max >= 0)'
+On 9/2/2022 5:18 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.9.327 release.
+> There are 31 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Sun, 04 Sep 2022 12:13:47 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.327-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
----
-This is RFC because I'm not sure that this is not a false positive from
-smatch. If NR_CPUS is 1, and the condition is always true, it's simply
-optimized out by a compiler, and nothing wrong happens, except maybe a
-couple of checks on boot.
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels, build tested on 
+BMIPS_GENERIC:
 
- arch/x86/kernel/apic/apic.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
-index 6d303d1d276c..6a43faaea5ac 100644
---- a/arch/x86/kernel/apic/apic.c
-+++ b/arch/x86/kernel/apic/apic.c
-@@ -2430,6 +2430,7 @@ int generic_processor_info(int apicid, int version)
- 		return -ENODEV;
- 	}
- 
-+#if NR_CPUS > 1
- 	/*
- 	 * If boot cpu has not been detected yet, then only allow upto
- 	 * nr_cpu_ids - 1 processors and keep one slot free for boot cpu
-@@ -2445,6 +2446,7 @@ int generic_processor_info(int apicid, int version)
- 		disabled_cpus++;
- 		return -ENODEV;
- 	}
-+#endif
- 
- 	if (num_processors >= nr_cpu_ids) {
- 		int thiscpu = max + disabled_cpus;
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.34.1
-
+Florian
