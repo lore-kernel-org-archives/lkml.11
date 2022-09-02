@@ -2,103 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6A9FECAAA1
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 07:55:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAAA4ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 07:57:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235525AbiIBHzJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 03:55:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45808 "EHLO
+        id S235567AbiIBH5h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 03:57:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235518AbiIBHzE (ORCPT
+        with ESMTP id S235551AbiIBH5d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 03:55:04 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4D62BC1E
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 00:55:00 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id j5so1127432plj.5
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 00:55:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=olRYQnYmrRIOGNSywKQ9G4nuley//Yo3uY1jFefZG7o=;
-        b=bhXeAh6NCcFpvJlv7XLzcG3X3zIgANLNUE4MmeQDW8WfdAahPXa8g0WRdHkW4TOqmC
-         yBd9xg/SSs0xMYBtSy4N4iQXPq17adhaIpZHsj0MmiDd0oOfQgPVdqtuIB9fx4NimvDe
-         ZInR8r6HJQuDDhInEdF23uSoUn5/vgxjMfJbq7dvhYAboZtF1Jo8al3BA+ZTnIEHotcQ
-         uUIrEfYfV6xDv6A4JqX837duDfoYhtPgj96kVrljzZlHKsddFfJ3nUhRs7h801RNIwHj
-         peX819TppTZqOAjYqpzhWZf46daEiiMfsy7swZZcJjOtYsWc2cXQCiG1cWNfUcA6n3gW
-         sc2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=olRYQnYmrRIOGNSywKQ9G4nuley//Yo3uY1jFefZG7o=;
-        b=2vee5kbQdcLIKtudN6A7vpGitXLHd1kb7cYcnapzWv6Uodu7d4XrKCnOPkS6SjuhDG
-         SXkHukHjVfO/M+z91JMlXU4IBP4SJ4TXGV/+/izF2fwV059CPpZvJay3BhirvpO6qBBZ
-         gteZ3tOoliiSsrdlnlxNAuvLWY7yhiOwh2/uB7sF23VKupmlIZ42xP6/4g+PXJCJv5v5
-         lLF2a97BZvKaFL+o25P5WyjW7G9rpYs5yyL6O+r3orBwrZrMk6Qw0112ZDG4+zU7ZjWw
-         hVMqgGCm/BCFe/dYcwUi3ITOdcxE3/JTWZgPZDzuzf9A4Txa1PSmzD3srEZk9ZnbVQzl
-         6aiQ==
-X-Gm-Message-State: ACgBeo246OjW+kflw0LievARP6w0p1mXdSdAnjCp0LKVnLBV5zE3y/HP
-        fvtniy/u8Qqa0cf2d8dcI1o=
-X-Google-Smtp-Source: AA6agR4XOQ2iEpSSKN5Yz5XMLIr6LdDI5VoI9vYEvx9vlTdzzxag0lMZfhF1mY/cUxVhW5mba0hqjQ==
-X-Received: by 2002:a17:90b:1d89:b0:1f5:a59:46b1 with SMTP id pf9-20020a17090b1d8900b001f50a5946b1mr3426825pjb.173.1662105300133;
-        Fri, 02 Sep 2022 00:55:00 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id u7-20020a170903124700b00170d34cf7f3sm922697plh.257.2022.09.02.00.54.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 00:54:59 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: zhang.songyi@zte.com.cn
-To:     harry.wentland@amd.com
-Cc:     sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
-        alexander.deucher@amd.com, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        wenjing.liu@amd.com, Jun.Lei@amd.com, Jimmy.Kizito@amd.com,
-        Jerry.Zuo@amd.com, meenakshikumar.somasundaram@amd.com,
-        hanghong.ma@amd.com, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        zhang songyi <zhang.songyi@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] drm/amd/display: Remove the unneeded result variable
-Date:   Fri,  2 Sep 2022 07:54:50 +0000
-Message-Id: <20220902075450.319982-1-zhang.songyi@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Fri, 2 Sep 2022 03:57:33 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 774D0B07F2
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 00:57:29 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4MJqyH4LY4z9sld;
+        Fri,  2 Sep 2022 09:57:27 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id egxSLJOecBhG; Fri,  2 Sep 2022 09:57:27 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4MJqyH3Y3fz9slD;
+        Fri,  2 Sep 2022 09:57:27 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 69A528B786;
+        Fri,  2 Sep 2022 09:57:27 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id 5F1jFIdX3c_t; Fri,  2 Sep 2022 09:57:27 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.232.39])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 285438B764;
+        Fri,  2 Sep 2022 09:57:27 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2827vFUZ2087537
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Fri, 2 Sep 2022 09:57:16 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2827vEmo2087532;
+        Fri, 2 Sep 2022 09:57:14 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH] powerpc/vdso: link with -z noexecstack
+Date:   Fri,  2 Sep 2022 09:57:09 +0200
+Message-Id: <24daf2ae379597b8d5dff41e4f7cebdca9db2d9d.1662105421.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1662105428; l=2854; s=20211009; h=from:subject:message-id; bh=4je2IPtBOUkkvQQU234Vx8lnLidiGcAfki042ic7QVE=; b=zUXL5Kcv3xh4MsDlXA8hP1kHNQXHVAYG8V2A7SERteqNZfjtQESoZZWuXQ49N9x9iji2a/hsB9XZ 5TwTvbA/AVj/LthdmbXkpazX71z2VFU7TxWpoNUcSsEBxh5DK878
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: zhang songyi <zhang.songyi@zte.com.cn>
+With recent binutils, the following warning appears:
 
-Return the enable_link_dp() directly instead of storing it in another
-redundant variable.
+  VDSO32L arch/powerpc/kernel/vdso/vdso32.so.dbg
+/opt/gcc-12.2.0-nolibc/powerpc64-linux/bin/../lib/gcc/powerpc64-linux/12.2.0/../../../../powerpc64-linux/bin/ld: warning: arch/powerpc/kernel/vdso/getcpu-32.o: missing .note.GNU-stack section implies executable stack
+/opt/gcc-12.2.0-nolibc/powerpc64-linux/bin/../lib/gcc/powerpc64-linux/12.2.0/../../../../powerpc64-linux/bin/ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: zhang songyi <zhang.songyi@zte.com.cn>
+To avoid that, explicitely tell the linker we don't
+want executable stack.
+
+For more explanations, see commit ffcf9c5700e4 ("x86: link vdso
+and boot with -z noexecstack --no-warn-rwx-segments")
+
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
- drivers/gpu/drm/amd/display/dc/core/dc_link.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ arch/powerpc/kernel/Makefile      | 3 ++-
+ arch/powerpc/kernel/vdso/Makefile | 4 ++--
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_link.c b/drivers/gpu/drm/amd/display/dc/core/dc_link.c
-index f9b798b7933c..4ab27e231337 100644
---- a/drivers/gpu/drm/amd/display/dc/core/dc_link.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc_link.c
-@@ -2077,11 +2077,7 @@ static enum dc_status enable_link_edp(
- 		struct dc_state *state,
- 		struct pipe_ctx *pipe_ctx)
- {
--	enum dc_status status;
--
--	status = enable_link_dp(state, pipe_ctx);
--
--	return status;
-+	return enable_link_dp(state, pipe_ctx);
- }
+diff --git a/arch/powerpc/kernel/Makefile b/arch/powerpc/kernel/Makefile
+index 06d2d1f78f71..b071e15dd574 100644
+--- a/arch/powerpc/kernel/Makefile
++++ b/arch/powerpc/kernel/Makefile
+@@ -128,7 +128,8 @@ extra-y				+= vmlinux.lds
  
- static enum dc_status enable_link_dp_mst(
+ obj-$(CONFIG_RELOCATABLE)	+= reloc_$(BITS).o
+ 
+-obj-$(CONFIG_PPC32)		+= entry_32.o setup_32.o early_32.o static_call.o
++obj-$(CONFIG_PPC32)		+= entry_32.o setup_32.o early_32.o
++obj-$(CONFIG_HAVE_STATIC_CALL)	+= static_call.o
+ obj-$(CONFIG_PPC64)		+= dma-iommu.o iommu.o
+ obj-$(CONFIG_KGDB)		+= kgdb.o
+ obj-$(CONFIG_BOOTX_TEXT)	+= btext.o
+diff --git a/arch/powerpc/kernel/vdso/Makefile b/arch/powerpc/kernel/vdso/Makefile
+index 096b0bf1335f..a2e7b0ce5b19 100644
+--- a/arch/powerpc/kernel/vdso/Makefile
++++ b/arch/powerpc/kernel/vdso/Makefile
+@@ -92,13 +92,13 @@ include/generated/vdso64-offsets.h: $(obj)/vdso64.so.dbg FORCE
+ 
+ # actual build commands
+ quiet_cmd_vdso32ld_and_check = VDSO32L $@
+-      cmd_vdso32ld_and_check = $(VDSOCC) $(c_flags) $(CC32FLAGS) -o $@ -Wl,-T$(filter %.lds,$^) $(filter %.o,$^) ; $(cmd_vdso_check)
++      cmd_vdso32ld_and_check = $(VDSOCC) $(c_flags) $(CC32FLAGS) -o $@ -Wl,-T$(filter %.lds,$^) $(filter %.o,$^) -z noexecstack ; $(cmd_vdso_check)
+ quiet_cmd_vdso32as = VDSO32A $@
+       cmd_vdso32as = $(VDSOCC) $(a_flags) $(CC32FLAGS) $(AS32FLAGS) -c -o $@ $<
+ quiet_cmd_vdso32cc = VDSO32C $@
+       cmd_vdso32cc = $(VDSOCC) $(c_flags) $(CC32FLAGS) -c -o $@ $<
+ 
+ quiet_cmd_vdso64ld_and_check = VDSO64L $@
+-      cmd_vdso64ld_and_check = $(VDSOCC) $(c_flags) $(CC64FLAGS) -o $@ -Wl,-T$(filter %.lds,$^) $(filter %.o,$^) ; $(cmd_vdso_check)
++      cmd_vdso64ld_and_check = $(VDSOCC) $(c_flags) $(CC64FLAGS) -o $@ -Wl,-T$(filter %.lds,$^) $(filter %.o,$^) -z noexecstack ; $(cmd_vdso_check)
+ quiet_cmd_vdso64as = VDSO64A $@
+       cmd_vdso64as = $(VDSOCC) $(a_flags) $(CC64FLAGS) $(AS64FLAGS) -c -o $@ $<
 -- 
-2.25.1
-
+2.37.1
 
