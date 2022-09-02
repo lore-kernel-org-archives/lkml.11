@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 936EBECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:51:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FB41ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:52:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232840AbiIBNvy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:51:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46976 "EHLO
+        id S238143AbiIBNwG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:52:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236787AbiIBNv1 (ORCPT
+        with ESMTP id S238108AbiIBNvd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:51:27 -0400
+        Fri, 2 Sep 2022 09:51:33 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB2662982F;
-        Fri,  2 Sep 2022 06:25:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14B6110F96F;
+        Fri,  2 Sep 2022 06:26:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4846EB829E7;
-        Fri,  2 Sep 2022 12:33:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95FF9C433D7;
-        Fri,  2 Sep 2022 12:33:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28C5AB82A96;
+        Fri,  2 Sep 2022 12:31:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C981C433D6;
+        Fri,  2 Sep 2022 12:31:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121990;
-        bh=Anhl2QGuM9FhBcz0l6zuTOPT3o4b337e8YDFCN4lQio=;
+        s=korg; t=1662121867;
+        bh=oBwYNBQG2bD4bY5vsoYIcoQiEwSXUi5hobMsxKpEJ7c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FBsnhpfnxy1D5rV4p/zl7uHChDuKMd3z2QJ3y43SdvbEeOL2RZndiasjMR+r5y/dz
-         uUkz5hlbiYMPDbMqnbPtW3lI8geWwkmKkj9H+m747SJ+uPtRnkXr/Zr+fSKmT+AQWt
-         hyffGlOY6I8QLA2oZJforlK9fZPfrtThXCGyBANY=
+        b=fDVl8yEiKy3nK84/M1iqe9kN/DrSSCuK/bLJ3p8rBUfoHVm4YdJoUAiuGmls+yqvE
+         R7hL3F5lQ7icQ72bkBoywGVXXyiaO7qCo2X0oo6gluSp4R9TrMbR0grcvS0UQMDQHh
+         7PaK2gPEL6Z1offDxePHTQIpvPW1LUnYb5HWigFA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 51/73] ASoC: sh: rz-ssi: Improve error handling in rz_ssi_probe() error path
-Date:   Fri,  2 Sep 2022 14:19:15 +0200
-Message-Id: <20220902121406.124483008@linuxfoundation.org>
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 13/73] io_uring: refactor poll update
+Date:   Fri,  2 Sep 2022 14:18:37 +0200
+Message-Id: <20220902121404.867208559@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
 References: <20220902121404.435662285@linuxfoundation.org>
@@ -50,79 +48,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
+From: Pavel Begunkov <asml.silence@gmail.com>
 
-[ Upstream commit c75ed9f54ce8d349fee557f2b471a4d637ed2a6b ]
+[ upstream commmit 2bbb146d96f4b45e17d6aeede300796bc1a96d68 ]
 
-We usually do cleanup in reverse order of init. Currently in case of
-error rz_ssi_release_dma_channels() done in the reverse order. This
-patch improves error handling in rz_ssi_probe() error path.
+Clean up io_poll_update() and unify cancellation paths for remove and
+update.
 
-While at it, use "goto cleanup" style to reduce code duplication.
-
-Reported-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Link: https://lore.kernel.org/r/20220728092612.38858-1-biju.das.jz@bp.renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+Link: https://lore.kernel.org/r/5937138b6265a1285220e2fab1b28132c1d73ce3.1639605189.git.asml.silence@gmail.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+[pavel: backport]
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/sh/rz-ssi.c | 26 +++++++++++++++-----------
- 1 file changed, 15 insertions(+), 11 deletions(-)
+ fs/io_uring.c |   62 ++++++++++++++++++++++++----------------------------------
+ 1 file changed, 26 insertions(+), 36 deletions(-)
 
-diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c
-index 6d794eaaf4c39..2e33a1fa0a6f4 100644
---- a/sound/soc/sh/rz-ssi.c
-+++ b/sound/soc/sh/rz-ssi.c
-@@ -1022,32 +1022,36 @@ static int rz_ssi_probe(struct platform_device *pdev)
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -5931,61 +5931,51 @@ static int io_poll_update(struct io_kioc
+ 	struct io_ring_ctx *ctx = req->ctx;
+ 	struct io_kiocb *preq;
+ 	bool completing;
+-	int ret;
++	int ret2, ret = 0;
  
- 	ssi->rstc = devm_reset_control_get_exclusive(&pdev->dev, NULL);
- 	if (IS_ERR(ssi->rstc)) {
--		rz_ssi_release_dma_channels(ssi);
--		return PTR_ERR(ssi->rstc);
-+		ret = PTR_ERR(ssi->rstc);
-+		goto err_reset;
- 	}
- 
- 	reset_control_deassert(ssi->rstc);
- 	pm_runtime_enable(&pdev->dev);
- 	ret = pm_runtime_resume_and_get(&pdev->dev);
- 	if (ret < 0) {
--		rz_ssi_release_dma_channels(ssi);
--		pm_runtime_disable(ssi->dev);
--		reset_control_assert(ssi->rstc);
--		return dev_err_probe(ssi->dev, ret, "pm_runtime_resume_and_get failed\n");
-+		dev_err(&pdev->dev, "pm_runtime_resume_and_get failed\n");
-+		goto err_pm;
- 	}
- 
- 	ret = devm_snd_soc_register_component(&pdev->dev, &rz_ssi_soc_component,
- 					      rz_ssi_soc_dai,
- 					      ARRAY_SIZE(rz_ssi_soc_dai));
- 	if (ret < 0) {
--		rz_ssi_release_dma_channels(ssi);
+ 	spin_lock(&ctx->completion_lock);
+ 	preq = io_poll_find(ctx, req->poll_update.old_user_data, true);
+ 	if (!preq) {
+ 		ret = -ENOENT;
+-		goto err;
+-	}
 -
--		pm_runtime_put(ssi->dev);
--		pm_runtime_disable(ssi->dev);
--		reset_control_assert(ssi->rstc);
- 		dev_err(&pdev->dev, "failed to register snd component\n");
-+		goto err_snd_soc;
+-	if (!req->poll_update.update_events && !req->poll_update.update_user_data) {
+-		completing = true;
+-		ret = io_poll_remove_one(preq) ? 0 : -EALREADY;
+-		goto err;
++fail:
++		spin_unlock(&ctx->completion_lock);
++		goto out;
  	}
+-
++	io_poll_remove_double(preq);
+ 	/*
+ 	 * Don't allow racy completion with singleshot, as we cannot safely
+ 	 * update those. For multishot, if we're racing with completion, just
+ 	 * let completion re-add it.
+ 	 */
+-	io_poll_remove_double(preq);
+ 	completing = !__io_poll_remove_one(preq, &preq->poll, false);
+ 	if (completing && (preq->poll.events & EPOLLONESHOT)) {
+ 		ret = -EALREADY;
+-		goto err;
+-	}
+-	/* we now have a detached poll request. reissue. */
+-	ret = 0;
+-err:
+-	if (ret < 0) {
+-		spin_unlock(&ctx->completion_lock);
+-		req_set_fail(req);
+-		io_req_complete(req, ret);
+-		return 0;
+-	}
+-	/* only mask one event flags, keep behavior flags */
+-	if (req->poll_update.update_events) {
+-		preq->poll.events &= ~0xffff;
+-		preq->poll.events |= req->poll_update.events & 0xffff;
+-		preq->poll.events |= IO_POLL_UNMASK;
++		goto fail;
+ 	}
+-	if (req->poll_update.update_user_data)
+-		preq->user_data = req->poll_update.new_user_data;
+ 	spin_unlock(&ctx->completion_lock);
  
-+	return 0;
++	if (req->poll_update.update_events || req->poll_update.update_user_data) {
++		/* only mask one event flags, keep behavior flags */
++		if (req->poll_update.update_events) {
++			preq->poll.events &= ~0xffff;
++			preq->poll.events |= req->poll_update.events & 0xffff;
++			preq->poll.events |= IO_POLL_UNMASK;
++		}
++		if (req->poll_update.update_user_data)
++			preq->user_data = req->poll_update.new_user_data;
 +
-+err_snd_soc:
-+	pm_runtime_put(ssi->dev);
-+err_pm:
-+	pm_runtime_disable(ssi->dev);
-+	reset_control_assert(ssi->rstc);
-+err_reset:
-+	rz_ssi_release_dma_channels(ssi);
-+
- 	return ret;
++		ret2 = io_poll_add(preq, issue_flags);
++		/* successfully updated, don't complete poll request */
++		if (!ret2)
++			goto out;
++	}
++	req_set_fail(preq);
++	io_req_complete(preq, -ECANCELED);
++out:
++	if (ret < 0)
++		req_set_fail(req);
+ 	/* complete update request, we're done with it */
+ 	io_req_complete(req, ret);
+-
+-	if (!completing) {
+-		ret = io_poll_add(preq, issue_flags);
+-		if (ret < 0) {
+-			req_set_fail(preq);
+-			io_req_complete(preq, ret);
+-		}
+-	}
+ 	return 0;
  }
  
--- 
-2.35.1
-
 
 
