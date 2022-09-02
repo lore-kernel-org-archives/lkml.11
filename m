@@ -2,255 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A3C5ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 16:08:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53CDCC54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 16:09:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236971AbiIBQIs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 12:08:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47032 "EHLO
+        id S236939AbiIBQJF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 12:09:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237156AbiIBQIP (ORCPT
+        with ESMTP id S237466AbiIBQIV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 12:08:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20BFDADCD2
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 09:01:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662134402;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=KHRvRVn7dZqjAbla/kU+RaIkGJZYLm02v4kWZjDrnLI=;
-        b=H/8D9PVV+MsGyMlx9HAwUakBBDHsn8oO489Ywh7P+6t0Obpr23nyKFuuhKN2znNMU51g8J
-        rnp1JKXLGgkX2THQlS6Ml/n3ShcRjBrpf9sgppvc8fzTkmbREfXFiYomcrBuqdR6kVt6NZ
-        PD7nkwhZ732pG22040jrIFhmz/zCC4Y=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-623-ybbCAw4yNmuM96IHl2YSLA-1; Fri, 02 Sep 2022 12:00:00 -0400
-X-MC-Unique: ybbCAw4yNmuM96IHl2YSLA-1
-Received: by mail-qk1-f199.google.com with SMTP id bq19-20020a05620a469300b006c097741d3dso2257808qkb.2
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 08:59:59 -0700 (PDT)
+        Fri, 2 Sep 2022 12:08:21 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A406B12BC29;
+        Fri,  2 Sep 2022 09:02:00 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id r6so1795255qtx.6;
+        Fri, 02 Sep 2022 09:02:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=hr32zQkQAMFpdycV9mqRMwFDXvtj260nxYs/HAKXI+Q=;
+        b=FhUCkkvqrme+DUmZztWDxyW9DDj+wrSYyrTFVf4UOHfjt09QSg+oA/zzJNoJPf+vyr
+         qycjjscw4FyzNAXtPfCnpN+CDD2dYbkqVu3vPD4Xb4S0c6l0OA2qGV8FK6Wdv298NFud
+         glz52AYRgM4/3r3agyXbpN/vCngSK24rs+wqcXevLqSkFzvlRU0ZmTsI+SAcAZUVg/eJ
+         0/nb2md1U7wDRVfeWb67FirxksK1zPCp/z1UkAcazvP/pGU+Gh6VGqn3fWigL3mWSL8g
+         cHiL1Lsdms4LjZj4J4bWxGZnXeSmszU1GS/SL5HUHqw5aA+XiT/hGM2T3D/fnHpjJyEU
+         svjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=KHRvRVn7dZqjAbla/kU+RaIkGJZYLm02v4kWZjDrnLI=;
-        b=m1hc1+X1clUz0GE0LomnpifJP+WA3BSRuhCYNHEGM3YhBlyKClh0f1oRYCP5YXAOaR
-         2tW3nMPerQiFgAOnNVABEqLv6dndtzGarvGPFNtL1sLuOqVlMAgKfNALNco5yuy9e77a
-         eW8dDVLz6+Xwcxm5qKA0ANdCTeWMmJS+yhiuNWFxS+EyR+ZvQuypSjhIPPaBmFc15uG5
-         BvOIM8NHIG+3LGwNe0VFmSkV8OmZvxkXuntvjxXP2lnXdhhj8eLA//Qk7RlzlA+bzTKG
-         MBsQBG9tYRch8rD9W7Gcua+q3w2aDKOXA3IHhba5BNK32LeDsEeL6sZojmPhnJ+K3Hw/
-         lvgw==
-X-Gm-Message-State: ACgBeo0TJAV3cqiSjOnjJewMcTitQbkNsxEPtmEZGfoB4btsCW1d7Eeq
-        AWDat18LJD9BhI/NMQnIx8Z7qmBpeljGBd7J4XUkXx1oe6u5EwVxPtuN22Tcl73TKNYjayiBbfb
-        vUfOpvNVn9K2hmCatZBJor9yf
-X-Received: by 2002:a05:622a:b:b0:342:f3de:e055 with SMTP id x11-20020a05622a000b00b00342f3dee055mr28058440qtw.43.1662134399266;
-        Fri, 02 Sep 2022 08:59:59 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5FwynZV/l6HUUKHni2VchqXiZk/C19dRbVXxKxUHeIsy3JumRGK+6Dru7sYn81VAiuy2cnJg==
-X-Received: by 2002:a05:622a:b:b0:342:f3de:e055 with SMTP id x11-20020a05622a000b00b00342f3dee055mr28058426qtw.43.1662134398993;
-        Fri, 02 Sep 2022 08:59:58 -0700 (PDT)
-Received: from xz-m1.local (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
-        by smtp.gmail.com with ESMTPSA id x9-20020a05620a448900b006b5e296452csm1757651qkp.54.2022.09.02.08.59.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 08:59:57 -0700 (PDT)
-Date:   Fri, 2 Sep 2022 11:59:56 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     Yang Shi <shy828301@gmail.com>
-Cc:     david@redhat.com, kirill.shutemov@linux.intel.com,
-        jhubbard@nvidia.com, jgg@nvidia.com, hughd@google.com,
-        akpm@linux-foundation.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm: gup: fix the fast GUP race against THP collapse
-Message-ID: <YxIofPiI8jvGzcjC@xz-m1.local>
-References: <20220901222707.477402-1-shy828301@gmail.com>
- <YxE/vuQlWJCJMuG2@xz-m1.local>
- <CAHbLzkqjZ_UhUbJ_f9Br7WCAgQvjrm5bMPRsKYvaFc2bzSuzrw@mail.gmail.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=hr32zQkQAMFpdycV9mqRMwFDXvtj260nxYs/HAKXI+Q=;
+        b=aS2yHDoYjCXz6O8px7jrgjufiGGbmengVExz5u1956glL9PCBX3jXfHKSckPYTpdfW
+         FPhSjvhzPUlSdmRB+bal2FbcEzMoLNiamf0Buq13tyAlZj76DbSvq9MTzhJdYaZkVjcD
+         EXBvL6lFpjDkjXsBVCCepQ7WRxhAbDwaS+FNT+jlDdY3akzftGBbCBCPMTqDkSIXVS3y
+         Zkb+slDVrRVs7A1JmGyOD0qzK1dKy33d6ji07XMw7YPj4rM3kZF0iK3A5+41goRtrOCw
+         kd4IBkiyj3sNmfhnFRfdCjQuk6B8sdx4Iock9BglHUzvd+GL8hI784/HE2RPBHokcMby
+         lwkw==
+X-Gm-Message-State: ACgBeo3QIInAJsih+x3xhNHwN/0+5V/7jKCDNQjWdwhx35XSNdCnHnFZ
+        FBR/aDqY90F/l7jlszuW7OU=
+X-Google-Smtp-Source: AA6agR73e8UxlvuT6qwwN5qmS8H+HvmUVahNMtcaO5mwrZ77r6fYQfeOKWR7E9FlRFnVvW5xjf4QKQ==
+X-Received: by 2002:a05:622a:40e:b0:343:7769:5895 with SMTP id n14-20020a05622a040e00b0034377695895mr29463186qtx.467.1662134476733;
+        Fri, 02 Sep 2022 09:01:16 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id w2-20020ac87182000000b00342f960d26esm1206063qto.15.2022.09.02.09.01.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Sep 2022 09:01:16 -0700 (PDT)
+Message-ID: <dce48f19-ff7d-981e-90bb-9005bf2fbd9a@gmail.com>
+Date:   Fri, 2 Sep 2022 09:01:13 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAHbLzkqjZ_UhUbJ_f9Br7WCAgQvjrm5bMPRsKYvaFc2bzSuzrw@mail.gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Subject: Re: [Patch net-next 2/3] net: dsa: microchip: lan937x: clear the
+ POR_READY_INT status bit
+Content-Language: en-US
+To:     Arun Ramadoss <arun.ramadoss@microchip.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Tristram Ha <Tristram.Ha@microchip.com>
+References: <20220902103210.10743-1-arun.ramadoss@microchip.com>
+ <20220902103210.10743-3-arun.ramadoss@microchip.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220902103210.10743-3-arun.ramadoss@microchip.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 01, 2022 at 04:50:45PM -0700, Yang Shi wrote:
-> On Thu, Sep 1, 2022 at 4:26 PM Peter Xu <peterx@redhat.com> wrote:
-> >
-> > Hi, Yang,
-> >
-> > On Thu, Sep 01, 2022 at 03:27:07PM -0700, Yang Shi wrote:
-> > > Since general RCU GUP fast was introduced in commit 2667f50e8b81 ("mm:
-> > > introduce a general RCU get_user_pages_fast()"), a TLB flush is no longer
-> > > sufficient to handle concurrent GUP-fast in all cases, it only handles
-> > > traditional IPI-based GUP-fast correctly.
-> >
-> > If TLB flush (or, IPI broadcasts) used to work to protect against gup-fast,
-> > I'm kind of confused why it's not sufficient even if with RCU gup?  Isn't
-> > that'll keep working as long as interrupt disabled (which current fast-gup
-> > will still do)?
+
+
+On 9/2/2022 3:32 AM, Arun Ramadoss wrote:
+> In the lan937x_reset_switch(), it masks all the switch and port
+> registers. In the Global_Int_status register, POR ready bit is write 1
+> to clear bit and all other bits are read only. So, this patch clear the
+> por_ready_int status bit by writing 1.
 > 
-> Actually the wording was copied from David's commit log for his
-> PageAnonExclusive fix. My understanding is the IPI broadcast still
-> works, but it may not be supported by all architectures and not
-> preferred anymore. So we should avoid depending on IPI broadcast IIUC.
-> 
-> >
-> > IIUC the issue is you suspect not all archs correctly implemented
-> > pmdp_collapse_flush(), or am I wrong?
-> 
-> This is a possible fix, please see below for details.
-> 
-> >
-> > > On architectures that send
-> > > an IPI broadcast on TLB flush, it works as expected.  But on the
-> > > architectures that do not use IPI to broadcast TLB flush, it may have
-> > > the below race:
-> > >
-> > >    CPU A                                          CPU B
-> > > THP collapse                                     fast GUP
-> > >                                               gup_pmd_range() <-- see valid pmd
-> > >                                                   gup_pte_range() <-- work on pte
-> > > pmdp_collapse_flush() <-- clear pmd and flush
-> > > __collapse_huge_page_isolate()
-> > >     check page pinned <-- before GUP bump refcount
-> > >                                                       pin the page
-> > >                                                       check PTE <-- no change
-> > > __collapse_huge_page_copy()
-> > >     copy data to huge page
-> > >     ptep_clear()
-> > > install huge pmd for the huge page
-> > >                                                       return the stale page
-> > > discard the stale page
-> > >
-> > > The race could be fixed by checking whether PMD is changed or not after
-> > > taking the page pin in fast GUP, just like what it does for PTE.  If the
-> > > PMD is changed it means there may be parallel THP collapse, so GUP
-> > > should back off.
-> >
-> > Could the race also be fixed by impl pmdp_collapse_flush() correctly for
-> > the archs that are missing? Do you know which arch(s) is broken with it?
-> 
-> Yes, and this was suggested by me in the first place, but per the
-> suggestion from John and David, this is not the preferred way. I think
-> it is because:
-> 
-> Firstly, using IPI to serialize against fast GUP is not recommended
-> anymore since fast GUP does check PTE then back off so we should avoid
-> it.
-> Secondly, if checking PMD then backing off could solve the problem,
-> why do we still need broadcast IPI? It doesn't sound performant.
-> 
-> >
-> > It's just not clear to me whether this patch is an optimization or a fix,
-> > if it's a fix whether the IPI broadcast in ppc pmdp_collapse_flush() would
-> > still be needed.
-> 
-> It is a fix and the fix will make IPI broadcast not useful anymore.
+> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 
-How about another patch to remove the ppc impl too?  Then it can be a two
-patches series.
-
-So that ppc developers can be copied and maybe it helps to have the ppc
-people looking at current approach too.
-
-Then the last piece of it is the s390 pmdp_collapse_flush().  I'm wondering
-whether generic pmdp_collapse_flush() would be good enough, since the only
-addition comparing to the s390 one will be flush_tlb_range() (which is a
-further __tlb_flush_mm_lazy).  David may have some thoughts.
-
-The patch itself looks good to me, one trivial nit below.
-
-> 
-> >
-> > Thanks,
-> >
-> > >
-> > > Also update the stale comment about serializing against fast GUP in
-> > > khugepaged.
-> > >
-> > > Fixes: 2667f50e8b81 ("mm: introduce a general RCU get_user_pages_fast()")
-> > > Signed-off-by: Yang Shi <shy828301@gmail.com>
-> > > ---
-> > >  mm/gup.c        | 30 ++++++++++++++++++++++++------
-> > >  mm/khugepaged.c | 10 ++++++----
-> > >  2 files changed, 30 insertions(+), 10 deletions(-)
-> > >
-> > > diff --git a/mm/gup.c b/mm/gup.c
-> > > index f3fc1f08d90c..4365b2811269 100644
-> > > --- a/mm/gup.c
-> > > +++ b/mm/gup.c
-> > > @@ -2380,8 +2380,9 @@ static void __maybe_unused undo_dev_pagemap(int *nr, int nr_start,
-> > >  }
-> > >
-> > >  #ifdef CONFIG_ARCH_HAS_PTE_SPECIAL
-> > > -static int gup_pte_range(pmd_t pmd, unsigned long addr, unsigned long end,
-> > > -                      unsigned int flags, struct page **pages, int *nr)
-> > > +static int gup_pte_range(pmd_t pmd, pmd_t *pmdp, unsigned long addr,
-> > > +                      unsigned long end, unsigned int flags,
-> > > +                      struct page **pages, int *nr)
-> > >  {
-> > >       struct dev_pagemap *pgmap = NULL;
-> > >       int nr_start = *nr, ret = 0;
-> > > @@ -2423,7 +2424,23 @@ static int gup_pte_range(pmd_t pmd, unsigned long addr, unsigned long end,
-> > >                       goto pte_unmap;
-> > >               }
-> > >
-> > > -             if (unlikely(pte_val(pte) != pte_val(*ptep))) {
-> > > +             /*
-> > > +              * THP collapse conceptually does:
-> > > +              *   1. Clear and flush PMD
-> > > +              *   2. Check the base page refcount
-> > > +              *   3. Copy data to huge page
-> > > +              *   4. Clear PTE
-> > > +              *   5. Discard the base page
-> > > +              *
-> > > +              * So fast GUP may race with THP collapse then pin and
-> > > +              * return an old page since TLB flush is no longer sufficient
-> > > +              * to serialize against fast GUP.
-> > > +              *
-> > > +              * Check PMD, if it is changed just back off since it
-> > > +              * means there may be parallel THP collapse.
-
-Would you mind rewording this comment a bit?  I feel it a bit weird to
-suddenly mention about thp collapse especially its details.
-
-Maybe some statement on the whole history of why check pte, and in what
-case pmd check is needed (where the thp collapse example can be moved to,
-imho)?
-
-One of my attempt for reference..
-
-		/*
-		 * Fast-gup relies on pte change detection to avoid
-		 * concurrent pgtable operations.
-		 *
-		 * To pin the page, fast-gup needs to do below in order:
-		 * (1) pin the page (by prefetching pte), then (2) check
-		 * pte not changed.
-		 *
-		 * For the rest of pgtable operations where pgtable updates
-		 * can be racy with fast-gup, we need to do (1) clear pte,
-		 * then (2) check whether page is pinned.
-		 *
-		 * Above will work for all pte-level operations, including
-		 * thp split.
-		 *
-		 * For thp collapse, it's a bit more complicated because
-		 * with RCU pgtable free fast-gup can be walking a pgtable
-		 * page that is being freed (so pte is still valid but pmd
-		 * can be cleared already).  To avoid race in such
-		 * condition, we need to also check pmd here to make sure
-		 * pmd doesn't change (corresponds to pmdp_collapse_flush()
-		 * in the thp collide code path).
-		 */
-
-If you agree with the comment change, feel free to add:
-
-Acked-by: Peter Xu <peterx@redhat.com>
-
-Thanks,
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-Peter Xu
-
+Florian
