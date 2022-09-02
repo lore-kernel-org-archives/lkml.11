@@ -2,110 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04DE5C6FA85
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:43:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1FBBC54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:43:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235906AbiIBIn1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 04:43:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57522 "EHLO
+        id S236005AbiIBIni (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 04:43:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235890AbiIBInF (ORCPT
+        with ESMTP id S235913AbiIBInI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 04:43:05 -0400
-Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C0E89E6A7;
-        Fri,  2 Sep 2022 01:43:04 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by comms.puri.sm (Postfix) with ESMTP id 9E10ADFE2A;
-        Fri,  2 Sep 2022 01:42:33 -0700 (PDT)
-Received: from comms.puri.sm ([127.0.0.1])
-        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 2FZVnIlIZDDt; Fri,  2 Sep 2022 01:42:32 -0700 (PDT)
-From:   Martin Kepplinger <martin.kepplinger@puri.sm>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=puri.sm; s=comms;
-        t=1662108152; bh=XTCJOy1lkwWbbFV/ClvUNuSaI8YS0YPYuLCf+fQ4u70=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NjczDtnuMPfxFD7pvzPTt7m8+EKF5pj6HYfvpQelgRVe1FLyvQpo+tgvicr1dxw57
-         yFaEQ359kfmHUTUy715IrOjF+Dt8iKjK1sURwit6U2ZhRo1QA7N0HUaXHO5scJXpCh
-         tZooioEePYHowXMHO3mKbtipSWwvntblMRSxzkJJSJim11OrgTc1HlVanzBD1M5J2p
-         QRtCf0HiKm9NSS/+S6vpbsOxjNS08Mg8FBq3U2tbpdJMTz21oVQnU9kiZ00q/53MGu
-         RLmreh17fuVbsSuuYt59e23MQfRwHLb8081NI6V1Vho0WwfdL7O/4yqbG/UlskARJ0
-         pEUaadBDQGq5w==
-To:     festevam@gmail.com, shawnguo@kernel.org
-Cc:     martin.kepplinger@puri.sm, devicetree@vger.kernel.org,
-        kernel@pengutronix.de, kernel@puri.sm, krzk@kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-imx@nxp.com,
-        linux-kernel@vger.kernel.org, phone-devel@vger.kernel.org,
-        robh@kernel.org, =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>
-Subject: [PATCH v2 2/6] arm64: dts: imx8mq-librem5: add RGB pwm notification leds
-Date:   Fri,  2 Sep 2022 10:42:12 +0200
-Message-Id: <20220902084216.1259202-3-martin.kepplinger@puri.sm>
-In-Reply-To: <20220902084216.1259202-1-martin.kepplinger@puri.sm>
-References: <20220902084216.1259202-1-martin.kepplinger@puri.sm>
+        Fri, 2 Sep 2022 04:43:08 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 006D0A6C77
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 01:43:07 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <l.stach@pengutronix.de>)
+        id 1oU2GJ-0003Cp-31; Fri, 02 Sep 2022 10:42:51 +0200
+Message-ID: <eee03d6198f460a2a0ac4d48319e8920d5f21d21.camel@pengutronix.de>
+Subject: Re: [PATCH v6 2/7] arm64: dts: imx8mp: Add iMX8MP PCIe support
+From:   Lucas Stach <l.stach@pengutronix.de>
+To:     Richard Zhu <hongxing.zhu@nxp.com>, p.zabel@pengutronix.de,
+        bhelgaas@google.com, lorenzo.pieralisi@arm.com, robh@kernel.org,
+        shawnguo@kernel.org, vkoul@kernel.org,
+        alexander.stein@ew.tq-group.com, marex@denx.de,
+        richard.leitner@linux.dev
+Cc:     linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        linux-imx@nxp.com
+Date:   Fri, 02 Sep 2022 10:42:49 +0200
+In-Reply-To: <1662004960-14071-3-git-send-email-hongxing.zhu@nxp.com>
+References: <1662004960-14071-1-git-send-email-hongxing.zhu@nxp.com>
+         <1662004960-14071-3-git-send-email-hongxing.zhu@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: l.stach@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guido Günther <agx@sigxcpu.org>
+Am Donnerstag, dem 01.09.2022 um 12:02 +0800 schrieb Richard Zhu:
+> Add i.MX8MP PCIe support.
+> 
+> Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+> Tested-by: Marek Vasut <marex@denx.de>
+> Tested-by: Richard Leitner <richard.leitner@skidata.com>
+> Tested-by: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-Describe the RGB notification leds on the Librem 5 phone.
-Use the common defines so we're sure to adhere to the common patterns,
-use predefined led colors and functions so we're being warned in case
-of deprecations.
+Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
 
-Signed-off-by: Guido Günther <agx@sigxcpu.org>
-Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
----
- .../boot/dts/freescale/imx8mq-librem5.dtsi    | 26 +++++++++++++++++++
- 1 file changed, 26 insertions(+)
+> ---
+>  arch/arm64/boot/dts/freescale/imx8mp.dtsi | 43 +++++++++++++++++++++++
+>  1 file changed, 43 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/freescale/imx8mp.dtsi b/arch/arm64/boot/dts/freescale/imx8mp.dtsi
+> index fe178b7d063c..21a4cc417c81 100644
+> --- a/arch/arm64/boot/dts/freescale/imx8mp.dtsi
+> +++ b/arch/arm64/boot/dts/freescale/imx8mp.dtsi
+> @@ -5,6 +5,7 @@
+>  
+>  #include <dt-bindings/clock/imx8mp-clock.h>
+>  #include <dt-bindings/power/imx8mp-power.h>
+> +#include <dt-bindings/reset/imx8mp-reset.h>
+>  #include <dt-bindings/gpio/gpio.h>
+>  #include <dt-bindings/input/input.h>
+>  #include <dt-bindings/interrupt-controller/arm-gic.h>
+> @@ -1084,6 +1085,17 @@ media_blk_ctrl: blk-ctrl@32ec0000 {
+>  				#power-domain-cells = <1>;
+>  			};
+>  
+> +			pcie_phy: pcie-phy@32f00000 {
+> +				compatible = "fsl,imx8mp-pcie-phy";
+> +				reg = <0x32f00000 0x10000>;
+> +				resets = <&src IMX8MP_RESET_PCIEPHY>,
+> +					 <&src IMX8MP_RESET_PCIEPHY_PERST>;
+> +				reset-names = "pciephy", "perst";
+> +				power-domains = <&hsio_blk_ctrl IMX8MP_HSIOBLK_PD_PCIE_PHY>;
+> +				#phy-cells = <0>;
+> +				status = "disabled";
+> +			};
+> +
+>  			hsio_blk_ctrl: blk-ctrl@32f10000 {
+>  				compatible = "fsl,imx8mp-hsio-blk-ctrl", "syscon";
+>  				reg = <0x32f10000 0x24>;
+> @@ -1099,6 +1111,37 @@ hsio_blk_ctrl: blk-ctrl@32f10000 {
+>  			};
+>  		};
+>  
+> +		pcie: pcie@33800000 {
+> +			compatible = "fsl,imx8mp-pcie";
+> +			reg = <0x33800000 0x400000>, <0x1ff00000 0x80000>;
+> +			reg-names = "dbi", "config";
+> +			#address-cells = <3>;
+> +			#size-cells = <2>;
+> +			device_type = "pci";
+> +			bus-range = <0x00 0xff>;
+> +			ranges =  <0x81000000 0 0x00000000 0x1ff80000 0 0x00010000>, /* downstream I/O 64KB */
+> +				  <0x82000000 0 0x18000000 0x18000000 0 0x07f00000>; /* non-prefetchable memory */
+> +			num-lanes = <1>;
+> +			num-viewport = <4>;
+> +			interrupts = <GIC_SPI 140 IRQ_TYPE_LEVEL_HIGH>;
+> +			interrupt-names = "msi";
+> +			#interrupt-cells = <1>;
+> +			interrupt-map-mask = <0 0 0 0x7>;
+> +			interrupt-map = <0 0 0 1 &gic GIC_SPI 126 IRQ_TYPE_LEVEL_HIGH>,
+> +					<0 0 0 2 &gic GIC_SPI 125 IRQ_TYPE_LEVEL_HIGH>,
+> +					<0 0 0 3 &gic GIC_SPI 124 IRQ_TYPE_LEVEL_HIGH>,
+> +					<0 0 0 4 &gic GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>;
+> +			fsl,max-link-speed = <3>;
+> +			linux,pci-domain = <0>;
+> +			power-domains = <&hsio_blk_ctrl IMX8MP_HSIOBLK_PD_PCIE>;
+> +			resets = <&src IMX8MP_RESET_PCIE_CTRL_APPS_EN>,
+> +				 <&src IMX8MP_RESET_PCIE_CTRL_APPS_TURNOFF>;
+> +			reset-names = "apps", "turnoff";
+> +			phys = <&pcie_phy>;
+> +			phy-names = "pcie-phy";
+> +			status = "disabled";
+> +		};
+> +
+>  		gpu3d: gpu@38000000 {
+>  			compatible = "vivante,gc";
+>  			reg = <0x38000000 0x8000>;
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi b/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi
-index 0626e4194d958..8da7b87c1aa1f 100644
---- a/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi
-@@ -7,6 +7,7 @@
- 
- #include "dt-bindings/input/input.h"
- #include <dt-bindings/interrupt-controller/irq.h>
-+#include <dt-bindings/leds/common.h>
- #include "dt-bindings/pwm/pwm.h"
- #include "dt-bindings/usb/pd.h"
- #include "imx8mq.dtsi"
-@@ -54,6 +55,31 @@ key-vol-up {
- 		};
- 	};
- 
-+	led-controller {
-+		compatible = "pwm-leds";
-+
-+		led-0 {
-+			function = LED_FUNCTION_STATUS;
-+			color = <LED_COLOR_ID_BLUE>;
-+			max-brightness = <248>;
-+			pwms = <&pwm2 0 50000 0>;
-+		};
-+
-+		led-1 {
-+			function = LED_FUNCTION_STATUS;
-+			color = <LED_COLOR_ID_GREEN>;
-+			max-brightness = <248>;
-+			pwms = <&pwm4 0 50000 0>;
-+		};
-+
-+		led-2 {
-+			function = LED_FUNCTION_STATUS;
-+			color = <LED_COLOR_ID_RED>;
-+			max-brightness = <248>;
-+			pwms = <&pwm3 0 50000 0>;
-+		};
-+	};
-+
- 	reg_aud_1v8: regulator-audio-1v8 {
- 		compatible = "regulator-fixed";
- 		pinctrl-names = "default";
--- 
-2.30.2
 
