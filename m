@@ -2,51 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9663ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:01:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2113DECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:01:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238443AbiIBNBI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:01:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51722 "EHLO
+        id S238431AbiIBNBN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:01:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238704AbiIBM7W (ORCPT
+        with ESMTP id S238706AbiIBM7W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 08:59:22 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A842C3AE4B;
-        Fri,  2 Sep 2022 05:40:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF4DFE1169;
+        Fri,  2 Sep 2022 05:40:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD381B829E5;
-        Fri,  2 Sep 2022 12:40:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA5FBC433D6;
-        Fri,  2 Sep 2022 12:40:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1AFDEB829E2;
+        Fri,  2 Sep 2022 12:33:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63570C433D6;
+        Fri,  2 Sep 2022 12:33:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122401;
-        bh=2mE2jwlzv5qeiHp5VD8bwbMz3PgUEayrX1/dxiB2RAo=;
+        s=korg; t=1662121983;
+        bh=4J2RiHe3cklBVvQ7Q0ymDh9jBYM6rHYOk5ssfRlrWjg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=If7ApqSgGfBVurx12uHdtdH0ljx1Kzx71rW3LLtxtL0aSBpNg3c5CRcOYCWX9UMPd
-         ghHo1H81oJx2KeGNrob0M7OdP6DoM2cLIOKtBLSA/AHBbql1bKwvZkONGFU5SshJcW
-         /cL8AhqmYdoysckshYrh4RQaOU75Wq9fYtddyTek=
+        b=m7hma8lJh5p108NKJvUTFGcy9HGYW1JNrTlzmlt0kMfvWsYRp6YSzBeH1Qyr9RIyS
+         yxNhChxngxl+isLxHkvbDgCpJQiUrnkETH9Uhy5+dNCHjhtCprNnxsi4VcqSWkO/Wz
+         AkfScc3u0OZ8GkfnAEpYlwCOHTIXpkB7o0Bwd7ds=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Greear <greearb@candelatech.com>,
-        Stefan Roese <sr@denx.de>, Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Yao Hongbo <yaohongbo@linux.alibaba.com>,
-        Naveen Naidu <naveennaidu479@gmail.com>,
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 08/37] Revert "PCI/portdrv: Dont disable AER reporting in get_port_device_capability()"
-Date:   Fri,  2 Sep 2022 14:19:30 +0200
-Message-Id: <20220902121359.438662311@linuxfoundation.org>
+Subject: [PATCH 5.15 49/73] btrfs: fix warning during log replay when bumping inode link count
+Date:   Fri,  2 Sep 2022 14:19:13 +0200
+Message-Id: <20220902121406.068166289@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121359.177846782@linuxfoundation.org>
-References: <20220902121359.177846782@linuxfoundation.org>
+In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
+References: <20220902121404.435662285@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,48 +49,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Filipe Manana <fdmanana@suse.com>
 
-This reverts commit ee70aa214a2d9fa74539b52f6c326ba2f7c0fb11 which is
-commit 8795e182b02dc87e343c79e73af6b8b7f9c5e635 upstream.
+[ Upstream commit 769030e11847c5412270c0726ff21d3a1f0a3131 ]
 
-It is reported to cause problems, so drop it from the stable trees for
-now until it gets sorted out.
+During log replay, at add_link(), we may increment the link count of
+another inode that has a reference that conflicts with a new reference
+for the inode currently being processed.
 
-Link: https://lore.kernel.org/r/47b775c5-57fa-5edf-b59e-8a9041ffbee7@candelatech.com
-Reported-by: Ben Greear <greearb@candelatech.com>
-Cc: Stefan Roese <sr@denx.de>
-Cc: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Pali Rohár <pali@kernel.org>
-Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
-Cc: Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
-Cc: Michal Simek <michal.simek@xilinx.com>
-Cc: Yao Hongbo <yaohongbo@linux.alibaba.com>
-Cc: Naveen Naidu <naveennaidu479@gmail.com>
-Cc: Sasha Levin <sashal@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+During log replay, at add_link(), we may drop (unlink) a reference from
+some inode in the subvolume tree if that reference conflicts with a new
+reference found in the log for the inode we are currently processing.
+
+After the unlink, If the link count has decreased from 1 to 0, then we
+increment the link count to prevent the inode from being deleted if it's
+evicted by an iput() call, because we may have references to add to that
+inode later on (and we will fixup its link count later during log replay).
+
+However incrementing the link count from 0 to 1 triggers a warning:
+
+  $ cat fs/inode.c
+  (...)
+  void inc_nlink(struct inode *inode)
+  {
+        if (unlikely(inode->i_nlink == 0)) {
+                 WARN_ON(!(inode->i_state & I_LINKABLE));
+                 atomic_long_dec(&inode->i_sb->s_remove_count);
+        }
+  (...)
+
+The I_LINKABLE flag is only set when creating an O_TMPFILE file, so it's
+never set during log replay.
+
+Most of the time, the warning isn't triggered even if we dropped the last
+reference of the conflicting inode, and this is because:
+
+1) The conflicting inode was previously marked for fixup, through a call
+   to link_to_fixup_dir(), which increments the inode's link count;
+
+2) And the last iput() on the inode has not triggered eviction of the
+   inode, nor was eviction triggered after the iput(). So at add_link(),
+   even if we unlink the last reference of the inode, its link count ends
+   up being 1 and not 0.
+
+So this means that if eviction is triggered after link_to_fixup_dir() is
+called, at add_link() we will read the inode back from the subvolume tree
+and have it with a correct link count, matching the number of references
+it has on the subvolume tree. So if when we are at add_link() the inode
+has exactly one reference only, its link count is 1, and after the unlink
+its link count becomes 0.
+
+So fix this by using set_nlink() instead of inc_nlink(), as the former
+accepts a transition from 0 to 1 and it's what we use in other similar
+contexts (like at link_to_fixup_dir().
+
+Also make add_inode_ref() use set_nlink() instead of inc_nlink() to
+bump the link count from 0 to 1.
+
+The warning is actually harmless, but it may scare users. Josef also ran
+into it recently.
+
+CC: stable@vger.kernel.org # 5.1+
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/pcie/portdrv_core.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ fs/btrfs/tree-log.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/pci/pcie/portdrv_core.c
-+++ b/drivers/pci/pcie/portdrv_core.c
-@@ -222,8 +222,15 @@ static int get_port_device_capability(st
- 
- #ifdef CONFIG_PCIEAER
- 	if (dev->aer_cap && pci_aer_available() &&
--	    (pcie_ports_native || host->native_aer))
-+	    (pcie_ports_native || host->native_aer)) {
- 		services |= PCIE_PORT_SERVICE_AER;
-+
-+		/*
-+		 * Disable AER on this port in case it's been enabled by the
-+		 * BIOS (the AER service driver will enable it when necessary).
-+		 */
-+		pci_disable_pcie_error_reporting(dev);
-+	}
- #endif
- 
- 	/*
+diff --git a/fs/btrfs/tree-log.c b/fs/btrfs/tree-log.c
+index c56a89d224bbb..7272896587302 100644
+--- a/fs/btrfs/tree-log.c
++++ b/fs/btrfs/tree-log.c
+@@ -1444,7 +1444,7 @@ static int add_link(struct btrfs_trans_handle *trans, struct btrfs_root *root,
+ 	 * on the inode will not free it. We will fixup the link count later.
+ 	 */
+ 	if (other_inode->i_nlink == 0)
+-		inc_nlink(other_inode);
++		set_nlink(other_inode, 1);
+ add_link:
+ 	ret = btrfs_add_link(trans, BTRFS_I(dir), BTRFS_I(inode),
+ 			     name, namelen, 0, ref_index);
+@@ -1587,7 +1587,7 @@ static noinline int add_inode_ref(struct btrfs_trans_handle *trans,
+ 				 * free it. We will fixup the link count later.
+ 				 */
+ 				if (!ret && inode->i_nlink == 0)
+-					inc_nlink(inode);
++					set_nlink(inode, 1);
+ 			}
+ 			if (ret < 0)
+ 				goto out;
+-- 
+2.35.1
+
 
 
