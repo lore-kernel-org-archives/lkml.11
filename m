@@ -2,90 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 142C6C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:42:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB7F9ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:44:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237273AbiIBNmz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:42:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41436 "EHLO
+        id S237894AbiIBNnc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:43:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237737AbiIBNmW (ORCPT
+        with ESMTP id S235956AbiIBNnH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:42:22 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7CEDFAC72;
-        Fri,  2 Sep 2022 06:19:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 063BCCE0304;
-        Fri,  2 Sep 2022 12:33:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F202DC433D7;
-        Fri,  2 Sep 2022 12:33:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121999;
-        bh=V7K8u+HKkmHfajResnfv9TsuOvtxrbC4m/STKrYaiH4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WHsTKUnCVvzHQbxpw02C2dMNa7J1I1UuoqluHsAuBTreuvU2N2cMnkwmrEEEZlIJo
-         BPfJJHsbVI+HCwNuz7zPB8PiBeyb9BXCm/Vmkbcvt7edQt0wiHmfF/nVbe5yZUs136
-         IDKmOONYZETnAny6DjcCM0v21YNNd9MLeCh3ilgk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Martin Leung <Martin.Leung@amd.com>,
-        Tom Chung <chiahsuan.chung@amd.com>,
-        Alvin Lee <alvin.lee2@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 54/73] drm/amd/display: For stereo keep "FLIP_ANY_FRAME"
-Date:   Fri,  2 Sep 2022 14:19:18 +0200
-Message-Id: <20220902121406.221738498@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
-References: <20220902121404.435662285@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Fri, 2 Sep 2022 09:43:07 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5B0A0FF0
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:19:52 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BA7641516;
+        Fri,  2 Sep 2022 06:03:17 -0700 (PDT)
+Received: from [10.57.16.88] (unknown [10.57.16.88])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D90B73F766;
+        Fri,  2 Sep 2022 06:03:09 -0700 (PDT)
+Message-ID: <54e034aa-4012-e6f1-c0f3-325d8fe0f4c1@arm.com>
+Date:   Fri, 2 Sep 2022 14:03:07 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] coresight: cti-sysfs: Mark coresight_cti_reg_store() as
+ __maybe_unused
+Content-Language: en-US
+To:     Nathan Chancellor <nathan@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>
+Cc:     Mike Leach <mike.leach@linaro.org>, Leo Yan <leo.yan@linaro.org>,
+        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <20220901195055.1932340-1-nathan@kernel.org>
+From:   James Clark <james.clark@arm.com>
+In-Reply-To: <20220901195055.1932340-1-nathan@kernel.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alvin Lee <alvin.lee2@amd.com>
-
-[ Upstream commit 84ef99c728079dfd21d6bc70b4c3e4af20602b3c ]
-
-[Description]
-Observed in stereomode that programming FLIP_LEFT_EYE
-can cause hangs. Keep FLIP_ANY_FRAME in stereo mode so
-the surface flip can take place before left or right eye
-
-Reviewed-by: Martin Leung <Martin.Leung@amd.com>
-Acked-by: Tom Chung <chiahsuan.chung@amd.com>
-Signed-off-by: Alvin Lee <alvin.lee2@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hubp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hubp.c b/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hubp.c
-index f246125232482..33c2337c4edf3 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hubp.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hubp.c
-@@ -86,7 +86,7 @@ bool hubp3_program_surface_flip_and_addr(
- 			VMID, address->vmid);
- 
- 	if (address->type == PLN_ADDR_TYPE_GRPH_STEREO) {
--		REG_UPDATE(DCSURF_FLIP_CONTROL, SURFACE_FLIP_MODE_FOR_STEREOSYNC, 0x1);
-+		REG_UPDATE(DCSURF_FLIP_CONTROL, SURFACE_FLIP_MODE_FOR_STEREOSYNC, 0);
- 		REG_UPDATE(DCSURF_FLIP_CONTROL, SURFACE_FLIP_IN_STEREOSYNC, 0x1);
- 
- 	} else {
--- 
-2.35.1
 
 
+On 01/09/2022 20:50, Nathan Chancellor wrote:
+> When building without CONFIG_CORESIGHT_CTI_INTEGRATION_REGS, there is a
+> warning about coresight_cti_reg_store() being unused in the file:
+> 
+>   drivers/hwtracing/coresight/coresight-cti-sysfs.c:184:16: warning: 'coresight_cti_reg_store' defined but not used [-Wunused-function]
+>     184 | static ssize_t coresight_cti_reg_store(struct device *dev,
+>         |                ^~~~~~~~~~~~~~~~~~~~~~~
+> 
+> This is expected as coresight_cti_reg_store() is only used in the
+> coresight_cti_reg_rw macro, which is only used in a block guarded by
+> CONFIG_CORESIGHT_CTI_INTEGRATION_REGS. Mark coresight_cti_reg_store() as
+> __maybe_unused to clearly indicate that the function may be unused
+> depending on the configuration.
 
+It would also be possible to fix this by wrapping the definitions in
+#ifdef CONFIG_CORESIGHT_CTI_INTEGRATION_REGS. That way the maybe_unused
+isn't needed and it's a bit cleaner.
+
+Either way, thanks for the fix.
+
+Reviewed-by: James Clark <james.clark@arm.com>
+
+> 
+> Fixes: fbca79e55429 ("coresight: cti-sysfs: Re-use same functions for similar sysfs register accessors")
+> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+> ---
+>  drivers/hwtracing/coresight/coresight-cti-sysfs.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/hwtracing/coresight/coresight-cti-sysfs.c b/drivers/hwtracing/coresight/coresight-cti-sysfs.c
+> index 478b8d38b744..6d59c815ecf5 100644
+> --- a/drivers/hwtracing/coresight/coresight-cti-sysfs.c
+> +++ b/drivers/hwtracing/coresight/coresight-cti-sysfs.c
+> @@ -181,9 +181,9 @@ static ssize_t coresight_cti_reg_show(struct device *dev,
+>  }
+>  
+>  /* Write registers with power check only (no enable check). */
+> -static ssize_t coresight_cti_reg_store(struct device *dev,
+> -				       struct device_attribute *attr,
+> -				       const char *buf, size_t size)
+> +static __maybe_unused ssize_t coresight_cti_reg_store(struct device *dev,
+> +						      struct device_attribute *attr,
+> +						      const char *buf, size_t size)
+>  {
+>  	struct cti_drvdata *drvdata = dev_get_drvdata(dev->parent);
+>  	struct cs_off_attribute *cti_attr = container_of(attr, struct cs_off_attribute, attr);
+> 
+> base-commit: 0a98181f805058773961c5ab3172ecf1bf1ed0e1
