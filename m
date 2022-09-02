@@ -2,125 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61713C54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:37:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AED4ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:37:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232681AbiIBNh1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:37:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51200 "EHLO
+        id S236957AbiIBNhc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:37:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236934AbiIBNgb (ORCPT
+        with ESMTP id S236800AbiIBNgo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:36:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10FCFC0E61;
-        Fri,  2 Sep 2022 06:15:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0753D621B3;
-        Fri,  2 Sep 2022 12:34:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B11BC43140;
-        Fri,  2 Sep 2022 12:34:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122081;
-        bh=FadrqUdVsz2jlLOfSCllylWQHjBpsfMwpCQB/vkl2lQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n/xyY4VuatCgkVbNd7d6yxonhBvE/YJOPh3Njproj27lOVOdsLGOD453QPLh3A73l
-         YOT/DRAZr84uI0YNwerPRokm28YiK3MYeg2BgOslqQRxIErXluF3l/3x8QZ8mkWJg7
-         BpKdvF//qSGipGDAgguaA9mBK8g+v1yZbsT6LdAc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 68/73] btrfs: tree-checker: check for overlapping extent items
-Date:   Fri,  2 Sep 2022 14:19:32 +0200
-Message-Id: <20220902121406.640584762@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
-References: <20220902121404.435662285@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Fri, 2 Sep 2022 09:36:44 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F8D1CD7AF
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:15:48 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id z14-20020a7bc7ce000000b003a5db0388a8so4376538wmk.1
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 06:15:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=OADg3UgKowYhLczGEB28pcVY5skR7AiQxx4OTT83oDk=;
+        b=H0g/M+OnJxjS/Fxem0m6Me0vNgo4xJviND9t9DF+p6KUOS4dV40camDINciqlwBsc6
+         1oZDtlnVq97CnomYp/1tuwInbIGN+Ta9z4Y89Grs1NH/0Ix8mnb7JpLaLQHd/dCNI5mx
+         r+jZUQBh/A066D/ih4Uklqgtm86em8TrInlLu7opZzPX0eGmOw/de4pqi2e2gWtU+Tbd
+         owVjzT7LjOk+vhiR8aBvkwJ5E4HwME8Pq6bWkRMvtKmUCOOv4P5NoLOKCCrkCL0Seju8
+         xFX9wpR9OdzWH/C5cSNqK6O7C2XmxZLIIOEfuofLVAi9DG5wxihkllicwI4UARRB2W2F
+         9nQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=OADg3UgKowYhLczGEB28pcVY5skR7AiQxx4OTT83oDk=;
+        b=JeyQqwUgdIRfDdVlThMQNR6nODdH45AhBXgkFtxL1VMK29mTBQq32r0LSzv6RaWVcZ
+         0oZ0NJCZ1qBDp2jb9ggltB3WwURDZyNtJBc9R5kUjj08nDVVFFZVt8hPPvx6lEVvm3Zd
+         o5YEKH2rlCZg5ZjoaCuTB8X/r/LHiXkb+9rULEaoJkeNfsz6pc1l7fCWToFgkY8SElEE
+         aIZjWuhGA2Gol+7k2TlQBJx+u1g++DtB3TYO3p3HE/3Z8Kan5841TEAS+AvhOkGZV9Us
+         nm7itwXFkLp1hlPudRt4o5tEQdpURNQCokuGYlfgeKBLZK4gQid8Vu7tT+9NoN6Fb6dd
+         EdHQ==
+X-Gm-Message-State: ACgBeo0k2M/Rvi53tDw+/FZRASETdTHDgoowBuqKVxXMWqt3vO2HbxDA
+        Ff6AWi1BTmzUMqYqobj9n5Oeiw==
+X-Google-Smtp-Source: AA6agR5QwGS7OPCyEFpfPg8vBBgyTrtB8Tf8na/GE9G5Ym492TMGsmtN6Vggy29GsnTDhZbxZYpI+Q==
+X-Received: by 2002:a05:600c:3d93:b0:3a5:eb9b:b495 with SMTP id bi19-20020a05600c3d9300b003a5eb9bb495mr2767314wmb.91.1662124478358;
+        Fri, 02 Sep 2022 06:14:38 -0700 (PDT)
+Received: from hackbox.lan ([94.52.112.99])
+        by smtp.gmail.com with ESMTPSA id v14-20020a5d43ce000000b002253fd19a6asm1766253wrr.18.2022.09.02.06.14.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 06:14:37 -0700 (PDT)
+From:   Abel Vesa <abel.vesa@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorande@qti.qualcomm.com>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Amol Maheshwari <amahesh@qti.qualcomm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Ekansh Gupta <ekangupt@qti.qualcomm.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: [PATCH 12/14] misc: fastrpc: Add mmap request assigning for static PD pool
+Date:   Fri,  2 Sep 2022 16:13:42 +0300
+Message-Id: <20220902131344.3029826-13-abel.vesa@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220902131344.3029826-1-abel.vesa@linaro.org>
+References: <20220902131344.3029826-1-abel.vesa@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+If the mmap request is to add pages and thre are VMIDs associated with
+that context, do a call to SCM to reassign that memory. Do not do this
+for remote heap allocation, that is done on init create static process
+only.
 
-[ Upstream commit 899b7f69f244e539ea5df1b4d756046337de44a5 ]
-
-We're seeing a weird problem in production where we have overlapping
-extent items in the extent tree.  It's unclear where these are coming
-from, and in debugging we realized there's no check in the tree checker
-for this sort of problem.  Add a check to the tree-checker to make sure
-that the extents do not overlap each other.
-
-Reviewed-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Co-developed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
 ---
- fs/btrfs/tree-checker.c | 25 +++++++++++++++++++++++--
- 1 file changed, 23 insertions(+), 2 deletions(-)
+ drivers/misc/fastrpc.c | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
 
-diff --git a/fs/btrfs/tree-checker.c b/fs/btrfs/tree-checker.c
-index 51382d2be3d44..a84d2d4895104 100644
---- a/fs/btrfs/tree-checker.c
-+++ b/fs/btrfs/tree-checker.c
-@@ -1216,7 +1216,8 @@ static void extent_err(const struct extent_buffer *eb, int slot,
- }
+diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
+index 41eabdf0a256..66dc71e20e4f 100644
+--- a/drivers/misc/fastrpc.c
++++ b/drivers/misc/fastrpc.c
+@@ -1849,8 +1849,9 @@ static int fastrpc_req_mmap(struct fastrpc_user *fl, char __user *argp)
+ 	if (copy_from_user(&req, argp, sizeof(req)))
+ 		return -EFAULT;
  
- static int check_extent_item(struct extent_buffer *leaf,
--			     struct btrfs_key *key, int slot)
-+			     struct btrfs_key *key, int slot,
-+			     struct btrfs_key *prev_key)
- {
- 	struct btrfs_fs_info *fs_info = leaf->fs_info;
- 	struct btrfs_extent_item *ei;
-@@ -1436,6 +1437,26 @@ static int check_extent_item(struct extent_buffer *leaf,
- 			   total_refs, inline_refs);
- 		return -EUCLEAN;
+-	if (req.flags != ADSP_MMAP_ADD_PAGES) {
++	if (req.flags != ADSP_MMAP_ADD_PAGES && req.flags != ADSP_MMAP_REMOTE_HEAP_ADDR) {
+ 		dev_err(dev, "flag not supported 0x%x\n", req.flags);
++
+ 		return -EINVAL;
  	}
+ 
+@@ -1896,6 +1897,22 @@ static int fastrpc_req_mmap(struct fastrpc_user *fl, char __user *argp)
+ 	/* let the client know the address to use */
+ 	req.vaddrout = rsp_msg.vaddr;
+ 
++	/* Add memory to static PD pool, protection thru hypervisor */
++	if (req.flags != ADSP_MMAP_REMOTE_HEAP_ADDR && fl->cctx->vmcount) {
++		struct qcom_scm_vmperm perm;
++		int err = 0;
 +
-+	if ((prev_key->type == BTRFS_EXTENT_ITEM_KEY) ||
-+	    (prev_key->type == BTRFS_METADATA_ITEM_KEY)) {
-+		u64 prev_end = prev_key->objectid;
-+
-+		if (prev_key->type == BTRFS_METADATA_ITEM_KEY)
-+			prev_end += fs_info->nodesize;
-+		else
-+			prev_end += prev_key->offset;
-+
-+		if (unlikely(prev_end > key->objectid)) {
-+			extent_err(leaf, slot,
-+	"previous extent [%llu %u %llu] overlaps current extent [%llu %u %llu]",
-+				   prev_key->objectid, prev_key->type,
-+				   prev_key->offset, key->objectid, key->type,
-+				   key->offset);
-+			return -EUCLEAN;
++		perm.vmid = QCOM_SCM_VMID_HLOS;
++		perm.perm = QCOM_SCM_PERM_RWX;
++		err = qcom_scm_assign_mem(buf->phys, buf->size,
++			&(fl->cctx->vmperms[0].vmid), &perm, 1);
++		if (err) {
++			dev_err(fl->sctx->dev, "Failed to assign memory phys 0x%llx size 0x%llx err %d",
++					buf->phys, buf->size, err);
++			goto err_assign;
 +		}
 +	}
 +
- 	return 0;
- }
- 
-@@ -1604,7 +1625,7 @@ static int check_leaf_item(struct extent_buffer *leaf,
- 		break;
- 	case BTRFS_EXTENT_ITEM_KEY:
- 	case BTRFS_METADATA_ITEM_KEY:
--		ret = check_extent_item(leaf, key, slot);
-+		ret = check_extent_item(leaf, key, slot, prev_key);
- 		break;
- 	case BTRFS_TREE_BLOCK_REF_KEY:
- 	case BTRFS_SHARED_DATA_REF_KEY:
+ 	spin_lock(&fl->lock);
+ 	list_add_tail(&buf->node, &fl->mmaps);
+ 	spin_unlock(&fl->lock);
 -- 
-2.35.1
-
-
+2.34.1
 
