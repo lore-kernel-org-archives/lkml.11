@@ -2,101 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 983AEC001B5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 17:36:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 210F8C001B5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 17:37:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236805AbiIBRgv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 13:36:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39514 "EHLO
+        id S236814AbiIBRhd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 13:37:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232815AbiIBRgt (ORCPT
+        with ESMTP id S232815AbiIBRha (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 13:36:49 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A90DCACA6;
-        Fri,  2 Sep 2022 10:36:49 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id w28so2013930qtc.7;
-        Fri, 02 Sep 2022 10:36:49 -0700 (PDT)
+        Fri, 2 Sep 2022 13:37:30 -0400
+Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 723D3D34E9
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 10:37:29 -0700 (PDT)
+Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-11e9a7135easo6414448fac.6
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 10:37:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=X/KMkJa9tNwOodhpy9YiwOnEKmKd6PupwV4wap/a+k0=;
-        b=bk/V6g6SZ/wGWRhMX1z77EKu9PFE9FjKHU/gQUiTGxivtOejf45tlQCY4BEGjpjqlh
-         BlwjXVlayClR4PsefaGU0kvps96GCBdAEUxmiBc5cvKrvCc6DFi3rzd6ANVqGQSpavRE
-         BtJ3OEKseItsfLZA586I10YeIOTLN1UOJvxGOVJ9VTL1rGWcMUK+zZUcmwEZKfjC6p14
-         ar3MErLG0cpAKWPeKFDnQYLuLL5TejiNUTz2zHePoYeJ1OZxr+8Rp/L7jKq4PkTOz5A/
-         XYIr9Z18yMHSLRiUa2PBeJUIarsq5nROGQHRtLDs8Y6kElfSBKdt+qcdlifXa0jm2QGH
-         1p/w==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=yIW23Q2C4Gr83MEV8yMj6oMsmguEejDKJ2Nl6VMech4=;
+        b=MPgjrCpJkdAg2pjrvgO0Lc9MxKf+fy9/WwEjLeTQcGhDHnPIYgtp+eXLwehzaiwWW5
+         +x9Men1Iov8SAxCK/2PvgMd2Rok615f+dtNOPL0bmpCaOj+yRM9N28VdIQQB+EQjAYsD
+         W/ERNigRQ8UFvl9jB/7SbPN3g+u2xfJqF/xX26AYwiUydsShrC9I+FYULuH+l46Kq9R7
+         RWGamMsgFauNZqpCUJAy9tvme9mH+Q/fCJNWs7K6ps0FaAHF9Nn5EaNHWobqPjNHrjFZ
+         aAuhSWW5eNRQ+73OJnQH37CYvEeMuThgaNtpNcAxziBd36IRGVNWwGfJAlukzKV0hU9R
+         VwHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=X/KMkJa9tNwOodhpy9YiwOnEKmKd6PupwV4wap/a+k0=;
-        b=D6P87q5PcpDfzYqPq7Jn4lvOQP/5nJBDZ6PloQCnJljljrPzLhYPTkuXpXfL/SPo1Q
-         v3kL03+h6Ih6LrE71I1BjVhrZ5lLBOeI1mdtQbfpkAxVTiUFFO8eKN8+HUMpCCZ5MDWw
-         zhTxFhDPEJPRi7udN18x930PiXyXuFe/yG40dluv3DHVh6vG68WISIcou5dLG00GMwrg
-         capgg+xY4ra8IM7u3/trA2qUNlM7WfmTjTalxaRV+dBKaZaEOdFNW4iv/6jpAKtspRxx
-         oeKI+4r0KlTfhgBZCM7L9ThYHssN0Bm7UaqyDP2tEWgUaTz3La6ZvVShv7rTHfALfIgW
-         EevA==
-X-Gm-Message-State: ACgBeo3tjgHk3PTP7wBU8f2w19M/4AnTdZd9XvdN2rKaK8TAXWYfjf/v
-        nQSb/NC31oUKyEzOzvbo8lVHjkSObu0=
-X-Google-Smtp-Source: AA6agR7/XKS2w/Dh/O9U4i8N7mn1O0jFr85/KvH6oVqah5d9W1RAF6nXjwbgDyrFOrXyzjn36pcW8w==
-X-Received: by 2002:ac8:5d49:0:b0:344:7275:dd61 with SMTP id g9-20020ac85d49000000b003447275dd61mr28899304qtx.48.1662140208206;
-        Fri, 02 Sep 2022 10:36:48 -0700 (PDT)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id a15-20020a05622a064f00b003437a694049sm1413922qtb.96.2022.09.02.10.36.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Sep 2022 10:36:47 -0700 (PDT)
-Message-ID: <58c182e2-13a0-0512-921f-34368a513979@gmail.com>
-Date:   Fri, 2 Sep 2022 10:36:45 -0700
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=yIW23Q2C4Gr83MEV8yMj6oMsmguEejDKJ2Nl6VMech4=;
+        b=MsrkUd0r+Tof/SAUTmcaGM9ETrVVpS9Adt2VuswdcGLWHDfJrMnU8IQwOtXKsCwDNy
+         zTLiVLUsthFoN1eXnm2WDrzau1E35Y296XSTyDtexcUZFmIoCsosddKFkBCxbBbPwX90
+         4ufe0KwjAFBkm5EHCRDCleFzy9Ts2jP+8OpF9nsiElClq9/cwSbykB16QKlszEyq1Z1P
+         D+PluDAZomt+xgj5T0+cSywffLVg91tc1+inyxnz+dcdFwW/2XW06u3D7daibuKTR1go
+         DECCM7faDwZHm13f4VHT7ercFIihOM33u+ft8oOl5itGy1O3kyNjZn19so5mq/iYgpa8
+         JNYg==
+X-Gm-Message-State: ACgBeo3MCx0okNEICOMe1w5a6DovnuMs7g24uJCpTTwZnL850iyJDEoR
+        z0yF1bdnRvG5lg6i1F5hS0rM1bTdcL0=
+X-Google-Smtp-Source: AA6agR6f86rk8GQUC7HkidMkM8Bdt/Wd+jnPEKyPDfOnFCmshMGzFj0OMICvSGHb3co+5Yw9h6nb5g==
+X-Received: by 2002:a05:6870:c695:b0:101:fe5c:4759 with SMTP id cv21-20020a056870c69500b00101fe5c4759mr2887500oab.49.1662140248010;
+        Fri, 02 Sep 2022 10:37:28 -0700 (PDT)
+Received: from localhost ([12.97.180.36])
+        by smtp.gmail.com with ESMTPSA id r16-20020a056830419000b00636cc9926dbsm1274727otu.40.2022.09.02.10.37.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 10:37:27 -0700 (PDT)
+Date:   Fri, 2 Sep 2022 10:35:16 -0700
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH RFC] x86/apic: skip cpu slot reservation logic on boot in
+ case of NR_CPUS == 1
+Message-ID: <YxI+1OjkpFz1mE8L@yury-laptop>
+References: <20220902164211.1425982-1-yury.norov@gmail.com>
+ <8722acbe-c668-5b05-c030-565f8c42068c@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [PATCH 5.10 00/37] 5.10.141-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220902121359.177846782@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220902121359.177846782@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8722acbe-c668-5b05-c030-565f8c42068c@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 9/2/2022 5:19 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.141 release.
-> There are 37 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Fri, Sep 02, 2022 at 10:14:51AM -0700, Dave Hansen wrote:
+> On 9/2/22 09:42, Yury Norov wrote:
+> > This is RFC because I'm not sure that this is not a false positive from
+> > smatch. If NR_CPUS is 1, and the condition is always true, it's simply
+> > optimized out by a compiler, and nothing wrong happens, except maybe a
+> > couple of checks on boot.
 > 
-> Responses should be made by Sun, 04 Sep 2022 12:13:47 +0000.
-> Anything received after that time might be too late.
+> I think it's a reasonable warning, but it's also not something we need
+> to hack around.  We can surely only land in here with
+> boot_cpu_detected==true if NR_CPUS==1, so the rest of the expression is
+> moot.
 > 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.141-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+> I don't think it's worth adding the #ifdef.
 
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels, build tested on 
-BMIPS_GENERIC:
+Thanks Dave. Then I'll add a comment and move my series as-is.
 
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Thanks,
+Yury
