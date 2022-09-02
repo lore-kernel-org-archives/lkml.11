@@ -2,106 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8126CECAAA1
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 07:53:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E5E8C6FA81
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 07:54:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234651AbiIBHxn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 03:53:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42520 "EHLO
+        id S235438AbiIBHyG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 03:54:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235271AbiIBHxi (ORCPT
+        with ESMTP id S235271AbiIBHyF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 03:53:38 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 58296B5A4E
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 00:53:37 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1411DD6E;
-        Fri,  2 Sep 2022 00:53:43 -0700 (PDT)
-Received: from [192.168.1.162] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B7EB23F766;
-        Fri,  2 Sep 2022 00:53:34 -0700 (PDT)
-Message-ID: <6281126b-3b93-86fa-25d6-d637b6c7dd87@arm.com>
-Date:   Fri, 2 Sep 2022 09:53:22 +0200
+        Fri, 2 Sep 2022 03:54:05 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC671B5A5E
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 00:54:03 -0700 (PDT)
+Received: from fraeml709-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MJqsT0qDVz67MDp;
+        Fri,  2 Sep 2022 15:53:17 +0800 (CST)
+Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
+ fraeml709-chm.china.huawei.com (10.206.15.37) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 2 Sep 2022 09:54:01 +0200
+Received: from localhost.localdomain (10.69.192.58) by
+ lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 2 Sep 2022 08:53:58 +0100
+From:   John Garry <john.garry@huawei.com>
+To:     <xuwei5@hisilicon.com>
+CC:     <andriy.shevchenko@linux.intel.com>, <linuxarm@huawei.com>,
+        <rafael.j.wysocki@intel.com>, <linux-kernel@vger.kernel.org>,
+        <soc@kernel.org>, <yangyingliang@huawei.com>,
+        John Garry <john.garry@huawei.com>
+Subject: [PATCH v2 0/5] Misc hisi_lpc changes
+Date:   Fri, 2 Sep 2022 15:47:16 +0800
+Message-ID: <1662104841-55360-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [RFC PATCH 1/1] sched/pelt: Introduce PELT multiplier
-Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Morten Rasmussen <morten.rasmussen@arm.com>,
-        Vincent Donnefort <vdonnefort@google.com>,
-        Quentin Perret <qperret@google.com>,
-        Patrick Bellasi <patrick.bellasi@matbug.net>,
-        Abhijeet Dharmapurikar <adharmap@quicinc.com>,
-        Jian-Min <Jian-Min.Liu@mediatek.com>,
-        Qais Yousef <qais.yousef@arm.com>, linux-kernel@vger.kernel.org
-References: <20220829055450.1703092-1-dietmar.eggemann@arm.com>
- <20220829055450.1703092-2-dietmar.eggemann@arm.com>
- <Ywxz7cuR+/+1CFMR@hirez.programming.kicks-ass.net>
- <YwyOzgbbUbB+JmSH@hirez.programming.kicks-ass.net>
-From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
-In-Reply-To: <YwyOzgbbUbB+JmSH@hirez.programming.kicks-ass.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ lhrpeml500003.china.huawei.com (7.191.162.67)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 29/08/2022 12:02, Peter Zijlstra wrote:
-> On Mon, Aug 29, 2022 at 10:08:13AM +0200, Peter Zijlstra wrote:
->> On Mon, Aug 29, 2022 at 07:54:50AM +0200, Dietmar Eggemann wrote:
->>> From: Vincent Donnefort <vincent.donnefort@arm.com>
+Hi Xu Wei,
 
-[...]
+This is a series of small improvements to the driver from Andy
+and myself.
 
->>> +extern unsigned int sched_pelt_lshift;
->>> +
->>> +/*
->>> + * absolute time   |1      |2      |3      |4      |5      |6      |
->>> + * @ mult = 1      --------****************--------****************-
->>> + * @ mult = 2      --------********----------------********---------
->>> + * @ mult = 4      --------****--------------------****-------------
->>> + * clock task mult
->>> + * @ mult = 2      |   |   |2  |3  |   |   |   |   |5  |6  |   |   |
->>> + * @ mult = 4      | | | | |2|3| | | | | | | | | | |5|6| | | | | | |
->>> + *
->>> + */
->>> +static inline void update_rq_clock_task_mult(struct rq *rq, s64 delta)
->>> +{
->>> +	delta <<= READ_ONCE(sched_pelt_lshift);
->>> +
->>> +	rq->clock_task_mult += delta;
->>> +
->>> +	update_rq_clock_pelt(rq, delta);
->>> +}
->>
->> Hurmph... I'd almost go write you something like
->> static_call()/static_branch() but for immediates.
->>
->> That said; given there's only like 3 options, perhaps a few
->> static_branch() instances work just fine ?
-> 
-> Also, I'm not at all sure about exposing that as an official sysctl.
-> 
-> How about something like so?
+Andy sent his patches originally in the following:
+https://lore.kernel.org/lkml/20220708210859.6774-1-andriy.shevchenko@linux.intel.com/
 
-[...]
+Please consider sending through the arm-soc tree for v6.1 .
 
->  void update_rq_clock(struct rq *rq)
-> --- a/kernel/sched/features.h
-> +++ b/kernel/sched/features.h
-> @@ -101,3 +101,6 @@ SCHED_FEAT(LATENCY_WARN, false)
->  
->  SCHED_FEAT(ALT_PERIOD, true)
->  SCHED_FEAT(BASE_SLICE, true)
-> +
-> +SCHED_FEAT(PELT_M2, false)
-> +SCHED_FEAT(PELT_M4, false)
+Based on v6.0-rc3.
 
-The sched features interface would definitely be much less official but
-I think it's not useful for Android since they don't mount debugfs anymore.
+Differences to v1:
+- remove blank lines in patch 5/5, as requested by Andy
 
-[...]
+Thanks,
+John
+
+Andy Shevchenko (4):
+  bus: hisi_lpc: Don't dereference fwnode handle
+  bus: hisi_lpc: Use devm_platform_ioremap_resource
+  bus: hisi_lpc: Correct error code for timeout
+  bus: hisi_lpc: Don't guard ACPI IDs with ACPI_PTR()
+
+John Garry (1):
+  bus: hisi_lpc: Use platform_device_register_full()
+
+ drivers/bus/hisi_lpc.c | 92 +++++++++++++++++++-----------------------
+ 1 file changed, 42 insertions(+), 50 deletions(-)
+
+-- 
+2.35.3
+
