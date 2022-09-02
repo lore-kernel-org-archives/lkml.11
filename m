@@ -2,105 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02267ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:12:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B0DC6FA83
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:12:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235556AbiIBIMS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 04:12:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56520 "EHLO
+        id S235705AbiIBIMU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 04:12:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233481AbiIBIML (ORCPT
+        with ESMTP id S233383AbiIBIMM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 04:12:11 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C5A0BD08E
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 01:12:10 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id x1-20020a17090ab00100b001fda21bbc90so4780825pjq.3
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 01:12:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=Sp6uHF5Iwvu00Tbj0ZOEc8ZB60lUbaBAN+8ZZ79Xoug=;
-        b=A6F63bK7HuYUTHZh1eppDTtnh1ZFOzfBh3saxCb2SKKPs7fBu3CdSWfk/Arg/V3f7Q
-         9SmP4JRE56f0w+5xIrPjQyuqDDSMUd3hlqDaApWjOLNUFIfPT6qDUILmb/+fEdw9MSQG
-         F2ZRFaAu95IQ4ueeHQRzV3Ae6WHh6oionqyVy3mJnE8LIXcw+ZJhNmXsLh2GOTrrQlXu
-         bd+ub7Rb/AptqI+yxDlkIcIjPeceWNocciUkVHoOXWXGJksMyJGmEiDFpTi7INytCBRw
-         hRmhzEXnyH7d534du13VS6TJ/tQNzFdB1DPubpm0uOXpy09qOaYNmLON4qH5glrWFYb+
-         8ENQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=Sp6uHF5Iwvu00Tbj0ZOEc8ZB60lUbaBAN+8ZZ79Xoug=;
-        b=sgIcHEkYRh0e8Mpa1F7HS6xi0Jr6Va3QbmSBKTrcNnEmmmMMvcB1Rd3GcVUMVThIrE
-         o3BRDbSoYc2kvROmUmQeFTNhzL+Wx2wDPyr2eqNcx5f23lp0dCI6rGY7c8sf8v2ZgoaC
-         fJ4qFk7J1T35rz+WBKUs1AkWVHO3tAYGK/UT3bX9+67otGHSIcKoSMwD3U6PqMgkk/FO
-         o2MG3ksqT3d3TJPDT2ou4EiQIJRcgx2WBo3PJdvxk/gtK5dQWWYiP1l4I4vT6Oi/nOhw
-         lDk+Erj2Td44iGZhloiTUlBr/xTAP6+TpyXmbrIzQ7Y4j81ws2JgedgNOSpLphCkCLXK
-         MtHQ==
-X-Gm-Message-State: ACgBeo2DEZN8bFwqqXhrkUwkGtFQd/2fYnX/DYtGYM8ALJAdFmTYeDaO
-        XJt9P5kZZ/HKMfon4JDMUnk=
-X-Google-Smtp-Source: AA6agR7tT9ErYh2E5Np94U1vZlfLy+m04TJYCSxWQ5NWkn48/4IAiJ5neS7k/0wnjmYs8aHsR23Jqw==
-X-Received: by 2002:a17:902:d509:b0:16f:1e1:2063 with SMTP id b9-20020a170902d50900b0016f01e12063mr34155758plg.131.1662106330062;
-        Fri, 02 Sep 2022 01:12:10 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id b8-20020a170902d50800b0017550eaa3eesm978052plg.71.2022.09.02.01.12.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 01:12:09 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: zhang.songyi@zte.com.cn
-To:     airlied@linux.ie
-Cc:     daniel@ffwll.ch, jani.nikula@intel.com,
-        ville.syrjala@linux.intel.com, lyude@redhat.com,
-        tzimmermann@suse.de, imre.deak@intel.com,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        zhang songyi <zhang.songyi@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] drm/dp_helper: Remove the unneeded result variable
-Date:   Fri,  2 Sep 2022 08:12:03 +0000
-Message-Id: <20220902081203.320165-1-zhang.songyi@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Fri, 2 Sep 2022 04:12:12 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FE74BCCEC;
+        Fri,  2 Sep 2022 01:12:11 -0700 (PDT)
+Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id F0A486601F01;
+        Fri,  2 Sep 2022 09:12:08 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1662106329;
+        bh=a52Rb9lUaNEcUSv5/G8YM3EWPJZbdtrNJh0NmApFglg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=LRCKklRrVvk+ft9d4GHtu/caqoAyvmhZFbdxlYs0Lb+cxFUHW4KHZ0Uulr0atjfKG
+         RjF5j8la741+bFpIABO1r6rpKjtS2442yG6ca2EnjuYlxsyxUhKz9slaoLlpiQTzRh
+         B9U5nezGGxrnYTCus2YnpNVzONWASEHqZl1oT0cqGfKV7olTe3msohpN6w7T/I8y/L
+         XjRYLOUwbH6Jkr2zQM6AKVvlkEnyrcm35pBEulbuCvExwlBOGPy+VRD1Nmocvab2d1
+         AOhLACBwsKh8ImVhjpNHo3PVhNG5hKdv/ofcQRbDvg22fbEO7zx7Nb4LhcWRzwUVdU
+         Z6h/c1RbL0Ynw==
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+To:     matthias.bgg@gmail.com
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, wenst@chromium.org,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Subject: [PATCH v3 0/7] MT8195 Acer Tomato - devicetrees Part 2
+Date:   Fri,  2 Sep 2022 10:11:49 +0200
+Message-Id: <20220902081156.38526-1-angelogioacchino.delregno@collabora.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: zhang songyi <zhang.songyi@zte.com.cn>
+This series enables more functionality on the MT8195 Tomato Chromebooks,
+bringing it to an almost usable state.
 
-Return the drm_dp_dpcd_writeb() directly instead of storing it in another
-redundant variable.
+With this series, the device is able to boot from the MicroSD card
+and is able to communicate with the EC for various functions,
+including the enablement of the Chromebook's keyboard, battery
+charging, fuel gauge and other standard ChromeOS EC functionality.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: zhang songyi <zhang.songyi@zte.com.cn>
----
- drivers/gpu/drm/display/drm_dp_helper.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+This also enables the Audio DSP, codec and sound card and adds support
+for the regulators found on the SPMI bus.
 
-diff --git a/drivers/gpu/drm/display/drm_dp_helper.c b/drivers/gpu/drm/display/drm_dp_helper.c
-index 92990a3d577a..09b282b704fa 100644
---- a/drivers/gpu/drm/display/drm_dp_helper.c
-+++ b/drivers/gpu/drm/display/drm_dp_helper.c
-@@ -2925,16 +2925,13 @@ EXPORT_SYMBOL(drm_dp_get_pcon_max_frl_bw);
-  */
- int drm_dp_pcon_frl_prepare(struct drm_dp_aux *aux, bool enable_frl_ready_hpd)
- {
--	int ret;
- 	u8 buf = DP_PCON_ENABLE_SOURCE_CTL_MODE |
- 		 DP_PCON_ENABLE_LINK_FRL_MODE;
- 
- 	if (enable_frl_ready_hpd)
- 		buf |= DP_PCON_ENABLE_HPD_READY;
- 
--	ret = drm_dp_dpcd_writeb(aux, DP_PCON_HDMI_LINK_CONFIG_1, buf);
--
--	return ret;
-+	return drm_dp_dpcd_writeb(aux, DP_PCON_HDMI_LINK_CONFIG_1, buf);
- }
- EXPORT_SYMBOL(drm_dp_pcon_frl_prepare);
- 
+What's missing (coming in the next part)?
+
+* Format:    feature  (location)
+*
+* MediaTek vcodec enc/dec (mt8195.dtsi only)
+* PCI-Express WiFi card (mt8195 and mt8195-cherry)
+* VDOSYS1 (mt8195.dtsi and mediatek-drm/mmsys drivers)
+* DP/eDP outputs for external/internal display (mt8195 and mt8195-cherry)
+* LVTS Thermal Sensors (mt8195.dtsi, driver is missing)
+* GPU support (comes later, clocks implementation is in the works)
+* Audio/ADSP support (waiting on SOF OF commits)
+
+Changes in v3:
+ - Commonized pin definitions for secondary SD/MMC controller
+ - Added firmware-name for SCP
+ - Changed keyboard backlight to google,cros-kbd-led-backlight
+
+AngeloGioacchino Del Regno (7):
+  arm64: dts: mediatek: cherry: Enable the System Companion Processor
+  arm64: dts: mediatek: cherry: Wire up the ChromeOS Embedded Controller
+  arm64: dts: mediatek: cherry: Add Google Security Chip (GSC) TPM
+  arm64: dts: mediatek: cherry: Add keyboard mapping for the top row
+  arm64: dts: mediatek: cherry: Enable secondary SD/MMC controller
+  arm64: dts: mediatek: cherry: Enable Elantech eKTH3000 i2c trackpad
+  arm64: dts: mediatek: cherry: Enable MT6315 regulators on SPMI bus
+
+ .../boot/dts/mediatek/mt8195-cherry.dtsi      | 256 ++++++++++++++++++
+ 1 file changed, 256 insertions(+)
+
 -- 
-2.25.1
-
+2.37.2
 
