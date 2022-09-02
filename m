@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75CE1C54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:40:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07A16C6FA82
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:40:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237066AbiIBMkN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:40:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55274 "EHLO
+        id S237100AbiIBMkV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:40:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236960AbiIBMiS (ORCPT
+        with ESMTP id S237109AbiIBMiZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:38:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77FE626575;
-        Fri,  2 Sep 2022 05:30:05 -0700 (PDT)
+        Fri, 2 Sep 2022 08:38:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A24E14D14;
+        Fri,  2 Sep 2022 05:29:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78498B82A90;
-        Fri,  2 Sep 2022 12:23:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D89F5C433B5;
-        Fri,  2 Sep 2022 12:23:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 24C776212E;
+        Fri,  2 Sep 2022 12:28:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 278F4C433D6;
+        Fri,  2 Sep 2022 12:28:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121427;
-        bh=vfB4k2SeQ29GA069iFUDeC8iBhO7QGdaUDS12pAlEZU=;
+        s=korg; t=1662121705;
+        bh=lcyJE0m0RvTkV7SS8mQ29O1jB6tQLac53XR7vc6SdT8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QUhJoUtBt5mV07XC1rkfGNLAikPxiMbv9bpcucfl5rTcQLFpxLWWgS3qAD67wMUMy
-         oCbkAm8FvkL4U6q/H8k4Vrc/Rm2f98fQKkoJUKdszqoNeW+aNozOy5SR/kD1w8J8Ee
-         peZ3OrdAWNs4Yrt9mrPX0HfhAxLGBGrOptk+XoZU=
+        b=YYpIWZPNERB6jbq8oUW3LTfxZvSsb0IpWvMvqUfelKyw/0VaTp2Lf1WVOEz+BJBbF
+         flu5ZglV1kHaH84sGn678mc3XrBcgzCh4+CcxLeT2hK0HqVQpzhvCq117QM0EstQQJ
+         6gmhazqm4Fn0WZycPSdogt3ZapseUDB6pCYUeQqk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 39/42] s390/hypfs: avoid error message under KVM
-Date:   Fri,  2 Sep 2022 14:19:03 +0200
-Message-Id: <20220902121400.114616456@linuxfoundation.org>
+        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
+        Filipe Manana <fdmanana@suse.com>,
+        Goldwyn Rodrigues <rgoldwyn@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.4 39/77] btrfs: check if root is readonly while setting security xattr
+Date:   Fri,  2 Sep 2022 14:18:48 +0200
+Message-Id: <20220902121404.952779080@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121358.773776406@linuxfoundation.org>
-References: <20220902121358.773776406@linuxfoundation.org>
+In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
+References: <20220902121403.569927325@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,60 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Goldwyn Rodrigues <rgoldwyn@suse.de>
 
-[ Upstream commit 7b6670b03641ac308aaa6fa2e6f964ac993b5ea3 ]
+commit b51111271b0352aa596c5ae8faf06939e91b3b68 upstream.
 
-When booting under KVM the following error messages are issued:
+For a filesystem which has btrfs read-only property set to true, all
+write operations including xattr should be denied. However, security
+xattr can still be changed even if btrfs ro property is true.
 
-hypfs.7f5705: The hardware system does not support hypfs
-hypfs.7a79f0: Initialization of hypfs failed with rc=-61
+This happens because xattr_permission() does not have any restrictions
+on security.*, system.*  and in some cases trusted.* from VFS and
+the decision is left to the underlying filesystem. See comments in
+xattr_permission() for more details.
 
-Demote the severity of first message from "error" to "info" and issue
-the second message only in other error cases.
+This patch checks if the root is read-only before performing the set
+xattr operation.
 
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Acked-by: Heiko Carstens <hca@linux.ibm.com>
-Acked-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220620094534.18967-1-jgross@suse.com
-[arch/s390/hypfs/hypfs_diag.c changed description]
-Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Testcase:
+
+  DEV=/dev/vdb
+  MNT=/mnt
+
+  mkfs.btrfs -f $DEV
+  mount $DEV $MNT
+  echo "file one" > $MNT/f1
+
+  setfattr -n "security.one" -v 2 $MNT/f1
+  btrfs property set /mnt ro true
+
+  setfattr -n "security.one" -v 1 $MNT/f1
+
+  umount $MNT
+
+CC: stable@vger.kernel.org # 4.9+
+Reviewed-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: Goldwyn Rodrigues <rgoldwyn@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/hypfs/hypfs_diag.c | 2 +-
- arch/s390/hypfs/inode.c      | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ fs/btrfs/xattr.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/s390/hypfs/hypfs_diag.c b/arch/s390/hypfs/hypfs_diag.c
-index be8cc53204b50..46338c65c75bf 100644
---- a/arch/s390/hypfs/hypfs_diag.c
-+++ b/arch/s390/hypfs/hypfs_diag.c
-@@ -437,7 +437,7 @@ __init int hypfs_diag_init(void)
- 	int rc;
- 
- 	if (diag204_probe()) {
--		pr_err("The hardware system does not support hypfs\n");
-+		pr_info("The hardware system does not support hypfs\n");
- 		return -ENODATA;
- 	}
- 	if (diag204_info_type == DIAG204_INFO_EXT) {
-diff --git a/arch/s390/hypfs/inode.c b/arch/s390/hypfs/inode.c
-index 32f5b3fb069f3..2a34c075fef66 100644
---- a/arch/s390/hypfs/inode.c
-+++ b/arch/s390/hypfs/inode.c
-@@ -494,9 +494,9 @@ static int __init hypfs_init(void)
- 	hypfs_vm_exit();
- fail_hypfs_diag_exit:
- 	hypfs_diag_exit();
-+	pr_err("Initialization of hypfs failed with rc=%i\n", rc);
- fail_dbfs_exit:
- 	hypfs_dbfs_exit();
--	pr_err("Initialization of hypfs failed with rc=%i\n", rc);
- 	return rc;
+--- a/fs/btrfs/xattr.c
++++ b/fs/btrfs/xattr.c
+@@ -387,6 +387,9 @@ static int btrfs_xattr_handler_set(const
+ 				   const char *name, const void *buffer,
+ 				   size_t size, int flags)
+ {
++	if (btrfs_root_readonly(BTRFS_I(inode)->root))
++		return -EROFS;
++
+ 	name = xattr_full_name(handler, name);
+ 	return btrfs_setxattr_trans(inode, name, buffer, size, flags);
  }
- device_initcall(hypfs_init)
--- 
-2.35.1
-
 
 
