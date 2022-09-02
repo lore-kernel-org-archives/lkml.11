@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CE7CC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:00:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67782ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:00:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238503AbiIBNA2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:00:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34874 "EHLO
+        id S238521AbiIBNAd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:00:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238546AbiIBM7B (ORCPT
+        with ESMTP id S238559AbiIBM7D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:59:01 -0400
+        Fri, 2 Sep 2022 08:59:03 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667C6EE3A;
-        Fri,  2 Sep 2022 05:40:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 873E86566D;
+        Fri,  2 Sep 2022 05:40:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5ED8AB82ACF;
-        Fri,  2 Sep 2022 12:31:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D70AC433D6;
-        Fri,  2 Sep 2022 12:31:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 51B07B82AA3;
+        Fri,  2 Sep 2022 12:31:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92A44C433D6;
+        Fri,  2 Sep 2022 12:31:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121899;
-        bh=aTEHJ4fS54rwEHzxV41QnRRSPAd+gExdSnKihoHECng=;
+        s=korg; t=1662121870;
+        bh=rzOgIZZWdpCTyq64HY1ag4uSWjHGb9DsGx3w7MOT8DM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OjfGSFRCKOTGOMZliXXbLQhCE6mChugz7aKYWWwKEgR728i280hKvtmYzTZhE7wWK
-         x+XnwCei62IgK0HvXHZM3+o6kcPwsgsWrj9CAI4hTyU87E/IhtWZ02QCkXeHYjuG15
-         xBLSqWHRjEU435yZMbqKop/9bwkRprog6EjRkq2M=
+        b=kA1i3TDQAy5+XSNV/0PNL9X6G/LGHJTYuSvD47fRmaUM3UJyy0ZsELuCFMQKr8tb7
+         BjZUAwc0pCiYApPF78EYA3WxuVR9V5PG5+t41PyNxI9IOCLxbnNs1kH0A8lIc+RD0d
+         ew6JgA0r6fNZK3qYvK4/BmKmxKSHg3clYfkqCsF0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Pavel Begunkov <asml.silence@gmail.com>,
         Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.15 22/73] io_uring: fix wrong arm_poll error handling
-Date:   Fri,  2 Sep 2022 14:18:46 +0200
-Message-Id: <20220902121405.182443393@linuxfoundation.org>
+Subject: [PATCH 5.15 14/73] io_uring: move common poll bits
+Date:   Fri,  2 Sep 2022 14:18:38 +0200
+Message-Id: <20220902121404.906439146@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
 References: <20220902121404.435662285@linuxfoundation.org>
@@ -50,35 +50,123 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Pavel Begunkov <asml.silence@gmail.com>
 
-[ upstream commmit 9d2ad2947a53abf5e5e6527a9eeed50a3a4cbc72 ]
+[ upstream commmit 5641897a5e8fb8abeb07e89c71a788d3db3ec75e ]
 
-Leaving ip.error set when a request was punted to task_work execution is
-problematic, don't forget to clear it.
+Move some poll helpers/etc up, we'll need them there shortly
 
-Fixes: aa43477b04025 ("io_uring: poll rework")
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-Link: https://lore.kernel.org/r/a6c84ef4182c6962380aebe11b35bdcb25b0ccfb.1655852245.git.asml.silence@gmail.com
+Link: https://lore.kernel.org/r/6c5c3dba24c86aad5cd389a54a8c7412e6a0621d.1639605189.git.asml.silence@gmail.com
 Signed-off-by: Jens Axboe <axboe@kernel.dk>
 [pavel: backport]
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/io_uring.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ fs/io_uring.c |   74 +++++++++++++++++++++++++++++-----------------------------
+ 1 file changed, 37 insertions(+), 37 deletions(-)
 
 --- a/fs/io_uring.c
 +++ b/fs/io_uring.c
-@@ -5627,8 +5627,10 @@ static int __io_arm_poll_handler(struct
+@@ -5318,6 +5318,43 @@ struct io_poll_table {
+ 	int error;
+ };
  
- 	if (mask) {
- 		/* can't multishot if failed, just queue the event we've got */
--		if (unlikely(ipt->error || !ipt->nr_entries))
-+		if (unlikely(ipt->error || !ipt->nr_entries)) {
- 			poll->events |= EPOLLONESHOT;
-+			ipt->error = 0;
-+		}
- 		__io_poll_execute(req, mask);
- 		return 0;
- 	}
++static struct io_poll_iocb *io_poll_get_double(struct io_kiocb *req)
++{
++	/* pure poll stashes this in ->async_data, poll driven retry elsewhere */
++	if (req->opcode == IORING_OP_POLL_ADD)
++		return req->async_data;
++	return req->apoll->double_poll;
++}
++
++static struct io_poll_iocb *io_poll_get_single(struct io_kiocb *req)
++{
++	if (req->opcode == IORING_OP_POLL_ADD)
++		return &req->poll;
++	return &req->apoll->poll;
++}
++
++static void io_poll_req_insert(struct io_kiocb *req)
++{
++	struct io_ring_ctx *ctx = req->ctx;
++	struct hlist_head *list;
++
++	list = &ctx->cancel_hash[hash_long(req->user_data, ctx->cancel_hash_bits)];
++	hlist_add_head(&req->hash_node, list);
++}
++
++static void io_init_poll_iocb(struct io_poll_iocb *poll, __poll_t events,
++			      wait_queue_func_t wake_func)
++{
++	poll->head = NULL;
++	poll->done = false;
++	poll->canceled = false;
++#define IO_POLL_UNMASK	(EPOLLERR|EPOLLHUP|EPOLLNVAL|EPOLLRDHUP)
++	/* mask in events that we always want/need */
++	poll->events = events | IO_POLL_UNMASK;
++	INIT_LIST_HEAD(&poll->wait.entry);
++	init_waitqueue_func_entry(&poll->wait, wake_func);
++}
++
+ static int __io_async_wake(struct io_kiocb *req, struct io_poll_iocb *poll,
+ 			   __poll_t mask, io_req_tw_func_t func)
+ {
+@@ -5366,21 +5403,6 @@ static bool io_poll_rewait(struct io_kio
+ 	return false;
+ }
+ 
+-static struct io_poll_iocb *io_poll_get_double(struct io_kiocb *req)
+-{
+-	/* pure poll stashes this in ->async_data, poll driven retry elsewhere */
+-	if (req->opcode == IORING_OP_POLL_ADD)
+-		return req->async_data;
+-	return req->apoll->double_poll;
+-}
+-
+-static struct io_poll_iocb *io_poll_get_single(struct io_kiocb *req)
+-{
+-	if (req->opcode == IORING_OP_POLL_ADD)
+-		return &req->poll;
+-	return &req->apoll->poll;
+-}
+-
+ static void io_poll_remove_double(struct io_kiocb *req)
+ 	__must_hold(&req->ctx->completion_lock)
+ {
+@@ -5505,19 +5527,6 @@ static int io_poll_double_wake(struct wa
+ 	return 1;
+ }
+ 
+-static void io_init_poll_iocb(struct io_poll_iocb *poll, __poll_t events,
+-			      wait_queue_func_t wake_func)
+-{
+-	poll->head = NULL;
+-	poll->done = false;
+-	poll->canceled = false;
+-#define IO_POLL_UNMASK	(EPOLLERR|EPOLLHUP|EPOLLNVAL|EPOLLRDHUP)
+-	/* mask in events that we always want/need */
+-	poll->events = events | IO_POLL_UNMASK;
+-	INIT_LIST_HEAD(&poll->wait.entry);
+-	init_waitqueue_func_entry(&poll->wait, wake_func);
+-}
+-
+ static void __io_queue_proc(struct io_poll_iocb *poll, struct io_poll_table *pt,
+ 			    struct wait_queue_head *head,
+ 			    struct io_poll_iocb **poll_ptr)
+@@ -5612,15 +5621,6 @@ static int io_async_wake(struct wait_que
+ 	return __io_async_wake(req, poll, key_to_poll(key), io_async_task_func);
+ }
+ 
+-static void io_poll_req_insert(struct io_kiocb *req)
+-{
+-	struct io_ring_ctx *ctx = req->ctx;
+-	struct hlist_head *list;
+-
+-	list = &ctx->cancel_hash[hash_long(req->user_data, ctx->cancel_hash_bits)];
+-	hlist_add_head(&req->hash_node, list);
+-}
+-
+ static __poll_t __io_arm_poll_handler(struct io_kiocb *req,
+ 				      struct io_poll_iocb *poll,
+ 				      struct io_poll_table *ipt, __poll_t mask,
 
 
