@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEE06C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E823DECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:43:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237378AbiIBMm4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:42:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44772 "EHLO
+        id S237386AbiIBMnN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:43:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237181AbiIBMmT (ORCPT
+        with ESMTP id S237313AbiIBMmg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:42:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BC175B7A6;
-        Fri,  2 Sep 2022 05:31:37 -0700 (PDT)
+        Fri, 2 Sep 2022 08:42:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 639F9E9255;
+        Fri,  2 Sep 2022 05:31:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A5E89B82AC9;
-        Fri,  2 Sep 2022 12:31:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF1A0C433D6;
-        Fri,  2 Sep 2022 12:31:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ED083621A6;
+        Fri,  2 Sep 2022 12:31:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2E38C433D7;
+        Fri,  2 Sep 2022 12:31:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121876;
-        bh=h+GfMyh6NtoOf91jqcS/nVhsx8iBfFEUNzTg3tAQC00=;
+        s=korg; t=1662121902;
+        bh=a9DYgK2g59OD5cCAIuKdT7mUo0T9p9dpCE3R3Zs+vG0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZuNvaBMuPDLVcczKosOV3UWnADCHDbJLL93ECxYvyC2DZKYuyU83KZPt+SIAQgqA1
-         HGcC9AkRm+kMt5FVqaxun3/a1wuVWHSRopgYrEugGkdyn9Fwr41LaV1KY2rRwDglGi
-         87CVo/GSbgEaSl3rxr2YgqYPVuLbNUJsGxZy2T7w=
+        b=klhIzGsdr08QCKXsewSLiES5fEYhOi8imtwGzGc3uCxoRlX5+wK2sNKlEJJ1vcAfZ
+         wpAbH/KHTyR7lJUaSZQBKbjcHQpDF/30S+6sz6yO95gp0XbVUba8yp4gbRhF8bVxrK
+         dGrgJVhNg6BBENcyLNEbPytqivcxUWFJDtdluX5I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Eric Biggers <ebiggers@google.com>,
         Pavel Begunkov <asml.silence@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.15 16/73] io_uring: inline io_poll_complete
-Date:   Fri,  2 Sep 2022 14:18:40 +0200
-Message-Id: <20220902121404.992001264@linuxfoundation.org>
+        Jens Axboe <axboe@kernel.dk>,
+        syzbot+5426c7ed6868c705ca14@syzkaller.appspotmail.com
+Subject: [PATCH 5.15 23/73] io_uring: fix UAF due to missing POLLFREE handling
+Date:   Fri,  2 Sep 2022 14:18:47 +0200
+Message-Id: <20220902121405.211182833@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
 References: <20220902121404.435662285@linuxfoundation.org>
@@ -50,49 +52,114 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Pavel Begunkov <asml.silence@gmail.com>
 
-[ upstream commmit eb6e6f0690c846f7de46181bab3954c12c96e11e ]
+[ upstream commmit 791f3465c4afde02d7f16cf7424ca87070b69396 ]
 
-Inline io_poll_complete(), it's simple and doesn't have any particular
-purpose.
+Fixes a problem described in 50252e4b5e989
+("aio: fix use-after-free due to missing POLLFREE handling")
+and copies the approach used there.
 
+In short, we have to forcibly eject a poll entry when we meet POLLFREE.
+We can't rely on io_poll_get_ownership() as can't wait for potentially
+running tw handlers, so we use the fact that wqs are RCU freed. See
+Eric's patch and comments for more details.
+
+Reported-by: Eric Biggers <ebiggers@google.com>
+Link: https://lore.kernel.org/r/20211209010455.42744-6-ebiggers@kernel.org
+Reported-and-tested-by: syzbot+5426c7ed6868c705ca14@syzkaller.appspotmail.com
+Fixes: 221c5eb233823 ("io_uring: add support for IORING_OP_POLL")
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-Link: https://lore.kernel.org/r/933d7ee3e4450749a2d892235462c8f18d030293.1633373302.git.asml.silence@gmail.com
+Link: https://lore.kernel.org/r/4ed56b6f548f7ea337603a82315750449412748a.1642161259.git.asml.silence@gmail.com
+[axboe: drop non-functional change from patch]
 Signed-off-by: Jens Axboe <axboe@kernel.dk>
 [pavel: backport]
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/io_uring.c |   13 ++-----------
- 1 file changed, 2 insertions(+), 11 deletions(-)
+ fs/io_uring.c |   58 ++++++++++++++++++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 50 insertions(+), 8 deletions(-)
 
 --- a/fs/io_uring.c
 +++ b/fs/io_uring.c
-@@ -5447,16 +5447,6 @@ static bool __io_poll_complete(struct io
- 	return !(flags & IORING_CQE_F_MORE);
+@@ -5369,12 +5369,14 @@ static void io_init_poll_iocb(struct io_
+ 
+ static inline void io_poll_remove_entry(struct io_poll_iocb *poll)
+ {
+-	struct wait_queue_head *head = poll->head;
++	struct wait_queue_head *head = smp_load_acquire(&poll->head);
+ 
+-	spin_lock_irq(&head->lock);
+-	list_del_init(&poll->wait.entry);
+-	poll->head = NULL;
+-	spin_unlock_irq(&head->lock);
++	if (head) {
++		spin_lock_irq(&head->lock);
++		list_del_init(&poll->wait.entry);
++		poll->head = NULL;
++		spin_unlock_irq(&head->lock);
++	}
  }
  
--static inline bool io_poll_complete(struct io_kiocb *req, __poll_t mask)
--	__must_hold(&req->ctx->completion_lock)
--{
--	bool done;
--
--	done = __io_poll_complete(req, mask);
--	io_commit_cqring(req->ctx);
--	return done;
--}
--
- static void io_poll_task_func(struct io_kiocb *req, bool *locked)
- {
- 	struct io_ring_ctx *ctx = req->ctx;
-@@ -5910,7 +5900,8 @@ static int io_poll_add(struct io_kiocb *
+ static void io_poll_remove_entries(struct io_kiocb *req)
+@@ -5382,10 +5384,26 @@ static void io_poll_remove_entries(struc
+ 	struct io_poll_iocb *poll = io_poll_get_single(req);
+ 	struct io_poll_iocb *poll_double = io_poll_get_double(req);
  
- 	if (mask) { /* no async, we'd stolen it */
- 		ipt.error = 0;
--		done = io_poll_complete(req, mask);
-+		done = __io_poll_complete(req, mask);
-+		io_commit_cqring(req->ctx);
- 	}
- 	spin_unlock(&ctx->completion_lock);
+-	if (poll->head)
+-		io_poll_remove_entry(poll);
+-	if (poll_double && poll_double->head)
++	/*
++	 * While we hold the waitqueue lock and the waitqueue is nonempty,
++	 * wake_up_pollfree() will wait for us.  However, taking the waitqueue
++	 * lock in the first place can race with the waitqueue being freed.
++	 *
++	 * We solve this as eventpoll does: by taking advantage of the fact that
++	 * all users of wake_up_pollfree() will RCU-delay the actual free.  If
++	 * we enter rcu_read_lock() and see that the pointer to the queue is
++	 * non-NULL, we can then lock it without the memory being freed out from
++	 * under us.
++	 *
++	 * Keep holding rcu_read_lock() as long as we hold the queue lock, in
++	 * case the caller deletes the entry from the queue, leaving it empty.
++	 * In that case, only RCU prevents the queue memory from being freed.
++	 */
++	rcu_read_lock();
++	io_poll_remove_entry(poll);
++	if (poll_double)
+ 		io_poll_remove_entry(poll_double);
++	rcu_read_unlock();
+ }
  
+ /*
+@@ -5523,6 +5541,30 @@ static int io_poll_wake(struct wait_queu
+ 						 wait);
+ 	__poll_t mask = key_to_poll(key);
+ 
++	if (unlikely(mask & POLLFREE)) {
++		io_poll_mark_cancelled(req);
++		/* we have to kick tw in case it's not already */
++		io_poll_execute(req, 0);
++
++		/*
++		 * If the waitqueue is being freed early but someone is already
++		 * holds ownership over it, we have to tear down the request as
++		 * best we can. That means immediately removing the request from
++		 * its waitqueue and preventing all further accesses to the
++		 * waitqueue via the request.
++		 */
++		list_del_init(&poll->wait.entry);
++
++		/*
++		 * Careful: this *must* be the last step, since as soon
++		 * as req->head is NULL'ed out, the request can be
++		 * completed and freed, since aio_poll_complete_work()
++		 * will no longer need to take the waitqueue lock.
++		 */
++		smp_store_release(&poll->head, NULL);
++		return 1;
++	}
++
+ 	/* for instances that support it check for an event match first */
+ 	if (mask && !(mask & poll->events))
+ 		return 0;
 
 
