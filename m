@@ -2,106 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 286C0C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 10:10:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C509ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 10:11:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235946AbiIBKKl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 06:10:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35028 "EHLO
+        id S235512AbiIBKLB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 06:11:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236038AbiIBKJu (ORCPT
+        with ESMTP id S235738AbiIBKKI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 06:09:50 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF2DCD2B1C
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 03:09:18 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4MJttN1sPDz9sr2;
-        Fri,  2 Sep 2022 12:09:16 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 30zhPl1dC03C; Fri,  2 Sep 2022 12:09:16 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4MJttN1BsMz9sqv;
-        Fri,  2 Sep 2022 12:09:16 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 19AD48B787;
-        Fri,  2 Sep 2022 12:09:16 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id Mg7xATy_cwAk; Fri,  2 Sep 2022 12:09:16 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.232.39])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id D341D8B764;
-        Fri,  2 Sep 2022 12:09:15 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 282A92Pu2127995
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Fri, 2 Sep 2022 12:09:02 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 282A91T32127988;
-        Fri, 2 Sep 2022 12:09:01 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        kernel test robot <lkp@intel.com>,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH v2 1/2] powerpc/math_emu/efp: Include module.h
-Date:   Fri,  2 Sep 2022 12:08:54 +0200
-Message-Id: <a7384eafc6a27aea15bdc9e8f9a12aac593fccb7.1662113301.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.37.1
+        Fri, 2 Sep 2022 06:10:08 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16B221EACF;
+        Fri,  2 Sep 2022 03:00:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662112806; x=1693648806;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=d5yiK5rUDQoz1xNFejou9U29PuuXFBd9NflB5rlSdd8=;
+  b=GCnh3tCbGSvSqMiU1SKpoaqBYDJsF94lE3HChB4rVxBhnQHXBPZ6P4BQ
+   ia3FgIozybfB6QN633F5AtiyxbyLfd+4988U3TUjIWbyxFR95T7IlzIHp
+   iwfd/3Q+EQPMw14vQeIH64KzNeEbGvpPdXdIr0gsKWEP/TfTpajLuTHq2
+   8F4O3ITy0kRuVF8cLhWNglYYpwi/PuPwbvNcx/PMzh8uvadoyJfJkELGe
+   t99O7Yre7O7QAejvXLkeILHXb5PfOPuNfVks9iV0z88zbwjrotjP2tD+q
+   Aoz8Hcitgu7VrNN8ZES4CNqSUF0f1x340GaYh21iJNhzk5RqiCRqD2y89
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="296729181"
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="296729181"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 03:00:05 -0700
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="590017514"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 03:00:03 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oU3Sz-007Jv5-0b;
+        Fri, 02 Sep 2022 13:00:01 +0300
+Date:   Fri, 2 Sep 2022 13:00:00 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, Andy Shevchenko <andy@kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: Re: [PATCH v3 2/3] ACPI: PMIC: Replace open coded be16_to_cpu()
+Message-ID: <YxHUIBaEwG3pxGnT@smile.fi.intel.com>
+References: <20220831135749.78743-1-andriy.shevchenko@linux.intel.com>
+ <20220831135749.78743-2-andriy.shevchenko@linux.intel.com>
+ <4f388bda-b991-0ab6-4098-4f5dbabe57fb@redhat.com>
+ <Yw+0jGdk2pIQSoOT@smile.fi.intel.com>
+ <073c2dce-bd03-9dfe-539f-203b6fb7eeaf@redhat.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1662113333; l=1490; i=christophe.leroy@csgroup.eu; s=20211009; h=from:subject:message-id; bh=OKSJgYFuo/pdrg21F1+qHF8xOtYyQ469CIxgwgwXZmQ=; b=Qyvj+9CpSnOgj6jZkT3YwFF/BJTPtyyvREz7SWmBzT84iqegoeNRdnW+AE7hX8++nBau21DOjrMA dHFhyiDkCaBqMG0nIPdOg000bbZCaTAox84YR/fSYUz3VACS/ZIY
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <073c2dce-bd03-9dfe-539f-203b6fb7eeaf@redhat.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+On Thu, Sep 01, 2022 at 11:02:11AM +0200, Hans de Goede wrote:
+> On 8/31/22 21:20, Andy Shevchenko wrote:
+> > On Wed, Aug 31, 2022 at 08:19:24PM +0200, Hans de Goede wrote:
+> >> On 8/31/22 15:57, Andy Shevchenko wrote:
 
-When building with a recent version of clang, there are a couple of
-errors around the call to module_init():
+...
 
-  arch/powerpc/math-emu/math_efp.c:927:1: error: type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int [-Wimplicit-int]
-  module_init(spe_mathemu_init);
-  ^
-  int
-  arch/powerpc/math-emu/math_efp.c:927:13: error: a parameter list without types is only allowed in a function definition
-  module_init(spe_mathemu_init);
-              ^
-  2 errors generated.
+> >>> -	if (regmap_read(regmap, (reg - 1), &val))
+> >>> -		return -EIO;
+> >>> -	temp_h = (u8) val;
+> >>
+> >> Hmm, you are changing the order of the register
+> >> reads here. The old code is doing:
+> >>
+> >> 	read(reg);
+> >> 	read(reg -1);
+> >>
+> >> Where as the new code is doing:
+> >>
+> >> 	read(reg -1);
+> >> 	read(reg);
+> >>
+> >> The order matters since typically upon reading the
+> >> low byte, the high bits will get latched so that
+> >> the next read of the high bytes uses the bits
+> >> from the same x-bits value as the low 8 bits.
+> >>
+> >> This avoids things like:
+> >>
+> >> 1. Entire register value (all bits) 0x0ff
+> >> 2. Read reg with low 8 bits, read 0x0ff
+> >> 3. Entire register value becomes 0x100
+> >> 4. Read reg with high bits
+> >> 5. Combined value now reads as 0x1ff
+> >>
+> >> I have no idea if the bxtwc PMIC latches
+> >> the bits, but giving the lack of documentation
+> >> it would IMHO be better to not change the reading order.
+> > 
+> > Interestingly documentation suggests otherwise, e.g.:
+> > 
+> > THRMZN0H_REG
+> > Battery Thermal Zone 0 Limit Register High
+> > Offset 044H
+> > 
+> > Description
+> > 
+> > Z0HYS	  Temperature hysteresis value for TCOLD threshold
+> > 
+> > Z0CURHYS  Battery ChargerTemperature Zone Current hysteresis for TCOLD (MSBs)
+> > 	  3 bits of the battery charger temperature zone current hysteresis for zones 0/1.
+> > 
+> > TCOLD_H	  Battery ChargerTemperature Zone Threshold for TCOLD (MSBs)
+> > 	  Upper 1 bit of the battery charger temperature zone threshold for zones 0/1.
+> > 	  Writes to THRMZN0H (and all thermal zone registers) are not committed until
+> > 	  THRMZN0L (lower byte) is written to.
+> > 	  Write Before: THRMZN0L_REG.TCOLD_L
+> > 
+> > (Note the last description)
+> 
+> I see, but that is about writes and the write path was already
+> first doing a read + write of reg - 1, followed by writing
+> reg 1. So for the write path this patch does not introduce
+> any functional changes. But what about the read path, is read
+> latching the same or does it need the inverse order of writes?
+> 
+> Note I think it is likely the read order for proper latching
+> is likely also first high then low, but it would be good to check.
+> If that is indeed the case then this would actually be a bugfix,
+> not just a cleanup.
+> 
+> Also you have only checked for 1 of the 4 PMICs you are making
+> changes to in this patch?
+> 
+> The commit message suggests this code change does not cause any
+> functional changes, but as discussed it actually does make changes,
+> so this should be in the commit message.
+> 
+> Talking about making changes to 4 PMICs unlike patch 1 and 3 the changes
+> in this one are not trivial so IMHO this should be split into 1 patch
+> per PMIC. This has 3 advantages:
+> 
+> 1. It makes reviewing easier, during my initial review I stopped
+> at the intel_bxtwc_pmic changes not even realizing more was coming...
+> 
+> 2. This makes properly describing the actual functional changes
+> in the commit message a lot easier, otherwise the commit msg
+> is going to become somewhat messy.
+> 
+> 3. This will also make reverting things easier if something does
+> break (even if it is just for testing if these changes are the cause
+> of the breakage).
+> 
+> ###
+> 
+> So I've been taking a closer look at these changes and here are some
+> more remarks:
+> 
+> intel_crc_pmic_get_raw_temp() you are again changing the order
+> in which the 2 (low/high) registers are read. This needs to be
+> checked and mentioned in the commit message.
+> 
+> intel_crc_pmic_update_aux() unlike the intel_pmic_bxtwc.c
+> equivalent in this case your changes do switch the write-order,
+> assuming the same write order as in bxtwc should be used
+> this would actually be another bugfix.
+> 
+> For intel_pmic_chtdc_ti.c this does seems to be purely a refactor.
+> 
+> For intel_pmic_xpower.c the original code actually seems
+> to be wrong, the datasheet says:
+> 
+> REG 5AH: GPADC pin input ADC data, highest 8bit
+> Bit 7-0 GPADC pin input ADC data, highest 8bit
+> 
+> REG 5BH: GPADC pin input ADC data, lowest 4bit
+> Bit 7-4 Reserved
+> Bit 3-0 GPADC pin input ADC data, lowest 4bit
 
-module_init() is a macro, which is not getting expanded because module.h
-is not included in this file. Add the include so that the macro can
-expand properly, clearing up the build failure.
+> So it looks like instead of your patch we actually need
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Fixes: ac6f120369ff ("powerpc/85xx: Workaroudn e500 CPU erratum A005")
-[chleroy: added fixes tag]
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- arch/powerpc/math-emu/math_efp.c | 1 +
- 1 file changed, 1 insertion(+)
+Not instead, but probably as a prerequisite fix.
 
-diff --git a/arch/powerpc/math-emu/math_efp.c b/arch/powerpc/math-emu/math_efp.c
-index 39b84e7452e1..aa3bb8da1cb9 100644
---- a/arch/powerpc/math-emu/math_efp.c
-+++ b/arch/powerpc/math-emu/math_efp.c
-@@ -17,6 +17,7 @@
- 
- #include <linux/types.h>
- #include <linux/prctl.h>
-+#include <linux/module.h>
- 
- #include <linux/uaccess.h>
- #include <asm/reg.h>
+> the following fix:
+> 
+> --- a/drivers/acpi/pmic/intel_pmic_xpower.c
+> +++ b/drivers/acpi/pmic/intel_pmic_xpower.c
+> @@ -257,7 +257,7 @@ static int intel_xpower_pmic_get_raw_temp(struct regmap *regmap, int reg)
+>  
+>  	ret = regmap_bulk_read(regmap, AXP288_GP_ADC_H, buf, 2);
+>  	if (ret == 0)
+> -		ret = (buf[0] << 4) + ((buf[1] >> 4) & 0x0f);
+> +		ret = (buf[0] << 4) | (buf[1] & 0x0f);
+>  
+>  	if (adc_ts_pin_ctrl & AXP288_ADC_TS_CURRENT_ON_OFF_MASK) {
+>  		regmap_update_bits(regmap, AXP288_ADC_TS_PIN_CTRL,
+> 
+> I will try to make some time to check this on actual hw to see if
+> the code or the doc is right soon-ish
+
+Thanks for your review and explanations. I will split pure cleanups and resend
+with Mika's tag, and will see what I can do about the rest (considering
+availability of the documentation and it's fullness).
+
 -- 
-2.37.1
+With Best Regards,
+Andy Shevchenko
+
 
