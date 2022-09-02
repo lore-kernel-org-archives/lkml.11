@@ -2,91 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4521BECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:05:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEF61ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:05:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238650AbiIBNFB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:05:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40692 "EHLO
+        id S238669AbiIBNFH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:05:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238723AbiIBNDr (ORCPT
+        with ESMTP id S238753AbiIBNDu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:03:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D95110F080;
-        Fri,  2 Sep 2022 05:42:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3819F6211C;
-        Fri,  2 Sep 2022 12:32:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E06FC433D6;
-        Fri,  2 Sep 2022 12:32:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121943;
-        bh=QXhlD+e++6kgBMShPi6oO6OcUkdZpztpCjKg39eR83k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CzIP9wI8ajNBR1PwPlQd9BoYN+vOKJUxkADcx7j8iEJ4LqJGjJxpUOAJu8Q1L178K
-         p/woON2/fN98iJXq0oT/co1vGFTLnrVh9eFDipadOIn7KmxKRHriBA7PXuK+tf1x1i
-         WHgjDYrfMyePt+kne4DIv0cFMV/QEqT432hD1kbM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Steev Klimaszewski <steev@kali.org>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.15 37/73] HID: add Lenovo Yoga C630 battery quirk
-Date:   Fri,  2 Sep 2022 14:19:01 +0200
-Message-Id: <20220902121405.661670249@linuxfoundation.org>
+        Fri, 2 Sep 2022 09:03:50 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9206C110D8B
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 05:42:18 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1BA961516;
+        Fri,  2 Sep 2022 05:40:53 -0700 (PDT)
+Received: from usa.arm.com (e103737-lin.cambridge.arm.com [10.1.197.49])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 947543F766;
+        Fri,  2 Sep 2022 05:40:45 -0700 (PDT)
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        op-tee@lists.trustedfirmware.org
+Cc:     Sudeep Holla <sudeep.holla@arm.com>,
+        Marc Bonnici <marc.bonnici@arm.com>,
+        Achin Gupta <achin.gupta@arm.com>,
+        Jens Wiklander <jens.wiklander@linaro.org>,
+        Valentin Laurent <valentin.laurent@trustonic.com>,
+        Lukas Hanel <lukas.hanel@trustonic.com>,
+        Coboy Chen <coboy.chen@mediatek.com>
+Subject: [PATCH v2 03/10] firmware: arm_ffa: Remove ffa_dev_ops_get()
+Date:   Fri,  2 Sep 2022 13:40:25 +0100
+Message-Id: <20220902124032.788488-4-sudeep.holla@arm.com>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
-References: <20220902121404.435662285@linuxfoundation.org>
-User-Agent: quilt/0.67
+In-Reply-To: <20220902124032.788488-1-sudeep.holla@arm.com>
+References: <20220902124032.788488-1-sudeep.holla@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steev Klimaszewski <steev@kali.org>
+The only user of this exported ffa_dev_ops_get() was OPTEE driver which
+now uses ffa_dev->ops directly, there are no other users for this.
 
-commit 3a47fa7b14c7d9613909a844aba27f99d3c58634 upstream.
+Also, since any ffa driver can use ffa_dev->ops directly, there will be
+no need for ffa_dev_ops_get(), so just remove ffa_dev_ops_get().
 
-Similar to the Surface Go devices, the Elantech touchscreen/digitizer in
-the Lenovo Yoga C630 mistakenly reports the battery of the stylus, and
-always reports an empty battery.
-
-Apply the HID_BATTERY_QUIRK_IGNORE quirk to ignore this battery and
-prevent the erroneous low battery warnings.
-
-Signed-off-by: Steev Klimaszewski <steev@kali.org>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Jens Wiklander <jens.wiklander@linaro.org>
+Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
 ---
- drivers/hid/hid-ids.h   |    1 +
- drivers/hid/hid-input.c |    2 ++
- 2 files changed, 3 insertions(+)
+ drivers/firmware/arm_ffa/driver.c | 9 ---------
+ include/linux/arm_ffa.h           | 6 ------
+ 2 files changed, 15 deletions(-)
 
---- a/drivers/hid/hid-ids.h
-+++ b/drivers/hid/hid-ids.h
-@@ -399,6 +399,7 @@
- #define USB_DEVICE_ID_ASUS_UX550_TOUCHSCREEN	0x2706
- #define I2C_DEVICE_ID_SURFACE_GO_TOUCHSCREEN	0x261A
- #define I2C_DEVICE_ID_SURFACE_GO2_TOUCHSCREEN	0x2A1C
-+#define I2C_DEVICE_ID_LENOVO_YOGA_C630_TOUCHSCREEN	0x279F
- 
- #define USB_VENDOR_ID_ELECOM		0x056e
- #define USB_DEVICE_ID_ELECOM_BM084	0x0061
---- a/drivers/hid/hid-input.c
-+++ b/drivers/hid/hid-input.c
-@@ -335,6 +335,8 @@ static const struct hid_device_id hid_ba
- 	  HID_BATTERY_QUIRK_IGNORE },
- 	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_SURFACE_GO2_TOUCHSCREEN),
- 	  HID_BATTERY_QUIRK_IGNORE },
-+	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_LENOVO_YOGA_C630_TOUCHSCREEN),
-+	  HID_BATTERY_QUIRK_IGNORE },
- 	{}
+diff --git a/drivers/firmware/arm_ffa/driver.c b/drivers/firmware/arm_ffa/driver.c
+index 213665e5ad0e..04e7cbb1b9aa 100644
+--- a/drivers/firmware/arm_ffa/driver.c
++++ b/drivers/firmware/arm_ffa/driver.c
+@@ -644,15 +644,6 @@ static const struct ffa_dev_ops ffa_ops = {
+ 	.memory_lend = ffa_memory_lend,
  };
  
-
+-const struct ffa_dev_ops *ffa_dev_ops_get(struct ffa_device *dev)
+-{
+-	if (ffa_device_is_valid(dev))
+-		return &ffa_ops;
+-
+-	return NULL;
+-}
+-EXPORT_SYMBOL_GPL(ffa_dev_ops_get);
+-
+ void ffa_device_match_uuid(struct ffa_device *ffa_dev, const uuid_t *uuid)
+ {
+ 	int count, idx;
+diff --git a/include/linux/arm_ffa.h b/include/linux/arm_ffa.h
+index 91b47e42b73d..556f50f27fb1 100644
+--- a/include/linux/arm_ffa.h
++++ b/include/linux/arm_ffa.h
+@@ -55,7 +55,6 @@ int ffa_driver_register(struct ffa_driver *driver, struct module *owner,
+ 			const char *mod_name);
+ void ffa_driver_unregister(struct ffa_driver *driver);
+ bool ffa_device_is_valid(struct ffa_device *ffa_dev);
+-const struct ffa_dev_ops *ffa_dev_ops_get(struct ffa_device *dev);
+ 
+ #else
+ static inline
+@@ -79,11 +78,6 @@ static inline void ffa_driver_unregister(struct ffa_driver *driver) {}
+ static inline
+ bool ffa_device_is_valid(struct ffa_device *ffa_dev) { return false; }
+ 
+-static inline
+-const struct ffa_dev_ops *ffa_dev_ops_get(struct ffa_device *dev)
+-{
+-	return NULL;
+-}
+ #endif /* CONFIG_ARM_FFA_TRANSPORT */
+ 
+ #define ffa_register(driver) \
+-- 
+2.37.3
 
