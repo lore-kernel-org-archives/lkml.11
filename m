@@ -2,169 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11647C54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:10:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8BAFC6FA82
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:16:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235881AbiIBMKh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:10:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58290 "EHLO
+        id S235485AbiIBMQm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:16:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235485AbiIBMKb (ORCPT
+        with ESMTP id S231266AbiIBMQk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:10:31 -0400
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2E32CDF2
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 05:10:28 -0700 (PDT)
-Received: by mail-qt1-x836.google.com with SMTP id e28so1277939qts.1
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 05:10:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=qJ+5rTllUEXndIRwC16RHfyczOD9RZjJHDBMLq4xn4E=;
-        b=XaF2OHSYSjd/Fqxdc4+3zeMhvsBqz15UidzNsC5nH/007NQpqThnifZOoVqbq6t29E
-         dSyWf4f1nyv+THgFu/+cz8aC7+9AbbpiRx3hz6ombHwsAxsCuix8DP53TanwVExanCKv
-         cKnHm0NUeis4XIOC8CVuVjX3H9JRgSN+SySnTinHOMutnm1RDxRQQvFBZdqDo2TpVOAh
-         Fh8dogbj3GRfv8ax5yVDWY44RLv4qbiuEB0BHEWkjMogudEfDBT/KlOaVC86Jqnw2zCF
-         aNvAs9YZFjCxP6PLT3Mi8ZVQy8sFuwSwARI+6qGmT0J4kfRti5VlReZgWrKHZFZ9qUCC
-         adgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=qJ+5rTllUEXndIRwC16RHfyczOD9RZjJHDBMLq4xn4E=;
-        b=QaeZilC+FjdNzw4mAHc5Kd5JkKufxYhVOX4DO7dDBefKQwmeDTc790FZm9wz5ZV8hX
-         yVSfVHMyZzhXGzDMBB4F/mYT0gWl0e2eveeBWu4GKsNHyby7gUkoSFGm855cKLXbe+Fr
-         N5he7Qqp+X8jSMPF8FKmKD/z4jzNLc6vm1NjnUuO6Pz4BlKW/6CTQxypzj4ZSDbcQe3c
-         q3l4wUaypbWk/mV22cUVCGwlJmvnf3Do97v9qZXZNIYtDSDhgmbZmC6HbRquToFnY56M
-         vG4rxHPu0DshU9I1rTNFpSyVWJ/yTPBxr0e5Ax+INVWEqSuD0gN4aKEVFVCtO62aYEna
-         vYlg==
-X-Gm-Message-State: ACgBeo3OiHdN1HfU03GCUv5rSmOKUL/0vEsDRswiBgCsvhW7OF2UCTi5
-        L9JYPEg6pjuNR4Zb1VHlY/Th0w==
-X-Google-Smtp-Source: AA6agR6UYujj0TrldztrCNZ0SxUDA5y4BY/uqML7IvPjp2zmQ/NTSUnCZBHGB1Yzieck2yayQmSsuA==
-X-Received: by 2002:a05:622a:1485:b0:343:781b:d1b with SMTP id t5-20020a05622a148500b00343781b0d1bmr27951187qtx.536.1662120627781;
-        Fri, 02 Sep 2022 05:10:27 -0700 (PDT)
-Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id l5-20020ac81485000000b0031f41ea94easm915395qtj.28.2022.09.02.05.10.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 05:10:26 -0700 (PDT)
-From:   William Breathitt Gray <william.gray@linaro.org>
-To:     linux-iio@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        William Breathitt Gray <william.gray@linaro.org>,
-        Yanteng Si <siyanteng@loongson.cn>
-Subject: [PATCH] counter: Realign counter_comp comment block to 80 characters
-Date:   Fri,  2 Sep 2022 08:08:39 -0400
-Message-Id: <20220902120839.4260-1-william.gray@linaro.org>
-X-Mailer: git-send-email 2.37.2
+        Fri, 2 Sep 2022 08:16:40 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA7EC2F92;
+        Fri,  2 Sep 2022 05:16:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662120999; x=1693656999;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=CJ7K6MAmvy9eYTd7oP1wszLEZKBCQJ6tFK2SaopjaYI=;
+  b=Rzs0+2nyXx00SSq6SgHv/p7hUhLoqv/wHOoFB1v12CAXOL2TO6LBzXX/
+   Ky+VtPEcqsqZuXwOaLjckJHMs0HivQkGLU1AV6hgLxb2QJb3hjiA0NnQ7
+   iWaHUVeFKeNfO89VU6k2XFQolGMLbbmmbDvy0L6fydGCEBHgIN9di4EwI
+   lp/KZBOqHEEkApjzi+TPF9tJPqUrio4tVmEqJG2ij47ai2jH/gcYXM0IQ
+   ZVurhisjy74nfCEvQbPWjH/UU5BZQ6rDlIOset0bYF4YjgtvPTjUKTnpX
+   ihHcH5Tx5ZGkKXDqDB4xCry0kNsdwF7wlouRrIo/0E3TmXYMbKXFxvPm5
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="278983881"
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="278983881"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 05:16:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="681270907"
+Received: from lkp-server02.sh.intel.com (HELO 95dfd251caa2) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 02 Sep 2022 05:16:34 -0700
+Received: from kbuild by 95dfd251caa2 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oU5b8-000039-0W;
+        Fri, 02 Sep 2022 12:16:34 +0000
+Date:   Fri, 2 Sep 2022 20:16:24 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Daniel Xu <dxu@dxuuu.xyz>, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, memxor@gmail.com
+Cc:     kbuild-all@lists.01.org, Daniel Xu <dxu@dxuuu.xyz>,
+        pablo@netfilter.org, fw@strlen.de, toke@kernel.org,
+        martin.lau@linux.dev, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH bpf-next v4 4/5] bpf: Add support for writing to
+ nf_conn:mark
+Message-ID: <202209022000.s58TmR9h-lkp@intel.com>
+References: <073173502d762faf87bde0ca23e609c84848dd7e.1661192455.git.dxu@dxuuu.xyz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <073173502d762faf87bde0ca23e609c84848dd7e.1661192455.git.dxu@dxuuu.xyz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The member documentation comment lines for struct counter_comp extend
-past the 80-characters column boundary due to extra identation at the
-start of each section. This patch realigns the comment block within the
-80-characters boundary by removing these superfluous indents.
+Hi Daniel,
 
-Cc: Yanteng Si <siyanteng@loongson.cn>
-Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
----
- include/linux/counter.h | 40 ++++++++++++++++++++--------------------
- 1 file changed, 20 insertions(+), 20 deletions(-)
+Thank you for the patch! Yet something to improve:
 
-diff --git a/include/linux/counter.h b/include/linux/counter.h
-index 1fe17f5adb09..a81234bc8ea8 100644
---- a/include/linux/counter.h
-+++ b/include/linux/counter.h
-@@ -38,64 +38,64 @@ enum counter_comp_type {
-  * @type:		Counter component data type
-  * @name:		device-specific component name
-  * @priv:		component-relevant data
-- * @action_read:		Synapse action mode read callback. The read value of the
-+ * @action_read:	Synapse action mode read callback. The read value of the
-  *			respective Synapse action mode should be passed back via
-  *			the action parameter.
-- * @device_u8_read:		Device u8 component read callback. The read value of the
-+ * @device_u8_read:	Device u8 component read callback. The read value of the
-  *			respective Device u8 component should be passed back via
-  *			the val parameter.
-- * @count_u8_read:		Count u8 component read callback. The read value of the
-+ * @count_u8_read:	Count u8 component read callback. The read value of the
-  *			respective Count u8 component should be passed back via
-  *			the val parameter.
-- * @signal_u8_read:		Signal u8 component read callback. The read value of the
-+ * @signal_u8_read:	Signal u8 component read callback. The read value of the
-  *			respective Signal u8 component should be passed back via
-  *			the val parameter.
-- * @device_u32_read:		Device u32 component read callback. The read value of
-+ * @device_u32_read:	Device u32 component read callback. The read value of
-  *			the respective Device u32 component should be passed
-  *			back via the val parameter.
-- * @count_u32_read:		Count u32 component read callback. The read value of the
-+ * @count_u32_read:	Count u32 component read callback. The read value of the
-  *			respective Count u32 component should be passed back via
-  *			the val parameter.
-- * @signal_u32_read:		Signal u32 component read callback. The read value of
-+ * @signal_u32_read:	Signal u32 component read callback. The read value of
-  *			the respective Signal u32 component should be passed
-  *			back via the val parameter.
-- * @device_u64_read:		Device u64 component read callback. The read value of
-+ * @device_u64_read:	Device u64 component read callback. The read value of
-  *			the respective Device u64 component should be passed
-  *			back via the val parameter.
-- * @count_u64_read:		Count u64 component read callback. The read value of the
-+ * @count_u64_read:	Count u64 component read callback. The read value of the
-  *			respective Count u64 component should be passed back via
-  *			the val parameter.
-- * @signal_u64_read:		Signal u64 component read callback. The read value of
-+ * @signal_u64_read:	Signal u64 component read callback. The read value of
-  *			the respective Signal u64 component should be passed
-  *			back via the val parameter.
-- * @action_write:		Synapse action mode write callback. The write value of
-+ * @action_write:	Synapse action mode write callback. The write value of
-  *			the respective Synapse action mode is passed via the
-  *			action parameter.
-- * @device_u8_write:		Device u8 component write callback. The write value of
-+ * @device_u8_write:	Device u8 component write callback. The write value of
-  *			the respective Device u8 component is passed via the val
-  *			parameter.
-- * @count_u8_write:		Count u8 component write callback. The write value of
-+ * @count_u8_write:	Count u8 component write callback. The write value of
-  *			the respective Count u8 component is passed via the val
-  *			parameter.
-- * @signal_u8_write:		Signal u8 component write callback. The write value of
-+ * @signal_u8_write:	Signal u8 component write callback. The write value of
-  *			the respective Signal u8 component is passed via the val
-  *			parameter.
-- * @device_u32_write:		Device u32 component write callback. The write value of
-+ * @device_u32_write:	Device u32 component write callback. The write value of
-  *			the respective Device u32 component is passed via the
-  *			val parameter.
-- * @count_u32_write:		Count u32 component write callback. The write value of
-+ * @count_u32_write:	Count u32 component write callback. The write value of
-  *			the respective Count u32 component is passed via the val
-  *			parameter.
-- * @signal_u32_write:		Signal u32 component write callback. The write value of
-+ * @signal_u32_write:	Signal u32 component write callback. The write value of
-  *			the respective Signal u32 component is passed via the
-  *			val parameter.
-- * @device_u64_write:		Device u64 component write callback. The write value of
-+ * @device_u64_write:	Device u64 component write callback. The write value of
-  *			the respective Device u64 component is passed via the
-  *			val parameter.
-- * @count_u64_write:		Count u64 component write callback. The write value of
-+ * @count_u64_write:	Count u64 component write callback. The write value of
-  *			the respective Count u64 component is passed via the val
-  *			parameter.
-- * @signal_u64_write:		Signal u64 component write callback. The write value of
-+ * @signal_u64_write:	Signal u64 component write callback. The write value of
-  *			the respective Signal u64 component is passed via the
-  *			val parameter.
-  */
+[auto build test ERROR on bpf-next/master]
 
-base-commit: a12224997bec72d231a8dd642876e6364decdc45
+url:    https://github.com/intel-lab-lkp/linux/commits/Daniel-Xu/bpf-Remove-duplicate-PTR_TO_BTF_ID-RO-check/20220823-032643
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220902/202209022000.s58TmR9h-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/496ec6d75c8e8758f93c6b987eee83713c911a05
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Daniel-Xu/bpf-Remove-duplicate-PTR_TO_BTF_ID-RO-check/20220823-032643
+        git checkout 496ec6d75c8e8758f93c6b987eee83713c911a05
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   ld: net/core/filter.o: in function `tc_cls_act_btf_struct_access':
+>> net/core/filter.c:8644: undefined reference to `nf_conntrack_btf_struct_access'
+   ld: net/core/filter.o: in function `xdp_btf_struct_access':
+   include/net/net_namespace.h:369: undefined reference to `nf_conntrack_btf_struct_access'
+   pahole: .tmp_vmlinux.btf: No such file or directory
+   .btf.vmlinux.bin.o: file not recognized: file format not recognized
+
+
+vim +8644 net/core/filter.c
+
+  8632	
+  8633	static int tc_cls_act_btf_struct_access(struct bpf_verifier_log *log,
+  8634						const struct btf *btf,
+  8635						const struct btf_type *t, int off,
+  8636						int size, enum bpf_access_type atype,
+  8637						u32 *next_btf_id,
+  8638						enum bpf_type_flag *flag)
+  8639	{
+  8640		if (atype == BPF_READ)
+  8641			return btf_struct_access(log, btf, t, off, size, atype, next_btf_id,
+  8642						 flag);
+  8643	
+> 8644		return nf_conntrack_btf_struct_access(log, btf, t, off, size, atype,
+  8645						      next_btf_id, flag);
+  8646	}
+  8647	
+
 -- 
-2.37.2
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
