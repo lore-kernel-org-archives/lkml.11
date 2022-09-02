@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16984C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:22:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D78FC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:22:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236108AbiIBMWr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:22:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46734 "EHLO
+        id S236125AbiIBMWx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:22:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235922AbiIBMVP (ORCPT
+        with ESMTP id S235928AbiIBMVP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 08:21:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F058B9E6A2;
-        Fri,  2 Sep 2022 05:21:04 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15094870AC;
+        Fri,  2 Sep 2022 05:21:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C093620C5;
-        Fri,  2 Sep 2022 12:21:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88058C433D6;
-        Fri,  2 Sep 2022 12:21:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A449F620E6;
+        Fri,  2 Sep 2022 12:21:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2BC7C433C1;
+        Fri,  2 Sep 2022 12:21:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121264;
-        bh=YpPCSFJZjYQX+u7yAHu3e5lF3mBjH9JLx9Fx7DDAunA=;
+        s=korg; t=1662121267;
+        bh=4paDaTJbkFXv9kZPbYAlYaeoy1x0FGqkIA2Hg3M2Fnk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iZ5Y2bX0WPSpHnGJRJrnyLoQVZr61q5R5ihLyuAxXyMw1H4BwF9YXOuol4g5DyPks
-         S/GOooeUrttlTb3hxGK5UGWauC3dnvDIkSTmMHCc18XpWFl79sKJVgg20V5wVaW/gB
-         KADJjxjZZeq57XQ1pdyQTseEbnEt7SicJIgFzh20=
+        b=PHLO/DMIE63/xuqhfP3wvAgheUAJxrq+ZutTg9iQ5h0Sia54Kes5Vuji2X2qOcLO0
+         Mru+wpsMoZ+EK4hezwjkR95PyJYCWuN21GpYEmdckUL3hvU+4DUzIeU+ltLwb8ratQ
+         5Lhc/rlQOQ3xXI9m15vdRwUMgHRunmAIgM3D2HtY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 10/31] net: Fix a data-race around sysctl_net_busy_read.
-Date:   Fri,  2 Sep 2022 14:18:36 +0200
-Message-Id: <20220902121357.135932728@linuxfoundation.org>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
+Subject: [PATCH 4.9 01/31] parisc: Fix exception handler for fldw and fstw instructions
+Date:   Fri,  2 Sep 2022 14:18:27 +0200
+Message-Id: <20220902121356.799456924@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121356.732130937@linuxfoundation.org>
 References: <20220902121356.732130937@linuxfoundation.org>
 User-Agent: quilt/0.67
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,36 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Helge Deller <deller@gmx.de>
 
-[ Upstream commit e59ef36f0795696ab229569c153936bfd068d21c ]
+commit 7ae1f5508d9a33fd58ed3059bd2d569961e3b8bd upstream.
 
-While reading sysctl_net_busy_read, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+The exception handler is broken for unaligned memory acceses with fldw
+and fstw instructions, because it trashes or uses randomly some other
+floating point register than the one specified in the instruction word
+on loads and stores.
 
-Fixes: 2d48d67fa8cd ("net: poll/select low latency socket support")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The instruction "fldw 0(addr),%fr22L" (and the other fldw/fstw
+instructions) encode the target register (%fr22) in the rightmost 5 bits
+of the instruction word. The 7th rightmost bit of the instruction word
+defines if the left or right half of %fr22 should be used.
+
+While processing unaligned address accesses, the FR3() define is used to
+extract the offset into the local floating-point register set.  But the
+calculation in FR3() was buggy, so that for example instead of %fr22,
+register %fr12 [((22 * 2) & 0x1f) = 12] was used.
+
+This bug has been since forever in the parisc kernel and I wonder why it
+wasn't detected earlier. Interestingly I noticed this bug just because
+the libime debian package failed to build on *native* hardware, while it
+successfully built in qemu.
+
+This patch corrects the bitshift and masking calculation in FR3().
+
+Signed-off-by: Helge Deller <deller@gmx.de>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/sock.c | 2 +-
+ arch/parisc/kernel/unaligned.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 1845a37d9f7e1..e4b28c10901ec 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -2508,7 +2508,7 @@ void sock_init_data(struct socket *sock, struct sock *sk)
- 
- #ifdef CONFIG_NET_RX_BUSY_POLL
- 	sk->sk_napi_id		=	0;
--	sk->sk_ll_usec		=	sysctl_net_busy_read;
-+	sk->sk_ll_usec		=	READ_ONCE(sysctl_net_busy_read);
- #endif
- 
- 	sk->sk_max_pacing_rate = ~0U;
--- 
-2.35.1
-
+--- a/arch/parisc/kernel/unaligned.c
++++ b/arch/parisc/kernel/unaligned.c
+@@ -120,7 +120,7 @@
+ #define R1(i) (((i)>>21)&0x1f)
+ #define R2(i) (((i)>>16)&0x1f)
+ #define R3(i) ((i)&0x1f)
+-#define FR3(i) ((((i)<<1)&0x1f)|(((i)>>6)&1))
++#define FR3(i) ((((i)&0x1f)<<1)|(((i)>>6)&1))
+ #define IM(i,n) (((i)>>1&((1<<(n-1))-1))|((i)&1?((0-1L)<<(n-1)):0))
+ #define IM5_2(i) IM((i)>>16,5)
+ #define IM5_3(i) IM((i),5)
 
 
