@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6CA9ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:31:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F05DC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:31:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236385AbiIBMbB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:31:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36774 "EHLO
+        id S236734AbiIBMbF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:31:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236663AbiIBMaD (ORCPT
+        with ESMTP id S236345AbiIBMab (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:30:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 055DCD5984;
-        Fri,  2 Sep 2022 05:25:59 -0700 (PDT)
+        Fri, 2 Sep 2022 08:30:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCC07DF64F;
+        Fri,  2 Sep 2022 05:26:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1059BB82AA3;
-        Fri,  2 Sep 2022 12:25:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 592A4C433C1;
-        Fri,  2 Sep 2022 12:25:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CFF55620E6;
+        Fri,  2 Sep 2022 12:24:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E376EC433C1;
+        Fri,  2 Sep 2022 12:24:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121545;
-        bh=44j/0QGKbnCXOQkwSh+zBTtcYgPKScXSQtuBhIR6w2k=;
+        s=korg; t=1662121460;
+        bh=nWRoO5ttH0qgnkkzYxYakfYShlDNVFZKpmajFJ1cLSU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xXb9o31k/NdvNg67PVrrVa0jnzupOlxZwAghd6rl9/rtivP2ZVrFLSPXINvkQRHDs
-         8jFEDc2Hvj4kaDF7GIcRC72zDllHbEU/xrlmI6brvC249EhH70p1yprhoSHqo1Qv5n
-         H5YVYB3OI3ZFHdeG6ErIcXNInUbIEdYU0yMz/6VQ=
+        b=Eu6OvrTRjz+U1olPQLAyypXq1o+/Ws1+KgcNqwbUxC1yGmROjqVcpaNxm5Z5Wb2Qe
+         vML210XnX+AldWbIa1V0sOKT43CeMo7DdTImZ3mHMD2JmWobSppuc1QfzCa7CPnsNd
+         WGuXnsTo836m2x06sC471sJh9ro/qHxAxNxJ5JFA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jing Leng <jleng@ambarella.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nicolas Schier <n.schier@avm.de>
-Subject: [PATCH 4.19 43/56] kbuild: Fix include path in scripts/Makefile.modpost
-Date:   Fri,  2 Sep 2022 14:19:03 +0200
-Message-Id: <20220902121401.870740913@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 15/56] netfilter: nft_payload: report ERANGE for too long offset and length
+Date:   Fri,  2 Sep 2022 14:18:35 +0200
+Message-Id: <20220902121400.699491043@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
 References: <20220902121400.219861128@linuxfoundation.org>
@@ -49,44 +48,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Leng <jleng@ambarella.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit 23a0cb8e3225122496bfa79172005c587c2d64bf upstream.
+[ Upstream commit 94254f990c07e9ddf1634e0b727fab821c3b5bf9 ]
 
-When building an external module, if users don't need to separate the
-compilation output and source code, they run the following command:
-"make -C $(LINUX_SRC_DIR) M=$(PWD)". At this point, "$(KBUILD_EXTMOD)"
-and "$(src)" are the same.
+Instead of offset and length are truncation to u8, report ERANGE.
 
-If they need to separate them, they run "make -C $(KERNEL_SRC_DIR)
-O=$(KERNEL_OUT_DIR) M=$(OUT_DIR) src=$(PWD)". Before running the
-command, they need to copy "Kbuild" or "Makefile" to "$(OUT_DIR)" to
-prevent compilation failure.
-
-So the kernel should change the included path to avoid the copy operation.
-
-Signed-off-by: Jing Leng <jleng@ambarella.com>
-[masahiro: I do not think "M=$(OUT_DIR) src=$(PWD)" is the official way,
-but this patch is a nice clean up anyway.]
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-[nsc: updated context for v4.19]
-Signed-off-by: Nicolas Schier <n.schier@avm.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 96518518cc41 ("netfilter: add nftables")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/Makefile.modpost |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ net/netfilter/nft_payload.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/scripts/Makefile.modpost
-+++ b/scripts/Makefile.modpost
-@@ -51,8 +51,7 @@ obj := $(KBUILD_EXTMOD)
- src := $(obj)
+diff --git a/net/netfilter/nft_payload.c b/net/netfilter/nft_payload.c
+index fd87216bc0a99..04b9df9e39554 100644
+--- a/net/netfilter/nft_payload.c
++++ b/net/netfilter/nft_payload.c
+@@ -398,6 +398,7 @@ nft_payload_select_ops(const struct nft_ctx *ctx,
+ {
+ 	enum nft_payload_bases base;
+ 	unsigned int offset, len;
++	int err;
  
- # Include the module's Makefile to find KBUILD_EXTRA_SYMBOLS
--include $(if $(wildcard $(KBUILD_EXTMOD)/Kbuild), \
--             $(KBUILD_EXTMOD)/Kbuild, $(KBUILD_EXTMOD)/Makefile)
-+include $(if $(wildcard $(src)/Kbuild), $(src)/Kbuild, $(src)/Makefile)
- endif
+ 	if (tb[NFTA_PAYLOAD_BASE] == NULL ||
+ 	    tb[NFTA_PAYLOAD_OFFSET] == NULL ||
+@@ -423,8 +424,13 @@ nft_payload_select_ops(const struct nft_ctx *ctx,
+ 	if (tb[NFTA_PAYLOAD_DREG] == NULL)
+ 		return ERR_PTR(-EINVAL);
  
- include scripts/Makefile.lib
+-	offset = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_OFFSET]));
+-	len    = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_LEN]));
++	err = nft_parse_u32_check(tb[NFTA_PAYLOAD_OFFSET], U8_MAX, &offset);
++	if (err < 0)
++		return ERR_PTR(err);
++
++	err = nft_parse_u32_check(tb[NFTA_PAYLOAD_LEN], U8_MAX, &len);
++	if (err < 0)
++		return ERR_PTR(err);
+ 
+ 	if (len <= 4 && is_power_of_2(len) && IS_ALIGNED(offset, len) &&
+ 	    base != NFT_PAYLOAD_LL_HEADER)
+-- 
+2.35.1
+
 
 
