@@ -2,297 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81580C6FA83
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:07:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D168ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:07:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235637AbiIBIHe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 04:07:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45258 "EHLO
+        id S235641AbiIBIHv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 04:07:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235614AbiIBIHc (ORCPT
+        with ESMTP id S235614AbiIBIHs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 04:07:32 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29996B5E5F;
-        Fri,  2 Sep 2022 01:07:27 -0700 (PDT)
-X-UUID: d33433cb6a944d5989485c3a0b51fc68-20220902
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=NfPL8FRzEeQalz99XK5cO58JgBO8rLvewmBL1xkEOIk=;
-        b=ePOAOEHKr3rfEEWHy4yEDj3GNFTvwBpAgOTSqxQtdbjscanww/XES0VlliEDQQmMJrpM9Hy7QW+8hdDKC5VvpoZi19ScQYaz7DtQYBDJ9/1mfPR5TmPgn1Ev58qo3NqCA4Uemp5wkhgUkzJtGNuf8j03Ycm530BRxbcdAxfBVzI=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.10,REQID:c641d57a-7105-48c5-9dee-770bea50defa,OB:0,L
-        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,BULK:0,RULE:Release
-        _Ham,ACTION:release,TS:45
-X-CID-INFO: VERSION:1.1.10,REQID:c641d57a-7105-48c5-9dee-770bea50defa,OB:0,LOB
-        :0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,BULK:0,RULE:Release_H
-        am,ACTION:release,TS:45
-X-CID-META: VersionHash:84eae18,CLOUDID:98316556-e800-47dc-8adf-0c936acf4f1b,C
-        OID:8133249e187a,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:11|1,File:nil,Bulk:41,QS:nil,BEC:nil,COL:0
-X-UUID: d33433cb6a944d5989485c3a0b51fc68-20220902
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1135810871; Fri, 02 Sep 2022 16:07:21 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Fri, 2 Sep 2022 16:07:19 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
- Transport; Fri, 2 Sep 2022 16:07:19 +0800
-Message-ID: <22523275b9ef44ab13e28ae544afcfbc7b8217ad.camel@mediatek.com>
-Subject: Re: [PATCH v17 08/10] drm/mediatek: dp: Add MT8195 External
- DisplayPort support
-From:   CK Hu <ck.hu@mediatek.com>
-To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
-        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <mripard@kernel.org>,
-        <tzimmermann@suse.de>, <matthias.bgg@gmail.com>, <deller@gmx.de>,
-        <airlied@linux.ie>
-CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
-        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
-        <angelogioacchino.delregno@collabora.com>,
-        <liangxu.xu@mediatek.com>, <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-fbdev@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Fri, 2 Sep 2022 16:07:18 +0800
-In-Reply-To: <20220901044149.16782-9-rex-bc.chen@mediatek.com>
-References: <20220901044149.16782-1-rex-bc.chen@mediatek.com>
-         <20220901044149.16782-9-rex-bc.chen@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Fri, 2 Sep 2022 04:07:48 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4031CB5E5F
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 01:07:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662106065;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jkCqqIO8foYTlUIWanTYmb1eD9F9iDyE1IcUyDBWeec=;
+        b=O6vdiwk95cjdtthpSa3Ukwam/jKluX8X2RaJaBxJujB5n9SjEK8973/2HhfVZ9Sih0R06Q
+        GmNi5qaaaVbhNLVQRaI5voBgDTNZvYBYzTTJRhiqBGl2HGS8JsYqTu/xhr/VD+gTJPshw6
+        jiqDzSUDMxeaW1MV+NKh042hX8XWDvw=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-370-40ccyVOXNmWkKRLMF7Qq5g-1; Fri, 02 Sep 2022 04:07:44 -0400
+X-MC-Unique: 40ccyVOXNmWkKRLMF7Qq5g-1
+Received: by mail-ed1-f69.google.com with SMTP id p4-20020a056402500400b00447e8b6f62bso890302eda.17
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 01:07:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=jkCqqIO8foYTlUIWanTYmb1eD9F9iDyE1IcUyDBWeec=;
+        b=M+LwImHr0rY4+vvb2z/jO29xCppJxUpwmHB7XFOkf/9w5GOB9xeHu1gD3UZtKSzjU+
+         0EK+MtQUZs5xTNoNPSIm0RcaubG8fWFDsC4ShjBNJoma183HOmjnqjXr39/ZfmNLOtUw
+         dIwef2EVN7rHs1Vtx7MQphqCJXvVPVqMdjhsGKL4jff3hZgY17PsH4ahFvAsK22wQIh+
+         TM7TOQUQZimOHCGrB5w8+r6ox5LVsOP+jI2YFJuP0szaqAdfpdJA9uEEdhiopt0PWViY
+         7jt50iP2fsRS+U4W0/1g3ykTMTM9Q2vbhh27YNNq3AzlJPkfiR2zNcK4UswQoFrMXZ+w
+         zW9Q==
+X-Gm-Message-State: ACgBeo2giQcaf64n+JHC9whxyH+DDD/w43uxaL4KABPTV9jqjKk4XGYU
+        +DHard7HREAusRL/lzKJVFdqGprhlWd7E1UamRo14JWONRQcDBDcHwNfJx8hgr5SkQyxMb/j/5m
+        1Eo+oXU4iSnmGHEvDuGe5z99N
+X-Received: by 2002:a17:907:c0f:b0:741:9525:23d6 with SMTP id ga15-20020a1709070c0f00b00741952523d6mr16448790ejc.277.1662106062840;
+        Fri, 02 Sep 2022 01:07:42 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4yiYTHzK+gzUo9zoqd/CH/evovZNWSJQnB5hGXo9T+dVDAD70xJ3OfQlaE7vw9o+Y8pgJXBQ==
+X-Received: by 2002:a17:907:c0f:b0:741:9525:23d6 with SMTP id ga15-20020a1709070c0f00b00741952523d6mr16448773ejc.277.1662106062622;
+        Fri, 02 Sep 2022 01:07:42 -0700 (PDT)
+Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
+        by smtp.gmail.com with ESMTPSA id gz28-20020a170907a05c00b0072b92daef1csm848895ejc.146.2022.09.02.01.07.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Sep 2022 01:07:41 -0700 (PDT)
+Message-ID: <3df6405a-924a-b0e6-c879-05b9151011e3@redhat.com>
+Date:   Fri, 2 Sep 2022 10:07:41 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v2] platform/x86: wmi: Allow duplicate GUIDs for drivers
+ that use struct wmi_driver
+Content-Language: en-US
+To:     "Limonciello, Mario" <Mario.Limonciello@amd.com>
+Cc:     Mark Gross <markgross@kernel.org>,
+        Platform Driver <platform-driver-x86@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+References: <20220829201500.6341-1-mario.limonciello@amd.com>
+ <CAHp75Vc3v4a6=ZJnOYYFGHEomExxopuUy8axDL=M2tbxHqtXqQ@mail.gmail.com>
+ <MN0PR12MB6101441AA29CE815DCAD26AEE27B9@MN0PR12MB6101.namprd12.prod.outlook.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <MN0PR12MB6101441AA29CE815DCAD26AEE27B9@MN0PR12MB6101.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Bo-Chen:
+Hi,
 
-On Thu, 2022-09-01 at 12:41 +0800, Bo-Chen Chen wrote:
-> From: Guillaume Ranquet <granquet@baylibre.com>
+On 9/1/22 23:39, Limonciello, Mario wrote:
+> [Public]
 > 
-> Add External DisplayPort support to the MT8195 eDP driver.
 > 
-> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-> ---
->  drivers/gpu/drm/mediatek/mtk_dp.c | 139
-> ++++++++++++++++++++++++++++++
->  1 file changed, 139 insertions(+)
 > 
-> diff --git a/drivers/gpu/drm/mediatek/mtk_dp.c
-> b/drivers/gpu/drm/mediatek/mtk_dp.c
-> index e37c9185e4ec..11a94927c0d0 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_dp.c
-> +++ b/drivers/gpu/drm/mediatek/mtk_dp.c
-> @@ -35,6 +35,7 @@
->  
->  #define MTK_DP_SIP_CONTROL_AARCH32	MTK_SIP_SMC_CMD(0x523)
->  #define MTK_DP_SIP_ATF_EDP_VIDEO_UNMUTE	(BIT(0) | BIT(5))
-> +#define MTK_DP_SIP_ATF_VIDEO_UNMUTE	BIT(5)
->  
->  #define MTK_DP_THREAD_CABLE_STATE_CHG	BIT(0)
->  #define MTK_DP_THREAD_HPD_EVENT		BIT(1)
-> @@ -199,6 +200,89 @@ static const struct mtk_dp_efuse_fmt
-> mt8195_edp_efuse_fmt[MTK_DP_CAL_MAX] = {
->  	},
->  };
->  
-> +static const struct mtk_dp_efuse_fmt
-> mt8195_dp_efuse_fmt[MTK_DP_CAL_MAX] = {
-> +	[MTK_DP_CAL_GLB_BIAS_TRIM] = {
-> +		.idx = 0,
-> +		.shift = 27,
-> +		.mask = 0x1f,
-> +		.min_val = 1,
-> +		.max_val = 0x1e,
-> +		.default_val = 0xf,
-> +	},
-> +	[MTK_DP_CAL_CLKTX_IMPSE] = {
-> +		.idx = 0,
-> +		.shift = 13,
-> +		.mask = 0xf,
-> +		.min_val = 1,
-> +		.max_val = 0xe,
-> +		.default_val = 0x8,
-> +	},
-> +	[MTK_DP_CAL_LN_TX_IMPSEL_PMOS_0] = {
-> +		.idx = 1,
-> +		.shift = 28,
-> +		.mask = 0xf,
-> +		.min_val = 1,
-> +		.max_val = 0xe,
-> +		.default_val = 0x8,
-> +	},
-> +	[MTK_DP_CAL_LN_TX_IMPSEL_PMOS_1] = {
-> +		.idx = 1,
-> +		.shift = 20,
-> +		.mask = 0xf,
-> +		.min_val = 1,
-> +		.max_val = 0xe,
-> +		.default_val = 0x8,
-> +	},
-> +	[MTK_DP_CAL_LN_TX_IMPSEL_PMOS_2] = {
-> +		.idx = 1,
-> +		.shift = 12,
-> +		.mask = 0xf,
-> +		.min_val = 1,
-> +		.max_val = 0xe,
-> +		.default_val = 0x8,
-> +	},
-> +	[MTK_DP_CAL_LN_TX_IMPSEL_PMOS_3] = {
-> +		.idx = 1,
-> +		.shift = 4,
-> +		.mask = 0xf,
-> +		.min_val = 1,
-> +		.max_val = 0xe,
-> +		.default_val = 0x8,
-> +	},
-> +	[MTK_DP_CAL_LN_TX_IMPSEL_NMOS_0] = {
-> +		.idx = 1,
-> +		.shift = 24,
-> +		.mask = 0xf,
-> +		.min_val = 1,
-> +		.max_val = 0xe,
-> +		.default_val = 0x8,
-> +	},
-> +	[MTK_DP_CAL_LN_TX_IMPSEL_NMOS_1] = {
-> +		.idx = 1,
-> +		.shift = 16,
-> +		.mask = 0xf,
-> +		.min_val = 1,
-> +		.max_val = 0xe,
-> +		.default_val = 0x8,
-> +	},
-> +	[MTK_DP_CAL_LN_TX_IMPSEL_NMOS_2] = {
-> +		.idx = 1,
-> +		.shift = 8,
-> +		.mask = 0xf,
-> +		.min_val = 1,
-> +		.max_val = 0xe,
-> +		.default_val = 0x8,
-> +	},
-> +	[MTK_DP_CAL_LN_TX_IMPSEL_NMOS_3] = {
-> +		.idx = 1,
-> +		.shift = 0,
-> +		.mask = 0xf,
-> +		.min_val = 1,
-> +		.max_val = 0xe,
-> +		.default_val = 0x8,
-> +	},
-> +};
-> +
->  static struct regmap_config mtk_dp_regmap_config = {
->  	.reg_bits = 32,
->  	.val_bits = 32,
-> @@ -1479,6 +1563,50 @@ static int mtk_dp_dt_parse(struct mtk_dp
-> *mtk_dp,
->  	return 0;
->  }
->  
-> +static enum drm_connector_status mtk_dp_bdg_detect(struct drm_bridge
-> *bridge)
-> +{
-> +	struct mtk_dp *mtk_dp = mtk_dp_from_bridge(bridge);
-> +	enum drm_connector_status ret = connector_status_disconnected;
-> +	bool enabled = mtk_dp->enabled;
-> +	u8 sink_count = 0;
-> +
-> +	if (mtk_dp->train_info.cable_plugged_in) {
+>> -----Original Message-----
+>> From: Andy Shevchenko <andy.shevchenko@gmail.com>
+>> Sent: Thursday, September 1, 2022 12:17
+>> To: Limonciello, Mario <Mario.Limonciello@amd.com>
+>> Cc: Hans de Goede <hdegoede@redhat.com>; Mark Gross
+>> <markgross@kernel.org>; Platform Driver <platform-driver-
+>> x86@vger.kernel.org>; Linux Kernel Mailing List <linux-
+>> kernel@vger.kernel.org>
+>> Subject: Re: [PATCH v2] platform/x86: wmi: Allow duplicate GUIDs for drivers
+>> that use struct wmi_driver
+>>
+>> On Mon, Aug 29, 2022 at 11:20 PM Mario Limonciello
+>> <mario.limonciello@amd.com> wrote:
+>>>
+>>> The WMI subsystem in the kernel currently tracks WMI devices by
+>>> a GUID string not by ACPI device.  The GUID used by the `wmi-bmof`
+>>> module however is available from many devices on nearly every machine.
+>>>
+>>> This originally was though to be a bug, but as it happens on most
+>>
+>> thought
+>>
+>>> machines it is a design mistake.  It has been fixed by tying an ACPI
+>>> device to the driver with struct wmi_driver. So drivers that have
+>>> moved over to struct wmi_driver can actually support multiple
+>>> instantiations of a GUID without any problem.
+>>>
+>>> Add an allow list into wmi.c for GUIDs that the drivers that are known
+>>> to use struct wmi_driver.  The list is populated with `wmi-bmof` right
+>>> now. The additional instances of that in sysfs with be suffixed with -%d
+>>
+>> ...
+>>
+>>> +/* allow duplicate GUIDs as these device drivers use struct wmi_driver */
+>>> +static const char * const allow_duplicates[] = {
+>>> +       "05901221-D566-11D1-B2F0-00A0C9062910", /* wmi-bmof */
+>>> +       NULL,
+>>
+>> No comma for the terminator.
+>>
+>>> +};
+>>
+>> ...
+>>
+>>> +static int guid_count(const guid_t *guid)
+>>> +{
+>>> +       struct wmi_block *wblock;
+>>> +       int count = 0;
+>>> +
+>>> +       list_for_each_entry(wblock, &wmi_block_list, list) {
+>>> +               if (guid_equal(&wblock->gblock.guid, guid))
+>>> +                       count++;
+>>> +       }
+>>> +
+>>> +       return count;
+>>> +}
+>>
+>> I haven't deeply checked the code, but this kind of approach is
+>> fragile and proven to be error prone as shown in practice. The
+>> scenario is (again, not sure if it's possible, need a comment in the
+>> code if it's not possible) removing an entry from the list in the
+>> middle and trying to add it again. you will see the duplicate count
+>> values. That's why in the general case we use IDA or similar
+>> approaches.
+> 
+> It shouldn't be possible to add/remove from the list, they're fixed
+> lists that were parsed from _WDG.
+> 
+> Hans - since you already took this into your review queue, can you
+> land fixes for the 3 things Andy pointed out before it goes to -next
+> or do you want me to do a manual follow up for them?
 
-I would modify this as below when I apply this patch into my tree:
+I can do a local fix and squash it into the original commit.
 
-if (!mtk_dp->train_info.cable_plugged_in)
-	return ret;
+> 1) Spelling error in commit message
+> 2) Remove comma on terminator
 
-Reviewed-by: CK Hu <ck.hu@mediatek.com>
+Ack, will fix.
 
+> 3) Add a comment why guid_count is safe (if you agree with me it is)
 
-> +		if (!enabled) {
-> +			/* power on aux */
-> +			mtk_dp_update_bits(mtk_dp,
-> MTK_DP_TOP_PWR_STATE,
-> +					   DP_PWR_STATE_BANDGAP_TPLL_LA
-> NE,
-> +					   DP_PWR_STATE_MASK);
-> +
-> +			/* power on panel */
-> +			drm_dp_dpcd_writeb(&mtk_dp->aux, DP_SET_POWER,
-> DP_SET_POWER_D0);
-> +			usleep_range(2000, 5000);
-> +		}
-> +		/*
-> +		 * Some dongles still source HPD when they do not
-> connect to any
-> +		 * sink device. To avoid this, we need to read the sink
-> count
-> +		 * to make sure we do connect to sink devices. After
-> this detect
-> +		 * function, we just need to check the HPD connection
-> to check
-> +		 * whether we connect to a sink device.
-> +		 */
-> +		drm_dp_dpcd_readb(&mtk_dp->aux, DP_SINK_COUNT,
-> &sink_count);
-> +		if (DP_GET_SINK_COUNT(sink_count))
-> +			ret = connector_status_connected;
-> +
-> +		if (!enabled) {
-> +			/* power off panel */
-> +			drm_dp_dpcd_writeb(&mtk_dp->aux, DP_SET_POWER,
-> DP_SET_POWER_D3);
-> +			usleep_range(2000, 3000);
-> +
-> +			/* power off aux */
-> +			mtk_dp_update_bits(mtk_dp,
-> MTK_DP_TOP_PWR_STATE,
-> +					   DP_PWR_STATE_BANDGAP_TPLL,
-> +					   DP_PWR_STATE_MASK);
-> +		}
-> +	}
-> +
-> +	return ret;
-> +}
-> +
->  static struct edid *mtk_dp_get_edid(struct drm_bridge *bridge,
->  				    struct drm_connector *connector)
->  {
-> @@ -1865,6 +1993,7 @@ static const struct drm_bridge_funcs
-> mtk_dp_bridge_funcs = {
->  	.atomic_disable = mtk_dp_bridge_atomic_disable,
->  	.mode_valid = mtk_dp_bridge_mode_valid,
->  	.get_edid = mtk_dp_get_edid,
-> +	.detect = mtk_dp_bdg_detect,
->  };
->  
->  static int mtk_dp_probe(struct platform_device *pdev)
-> @@ -1991,11 +2120,21 @@ static const struct mtk_dp_data
-> mt8195_edp_data = {
->  	.efuse_fmt = mt8195_edp_efuse_fmt,
->  };
->  
-> +static const struct mtk_dp_data mt8195_dp_data = {
-> +	.bridge_type = DRM_MODE_CONNECTOR_DisplayPort,
-> +	.smc_cmd = MTK_DP_SIP_ATF_VIDEO_UNMUTE,
-> +	.efuse_fmt = mt8195_dp_efuse_fmt,
-> +};
-> +
->  static const struct of_device_id mtk_dp_of_match[] = {
->  	{
->  		.compatible = "mediatek,mt8195-edp-tx",
->  		.data = &mt8195_edp_data,
->  	},
-> +	{
-> +		.compatible = "mediatek,mt8195-dp-tx",
-> +		.data = &mt8195_dp_data,
-> +	},
->  	{},
->  };
->  MODULE_DEVICE_TABLE(of, mtk_dp_of_match);
+I agree it is safe.
+
+Can you suggest some wording for the comment please ?
+
+Regards,
+
+Hans
 
