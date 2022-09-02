@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 093C6ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:24:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F27B0ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:24:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236343AbiIBMYh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:24:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49766 "EHLO
+        id S236260AbiIBMYm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:24:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236175AbiIBMYD (ORCPT
+        with ESMTP id S234985AbiIBMYN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:24:03 -0400
+        Fri, 2 Sep 2022 08:24:13 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA230DAA2D;
-        Fri,  2 Sep 2022 05:22:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFE2ED7CC3;
+        Fri,  2 Sep 2022 05:22:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36869B82A97;
-        Fri,  2 Sep 2022 12:22:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8385AC433D6;
-        Fri,  2 Sep 2022 12:22:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4D9EFB82A92;
+        Fri,  2 Sep 2022 12:22:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4A6BC433C1;
+        Fri,  2 Sep 2022 12:22:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121339;
-        bh=YVQf9rea3wCSEd+Nr8LrMUlvQI590sl/A/wZ7OuSBlQ=;
+        s=korg; t=1662121337;
+        bh=MolakyFmjNbfxyrFA1j8Zfr9J+QdKVMz8ceNyw+BLG4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TEpKj7eG6WNnbE45pzmPkUvxkL4yG+dh5uJbr2rnrxKMQpdilYzNc+d4796eUNaH8
-         T5HaAPFhwSz8o7hupJ5QeyMCBBHA2Qug4KS2ZQ3TcVI2zSnWtN3RTb/cdyBmMSPSpb
-         F9597KK58ekp33nEZxoy86UcXsmFWvI6NO4xX5JU=
+        b=clEJM6lda484Aud1s5g400eYk5x5hZc69iJdZa3XMrqJ5KbM7nCuzuMHw4HZw7XL8
+         ZpI++bfOyduoXvVT29Zvg3LMj4C6H7strx2U8i5khPYtz5uekQwtAjxrbJmHQFfNPG
+         NW9JXm4q32Lz3PnoBIN8RKzoR6NZj9B0WqrFpkPE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 18/42] net: Fix a data-race around netdev_budget_usecs.
-Date:   Fri,  2 Sep 2022 14:18:42 +0200
-Message-Id: <20220902121359.431858674@linuxfoundation.org>
+Subject: [PATCH 4.14 17/42] net: Fix a data-race around netdev_budget.
+Date:   Fri,  2 Sep 2022 14:18:41 +0200
+Message-Id: <20220902121359.401149952@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121358.773776406@linuxfoundation.org>
 References: <20220902121358.773776406@linuxfoundation.org>
@@ -51,12 +51,12 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit fa45d484c52c73f79db2c23b0cdfc6c6455093ad ]
+[ Upstream commit 2e0c42374ee32e72948559d2ae2f7ba3dc6b977c ]
 
-While reading netdev_budget_usecs, it can be changed concurrently.
+While reading netdev_budget, it can be changed concurrently.
 Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: 7acf8a1e8a28 ("Replace 2 jiffies with sysctl netdev_budget_usecs to enable softirq tuning")
+Fixes: 51b0bdedb8e7 ("[NET]: Separate two usages of netdev_max_backlog.")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
@@ -65,18 +65,18 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/core/dev.c b/net/core/dev.c
-index f6d3cbc57425c..4741c239af170 100644
+index 51721fb2e30cf..f6d3cbc57425c 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -5648,7 +5648,7 @@ static __latent_entropy void net_rx_action(struct softirq_action *h)
- {
+@@ -5649,7 +5649,7 @@ static __latent_entropy void net_rx_action(struct softirq_action *h)
  	struct softnet_data *sd = this_cpu_ptr(&softnet_data);
  	unsigned long time_limit = jiffies +
--		usecs_to_jiffies(netdev_budget_usecs);
-+		usecs_to_jiffies(READ_ONCE(netdev_budget_usecs));
- 	int budget = READ_ONCE(netdev_budget);
+ 		usecs_to_jiffies(netdev_budget_usecs);
+-	int budget = netdev_budget;
++	int budget = READ_ONCE(netdev_budget);
  	LIST_HEAD(list);
  	LIST_HEAD(repoll);
+ 
 -- 
 2.35.1
 
