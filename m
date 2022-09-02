@@ -2,88 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE37BC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 09:50:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B7DECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 09:50:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235826AbiIBJuN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 05:50:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48980 "EHLO
+        id S235842AbiIBJu1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 05:50:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235792AbiIBJt5 (ORCPT
+        with ESMTP id S235396AbiIBJuV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 05:49:57 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21D42F2
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 02:49:56 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id az24-20020a05600c601800b003a842e4983cso1111114wmb.0
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 02:49:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=5jgqKei2zXKIzWLNZrfShPq80y4Jd5xdvtwvka6rR5g=;
-        b=gT4EYfkdJm6NNpuDd4QvJP+nWZB5+2rUmtLF8NrqqGX362cCUM0dUYepuvZ4IBt1YY
-         KLYKIhjg1nlbX/LI2CsJbapnfqaRK+k3Cm4saCElj/cmisJhs6/ahVX6sDWTEDJYideI
-         7uuFSY4Z4X+RDwuhkIzZ/t56PKjWrie0B+w13SyjHi57HZcuLSu/YPbQdAuOFtRVZNDt
-         pPxdLJ8gQV8S2z2TgSyc2yzzxjvxbmSxuBM43tAW24Q2Wezr9S1FQ6Mt73S/mCQyiHWO
-         kCfuydMlfsjg6/pBsiUO7VCszMaSnD2aU+9n1GMK7XcCvpD5B0aQYgk+BaKc/MsA0Wr/
-         viFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=5jgqKei2zXKIzWLNZrfShPq80y4Jd5xdvtwvka6rR5g=;
-        b=xlfzExLuWfZjxlPCsSJwQNio8OGRbr7OqhCjNuaYcV1mQz4hxjQibGPoal7nGsnR/r
-         GYKoXZ4CzivpmoChcfqqDRhWVDAbidc7y+TGOaWhSZRmbcu40A3S3fHSdQjB8Wo8oOSr
-         bqOM9f9cySVWFfya3ibGiEs54fhKMU0bf+AuM7EToO9MY4uefV3DIVFK+EmMUj+1EjAQ
-         Jk2ReefP8DxymM5eN7ksJsB8Nv7C3o8QTt/epGyBj1mOtdcPsyaTtcvuCJ/MG++1RTYl
-         ZMo7CwWXnbiq8iFf2lh80NUI782m2S7cB7v1U7kpWXhRf1vKX6bBeHSlfO+Zzy6ZVrC2
-         c8Gw==
-X-Gm-Message-State: ACgBeo3odfUYqmCArZEXXBNh3v4/Qn5hW1V17DmOH7fzANkmiYdXYuBn
-        ZhwhYrDBdC8dYjMQN6ZXDDJM0A==
-X-Google-Smtp-Source: AA6agR43cZGDFm+PQO3dwQr4fi68wE9MYBX9MebvlYdc9RdgxwtO1X/wxn+rVFo3orUQpfZifHJ3FQ==
-X-Received: by 2002:a05:600c:4f10:b0:3a5:f8c8:a5b5 with SMTP id l16-20020a05600c4f1000b003a5f8c8a5b5mr2235058wmq.34.1662112195250;
-        Fri, 02 Sep 2022 02:49:55 -0700 (PDT)
-Received: from localhost (cst2-173-67.cust.vodafone.cz. [31.30.173.67])
-        by smtp.gmail.com with ESMTPSA id e2-20020a056000120200b0022529d3e911sm1066172wrx.109.2022.09.02.02.49.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 02:49:55 -0700 (PDT)
-Date:   Fri, 2 Sep 2022 11:49:54 +0200
-From:   Andrew Jones <ajones@ventanamicro.com>
-To:     Heiko Stuebner <heiko@sntech.de>
-Cc:     paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, conor.dooley@microchip.com,
-        guoren@kernel.org, apatel@ventanamicro.com, atishp@rivosinc.com,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/4] riscv: drop some idefs from CMO initialization
-Message-ID: <20220902094954.xu4y6kradqrtd2jz@kamzik>
-References: <20220901222744.2210215-1-heiko@sntech.de>
- <20220901222744.2210215-2-heiko@sntech.de>
+        Fri, 2 Sep 2022 05:50:21 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A0E193DD;
+        Fri,  2 Sep 2022 02:50:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662112206; x=1693648206;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=IaIr/VGI/rpzpeneCz+2giuJhgGkXrDlzgjqfyGBTt0=;
+  b=XNkTVRDmdjYHpc2zFXWAZdqZpACq+NCba3Ncih6zotmMe7WIDd76MfKA
+   tz7osbCFVke4sAMyNUagTq4E74VnYOYvI1q5XhAO9NMwx5aymVwsSEqBD
+   /VmMQ/xyPAdLayyItkKqB8tgPPl/4RhBcGqOcp/2mrqp8/gMy5cSnOYBS
+   MHrE+nWMU2OjlrCehVWjH1MwD6tmq/wxr7gJstOvpVttJnZU/T1QSGJiu
+   R0tZ3QMtw7O3IFGxYgzUh53NWwdCCaoxeDXwRVUWo/G/yEr3otor7DGGw
+   vkKh4atgyoQzUiNhnWLxBC3Q4H1gAawh+U7/zVdigDvN8dFVsZPmPqKPJ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="359904491"
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="359904491"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 02:50:06 -0700
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="563913638"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 02:50:04 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oU3HE-007Jfu-1v;
+        Fri, 02 Sep 2022 12:47:52 +0300
+Date:   Fri, 2 Sep 2022 12:47:52 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        Len Brown <lenb@kernel.org>
+Subject: Re: [PATCH] ACPI / property: Silence missing-declarations warning in
+ apple.c
+Message-ID: <YxHRSPUWtQdP1w/4@smile.fi.intel.com>
+References: <202209020412.Ts31BZrs-lkp@intel.com>
+ <a6030c5943ccd2965261a92320b1ae1adb909116.1662084833.git.lukas@wunner.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220901222744.2210215-2-heiko@sntech.de>
+In-Reply-To: <a6030c5943ccd2965261a92320b1ae1adb909116.1662084833.git.lukas@wunner.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Sep 02, 2022 at 12:27:42AM +0200, Heiko Stuebner wrote:
-> Wrapping things in #ifdefs makes the code harder to read
-> while we also have IS_ENABLED() macros to do this in regular code
-> and the extension detection is not _that_ runtime critical.
+On Fri, Sep 02, 2022 at 04:15:55AM +0200, Lukas Wunner wrote:
+> Silence an annoying message emitted for W=1 builds:
 > 
-> So define a stub for riscv_noncoherent_supported() in the
-> non-CONFIG_RISCV_DMA_NONCOHERENT case and move the code to
-> us IS_ENABLED.
-> 
-> Suggested-by: Conor Dooley <conor.dooley@microchip.com>
-> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+> drivers/acpi/x86/apple.c:30:6: warning: no previous declaration for 'acpi_extract_apple_properties' [-Wmissing-declarations]
+
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Lukas Wunner <lukas@wunner.de>
 > ---
->  arch/riscv/errata/thead/errata.c    |  7 +++----
->  arch/riscv/include/asm/cacheflush.h |  2 ++
->  arch/riscv/kernel/cpufeature.c      | 22 +++++++++-------------
->  3 files changed, 14 insertions(+), 17 deletions(-)
->
+>  drivers/acpi/x86/apple.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/acpi/x86/apple.c b/drivers/acpi/x86/apple.c
+> index c285c91a5e9c..8812ecd03d55 100644
+> --- a/drivers/acpi/x86/apple.c
+> +++ b/drivers/acpi/x86/apple.c
+> @@ -8,6 +8,7 @@
+>  #include <linux/bitmap.h>
+>  #include <linux/platform_data/x86/apple.h>
+>  #include <linux/uuid.h>
+> +#include "../internal.h"
+>  
+>  /* Apple _DSM device properties GUID */
+>  static const guid_t apple_prp_guid =
+> -- 
+> 2.36.1
+> 
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-Reviewed-by: Andrew Jones <ajones@ventanamicro.com>
