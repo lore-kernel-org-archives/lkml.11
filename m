@@ -2,251 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B04AECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 16:39:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 793F0ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 16:44:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235548AbiIBQji (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 12:39:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36410 "EHLO
+        id S235995AbiIBQoI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 12:44:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230257AbiIBQjf (ORCPT
+        with ESMTP id S236145AbiIBQoG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 12:39:35 -0400
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58410F54AE
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 09:39:33 -0700 (PDT)
-Received: from mail.ispras.ru (unknown [83.149.199.84])
-        by mail.ispras.ru (Postfix) with ESMTPSA id 404BB40737A8;
-        Fri,  2 Sep 2022 16:39:28 +0000 (UTC)
+        Fri, 2 Sep 2022 12:44:06 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7C5F72E0
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 09:44:05 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id kk26so4952372ejc.11
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 09:44:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=VmUnMpMx9FCpdgOfRQX0qdDo5Ev0z9Y827Nqgg69gqA=;
+        b=C9WaGds13KebfDZBCKtuewhv6eHNZKasIwrABJm8q88TgSSillzYLfRXxuIkeWJ+EE
+         ATXb5NU2GQZXcTPBfK0lU7BTe8a0OK1fE8MMAFockFtrlxQjFA7bjr1tHm+FWl1M0jfB
+         bsQB3zJpW2YyG0sGyLHuO2fvRrTjl9vsriR8c=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=VmUnMpMx9FCpdgOfRQX0qdDo5Ev0z9Y827Nqgg69gqA=;
+        b=HqX9V2cxctlZ58d+nBg1Chl5zXOXQ8gd32z0eEq3spS7Wb+3ZoyJkUQjICiwr0f3Fz
+         6s2RrB4KZ6JinaRI66cGIFBh3RFWcbNo1HHkpOS9pzqpU/okNHCoTEeprTge/0cZunAO
+         Q/Ks5o30dKa/6iN0O0Y5cO59d9AsE3qHsKllxUVk8AI+dhJplyt3IlYmYxWvB2jYrv2G
+         Kwev4dvSSXjMWulKGhPRWo3e129Crr8aoF7GMdHCnuU7GIDFnnUoRuqrHMjzom1RnrWb
+         M78GoA+lC4lS8deekCHWfGd5M6xRHIdyecOfExeSIrRd39E6Hl9qZok6m7de+oTtp4Dt
+         86wA==
+X-Gm-Message-State: ACgBeo0bYQC0cbwF1suGj6b5Ph/Pzt0citZIAHeu5nGrZrC6ma7uLnh2
+        cmCfnQjUHG02aVz9Nw2t5F/tMeTTidh7fjD/
+X-Google-Smtp-Source: AA6agR481b+7l4ai4nfWxuekmNFsH8/bGVLtLNz8GWpPRz6BkxmLl7uCtU92GhHPDxiVK7DalTxYJg==
+X-Received: by 2002:a17:907:9693:b0:73d:cc84:deb with SMTP id hd19-20020a170907969300b0073dcc840debmr27666238ejc.552.1662137043405;
+        Fri, 02 Sep 2022 09:44:03 -0700 (PDT)
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com. [209.85.221.45])
+        by smtp.gmail.com with ESMTPSA id f17-20020a1709067f9100b0073a62f3b447sm1508351ejr.44.2022.09.02.09.44.02
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Sep 2022 09:44:02 -0700 (PDT)
+Received: by mail-wr1-f45.google.com with SMTP id c7so3000483wrp.11
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 09:44:02 -0700 (PDT)
+X-Received: by 2002:a5d:4052:0:b0:225:8b55:67fd with SMTP id
+ w18-20020a5d4052000000b002258b5567fdmr17701419wrp.281.1662137041789; Fri, 02
+ Sep 2022 09:44:01 -0700 (PDT)
 MIME-Version: 1.0
-Date:   Fri, 02 Sep 2022 19:39:28 +0300
-From:   Alexey Izbyshev <izbyshev@ispras.ru>
-To:     Andrei Vagin <avagin@gmail.com>
-Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        Florian Weimer <fweimer@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Kees Cook <keescook@chromium.org>
-Subject: Re: Potentially undesirable interactions between vfork() and time
- namespaces
-In-Reply-To: <YxIr15QTmYb4Uojq@gmail.com>
-References: <YxAq2jYvGG8QOypu@gmail.com>
- <87czcfhsme.fsf@email.froward.int.ebiederm.org> <YxIr15QTmYb4Uojq@gmail.com>
-User-Agent: Roundcube Webmail/1.4.4
-Message-ID: <b14a9802e171b3148c62f6193d08fa92@ispras.ru>
-X-Sender: izbyshev@ispras.ru
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220902130625.217071627@infradead.org> <20220902130950.205726504@infradead.org>
+In-Reply-To: <20220902130950.205726504@infradead.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 2 Sep 2022 09:43:45 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wig7_=CpkvZXrbcM97pBGk5MCbVkA0yBGP2moiho-XS_Q@mail.gmail.com>
+Message-ID: <CAHk-=wig7_=CpkvZXrbcM97pBGk5MCbVkA0yBGP2moiho-XS_Q@mail.gmail.com>
+Subject: Re: [PATCH v2 37/59] x86/putuser: Provide room for padding
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+        x86@kernel.org, Tim Chen <tim.c.chen@linux.intel.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Andrew Cooper <Andrew.Cooper3@citrix.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Johannes Wikner <kwikner@ethz.ch>,
+        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
+        Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
+        Joao Moreira <joao.moreira@intel.com>,
+        Joseph Nuzman <joseph.nuzman@intel.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Juergen Gross <jgross@suse.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        K Prateek Nayak <kprateek.nayak@amd.com>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-09-02 19:14, Andrei Vagin wrote:
-> On Thu, Sep 01, 2022 at 01:11:37PM -0500, Eric W. Biederman wrote:
->> Andrei Vagin <avagin@gmail.com> writes:
->> 
->> > On Tue, Aug 30, 2022 at 6:18 PM Andrei Vagin <avagin@gmail.com> wrote:
->> >>On Tue, Aug 30, 2022 at 10:49:43PM +0300, Alexey Izbyshev wrote:
->> > <snip>
->> >>> @@ -1030,6 +1033,10 @@ static int exec_mmap(struct mm_struct *mm)
->> >>>         tsk->mm->vmacache_seqnum = 0;
->> >>>         vmacache_flush(tsk);
->> >>>         task_unlock(tsk);
->> >>> +
->> >>> +       if (vfork)
->> >>> +               timens_on_fork(tsk->nsproxy, tsk);
->> >>> +
->> >>>
->> >>> Similarly, even after a normal vfork(), time namespace switch could be
->> >>> silently skipped if the parent dies before "tsk->vfork_done" is read. Again,
->> >>> I don't know whether anybody cares, but this behavior seems non-obvious and
->> >>> probably unintended to me.
->> >> This is the more interesting case. I will try to find out how we can
->> >> handle it properly.
->> >
->> > It might not be a good idea to use vfork_done in this case. Let's
->> > think about what we have and what we want to change. We don't want to
->> > allow switching timens if a process mm is used by someone else. But we
->> > forgot to handle execve that creates a new mm, and we can't change this
->> > behavior right now because it can affect current users. Right?
->> 
->> What we can't changes are things that will break existing programs.  
->> If
->> existing programs don't care we can change the behavior of the kernel.
-> 
-> I agree that it is very unlikely that anyone will notice
-> these changes. And it is hard to imagine that anyone uses the old
-> behavior intentionally.
-> 
->> 
->> > So maybe the best choice, in this case, is to change behavior by adding
->> > a new control that enables it. The first interface that comes to my mind
->> > is to introduce a new ioctl for a namespace file descriptor. Here is a
->> > draft patch below that should help to understand what I mean.
->> 
->> I don't think adding a new control works, because programs that are
->> calling vfork or posix_spawn today will stop working.
->> 
->> We should recognize that basing things off of CLONE_VFORK was a bad 
->> idea
->> as CLONE_VFORK is all about waiting for the created task to exec or
->> exit, and really has nothing to do with creating a new mm.
->> 
->> Instead I think the rule should be that a new time namespaces is
->> installed as soon as we have a new mm.
->> 
->> That will be a behavioral change if the time ns is unshared and then 
->> the
->> program exec's instead of forking children, but I suspect it is the
->> proper behavior all the same, and that existing userspace won't care.
->> Especially since all of the vfork_done work is new behavior as
->> of v6.0-rc1.
->> 
->> Ugh.  I just spotted another bug.  The function timens_on_fork as
->> written is not safe to call without first creating a fresh copy
->> of the nsproxy, and we don't do that during exec.  Because nsproxy
->> is shared between tasks and processes updating the values needs to
->> create a new nsproxy or other tasks/processes can be affected.
->> Not hard to handle just something that needs to be addressed.
-> 
-> You are right. Thanks.
-> 
->> 
->> Say something like this:
->> 
->> diff --git a/fs/exec.c b/fs/exec.c
->> index 9a5ca7b82bfc..8a6947e631dd 100644
->> --- a/fs/exec.c
->> +++ b/fs/exec.c
->> @@ -979,12 +979,10 @@ static int exec_mmap(struct mm_struct *mm)
->>  {
->>  	struct task_struct *tsk;
->>  	struct mm_struct *old_mm, *active_mm;
->> -	bool vfork;
->>  	int ret;
->> 
->>  	/* Notify parent that we're no longer interested in the old VM */
->>  	tsk = current;
->> -	vfork = !!tsk->vfork_done;
->>  	old_mm = current->mm;
->>  	exec_mm_release(tsk, old_mm);
->>  	if (old_mm)
->> @@ -1030,9 +1028,6 @@ static int exec_mmap(struct mm_struct *mm)
->>  	vmacache_flush(tsk);
->>  	task_unlock(tsk);
->> 
->> -	if (vfork)
->> -		timens_on_fork(tsk->nsproxy, tsk);
->> -
->>  	if (old_mm) {
->>  		mmap_read_unlock(old_mm);
->>  		BUG_ON(active_mm != old_mm);
->> @@ -1303,6 +1298,10 @@ int begin_new_exec(struct linux_binprm * bprm)
->> 
->>  	bprm->mm = NULL;
->> 
->> +	retval = exec_task_namespaces();
->> +	if (retval)
->> +		goto out_unlock;
->> +
->>  #ifdef CONFIG_POSIX_TIMERS
->>  	spin_lock_irq(&me->sighand->siglock);
->>  	posix_cpu_timers_exit(me);
->> diff --git a/include/linux/nsproxy.h b/include/linux/nsproxy.h
->> index cdb171efc7cb..fee881cded01 100644
->> --- a/include/linux/nsproxy.h
->> +++ b/include/linux/nsproxy.h
->> @@ -94,6 +94,7 @@ static inline struct cred *nsset_cred(struct nsset 
->> *set)
->>  int copy_namespaces(unsigned long flags, struct task_struct *tsk);
->>  void exit_task_namespaces(struct task_struct *tsk);
->>  void switch_task_namespaces(struct task_struct *tsk, struct nsproxy 
->> *new);
->> +int exec_task_namespaces(void);
->>  void free_nsproxy(struct nsproxy *ns);
->>  int unshare_nsproxy_namespaces(unsigned long, struct nsproxy **,
->>  	struct cred *, struct fs_struct *);
->> diff --git a/kernel/fork.c b/kernel/fork.c
->> index 90c85b17bf69..b4a799d9c50f 100644
->> --- a/kernel/fork.c
->> +++ b/kernel/fork.c
->> @@ -2043,18 +2043,6 @@ static __latent_entropy struct task_struct 
->> *copy_process(
->>  			return ERR_PTR(-EINVAL);
->>  	}
->> 
->> -	/*
->> -	 * If the new process will be in a different time namespace
->> -	 * do not allow it to share VM or a thread group with the forking 
->> task.
->> -	 *
->> -	 * On vfork, the child process enters the target time namespace only
->> -	 * after exec.
->> -	 */
->> -	if ((clone_flags & (CLONE_VM | CLONE_VFORK)) == CLONE_VM) {
->> -		if (nsp->time_ns != nsp->time_ns_for_children)
->> -			return ERR_PTR(-EINVAL);
->> -	}
-> 
-> pls don't remove this part. It was one of the concerns that vfork
-> doesn't work after unshare(CLONE_NEWTIME), but it is one of the 
-> standard
-> ways of creating a new process. For example, posix_spawn uses it.
-> 
-What do you mean? On the contrary, removing this restriction of the 
-original time namespace implementation allows vfork(), pthread_create() 
-and the like, solving the issue with posix_spawn() as well.
+So I don't hate this patch and it's probably good for consistency, but
+I really think that the retbleed tracking could perhaps be improved to
+let this be all unnecessary.
 
-Thanks,
-Alexey
->> -
->>  	if (clone_flags & CLONE_PIDFD) {
->>  		/*
->>  		 * - CLONE_DETACHED is blocked so that we can potentially
->> diff --git a/kernel/nsproxy.c b/kernel/nsproxy.c
->> index b4cbb406bc28..b6647846fe42 100644
->> --- a/kernel/nsproxy.c
->> +++ b/kernel/nsproxy.c
->> @@ -255,6 +255,24 @@ void exit_task_namespaces(struct task_struct *p)
->>  	switch_task_namespaces(p, NULL);
->>  }
->> 
->> +int exec_task_namespaces(void)
->> +{
->> +	struct task_struct *tsk = current;
->> +	struct nsproxy *new;
->> +
->> +	if (tsk->nsproxy->time_ns_for_children == tsk->nsproxy->time_ns)
->> +		return 0;
->> +
->> +	new = create_new_namespaces(0, tsk, current_user_ns(), tsk->fs);
->> +	if (IS_ERR(new))
->> +		return PTR_ERR(new);
->> +
->> +	timens_on_fork(new, tsk);
->> +	switch_task_namespaces(tsk, new);
->> +	return 0;
->> +}
->> +
->> +
->>  static int check_setns_flags(unsigned long flags)
->>  {
->>  	if (!flags || (flags & ~(CLONE_NEWNS | CLONE_NEWUTS | CLONE_NEWIPC |
->> 
->> 
->> 
->> To keep things from being too confusing it probably makes sense to
->> rename the nsproxy variable from time_ns_for_children to
->> time_ns_for_new_mm.  Likewise timens_on_fork can be renamed
->> timens_on_new_mm.
->> 
->> But that would be follow up work.
->> 
->> How does the above change sound to folks?
-> 
-> It looks good to me.
-> 
-> Thanks,
-> Andrei
+The whole return stack depth counting is already not 100% exact, and I
+think we could just make the rule be that we don't track leaf
+functions.
+
+Why? It's just a off-by-one in the already not exact tracking. And -
+perhaps equally importantly - leaf functions are very very common
+dynamically, and I suspect it's trivial to see them.
+
+Yes, yes, you could make objtool even smarter and actually do some
+kind of function flow graph thing (and I think some people were
+talking about that with the whole ret counting long long ago), but the
+leaf function thing is the really simple low-hanging fruit case of
+that.
+
+            Linus
