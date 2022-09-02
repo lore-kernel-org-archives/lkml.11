@@ -2,52 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A07EC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:40:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D5E9C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:40:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237230AbiIBMkt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:40:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42148 "EHLO
+        id S237256AbiIBMkz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:40:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237172AbiIBMil (ORCPT
+        with ESMTP id S237192AbiIBMio (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:38:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93C443FA11;
-        Fri,  2 Sep 2022 05:30:21 -0700 (PDT)
+        Fri, 2 Sep 2022 08:38:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC1F357D4;
+        Fri,  2 Sep 2022 05:30:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CEB21B82AA5;
-        Fri,  2 Sep 2022 12:28:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01041C433D6;
-        Fri,  2 Sep 2022 12:28:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2EEA26212F;
+        Fri,  2 Sep 2022 12:28:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E23BC433D6;
+        Fri,  2 Sep 2022 12:28:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121726;
-        bh=e7iSAsuMgLzDD22dnjqsXL2x5AyqGYLuAhRZDowhmYM=;
+        s=korg; t=1662121738;
+        bh=UuMUeBmpGk/Mnp+63zDG82AHnd7WX/mFvSbFWECgQbo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YiuxYFqTD3SHywplhLDPoE3SJ76ck4TprfwGJ9f75efu8E4nqivmhe2yiD5i59aGf
-         CZjz/ZlLJbOf8xOeACcF3jioGwwOTn1pCnXRbkvd8lJgbmoxGi8CFADBM6NFU8vB82
-         DZTUDcctI1joYCVYicVPpNyBo1BOgeKkCERoWvAU=
+        b=UB4yKmBrCOdDaRXGiKBEFqpy5bb5J9FQKbCgdxdGNNNdw+g/ZF6Wsjsc52XWuyWLK
+         Pk/GxGGLEsVAZxPu3cbf5wc7xNIQ4Ir3Xw6E/BWJkEupX50mUK8n51dp1tZyt/O3IZ
+         r6mnsh01uoIs3hrVOmgmQSu0vH2Ezu/a6JT0vbg4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Hildenbrand <david@redhat.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Peter Feiner <pfeiner@google.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Cyrill Gorcunov <gorcunov@openvz.org>,
-        Pavel Emelyanov <xemul@parallels.com>,
-        Jamie Liu <jamieliu@google.com>,
-        Hugh Dickins <hughd@google.com>,
-        Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Peter Xu <peterx@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.4 45/77] mm/hugetlb: fix hugetlb not supporting softdirty tracking
-Date:   Fri,  2 Sep 2022 14:18:54 +0200
-Message-Id: <20220902121405.146172884@linuxfoundation.org>
+        Jann Horn <jannh@google.com>
+Subject: [PATCH 5.4 49/77] mm: Force TLB flush for PFNMAP mappings before unlink_file_vma()
+Date:   Fri,  2 Sep 2022 14:18:58 +0200
+Message-Id: <20220902121405.269688237@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
 References: <20220902121403.569927325@linuxfoundation.org>
@@ -59,163 +47,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Hildenbrand <david@redhat.com>
+From: Jann Horn <jannh@google.com>
 
-commit f96f7a40874d7c746680c0b9f57cef2262ae551f upstream.
+commit b67fbebd4cf980aecbcc750e1462128bffe8ae15 upstream.
 
-Patch series "mm/hugetlb: fix write-fault handling for shared mappings", v2.
+Some drivers rely on having all VMAs through which a PFN might be
+accessible listed in the rmap for correctness.
+However, on X86, it was possible for a VMA with stale TLB entries
+to not be listed in the rmap.
 
-I observed that hugetlb does not support/expect write-faults in shared
-mappings that would have to map the R/O-mapped page writable -- and I
-found two case where we could currently get such faults and would
-erroneously map an anon page into a shared mapping.
+This was fixed in mainline with
+commit b67fbebd4cf9 ("mmu_gather: Force tlb-flush VM_PFNMAP vmas"),
+but that commit relies on preceding refactoring in
+commit 18ba064e42df3 ("mmu_gather: Let there be one tlb_{start,end}_vma()
+implementation") and commit 1e9fdf21a4339 ("mmu_gather: Remove per arch
+tlb_{start,end}_vma()").
 
-Reproducers part of the patches.
+This patch provides equivalent protection without needing that
+refactoring, by forcing a TLB flush between removing PTEs in
+unmap_vmas() and the call to unlink_file_vma() in free_pgtables().
 
-I propose to backport both fixes to stable trees.  The first fix needs a
-small adjustment.
-
-
-This patch (of 2):
-
-Staring at hugetlb_wp(), one might wonder where all the logic for shared
-mappings is when stumbling over a write-protected page in a shared
-mapping.  In fact, there is none, and so far we thought we could get away
-with that because e.g., mprotect() should always do the right thing and
-map all pages directly writable.
-
-Looks like we were wrong:
-
---------------------------------------------------------------------------
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
- #include <fcntl.h>
- #include <unistd.h>
- #include <errno.h>
- #include <sys/mman.h>
-
- #define HUGETLB_SIZE (2 * 1024 * 1024u)
-
- static void clear_softdirty(void)
- {
-         int fd = open("/proc/self/clear_refs", O_WRONLY);
-         const char *ctrl = "4";
-         int ret;
-
-         if (fd < 0) {
-                 fprintf(stderr, "open(clear_refs) failed\n");
-                 exit(1);
-         }
-         ret = write(fd, ctrl, strlen(ctrl));
-         if (ret != strlen(ctrl)) {
-                 fprintf(stderr, "write(clear_refs) failed\n");
-                 exit(1);
-         }
-         close(fd);
- }
-
- int main(int argc, char **argv)
- {
-         char *map;
-         int fd;
-
-         fd = open("/dev/hugepages/tmp", O_RDWR | O_CREAT);
-         if (!fd) {
-                 fprintf(stderr, "open() failed\n");
-                 return -errno;
-         }
-         if (ftruncate(fd, HUGETLB_SIZE)) {
-                 fprintf(stderr, "ftruncate() failed\n");
-                 return -errno;
-         }
-
-         map = mmap(NULL, HUGETLB_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
-         if (map == MAP_FAILED) {
-                 fprintf(stderr, "mmap() failed\n");
-                 return -errno;
-         }
-
-         *map = 0;
-
-         if (mprotect(map, HUGETLB_SIZE, PROT_READ)) {
-                 fprintf(stderr, "mmprotect() failed\n");
-                 return -errno;
-         }
-
-         clear_softdirty();
-
-         if (mprotect(map, HUGETLB_SIZE, PROT_READ|PROT_WRITE)) {
-                 fprintf(stderr, "mmprotect() failed\n");
-                 return -errno;
-         }
-
-         *map = 0;
-
-         return 0;
- }
---------------------------------------------------------------------------
-
-Above test fails with SIGBUS when there is only a single free hugetlb page.
- # echo 1 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
- # ./test
- Bus error (core dumped)
-
-And worse, with sufficient free hugetlb pages it will map an anonymous page
-into a shared mapping, for example, messing up accounting during unmap
-and breaking MAP_SHARED semantics:
- # echo 2 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
- # ./test
- # cat /proc/meminfo | grep HugePages_
- HugePages_Total:       2
- HugePages_Free:        1
- HugePages_Rsvd:    18446744073709551615
- HugePages_Surp:        0
-
-Reason in this particular case is that vma_wants_writenotify() will
-return "true", removing VM_SHARED in vma_set_page_prot() to map pages
-write-protected. Let's teach vma_wants_writenotify() that hugetlb does not
-support softdirty tracking.
-
-Link: https://lkml.kernel.org/r/20220811103435.188481-1-david@redhat.com
-Link: https://lkml.kernel.org/r/20220811103435.188481-2-david@redhat.com
-Fixes: 64e455079e1b ("mm: softdirty: enable write notifications on VMAs after VM_SOFTDIRTY cleared")
-Signed-off-by: David Hildenbrand <david@redhat.com>
-Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: Peter Feiner <pfeiner@google.com>
-Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Cc: Cyrill Gorcunov <gorcunov@openvz.org>
-Cc: Pavel Emelyanov <xemul@parallels.com>
-Cc: Jamie Liu <jamieliu@google.com>
-Cc: Hugh Dickins <hughd@google.com>
-Cc: Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Muchun Song <songmuchun@bytedance.com>
-Cc: Peter Xu <peterx@redhat.com>
-Cc: <stable@vger.kernel.org>	[3.18+]
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: David Hildenbrand <david@redhat.com>
+[This is a stable-specific rewrite of the upstream commit!]
+Signed-off-by: Jann Horn <jannh@google.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/mmap.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ mm/mmap.c |   12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
 --- a/mm/mmap.c
 +++ b/mm/mmap.c
-@@ -1679,8 +1679,12 @@ int vma_wants_writenotify(struct vm_area
- 	    pgprot_val(vm_pgprot_modify(vm_page_prot, vm_flags)))
- 		return 0;
- 
--	/* Do we need to track softdirty? */
--	if (IS_ENABLED(CONFIG_MEM_SOFT_DIRTY) && !(vm_flags & VM_SOFTDIRTY))
+@@ -2610,6 +2610,18 @@ static void unmap_region(struct mm_struc
+ 	tlb_gather_mmu(&tlb, mm, start, end);
+ 	update_hiwater_rss(mm);
+ 	unmap_vmas(&tlb, vma, start, end);
++
 +	/*
-+	 * Do we need to track softdirty? hugetlb does not support softdirty
-+	 * tracking yet.
++	 * Ensure we have no stale TLB entries by the time this mapping is
++	 * removed from the rmap.
++	 * Note that we don't have to worry about nested flushes here because
++	 * we're holding the mm semaphore for removing the mapping - so any
++	 * concurrent flush in this region has to be coming through the rmap,
++	 * and we synchronize against that using the rmap lock.
 +	 */
-+	if (IS_ENABLED(CONFIG_MEM_SOFT_DIRTY) && !(vm_flags & VM_SOFTDIRTY) &&
-+	    !is_vm_hugetlb_page(vma))
- 		return 1;
- 
- 	/* Specialty mapping? */
++	if ((vma->vm_flags & (VM_PFNMAP|VM_MIXEDMAP)) != 0)
++		tlb_flush_mmu(&tlb);
++
+ 	free_pgtables(&tlb, vma, prev ? prev->vm_end : FIRST_USER_ADDRESS,
+ 				 next ? next->vm_start : USER_PGTABLES_CEILING);
+ 	tlb_finish_mmu(&tlb, start, end);
 
 
