@@ -2,159 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53AD6C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 10:32:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E82FCC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 10:32:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235708AbiIBKcN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 06:32:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47866 "EHLO
+        id S235574AbiIBKcn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 06:32:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235461AbiIBKcD (ORCPT
+        with ESMTP id S235787AbiIBKce (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 06:32:03 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ABD2AE20F;
-        Fri,  2 Sep 2022 03:32:01 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id x10so1805728ljq.4;
-        Fri, 02 Sep 2022 03:32:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=oS1FPn188GwYqcEpeAiuLHN0qFHFB655DOQwCXbqud0=;
-        b=n3OAhLhYLpZxMnQfsFjiyUnhcv12eKqug64v55vPtpE/UCjJaNIZHCA+Wwv+6WbtT/
-         qWkYjCAk4Yjkuctjw0fBnbyysWH+4pCHaxR5XU+s4CKQjBA8zqhlLNk/otAC43pVbwk/
-         +Oxsn+VvggqMRnSHBrZ+4CWc9VjYKgT5IxVQ6II8ncEcyJrTjiDJmp2cyMJgIaGZlVbQ
-         +Ann9KO6Y/CoglJHcaRMsiN1jERvtH9CBEqaVN6GF/whofd6gb7RHL1HfeSFl8tQ1bkZ
-         Wfhpb2x7/mkxuV0CZPD44CTBUcnCyTj5Pbq+/Suo58ul0XAxasomkcmrFrUsPxyLaF5j
-         07AA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=oS1FPn188GwYqcEpeAiuLHN0qFHFB655DOQwCXbqud0=;
-        b=FA1bMzFrtY05RO1wuizXTvliyrX39Vtz0FHBlja11kxbZdnkgsfD67a3Nfr2fdlt8p
-         aXeEMFfWrvrLWp5QU+CNdTLlIp1oz3kMzfDd+r5EvsVNARa9X+Yy5fD7gecwjgcgDF7S
-         WXfHoMNDWw+XHObFUKmfBKvz1IBdkkyxpGAjPmTbSThvRrm9t6t9SJQTLZbs5k9sX/z7
-         VbW6smUW2F8rcIdadDK1widVqFAslNpEdXoqlwNe0I4Lt1bZHF4al9O6UfZYin/mL5al
-         HkY2qfRNQXb7HvsXvjp9bsZKPRz1LFdbttwmA5hgzyHGUfOinB3h6Gb/dwiO0JINDzoS
-         GHFA==
-X-Gm-Message-State: ACgBeo0ZBjKyEzkYG9XwbBs6AfJiwWJ+RD3fYxpaHbEWOZv9IQxqdKn+
-        aZjiGKejPNDAoAC6Q9X4JHY=
-X-Google-Smtp-Source: AA6agR6ou/2uO4ZwPmqiUBrbDeggu1Vc3sPE8fBViDweS453cB4ryN7X8CzDyYJrxfL2DeihrtrS8A==
-X-Received: by 2002:a05:651c:4cf:b0:265:3ba8:92f7 with SMTP id e15-20020a05651c04cf00b002653ba892f7mr6302546lji.105.1662114718656;
-        Fri, 02 Sep 2022 03:31:58 -0700 (PDT)
-Received: from [192.168.2.145] (109-252-119-13.nat.spd-mgts.ru. [109.252.119.13])
-        by smtp.googlemail.com with ESMTPSA id u9-20020ac258c9000000b0048b064707ebsm205794lfo.103.2022.09.02.03.31.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Sep 2022 03:31:58 -0700 (PDT)
-Message-ID: <760b999f-b15d-102e-8bc7-c3e69f07f43f@gmail.com>
-Date:   Fri, 2 Sep 2022 13:31:56 +0300
+        Fri, 2 Sep 2022 06:32:34 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA84EB07D1;
+        Fri,  2 Sep 2022 03:32:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1662114751; x=1693650751;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=QTCs0BKJ8AZF5dsnIBAu9d9AC7NCckejdUsulm1LMWE=;
+  b=IUm4vx3Bx+DivTCaF9Zh72gLPkesJj+Vz9+DGqZFgPuNd/l1tjCM6xjH
+   OorDN+zcwodb9t4sUDChnjqnUkVuB0e37uP4daDdZL5cMSifez+JEbIeo
+   3wAq1zk5/wvJPGxb3Gs/ciWZT58+iQXl7qyA5I5R1FsyZX0QMztZjipMp
+   YXFsX3MnnNFp8Duqg9rOYR0V8Vc3qdK/Z3cKuS93g6dyfkCvQUT0AoSl1
+   gQvEcWArSOT2ICkBFyYXbwRAwqnzjQFf5Velje9V1QvQQ2SKGl0faoLBm
+   CR8NYHts+vGEAbMxCDNnUc7AWMQdsVh45LzbV4AQZf0c/tcQc5jWTe4IT
+   g==;
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="178772910"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 Sep 2022 03:32:30 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Fri, 2 Sep 2022 03:32:29 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Fri, 2 Sep 2022 03:32:24 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Woojung Huh <woojung.huh@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Russell King" <linux@armlinux.org.uk>,
+        Tristram Ha <Tristram.Ha@microchip.com>
+Subject: [Patch net-next 1/3] net: dsa: microchip: add reference to ksz_device inside the ksz_port
+Date:   Fri, 2 Sep 2022 16:02:08 +0530
+Message-ID: <20220902103210.10743-2-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220902103210.10743-1-arun.ramadoss@microchip.com>
+References: <20220902103210.10743-1-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v4 06/21] drm/i915: Prepare to dynamic dma-buf locking
- specification
-Content-Language: en-US
-To:     "Ruhl, Michael J" <michael.j.ruhl@intel.com>,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        =?UTF-8?Q?Thomas_Hellstr=c3=b6m?= <thomas_os@shipmail.org>,
-        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>
-Cc:     "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-        "linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>,
-        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
-        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
-        "kernel@collabora.com" <kernel@collabora.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        Daniel Stone <daniel@fooishbar.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Rob Clark <robdclark@gmail.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Qiang Yu <yuq825@gmail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Amol Maheshwari <amahesh@qti.qualcomm.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>,
-        "Gross, Jurgen" <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        Tomi Valkeinen <tomba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>
-References: <20220831153757.97381-1-dmitry.osipenko@collabora.com>
- <20220831153757.97381-7-dmitry.osipenko@collabora.com>
- <DM5PR11MB1324088635FDE00B0D957816C17B9@DM5PR11MB1324.namprd11.prod.outlook.com>
-From:   Dmitry Osipenko <digetx@gmail.com>
-In-Reply-To: <DM5PR11MB1324088635FDE00B0D957816C17B9@DM5PR11MB1324.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-01.09.2022 17:02, Ruhl, Michael J пишет:
-...
->> --- a/drivers/gpu/drm/i915/gem/i915_gem_object.c
->> +++ b/drivers/gpu/drm/i915/gem/i915_gem_object.c
->> @@ -331,7 +331,19 @@ static void __i915_gem_free_objects(struct
->> drm_i915_private *i915,
->> 			continue;
->> 		}
->>
->> +		/*
->> +		 * dma_buf_unmap_attachment() requires reservation to be
->> +		 * locked. The imported GEM shouldn't share reservation lock,
->> +		 * so it's safe to take the lock.
->> +		 */
->> +		if (obj->base.import_attach)
->> +			i915_gem_object_lock(obj, NULL);
-> 
-> There is a lot of stuff going here.  Taking the lock may be premature...
-> 
->> 		__i915_gem_object_pages_fini(obj);
-> 
-> The i915_gem_dmabuf.c:i915_gem_object_put_pages_dmabuf is where
-> unmap_attachment is actually called, would it make more sense to make
-> do the locking there?
+struct ksz_port doesn't have reference to ksz_device as of now. In order
+to find out from which port interrupt has triggered, we need to pass the
+struct ksz_port as a host data. When the interrupt is triggered, we can
+get the port from which interrupt triggered, but to identify it is phy
+interrupt we have to read status register. The regmap structure for
+accessing the device register is present in the ksz_device struct. To
+access the ksz_device from the ksz_port, the reference is added to it
+with port number as well.
 
-The __i915_gem_object_put_pages() is invoked with a held reservation
-lock, while freeing object is a special time when we know that GEM is
-unused.
+Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+---
+ drivers/net/dsa/microchip/ksz_common.c | 3 +++
+ drivers/net/dsa/microchip/ksz_common.h | 4 ++++
+ 2 files changed, 7 insertions(+)
 
-The __i915_gem_free_objects() was taking the lock two weeks ago until
-the change made Chris Wilson [1] reached linux-next.
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 37fb5ba2cd7a..63b9faa89393 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -2357,6 +2357,9 @@ int ksz_switch_register(struct ksz_device *dev)
+ 				     GFP_KERNEL);
+ 		if (!dev->ports[i].mib.counters)
+ 			return -ENOMEM;
++
++		dev->ports[i].ksz_dev = dev;
++		dev->ports[i].num = i;
+ 	}
+ 
+ 	/* set the real number of ports */
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index c01989c04d4e..3fa3e4731d58 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -16,6 +16,8 @@
+ 
+ #define KSZ_MAX_NUM_PORTS 8
+ 
++struct ksz_device;
++
+ struct vlan_table {
+ 	u32 table[3];
+ };
+@@ -83,6 +85,8 @@ struct ksz_port {
+ 	u16 max_frame;
+ 	u32 rgmii_tx_val;
+ 	u32 rgmii_rx_val;
++	struct ksz_device *ksz_dev;
++	u8 num;
+ };
+ 
+ struct ksz_device {
+-- 
+2.36.1
 
-[1]
-https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=2826d447fbd60e6a05e53d5f918bceb8c04e315c
-
-I don't think we can take the lock within
-i915_gem_object_put_pages_dmabuf(), it may/should deadlock other code paths.
