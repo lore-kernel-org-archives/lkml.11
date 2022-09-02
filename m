@@ -2,119 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C523EECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 10:54:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0777EC54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 10:54:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235730AbiIBKyE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 06:54:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56302 "EHLO
+        id S235859AbiIBKyL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 06:54:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbiIBKyB (ORCPT
+        with ESMTP id S235482AbiIBKyI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 06:54:01 -0400
-Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE86C480C;
-        Fri,  2 Sep 2022 03:54:00 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.30.67.143])
-        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4MJvrG5MShzlCC0;
-        Fri,  2 Sep 2022 18:52:30 +0800 (CST)
-Received: from [10.174.176.73] (unknown [10.174.176.73])
-        by APP2 (Coremail) with SMTP id Syh0CgD3SXPE4BFjn3sRAQ--.17387S3;
-        Fri, 02 Sep 2022 18:53:58 +0800 (CST)
-Subject: Re: [PATCH -next 2/3] md/raid10: convert resync_lock to use seqlock
-To:     Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Yu Kuai <yukuai1@huaweicloud.com>, song@kernel.org
-Cc:     linux-raid@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yi.zhang@huawei.com, "yukuai (C)" <yukuai3@huawei.com>
-References: <20220829131502.165356-1-yukuai1@huaweicloud.com>
- <20220829131502.165356-3-yukuai1@huaweicloud.com>
- <3d8859bc-80d6-08b0-fd40-8874df4d3419@linux.dev>
- <1891ec2c-0ccc-681e-31de-fdd28eebce82@huaweicloud.com>
- <82f11462-454c-4a5e-d3a2-e71479960eaf@linux.dev>
-From:   Yu Kuai <yukuai1@huaweicloud.com>
-Message-ID: <01191595-f2f7-d953-fb00-e24803910515@huaweicloud.com>
-Date:   Fri, 2 Sep 2022 18:53:56 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Fri, 2 Sep 2022 06:54:08 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 821FDC88A1
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 03:54:07 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id h13-20020a17090a648d00b001fdb9003787so1753752pjj.4
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 03:54:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=vT4GD3+/0MzbbBEdOSGt98w+JvqU9hw4JCyFBULPEdA=;
+        b=5RX14LCU/zE20jlyYS+jNVKQQY9uCRNuM5U94KDBQRnMPdv/BHlAUQKGHnpHxtYgPt
+         YUC3gSidU4Ur8dKx1aE1Q39Pl1kU0Sc9F350a4+d8tRlMnGjCwrjlp1fF9xb38kQpzK4
+         8rVNcFKvZdeU+5qqa1gtZoz4qq91WYBrw0clTb3l1kCU1RENsFuy+cZRf6m82kjXwxH+
+         fUXq4nkVHXTHH8R/i1iasX0iwxtcQi1zp+kB8DAVoxpEI3K2+pNNvY8eGKO/Twl+mR0j
+         VUk9OQDPCA2VSsoVmrc3o1F7PJLe/9cWfIiIml7/qFkWRTI3tDGFFDFhGZiPcXR8J/1F
+         N9pQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=vT4GD3+/0MzbbBEdOSGt98w+JvqU9hw4JCyFBULPEdA=;
+        b=FDcrSfZxaGPoM05mDIQqA1jinv4Uuqp3B/es3IAHlcuns4wgicWz8T9HiLxmtSvOaC
+         7BE2luhvrVWWFNdUq6mkCFJFdkde9HTNRFmjyzROJETRO/3oPUZHPnZN7d+HiSEhwjq7
+         ZmXTFMgjYtxeqN8hM8aWYF7wn87NTGpK6+Bu+x3b4q3xArko7FJnULNUSunmj8MS7aTY
+         GrgSW1RM5jfiTRIoXnkFjEvWYkLZto5/Lw3iBo2tP0Vv5A13oJ3i3YfEcXH2p4UZEFLm
+         yk8qCilSJqAaU9lRX/hHw/pI11GB22DcSK49B5SojPEi2S4taGscVC8B20Q08QuijuUq
+         DcJg==
+X-Gm-Message-State: ACgBeo1I67YzFbsiqZxc4QCLQe86lyZPdj6Zpj6YPj44t+av1z/PwHpK
+        sH0259+khsxjBRXxDkUEmEzTCSqNwUM1Qw==
+X-Google-Smtp-Source: AA6agR6kEeWww8j05ZFcDdob4i78cy50JnfDQIPezSnmR418EyvU4bI8yHEHQdn5r9dIeRz74989RQ==
+X-Received: by 2002:a17:90b:4d12:b0:1f5:59e1:994f with SMTP id mw18-20020a17090b4d1200b001f559e1994fmr4142105pjb.217.1662116047024;
+        Fri, 02 Sep 2022 03:54:07 -0700 (PDT)
+Received: from C02G705SMD6V.bytedance.net ([61.120.150.76])
+        by smtp.gmail.com with ESMTPSA id e4-20020a63d944000000b0041b29fd0626sm1128681pgj.88.2022.09.02.03.54.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 03:54:06 -0700 (PDT)
+From:   Jia Zhu <zhujia.zj@bytedance.com>
+To:     linux-erofs@lists.ozlabs.org, xiang@kernel.org, chao@kernel.org
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yinxin.x@bytedance.com, jefflexu@linux.alibaba.com,
+        huyue2@coolpad.com, Jia Zhu <zhujia.zj@bytedance.com>
+Subject: [PATCH V2 0/5] Introduce erofs shared domain
+Date:   Fri,  2 Sep 2022 18:53:00 +0800
+Message-Id: <20220902105305.79687-1-zhujia.zj@bytedance.com>
+X-Mailer: git-send-email 2.32.1 (Apple Git-133)
 MIME-Version: 1.0
-In-Reply-To: <82f11462-454c-4a5e-d3a2-e71479960eaf@linux.dev>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: Syh0CgD3SXPE4BFjn3sRAQ--.17387S3
-X-Coremail-Antispam: 1UD129KBjvJXoW7Zr1fuw1UWFyxWFW8Jw4xJFb_yoW8Xr1kpa
-        1kXFWUtrWYyrnY9w4Dt3yvvasayw17ta1UXrZ3X3W7AFnFqr4Sqry5WrnFgFyDZrWkJ3Wj
-        qFWUWa9xZF9xGFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkE14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvEwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc7I2V7IY0VAS07AlzVAY
-        IcxG8wCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14
-        v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkG
-        c2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI
-        0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE14v26r1j
-        6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHU
-        DUUUUU=
-X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Changes since V1:
+0. Only initialize one pseudo fs to manage anonymous inodes(cookies).
+1. Remove ctx's 'ref' field and replace it with inode's i_count.
+2. Add lock in erofs_fscache_unregister_cookie() to avoid race condition
+   between cookie's get/put/search.
+3. Remove useless blank lines.
 
-在 2022/09/02 18:16, Guoqing Jiang 写道:
-> 
-> 
-> On 9/2/22 6:02 PM, Yu Kuai wrote:
->> Hi,
->>
->> 在 2022/09/02 17:42, Guoqing Jiang 写道:
->>> Hi,
->>>
->>> On 8/29/22 9:15 PM, Yu Kuai wrote:
->>>> +static bool wait_barrier_nolock(struct r10conf *conf)
->>>> +{
->>>> +    unsigned int seq = raw_read_seqcount(&conf->resync_lock.seqcount);
->>>> +
->>>> +    if (seq & 1)
->>>> +        return false;
->>>> +
->>>> +    if (READ_ONCE(conf->barrier))
->>>> +        return false;
->>>> +
->>>> +    atomic_inc(&conf->nr_pending);
->>>> +    if (!read_seqcount_retry(&conf->resync_lock.seqcount, seq))
->>>
->>> I think 'seq' is usually get from read_seqcount_begin.
->>
->> read_seqcount_begin will loop untill "req & 1" failed, I'm afraid this
->> will cause high cpu usage in come cases.
->>
->> What I try to do here is just try once, and fall back to hold lock and
->> wait if failed.
-> 
-> Thanks for the explanation.
-> 
-> I'd suggest to try with read_seqcount_begin/read_seqcount_retry pattern
-> because it is a common usage in kernel I think, then check whether the
-> performance drops or not.  Maybe it is related to lockdep issue, but I am
-> not sure.
+[Kernel Patchset]
+===============
+Git tree:
+	https://github.com/userzj/linux.git zhujia/shared-domain-v2
+Git web:
+	https://github.com/userzj/linux/tree/zhujia/shared-domain-v2
 
-I can try read_seqcount_begin/read_seqcount_retry.
+[Background]
+============
+In ondemand read mode, we use individual volume to present an erofs
+mountpoint, cookies to present bootstrap and data blobs.
 
-Please take a look at another thread, lockdep issue is due to
-inconsistent usage of lock and seqcount inside seqlock:
+In which case, since cookies can't be shared between fscache volumes,
+even if the data blobs between different mountpoints are exactly same,
+they can't be shared.
 
-wait_event() only release lock, seqcount is not released.
+[Introduction]
+==============
+Here we introduce erofs shared domain to resolve above mentioned case.
+Several erofs filesystems can belong to one domain, and data blobs can
+be shared among these erofs filesystems of same domain.
 
-Thansk,
-Kuai
-> 
-> Thanks,
-> Guoqing
-> .
-> 
+[Usage]
+Users could specify 'domain_id' mount option to create or join into a
+domain which reuses the same cookies(blobs).
+
+[Design]
+========
+1. Use pseudo mnt to manage domain's lifecycle.
+2. Use a linked list to maintain & traverse domains.
+3. Use pseudo sb to create anonymous inode for recording cookie's info
+   and manage cookies lifecycle.
+
+[Flow Path]
+===========
+1. User specify a new 'domain_id' in mount option.
+   1.1 Traverse domain list, compare domain_id with existing domain.[Miss]
+   1.2 Create a new domain(volume), add it to domain list.
+   1.3 Traverse pseudo sb's inode list, compare cookie name with
+       existing cookies.[Miss]
+   1.4 Alloc new anonymous inodes and cookies.
+
+2. User specify an existing 'domain_id' in mount option and the data
+   blob is existed in domain.
+   2.1 Traverse domain list, compare domain_id with existing domain.[Hit]
+   2.2 Reuse the domain and increase its refcnt.
+   2.3 Traverse pseudo sb's inode list, compare cookie name with
+   	   existing cookies.[Hit]
+   2.4 Reuse the cookie and increase its refcnt.
+[Test]
+======
+Git web:
+	https://github.com/userzj/demand-read-cachefilesd/tree/shared-domain
+More test cases will be added to:
+	https://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git/log/?h=experimental-tests-fscache 
+
+RFC: https://lore.kernel.org/all/YxAlO%2FDHDrIAafR2@B-P7TQMD6M-0146.local/
+V1: https://lore.kernel.org/all/20220902034748.60868-1-zhujia.zj@bytedance.com/
+
+
+Jia Zhu (5):
+  erofs: add 'domain_id' mount option for on-demand read sementics
+  erofs: introduce fscache-based domain
+  erofs: add 'domain_id' prefix when register sysfs
+  erofs: remove duplicated unregister_cookie
+  erofs: support fscache based shared domain
+
+ fs/erofs/fscache.c  | 168 +++++++++++++++++++++++++++++++++++++++++++-
+ fs/erofs/internal.h |  31 +++++++-
+ fs/erofs/super.c    |  94 +++++++++++++++++++------
+ fs/erofs/sysfs.c    |  11 ++-
+ 4 files changed, 278 insertions(+), 26 deletions(-)
+
+-- 
+2.20.1
 
