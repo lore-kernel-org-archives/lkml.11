@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6422C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:45:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 620CBC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:45:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237521AbiIBMpL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:45:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42082 "EHLO
+        id S237558AbiIBMpQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:45:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237357AbiIBMnJ (ORCPT
+        with ESMTP id S237397AbiIBMnV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:43:09 -0400
+        Fri, 2 Sep 2022 08:43:21 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE0A5EA325;
-        Fri,  2 Sep 2022 05:32:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2FE5EA338;
+        Fri,  2 Sep 2022 05:32:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A21A8B82A8E;
-        Fri,  2 Sep 2022 12:31:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7C11C433D6;
-        Fri,  2 Sep 2022 12:31:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 093B9B82AA1;
+        Fri,  2 Sep 2022 12:31:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A08CC433D7;
+        Fri,  2 Sep 2022 12:31:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121909;
-        bh=Fa7WovnHxayldyRpvvDzx29dgo4d6dgVASAbo4Mh8Fw=;
+        s=korg; t=1662121915;
+        bh=YYZqNvYH974mWYE0XTAzE/Kt7rGuXw0ZNZXMqgHHd+4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BY2HkI1LOw6TkAPAWYLlbbPbGEJ3nrmHcGiC7YmmgiPRh0zYqp1SUCx74sOFwRHbq
-         VHmm3WFY4VE5hx0LkyCSdvU83Qcxo5+ctQrpwBonOMOSS8EOx9kK80qN6zNsbR7yd3
-         GmAXYI5ecZdpZ/RlgP6ykqBZcDxsi+xm0Ip60PAg=
+        b=m5uHo9Bqhbp45IsRBaY2GVjkh2CoEc+1o/YyLCCU3prLYlF5rFIs9mGMn9aLwMxIT
+         dbb00imKDr0/l7j1oZCrlhSvim7l0o418xXSbo2K3xYiLCh2j/10m1EmHH/beu8Hw4
+         mSFfzH3j5O8XUx1QurRP/gi0pxMP14lZsiKxAlpc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adam Borowski <kilobyte@angband.pl>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 5.15 03/73] ACPI: thermal: drop an always true check
-Date:   Fri,  2 Sep 2022 14:18:27 +0200
-Message-Id: <20220902121404.554401125@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 5.15 05/73] drm/vc4: hdmi: Depends on CONFIG_PM
+Date:   Fri,  2 Sep 2022 14:18:29 +0200
+Message-Id: <20220902121404.619894185@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
 References: <20220902121404.435662285@linuxfoundation.org>
@@ -49,31 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adam Borowski <kilobyte@angband.pl>
+From: Maxime Ripard <maxime@cerno.tech>
 
-commit e5b5d25444e9ee3ae439720e62769517d331fa39 upstream.
+commit 72e2329e7c9bbe15e7a813670497ec9c6f919af3 upstream.
 
-Address of a field inside a struct can't possibly be null; gcc-12 warns
-about this.
+We already depend on runtime PM to get the power domains and clocks for
+most of the devices supported by the vc4 driver, so let's just select it
+to make sure it's there.
 
-Signed-off-by: Adam Borowski <kilobyte@angband.pl>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Link: https://lore.kernel.org/r/20220629123510.1915022-38-maxime@cerno.tech
+Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
+Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+(cherry picked from commit f1bc386b319e93e56453ae27e9e83817bb1f6f95)
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Cc: "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/thermal.c |    2 --
- 1 file changed, 2 deletions(-)
+ drivers/gpu/drm/vc4/Kconfig    |    1 +
+ drivers/gpu/drm/vc4/vc4_hdmi.c |    2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/acpi/thermal.c
-+++ b/drivers/acpi/thermal.c
-@@ -1098,8 +1098,6 @@ static int acpi_thermal_resume(struct de
- 		return -EINVAL;
+--- a/drivers/gpu/drm/vc4/Kconfig
++++ b/drivers/gpu/drm/vc4/Kconfig
+@@ -5,6 +5,7 @@ config DRM_VC4
+ 	depends on DRM
+ 	depends on SND && SND_SOC
+ 	depends on COMMON_CLK
++	depends on PM
+ 	select DRM_KMS_HELPER
+ 	select DRM_KMS_CMA_HELPER
+ 	select DRM_GEM_CMA_HELPER
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -2122,7 +2122,7 @@ static int vc5_hdmi_init_resources(struc
+ 	return 0;
+ }
  
- 	for (i = 0; i < ACPI_THERMAL_MAX_ACTIVE; i++) {
--		if (!(&tz->trips.active[i]))
--			break;
- 		if (!tz->trips.active[i].flags.valid)
- 			break;
- 		tz->trips.active[i].flags.enabled = 1;
+-static int __maybe_unused vc4_hdmi_runtime_suspend(struct device *dev)
++static int vc4_hdmi_runtime_suspend(struct device *dev)
+ {
+ 	struct vc4_hdmi *vc4_hdmi = dev_get_drvdata(dev);
+ 
 
 
