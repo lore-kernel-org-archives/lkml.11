@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15C3CECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:54:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EC0CC6FA87
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:54:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238029AbiIBMxg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:53:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45212 "EHLO
+        id S237838AbiIBMyY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:54:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237876AbiIBMwx (ORCPT
+        with ESMTP id S237971AbiIBMxA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:52:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB0DF8FD2;
-        Fri,  2 Sep 2022 05:37:41 -0700 (PDT)
+        Fri, 2 Sep 2022 08:53:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26CD5F8FF5;
+        Fri,  2 Sep 2022 05:37:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3BBE0B81CCF;
-        Fri,  2 Sep 2022 12:36:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9041EC433D6;
-        Fri,  2 Sep 2022 12:36:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D8CA6621BE;
+        Fri,  2 Sep 2022 12:36:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD90FC433C1;
+        Fri,  2 Sep 2022 12:36:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122195;
-        bh=sYkZkvrgtkFRSF4QEy0oqraFW7XT7ofLBS5VurAovuo=;
+        s=korg; t=1662122210;
+        bh=wbSiZ0CLZonH7ncXPFcG0OikktRRtS3l6RAKoUdrON8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kJWIcffR2O6ONcFUXBtfeyybCG2c5waWRcc/L0paNUB/HvvdOufgBNpxEVqqg/cQX
-         GZpqTPWLKznLVdhNHy2Zyj9bhtaDNgmqjdgyQAt4+VhNObeo14Lo9p12KKCYhG/N0m
-         Zwc3Ghl3bgh9CYE8nmSiPDpP8gNMUuYAiXJdmrJk=
+        b=KHvTZir5VaxRhkWzdIvZI+KuB3UX5IdO8GCZpY1ILfvs/YIExyPOSpQD3oymBOUkv
+         XXzkOAYJbMlDe2r7uuvKGPnhUauqxE9/vJ63bXlayFg7R9Z2sqeBj+uyLyuFMo+1qz
+         aHGIsG9N9b/MxMzd6BVVo5sKXhaurOfWVPb8USXA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jimmy Kizito <Jimmy.Kizito@amd.com>,
-        Jun Lei <Jun.Lei@amd.com>, Tom Chung <chiahsuan.chung@amd.com>,
-        Meenakshikumar Somasundaram <meenakshikumar.somasundaram@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Li Qiong <liqiong@nfschina.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 42/72] drm/amd/display: Fix TDR eDP and USB4 display light up issue
-Date:   Fri,  2 Sep 2022 14:19:18 +0200
-Message-Id: <20220902121406.146940764@linuxfoundation.org>
+Subject: [PATCH 5.19 47/72] net: lan966x: fix checking for return value of platform_get_irq_byname()
+Date:   Fri,  2 Sep 2022 14:19:23 +0200
+Message-Id: <20220902121406.313441704@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
 References: <20220902121404.772492078@linuxfoundation.org>
@@ -52,57 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Meenakshikumar Somasundaram <meenakshikumar.somasundaram@amd.com>
+From: Li Qiong <liqiong@nfschina.com>
 
-[ Upstream commit 30456ffa65469d1d2e5e1da05017e6728d24c11c ]
+[ Upstream commit 40b4ac880e21d917da7f3752332fa57564a4c202 ]
 
-[Why]
-After TDR recovery, eDP and USB4 display does not light up. Because
-dmub outbox notifications are not enabled after dmub reload and link
-encoder assignments for the streams are not cleared before dc state
-reset.
+The platform_get_irq_byname() returns non-zero IRQ number
+or negative error number. "if (irq)" always true, chang it
+to "if (irq > 0)"
 
-[How]
-- Dmub outbox notification is enabled after tdr recovery by issuing
-  inbox command to dmub.
-- Link encoders for the streams are unassigned before dc state reset.
-
-Reviewed-by: Jimmy Kizito <Jimmy.Kizito@amd.com>
-Reviewed-by: Jun Lei <Jun.Lei@amd.com>
-Acked-by: Tom Chung <chiahsuan.chung@amd.com>
-Signed-off-by: Meenakshikumar Somasundaram <meenakshikumar.somasundaram@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Li Qiong <liqiong@nfschina.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/core/dc.c | 1 +
- drivers/gpu/drm/amd/display/dc/dc_link.h | 1 +
- 2 files changed, 2 insertions(+)
+ drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/core/dc.c b/drivers/gpu/drm/amd/display/dc/core/dc.c
-index f144494011882..7d69341acca02 100644
---- a/drivers/gpu/drm/amd/display/dc/core/dc.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc.c
-@@ -3783,6 +3783,7 @@ void dc_enable_dmub_outbox(struct dc *dc)
- 	struct dc_context *dc_ctx = dc->ctx;
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+index 1d6e3b641b2e6..d928b75f37803 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+@@ -710,7 +710,7 @@ static void lan966x_cleanup_ports(struct lan966x *lan966x)
+ 	disable_irq(lan966x->xtr_irq);
+ 	lan966x->xtr_irq = -ENXIO;
  
- 	dmub_enable_outbox_notification(dc_ctx->dmub_srv);
-+	DC_LOG_DC("%s: dmub outbox notifications enabled\n", __func__);
+-	if (lan966x->ana_irq) {
++	if (lan966x->ana_irq > 0) {
+ 		disable_irq(lan966x->ana_irq);
+ 		lan966x->ana_irq = -ENXIO;
+ 	}
+@@ -718,10 +718,10 @@ static void lan966x_cleanup_ports(struct lan966x *lan966x)
+ 	if (lan966x->fdma)
+ 		devm_free_irq(lan966x->dev, lan966x->fdma_irq, lan966x);
+ 
+-	if (lan966x->ptp_irq)
++	if (lan966x->ptp_irq > 0)
+ 		devm_free_irq(lan966x->dev, lan966x->ptp_irq, lan966x);
+ 
+-	if (lan966x->ptp_ext_irq)
++	if (lan966x->ptp_ext_irq > 0)
+ 		devm_free_irq(lan966x->dev, lan966x->ptp_ext_irq, lan966x);
  }
  
- /**
-diff --git a/drivers/gpu/drm/amd/display/dc/dc_link.h b/drivers/gpu/drm/amd/display/dc/dc_link.h
-index a3c37ee3f849c..f96f53c1bc258 100644
---- a/drivers/gpu/drm/amd/display/dc/dc_link.h
-+++ b/drivers/gpu/drm/amd/display/dc/dc_link.h
-@@ -337,6 +337,7 @@ enum dc_detect_reason {
- 	DETECT_REASON_HPDRX,
- 	DETECT_REASON_FALLBACK,
- 	DETECT_REASON_RETRAIN,
-+	DETECT_REASON_TDR,
- };
+@@ -1049,7 +1049,7 @@ static int lan966x_probe(struct platform_device *pdev)
+ 	}
  
- bool dc_link_detect(struct dc_link *dc_link, enum dc_detect_reason reason);
+ 	lan966x->ana_irq = platform_get_irq_byname(pdev, "ana");
+-	if (lan966x->ana_irq) {
++	if (lan966x->ana_irq > 0) {
+ 		err = devm_request_threaded_irq(&pdev->dev, lan966x->ana_irq, NULL,
+ 						lan966x_ana_irq_handler, IRQF_ONESHOT,
+ 						"ana irq", lan966x);
 -- 
 2.35.1
 
