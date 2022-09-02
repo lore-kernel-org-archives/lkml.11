@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B9CEC6FA81
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:43:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29AD3C54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:43:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235953AbiIBInV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 04:43:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57644 "EHLO
+        id S235921AbiIBIne (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 04:43:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235895AbiIBInE (ORCPT
+        with ESMTP id S235893AbiIBInH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 04:43:04 -0400
+        Fri, 2 Sep 2022 04:43:07 -0400
 Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97D79B95A8;
-        Fri,  2 Sep 2022 01:43:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03367ABD4D;
+        Fri,  2 Sep 2022 01:43:07 -0700 (PDT)
 Received: from localhost (localhost [127.0.0.1])
-        by comms.puri.sm (Postfix) with ESMTP id 6B7D7DFD92;
-        Fri,  2 Sep 2022 01:42:30 -0700 (PDT)
+        by comms.puri.sm (Postfix) with ESMTP id C9FFBDFE53;
+        Fri,  2 Sep 2022 01:42:36 -0700 (PDT)
 Received: from comms.puri.sm ([127.0.0.1])
         by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 8YpgOypMxvnP; Fri,  2 Sep 2022 01:42:29 -0700 (PDT)
+        with ESMTP id GKgNz54uSPJW; Fri,  2 Sep 2022 01:42:36 -0700 (PDT)
 From:   Martin Kepplinger <martin.kepplinger@puri.sm>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=puri.sm; s=comms;
-        t=1662108149; bh=yaZZI5m921+EyANDEcdH4Vsbrq6CyoF91jveOMdpW9Y=;
+        t=1662108156; bh=KUxiFlsvpcd+F5TUJQ2y/X50YrcqnyZ008WHXZXuiUc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=plykktG6ighlbWkyyri5fPSEEEt1SrU6ShxPOz6ODAJmKs5BPe3W40eRHBQEh0wRS
-         T+tNCGI32JWdV2uwOuJsmN8i353rJqTVyTFM/StkDteSCSbi7ibyQd3d5BTpiAxoUf
-         XQGj4sG4Qa7ufMbmWg/+J3mFdAutENPWjOa3PySQvh5w5N9MXOtJbRmHETyyDyWEyV
-         OY2UJFN/RvG7djNNDjykhC9p797mN39h3IyYVS814AVDfC/5C0pkoU3w+aeyNId4og
-         rcg0OaZ8deLf/6+e+nP9wjwRoqH5lnW+r1AT2OoUxaJrPOfmoJ5nDZhCf8X+qgmBtG
-         2MT4ZdcxB28AQ==
+        b=ep+tjQXP1ddXX5tsKpXiburC+cb0chbIauIEUqek9UVqh2FrMbc7BHNcrL40plePt
+         3OpHkzaGEzOy75w9UVYjGYNh843PYqEkO3Igq69mhrIaZ2N2C4E3JI/BBhKoiiODxF
+         A3L+WU6WVG17h8PyJYtIbOG7sQK3Lw8Lw4zl7ES8cvmc3k2zgFS/b+cE/VXT+eh1q3
+         kynz+s1JBaCBcdbhAxwb7KbEcFQmkBSdyICw2mq7QiQUAEhOqJn8RvCvarXIm2i6mS
+         Aq8LvqhXW476jRbtZCcb4h2O8vucT077cUzvTmD2EHu19SfwhmQpL3Glzsse+V6hpU
+         WK+z0orkXom6w==
 To:     festevam@gmail.com, shawnguo@kernel.org
 Cc:     martin.kepplinger@puri.sm, devicetree@vger.kernel.org,
         kernel@pengutronix.de, kernel@puri.sm, krzk@kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-imx@nxp.com,
         linux-kernel@vger.kernel.org, phone-devel@vger.kernel.org,
-        robh@kernel.org
-Subject: [PATCH v2 1/6] arm64: dts: imx8mq-librem5: describe the voice coil motor for focus control
-Date:   Fri,  2 Sep 2022 10:42:11 +0200
-Message-Id: <20220902084216.1259202-2-martin.kepplinger@puri.sm>
+        robh@kernel.org,
+        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
+Subject: [PATCH v2 3/6] arm64: dts: imx8mq-librem5: Add bq25895 as max17055's power supply
+Date:   Fri,  2 Sep 2022 10:42:13 +0200
+Message-Id: <20220902084216.1259202-4-martin.kepplinger@puri.sm>
 In-Reply-To: <20220902084216.1259202-1-martin.kepplinger@puri.sm>
 References: <20220902084216.1259202-1-martin.kepplinger@puri.sm>
 MIME-Version: 1.0
@@ -48,32 +49,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Describe the focus motor that will be used for the rear camera - even
-though the rear camera sensor driver is not yet in the mainline. The
-focus motor is a separate device and can be controlled already.
+From: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
 
+This allows the userspace to notice that there's not enough
+current provided to charge the battery, and also fixes issues
+with 0% SOC values being considered invalid.
+
+Signed-off-by: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
 Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
 ---
- arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi b/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi
-index 9eec8a7eecfc8..0626e4194d958 100644
+index 8da7b87c1aa1f..7e6c4ad438092 100644
 --- a/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi
 +++ b/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi
-@@ -1070,6 +1070,12 @@ &i2c4 {
- 	pinctrl-0 = <&pinctrl_i2c4>;
- 	status = "okay";
- 
-+	vcm@c {
-+		compatible = "dongwoon,dw9714";
-+		reg = <0x0c>;
-+		vcc-supply = <&reg_csi_1v8>;
-+	};
-+
- 	bat: fuel-gauge@36 {
- 		compatible = "maxim,max17055";
- 		reg = <0x36>;
+@@ -1109,6 +1109,7 @@ bat: fuel-gauge@36 {
+ 		interrupts = <20 IRQ_TYPE_LEVEL_LOW>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pinctrl_gauge>;
++		power-supplies = <&bq25895>;
+ 		maxim,over-heat-temp = <700>;
+ 		maxim,over-volt = <4500>;
+ 		maxim,rsns-microohm = <5000>;
 -- 
 2.30.2
 
