@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AD4CC6FA81
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:43:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31092ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:43:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236032AbiIBInm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 04:43:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57336 "EHLO
+        id S235928AbiIBIn4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 04:43:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235916AbiIBInK (ORCPT
+        with ESMTP id S235922AbiIBInS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 04:43:10 -0400
+        Fri, 2 Sep 2022 04:43:18 -0400
 Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E6B09E6B9;
-        Fri,  2 Sep 2022 01:43:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D35F0AFAC2;
+        Fri,  2 Sep 2022 01:43:16 -0700 (PDT)
 Received: from localhost (localhost [127.0.0.1])
-        by comms.puri.sm (Postfix) with ESMTP id EE41FDFEC1;
-        Fri,  2 Sep 2022 01:42:39 -0700 (PDT)
+        by comms.puri.sm (Postfix) with ESMTP id 0F406DFECD;
+        Fri,  2 Sep 2022 01:42:46 -0700 (PDT)
 Received: from comms.puri.sm ([127.0.0.1])
         by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id QYOPQjR-QD9P; Fri,  2 Sep 2022 01:42:39 -0700 (PDT)
+        with ESMTP id obPoZtoo9hhS; Fri,  2 Sep 2022 01:42:45 -0700 (PDT)
 From:   Martin Kepplinger <martin.kepplinger@puri.sm>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=puri.sm; s=comms;
-        t=1662108159; bh=JakZJWZhM51HWNUPYm0nW2ELxI9hOSYdsE72l4TJkxA=;
+        t=1662108165; bh=dLxGZ2rBkhtKIFimeky7PZ5dqQic1x5ZAGAEZHNaB4c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P+nMpyav7GRNkNoPtp3/6UBlJD+4MSrUcutwbCfqPs+0gn95M5Tb4+H811VkucS/T
-         UDHMFRMOpw5QrFWmESgi0M/L/pGYrLp7Z8zDbsR/RnW83NjMujwNgoxr0pEroroLAG
-         TQHlVW2ye4Y8+0gWnt9COFUQoiG13leS3q/LR/kmDxupevRgDGwazFR2UNfQFAZxBs
-         CzzAjtx3IUFL1bv1xl1mh2uVEaQHltkmcmquptvyVbxXYBUOAbA0yIjZ2FA6G5BAA8
-         QT1iSxW07QYnDEGJNY1HRTTa2Ty0HwjUf8NPOxDEJqV22JZb2/1xRoVqIZMymp76l2
-         1QGVDF1J5AusA==
+        b=KMrKLYnae4TV1G8nsJKolHN1cTyAeDBWI1JtzSrjglkZfB/BkS8RJ6Y40Ng6/ojdO
+         kttmwFDfFUJ1MBe3I50HWENlKVlyYB3NY4l7vnuoVpV8qYNH8elYfl/R+FWQq2N70Q
+         HwR9ReiAN/feAbHP2TmZ2DGDRipg+uN4+7mnHjsEHSTmLgmxxqsC3ZEkqMky0cbewF
+         5FSkXA8xGhF7E3bhLLjHuqEVhiYu/KSnm4oqjsliIfGciT/6LWR9KWoQ1i1JGX0heg
+         le+2ausqTbyoHhMAwiCoyHMJ/VeX5HRfyjltSmmmI/BsHOvVSOXUkz1qtjL3OPkveK
+         SdXoyDpV9ewAg==
 To:     festevam@gmail.com, shawnguo@kernel.org
 Cc:     martin.kepplinger@puri.sm, devicetree@vger.kernel.org,
         kernel@pengutronix.de, kernel@puri.sm, krzk@kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-imx@nxp.com,
         linux-kernel@vger.kernel.org, phone-devel@vger.kernel.org,
-        robh@kernel.org, Angus Ainslie <angus@akkea.ca>
-Subject: [PATCH v2 4/6] arm64: dts: imx8mq-librem5: add USB type-c properties for role switching
-Date:   Fri,  2 Sep 2022 10:42:14 +0200
-Message-Id: <20220902084216.1259202-5-martin.kepplinger@puri.sm>
+        robh@kernel.org
+Subject: [PATCH v2 6/6] arm64: dts: imx8mq-librem5: fix mipi_csi description
+Date:   Fri,  2 Sep 2022 10:42:16 +0200
+Message-Id: <20220902084216.1259202-7-martin.kepplinger@puri.sm>
 In-Reply-To: <20220902084216.1259202-1-martin.kepplinger@puri.sm>
 References: <20220902084216.1259202-1-martin.kepplinger@puri.sm>
 MIME-Version: 1.0
@@ -48,32 +48,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Angus Ainslie <angus@akkea.ca>
+Properties are not documented so lead to the following error:
+'#address-cells', '#size-cells', 'interrupts' do not match any of the regexes: 'pinctrl-[0-9]+'
 
-Add the connector properties to the USB type-c stanza to enable (PD)
-role-switching on the Librem 5 phone.
+Fix this by removing unneeded properties.
 
-Signed-off-by: Angus Ainslie <angus@akkea.ca>
 Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
 ---
- arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi | 2 --
+ 1 file changed, 2 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi b/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi
-index 7e6c4ad438092..f07d1c6e97777 100644
+index 058d6ecf109b2..ae08556b2ef2f 100644
 --- a/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi
 +++ b/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi
-@@ -773,6 +773,10 @@ typec_pd: usb-pd@3f {
- 		interrupt-names = "irq";
+@@ -1143,8 +1143,6 @@ &lcdif {
+ };
  
- 		connector {
-+			compatible = "usb-c-connector";
-+			label = "USB-C";
-+			data-role = "dual";
-+
- 			ports {
- 				#address-cells = <1>;
- 				#size-cells = <0>;
+ &mipi_csi1 {
+-	#address-cells = <1>;
+-	#size-cells = <0>;
+ 	status = "okay";
+ 
+ 	ports {
 -- 
 2.30.2
 
