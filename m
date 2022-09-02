@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38417ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:29:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CF26C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:30:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236634AbiIBM34 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:29:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34226 "EHLO
+        id S236651AbiIBMaA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:30:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236520AbiIBM2c (ORCPT
+        with ESMTP id S236604AbiIBM2s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:28:32 -0400
+        Fri, 2 Sep 2022 08:28:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA7095FE7;
-        Fri,  2 Sep 2022 05:24:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 248551EAF2;
+        Fri,  2 Sep 2022 05:24:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E86986210A;
-        Fri,  2 Sep 2022 12:23:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB6B6C433D7;
-        Fri,  2 Sep 2022 12:23:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6456F620F0;
+        Fri,  2 Sep 2022 12:24:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5915DC433C1;
+        Fri,  2 Sep 2022 12:24:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121415;
-        bh=HCozxiwfuRdOkCThfE6MAv65G6TqAXwpnaKlKnXiZpM=;
+        s=korg; t=1662121498;
+        bh=t1+9ZyLredsBU/XEAMtgk9KW8FhRU65i9SlYct5eK7E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ovw0sxi5piyST3asPeFV0HJpuSicyaLZwi6QrD4IbdtHIiaYStLaQQFKEZ+dw3smI
-         rJZ5c7E7gn4J6TEUGmDkAnGnq6S1GlX5+ylR/25G/HTQuCjSZm9Lij1MqDRTDMcp4y
-         AXP4NWuk4BYNp7UwBOJmoXLiXJf+0G7wf4KifkgQ=
+        b=1Jy5wuOhWfAbWJjZTD5e1+oYi7KmxI1lTJielDye2/atqTzGPiDakwWu6v/j8B2ZZ
+         FGQ6g9wVrSW8lON67u49+C2uPkUqux78bKSF4sDTqQyMNumPiiFSq/uUYIkmwUGYjn
+         6eyvN7zcbP1Z663ksVkJcQdIHYiGXSYJ2kTQZyog=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 12/42] net: Fix data-races around weight_p and dev_weight_[rt]x_bias.
-Date:   Fri,  2 Sep 2022 14:18:36 +0200
-Message-Id: <20220902121359.234283065@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 4.19 04/56] pinctrl: amd: Dont save/restore interrupt status and wake status bits
+Date:   Fri,  2 Sep 2022 14:18:24 +0200
+Message-Id: <20220902121400.358080677@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121358.773776406@linuxfoundation.org>
-References: <20220902121358.773776406@linuxfoundation.org>
+In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
+References: <20220902121400.219861128@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,85 +50,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
 
-[ Upstream commit bf955b5ab8f6f7b0632cdef8e36b14e4f6e77829 ]
+commit b8c824a869f220c6b46df724f85794349bafbf23 upstream.
 
-While reading weight_p, it can be changed concurrently.  Thus, we need
-to add READ_ONCE() to its reader.
+Saving/restoring interrupt and wake status bits across suspend can
+cause the suspend to fail if an IRQ is serviced across the
+suspend cycle.
 
-Also, dev_[rt]x_weight can be read/written at the same time.  So, we
-need to use READ_ONCE() and WRITE_ONCE() for its access.  Moreover, to
-use the same weight_p while changing dev_[rt]x_weight, we add a mutex
-in proc_do_dev_weight().
-
-Fixes: 3d48b53fb2ae ("net: dev_weight: TX/RX orthogonality")
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
+Fixes: 79d2c8bede2c ("pinctrl/amd: save pin registers over suspend/resume")
+Link: https://lore.kernel.org/r/20220613064127.220416-3-Basavaraj.Natikar@amd.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/dev.c             |  2 +-
- net/core/sysctl_net_core.c | 15 +++++++++------
- net/sched/sch_generic.c    |  2 +-
- 3 files changed, 11 insertions(+), 8 deletions(-)
+ drivers/pinctrl/pinctrl-amd.c |   11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index ea09e0809c122..51721fb2e30cf 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -5186,7 +5186,7 @@ static int process_backlog(struct napi_struct *napi, int quota)
- 		net_rps_action_and_irq_enable(sd);
+--- a/drivers/pinctrl/pinctrl-amd.c
++++ b/drivers/pinctrl/pinctrl-amd.c
+@@ -798,6 +798,7 @@ static int amd_gpio_suspend(struct devic
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct amd_gpio *gpio_dev = platform_get_drvdata(pdev);
+ 	struct pinctrl_desc *desc = gpio_dev->pctrl->desc;
++	unsigned long flags;
+ 	int i;
+ 
+ 	for (i = 0; i < desc->npins; i++) {
+@@ -806,7 +807,9 @@ static int amd_gpio_suspend(struct devic
+ 		if (!amd_gpio_should_save(gpio_dev, pin))
+ 			continue;
+ 
+-		gpio_dev->saved_regs[i] = readl(gpio_dev->base + pin*4);
++		raw_spin_lock_irqsave(&gpio_dev->lock, flags);
++		gpio_dev->saved_regs[i] = readl(gpio_dev->base + pin * 4) & ~PIN_IRQ_PENDING;
++		raw_spin_unlock_irqrestore(&gpio_dev->lock, flags);
  	}
  
--	napi->weight = dev_rx_weight;
-+	napi->weight = READ_ONCE(dev_rx_weight);
- 	while (again) {
- 		struct sk_buff *skb;
+ 	return 0;
+@@ -817,6 +820,7 @@ static int amd_gpio_resume(struct device
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct amd_gpio *gpio_dev = platform_get_drvdata(pdev);
+ 	struct pinctrl_desc *desc = gpio_dev->pctrl->desc;
++	unsigned long flags;
+ 	int i;
  
-diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
-index ac1a32d5cad3c..1b5749f2ef9c0 100644
---- a/net/core/sysctl_net_core.c
-+++ b/net/core/sysctl_net_core.c
-@@ -229,14 +229,17 @@ static int set_default_qdisc(struct ctl_table *table, int write,
- static int proc_do_dev_weight(struct ctl_table *table, int write,
- 			   void __user *buffer, size_t *lenp, loff_t *ppos)
- {
--	int ret;
-+	static DEFINE_MUTEX(dev_weight_mutex);
-+	int ret, weight;
+ 	for (i = 0; i < desc->npins; i++) {
+@@ -825,7 +829,10 @@ static int amd_gpio_resume(struct device
+ 		if (!amd_gpio_should_save(gpio_dev, pin))
+ 			continue;
  
-+	mutex_lock(&dev_weight_mutex);
- 	ret = proc_dointvec(table, write, buffer, lenp, ppos);
--	if (ret != 0)
--		return ret;
--
--	dev_rx_weight = weight_p * dev_weight_rx_bias;
--	dev_tx_weight = weight_p * dev_weight_tx_bias;
-+	if (!ret && write) {
-+		weight = READ_ONCE(weight_p);
-+		WRITE_ONCE(dev_rx_weight, weight * dev_weight_rx_bias);
-+		WRITE_ONCE(dev_tx_weight, weight * dev_weight_tx_bias);
-+	}
-+	mutex_unlock(&dev_weight_mutex);
+-		writel(gpio_dev->saved_regs[i], gpio_dev->base + pin*4);
++		raw_spin_lock_irqsave(&gpio_dev->lock, flags);
++		gpio_dev->saved_regs[i] |= readl(gpio_dev->base + pin * 4) & PIN_IRQ_PENDING;
++		writel(gpio_dev->saved_regs[i], gpio_dev->base + pin * 4);
++		raw_spin_unlock_irqrestore(&gpio_dev->lock, flags);
+ 	}
  
- 	return ret;
- }
-diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-index 82752dcbf2a2c..4a76ceeca6fdd 100644
---- a/net/sched/sch_generic.c
-+++ b/net/sched/sch_generic.c
-@@ -251,7 +251,7 @@ static inline int qdisc_restart(struct Qdisc *q, int *packets)
- 
- void __qdisc_run(struct Qdisc *q)
- {
--	int quota = dev_tx_weight;
-+	int quota = READ_ONCE(dev_tx_weight);
- 	int packets;
- 
- 	while (qdisc_restart(q, &packets)) {
--- 
-2.35.1
-
+ 	return 0;
 
 
