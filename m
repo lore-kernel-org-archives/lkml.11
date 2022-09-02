@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BA06ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 09:53:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E57A3C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 09:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235696AbiIBJxG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 05:53:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60736 "EHLO
+        id S235605AbiIBJxK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 05:53:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235708AbiIBJwm (ORCPT
+        with ESMTP id S235715AbiIBJwm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 05:52:42 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D1F5CD530
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 02:52:39 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id y64so1982117ede.2
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 02:52:38 -0700 (PDT)
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D12EDD11FA
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 02:52:36 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id y64so1982004ede.2
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 02:52:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=h3mhTe/mjeUDsRieRFZcGAvsQDavOcg5RIWTE5zQGmg=;
-        b=P3QdD0gpQHruFVJqMa7Wzvc+n78eFD5RH+hz7cX3l6rx08EFj3fZWG05QZDc1tCA/N
-         tqRdJWwx9/9Udq2YSEbOvUobkWiLQKGhoYbefcfJgEmpjeV9ek/f5nzNCNIuFcWsdw51
-         Ika/mTSR3k7lfAFgRUqyy2B5HPmcfTULxXoqQS/NkaFvT+8l4UV9I7Ng0DThuyouyMlc
-         Arx2cZJHg3/LlIUbqyiSVtXlDLR8rYB6EsX6QqtdMJ1bN6lC4F+BnlMZGDBG4oq4Nohi
-         LHM1zFvigxswzvXcx8rs+phoLDRdUZapoyRSXylO3L9ErPNxHpr/1M16YSrV5JgztBsJ
-         CQ5A==
+        bh=1DfksHW7Ish2UvigiC+OsNMircH0PL3M9sKVGJTg530=;
+        b=GwURQpXCkXATE+oyuEySbyquqLfL6FdQvLFR57Y9myNNAv/qP+Ou99yQ18r0Vw6GNo
+         kAR2W2v1eD/sr/fPmVCE4h9HfHzWuvJ+uXPCvTa9n7QqTTiZk4VDlbvBp79G85MRsmKS
+         sR47+F1D92cK9CEbW87GgJoEp4hRgBXQEs6D5oQrq3qjonZcDvQhmgEaIKJPaEukssaZ
+         5vXcv4DPa3mG8ovOGuFXmJysv2P/EV2qfiap5oC971/5LD9BwS4wlAcX4CWolRkMNbqw
+         vVRDf5jDw+zNiYGYzSSyAv5tFkPMuqyhxw8GVI1JXTGPrqNyz274IDh59YN7nMgjb/YW
+         Fafw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=h3mhTe/mjeUDsRieRFZcGAvsQDavOcg5RIWTE5zQGmg=;
-        b=342QWxUlkPfncoLrSP1fTJuncWDs+nsc2y8PO/wWfgwqesdusbt9rTuqJqOumYxcL7
-         cutFz+fPGcRcR5k7KTmoiYL9QsE0Dh54t+Q+Mfnp4CwpyVgItyLR7/x512vSk/yCXL6Y
-         i/vloerSn8ss4cu/9whbc0mG0hYUoINRlUTBwfR0A2BqIzgxRZiJmfrzVG+/W8jPGdtG
-         IWuV6aaFP5N+7BBdrjGI7DgZCVc4Kf7DyDjbBAs43KskvckJ1DIeYBUZKNHiWI0rCP+n
-         CADsng8FlSYP0ajYLiUnIzVhlFCIUYH1ISU2CnpRKzDfD2zM83w/ekNmLykw3Epgnaoy
-         wRow==
-X-Gm-Message-State: ACgBeo3aeHgs1U90pjPlnbQG2nM32MIZFnBhaaWx9BxUoTeglrmBGOUG
-        iyQTnJqaqggQ4T6r9w8GVKE=
-X-Google-Smtp-Source: AA6agR6XamPgDiGUEGLE9DLDhapoNvBAlbipZ3p2jb95dD0vAa9TTvWkK8BfBpaom1LZMB0xKqqtig==
-X-Received: by 2002:a05:6402:428a:b0:42e:8f7e:1638 with SMTP id g10-20020a056402428a00b0042e8f7e1638mr32624816edc.228.1662112357639;
-        Fri, 02 Sep 2022 02:52:37 -0700 (PDT)
+        bh=1DfksHW7Ish2UvigiC+OsNMircH0PL3M9sKVGJTg530=;
+        b=ePapEXJq4P3rQbjr1PRFT9RbmHHGKdfceGxShAIv+tnORCi7gd9gX9cEDBmHE8+zXP
+         28pHkSKsf0K5zixDg8FsA6b4pgd4apcfMjWiGqJ+Kd7lAri+e2U8YNMl0aY2VueafVfI
+         0p8YiIOehAcaKjWI/fuJWuOICl3q9s3lku2TGGiaHRqI4T6GpNN40vxnFllTReHTnpew
+         WGg/ttOnJofY8G6QL3M0kWpqKaG5GxfbCrFhSEaTV7NYHg6JtW399+eWGsdnJoIxjMR6
+         1tnT5xeSmHLa4SUUOjvJx4bHzlERTDuc6mlngGSCXvkIV6Jj6hPt+O7uZajiIRjr/I4W
+         zIIw==
+X-Gm-Message-State: ACgBeo365ZD3UKZxcE2Bv+ffkkMTvdCXH6vco65Yoa7v05JGiQ7VxEiX
+        /DKv23D8Kg15I3cMX6+iy5k=
+X-Google-Smtp-Source: AA6agR55x2wjYUvZMbG74LyI3iQ3j9xx4uDuayhtH6FQD3FRbSBS5lG6m5cyMaQ3IDBJsEijGQ/y/w==
+X-Received: by 2002:a05:6402:1d54:b0:447:b1f7:9ecf with SMTP id dz20-20020a0564021d5400b00447b1f79ecfmr31881111edb.425.1662112355310;
+        Fri, 02 Sep 2022 02:52:35 -0700 (PDT)
 Received: from localhost.localdomain (ip-217-105-46-83.ip.prioritytelecom.net. [217.105.46.83])
-        by smtp.gmail.com with ESMTPSA id h6-20020a170906828600b0073d6234ceebsm959601ejx.160.2022.09.02.02.52.37
+        by smtp.gmail.com with ESMTPSA id h6-20020a170906828600b0073d6234ceebsm959601ejx.160.2022.09.02.02.52.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 02:52:37 -0700 (PDT)
+        Fri, 02 Sep 2022 02:52:34 -0700 (PDT)
 From:   Nam Cao <namcaov@gmail.com>
 To:     Larry.Finger@lwfinger.net, gregkh@linuxfoundation.org,
         hdegoede@redhat.com
 Cc:     namcaov@gmail.com, linux-kernel@vger.kernel.org,
         linux-staging@lists.linux.dev
-Subject: [PATCH 05/10] staging: rtl8723bs: remove odm_PauseDIG
-Date:   Fri,  2 Sep 2022 11:51:55 +0200
-Message-Id: <274e8338398d915327d353f713b2d47e48f92ba9.1662111798.git.namcaov@gmail.com>
+Subject: [PATCH 02/10] staging: rtl8723bs: delete function rtw_set_chplan_cmd
+Date:   Fri,  2 Sep 2022 11:51:52 +0200
+Message-Id: <b5a1fe5bc7bc8eb154247ee8eafafe6af266dab9.1662111798.git.namcaov@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1662111798.git.namcaov@gmail.com>
 References: <cover.1662111798.git.namcaov@gmail.com>
@@ -66,95 +66,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove function odm_PauseDIG because it is not used.
+The function rtw_set_chplan_cmd is not used. Remove it.
 
 Signed-off-by: Nam Cao <namcaov@gmail.com>
 ---
- drivers/staging/rtl8723bs/hal/odm_DIG.c | 57 -------------------------
- drivers/staging/rtl8723bs/hal/odm_DIG.h |  2 -
- 2 files changed, 59 deletions(-)
+ drivers/staging/rtl8723bs/core/rtw_cmd.c    | 55 ---------------------
+ drivers/staging/rtl8723bs/include/rtw_cmd.h |  2 -
+ 2 files changed, 57 deletions(-)
 
-diff --git a/drivers/staging/rtl8723bs/hal/odm_DIG.c b/drivers/staging/rtl8723bs/hal/odm_DIG.c
-index 7e92c373cddb..07edf74ccfe5 100644
---- a/drivers/staging/rtl8723bs/hal/odm_DIG.c
-+++ b/drivers/staging/rtl8723bs/hal/odm_DIG.c
-@@ -309,63 +309,6 @@ void ODM_Write_DIG(void *pDM_VOID, u8 CurrentIGI)
- 
+diff --git a/drivers/staging/rtl8723bs/core/rtw_cmd.c b/drivers/staging/rtl8723bs/core/rtw_cmd.c
+index a5e66b9868ad..5e82d491ad75 100644
+--- a/drivers/staging/rtl8723bs/core/rtw_cmd.c
++++ b/drivers/staging/rtl8723bs/core/rtw_cmd.c
+@@ -1111,61 +1111,6 @@ u8 rtw_dynamic_chk_wk_cmd(struct adapter *padapter)
+ 	return res;
  }
  
--void odm_PauseDIG(
--	void *pDM_VOID,
--	enum ODM_Pause_DIG_TYPE PauseType,
--	u8 IGIValue
--)
+-u8 rtw_set_chplan_cmd(struct adapter *padapter, u8 chplan, u8 enqueue, u8 swconfig)
 -{
--	struct dm_odm_t *pDM_Odm = (struct dm_odm_t *)pDM_VOID;
--	struct dig_t *pDM_DigTable = &pDM_Odm->DM_DigTable;
--	static bool bPaused;
+-	struct	cmd_obj *pcmdobj;
+-	struct	SetChannelPlan_param *setChannelPlan_param;
+-	struct	cmd_priv   *pcmdpriv = &padapter->cmdpriv;
 -
--	if (
--		(pDM_Odm->SupportAbility & ODM_BB_ADAPTIVITY) &&
--		pDM_Odm->TxHangFlg == true
--	) {
--		return;
+-	u8 res = _SUCCESS;
+-
+-	/*  check if allow software config */
+-	if (swconfig && rtw_hal_is_disable_sw_channel_plan(padapter)) {
+-		res = _FAIL;
+-		goto exit;
 -	}
 -
--	if (
--		!bPaused && (!(pDM_Odm->SupportAbility & ODM_BB_DIG) ||
--		!(pDM_Odm->SupportAbility & ODM_BB_FA_CNT))
--	){
--		return;
+-	/* check input parameter */
+-	if (!rtw_is_channel_plan_valid(chplan)) {
+-		res = _FAIL;
+-		goto exit;
 -	}
 -
--	switch (PauseType) {
--	/* 1 Pause DIG */
--	case ODM_PAUSE_DIG:
--		/* 2 Disable DIG */
--		ODM_CmnInfoUpdate(pDM_Odm, ODM_CMNINFO_ABILITY, pDM_Odm->SupportAbility & (~ODM_BB_DIG));
+-	/* prepare cmd parameter */
+-	setChannelPlan_param = rtw_zmalloc(sizeof(struct SetChannelPlan_param));
+-	if (!setChannelPlan_param) {
+-		res = _FAIL;
+-		goto exit;
+-	}
+-	setChannelPlan_param->channel_plan = chplan;
 -
--		/* 2 Backup IGI value */
--		if (!bPaused) {
--			pDM_DigTable->IGIBackup = pDM_DigTable->CurIGValue;
--			bPaused = true;
+-	if (enqueue) {
+-		/* need enqueue, prepare cmd_obj and enqueue */
+-		pcmdobj = rtw_zmalloc(sizeof(struct cmd_obj));
+-		if (!pcmdobj) {
+-			kfree(setChannelPlan_param);
+-			res = _FAIL;
+-			goto exit;
 -		}
 -
--		/* 2 Write new IGI value */
--		ODM_Write_DIG(pDM_Odm, IGIValue);
--		break;
+-		init_h2fwcmd_w_parm_no_rsp(pcmdobj, setChannelPlan_param, GEN_CMD_CODE(_SetChannelPlan));
+-		res = rtw_enqueue_cmd(pcmdpriv, pcmdobj);
+-	} else {
+-		/* no need to enqueue, do the cmd hdl directly and free cmd parameter */
+-		if (set_chplan_hdl(padapter, (unsigned char *)setChannelPlan_param) != H2C_SUCCESS)
+-			res = _FAIL;
 -
--	/* 1 Resume DIG */
--	case ODM_RESUME_DIG:
--		if (bPaused) {
--			/* 2 Write backup IGI value */
--			ODM_Write_DIG(pDM_Odm, pDM_DigTable->IGIBackup);
--			bPaused = false;
--
--			/* 2 Enable DIG */
--			ODM_CmnInfoUpdate(pDM_Odm, ODM_CMNINFO_ABILITY, pDM_Odm->SupportAbility | ODM_BB_DIG);
--		}
--		break;
--
--	default:
--		break;
+-		kfree(setChannelPlan_param);
 -	}
+-
+-	/* do something based on res... */
+-	if (res == _SUCCESS)
+-		padapter->mlmepriv.ChannelPlan = chplan;
+-
+-exit:
+-	return res;
 -}
 -
- bool odm_DigAbort(void *pDM_VOID)
+ static void collect_traffic_statistics(struct adapter *padapter)
  {
- 	struct dm_odm_t *pDM_Odm = (struct dm_odm_t *)pDM_VOID;
-diff --git a/drivers/staging/rtl8723bs/hal/odm_DIG.h b/drivers/staging/rtl8723bs/hal/odm_DIG.h
-index 88cfd542df16..a5b041101c89 100644
---- a/drivers/staging/rtl8723bs/hal/odm_DIG.h
-+++ b/drivers/staging/rtl8723bs/hal/odm_DIG.h
-@@ -141,8 +141,6 @@ void odm_Adaptivity(void *pDM_VOID, u8 IGI);
+ 	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(padapter);
+diff --git a/drivers/staging/rtl8723bs/include/rtw_cmd.h b/drivers/staging/rtl8723bs/include/rtw_cmd.h
+index 0af8215e2f2f..fe1b03101203 100644
+--- a/drivers/staging/rtl8723bs/include/rtw_cmd.h
++++ b/drivers/staging/rtl8723bs/include/rtw_cmd.h
+@@ -612,8 +612,6 @@ extern u8 rtw_ps_cmd(struct adapter *padapter);
  
- void ODM_Write_DIG(void *pDM_VOID, u8 CurrentIGI);
+ u8 rtw_chk_hi_queue_cmd(struct adapter *padapter);
  
--void odm_PauseDIG(void *pDM_VOID, enum ODM_Pause_DIG_TYPE PauseType, u8 IGIValue);
+-extern u8 rtw_set_chplan_cmd(struct adapter *padapter, u8 chplan, u8 enqueue, u8 swconfig);
 -
- void odm_DIGInit(void *pDM_VOID);
+ extern u8 rtw_c2h_packet_wk_cmd(struct adapter *padapter, u8 *pbuf, u16 length);
+ extern u8 rtw_c2h_wk_cmd(struct adapter *padapter, u8 *c2h_evt);
  
- void odm_DIG(void *pDM_VOID);
 -- 
 2.25.1
 
