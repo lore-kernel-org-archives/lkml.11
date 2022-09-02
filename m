@@ -2,105 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EDC2C54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:20:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4372C54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:20:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235690AbiIBIUm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 04:20:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42732 "EHLO
+        id S235711AbiIBIUy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 04:20:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233481AbiIBIUi (ORCPT
+        with ESMTP id S235512AbiIBIUw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 04:20:38 -0400
-Received: from giacobini.uberspace.de (giacobini.uberspace.de [185.26.156.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B201E32068
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 01:20:34 -0700 (PDT)
-Received: (qmail 32432 invoked by uid 990); 2 Sep 2022 08:20:32 -0000
-Authentication-Results: giacobini.uberspace.de;
-        auth=pass (plain)
-From:   Soenke Huster <soenke.huster@eknoes.de>
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Soenke Huster <soenke.huster@eknoes.de>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] wifi: mac80211_hwsim: check length for virtio packets
-Date:   Fri,  2 Sep 2022 10:19:58 +0200
-Message-Id: <20220902081957.9718-1-soenke.huster@eknoes.de>
-X-Mailer: git-send-email 2.37.3
+        Fri, 2 Sep 2022 04:20:52 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCE074C634;
+        Fri,  2 Sep 2022 01:20:50 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id br21so2304864lfb.0;
+        Fri, 02 Sep 2022 01:20:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=k9HeV9s5RJqmOoAs4X6mfRUQcnflr2D6WhL4YEXe9A8=;
+        b=C/nkcPUsOieObthxNg9fCVGaYuhWDiMK5eOiprrNB1lSd9ZfCXTS7+7kbtdU2eiu5u
+         X2dMHujTgiYccI0Soqg82ZSrVJLoLqY464DSDjSjgReJTpVwqyyK3qnaf74mzBvRuro6
+         zUFXiWhW9+1ib8U8Wi1bNsUsZVW9YVbElDkfxmffuIa5JPDlSVWoI2xhWZ+CpkOZaVus
+         dvZ67ruo7uYKrxGdB8Lswt77BYmUYdZTYvUjowLjCO6sIAZASfFA8FioVROnRZz6UAup
+         shBUjr2U66MjpPLyT0S3wxRSUgFrxpCEYlF7+TepE3boPZ3SDXSsgPg/ig4kqqkNHTMn
+         KXsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=k9HeV9s5RJqmOoAs4X6mfRUQcnflr2D6WhL4YEXe9A8=;
+        b=EdIxa74jBErjcjt5RgVYE0a+upPGFZMKAv6ZJE1Y3TqeRd/+ZMBIoirj5n0cHwYql2
+         LxpRvryK+TIDVZ3CX6iUwJCIWFlMBZlO2J1wDLiBkBNbhkHqZokm5p+OBkIa5hxdnZSw
+         ozRivxXywmGmtI1vXtPQGv0qD24lCEvVpZW/I9ycUEZx1FNE66V/5GXmlyPlRi3bmcce
+         6xEGwrCiVbx6NNbqtPPTMXEpgvWoEiru1FRUXofGicqHG5T2rGHYRr9RTqfSSdjGNCgo
+         s3Ot1PNwnQKSZ1F1/DZRigf8qK2eflcpKD4RF3GVRvJ2LZnygWr+7z4jic8eIweY4T+l
+         o75A==
+X-Gm-Message-State: ACgBeo2F9+96kq6Ao7feKukvmNCi948KEmF/1SCz7Y9LMYiNvuzP5qtH
+        rBdfbKAmW/yGx9kBi6nBS0v0PF0eTbM=
+X-Google-Smtp-Source: AA6agR4qxy7JuL5Kj2d2iLY3PqQ6Ytyr9gp5BBvPFzA4Fwtv18UaRFvaYnZ8kUMuZtPxZeD1cy0+hw==
+X-Received: by 2002:a05:6512:31c5:b0:48b:38cf:51f8 with SMTP id j5-20020a05651231c500b0048b38cf51f8mr12591310lfe.315.1662106849025;
+        Fri, 02 Sep 2022 01:20:49 -0700 (PDT)
+Received: from localhost.localdomain (82-209-154-112.cust.bredband2.com. [82.209.154.112])
+        by smtp.gmail.com with ESMTPSA id a27-20020a05651c031b00b00263630ab29dsm108828ljp.118.2022.09.02.01.20.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 01:20:48 -0700 (PDT)
+From:   Marcus Folkesson <marcus.folkesson@gmail.com>
+To:     benjamin.tissoires@redhat.com, jikos@kernel.org,
+        marcus.folkesson@gmail.com
+Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/1] VRC-2 Car Controller
+Date:   Fri,  2 Sep 2022 10:25:51 +0200
+Message-Id: <20220902082552.2433744-1-marcus.folkesson@gmail.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Bar: +
-X-Rspamd-Report: R_MISSING_CHARSET(0.5) MIME_GOOD(-0.1) MID_CONTAINS_FROM(1) BAYES_HAM(-0.162514)
-X-Rspamd-Score: 1.237485
-Received: from unknown (HELO unkown) (::1)
-        by giacobini.uberspace.de (Haraka/2.8.28) with ESMTPSA; Fri, 02 Sep 2022 10:20:32 +0200
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-An invalid packet with a length shorter than the specified length in the
-netlink header can lead to use-after-frees and slab-out-of-bounds in the
-processing of the netlink attributes, such as the following:
+Hi,
 
-  BUG: KASAN: slab-out-of-bounds in __nla_validate_parse+0x1258/0x2010
-  Read of size 2 at addr ffff88800ac7952c by task kworker/0:1/12
+The device creates two USB endpoints where on of those represent the X/Y
+axis as 16 buttons which is not.. quite right.
+So get rid of that endpoint.
 
-  Workqueue: events hwsim_virtio_rx_work
-  Call Trace:
-   <TASK>
-   dump_stack_lvl+0x45/0x5d
-   print_report.cold+0x5e/0x5e5
-   kasan_report+0xb1/0x1c0
-   __nla_validate_parse+0x1258/0x2010
-   __nla_parse+0x22/0x30
-   hwsim_virtio_handle_cmd.isra.0+0x13f/0x2d0
-   hwsim_virtio_rx_work+0x1b2/0x370
-   process_one_work+0x8df/0x1530
-   worker_thread+0x575/0x11a0
-   kthread+0x29d/0x340
-   ret_from_fork+0x22/0x30
- </TASK>
+Also fix the report descriptor for the other endpoint.
 
-Discarding packets with an invalid length solves this.
-Therefore, skb->len must be set at reception.
+Output from hid-recorder:
+#  X:     32 | Y:   1001 | # 
+E: 000105.808008 7 20 00 e9 03 00 00 00
 
-Signed-off-by: Soenke Huster <soenke.huster@eknoes.de>
----
-v2: Spelling
+Link to previous discussion:
+https://lore.kernel.org/all/CAO-hwJL-3vAzywjeUsopsRSJX6j-maC5R75ekxZg-W_oKDqYYw@mail.gmail.com/
 
- drivers/net/wireless/mac80211_hwsim.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-index 4fb8f68e5c3b..6bd9bd50071e 100644
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -5436,6 +5436,10 @@ static int hwsim_virtio_handle_cmd(struct sk_buff *skb)
- 
- 	nlh = nlmsg_hdr(skb);
- 	gnlh = nlmsg_data(nlh);
-+
-+	if (skb->len < nlh->nlmsg_len)
-+		return -EINVAL;
-+
- 	err = genlmsg_parse(nlh, &hwsim_genl_family, tb, HWSIM_ATTR_MAX,
- 			    hwsim_genl_policy, NULL);
- 	if (err) {
-@@ -5478,7 +5482,8 @@ static void hwsim_virtio_rx_work(struct work_struct *work)
- 	spin_unlock_irqrestore(&hwsim_virtio_lock, flags);
- 
- 	skb->data = skb->head;
--	skb_set_tail_pointer(skb, len);
-+	skb_reset_tail_pointer(skb);
-+	skb_put(skb, len);
- 	hwsim_virtio_handle_cmd(skb);
- 
- 	spin_lock_irqsave(&hwsim_virtio_lock, flags);
+v2:
+- Remove .remove
+- Change help text in Kconfig
+- Remove redundant check for USB endpoint in vrc2_report_fixup
+
+Marcus Folkesson (1):
+  HID: Add driver for VRC-2 Car Controller
+
+ MAINTAINERS            |  6 +++
+ drivers/hid/Kconfig    | 10 +++++
+ drivers/hid/Makefile   |  1 +
+ drivers/hid/hid-vrc2.c | 91 ++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 108 insertions(+)
+ create mode 100644 drivers/hid/hid-vrc2.c
+
 -- 
-2.37.3
+2.37.1
 
