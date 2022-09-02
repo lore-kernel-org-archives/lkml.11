@@ -2,90 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26A45C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:40:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24377ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:40:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236412AbiIBOkc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:40:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55016 "EHLO
+        id S237088AbiIBOkv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:40:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237980AbiIBOjm (ORCPT
+        with ESMTP id S236881AbiIBOkG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:39:42 -0400
+        Fri, 2 Sep 2022 10:40:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E043A6C0D;
-        Fri,  2 Sep 2022 07:00:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7401C12484B;
+        Fri,  2 Sep 2022 07:00:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D30DFB82ADE;
-        Fri,  2 Sep 2022 12:36:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EA56C433D6;
-        Fri,  2 Sep 2022 12:36:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122216;
-        bh=X5Z+z4Pgu8nCOi4IJks/BCJU46M+fFxPEAB17gBLcIg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Tz/m4EBa/K+/Uq3VMLFnw7TumUo4omQKlVJcMvqTIeANRUI93es4oqAg+GXspu+6s
-         JyycXHhrTWZjTG015bPKmdT88y9zkXVe80REVrgzOUkkXWkiWjN0a8XanA8+zxAgmM
-         8RcoL/+fO5jojRYfmEPuemhxog62ykBMd5t/aP1Q=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Stefan Binding <sbinding@opensource.cirrus.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 49/72] ALSA: hda/realtek: Add quirks for ASUS Zenbooks using CS35L41
-Date:   Fri,  2 Sep 2022 14:19:25 +0200
-Message-Id: <20220902121406.389450032@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
-References: <20220902121404.772492078@linuxfoundation.org>
-User-Agent: quilt/0.67
+        by ams.source.kernel.org (Postfix) with ESMTPS id 64F8CB82C03;
+        Fri,  2 Sep 2022 14:00:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1AE3CC433D7;
+        Fri,  2 Sep 2022 14:00:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662127216;
+        bh=6FkOE0V4Xl0gp19KmvjJh3tYe8TXuJxNaJXe5cYKWtY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=QwevnPlVKT8sKyLUXOmFC3g8jLH3mwyfHt2ULozsHipTdWaNetXQIgZLubI6v789S
+         by009iQSOMS11/xX/tVlKUyTnYoqRxIITAu7X9eTVFk/nuftkOx96+aeIsQhor1MHz
+         l6yhZ1vEnPAOGFFVfk//OweyVjp+oU8gPOszu9XLwvdUHQUzMy++UmTGTgtbxPZDlU
+         JsGMsul8wM8KStocJnEwWeya+1aAN4brXciTrlpRiktODdhG0Mv7GvJAVhmdYASBT5
+         24H1WRL/J0eieDR18h5zDUYU0li3u9TMEKadsYyzB0s7RaD4XNDx+qmlWrwbyjWVhR
+         ihxU86cWFOJmg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EFF0DC4166F;
+        Fri,  2 Sep 2022 14:00:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v1] selftests/xsk: Avoid use-after-free on ctx
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166212721597.8214.1758586217041951809.git-patchwork-notify@kernel.org>
+Date:   Fri, 02 Sep 2022 14:00:15 +0000
+References: <20220901202645.1463552-1-irogers@google.com>
+In-Reply-To: <20220901202645.1463552-1-irogers@google.com>
+To:     Ian Rogers <irogers@google.com>
+Cc:     bjorn@kernel.org, magnus.karlsson@intel.com,
+        maciej.fijalkowski@intel.com, jonathan.lemon@gmail.com,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org, mykolal@fb.com,
+        shuah@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Binding <sbinding@opensource.cirrus.com>
+Hello:
 
-[ Upstream commit 461122b999bda2ebef2086a35d8990f9ccac5ab8 ]
+This patch was applied to bpf/bpf-next.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
 
-These Asus Zenbook laptop use Realtek HDA codec combined with
-2xCS35L41 Amplifiers using SPI.
+On Thu,  1 Sep 2022 13:26:45 -0700 you wrote:
+> The put lowers the reference count to 0 and frees ctx, reading it
+> afterwards is invalid. Move the put after the uses and determine the
+> last use by the reference count being 1.
+> 
+> Fixes: 39e940d4abfa ("selftests/xsk: Destroy BPF resources only when ctx refcount drops to 0")
+> Signed-off-by: Ian Rogers <irogers@google.com>
+> 
+> [...]
 
-Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220815141953.25197-1-sbinding@opensource.cirrus.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/pci/hda/patch_realtek.c | 2 ++
- 1 file changed, 2 insertions(+)
+Here is the summary with links:
+  - [v1] selftests/xsk: Avoid use-after-free on ctx
+    https://git.kernel.org/bpf/bpf-next/c/af515a5587b8
 
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 1ae9674fa8a3c..b44b882f8378c 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9248,6 +9248,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x1043, 0x1271, "ASUS X430UN", ALC256_FIXUP_ASUS_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1043, 0x1290, "ASUS X441SA", ALC233_FIXUP_EAPD_COEF_AND_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1043, 0x12a0, "ASUS X441UV", ALC233_FIXUP_EAPD_COEF_AND_MIC_NO_PRESENCE),
-+	SND_PCI_QUIRK(0x1043, 0x12af, "ASUS UX582ZS", ALC245_FIXUP_CS35L41_SPI_2),
- 	SND_PCI_QUIRK(0x1043, 0x12e0, "ASUS X541SA", ALC256_FIXUP_ASUS_MIC),
- 	SND_PCI_QUIRK(0x1043, 0x12f0, "ASUS X541UV", ALC256_FIXUP_ASUS_MIC),
- 	SND_PCI_QUIRK(0x1043, 0x1313, "Asus K42JZ", ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE),
-@@ -9268,6 +9269,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x1043, 0x19e1, "ASUS UX581LV", ALC295_FIXUP_ASUS_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1043, 0x1a13, "Asus G73Jw", ALC269_FIXUP_ASUS_G73JW),
- 	SND_PCI_QUIRK(0x1043, 0x1a30, "ASUS X705UD", ALC256_FIXUP_ASUS_MIC),
-+	SND_PCI_QUIRK(0x1043, 0x1a8f, "ASUS UX582ZS", ALC245_FIXUP_CS35L41_SPI_2),
- 	SND_PCI_QUIRK(0x1043, 0x1b11, "ASUS UX431DA", ALC294_FIXUP_ASUS_COEF_1B),
- 	SND_PCI_QUIRK(0x1043, 0x1b13, "Asus U41SV", ALC269_FIXUP_INV_DMIC),
- 	SND_PCI_QUIRK(0x1043, 0x1bbd, "ASUS Z550MA", ALC255_FIXUP_ASUS_MIC_NO_PRESENCE),
+You are awesome, thank you!
 -- 
-2.35.1
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
