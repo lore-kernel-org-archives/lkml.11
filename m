@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F1EAC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:52:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA801C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:52:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237949AbiIBMwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:52:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45584 "EHLO
+        id S237956AbiIBMwr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:52:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237792AbiIBMvn (ORCPT
+        with ESMTP id S237798AbiIBMvo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:51:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB918E340E;
-        Fri,  2 Sep 2022 05:37:18 -0700 (PDT)
+        Fri, 2 Sep 2022 08:51:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A2FAF2CA7;
+        Fri,  2 Sep 2022 05:37:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C074F6211D;
-        Fri,  2 Sep 2022 12:29:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B770DC433C1;
-        Fri,  2 Sep 2022 12:29:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0D973B82AC8;
+        Fri,  2 Sep 2022 12:35:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36C00C433D6;
+        Fri,  2 Sep 2022 12:35:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121754;
-        bh=mHzs6d5hxU1i6+1Mo1KuGNkiU33DBxG/VTXMU/Qg5zw=;
+        s=korg; t=1662122132;
+        bh=/GzZFNJ4zbZE3yw3cxjtkbCmRfMDh5qUScV5IZLRNnw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LtG509XWJPdOKuWPczs28bXumTt83PlwTGHtTgMS5SK+ha3Hvt91lFj3EXz7pqluJ
-         I8uquRWBDBraAeNSSW4zziFE5JTAqKgyvnssehWLiE0XoD9ler9GjvCndz4nCklnnt
-         PqBFNs759PlkrOCEroRxLUwr5WCt9iyCDaQm74WY=
+        b=VCrD5gyNvfLAACkBLUlgbnHZYrtUxwUtXvnC4PdQZJ5PqaSiaJ8YTj9Njg7gjz5KE
+         IjflNz3AgS57vhJya+fF6zpnIOJEM101k5e/kaY2Enn2RIV/kN8zc7DcIKd1d5MYRg
+         BMNU/CgLgdQYx4/4ZQyi7BqYxSnBx/CI2ZrTgltM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 5.4 53/77] Bluetooth: L2CAP: Fix build errors in some archs
-Date:   Fri,  2 Sep 2022 14:19:02 +0200
-Message-Id: <20220902121405.425755290@linuxfoundation.org>
+        stable@vger.kernel.org, Timo Alho <talho@nvidia.com>,
+        Mikko Perttunen <mperttunen@nvidia.com>,
+        Thierry Reding <treding@nvidia.com>,
+        Jon Hunter <jonathanh@nvidia.com>
+Subject: [PATCH 5.19 03/72] firmware: tegra: bpmp: Do only aligned access to IPC memory area
+Date:   Fri,  2 Sep 2022 14:18:39 +0200
+Message-Id: <20220902121404.873205464@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
-References: <20220902121403.569927325@linuxfoundation.org>
+In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
+References: <20220902121404.772492078@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,63 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Timo Alho <talho@nvidia.com>
 
-commit b840304fb46cdf7012722f456bce06f151b3e81b upstream.
+commit a4740b148a04dc60e14fe6a1dfe216d3bae214fd upstream.
 
-This attempts to fix the follow errors:
+Use memcpy_toio and memcpy_fromio variants of memcpy to guarantee no
+unaligned access to IPC memory area. This is to allow the IPC memory to
+be mapped as Device memory to further suppress speculative reads from
+happening within the 64 kB memory area above the IPC memory when 64 kB
+memory pages are used.
 
-In function 'memcmp',
-    inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:347:9,
-    inlined from 'l2cap_global_chan_by_psm' at
-    net/bluetooth/l2cap_core.c:2003:15:
-./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp'
-specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
-   44 | #define __underlying_memcmp     __builtin_memcmp
-      |                                 ^
-./include/linux/fortify-string.h:420:16: note: in expansion of macro
-'__underlying_memcmp'
-  420 |         return __underlying_memcmp(p, q, size);
-      |                ^~~~~~~~~~~~~~~~~~~
-In function 'memcmp',
-    inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:347:9,
-    inlined from 'l2cap_global_chan_by_psm' at
-    net/bluetooth/l2cap_core.c:2004:15:
-./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp'
-specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
-   44 | #define __underlying_memcmp     __builtin_memcmp
-      |                                 ^
-./include/linux/fortify-string.h:420:16: note: in expansion of macro
-'__underlying_memcmp'
-  420 |         return __underlying_memcmp(p, q, size);
-      |                ^~~~~~~~~~~~~~~~~~~
-
-Fixes: 332f1795ca20 ("Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm regression")
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Signed-off-by: Timo Alho <talho@nvidia.com>
+Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+Cc: Jon Hunter <jonathanh@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/bluetooth/l2cap_core.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/firmware/tegra/bpmp.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -1835,11 +1835,11 @@ static struct l2cap_chan *l2cap_global_c
- 			src_match = !bacmp(&c->src, src);
- 			dst_match = !bacmp(&c->dst, dst);
- 			if (src_match && dst_match) {
--				c = l2cap_chan_hold_unless_zero(c);
--				if (c) {
--					read_unlock(&chan_list_lock);
--					return c;
--				}
-+				if (!l2cap_chan_hold_unless_zero(c))
-+					continue;
-+
-+				read_unlock(&chan_list_lock);
-+				return c;
- 			}
+--- a/drivers/firmware/tegra/bpmp.c
++++ b/drivers/firmware/tegra/bpmp.c
+@@ -201,7 +201,7 @@ static ssize_t __tegra_bpmp_channel_read
+ 	int err;
  
- 			/* Closest match */
+ 	if (data && size > 0)
+-		memcpy(data, channel->ib->data, size);
++		memcpy_fromio(data, channel->ib->data, size);
+ 
+ 	err = tegra_bpmp_ack_response(channel);
+ 	if (err < 0)
+@@ -245,7 +245,7 @@ static ssize_t __tegra_bpmp_channel_writ
+ 	channel->ob->flags = flags;
+ 
+ 	if (data && size > 0)
+-		memcpy(channel->ob->data, data, size);
++		memcpy_toio(channel->ob->data, data, size);
+ 
+ 	return tegra_bpmp_post_request(channel);
+ }
+@@ -420,7 +420,7 @@ void tegra_bpmp_mrq_return(struct tegra_
+ 	channel->ob->code = code;
+ 
+ 	if (data && size > 0)
+-		memcpy(channel->ob->data, data, size);
++		memcpy_toio(channel->ob->data, data, size);
+ 
+ 	err = tegra_bpmp_post_response(channel);
+ 	if (WARN_ON(err < 0))
 
 
