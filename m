@@ -2,236 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D74CC54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 06:43:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1AFDECAAA1
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 06:45:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235526AbiIBGny (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 02:43:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44542 "EHLO
+        id S235376AbiIBGpI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 02:45:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230151AbiIBGnq (ORCPT
+        with ESMTP id S233557AbiIBGpE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 02:43:46 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B181BBBA57
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 23:43:44 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MJpDx0h74z1N7ln;
-        Fri,  2 Sep 2022 14:40:01 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 2 Sep 2022 14:43:42 +0800
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 2 Sep 2022 14:43:42 +0800
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-To:     Andrew Morton <akpm@linux-foundation.org>, <linux-mm@kvack.org>
-CC:     Mike Rapoport <rppt@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        <linux-kernel@vger.kernel.org>, "Vlastimil Babka" <vbabka@suse.cz>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: [PATCH 2/2] mm: add pageblock_aligned() macro
-Date:   Fri, 2 Sep 2022 14:47:51 +0800
-Message-ID: <20220902064751.17890-2-wangkefeng.wang@huawei.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220902064751.17890-1-wangkefeng.wang@huawei.com>
-References: <20220902064751.17890-1-wangkefeng.wang@huawei.com>
+        Fri, 2 Sep 2022 02:45:04 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 572751010
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 23:45:00 -0700 (PDT)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2826gWN4015477;
+        Fri, 2 Sep 2022 06:44:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=oXfhblV9Gn509Y6lsGhV9mLyu7HT0FI0E4q3AT34Jts=;
+ b=r2je0uCUUgYTQcWTwSYN70/0y+ay8pqVL2pV4dBVbTTd82Hxl4liJKoSFRoSIdMaTfV9
+ Drmjr+ChhfjS/8oIyk1TYe2bkRRKyHpEzrHzQ16BOmG6m+TpGQeBVmahzj9jXLdvFmRJ
+ GNLKHNQeRB7q7p6LvEhL2tYpsgSUYxQncEMt3l6Qr5A+jcJCQdg+lsj0zcP4+qMWrikZ
+ ZWJPVjfC2O/hBI2H2XS0CW3ABOSHySMjmNqsITnWFji8Y+SnlsCMRk43upJn7eUm7qvQ
+ KaiNS4iB+7XYLTFm5+FANdCl8dwy/arp7EsqDf1DF31WEDKBK2XwDuI3qp38jx/4fQbN WQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jbcsu8215-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 02 Sep 2022 06:44:44 +0000
+Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2826hYGC018244;
+        Fri, 2 Sep 2022 06:44:44 GMT
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jbcsu81ye-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 02 Sep 2022 06:44:43 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2826aBFV005974;
+        Fri, 2 Sep 2022 06:44:41 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma05fra.de.ibm.com with ESMTP id 3j7aw8wp5h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 02 Sep 2022 06:44:41 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2826j1ED40436108
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 2 Sep 2022 06:45:01 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id DA9F04C04A;
+        Fri,  2 Sep 2022 06:44:38 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0BECA4C040;
+        Fri,  2 Sep 2022 06:44:33 +0000 (GMT)
+Received: from [9.43.64.219] (unknown [9.43.64.219])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri,  2 Sep 2022 06:44:32 +0000 (GMT)
+Message-ID: <45488760-02b5-115b-c16d-5219303f2f33@linux.ibm.com>
+Date:   Fri, 2 Sep 2022 12:14:31 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH v3 updated] mm/demotion: Expose memory tier details via
+ sysfs
+Content-Language: en-US
+To:     "Huang, Ying" <ying.huang@intel.com>
+Cc:     Wei Xu <weixugc@google.com>, Johannes Weiner <hannes@cmpxchg.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        jvgediya.oss@gmail.com, Bharata B Rao <bharata@amd.com>,
+        Greg Thelen <gthelen@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+References: <20220830081736.119281-1-aneesh.kumar@linux.ibm.com>
+ <87tu5rzigc.fsf@yhuang6-desk2.ccr.corp.intel.com>
+ <ad19e105-9290-922d-59e6-e6813a30f5f0@linux.ibm.com>
+ <87pmgezkhp.fsf@yhuang6-desk2.ccr.corp.intel.com>
+ <CAAPL-u8MEs04DkHy6kaS788VjdYZZjAYOgzMnioOzDXbc0ZhhQ@mail.gmail.com>
+ <d91beb53-e940-e02a-f9ca-3326bf914da7@linux.ibm.com>
+ <87fshaz63h.fsf@yhuang6-desk2.ccr.corp.intel.com>
+ <698120ce-d4df-3d13-dea9-a8f5c298783c@linux.ibm.com>
+ <87bkryz4nh.fsf@yhuang6-desk2.ccr.corp.intel.com>
+ <2b4ddc45-74ae-27df-d973-6724f61f4e18@linux.ibm.com>
+ <877d2mz3c1.fsf@yhuang6-desk2.ccr.corp.intel.com>
+From:   Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
+In-Reply-To: <877d2mz3c1.fsf@yhuang6-desk2.ccr.corp.intel.com>
+Content-Type: text/plain; charset=UTF-8
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: id3h1xHQI30Uq9IFIfXdbOVYH4Nu8qtS
+X-Proofpoint-GUID: Vy__WMwFUcpmib_RCUdVcQyq-Vg3vas3
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-09-01_12,2022-08-31_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 malwarescore=0
+ lowpriorityscore=0 suspectscore=0 impostorscore=0 clxscore=1015
+ phishscore=0 mlxscore=0 bulkscore=0 priorityscore=1501 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2209020029
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add pageblock_aligned() and use it to simplify code.
+On 9/2/22 12:10 PM, Huang, Ying wrote:
+> Aneesh Kumar K V <aneesh.kumar@linux.ibm.com> writes:
+> 
+>> On 9/2/22 11:42 AM, Huang, Ying wrote:
+>>> Aneesh Kumar K V <aneesh.kumar@linux.ibm.com> writes:
+>>>
+>>>> On 9/2/22 11:10 AM, Huang, Ying wrote:
+>>>>> Aneesh Kumar K V <aneesh.kumar@linux.ibm.com> writes:
+>>>>>
+>>>>>> On 9/2/22 10:39 AM, Wei Xu wrote:
+>>>>>>> On Thu, Sep 1, 2022 at 5:33 PM Huang, Ying <ying.huang@intel.com> wrote:
+>>>>>>>>
+>>>>>>>> Aneesh Kumar K V <aneesh.kumar@linux.ibm.com> writes:
+>>>>>>>>
+>>>>>>>>> On 9/1/22 12:31 PM, Huang, Ying wrote:
+>>>>>>>>>> "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
+>>>>>>>>>>
+>>>>>>>>>>> This patch adds /sys/devices/virtual/memory_tiering/ where all memory tier
+>>>>>>>>>>> related details can be found. All allocated memory tiers will be listed
+>>>>>>>>>>> there as /sys/devices/virtual/memory_tiering/memory_tierN/
+>>>>>>>>>>>
+>>>>>>>>>>> The nodes which are part of a specific memory tier can be listed via
+>>>>>>>>>>> /sys/devices/virtual/memory_tiering/memory_tierN/nodes
+>>>>>>>>>>
+>>>>>>>>>> I think "memory_tier" is a better subsystem/bus name than
+>>>>>>>>>> memory_tiering.  Because we have a set of memory_tierN devices inside.
+>>>>>>>>>> "memory_tier" sounds more natural.  I know this is subjective, just my
+>>>>>>>>>> preference.
+>>>>>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> I missed replying to this earlier. I will keep memory_tiering as subsystem name in v4 
+>>>>>> because we would want it to a susbsystem where all memory tiering related details can be found
+>>>>>> including memory type in the future. This is as per discussion 
+>>>>>>
+>>>>>> https://lore.kernel.org/linux-mm/CAAPL-u9TKbHGztAF=r-io3gkX7gorUunS2UfstudCWuihrA=0g@mail.gmail.com
+>>>>>
+>>>>> I don't think that it's a good idea to mix 2 types of devices in one
+>>>>> subsystem (bus).  If my understanding were correct, that breaks the
+>>>>> driver core convention.
+>>>>>
+>>>>
+>>>> All these are virtual devices .I am not sure i follow what you mean by 2 types of devices.
+>>>> memory_tiering is a subsystem that represents all the details w.r.t memory tiering. It shows
+>>>> details of memory tiers and can possibly contain details of different memory types .
+>>>
+>>> IMHO, memory_tier and memory_type are 2 kind of devices.  They have
+>>> almost totally different attributes (sysfs file).  So, we should create
+>>> 2 buses for them.  Each has its own attribute group.  "virtual" itself
+>>> isn't a subsystem.
+>>
+>> Considering both the details are related to memory tiering, wouldn't it be much simpler we consolidate
+>> them within the same subdirectory? I am still not clear why you are suggesting they need to be in different
+>> sysfs hierarchy.  It doesn't break any driver core convention as you mentioned earlier. 
+>>
+>> /sys/devices/virtual/memory_tiering/memory_tierN
+>> /sys/devices/virtual/memory_tiering/memory_typeN
+> 
+> I think we should add
+> 
+>  /sys/devices/virtual/memory_tier/memory_tierN
+>  /sys/devices/virtual/memory_type/memory_typeN
+> 
 
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
----
- include/linux/pageblock-flags.h |  1 +
- mm/compaction.c                 |  8 ++++----
- mm/memory_hotplug.c             |  6 ++----
- mm/page_alloc.c                 | 17 +++++++----------
- mm/page_isolation.c             |  2 +-
- 5 files changed, 15 insertions(+), 19 deletions(-)
+I am trying to find if there is a technical reason to do the same? 
 
-diff --git a/include/linux/pageblock-flags.h b/include/linux/pageblock-flags.h
-index ef2e17e312ae..e0b980268442 100644
---- a/include/linux/pageblock-flags.h
-+++ b/include/linux/pageblock-flags.h
-@@ -53,6 +53,7 @@ extern unsigned int pageblock_order;
- #endif /* CONFIG_HUGETLB_PAGE */
- 
- #define pageblock_nr_pages	(1UL << pageblock_order)
-+#define pageblock_aligned(pfn)	IS_ALIGNED((unsigned long)(pfn), pageblock_nr_pages)
- #define pageblock_start_pfn(pfn)	round_down(pfn, pageblock_nr_pages)
- #define pageblock_end_pfn(pfn)		ALIGN((pfn + 1), pageblock_nr_pages)
- 
-diff --git a/mm/compaction.c b/mm/compaction.c
-index 65bef5f78897..c4e4453187a2 100644
---- a/mm/compaction.c
-+++ b/mm/compaction.c
-@@ -402,7 +402,7 @@ static bool test_and_set_skip(struct compact_control *cc, struct page *page,
- 	if (cc->ignore_skip_hint)
- 		return false;
- 
--	if (!IS_ALIGNED(pfn, pageblock_nr_pages))
-+	if (!pageblock_aligned(pfn))
- 		return false;
- 
- 	skip = get_pageblock_skip(page);
-@@ -884,7 +884,7 @@ isolate_migratepages_block(struct compact_control *cc, unsigned long low_pfn,
- 		 * COMPACT_CLUSTER_MAX at a time so the second call must
- 		 * not falsely conclude that the block should be skipped.
- 		 */
--		if (!valid_page && IS_ALIGNED(low_pfn, pageblock_nr_pages)) {
-+		if (!valid_page && pageblock_aligned(low_pfn)) {
- 			if (!isolation_suitable(cc, page)) {
- 				low_pfn = end_pfn;
- 				page = NULL;
-@@ -1936,7 +1936,7 @@ static isolate_migrate_t isolate_migratepages(struct compact_control *cc)
- 		 * before making it "skip" so other compaction instances do
- 		 * not scan the same block.
- 		 */
--		if (IS_ALIGNED(low_pfn, pageblock_nr_pages) &&
-+		if (pageblock_aligned(low_pfn) &&
- 		    !fast_find_block && !isolation_suitable(cc, page))
- 			continue;
- 
-@@ -2122,7 +2122,7 @@ static enum compact_result __compact_finished(struct compact_control *cc)
- 	 * migration source is unmovable/reclaimable but it's not worth
- 	 * special casing.
- 	 */
--	if (!IS_ALIGNED(cc->migrate_pfn, pageblock_nr_pages))
-+	if (!pageblock_aligned(cc->migrate_pfn))
- 		return COMPACT_CONTINUE;
- 
- 	/* Direct compactor: Is a suitable page free? */
-diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
-index 9ae1f98548b1..fd40f7e9f176 100644
---- a/mm/memory_hotplug.c
-+++ b/mm/memory_hotplug.c
-@@ -1085,8 +1085,7 @@ int __ref online_pages(unsigned long pfn, unsigned long nr_pages,
- 	 * of the physical memory space for vmemmaps. That space is pageblock
- 	 * aligned.
- 	 */
--	if (WARN_ON_ONCE(!nr_pages ||
--			 !IS_ALIGNED(pfn, pageblock_nr_pages) ||
-+	if (WARN_ON_ONCE(!nr_pages || !pageblock_aligned(pfn) ||
- 			 !IS_ALIGNED(pfn + nr_pages, PAGES_PER_SECTION)))
- 		return -EINVAL;
- 
-@@ -1806,8 +1805,7 @@ int __ref offline_pages(unsigned long start_pfn, unsigned long nr_pages,
- 	 * of the physical memory space for vmemmaps. That space is pageblock
- 	 * aligned.
- 	 */
--	if (WARN_ON_ONCE(!nr_pages ||
--			 !IS_ALIGNED(start_pfn, pageblock_nr_pages) ||
-+	if (WARN_ON_ONCE(!nr_pages || !pageblock_aligned(start_pfn) ||
- 			 !IS_ALIGNED(start_pfn + nr_pages, PAGES_PER_SECTION)))
- 		return -EINVAL;
- 
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 93339cc61f92..d030c20a6081 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -1892,15 +1892,14 @@ static void __init deferred_free_range(unsigned long pfn,
- 	page = pfn_to_page(pfn);
- 
- 	/* Free a large naturally-aligned chunk if possible */
--	if (nr_pages == pageblock_nr_pages &&
--	    (pfn & (pageblock_nr_pages - 1)) == 0) {
-+	if (nr_pages == pageblock_nr_pages && pageblock_aligned(pfn)) {
- 		set_pageblock_migratetype(page, MIGRATE_MOVABLE);
- 		__free_pages_core(page, pageblock_order);
- 		return;
- 	}
- 
- 	for (i = 0; i < nr_pages; i++, page++, pfn++) {
--		if ((pfn & (pageblock_nr_pages - 1)) == 0)
-+		if (pageblock_aligned(pfn))
- 			set_pageblock_migratetype(page, MIGRATE_MOVABLE);
- 		__free_pages_core(page, 0);
- 	}
-@@ -1928,7 +1927,7 @@ static inline void __init pgdat_init_report_one_done(void)
-  */
- static inline bool __init deferred_pfn_valid(unsigned long pfn)
- {
--	if (!(pfn & (pageblock_nr_pages - 1)) && !pfn_valid(pfn))
-+	if (!pageblock_aligned(pfn) && !pfn_valid(pfn))
- 		return false;
- 	return true;
- }
-@@ -1940,14 +1939,13 @@ static inline bool __init deferred_pfn_valid(unsigned long pfn)
- static void __init deferred_free_pages(unsigned long pfn,
- 				       unsigned long end_pfn)
- {
--	unsigned long nr_pgmask = pageblock_nr_pages - 1;
- 	unsigned long nr_free = 0;
- 
- 	for (; pfn < end_pfn; pfn++) {
- 		if (!deferred_pfn_valid(pfn)) {
- 			deferred_free_range(pfn - nr_free, nr_free);
- 			nr_free = 0;
--		} else if (!(pfn & nr_pgmask)) {
-+		} else if (!pageblock_aligned(pfn)) {
- 			deferred_free_range(pfn - nr_free, nr_free);
- 			nr_free = 1;
- 		} else {
-@@ -1967,7 +1965,6 @@ static unsigned long  __init deferred_init_pages(struct zone *zone,
- 						 unsigned long pfn,
- 						 unsigned long end_pfn)
- {
--	unsigned long nr_pgmask = pageblock_nr_pages - 1;
- 	int nid = zone_to_nid(zone);
- 	unsigned long nr_pages = 0;
- 	int zid = zone_idx(zone);
-@@ -1977,7 +1974,7 @@ static unsigned long  __init deferred_init_pages(struct zone *zone,
- 		if (!deferred_pfn_valid(pfn)) {
- 			page = NULL;
- 			continue;
--		} else if (!page || !(pfn & nr_pgmask)) {
-+		} else if (!page || !pageblock_aligned(pfn)) {
- 			page = pfn_to_page(pfn);
- 		} else {
- 			page++;
-@@ -6759,7 +6756,7 @@ void __meminit memmap_init_range(unsigned long size, int nid, unsigned long zone
- 		 * such that unmovable allocations won't be scattered all
- 		 * over the place during system boot.
- 		 */
--		if (IS_ALIGNED(pfn, pageblock_nr_pages)) {
-+		if (pageblock_aligned(pfn)) {
- 			set_pageblock_migratetype(page, migratetype);
- 			cond_resched();
- 		}
-@@ -6802,7 +6799,7 @@ static void __ref __init_zone_device_page(struct page *page, unsigned long pfn,
- 	 * Please note that MEMINIT_HOTPLUG path doesn't clear memmap
- 	 * because this is done early in section_activate()
- 	 */
--	if (IS_ALIGNED(pfn, pageblock_nr_pages)) {
-+	if (pageblock_aligned(pfn)) {
- 		set_pageblock_migratetype(page, MIGRATE_MOVABLE);
- 		cond_resched();
- 	}
-diff --git a/mm/page_isolation.c b/mm/page_isolation.c
-index f2df4ad53cd6..13cc00598677 100644
---- a/mm/page_isolation.c
-+++ b/mm/page_isolation.c
-@@ -311,7 +311,7 @@ static int isolate_single_pageblock(unsigned long boundary_pfn, int flags,
- 	struct zone *zone;
- 	int ret;
- 
--	VM_BUG_ON(!IS_ALIGNED(boundary_pfn, pageblock_nr_pages));
-+	VM_BUG_ON(!pageblock_aligned(boundary_pfn));
- 
- 	if (isolate_before)
- 		isolate_pageblock = boundary_pfn - pageblock_nr_pages;
--- 
-2.35.3
+> I don't think this is complex.  Devices of same bus/subsystem should
+> have mostly same attributes.  This is my understanding of driver core
+> convention.
+> 
+
+I was not looking at this from code complexity point. Instead of having multiple directories
+with details w.r.t memory tiering, I was looking at consolidating the details
+within the directory /sys/devices/virtual/memory_tiering. (similar to all virtual devices
+are consolidated within /sys/devics/virtual/).
+
+-aneesh
 
