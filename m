@@ -2,75 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFA0CECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:42:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAE10ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:43:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235879AbiIBImr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 04:42:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56974 "EHLO
+        id S235933AbiIBInI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 04:43:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235817AbiIBImn (ORCPT
+        with ESMTP id S235889AbiIBIm7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 04:42:43 -0400
-Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 473529DB54;
-        Fri,  2 Sep 2022 01:42:43 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by comms.puri.sm (Postfix) with ESMTP id 19BDEDFC97;
-        Fri,  2 Sep 2022 01:42:43 -0700 (PDT)
-Received: from comms.puri.sm ([127.0.0.1])
-        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Qth0n9K1XUrE; Fri,  2 Sep 2022 01:42:42 -0700 (PDT)
-From:   Martin Kepplinger <martin.kepplinger@puri.sm>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=puri.sm; s=comms;
-        t=1662108162; bh=f5pKOXHbGKD/nYgQOSeg2/+MMasiz7zAAfiGLG+NTJk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=urzOoLmeLNMFJMJGbZH/mv+bUIioZASCyXEWUEs2h6UkYtL9SnNZBry6M8PYWC1P4
-         CSz6PEo2ndgfEJt1dSTtqNONizhTft7zfQVUSFwpco5QwwF15rk+gApgUlhWLhQIGp
-         QMgSIFLU/dfs6ISLZl810Gf3KEJs1wF1EbuktFiwEob0OaPduYK5R7L+Ey2FhusM1Y
-         5atxY7Ecp2uBE9TwFvMGK0XaL8QreXs9toiAt16FHf36VYJ/i7M1HDQXDXNxtrrwta
-         DszHDcvvrwEIMkPqZduprCTOgXGsMY2k1itfV2CUJJxCnF1PcUW36HFfJy1ejLMGNp
-         gpAW/o/inxEVw==
-To:     festevam@gmail.com, shawnguo@kernel.org
-Cc:     martin.kepplinger@puri.sm, devicetree@vger.kernel.org,
-        kernel@pengutronix.de, kernel@puri.sm, krzk@kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-imx@nxp.com,
-        linux-kernel@vger.kernel.org, phone-devel@vger.kernel.org,
-        robh@kernel.org, Angus Ainslie <angus@akkea.ca>
-Subject: [PATCH v2 5/6] arm64: dts: imx8mq-librem5: add usb-role-switch property to dwc3
-Date:   Fri,  2 Sep 2022 10:42:15 +0200
-Message-Id: <20220902084216.1259202-6-martin.kepplinger@puri.sm>
-In-Reply-To: <20220902084216.1259202-1-martin.kepplinger@puri.sm>
-References: <20220902084216.1259202-1-martin.kepplinger@puri.sm>
+        Fri, 2 Sep 2022 04:42:59 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7646DAFADC
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 01:42:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Transfer-Encoding:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=kyUq76Ekypnho/k0EISFYQkD5KK5rKzGsuomfL+eaXc=; b=lC/XLdh8VjG1swl38+yATsXvz3
+        r6gwmqc2fYBtTbRW1eo85+4AMiO6E6/2aJ6THbpInNUlmeMKt3GhkNVy2uLq0QMz+pkw6c62y+5zs
+        4Jgtt20xoA/PrrpZqKIkEr/sTdS1C/DfXr7RioekxoS3gM/c+KxYShn+KBf+CYQVBYyTz6sOSYPKr
+        zA/fuz/3o7pf4KQyujptDcXRVlo///hpm7j+x9IpOZfxbdNB6r8/SbI8eOgz/vAODNX2wKEvUhZ/s
+        /6tGqbWCZ32XiTaSegBK5VgHc2thAUjL+TvtDwt6McfUTx0ctUU/rJPbw8FyC7SF6HP1XJNbNZHox
+        W7X7E9Nw==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oU2Fo-008cnp-OP; Fri, 02 Sep 2022 08:42:21 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id DC8003002C7;
+        Fri,  2 Sep 2022 10:42:17 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id C62CB2B8A3BCB; Fri,  2 Sep 2022 10:42:17 +0200 (CEST)
+Date:   Fri, 2 Sep 2022 10:42:17 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Sathvika Vasireddy <sv@linux.ibm.com>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "aik@ozlabs.ru" <aik@ozlabs.ru>,
+        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "mbenes@suse.cz" <mbenes@suse.cz>,
+        "npiggin@gmail.com" <npiggin@gmail.com>,
+        "chenzhongjin@huawei.com" <chenzhongjin@huawei.com>,
+        "naveen.n.rao@linux.vnet.ibm.com" <naveen.n.rao@linux.vnet.ibm.com>
+Subject: Re: [PATCH v2 08/16] objtool: Fix SEGFAULT
+Message-ID: <YxHB6VzfXYozAPEA@hirez.programming.kicks-ass.net>
+References: <20220829055223.24767-1-sv@linux.ibm.com>
+ <20220829055223.24767-9-sv@linux.ibm.com>
+ <YxEGD0TVWtXTjcGR@hirez.programming.kicks-ass.net>
+ <66a3976b-48c1-f8c4-aee0-d04c2c11f5af@csgroup.eu>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <66a3976b-48c1-f8c4-aee0-d04c2c11f5af@csgroup.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Angus Ainslie <angus@akkea.ca>
+On Fri, Sep 02, 2022 at 08:06:28AM +0000, Christophe Leroy wrote:
+> 
+> 
+> Le 01/09/2022 à 21:20, Peter Zijlstra a écrit :
+> > On Mon, Aug 29, 2022 at 11:22:15AM +0530, Sathvika Vasireddy wrote:
+> >> From: Christophe Leroy <christophe.leroy@csgroup.eu>
+> >>
+> >> find_insn() will return NULL in case of failure. Check insn in order
+> >> to avoid a kernel Oops for NULL pointer dereference.
+> >>
+> >> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+> >> ---
+> >>   tools/objtool/check.c | 2 +-
+> >>   1 file changed, 1 insertion(+), 1 deletion(-)
+> >>
+> >> diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+> >> index 91678252a9b6..ed2fdfeb1d9c 100644
+> >> --- a/tools/objtool/check.c
+> >> +++ b/tools/objtool/check.c
+> >> @@ -205,7 +205,7 @@ static bool __dead_end_function(struct objtool_file *file, struct symbol *func,
+> >>   		return false;
+> >>   
+> >>   	insn = find_insn(file, func->sec, func->offset);
+> >> -	if (!insn->func)
+> >> +	if (!insn || !insn->func)
+> >>   		return false;
+> > 
+> > I suppose this is ok, but how can the lookup for func->sec, func->offset
+> > *not* find an instruction ?!
+> 
+> That happened to me at the begining when the port to powerpc was not 
+> fully functionnal.
+> 
+> I guess that could also happen with a corrupted object file so better 
+> safe than sorry.
 
-In order to enable (PD and data) role switching on the Librem 5 phone,
-add the usb-role-switch property to imx8mq's dwc3 node.
+Fair enough.
 
-Signed-off-by: Angus Ainslie <angus@akkea.ca>
-Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
----
- arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi b/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi
-index f07d1c6e97777..058d6ecf109b2 100644
---- a/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi
-@@ -1302,6 +1302,7 @@ &usb_dwc3_0 {
- 	#size-cells = <0>;
- 	dr_mode = "otg";
- 	snps,dis_u3_susphy_quirk;
-+	usb-role-switch;
- 	status = "okay";
- 
- 	port@0 {
--- 
-2.30.2
-
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
