@@ -2,89 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0901DC54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:50:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80495C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237762AbiIBMu3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:50:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34710 "EHLO
+        id S237787AbiIBMuo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:50:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238008AbiIBMt3 (ORCPT
+        with ESMTP id S238026AbiIBMtc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:49:29 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDE97F47E5;
-        Fri,  2 Sep 2022 05:36:10 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Fri, 2 Sep 2022 08:49:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14DADF490E;
+        Fri,  2 Sep 2022 05:36:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 667CE20440;
-        Fri,  2 Sep 2022 12:29:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1662121747;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=6qCFOxxO+LMYV00zUvZObOY0/jrL79ZSovJuTBVwyco=;
-        b=iJ9CQY5kfRwAbA7g7Z3xJW2BCrOA8wgnIWzXMxAoCfpdW4xdtHXMD1ZiDvaVjyw+GEfo+1
-        fkAVWImqpV+d0yal5teYFFdsCYUEV58dewquPOoUKGdIKWaH7VqoysnbS5phGgD2/DTdvL
-        +EUMAsekpIKicwyE2KGUx3VScEQsBG8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1662121747;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=6qCFOxxO+LMYV00zUvZObOY0/jrL79ZSovJuTBVwyco=;
-        b=7fSqaAfgJjkgR9p7k+ZY+McQ0vk01A43UYqnLtSWHex+mxmMHoP05vUFaLutll0xv3OdSe
-        9MbNE3TzLBFWLxAw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3812613328;
-        Fri,  2 Sep 2022 12:29:07 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id sJO2DBP3EWOnZgAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Fri, 02 Sep 2022 12:29:07 +0000
-Date:   Fri, 2 Sep 2022 14:23:47 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     cgel.zte@gmail.com
-Cc:     clm@fb.com, josef@toxicpanda.com, dsterba@suse.com,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        zhang songyi <zhang.songyi@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH linux-next] btrfs: Remove the unneeded result variable
-Message-ID: <20220902122346.GT13489@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, cgel.zte@gmail.com, clm@fb.com,
-        josef@toxicpanda.com, dsterba@suse.com, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        zhang songyi <zhang.songyi@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-References: <20220902074810.319914-1-zhang.songyi@zte.com.cn>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E756B82A91;
+        Fri,  2 Sep 2022 12:34:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A20D6C433D7;
+        Fri,  2 Sep 2022 12:34:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662122066;
+        bh=XlpRlleOfgifAD8pu3t/mBaUonQB1oJolSrwU3msclo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=zlLCTzq07Ys6EXIGwHD0r3rIdMR85ZbWaT+nra0YJQXe0COHBWG/dCX6IJ7Fx3Vca
+         BvUUAfDKw6tsSibtaEvH4CIeBllGT7PqoMlzLvkejJSOtg8/N+vh7MWi/2HZfdce1j
+         aYvUra1JIyEW+/tRCmx0MWtc8b+wm9j/YwQPPIkQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Martin Leung <Martin.Leung@amd.com>,
+        Brian Chang <Brian.Chang@amd.com>,
+        Charlene Liu <Charlene.Liu@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 63/73] drm/amd/display: avoid doing vm_init multiple time
+Date:   Fri,  2 Sep 2022 14:19:27 +0200
+Message-Id: <20220902121406.494013281@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
+References: <20220902121404.435662285@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220902074810.319914-1-zhang.songyi@zte.com.cn>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Sep 02, 2022 at 07:48:10AM +0000, cgel.zte@gmail.com wrote:
-> From: zhang songyi <zhang.songyi@zte.com.cn>
-> 
-> Return the sysfs_emit() directly instead of storing it in another
-> redundant variable.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: zhang songyi <zhang.songyi@zte.com.cn>
+From: Charlene Liu <Charlene.Liu@amd.com>
 
-There's another patch doing a similar cleanup in btrfs_load_inode_props,
-can you please resend so it's all done in one patch? I did not want to
-apply a single fix but now that there are a few more instances of the
-pattern it makes slightly more sense to apply it. Thanks.
+[ Upstream commit 5544a7b5a07480192eb5fd3536462faed2c21528 ]
 
-https://lore.kernel.org/linux-btrfs/20220830083914.276926-1-ye.xingchen@zte.com.cn/
+[why]
+this is to ensure that driver will not reprogram hvm_prefetch_req again if
+it is done.
+
+Reviewed-by: Martin Leung <Martin.Leung@amd.com>
+Acked-by: Brian Chang <Brian.Chang@amd.com>
+Signed-off-by: Charlene Liu <Charlene.Liu@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hubbub.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hubbub.c b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hubbub.c
+index 36044cb8ec834..1c0f56d8ba8bb 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hubbub.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hubbub.c
+@@ -67,9 +67,15 @@ static uint32_t convert_and_clamp(
+ void dcn21_dchvm_init(struct hubbub *hubbub)
+ {
+ 	struct dcn20_hubbub *hubbub1 = TO_DCN20_HUBBUB(hubbub);
+-	uint32_t riommu_active;
++	uint32_t riommu_active, prefetch_done;
+ 	int i;
+ 
++	REG_GET(DCHVM_RIOMMU_STAT0, HOSTVM_PREFETCH_DONE, &prefetch_done);
++
++	if (prefetch_done) {
++		hubbub->riommu_active = true;
++		return;
++	}
+ 	//Init DCHVM block
+ 	REG_UPDATE(DCHVM_CTRL0, HOSTVM_INIT_REQ, 1);
+ 
+-- 
+2.35.1
+
+
+
