@@ -2,87 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 740D6C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 11:32:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A9C3ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 11:33:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235730AbiIBLc2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 07:32:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44292 "EHLO
+        id S235485AbiIBLdD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 07:33:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236124AbiIBLbw (ORCPT
+        with ESMTP id S232659AbiIBLcP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 07:31:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 314A22A277;
-        Fri,  2 Sep 2022 04:30:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 2 Sep 2022 07:32:15 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E19B64EE
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 04:31:21 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 613D26209A;
-        Fri,  2 Sep 2022 11:30:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C66C9C433D6;
-        Fri,  2 Sep 2022 11:30:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662118217;
-        bh=p56tPFujkhk9sqPkTP10zznYngxLR5f7HLsH03HaYzY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=LiPG8H05Iu8lIKQL9SS/RdWdlipBUgpBuDQ0GPxiV+0kOXTdf7/eiEzGU/xdZMEd3
-         LVGc+g4kTK/4TcrT27/21BsHaWfJU17NywrM1jEh2B4fiMv8gpGUn3nlZBV+OM6S3D
-         TyhjaZt0X0FqRAj+V9pRXL26hoWbsyPtadH3JJwSVhzLXT4+nG36jdCtrdriDfB17A
-         uhwMHjbNKEWUBfRffoF4aeS+eW4zJc6CoMSv2u+SuYnkcycKbRhPFZuVCSpVgRTPbh
-         vI/LB8Yug8LlaIJGHjBtCLLDNmO9qjxtlBfBv6gJA+4uWPT7tjAMz1mOiXZM5x2nnu
-         3xb97sLYxfTqg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B0FA0E924D5;
-        Fri,  2 Sep 2022 11:30:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4MJwj11jcpz4xG9;
+        Fri,  2 Sep 2022 21:31:17 +1000 (AEST)
+From:   Michael Ellerman <patch-notifications@ellerman.id.au>
+To:     Nathan Chancellor <nathan@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Vaibhav Jain <vaibhav@linux.ibm.com>, llvm@lists.linux.dev,
+        Kajol Jain <kjain@linux.ibm.com>, patches@lists.linux.dev,
+        Tom Rix <trix@redhat.com>, Nicholas Piggin <npiggin@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>
+In-Reply-To: <20220830151256.1473169-1-nathan@kernel.org>
+References: <20220830151256.1473169-1-nathan@kernel.org>
+Subject: Re: [PATCH] powerpc/papr_scm: Ensure rc is always initialized in papr_scm_pmu_register()
+Message-Id: <166211825227.554590.4969553793169461587.b4-ty@ellerman.id.au>
+Date:   Fri, 02 Sep 2022 21:30:52 +1000
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/2] net: lan966x: make reset optional
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166211821772.29115.1067348886284578708.git-patchwork-notify@kernel.org>
-Date:   Fri, 02 Sep 2022 11:30:17 +0000
-References: <20220831111855.1749646-1-michael@walle.cc>
-In-Reply-To: <20220831111855.1749646-1-michael@walle.cc>
-To:     Michael Walle <michael@walle.cc>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, lars.povlsen@microchip.com,
-        Steen.Hegelund@microchip.com, horatiu.vultur@microchip.com,
-        UNGLinuxDriver@microchip.com, p.zabel@pengutronix.de,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Wed, 31 Aug 2022 13:18:53 +0200 you wrote:
-> This is the remaining part of the reset rework on the LAN966x targetting
-> the netdev tree.
+On Tue, 30 Aug 2022 08:12:56 -0700, Nathan Chancellor wrote:
+> Clang warns:
 > 
-> The former series can be found at:
-> https://lore.kernel.org/lkml/20220826115607.1148489-1-michael@walle.cc/
-> 
-> Michael Walle (2):
->   dt-bindings: net: sparx5: don't require a reset line
->   net: lan966x: make reset optional
+>   arch/powerpc/platforms/pseries/papr_scm.c:492:6: warning: variable 'rc' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
+>           if (!p->stat_buffer_len)
+>               ^~~~~~~~~~~~~~~~~~~
+>   arch/powerpc/platforms/pseries/papr_scm.c:523:64: note: uninitialized use occurs here
+>           dev_info(&p->pdev->dev, "nvdimm pmu didn't register rc=%d\n", rc);
+>                                                                         ^~
+>   include/linux/dev_printk.h:150:67: note: expanded from macro 'dev_info'
+>           dev_printk_index_wrap(_dev_info, KERN_INFO, dev, dev_fmt(fmt), ##__VA_ARGS__)
+>                                                                           ^~~~~~~~~~~
+>   include/linux/dev_printk.h:110:23: note: expanded from macro 'dev_printk_index_wrap'
+>                   _p_func(dev, fmt, ##__VA_ARGS__);                       \
+>                                       ^~~~~~~~~~~
+>   arch/powerpc/platforms/pseries/papr_scm.c:492:2: note: remove the 'if' if its condition is always false
+>           if (!p->stat_buffer_len)
+>           ^~~~~~~~~~~~~~~~~~~~~~~~
+>   arch/powerpc/platforms/pseries/papr_scm.c:484:8: note: initialize the variable 'rc' to silence this warning
+>           int rc, nodeid;
+>                 ^
+>                 = 0
+>   1 warning generated.
 > 
 > [...]
 
-Here is the summary with links:
-  - [net-next,1/2] dt-bindings: net: sparx5: don't require a reset line
-    https://git.kernel.org/netdev/net-next/c/baa6a9b59070
-  - [net-next,2/2] net: lan966x: make reset optional
-    https://git.kernel.org/netdev/net-next/c/f4c1f51cea4e
+Applied to powerpc/fixes.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+[1/1] powerpc/papr_scm: Ensure rc is always initialized in papr_scm_pmu_register()
+      https://git.kernel.org/powerpc/c/6cf07810e9ef8535d60160d13bf0fd05f2af38e7
 
-
+cheers
