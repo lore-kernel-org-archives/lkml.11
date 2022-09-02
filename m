@@ -2,167 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AD6FC6FA82
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 21:38:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D920DC6FA82
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 21:40:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231220AbiIBViI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 17:38:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40390 "EHLO
+        id S231199AbiIBVk1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 17:40:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231204AbiIBVh7 (ORCPT
+        with ESMTP id S229500AbiIBVkY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 17:37:59 -0400
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA50EF5CCF
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 14:37:57 -0700 (PDT)
-Received: by mail-pf1-x44a.google.com with SMTP id a19-20020aa780d3000000b0052bccd363f8so1610934pfn.22
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 14:37:57 -0700 (PDT)
+        Fri, 2 Sep 2022 17:40:24 -0400
+Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A304038476
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 14:40:21 -0700 (PDT)
+Received: by mail-qk1-x730.google.com with SMTP id g16so2728008qkl.11
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 14:40:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date;
-        bh=HDZJ0lSRQoma7HASH55s+Lq3/kCI0PVAr3SKG55mmDE=;
-        b=rBbZGj2hyaPbBdrQ8ZAtAd8fBVTk/aNT+PMfh4D+6g9Dnr1lJ+8WgvE2JpQSQ5mpKr
-         LT2dmPZTqjjH4ka2YE7gNLcVOQ7eD+OWNfyQ2AkU6DMz3lRStI2yu9n2MfIPoTx7L5ey
-         +2YIepUmQxsASZ4ckcGjskYeuPdVvt1j/Wcq+jPORMIzjcCPcV4PD0zHxpxeC1Oq2wre
-         +8hAszoekk7kAiAJsqgWbZ2ymL+wkxPxV5ctB6USiI8NBgGNkPygEfA6Bm89F2jwk/eS
-         piZC+qd+beRl05PxC+rpuQfD/8nEToe3qBGP0kiN2/ERGnRCwcAREuiF7Yu7Hu4WltFr
-         fYMg==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=bR3hEleHn1hDXjDK6nUjMSvBYEAsUeJzCzyUGuVERRQ=;
+        b=wuzCTnre6tTsSegsWv8KZyKcXhhqdhcG6fFIvRHpUAcFTLq9edlgDAeNCrP1BZBuQs
+         +snDeAgYpQ9ou4o7gjLmO4qAPCuMqjAMbSPDH6nE3m4Wt26glIh+Q+WnQ8h2JPbH743C
+         XofCCIy/C62BWw7Gz4ktIrZQqvhlIuwS7utzOIyMLVq6TDdCeNhT05Niap6zzINjxe9d
+         VRnsUCafjeFcUtRGslnzqSsXeskPb0D729WRKiT3jNNohcyEJmY1jMASfZ0wmaKpZmpH
+         seXeBDvkWD9yhDdZJxHZ8g6wAsmC/bSfQs1ikHOQO7BCPMuu2XRckAw5U3BgMDCidcWo
+         28Lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date;
-        bh=HDZJ0lSRQoma7HASH55s+Lq3/kCI0PVAr3SKG55mmDE=;
-        b=Kn+G9Q0suaGh6iGYP2regRgsv17jpE5UcnanBRA2vj14oscQF2q8p9D319i7DQDO13
-         fSzltOHqLAkbPYQ/3tLE0KKbFAG02ImLgaPRv6CYct2xJnKiinQybE1OnmnCFZ0ZElrj
-         COzum8crtIXP8ZFaTkj8r4mtm0H/VXi+oNFhnTCQvpw4hMq7EipYTjaxSBcG7H53W3WC
-         4PDB9xaLvCK+F7ZOdrjRFbFTOPbDBzFzzNciNyVEngrodQIN9PoYKXoHcMrz0p+rIYX3
-         dRXIL7G9kYAzBBVlaB+EyhXOjwMKq+O6qtRbV9Icjy9xnoqVxFytIGWR7v3Nfuto3VYO
-         cjhA==
-X-Gm-Message-State: ACgBeo2/ACkx4ewNzLFjek5eb8g6EFQfjQ8Td1ZHCURjlV/ktarcng/F
-        6xAoQahGDfHIDB02I0mH00kIN5Bi
-X-Google-Smtp-Source: AA6agR6rg/qLo+yQa1/A/MnMpENNlMrew4RjKFVFUDSg5m3sigIjZqHtxPyD4LsEch28EwHGn9DhXIq91Q==
-X-Received: from fawn.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5795])
- (user=morbo job=sendgmr) by 2002:a17:90b:264a:b0:1fd:f88d:dbad with SMTP id
- pa10-20020a17090b264a00b001fdf88ddbadmr7040192pjb.93.1662154677243; Fri, 02
- Sep 2022 14:37:57 -0700 (PDT)
-Date:   Fri,  2 Sep 2022 21:37:50 +0000
-In-Reply-To: <20220902213750.1124421-1-morbo@google.com>
-Mime-Version: 1.0
-References: <20220902213750.1124421-1-morbo@google.com>
-X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
-Message-ID: <20220902213750.1124421-3-morbo@google.com>
-Subject: [PATCH 2/2] x86/paravirt: add extra clobbers with ZERO_CALL_USED_REGS enabled
-From:   Bill Wendling <morbo@google.com>
-To:     Juergen Gross <jgross@suse.com>,
-        "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>,
-        Alexey Makhalov <amakhalov@vmware.com>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        llvm@lists.linux.dev
-Cc:     Bill Wendling <morbo@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=bR3hEleHn1hDXjDK6nUjMSvBYEAsUeJzCzyUGuVERRQ=;
+        b=otOpNwzsYl5yBZVtiQZInKQJK7O1I4Marin2cMCGr63lbXd7+tbKTnDsYCPu896Q9k
+         PB2Rt4DEsS+jfbDPP/Nh8opQe7VDVOIbqUX10gtgEZQXjDYOQn6MTofNCWPr6uiimsvy
+         mRkmXM0ml9zMxogBgc93yhVJeQWImLcgvNeHJp8ADVzkuw2OmKJQv3IPZimN2iXXGd2s
+         UksXU1R91w9L0AarI536t1OXJp6v0OVfXD4lPEg3Ttc42XzAROwmqFcyP/BALy8gbKII
+         ZcELQ1Zhh1SfTLQmIlY6LG/jyVpmns3fIvhUuaTAYuoDYuzvRo5kNDQb0T6ZwNN9E06a
+         9oMg==
+X-Gm-Message-State: ACgBeo0TcNqVP2nmfAhUrZg2DmzFblvv+qFJOftiMow7EZf9DGo5Gk9V
+        aebcq1vQI/P+cnHKehxdmhyEh4RtDOrhBA==
+X-Google-Smtp-Source: AA6agR5GjIxXkb/bcDLBsnO3UPU6jpE1pq17eJNvvjhLBlYBn3BCFQ7DqD21u9qoZ70EX7rLo01JsA==
+X-Received: by 2002:a05:620a:4094:b0:6bb:8514:9c84 with SMTP id f20-20020a05620a409400b006bb85149c84mr24438491qko.134.1662154820356;
+        Fri, 02 Sep 2022 14:40:20 -0700 (PDT)
+Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id 15-20020ac84e8f000000b0031f0b43629dsm1819533qtp.23.2022.09.02.14.40.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 14:40:20 -0700 (PDT)
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     brgl@bgdev.pl, linus.walleij@linaro.org
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        William Breathitt Gray <william.gray@linaro.org>,
+        Frede@cmslaser.com
+Subject: [PATCH 3/4] gpio: 104-idio-16: Make irq_chip immutable
+Date:   Fri,  2 Sep 2022 13:45:25 -0400
+Message-Id: <1a97e3f21f695f238fad9366e5976694b41a5da0.1662140119.git.william.gray@linaro.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <cover.1662140119.git.william.gray@linaro.org>
+References: <cover.1662140119.git.william.gray@linaro.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ZERO_CALL_USED_REGS feature may zero out caller-saved registers
-before returning.
+Kernel warns about mutable irq_chips:
 
-In spurious_kernel_fault(), the "pte_offset_kernel()" call results in
-this assembly code:
+    "not an immutable chip, please consider fixing!"
 
-.Ltmp151:
-        #APP
-        # ALT: oldnstr
-.Ltmp152:
-.Ltmp153:
-.Ltmp154:
-        .section        .discard.retpoline_safe,"",@progbits
-        .quad   .Ltmp154
-        .text
+Make the struct irq_chip const, flag it as IRQCHIP_IMMUTABLE, add the
+new helper functions, and call the appropriate gpiolib functions.
 
-        callq   *pv_ops+536(%rip)
-
-.Ltmp155:
-        .section        .parainstructions,"a",@progbits
-        .p2align        3, 0x0
-        .quad   .Ltmp153
-        .byte   67
-        .byte   .Ltmp155-.Ltmp153
-        .short  1
-        .text
-.Ltmp156:
-        # ALT: padding
-        .zero   (-(((.Ltmp157-.Ltmp158)-(.Ltmp156-.Ltmp152))>0))*((.Ltmp157-.Ltmp158)-(.Ltmp156-.Ltmp152)),144
-.Ltmp159:
-        .section        .altinstructions,"a",@progbits
-.Ltmp160:
-        .long   .Ltmp152-.Ltmp160
-.Ltmp161:
-        .long   .Ltmp158-.Ltmp161
-        .short  33040
-        .byte   .Ltmp159-.Ltmp152
-        .byte   .Ltmp157-.Ltmp158
-        .text
-
-        .section        .altinstr_replacement,"ax",@progbits
-        # ALT: replacement 1
-.Ltmp158:
-        movq    %rdi, %rax
-.Ltmp157:
-        .text
-        #NO_APP
-.Ltmp162:
-        testb   $-128, %dil
-
-The "testb" here is using %dil, but the %rdi register was cleared before
-returning from "callq *pv_ops+536(%rip)". Adding the proper constraints
-results in the use of a different register:
-
-        movq    %r11, %rdi
-
-        # Similar to above.
-
-        testb   $-128, %r11b
-
-Link: https://github.com/KSPP/linux/issues/192
-Signed-off-by: Bill Wendling <morbo@google.com>
-Reported-and-tested-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
 ---
- arch/x86/include/asm/paravirt_types.h | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/gpio/gpio-104-idio-16.c | 18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
 
-diff --git a/arch/x86/include/asm/paravirt_types.h b/arch/x86/include/asm/paravirt_types.h
-index f04157456a49..b1ab5d94881b 100644
---- a/arch/x86/include/asm/paravirt_types.h
-+++ b/arch/x86/include/asm/paravirt_types.h
-@@ -414,8 +414,17 @@ int paravirt_disable_iospace(void);
- 				"=c" (__ecx)
- #define PVOP_CALL_CLOBBERS	PVOP_VCALL_CLOBBERS, "=a" (__eax)
+diff --git a/drivers/gpio/gpio-104-idio-16.c b/drivers/gpio/gpio-104-idio-16.c
+index 65a5f581d981..4756e583f223 100644
+--- a/drivers/gpio/gpio-104-idio-16.c
++++ b/drivers/gpio/gpio-104-idio-16.c
+@@ -174,10 +174,11 @@ static void idio_16_irq_mask(struct irq_data *data)
+ {
+ 	struct gpio_chip *chip = irq_data_get_irq_chip_data(data);
+ 	struct idio_16_gpio *const idio16gpio = gpiochip_get_data(chip);
+-	const unsigned long mask = BIT(irqd_to_hwirq(data));
++	const unsigned long offset = irqd_to_hwirq(data);
+ 	unsigned long flags;
  
--/* void functions are still allowed [re]ax for scratch */
-+/*
-+ * void functions are still allowed [re]ax for scratch.
-+ *
-+ * The ZERO_CALL_USED REGS feature may end up zeroing out callee-saved
-+ * registers. Make sure we model this with the appropriate clobbers.
-+ */
-+#ifdef CONFIG_ZERO_CALL_USED_REGS
-+#define PVOP_VCALLEE_CLOBBERS	"=a" (__eax), PVOP_VCALL_CLOBBERS
-+#else
- #define PVOP_VCALLEE_CLOBBERS	"=a" (__eax)
-+#endif
- #define PVOP_CALLEE_CLOBBERS	PVOP_VCALLEE_CLOBBERS
+-	idio16gpio->irq_mask &= ~mask;
++	idio16gpio->irq_mask &= ~BIT(offset);
++	gpiochip_disable_irq(chip, offset);
  
- #define EXTRA_CLOBBERS	 , "r8", "r9", "r10", "r11"
+ 	if (!idio16gpio->irq_mask) {
+ 		raw_spin_lock_irqsave(&idio16gpio->lock, flags);
+@@ -192,11 +193,12 @@ static void idio_16_irq_unmask(struct irq_data *data)
+ {
+ 	struct gpio_chip *chip = irq_data_get_irq_chip_data(data);
+ 	struct idio_16_gpio *const idio16gpio = gpiochip_get_data(chip);
+-	const unsigned long mask = BIT(irqd_to_hwirq(data));
++	const unsigned long offset = irqd_to_hwirq(data);
+ 	const unsigned long prev_irq_mask = idio16gpio->irq_mask;
+ 	unsigned long flags;
+ 
+-	idio16gpio->irq_mask |= mask;
++	gpiochip_enable_irq(chip, offset);
++	idio16gpio->irq_mask |= BIT(offset);
+ 
+ 	if (!prev_irq_mask) {
+ 		raw_spin_lock_irqsave(&idio16gpio->lock, flags);
+@@ -217,12 +219,14 @@ static int idio_16_irq_set_type(struct irq_data *data, unsigned int flow_type)
+ 	return 0;
+ }
+ 
+-static struct irq_chip idio_16_irqchip = {
++static const struct irq_chip idio_16_irqchip = {
+ 	.name = "104-idio-16",
+ 	.irq_ack = idio_16_irq_ack,
+ 	.irq_mask = idio_16_irq_mask,
+ 	.irq_unmask = idio_16_irq_unmask,
+-	.irq_set_type = idio_16_irq_set_type
++	.irq_set_type = idio_16_irq_set_type,
++	.flags = IRQCHIP_IMMUTABLE,
++	GPIOCHIP_IRQ_RESOURCE_HELPERS,
+ };
+ 
+ static irqreturn_t idio_16_irq_handler(int irq, void *dev_id)
+@@ -299,7 +303,7 @@ static int idio_16_probe(struct device *dev, unsigned int id)
+ 	idio16gpio->out_state = 0xFFFF;
+ 
+ 	girq = &idio16gpio->chip.irq;
+-	girq->chip = &idio_16_irqchip;
++	gpio_irq_chip_set_chip(girq, &idio_16_irqchip);
+ 	/* This will let us handle the parent IRQ in the driver */
+ 	girq->parent_handler = NULL;
+ 	girq->num_parents = 0;
 -- 
-2.37.2.789.g6183377224-goog
+2.37.2
 
