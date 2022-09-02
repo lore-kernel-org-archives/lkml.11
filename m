@@ -2,145 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48CB1ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:28:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81C2EECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236598AbiIBN2f convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:28:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42322 "EHLO
+        id S236994AbiIBN3b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:29:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236256AbiIBN16 (ORCPT
+        with ESMTP id S236121AbiIBN3N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:27:58 -0400
-Received: from de-smtp-delivery-113.mimecast.com (de-smtp-delivery-113.mimecast.com [194.104.109.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A30813F901
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:06:50 -0700 (PDT)
-Received: from CHE01-GV0-obe.outbound.protection.outlook.com
- (mail-gv0che01lp2045.outbound.protection.outlook.com [104.47.22.45]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- de-mta-46-Vuv77KofOH-pwINw9Aup7Q-2; Fri, 02 Sep 2022 14:50:43 +0200
-X-MC-Unique: Vuv77KofOH-pwINw9Aup7Q-2
-Received: from GV0P278MB0484.CHEP278.PROD.OUTLOOK.COM (2603:10a6:710:33::8) by
- GV0P278MB0147.CHEP278.PROD.OUTLOOK.COM (2603:10a6:710:2e::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5588.10; Fri, 2 Sep 2022 12:50:42 +0000
-Received: from GV0P278MB0484.CHEP278.PROD.OUTLOOK.COM
- ([fe80::a4b9:1240:bb28:fc94]) by GV0P278MB0484.CHEP278.PROD.OUTLOOK.COM
- ([fe80::a4b9:1240:bb28:fc94%9]) with mapi id 15.20.5588.014; Fri, 2 Sep 2022
- 12:50:42 +0000
-Date:   Fri, 2 Sep 2022 14:50:40 +0200
-From:   Francesco Dolcini <francesco.dolcini@toradex.com>
-To:     Mark Brown <broonie@kernel.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Max Krummenacher <max.oss.09@gmail.com>
-Cc:     Max Krummenacher <max.krummenacher@toradex.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Liam Girdwood <lgirdwood@gmail.com>
-Subject: Re: [PATCH] arm64: dts: imx8mp-verdin: board regulators: add
- always-on
-Message-ID: <20220902125040.GA5699@francesco-nb.int.toradex.com>
-References: <20220901110422.1859621-1-max.oss.09@gmail.com>
- <YxD5+RCYtzcxEdjj@pendragon.ideasonboard.com>
- <YxD9m7sELdTUFFZ3@sirena.org.uk>
-In-Reply-To: <YxD9m7sELdTUFFZ3@sirena.org.uk>
-X-ClientProxiedBy: MR2P264CA0096.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:500:32::36) To GV0P278MB0484.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:710:33::8)
+        Fri, 2 Sep 2022 09:29:13 -0400
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 537AEEEC59
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:08:20 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id E4371320090C;
+        Fri,  2 Sep 2022 08:34:06 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Fri, 02 Sep 2022 08:34:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1662122046; x=1662208446; bh=69wBoD2FcW
+        S+VJub/o1SXKNMgpIXHt/jaTIMdQTQNes=; b=XHrR1ZCQoQmpvRT/cPY/9LcNB5
+        HbYvLIIwbwJ3I8tAiCkQeqeD6ac4sQxkWFElK4/2M96NO42Hn11H07JT/QFVXr8z
+        kjDkscAYB/o/TxBPAsTcp+fBpWSD/X1HfCWtH3LgmeNzI7tSVefpoYfjRXCfJCN8
+        yDK2T/6mdgHaynbM6eZ0TXnzYtHqgCrJqnqkHxz6vRRzIfyplybtYLDBG8aDYvI8
+        pUTzvXG+HUMzuuTVOYAws1tvn7az6LV1uZdaFlVENwuar4NRxgqpiKmI7/ofJtsr
+        Hdv3DLT5DJHI3FWooBjmEE43LrvAwr5PqO+XYyjq6nrmo8PliVuHhkTGbZeA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1662122046; x=1662208446; bh=69wBoD2FcWS+VJub/o1SXKNMgpIX
+        Ht/jaTIMdQTQNes=; b=CWTAamlIdomT+2ReqO+SVhE0ewgiqv4yZ5OnRNWDwcWE
+        X+8+FemvxwpBtL7ywc/vsmj75bkH8tMuLI15yvL0uqDa8/So7C9tjphjJ/4HlESX
+        RkAKKO07mO5oNGEPr+G1FKsJtliCuhZBW17aBw6gamPUMJa4F5P8KkwPf2pftijZ
+        tM8Ih6E6wiVykyxgp/vBxmhEmr46bOVdJLJz9AILj7bmhvZ6mZNL/15uUiLHO1R5
+        DPcjpytHi9i6NFcJNfHaInErfSGLL/eKd+sTtPv0iRCd2PPKhcBWEvzZZwiLL0tE
+        hNsr1L3frvU1jNbOHl3IQ4yXzpfKT0mAiv3hF74pBA==
+X-ME-Sender: <xms:PfgRYzY0V9T6oHAQHYFq_qp488C0-vJwmhaKBtvMkoo--Pptnv3k_Q>
+    <xme:PfgRYybbx_9WsuS45POrQj46N9ZoIAtv9JfUFyFTQm_BgBUoYbTjEDmtfPAPI5y6s
+    JmtzIX7xj6wM1L5yjY>
+X-ME-Received: <xmr:PfgRY1_LZGkpshpvDD9gA_AiArZJHnu4dD16PaWXHxuc2vSX2-Ev4UR0Zw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdeltddgheeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesghdtreertddtudenucfhrhhomhepofgrgihi
+    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
+    htthgvrhhnpeeljeeugfegveetleevkeetffegudevieetieeugeeugeeivddtjeejvdef
+    feetgfenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivg
+    eptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhhordhtvggt
+    hh
+X-ME-Proxy: <xmx:PfgRY5pdGZEc6150lT0Pj62iRT2PDLE_CEy5Zbw-1_46mEj43zL5Cw>
+    <xmx:PfgRY-r6IKQCQHWo131B_1vTIKy_IvK3_85AfmrLwbBg9l0FlI2bqQ>
+    <xmx:PfgRY_StF0AYljou5s-fvHd8GAt3KYRXn70kCZ7iTDDTXUGXH1UBaQ>
+    <xmx:PvgRYzjM24CXnQqyMUH2ejZ8atEu4eK32NXN-shDmoLTZ3mzmTN61g>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 2 Sep 2022 08:34:04 -0400 (EDT)
+Date:   Fri, 2 Sep 2022 14:34:00 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Jani Nikula <jani.nikula@linux.intel.com>
+Cc:     =?utf-8?B?TWHDrXJh?= Canal <mairacanal@riseup.net>,
+        Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
+        tales.aparecida@gmail.com, mwen@igalia.com, andrealmeid@riseup.net,
+        siqueirajordao@riseup.net, Trevor Woerner <twoerner@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        David Gow <davidgow@google.com>, brendanhiggins@google.com,
+        Arthur Grillo <arthur.grillo@usp.br>,
+        michal.winiarski@intel.com,
+        =?utf-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        kunit-dev@googlegroups.com
+Subject: Re: [PATCH v2 2/2] drm/tests: Change "igt_" prefix to "test_drm_"
+Message-ID: <20220902123400.5ljgc7z6zw34d64m@houat>
+References: <20220901124210.591994-1-mairacanal@riseup.net>
+ <20220901124210.591994-2-mairacanal@riseup.net>
+ <20220901125530.b56s4zisnkfuigvc@houat>
+ <04aeba53-793c-3196-3137-915f0640dc2a@riseup.net>
+ <87h71qfbi9.fsf@intel.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 56aa0979-4c5b-418d-b777-08da8ce1be79
-X-MS-TrafficTypeDiagnostic: GV0P278MB0147:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0
-X-Microsoft-Antispam-Message-Info: I1/+PZbFwieuU7+QozoZ0kyYmb8eaFgpIwcZ76wl6A1TzWPzTpUK7u7Y6EIhQZOADGEenI4AN7nvCMVG8fUxbxFPzcRx+32328YLNdMGlYQeSloSOPlxVRfGznMVauMD0Vlfn7qfzv0VUNOJ9BjQscxYilQE/880ZRKiawouul1GGKOFPzx8bKZ1D28ZjIA5NXDfl0MYG+XAeOMPBwo+L1GTrItKAQjIN8oV1JYxTRE0ojcibHea+Dc1yak20GbrCTUwSIU/WbpIDtraMWCNhXKYJUt7SK22QVk7/Olu14S9V5y67N0O7X/v4WPICu8Nj8lG+11foTDnkj+6IgMEWA3tzEglZHkD6hJo62C34aF5Zqa4lc2pjttPQCpCj49fE7tCn7M+fWd8yRI6ktA1kufUlzw5jF8CQkhCVryrWhiuaNk9+jrFNpYFTRToJ5Qct1kqPGbHZN0RYNz3wpdsM04jRmukv9L6JMbzQ9gbN0+vgcBWqV2Cw7BffDM7Rr/ZolxnpENkxSEb528G0Zc6tW8LYqIX/IgPkRshueVoZ83PsvEKgYu7tLlx03PcxwEC12ZerMJ4KP7WJeRhffGryqAE3W5bI8SC+tZmZEOMR7VfGe82fHM3zIRJInJaN+lGTW6bKSS+uQZgxdpP6hdrFARYAxmqbNs1eUSM/IpDbLSTs1F1HtULocpAr0Uwp/PmMKJ+EfGtq+o1hzegEW/IfnNF2dFBLBDwgc/w6xJf5ltzE/pfslbMvTYM0rYIJkphTerErZj4y3Aff071ThRtB6WusPGDCZ/2vRdYmg4M8sY=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV0P278MB0484.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(376002)(366004)(136003)(39850400004)(52116002)(26005)(6506007)(1076003)(186003)(7416002)(6512007)(44832011)(5660300002)(8936002)(86362001)(33656002)(6486002)(41300700001)(478600001)(83380400001)(38350700002)(66476007)(66556008)(8676002)(66946007)(38100700002)(2906002)(54906003)(316002)(110136005)(4326008)(32563001);DIR:OUT;SFP:1102
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?amogJAbD1PRMUL8LekCmeR6TVBtZSN+5QdPjOvttEuVoGX1WytDNcM65RBP4?=
- =?us-ascii?Q?cIUorbbFECcBVeL7HSSOk2tL1XdSi9YZGFUvQxT+zrGSvgoMDjdHaCKiqIuc?=
- =?us-ascii?Q?5EJwtWUqaYoJxvqQiPgWEemSsJrc/Z4Fo0VFsq8QyxwXe2tUpncqAYbSnguh?=
- =?us-ascii?Q?JLlFTOj+ApfhGthvvYu30NtgPtUrHeZZMYDEzMEf1K6m2+BI4ey+AxU7HNHG?=
- =?us-ascii?Q?e2fWtvFVf2+Lvp7Jx06U8EJqsLp8dXcthrHzekJQTzx0nqOIu88VoqJXuhuS?=
- =?us-ascii?Q?uUDFCuYVTy1Pzf756DQLHzR/Z959mTZ/yygWOVezjGQ+Gf0QTsYJrut1CSps?=
- =?us-ascii?Q?tEekDoqL6wWw3kpdo/sHghIumZ8M7OlfFuHt0PGtGb1wCyYYaAO8udUvyAtI?=
- =?us-ascii?Q?7rAYZDYjmi8HEdwT+0gcO69ZEGrtlO4ldi9kokX+ogL+JBB9VUyHZWiH04qX?=
- =?us-ascii?Q?FuUk/KYd7yGh2ge8CmiDsNhZ9H8NXX6OkxWIYknsGeuc9s73Wcl9E+/BE+Xw?=
- =?us-ascii?Q?+fXG4oznmkEwxZpAC5ZZWkbn76KBCKorABUp3X3geZ3O3muVYBrJBJr9h5qB?=
- =?us-ascii?Q?zubJfgbbw+HUbws1YCyf3W70K69ijwN7Q76vVWTuIc9fQNfSDetS6sfJpC9c?=
- =?us-ascii?Q?6ndDBLOLexCE/vSUsgcQmgTzSqCpDszWVESGdDGU1xpT83gNzrDV+FtKKfP0?=
- =?us-ascii?Q?l5Aij60dOf73uP9qAaJ0vYsgJrQ1Qjv6h6n3c0jRkRbLEJUxY/RqQg3CUf6a?=
- =?us-ascii?Q?QiKwqgNR8ep3vvq6NIatNfQ/uMnbSjwPypJvorMce0fZPuK+BmgC643w2aRE?=
- =?us-ascii?Q?9LnCJ/QVLhMF8cNgEHuHt5vwjmWcpdwsUP8wTkyAVNJDxYQ24XbIstL1yVS+?=
- =?us-ascii?Q?+XP+LP7HCkvtYuP25yFltckkpM4ch5NNIBw1HrEzWTmDajY1vmZbtYNai3rz?=
- =?us-ascii?Q?eFpB14h93vDXPGqZnWYIn5lUMVR8qDEJrN1HB9ctpmGshxRRK157HL66vdjL?=
- =?us-ascii?Q?atXH0qg4dUUKh51cDgCTPgGNIO079ynZvW6cViatqvxlRbTDKKyTG9LpOGea?=
- =?us-ascii?Q?08LdThDOPPj8MOrj/37oPBYua4Ozorky3FYa4V03w0uHwcijp74VBsG8ID3l?=
- =?us-ascii?Q?bARvOy8AZ1S3y1DJA3VOi9OKapAeaoJ+nniOGAYxhoc0sJVSXerKeWATeLaO?=
- =?us-ascii?Q?uE6lK3XRPYQEO8Ghsz8O2r4mmF3mJtsbxWf431thvnCIE+ClHzXVDC/4iJY4?=
- =?us-ascii?Q?IsP5+XmU2hS0OiW1F6yt9HFrYsC4MaoTfKTqIXgm6v7SNvnTTqlW4vFyDmLa?=
- =?us-ascii?Q?ELsFbCUjzUJ8PE2nsR5gJkPi6At8sWdv87vBbggr81nIW28I96+9Q4LA/tra?=
- =?us-ascii?Q?/bvgEjxpaKA+c2r6xl6WpT6PqZt4aCSaZFAOGjwIybpjB/7KlNR4eiQntbK+?=
- =?us-ascii?Q?LoJqiBpnxBYZ36u8haQ1hPkckM3Q5U0efWs/4jwKirj5iqKaVdd7q1JD+CpK?=
- =?us-ascii?Q?+6QoGVBPb09V0lv6b7vcw1/Z5q6BsCkMWYTDIHZs9S6cPGHLXaTVh8V7/rvn?=
- =?us-ascii?Q?urbw7zKMMY5cv+0sqCRQQtFzr1tA4xyPARsi8QFgasuHs7enOwhDfEFSas5Z?=
- =?us-ascii?Q?hw=3D=3D?=
-X-OriginatorOrg: toradex.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 56aa0979-4c5b-418d-b777-08da8ce1be79
-X-MS-Exchange-CrossTenant-AuthSource: GV0P278MB0484.CHEP278.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Sep 2022 12:50:41.9555
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Ys9CrAXmrGbOwk0uypC+LntdBf6438GzhVCs8gawVtn3MAsXZt3pKQ6t3dGutfMm2cu5g+dGwBwcP9AEozH0ihiygdyuQl+nmy9rs8UfmjY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV0P278MB0147
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: toradex.com
-Content-Type: text/plain; charset=WINDOWS-1252
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="je6h4ueg2vhmqv2d"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
+In-Reply-To: <87h71qfbi9.fsf@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 01, 2022 at 07:44:43PM +0100, Mark Brown wrote:
-> On Thu, Sep 01, 2022 at 09:29:13PM +0300, Laurent Pinchart wrote:
-> > On Thu, Sep 01, 2022 at 01:04:22PM +0200, Max Krummenacher wrote:
-> > > From: Max Krummenacher <max.krummenacher@toradex.com>
-> 
-> > > These regulators are switched on by HW during power up and can not
-> > > be influenced by SW.
-> > > Set the always-on property.
-> > 
-> > Is this needed ? When a fixed regulator has no control GPIO or clock, as
-> > is the case here, I would expect the driver and/or regulator core to
-> > understand that it's always on, as the alternative is always-off, which
-> > is pointless :-) Mark, Liam, what do you think ?
-> 
-> If there's no physical control setting always-on does nothing.
 
-The patch was posted because of a warning on trying to disable an unused
-regulator.
+--je6h4ueg2vhmqv2d
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-However this was changed with
-  261f06315cf7 ("regulator: Flag uncontrollable regulators as always_on").
+On Fri, Sep 02, 2022 at 11:04:14AM +0300, Jani Nikula wrote:
+> On Thu, 01 Sep 2022, Ma=EDra Canal <mairacanal@riseup.net> wrote:
+> > Hi Maxime,
+> >
+> > On 9/1/22 09:55, Maxime Ripard wrote:
+> >> Hi,
+> >>=20
+> >> On Thu, Sep 01, 2022 at 09:42:10AM -0300, Ma=EDra Canal wrote:
+> >>> With the introduction of KUnit, IGT is no longer the only option to r=
+un
+> >>> the DRM unit tests, as the tests can be run through kunit-tool or on
+> >>> real hardware with CONFIG_KUNIT.
+> >>>
+> >>> Therefore, remove the "igt_" prefix from the tests and replace it with
+> >>> the "test_drm_" prefix, making the tests' names independent from the =
+tool
+> >>> used.
+> >>>
+> >>> Signed-off-by: Ma=EDra Canal <mairacanal@riseup.net>
+> >>>
+> >>> ---
+> >>> v1 -> v2: https://lore.kernel.org/dri-devel/20220830211603.191734-1-m=
+airacanal@riseup.net/
+> >>> - Change "drm_" prefix to "test_drm_", as "drm_" can be a bit confusi=
+ng (Jani Nikula).
+> >>=20
+> >> I appreciate it's a bit of a bikeshed but I disagree with this. The
+> >> majority of the kunit tests already out there start with the framework
+> >> name, including *all* the examples in the kunit doc. Plus, it's fairly
+> >> obvious that it's a test, kunit is only about running tests in the fir=
+st
+> >> place.
+> >
+> > Would it be better to keep it as "drm_"?
+>=20
+> That's not "keeping". That's renaming igt to drm.
 
-Max was testing with a kernel without this patch in and forgot to verify
-on latest upstream kernel.
+Well, there's like half the tests that are prefixed with drm, the other
+with igt, so it's both really
 
-Just disregard this.
+> > Currently, I don't think it is appropriate to hold the "igt_" prefix, as
+> > the tests are not IGT exclusive, but I don't have a strong opinion on
+> > using the "drm_" or the "test_drm" prefixes.
+>=20
+> I repeat my stance that "drm_" alone is confusing.
 
-Francesco
+What are you confusing it with?
 
+> For the reason alone that it pollutes the code tagging tools, mixing
+> actual drm_ types and functions with unit test functions.
+
+I don't get it, I'm sorry. All these functions are static and not part
+of any API, so I can't see how it would pollute a code tagging tool. Or
+at least, not more than any driver does.
+
+And we're part of a larger project here, it's about consistency with the
+rest of the ecosystem.
+
+Maxime
+
+--je6h4ueg2vhmqv2d
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYxH4OAAKCRDj7w1vZxhR
+xcnGAQDfG15wrc3ceeKSo7qsOykhYDbwylJuO4xitBZoirs0ZgD/ecLkzhEgtAOv
+b++wHEVZEq7FPSdzWgIwHQIiRnLixgA=
+=zFJ3
+-----END PGP SIGNATURE-----
+
+--je6h4ueg2vhmqv2d--
