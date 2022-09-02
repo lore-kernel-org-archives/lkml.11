@@ -2,86 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B6ABC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:07:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0ABEC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:09:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238934AbiIBOHe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:07:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54402 "EHLO
+        id S238666AbiIBOJo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:09:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238915AbiIBOHJ (ORCPT
+        with ESMTP id S238862AbiIBOIg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:07:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A9032A963;
-        Fri,  2 Sep 2022 06:35:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Fri, 2 Sep 2022 10:08:36 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDB8E7F27C;
+        Fri,  2 Sep 2022 06:36:43 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id ADEEF5BF1D;
+        Fri,  2 Sep 2022 13:36:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1662125789; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XUtxAgroLi+3mkSlCPYSB9lB6AVEuFtS3rX+ldctwAE=;
+        b=Z9JSa0ejAJmKR7I5S5jtOAyduv6UtVGbvYgt8bB1GsCdpK68fwvaljAUKZAqf0avItWPHz
+        gkgRZEIQi9FhddEO6bkNixODOT3rYjpGeYC5RcQqdkEKdcKJ5bLiYBzmupGlI9iJaYbQsV
+        v1WS8v2ONDQqr27G7mtU7wUjWuFsmFQ=
+Received: from suse.cz (pathway.suse.cz [10.100.12.24])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB689B829E6;
-        Fri,  2 Sep 2022 12:36:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45928C433D6;
-        Fri,  2 Sep 2022 12:36:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122173;
-        bh=r1Y3OJV+YGLJqZpyhIjb0C5nbwFq/NU3LvJWzdODIdM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ssiC387961+zXn6RLnMOsWUzf5EHiEvN33j7nkRLj6BOaJEPkFqRnBfpLKMai9HVK
-         dIe9cX07FPMlGp6i7audsh88VRPjGW+HibRGdIL8Gny10d3cNJOtbhmC801JacbGoE
-         Zi2ztfnxRA5Ow1btMmaLGxzKm0ZT4NrfZzEtJxfU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Aurabindo Pillai <aurabindo.pillai@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 36/72] drm/amd/display: Add a missing register field for HPO DP stream encoder
-Date:   Fri,  2 Sep 2022 14:19:12 +0200
-Message-Id: <20220902121405.973616576@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
-References: <20220902121404.772492078@linuxfoundation.org>
-User-Agent: quilt/0.67
+        by relay2.suse.de (Postfix) with ESMTPS id 7BF292C149;
+        Fri,  2 Sep 2022 13:36:29 +0000 (UTC)
+Date:   Fri, 2 Sep 2022 15:36:28 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Cc:     Josh Poimboeuf <jpoimboe@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] livepatch: Move error print out of lock protection in
+ klp_enable_patch()
+Message-ID: <20220902133628.GA29761@pathway.suse.cz>
+References: <20220901022706.813-1-thunder.leizhen@huawei.com>
+ <YxC/L+fKInPWJPdy@alley>
+ <c1f6c6ec-2681-8d7a-506a-4da72a963ce8@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c1f6c6ec-2681-8d7a-506a-4da72a963ce8@huawei.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aurabindo Pillai <aurabindo.pillai@amd.com>
+On Fri 2022-09-02 09:28:59, Leizhen (ThunderTown) wrote:
+> >> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+> >> index 42f7e716d56bf72..cb7abc821a50584 100644
+> >> --- a/kernel/livepatch/core.c
+> >> +++ b/kernel/livepatch/core.c
+> >> @@ -1041,9 +1041,9 @@ int klp_enable_patch(struct klp_patch *patch)
+> >>  	mutex_lock(&klp_mutex);
+> >>  
+> >>  	if (!klp_is_patch_compatible(patch)) {
+> >> +		mutex_unlock(&klp_mutex);
+> >>  		pr_err("Livepatch patch (%s) is not compatible with the already installed livepatches.\n",
+> >>  			patch->mod->name);
+> >> -		mutex_unlock(&klp_mutex);
+> > 
+> > I do not see how this change could reliably reduce the code size.
+> > 
+> > As Joe wrote, it looks like a random effect that is specific to a
+> > particular compiler version, compilation options, and architecture.
+> > 
+> > I am against these kind of random microptimizations. It is just a call
+> > for problems. If you move printk() outside of a lock, you need to make
+> > sure that the information is not racy.
+> 
+> OK.
+> 
+> 	mutex_lock(&klp_mutex);
+>         if (!klp_is_patch_compatible(patch)) {
+>                 mutex_unlock(&klp_mutex);
+> 			<--------- Do you mean the incompatible patches maybe disabled at this point?
 
-[ Upstream commit 37bc31f0e7da4fbad4664e64d906ae7b9009e550 ]
+This particular change is safe in the current design.
+klp_enable_patch() is called from the module_init() callback
+where patch->mod->name is defined. So it can't change.
 
-[Why&How]
-Add the missing definition to set the register field
-HBLANK_MINIMUM_SYMBOL_WIDTH
+The problem is that it is not obvious that it is safe. One has to
+think about it. Also it might become dangerous when someone
+tries to call klp_enable_livepatch() for another livepatch module.
 
-Signed-off-by: Aurabindo Pillai <aurabindo.pillai@amd.com>
-Acked-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- .../gpu/drm/amd/display/dc/dcn31/dcn31_hpo_dp_stream_encoder.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+>                 pr_err("Livepatch patch (%s) ...\n", patch->mod->name);
+>                 return -EINVAL;
+>         }
+> 
+> > 
+> > It might be safe in this particular case. But it is a bad practice.
+> > It adds an extra work. It is error-prone with questionable gain.
+> > 
+> > I am sorry but I NACK this patch. There must be better ways to
+> 
+> OK
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hpo_dp_stream_encoder.h b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hpo_dp_stream_encoder.h
-index 7c77c71591a08..82c3b3ac1f0d0 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hpo_dp_stream_encoder.h
-+++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hpo_dp_stream_encoder.h
-@@ -162,7 +162,8 @@
- 	SE_SF(DP_SYM32_ENC0_DP_SYM32_ENC_SDP_AUDIO_CONTROL0, AIP_ENABLE, mask_sh),\
- 	SE_SF(DP_SYM32_ENC0_DP_SYM32_ENC_SDP_AUDIO_CONTROL0, ACM_ENABLE, mask_sh),\
- 	SE_SF(DP_SYM32_ENC0_DP_SYM32_ENC_VID_CRC_CONTROL, CRC_ENABLE, mask_sh),\
--	SE_SF(DP_SYM32_ENC0_DP_SYM32_ENC_VID_CRC_CONTROL, CRC_CONT_MODE_ENABLE, mask_sh)
-+	SE_SF(DP_SYM32_ENC0_DP_SYM32_ENC_VID_CRC_CONTROL, CRC_CONT_MODE_ENABLE, mask_sh),\
-+	SE_SF(DP_SYM32_ENC0_DP_SYM32_ENC_HBLANK_CONTROL, HBLANK_MINIMUM_SYMBOL_WIDTH, mask_sh)
- 
- 
- #define DCN3_1_HPO_DP_STREAM_ENC_REG_FIELD_LIST(type) \
--- 
-2.35.1
+Thanks for understanding.
 
-
-
+Best Regards,
+Petr
