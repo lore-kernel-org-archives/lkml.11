@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA166ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:29:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C26BC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:29:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237092AbiIBO3W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:29:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51132 "EHLO
+        id S236086AbiIBO32 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:29:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236674AbiIBO1a (ORCPT
+        with ESMTP id S236779AbiIBO1b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:27:30 -0400
+        Fri, 2 Sep 2022 10:27:31 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EDFA5FACE
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18C6E141A1C
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=LufghqVQE4/oVdylEJUs4Nk7E1aIBOIRXlB89gM3l3o=; b=B9YERCypWa3gNK9KRNrc0Nq8qk
-        G23GqGCK6TlIekmRNbydDhsXiCnPqm8equTiVdwXFDf3Nl6wau1RACEMOIkm6DyfE2j22fql5jaws
-        emA/5Tj6pczWKaF9ZBw6VFfhM5+3S7YE8ewXm1PWv0F2YPvePXH2OWa+n5DZdQGlkAItzWt05c6TD
-        FrIRjaAc2Lk1uUQj5dzA0j9RTL/mhOSiIrQitgUXHeukbv7TFjjYn5LvNRXi7qwNfNU75pIvvo984
-        JsKZZFSjfYr5hMM+BEWr4Zksj7L2/BPfXIB9NeY5Q3XorHPCHFZjd0372KH9rSoZdrgVHEhJrcs0L
-        ovuZp4YQ==;
+        bh=BJHqXamgAJqTcT2FFMKxQyrqmVcujF7M2+0CHXkEhUI=; b=H5hU9sfBcD7OUyu4swO7EK/OTZ
+        MmGmNZef0mMHGjyQq8bgUPvguOphKna5I1Hw1FlXrFgP+EA3wQXJKyrUCNhyLfCdgW8oS+QXIqd0x
+        DhvuaRO98BdPJYnC0Ln68CNn8w39QW4ES0XmD5+hhh1XJTLoGtPvTVnsAEWUEbWL5HJY7WdQrHnL8
+        HYh4m7LkOW6z/VoylyEZiNBPPHmYCbjLoRt3IsoOUlHBj6NI+8Rw//OZKvj9HsI8Z1Mmp7FRQTOHm
+        mTeMYNpOoiOzUCMAlur2oAWSN5u0kfts3ENZIYvxLLRqxAjFKh6k1g0Rgr4xOxVAwBWD0l48CBAYY
+        NoHy5w7Q==;
 Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
         by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oU77N-0074TP-Nf; Fri, 02 Sep 2022 13:54:01 +0000
+        id 1oU77M-0074T9-TV; Fri, 02 Sep 2022 13:53:57 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 2FAE6302203;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 128AC301BCC;
         Fri,  2 Sep 2022 15:53:54 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 0BF3F2B8EF7F9; Fri,  2 Sep 2022 15:53:53 +0200 (CEST)
-Message-ID: <20220902130949.998407562@infradead.org>
+        id 57F1F2B077D29; Fri,  2 Sep 2022 15:53:52 +0200 (CEST)
+Message-ID: <20220902130947.709764677@infradead.org>
 User-Agent: quilt/0.66
-Date:   Fri, 02 Sep 2022 15:07:00 +0200
+Date:   Fri, 02 Sep 2022 15:06:38 +0200
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     Thomas Gleixner <tglx@linutronix.de>
 Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
@@ -59,7 +59,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
         Daniel Borkmann <daniel@iogearbox.net>,
         K Prateek Nayak <kprateek.nayak@amd.com>,
         Eric Dumazet <edumazet@google.com>
-Subject: [PATCH v2 35/59] x86/entry: Make sync_regs() invocation a tail call
+Subject: [PATCH v2 13/59] crypto: x86/camellia: Remove redundant alignments
 References: <20220902130625.217071627@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -67,40 +67,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Thomas Gleixner <tglx@linutronix.de>
 
-No point in having a call there. Spare the call/ret overhead.
+SYM_FUNC_START*() and friends already imply alignment, remove custom
+alignment hacks to make code consistent. This prepares for future
+function call ABI changes.
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Also, with having pushed the function alignment to 16 bytes, this
+custom alignment is completely superfluous.
+
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/x86/entry/entry_64.S |    7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ arch/x86/crypto/camellia-aesni-avx-asm_64.S  |    2 --
+ arch/x86/crypto/camellia-aesni-avx2-asm_64.S |    4 ----
+ 2 files changed, 6 deletions(-)
 
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -1062,11 +1062,8 @@ SYM_CODE_START_LOCAL(error_entry)
- 	UNTRAIN_RET
+--- a/arch/x86/crypto/camellia-aesni-avx-asm_64.S
++++ b/arch/x86/crypto/camellia-aesni-avx-asm_64.S
+@@ -712,7 +712,6 @@ SYM_FUNC_END(roundsm16_x4_x5_x6_x7_x0_x1
  
- 	leaq	8(%rsp), %rdi			/* arg0 = pt_regs pointer */
--.Lerror_entry_from_usermode_after_swapgs:
--
- 	/* Put us onto the real thread stack. */
--	call	sync_regs
--	RET
-+	jmp	sync_regs
+ .text
  
- 	/*
- 	 * There are two places in the kernel that can potentially fault with
-@@ -1124,7 +1121,7 @@ SYM_CODE_START_LOCAL(error_entry)
- 	leaq	8(%rsp), %rdi			/* arg0 = pt_regs pointer */
- 	call	fixup_bad_iret
- 	mov	%rax, %rdi
--	jmp	.Lerror_entry_from_usermode_after_swapgs
-+	jmp	sync_regs
- SYM_CODE_END(error_entry)
+-.align 8
+ SYM_FUNC_START_LOCAL(__camellia_enc_blk16)
+ 	/* input:
+ 	 *	%rdi: ctx, CTX
+@@ -799,7 +798,6 @@ SYM_FUNC_START_LOCAL(__camellia_enc_blk1
+ 	jmp .Lenc_done;
+ SYM_FUNC_END(__camellia_enc_blk16)
  
- SYM_CODE_START_LOCAL(error_return)
+-.align 8
+ SYM_FUNC_START_LOCAL(__camellia_dec_blk16)
+ 	/* input:
+ 	 *	%rdi: ctx, CTX
+--- a/arch/x86/crypto/camellia-aesni-avx2-asm_64.S
++++ b/arch/x86/crypto/camellia-aesni-avx2-asm_64.S
+@@ -221,7 +221,6 @@
+  * Size optimization... with inlined roundsm32 binary would be over 5 times
+  * larger and would only marginally faster.
+  */
+-.align 8
+ SYM_FUNC_START_LOCAL(roundsm32_x0_x1_x2_x3_x4_x5_x6_x7_y0_y1_y2_y3_y4_y5_y6_y7_cd)
+ 	roundsm32(%ymm0, %ymm1, %ymm2, %ymm3, %ymm4, %ymm5, %ymm6, %ymm7,
+ 		  %ymm8, %ymm9, %ymm10, %ymm11, %ymm12, %ymm13, %ymm14, %ymm15,
+@@ -229,7 +228,6 @@ SYM_FUNC_START_LOCAL(roundsm32_x0_x1_x2_
+ 	RET;
+ SYM_FUNC_END(roundsm32_x0_x1_x2_x3_x4_x5_x6_x7_y0_y1_y2_y3_y4_y5_y6_y7_cd)
+ 
+-.align 8
+ SYM_FUNC_START_LOCAL(roundsm32_x4_x5_x6_x7_x0_x1_x2_x3_y4_y5_y6_y7_y0_y1_y2_y3_ab)
+ 	roundsm32(%ymm4, %ymm5, %ymm6, %ymm7, %ymm0, %ymm1, %ymm2, %ymm3,
+ 		  %ymm12, %ymm13, %ymm14, %ymm15, %ymm8, %ymm9, %ymm10, %ymm11,
+@@ -748,7 +746,6 @@ SYM_FUNC_END(roundsm32_x4_x5_x6_x7_x0_x1
+ 
+ .text
+ 
+-.align 8
+ SYM_FUNC_START_LOCAL(__camellia_enc_blk32)
+ 	/* input:
+ 	 *	%rdi: ctx, CTX
+@@ -835,7 +832,6 @@ SYM_FUNC_START_LOCAL(__camellia_enc_blk3
+ 	jmp .Lenc_done;
+ SYM_FUNC_END(__camellia_enc_blk32)
+ 
+-.align 8
+ SYM_FUNC_START_LOCAL(__camellia_dec_blk32)
+ 	/* input:
+ 	 *	%rdi: ctx, CTX
 
 
