@@ -2,140 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 524E5ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 02:20:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD56EECAAD3
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 02:23:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235436AbiIBCUT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 22:20:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59650 "EHLO
+        id S235383AbiIBCX2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 22:23:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234274AbiIBCS3 (ORCPT
+        with ESMTP id S235297AbiIBCXC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 22:18:29 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90EF9AB055;
-        Thu,  1 Sep 2022 19:18:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662085101; x=1693621101;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=kP8Ku5Lv8rqfw0Nma82+ZaeLrsDvE/lPJOPwAOWO6Gg=;
-  b=HejgL1XlZmwwU2nKwNzVjjgyw1cD+yZ+OWCIB2Wm/BaSdUb1ByGny+og
-   8RWH66K1VYE4QizvTcdzt8qbBklFejFGSr+S0w4jY6796Q3+KOg9x9zMa
-   +btw6Ec2Kh0xTetLY+pU12PnabT514ReUF/16uPA5TlUFtgwtOQuiBK7k
-   qGXaXjppWMhBFAHmFNmsxO6lRn5+3rBo7lKPellRR+Ig9Ky5vckYqcStW
-   LH75l2+1zbZ+ekkwUCJKIICnZ7H5ZuGO4HsZczJSXo0YZdi/wkFLzgbq8
-   G3FPS2xHz58/+EZTONO5XYbUXyKadcwXFtAAq2EpcUwVUiiOZEAljsoNr
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="297157867"
-X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
-   d="scan'208";a="297157867"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 19:18:21 -0700
-X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
-   d="scan'208";a="608835672"
-Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 19:18:21 -0700
-From:   isaku.yamahata@intel.com
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>, Will Deacon <will@kernel.org>
-Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
-        Kai Huang <kai.huang@intel.com>, Chao Gao <chao.gao@intel.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Shaokun Zhang <zhangshaokun@hisilicon.com>,
-        Qi Liu <liuqi115@huawei.com>,
-        John Garry <john.garry@huawei.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Huang Ying <ying.huang@intel.com>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>
-Subject: [PATCH v3 20/22] KVM: Add config to not compile kvm_arch.c
-Date:   Thu,  1 Sep 2022 19:17:55 -0700
-Message-Id: <3faaf048edc544cc9bcedd9e3bc1fc6decbb7cb4.1662084396.git.isaku.yamahata@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1662084396.git.isaku.yamahata@intel.com>
-References: <cover.1662084396.git.isaku.yamahata@intel.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Thu, 1 Sep 2022 22:23:02 -0400
+X-Greylist: delayed 373 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 01 Sep 2022 19:22:12 PDT
+Received: from mailout3.hostsharing.net (mailout3.hostsharing.net [176.9.242.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47128AD9A7;
+        Thu,  1 Sep 2022 19:22:11 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by mailout3.hostsharing.net (Postfix) with ESMTPS id 2E0BE10029E5D;
+        Fri,  2 Sep 2022 04:15:54 +0200 (CEST)
+Received: from localhost (unknown [89.246.108.87])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by h08.hostsharing.net (Postfix) with ESMTPSA id C678D60EB3DC;
+        Fri,  2 Sep 2022 04:15:53 +0200 (CEST)
+X-Mailbox-Line: From a6030c5943ccd2965261a92320b1ae1adb909116 Mon Sep 17 00:00:00 2001
+Message-Id: <a6030c5943ccd2965261a92320b1ae1adb909116.1662084833.git.lukas@wunner.de>
+In-Reply-To: <202209020412.Ts31BZrs-lkp@intel.com>
+References: <202209020412.Ts31BZrs-lkp@intel.com>
+From:   Lukas Wunner <lukas@wunner.de>
+Date:   Fri, 2 Sep 2022 04:15:55 +0200
+Subject: [PATCH] ACPI / property: Silence missing-declarations warning in
+ apple.c
+To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, Len Brown <lenb@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Isaku Yamahata <isaku.yamahata@intel.com>
+Silence an annoying message emitted for W=1 builds:
 
-So that kvm_arch_hardware_enable/disable() aren't defined.
+drivers/acpi/x86/apple.c:30:6: warning: no previous declaration for 'acpi_extract_apple_properties' [-Wmissing-declarations]
 
-Once the conversion of all KVM archs is done, this config and kvm_arch.c
-should be removed.
-
-Suggested-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
 ---
- arch/x86/kvm/Kconfig     | 1 +
- include/linux/kvm_host.h | 2 ++
- virt/kvm/Kconfig         | 3 +++
- virt/kvm/Makefile.kvm    | 5 ++++-
- 4 files changed, 10 insertions(+), 1 deletion(-)
+ drivers/acpi/x86/apple.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/x86/kvm/Kconfig b/arch/x86/kvm/Kconfig
-index e3cbd7706136..e2e16205425d 100644
---- a/arch/x86/kvm/Kconfig
-+++ b/arch/x86/kvm/Kconfig
-@@ -25,6 +25,7 @@ config KVM
- 	depends on X86_LOCAL_APIC
- 	select PREEMPT_NOTIFIERS
- 	select MMU_NOTIFIER
-+	select HAVE_KVM_OVERRIDE_HARDWARE_ENABLE
- 	select HAVE_KVM_IRQCHIP
- 	select HAVE_KVM_PFNCACHE
- 	select HAVE_KVM_IRQFD
-diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index 8abbf7a1773b..74111118db42 100644
---- a/include/linux/kvm_host.h
-+++ b/include/linux/kvm_host.h
-@@ -1434,8 +1434,10 @@ void kvm_arch_create_vcpu_debugfs(struct kvm_vcpu *vcpu, struct dentry *debugfs_
- static inline void kvm_create_vcpu_debugfs(struct kvm_vcpu *vcpu) {}
- #endif
+diff --git a/drivers/acpi/x86/apple.c b/drivers/acpi/x86/apple.c
+index c285c91a5e9c..8812ecd03d55 100644
+--- a/drivers/acpi/x86/apple.c
++++ b/drivers/acpi/x86/apple.c
+@@ -8,6 +8,7 @@
+ #include <linux/bitmap.h>
+ #include <linux/platform_data/x86/apple.h>
+ #include <linux/uuid.h>
++#include "../internal.h"
  
-+#ifndef CONFIG_HAVE_KVM_OVERRIDE_HARDWARE_ENABLE
- int kvm_arch_hardware_enable(void);
- void kvm_arch_hardware_disable(void);
-+#endif
- int kvm_arch_hardware_setup(void *opaque);
- void kvm_arch_pre_hardware_unsetup(void);
- void kvm_arch_hardware_unsetup(void);
-diff --git a/virt/kvm/Kconfig b/virt/kvm/Kconfig
-index a8c5c9f06b3c..917314a87696 100644
---- a/virt/kvm/Kconfig
-+++ b/virt/kvm/Kconfig
-@@ -72,3 +72,6 @@ config KVM_XFER_TO_GUEST_WORK
- 
- config HAVE_KVM_PM_NOTIFIER
-        bool
-+
-+config HAVE_KVM_OVERRIDE_HARDWARE_ENABLE
-+	def_bool n
-diff --git a/virt/kvm/Makefile.kvm b/virt/kvm/Makefile.kvm
-index c4210acabd35..c0187ec4f83c 100644
---- a/virt/kvm/Makefile.kvm
-+++ b/virt/kvm/Makefile.kvm
-@@ -5,7 +5,10 @@
- 
- KVM ?= ../../../virt/kvm
- 
--kvm-y := $(KVM)/kvm_main.o $(KVM)/kvm_arch.o $(KVM)/eventfd.o $(KVM)/binary_stats.o
-+kvm-y := $(KVM)/kvm_main.o $(KVM)/eventfd.o $(KVM)/binary_stats.o
-+ifneq ($(CONFIG_HAVE_KVM_OVERRIDE_HARDWARE_ENABLE), y)
-+kvm-y += $(KVM)/kvm_arch.o
-+endif
- kvm-$(CONFIG_KVM_VFIO) += $(KVM)/vfio.o
- kvm-$(CONFIG_KVM_MMIO) += $(KVM)/coalesced_mmio.o
- kvm-$(CONFIG_KVM_ASYNC_PF) += $(KVM)/async_pf.o
+ /* Apple _DSM device properties GUID */
+ static const guid_t apple_prp_guid =
 -- 
-2.25.1
+2.36.1
 
