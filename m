@@ -2,113 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACAD4C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:27:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16ADAECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:27:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235738AbiIBO1A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:27:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50938 "EHLO
+        id S237224AbiIBO1g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:27:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237000AbiIBO0d (ORCPT
+        with ESMTP id S236702AbiIBO1B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:26:33 -0400
-Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F316112EFF
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:53:55 -0700 (PDT)
-Received: by mail-ot1-x335.google.com with SMTP id 92-20020a9d0be5000000b0063946111607so1463847oth.10
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 06:53:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=TRNEPv/fVZBL+J+K0gbUvPbd/wP8B+12JIvN/V7uTcU=;
-        b=JJEiY1nRuKPAHexQSBWa1G1+D1zLBXZhFgMaAb2sUdoGvIO/vi/5FZjf3cbuXhRuS2
-         UCd9crNd+fUPxT9Fi7I5uObbhL0ex1QkxUU9j4jxgfQiBVy2PaiKUvTB8sXRu9fFVAah
-         KYM7x34v7hcl+UNTbsGMMKlRHV6XMoOvcb2TZQoY8bOAxvWLeI1qeyQgMq8zgOMAaF6b
-         PJe80p9cyT6qYpurA6bBVX9NENNzT/0xn0CRy3P8K3yed0vYzDunlyEfxOh5r2PDPQVM
-         kVGFJ5mDJrgi755A+/6bpL+HDjZYfesebLyl9SLaz24zvcnbRvbh+mKy9sapsSxqkoFV
-         IMJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=TRNEPv/fVZBL+J+K0gbUvPbd/wP8B+12JIvN/V7uTcU=;
-        b=QK20ox9qI+HCVH7ed7t5dzfhW+YC34/K7ot0GZY9BZbCMBgL/xrSJ5wb/pZov+OptU
-         JjW1OfvPiZP6NNx/yP4q+2ayEEuHEAsPId/P8fGxcnXUfh6XlDSh5p742qtKwxvIdwFb
-         cZMt7A9bqnYwGl6QsaMYU/cFFAEORE/6fU1FJRy3kuVTh8qT7o7dHUoLSwNerNIfTpSM
-         W3bp24hWsBp848JQTRQ2Q6XvZkyvdWiFyZjgFP1t/PpQtGQpV/WWzG9vccwB5KjJyfsh
-         dqlX/xlJsfYnQWpJ4NM/1OVEw9clJkBEkr8rqEKgqhypC/Oqhe3DxS82bA8b1Y4M+bI3
-         frww==
-X-Gm-Message-State: ACgBeo24cdx1s1pMI2YLzg6C4PKEKnqOonEoTJu45P65GCGE/xd08odJ
-        SyuJNsLnQ3moL8dLdHLK4NV5uvLeIIShGtkJ6HiDrg==
-X-Google-Smtp-Source: AA6agR6zb53YPcXo5kDN/63AZ67C60d0NARcZzDg39E8JP0pQszvgj2ovZPGPXkptzTrSV8v0tYkxi9MEbsv38BvS44=
-X-Received: by 2002:a05:6830:2a17:b0:636:f7fc:98bb with SMTP id
- y23-20020a0568302a1700b00636f7fc98bbmr14890114otu.223.1662126833447; Fri, 02
- Sep 2022 06:53:53 -0700 (PDT)
+        Fri, 2 Sep 2022 10:27:01 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCA9FE926C
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
+        Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:In-Reply-To;
+        bh=81/ujGXHG3X7Sjz3zTn5ireIwtU9AJNdDga1fZrvIMw=; b=Ek2vrkgbZxClCajtuiRSa01Fk5
+        8aDMIUsCLNjafzuzDQUSaGUWGRfyTX6qTJ+eEXVqyrPlC5N58skYODUOCJnhGZsmVXXJEeq/vqX4a
+        aGRSh0rCTuV0Fci6qBOQ90nv4X4MfT/wb+rM4IXGdLTsjiZ9fSsDKqwFVQfBTYiK4bULIb6d11lmY
+        uTQ9aEyfigNZBo+it+WR/3HufoHeBNFv+3ZurYP6YbXrrFFA28k2whCktOwEjZ6gpNIY/dan3t2w7
+        SrgZ2pD4KOsMwoJdxmNqOg3g0oTqXl0vlFBSDfGCSCJAlCUuCgSg527ac1kdaAUke4gQb0vE8uX8u
+        rYpFiv/w==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oU77L-008g84-Pb; Fri, 02 Sep 2022 13:53:56 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 1440D301BEC;
+        Fri,  2 Sep 2022 15:53:54 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
+        id 6C7B72B363A1E; Fri,  2 Sep 2022 15:53:52 +0200 (CEST)
+Message-ID: <20220902130948.123654749@infradead.org>
+User-Agent: quilt/0.66
+Date:   Fri, 02 Sep 2022 15:06:42 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Andrew Cooper <Andrew.Cooper3@citrix.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Johannes Wikner <kwikner@ethz.ch>,
+        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
+        Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
+        Joao Moreira <joao.moreira@intel.com>,
+        Joseph Nuzman <joseph.nuzman@intel.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Juergen Gross <jgross@suse.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        K Prateek Nayak <kprateek.nayak@amd.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: [PATCH v2 17/59] crypto: x86/sha1: Remove custom alignments
+References: <20220902130625.217071627@infradead.org>
 MIME-Version: 1.0
-References: <20220902112446.29858-1-shaozhengchao@huawei.com> <20220902112446.29858-2-shaozhengchao@huawei.com>
-In-Reply-To: <20220902112446.29858-2-shaozhengchao@huawei.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Fri, 2 Sep 2022 09:53:42 -0400
-Message-ID: <CAM0EoMnxxA5y2W22aMXF+QRqckbkGm9eJoEnu-CaKhgWMM7kdA@mail.gmail.com>
-Subject: Re: [PATCH net-next 01/22] net: sched: act_api: implement generic
- walker and search for tc action
-To:     Zhengchao Shao <shaozhengchao@huawei.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, martin.lau@linux.dev, daniel@iogearbox.net,
-        john.fastabend@gmail.com, ast@kernel.org, andrii@kernel.org,
-        song@kernel.org, yhs@fb.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, weiyongjun1@huawei.com,
-        yuehaibing@huawei.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Sep 2, 2022 at 7:22 AM Zhengchao Shao <shaozhengchao@huawei.com> wrote:
->
-> Being able to get tc_action_net by using net_id stored in tc_action_ops
-> and execute the generic walk/search function, add __tcf_generic_walker()
-> and __tcf_idr_search() helpers.
->
+From: Thomas Gleixner <tglx@linutronix.de>
 
-These are nice cleanups.
-Can you please run all tdc tests for all changes you are making to
-the tc subsystem? Maybe do a kindness and add more tests.
+SYM_FUNC_START*() and friends already imply alignment, remove custom
+alignment hacks to make code consistent. This prepares for future
+function call ABI changes.
 
-Just small  opinions below. Otherwise you can add my ACK.
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+---
+ arch/x86/crypto/sha1_ni_asm.S |    1 -
+ 1 file changed, 1 deletion(-)
 
-> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-> ---
->  include/net/act_api.h |  1 +
->  net/sched/act_api.c   | 48 +++++++++++++++++++++++++++++++++++++------
->  2 files changed, 43 insertions(+), 6 deletions(-)
->
-> diff --git a/include/net/act_api.h b/include/net/act_api.h
-> index 9cf6870b526e..a79d6e58519e 100644
-\
-
-> @@ -926,7 +945,8 @@ int tcf_register_action(struct tc_action_ops *act,
->         struct tc_action_ops *a;
->         int ret;
->
-> -       if (!act->act || !act->dump || !act->init || !act->walk || !act->lookup)
-> +       if (!act->act || !act->dump || !act->init ||
-> +           (!act->net_id && (!act->walk || !act->lookup)))
-
-I can understand net_id, but why && (!act->walk || !act->lookup) ?
-Assumedly they are now optional, no?
+--- a/arch/x86/crypto/sha1_ni_asm.S
++++ b/arch/x86/crypto/sha1_ni_asm.S
+@@ -92,7 +92,6 @@
+  * numBlocks: Number of blocks to process
+  */
+ .text
+-.align 32
+ SYM_FUNC_START(sha1_ni_transform)
+ 	push		%rbp
+ 	mov		%rsp, %rbp
 
 
-> +       if (ops->walk) {
-> +               err = ops->walk(net, skb, &dcb, RTM_DELACTION, ops, extack);
-> +       } else {
-> +               err = __tcf_generic_walker(net, skb, &dcb, RTM_DELACTION, ops, extack);
-> +       }
-
-Bikeshed mod: those braces.
-
-cheers,
-jamal
