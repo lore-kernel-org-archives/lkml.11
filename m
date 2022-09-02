@@ -2,109 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 384F2ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 04:14:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D521ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 04:21:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235137AbiIBEOI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 00:14:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52428 "EHLO
+        id S234947AbiIBEVb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 00:21:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231344AbiIBEOG (ORCPT
+        with ESMTP id S229602AbiIBEV1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 00:14:06 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D99FA9265;
-        Thu,  1 Sep 2022 21:14:05 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id z6so1551460lfu.9;
-        Thu, 01 Sep 2022 21:14:05 -0700 (PDT)
+        Fri, 2 Sep 2022 00:21:27 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7763C67145;
+        Thu,  1 Sep 2022 21:21:25 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id t5so936172pjs.0;
+        Thu, 01 Sep 2022 21:21:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id:from:to:cc
-         :subject:date;
-        bh=AijBO9nrg7xX2FQ7t5pNNFjzi755cTFDKODqE4YFCPQ=;
-        b=mm2IaPaiZD2YANcxOHf7RTxd/urUt118pLj6ni5f+pIKMaHXNOFjHxopf+AxdheVEP
-         oE3Iwu+BchPlyJ0fTs2FN+KKWCI4ooCXNcsG6BcNokOMyK4Bp07Knk/Yq9+UKDH9cY4M
-         U9A8FGjZVmubakszF9f8+qrQBSkjeo8ftj4rr0uiemHUYI0qD8z+h0rMpNSommvj3bwc
-         LjnpzDRfS+osCXs2D261TmUzUd7Rc5v3omCgOJbDVQ6Yz1aBGKAOCSjub5NpoN/+F77T
-         ft3WcXPmWO6OjTGR5xfeXkQ+D0JCgfMmZn4EopOP5gJaRYhXjRSTS66vPMHFm6WfHfJH
-         Zkmw==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=kkVoah+Kt1f00+c7U5NLPu9XabBa7X+D/IK+W2hYO48=;
+        b=fT5cGEFvgQSmfw0Vg6OBjepfR6dgZcG4jAfHbTEcBVFhucx95zaucRKWjOImTjxYeu
+         zRtLZ6Y0Zar2jsx9E7Dgw463u+KqZaPo/MF/4Aq1s+52GrmONtbV/cGfS72RQgQmKuGL
+         lJyQJMzlhgTpqlbUp9nnwBJuLF3JJJWgDhiMxZ0Bm+8FQskyTUuBnI/dfgo4JdKtjn7a
+         gYsvfCVKAFWhbyOFJdymjc6MDxRWOgjQiQGVBbklmrInAJqcTObwlvmh+tsCZwbNz+zt
+         QkByrnmr9/LoXSBRtiNQuSObzdgL58zgVa5OFNAFyUcv7JTPfOUOdM6O3zRohfNnegtA
+         u3pQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=AijBO9nrg7xX2FQ7t5pNNFjzi755cTFDKODqE4YFCPQ=;
-        b=bW2qCnbN8NV5RtO3L5/E8b/eTmspkx5kfWnh3wLCA85H8HlbRY3uBM6Os0VM3CCUgr
-         1C9e8uMhlhO8YQ0+59algRnY0SrxVzUfblKNO3aAlTsZ/YRMU4/7sKjKyQsVBFMXechd
-         tphPERIDnlEY0acFjWcppE13cdeeTbgd/L6ndN29s3T+21aRH749KNO1yWCHkYF7KmbU
-         REXd1eMBuCWJoyQG1D5rkbhLZ0PR9vRktwEQTi39/o4aZEZK33/6Pj4PxyDst76skhwC
-         wHSZy+MNgcm7wyFQIDIXMds8u8VLeBvRVIZJMNqg/i9qsGzDN29HyPvIK8ViVg5r1XNe
-         brMg==
-X-Gm-Message-State: ACgBeo29enQSKZmYYzPrAOcysmsgPF5N1OXHaxi8zzLayU5tLzF2DkFN
-        q6G1BJK/am4OLVzNAqTThN0=
-X-Google-Smtp-Source: AA6agR5mOoimDDR08ufDCX8FZ5yVJE5be3+aRioWr9enab2ly9IAyC7eRKTTJTTrAStepJkxsgJAdw==
-X-Received: by 2002:a05:6512:6c8:b0:494:796e:93b6 with SMTP id u8-20020a05651206c800b00494796e93b6mr5119794lff.213.1662092043519;
-        Thu, 01 Sep 2022 21:14:03 -0700 (PDT)
-Received: from ?IPV6:2001:14ba:16f3:4a00::1? (dc75zzyyyyyyyyyyyyyyt-3.rev.dnainternet.fi. [2001:14ba:16f3:4a00::1])
-        by smtp.gmail.com with ESMTPSA id z4-20020a056512370400b00494706193adsm106680lfr.208.2022.09.01.21.14.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Sep 2022 21:14:02 -0700 (PDT)
-Message-ID: <59b6dd0a-7cbb-5dbd-8da0-57baeba3327e@gmail.com>
-Date:   Fri, 2 Sep 2022 07:14:01 +0300
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=kkVoah+Kt1f00+c7U5NLPu9XabBa7X+D/IK+W2hYO48=;
+        b=vhCAYNMsYne6FQlXqCBG3P1e6ZlZtBfwUyCLnstV/lqCzIjUSUBHuQTNIDfqZXVi0s
+         bFC4LKxQNYEYjnKwlFj+j/gORHlv31GD0AKnSd8dHsQoD9fUWDSY6tYLsdrAnhYdkxHP
+         rqaYVfDZcyL5mX1B9z4eE8De9MOcgFxH7MKCr1t7igl4wbE0EcgeHXvL21svBrKgM6wM
+         346Xl0OBgFF3c0fRqeunJ3Hqjgxs7Q9iRPPdNMRCeqlmLjtt+vm3oFUtnyIbBcxmmEB/
+         3fUVUNG2GyB3pWVYGisKn33uqQCfq1k4Sq7GaUbT+BHnKOAsaJ+dOjWbvlKL7O1qQJGo
+         k+HQ==
+X-Gm-Message-State: ACgBeo1GrPYGrt1Q79XaJ+mb2PXff6cJJDbbNIKxTIFLQpLN71CubiDJ
+        WBKi1of3WDwfxLzS5aAkr8A=
+X-Google-Smtp-Source: AA6agR5rqlKFWLqQhU/h5s3uRwQGy4k7zlANz5c9Vx/6oOmHSP3OESV6k/mn42Ei2WbNc71UN2bC5A==
+X-Received: by 2002:a17:90a:181:b0:1fb:824:d33f with SMTP id 1-20020a17090a018100b001fb0824d33fmr2611819pjc.225.1662092484971;
+        Thu, 01 Sep 2022 21:21:24 -0700 (PDT)
+Received: from debian.me (subs02-180-214-232-89.three.co.id. [180.214.232.89])
+        by smtp.gmail.com with ESMTPSA id k1-20020a654641000000b0042b890d8b82sm386081pgr.24.2022.09.01.21.21.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Sep 2022 21:21:24 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+        id 4F21B104010; Fri,  2 Sep 2022 11:21:21 +0700 (WIB)
+Date:   Fri, 2 Sep 2022 11:21:21 +0700
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Len Baker <len.baker@gmx.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v2] string: Introduce strtomem() and strtomem_pad()
+Message-ID: <YxGEwdc69waEXhnV@debian.me>
+References: <20220901190952.2229696-1-keescook@chromium.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Content-Language: en-US
-To:     Tim Harvey <tharvey@gateworks.com>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>
-Cc:     NXP Linux Team <linux-imx@nxp.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Marek Vasut <marex@denx.de>
-References: <CAJ+vNU1Za2CPGVX3q4HKufsxbL5zRrk1B5CWFpKritetrTs4dA@mail.gmail.com>
-From:   Matti Vaittinen <mazziesaccount@gmail.com>
-Subject: Re: BD71847 clk driver disables clk-32k-out causing RTC/WDT failure
-In-Reply-To: <CAJ+vNU1Za2CPGVX3q4HKufsxbL5zRrk1B5CWFpKritetrTs4dA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="cBiPWK8Ew+srt+QB"
+Content-Disposition: inline
+In-Reply-To: <20220901190952.2229696-1-keescook@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tim,
 
-On 9/2/22 01:23, Tim Harvey wrote:
-> Greetings,
-> 
-> I've found that the bd71847 clk driver (CONFIG_COMMON_CLK_BD718XX
-> drivers/clk/clk-bd718x7.c) disables clk-32k-out (the BD71847 C32K_OUT
-> pin) which is connected IMX8MM RTC_XTALI which ends up disabling the
-> IMX RTC as well as the IMX WDOG functionality.
+--cBiPWK8Ew+srt+QB
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-//snip
+On Thu, Sep 01, 2022 at 12:09:52PM -0700, Kees Cook wrote:
+> + * Do not use this function. While FORTIFY_SOURCE tries to avoid
+> + * over-reads of @q, it cannot defend against writing unterminated
+> + * results to @p. Using strncpy() remains ambiguous and fragile.
+> + * Instead, please choose an alternative, so that the expectation
+> + * of @p's contents is unambiguous:
+> + *
+> + * @p needs to be:     | padded to @size | not padded
+> + * --------------------+-----------------+------------+
+> + *      NUL-terminated | strscpy_pad()   | strscpy()  |
+> + * --------------------+-----------------+------------+
+> + *  not NUL-terminated | strtomem_pad()  | strtomem() |
+> + * --------------------+-----------------+------------+
+> + *
 
-> This happens via clk_unprepare_unused() as nothing is flagging the
-> clk-32k-out as being used. What should be added to the device-tree to
-> signify that this clk is indeed necessary and should not be disabled?
+My htmldocs build doesn't catch any new warnings, but I think the table
+above can be fixed up:
 
-I have seen following proposal from Marek Vasut:
+---- >8 ----
 
-https://lore.kernel.org/all/20220517235919.200375-1-marex@denx.de/T/#m52d6d0831bf43d5f293e35cb27f3021f278d0564
+diff --git a/include/linux/fortify-string.h b/include/linux/fortify-string.h
+index eed2119b23c523..3413a8e561fc62 100644
+--- a/include/linux/fortify-string.h
++++ b/include/linux/fortify-string.h
+@@ -95,12 +95,13 @@ extern char *__underlying_strncpy(char *p, const char *=
+q, __kernel_size_t size)
+  * Instead, please choose an alternative, so that the expectation
+  * of @p's contents is unambiguous:
+  *
+- * @p needs to be:     | padded to @size | not padded
+- * --------------------+-----------------+------------+
+- *      NUL-terminated | strscpy_pad()   | strscpy()  |
+- * --------------------+-----------------+------------+
+- *  not NUL-terminated | strtomem_pad()  | strtomem() |
+- * --------------------+-----------------+------------+
++ * +--------------------+-----------------+------------+
++ * |@p needs to be:     | padded to @size | not padded |
++ * +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D+=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D+
++ * |     NUL-terminated | strscpy_pad()   | strscpy()  |
++ * +--------------------+-----------------+------------+
++ * | not NUL-terminated | strtomem_pad()  | strtomem() |
++ * +--------------------+-----------------+------------+
+  *
+  * Note strscpy*()'s differing return values for detecting truncation,
+  * and strtomem*()'s expectation that the destination is marked with
 
-I am not sure if the discussion is completed though. I guess it was 
-agreed this was needed/usefull and maybe the remaining thing to decide 
-was just the property naming.
+> + * Note strscpy*()'s differing return values for detecting truncation,
+> + * and strtomem*()'s expectation that the destination is marked with
+> + * __nonstring when it is a character array.
+> + *
 
-Best Regards
-	-- Matti
+Regardless, I don't see these new table above in the output (am I missing
+something?).
 
--- 
-Matti Vaittinen
-Linux kernel developer at ROHM Semiconductors
-Oulu Finland
+Thanks.
 
-~~ When things go utterly wrong vim users can always type :help! ~~
+--=20
+An old man doll... just what I always wanted! - Clara
+
+--cBiPWK8Ew+srt+QB
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCYxGEuwAKCRD2uYlJVVFO
+o7dyAQCuf34QoZiPdFSC5RcNjrE7qXsLbk3bV5THirROShZnNgEA3ZKwneqmos4v
+2LjcY1sxWbdLIrq4Y810093uQL8PgQ8=
+=x7CB
+-----END PGP SIGNATURE-----
+
+--cBiPWK8Ew+srt+QB--
