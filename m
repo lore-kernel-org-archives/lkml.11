@@ -2,142 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84C5CECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:56:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AA4FECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:56:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236845AbiIBP4q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 11:56:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37156 "EHLO
+        id S237681AbiIBP4t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 11:56:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237170AbiIBPzG (ORCPT
+        with ESMTP id S237542AbiIBPzG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 11:55:06 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8036338478
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A355C399E8
         for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 08:49:28 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id u18so2827038wrq.10
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 08:49:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=1fcl6Kulh1x6/Y+M+GkZaGHNlzH6/YOoS5vivMb0MlE=;
-        b=GdX0/Lr71x+leoWDFGxoX9mQ4gWhiifvqrIG58YF8FjeVf3ugyvMJYpn2HRMaAgfXZ
-         3wAfUVchhYk3g1ahLeJpRNYi8UiplDDOkIEN+FhoITX1Uk+OJj4AIItimVO3NxdSI/w2
-         sGxKvfRi3O95WWXWnPXP0rqFXpvoY0UieDFq+yqX+Q2gtyGMwIOjaHntPP7tqiYhDCdU
-         czUozYtMay1nywMCprsxZcyfwIYXqPvTcMB/pHmhOsYp1TvnD0eAq+7fwzAQ92Z3kE6m
-         L1J2emAa4nx1n3ZV5VZ0IErL/4s2maRiA9Hn9rV2K50DHDI2w7bnQQde2DqYohnaiKoE
-         xiFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=1fcl6Kulh1x6/Y+M+GkZaGHNlzH6/YOoS5vivMb0MlE=;
-        b=wPXLClwCwtoREYKhBUvXO9MkY95h+jGAQFgn5HUDJssS+Vhb8e5a911y9mLnSyEHd+
-         d9NIckSiOKisWX7nXixsEUOlN0tGKDV8y1U2mrtG5IkHkO8BnljNG1ZMMfGhxMm9JdC/
-         UJQbB61rPEgmWb0wcqoO+U4V1gXpUAPN3FFIWep0fNDNLfF5HLmcaMnA2QgeLnHF0VD8
-         NDlQUUnEx87ea0Q6rTgglAMuXi4NMRxrk3+FHUPiwmZWGYohKZiBEiZIWn9X4ePz/IVs
-         fQqiGJdXBZuYMd/gCreNu3DrGC+ZfPaa+rL/Zpt+gV1lN/Raf4Uwiizo4LCM+2VAJJ1U
-         fM4Q==
-X-Gm-Message-State: ACgBeo0SWplkli4G5ReyO50oIAtNJNPdrXnT+XCHQ73lRHOxHa4Je8nK
-        6gku94pO6udR7UlgAkvo6ZTUBw==
-X-Google-Smtp-Source: AA6agR4EORuBuXV+b+aZAp3CJh26F5anxnwNPLBAhcQ90bs4+ypwtlQZkUHEqRPohEhnGsUdcYImNg==
-X-Received: by 2002:a5d:430d:0:b0:223:808f:19c6 with SMTP id h13-20020a5d430d000000b00223808f19c6mr18124926wrq.273.1662133768058;
-        Fri, 02 Sep 2022 08:49:28 -0700 (PDT)
-Received: from hackbox.lan ([94.52.112.99])
-        by smtp.gmail.com with ESMTPSA id b1-20020a05600010c100b002250f9abdefsm2046741wrx.117.2022.09.02.08.49.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 08:49:27 -0700 (PDT)
-From:   Abel Vesa <abel.vesa@linaro.org>
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Amol Maheshwari <amahesh@qti.qualcomm.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Ekansh Gupta <quic_ekagupt@quicinc.com>
-Cc:     Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-arm-msm@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree@vger.kernel.org
-Subject: [PATCH v2 04/10] misc: fastrpc: Add fastrpc_remote_heap_alloc
-Date:   Fri,  2 Sep 2022 18:48:54 +0300
-Message-Id: <20220902154900.3404524-5-abel.vesa@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220902154900.3404524-1-abel.vesa@linaro.org>
-References: <20220902154900.3404524-1-abel.vesa@linaro.org>
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 95A841595;
+        Fri,  2 Sep 2022 08:49:34 -0700 (PDT)
+Received: from merodach.members.linode.com (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 10B193F766;
+        Fri,  2 Sep 2022 08:49:25 -0700 (PDT)
+From:   James Morse <james.morse@arm.com>
+To:     x86@kernel.org, linux-kernel@vger.kernel.org
+Cc:     Fenghua Yu <fenghua.yu@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        H Peter Anvin <hpa@zytor.com>,
+        Babu Moger <Babu.Moger@amd.com>,
+        James Morse <james.morse@arm.com>,
+        shameerali.kolothum.thodi@huawei.com,
+        D Scott Phillips OS <scott@os.amperecomputing.com>,
+        lcherian@marvell.com, bobo.shaobowang@huawei.com,
+        tan.shaopeng@fujitsu.com, Jamie Iles <quic_jiles@quicinc.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
+        baolin.wang@linux.alibaba.com
+Subject: [PATCH v6 13/21] x86/resctrl: Add per-rmid arch private storage for overflow and chunks
+Date:   Fri,  2 Sep 2022 15:48:21 +0000
+Message-Id: <20220902154829.30399-14-james.morse@arm.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220902154829.30399-1-james.morse@arm.com>
+References: <20220902154829.30399-1-james.morse@arm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Split fastrpc_buf_alloc in such a way it allows allocation of remote
-heap too and add fastrpc_remote_heap_alloc to do so.
+A renamed __rmid_read() is intended as the function that an
+architecture agnostic resctrl filesystem driver can use to
+read a value in bytes from a counter. Currently the function returns
+the MBM values in chunks directly from hardware. For bandwidth
+counters the resctrl filesystem uses this to calculate the number of
+bytes ever seen.
 
-Co-developed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
+MPAM's scaling of counters can be changed at runtime, reducing the
+resolution but increasing the range. When this is changed the prev_msr
+values need to be converted by the architecture code.
+
+Add an array for per-rmid private storage. The prev_msr and chunks
+values will move here to allow resctrl_arch_rmid_read() to always
+return the number of bytes read by this counter without assistance
+from the filesystem. The values are moved in later patches when
+the overflow and correction calls are moved into __rmid_read().
+
+Reviewed-by: Jamie Iles <quic_jiles@quicinc.com>
+Tested-by: Xin Hao <xhao@linux.alibaba.com>
+Reviewed-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
+Tested-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
+Tested-by: Cristian Marussi <cristian.marussi@arm.com>
+Reviewed-by: Reinette Chatre <reinette.chatre@intel.com>
+Signed-off-by: James Morse <james.morse@arm.com>
 ---
- drivers/misc/fastrpc.c | 29 ++++++++++++++++++++++++++---
- 1 file changed, 26 insertions(+), 3 deletions(-)
+Changes since v2:
+ * Capitalisation
+ * Use __rmid_read() as this patch is earlier in the series.
+ * kfree() one array in arch_domain_mbm_alloc() when allocating the other
+   fails, instead of relying on domain_free().
+ * Remove the documentation that domain_free() has to be called to cleanup
+   if this call fails.
+---
+ arch/x86/kernel/cpu/resctrl/core.c     | 35 ++++++++++++++++++++++++++
+ arch/x86/kernel/cpu/resctrl/internal.h | 14 +++++++++++
+ 2 files changed, 49 insertions(+)
 
-diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
-index 52271f51800d..6730aa324e10 100644
---- a/drivers/misc/fastrpc.c
-+++ b/drivers/misc/fastrpc.c
-@@ -379,7 +379,7 @@ static void fastrpc_buf_free(struct fastrpc_buf *buf)
- 	kfree(buf);
+diff --git a/arch/x86/kernel/cpu/resctrl/core.c b/arch/x86/kernel/cpu/resctrl/core.c
+index 90ebb7d71af2..de62b0b87ced 100644
+--- a/arch/x86/kernel/cpu/resctrl/core.c
++++ b/arch/x86/kernel/cpu/resctrl/core.c
+@@ -413,6 +413,8 @@ static void setup_default_ctrlval(struct rdt_resource *r, u32 *dc)
+ 
+ static void domain_free(struct rdt_hw_domain *hw_dom)
+ {
++	kfree(hw_dom->arch_mbm_total);
++	kfree(hw_dom->arch_mbm_local);
+ 	kfree(hw_dom->ctrl_val);
+ 	kfree(hw_dom);
+ }
+@@ -438,6 +440,34 @@ static int domain_setup_ctrlval(struct rdt_resource *r, struct rdt_domain *d)
+ 	return 0;
  }
  
--static int fastrpc_buf_alloc(struct fastrpc_user *fl, struct device *dev,
-+static int __fastrpc_buf_alloc(struct fastrpc_user *fl, struct device *dev,
- 			     u64 size, struct fastrpc_buf **obuf)
- {
- 	struct fastrpc_buf *buf;
-@@ -407,14 +407,37 @@ static int fastrpc_buf_alloc(struct fastrpc_user *fl, struct device *dev,
- 		return -ENOMEM;
- 	}
- 
-+	*obuf = buf;
++/**
++ * arch_domain_mbm_alloc() - Allocate arch private storage for the MBM counters
++ * @num_rmid:	The size of the MBM counter array
++ * @hw_dom:	The domain that owns the allocated arrays
++ */
++static int arch_domain_mbm_alloc(u32 num_rmid, struct rdt_hw_domain *hw_dom)
++{
++	size_t tsize;
++
++	if (is_mbm_total_enabled()) {
++		tsize = sizeof(*hw_dom->arch_mbm_total);
++		hw_dom->arch_mbm_total = kcalloc(num_rmid, tsize, GFP_KERNEL);
++		if (!hw_dom->arch_mbm_total)
++			return -ENOMEM;
++	}
++	if (is_mbm_local_enabled()) {
++		tsize = sizeof(*hw_dom->arch_mbm_local);
++		hw_dom->arch_mbm_local = kcalloc(num_rmid, tsize, GFP_KERNEL);
++		if (!hw_dom->arch_mbm_local) {
++			kfree(hw_dom->arch_mbm_total);
++			hw_dom->arch_mbm_total = NULL;
++			return -ENOMEM;
++		}
++	}
 +
 +	return 0;
 +}
 +
-+static int fastrpc_buf_alloc(struct fastrpc_user *fl, struct device *dev,
-+			     u64 size, struct fastrpc_buf **obuf)
-+{
-+	int ret;
-+	struct fastrpc_buf *buf;
-+
-+	ret = __fastrpc_buf_alloc(fl, dev, size, obuf);
-+	if (ret)
-+		return ret;
-+
-+	buf = *obuf;
-+
- 	if (fl->sctx && fl->sctx->sid)
- 		buf->phys += ((u64)fl->sctx->sid << 32);
+ /*
+  * domain_add_cpu - Add a cpu to a resource's domain list.
+  *
+@@ -487,6 +517,11 @@ static void domain_add_cpu(int cpu, struct rdt_resource *r)
+ 		return;
+ 	}
  
--	*obuf = buf;
--
- 	return 0;
- }
++	if (r->mon_capable && arch_domain_mbm_alloc(r->num_rmid, hw_dom)) {
++		domain_free(hw_dom);
++		return;
++	}
++
+ 	list_add_tail(&d->list, add_pos);
  
-+static int fastrpc_remote_heap_alloc(struct fastrpc_user *fl, struct device *dev,
-+				     u64 size, struct fastrpc_buf **obuf)
-+{
-+	struct device *rdev = &fl->cctx->rpdev->dev;
+ 	err = resctrl_online_domain(r, d);
+diff --git a/arch/x86/kernel/cpu/resctrl/internal.h b/arch/x86/kernel/cpu/resctrl/internal.h
+index 46062099d69e..4de8e5bb93e1 100644
+--- a/arch/x86/kernel/cpu/resctrl/internal.h
++++ b/arch/x86/kernel/cpu/resctrl/internal.h
+@@ -303,17 +303,31 @@ struct mbm_state {
+ 	bool	delta_comp;
+ };
+ 
++/**
++ * struct arch_mbm_state - values used to compute resctrl_arch_rmid_read()s
++ *			   return value.
++ * @prev_msr:	Value of IA32_QM_CTR last time it was read for the RMID used to
++ *		find this struct.
++ */
++struct arch_mbm_state {
++	u64	prev_msr;
++};
 +
-+	return  __fastrpc_buf_alloc(fl, rdev, size, obuf);
-+}
-+
- static void fastrpc_channel_ctx_free(struct kref *ref)
- {
- 	struct fastrpc_channel_ctx *cctx;
+ /**
+  * struct rdt_hw_domain - Arch private attributes of a set of CPUs that share
+  *			  a resource
+  * @d_resctrl:	Properties exposed to the resctrl file system
+  * @ctrl_val:	array of cache or mem ctrl values (indexed by CLOSID)
++ * @arch_mbm_total:	arch private state for MBM total bandwidth
++ * @arch_mbm_local:	arch private state for MBM local bandwidth
+  *
+  * Members of this structure are accessed via helpers that provide abstraction.
+  */
+ struct rdt_hw_domain {
+ 	struct rdt_domain		d_resctrl;
+ 	u32				*ctrl_val;
++	struct arch_mbm_state		*arch_mbm_total;
++	struct arch_mbm_state		*arch_mbm_local;
+ };
+ 
+ static inline struct rdt_hw_domain *resctrl_to_arch_dom(struct rdt_domain *r)
 -- 
-2.34.1
+2.30.2
 
