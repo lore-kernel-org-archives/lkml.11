@@ -2,75 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87ABDC54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:08:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F03BECAAA1
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:08:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235691AbiIBIIa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 04:08:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45976 "EHLO
+        id S235690AbiIBIIx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 04:08:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235671AbiIBIIS (ORCPT
+        with ESMTP id S235671AbiIBIId (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 04:08:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E92D7BB91F;
-        Fri,  2 Sep 2022 01:08:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 972A3B829FA;
-        Fri,  2 Sep 2022 08:08:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E10CC433D7;
-        Fri,  2 Sep 2022 08:08:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662106094;
-        bh=NzHDhgY0zXBXtEi3T20cJPJB0uznOhoVmX/WodgpvMw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=HD12sV+ZmWshRGuU92uYAtR4sxLCisrf1cxsMTNJMkD2713y6ltgEcfiW9xcWG+TE
-         NnvsA4jLZlHhoCXhXCi3TP6FGy4sZtjzLodEhsm8lFHZDnvdos+nFzmnVswE3IQrmi
-         Xgo1uQrqdQgeNVUhqTejCoxpbw1IG4Jxb6jWZ3paiF887Ne2JeUy7VM097mPR0rXkt
-         4/6Es2SuLkFj7x6ovjhmPVq5ClcuruZqT4rjAYXeuvYehOrGemZV/xgLieqsn9CGZw
-         WeHrOwwpXQ+BqNbCAPDsdhjTRyNsA8HJKzmem5siPn/YBcyetdLTfS+HWq4i9BbWGo
-         VN+NyF9L+m2qQ==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1oU1iq-000397-JV; Fri, 02 Sep 2022 10:08:16 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Wesley Cheng <quic_wcheng@quicinc.com>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 0/2] dt-bindings: phy: qcom,qmp: add missing power-domains properties
-Date:   Fri,  2 Sep 2022 10:07:03 +0200
-Message-Id: <20220902080705.12050-1-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Fri, 2 Sep 2022 04:08:33 -0400
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF7C2BD4FF
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 01:08:25 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 27D515C01E1;
+        Fri,  2 Sep 2022 04:08:22 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Fri, 02 Sep 2022 04:08:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1662106102; x=1662192502; bh=oXx8G2C70O
+        6z7Y/AAZDRV0BkSeYx27XRk/1S/V+785o=; b=AoNigvqd/+Gl1lrbqAJj3zRlf4
+        Uz+mv5mzgXm5dv6SnTveWgJEojTFNdY3TgmnvZO0vUzy9ewsXpJ2SHyfVA7L6xG2
+        9uXzBJh8xCZItDt5VMInEky88lFLt+kCHzZtW/dhkoUTmVFkJKllnNWbw4BODecl
+        BORICHIGuoWFWHYavNu89rTZMAMjuljt0KD9bHABb8ijEVdoQ6haqi97J56RbQJe
+        4FNRn59X/EjKlmqM4B5pYidgzaAfoIrpfYOMg3DGeJaKnwKDJTgM2JSh4Z4B0WTx
+        zUJaIekrZltZVUMU6Vqu+FB3NjFbgnMZ6C2dUe7eP6ZGpfqos72XhhgHuIAg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1662106102; x=1662192502; bh=oXx8G2C70O6z7Y/AAZDRV0BkSeYx
+        27XRk/1S/V+785o=; b=zmrjfZ1MPWS1YUuIsqTqNX9e/+ow093v35x8nLRMtfi9
+        HrhCV5/rXKAvyeq3PHNHQOU5PKk0Phmf5Riv57CfRsW4N3SoKrKXE12HbZemqUeR
+        U22nz+9tSQvL+CkhKnBpqyDSIVS50nT4/sHCjjo5ZAXrErYGXhEXVhJyaOuG4QKd
+        FHMDHaDloo8M4WcxG0BcOcqgJaMUOt42WhjOsAhBG3lOe7ogA0U/4yqyQZGp8i3e
+        7OsDc61NmPFUkeg904NEVEZJI35US9Hx4E9Rkbnu1Eeg5E7GPmL+4HSUS6Uj+Gjp
+        6k5puXHIc7J/PYpe9ftSiusdabk4CahrCcdjljQNuA==
+X-ME-Sender: <xms:9bkRY7Gvvk_fjYmLfEx9LpWNeCw-dVkoRKCu052gjNKz4oYGH1suRw>
+    <xme:9bkRY4XwKwOhreqFx_QK-ACNNceJvifIm7tpNmG6sbSJY7e0_BgHC5OXlUpAYP3Hx
+    NBPM5HxPJOIAoJpiK8>
+X-ME-Received: <xmr:9bkRY9I-ydv9qTMuOheMvOdcRUY2Bpmbg_AVBrb9np8sn2wFAxP2QCoR4w>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdeltddgtdduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesghdtreertddtudenucfhrhhomhepofgrgihi
+    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
+    htthgvrhhnpeeljeeugfegveetleevkeetffegudevieetieeugeeugeeivddtjeejvdef
+    feetgfenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivg
+    eptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhhordhtvggt
+    hh
+X-ME-Proxy: <xmx:9bkRY5HXm61F4PcxLNK5m3rQg8z2teZN-HZOQWzL1Y2mZJC5Gp6npA>
+    <xmx:9bkRYxXT9qIjLUEkWBe6eJb-wlNSxIy3FF3Kl2TTcu1Zlgw8ikPM1Q>
+    <xmx:9bkRY0Na_3KoCTFKeDnS_NrgD3qAjgw5AiV4tQr85JIsexiy3hNQdQ>
+    <xmx:9rkRY4MXrD0wx5qHwdfAbxRIyLEgoNzehIkf2gd_q0YkGZ_c3AvKTg>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 2 Sep 2022 04:08:20 -0400 (EDT)
+Date:   Fri, 2 Sep 2022 10:08:17 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     =?utf-8?B?TWHDrXJh?= Canal <mairacanal@riseup.net>
+Cc:     Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
+        tales.aparecida@gmail.com, mwen@igalia.com, andrealmeid@riseup.net,
+        siqueirajordao@riseup.net, Trevor Woerner <twoerner@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        David Gow <davidgow@google.com>, brendanhiggins@google.com,
+        Arthur Grillo <arthur.grillo@usp.br>,
+        michal.winiarski@intel.com,
+        =?utf-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        kunit-dev@googlegroups.com
+Subject: Re: [PATCH v2 2/2] drm/tests: Change "igt_" prefix to "test_drm_"
+Message-ID: <20220902080817.is2dqqe5sxxhj6qo@houat>
+References: <20220901124210.591994-1-mairacanal@riseup.net>
+ <20220901124210.591994-2-mairacanal@riseup.net>
+ <20220901125530.b56s4zisnkfuigvc@houat>
+ <04aeba53-793c-3196-3137-915f0640dc2a@riseup.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="76a7tdldm3qyyhst"
+Content-Disposition: inline
+In-Reply-To: <04aeba53-793c-3196-3137-915f0640dc2a@riseup.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The new SC8280XP USB PHYs require a power domain to be specified so
-amend the bindings.
 
-Johan
+--76a7tdldm3qyyhst
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Thu, Sep 01, 2022 at 07:33:18PM -0300, Ma=EDra Canal wrote:
+> Hi Maxime,
+>=20
+> On 9/1/22 09:55, Maxime Ripard wrote:
+> > Hi,
+> >=20
+> > On Thu, Sep 01, 2022 at 09:42:10AM -0300, Ma=EDra Canal wrote:
+> >> With the introduction of KUnit, IGT is no longer the only option to run
+> >> the DRM unit tests, as the tests can be run through kunit-tool or on
+> >> real hardware with CONFIG_KUNIT.
+> >>
+> >> Therefore, remove the "igt_" prefix from the tests and replace it with
+> >> the "test_drm_" prefix, making the tests' names independent from the t=
+ool
+> >> used.
+> >>
+> >> Signed-off-by: Ma=EDra Canal <mairacanal@riseup.net>
+> >>
+> >> ---
+> >> v1 -> v2: https://lore.kernel.org/dri-devel/20220830211603.191734-1-ma=
+iracanal@riseup.net/
+> >> - Change "drm_" prefix to "test_drm_", as "drm_" can be a bit confusin=
+g (Jani Nikula).
+> >=20
+> > I appreciate it's a bit of a bikeshed but I disagree with this. The
+> > majority of the kunit tests already out there start with the framework
+> > name, including *all* the examples in the kunit doc. Plus, it's fairly
+> > obvious that it's a test, kunit is only about running tests in the first
+> > place.
+>=20
+> Would it be better to keep it as "drm_"?
+>=20
+> Currently, I don't think it is appropriate to hold the "igt_" prefix, as
+> the tests are not IGT exclusive, but I don't have a strong opinion on
+> using the "drm_" or the "test_drm" prefixes.
 
-Johan Hovold (2):
-  dt-bindings: phy: qcom,qmp-usb: add missing power-domains property
-  dt-bindings: phy: qcom,qmp-usb3-dp: add missing power-domains property
+Yes, using drm as our prefix everywhere seems like a good idea :)
 
- .../devicetree/bindings/phy/qcom,qmp-usb-phy.yaml  | 13 +++++++++++++
- .../bindings/phy/qcom,qmp-usb3-dp-phy.yaml         | 14 ++++++++++++++
- 2 files changed, 27 insertions(+)
+Maxime
 
--- 
-2.35.1
+--76a7tdldm3qyyhst
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYxG58QAKCRDj7w1vZxhR
+xT6yAQDBwt2ucJpi8xbfOexsSn0IwtFEfMVmlzrn0/gz/emVbgEAwWwWnzbG5bKB
+w4pOcdJqPCvfrvxmbjUcFF/2yU3CAwg=
+=4LKf
+-----END PGP SIGNATURE-----
+
+--76a7tdldm3qyyhst--
