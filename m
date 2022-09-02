@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36660ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:01:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20D9DC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:02:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238452AbiIBNBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:01:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48672 "EHLO
+        id S238589AbiIBNB6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:01:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238265AbiIBM7g (ORCPT
+        with ESMTP id S238395AbiIBM7v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:59:36 -0400
+        Fri, 2 Sep 2022 08:59:51 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 528D6D4F51;
-        Fri,  2 Sep 2022 05:40:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8BE1FE357;
+        Fri,  2 Sep 2022 05:41:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9ECFB82AC5;
-        Fri,  2 Sep 2022 12:39:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 227F6C433D6;
-        Fri,  2 Sep 2022 12:39:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D1BACB82A94;
+        Fri,  2 Sep 2022 12:40:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D703C433C1;
+        Fri,  2 Sep 2022 12:40:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122376;
-        bh=Rl54nJO1BHf012tRjZqYPLcT3BC/VSEP7sb101CBww0=;
+        s=korg; t=1662122432;
+        bh=HvJAvfahX2qMcHfJMcbUzlT+p01VbVQuQu0FwetkayU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dfOfup6MlQQjFdDr9IN/GFj0NBgmptaGgS67G858XwY1QhcKlj9oAp0zzYfKrzTTI
-         UeG2ynyDL0oJvwAkYmyPEa77Oyg1Y3afAk5zMnDkHAO7aX1HxMVAXPEozXRk11HAAv
-         KqBq6WVRYjRB7fpnSCE1cTcBJJ2KkvMued2j9/XM=
+        b=rgAYcY/nyYZxsvkJWn0YEfoVU1MyFCpZjvaRhC0rAtOTsGUrCMCF4iVwATOE1tfnf
+         ba54n1oGZF0TCY3FB3Z+z/rbic1V2lJaMimrKLTztTdv2RexyYm9Buxxk3wRFr3KFO
+         8oTy4FZM0VzbygrFWfdVkDOVBqIq2atiBTICPaic=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
-        Florian Westphal <fw@strlen.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 27/37] netfilter: conntrack: NF_CONNTRACK_PROCFS should no longer default to y
-Date:   Fri,  2 Sep 2022 14:19:49 +0200
-Message-Id: <20220902121400.016500501@linuxfoundation.org>
+        stable@vger.kernel.org, David Hildenbrand <david@redhat.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Subject: [PATCH 5.10 05/37] s390/mm: do not trigger write fault when vma does not allow VM_WRITE
+Date:   Fri,  2 Sep 2022 14:19:27 +0200
+Message-Id: <20220902121359.338498863@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121359.177846782@linuxfoundation.org>
 References: <20220902121359.177846782@linuxfoundation.org>
@@ -49,35 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert@linux-m68k.org>
+From: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
 
-[ Upstream commit aa5762c34213aba7a72dc58e70601370805fa794 ]
+commit 41ac42f137080bc230b5882e3c88c392ab7f2d32 upstream.
 
-NF_CONNTRACK_PROCFS was marked obsolete in commit 54b07dca68557b09
-("netfilter: provide config option to disable ancient procfs parts") in
-v3.3.
+For non-protection pXd_none() page faults in do_dat_exception(), we
+call do_exception() with access == (VM_READ | VM_WRITE | VM_EXEC).
+In do_exception(), vma->vm_flags is checked against that before
+calling handle_mm_fault().
 
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Since commit 92f842eac7ee3 ("[S390] store indication fault optimization"),
+we call handle_mm_fault() with FAULT_FLAG_WRITE, when recognizing that
+it was a write access. However, the vma flags check is still only
+checking against (VM_READ | VM_WRITE | VM_EXEC), and therefore also
+calling handle_mm_fault() with FAULT_FLAG_WRITE in cases where the vma
+does not allow VM_WRITE.
+
+Fix this by changing access check in do_exception() to VM_WRITE only,
+when recognizing write access.
+
+Link: https://lkml.kernel.org/r/20220811103435.188481-3-david@redhat.com
+Fixes: 92f842eac7ee3 ("[S390] store indication fault optimization")
+Cc: <stable@vger.kernel.org>
+Reported-by: David Hildenbrand <david@redhat.com>
+Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
+Signed-off-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+ arch/s390/mm/fault.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/net/netfilter/Kconfig b/net/netfilter/Kconfig
-index 6bafd3876aff3..8bf70ce03f951 100644
---- a/net/netfilter/Kconfig
-+++ b/net/netfilter/Kconfig
-@@ -118,7 +118,6 @@ config NF_CONNTRACK_ZONES
+--- a/arch/s390/mm/fault.c
++++ b/arch/s390/mm/fault.c
+@@ -429,7 +429,9 @@ static inline vm_fault_t do_exception(st
+ 	flags = FAULT_FLAG_DEFAULT;
+ 	if (user_mode(regs))
+ 		flags |= FAULT_FLAG_USER;
+-	if (access == VM_WRITE || (trans_exc_code & store_indication) == 0x400)
++	if ((trans_exc_code & store_indication) == 0x400)
++		access = VM_WRITE;
++	if (access == VM_WRITE)
+ 		flags |= FAULT_FLAG_WRITE;
+ 	mmap_read_lock(mm);
  
- config NF_CONNTRACK_PROCFS
- 	bool "Supply CT list in procfs (OBSOLETE)"
--	default y
- 	depends on PROC_FS
- 	help
- 	This option enables for the list of known conntrack entries
--- 
-2.35.1
-
 
 
