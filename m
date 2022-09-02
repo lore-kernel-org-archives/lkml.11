@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F27B0ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:24:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DFBCECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:24:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236260AbiIBMYm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:24:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51408 "EHLO
+        id S236354AbiIBMYp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:24:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234985AbiIBMYN (ORCPT
+        with ESMTP id S236259AbiIBMYO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:24:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFE2ED7CC3;
-        Fri,  2 Sep 2022 05:22:22 -0700 (PDT)
+        Fri, 2 Sep 2022 08:24:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 149D9D347F;
+        Fri,  2 Sep 2022 05:22:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D9EFB82A92;
-        Fri,  2 Sep 2022 12:22:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4A6BC433C1;
-        Fri,  2 Sep 2022 12:22:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F25B1620FB;
+        Fri,  2 Sep 2022 12:21:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08801C433C1;
+        Fri,  2 Sep 2022 12:21:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121337;
-        bh=MolakyFmjNbfxyrFA1j8Zfr9J+QdKVMz8ceNyw+BLG4=;
+        s=korg; t=1662121312;
+        bh=TpU6l5g02zbis8XEGsCk0XSgQ9cTnQU9Y4JX6Odi2S8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=clEJM6lda484Aud1s5g400eYk5x5hZc69iJdZa3XMrqJ5KbM7nCuzuMHw4HZw7XL8
-         ZpI++bfOyduoXvVT29Zvg3LMj4C6H7strx2U8i5khPYtz5uekQwtAjxrbJmHQFfNPG
-         NW9JXm4q32Lz3PnoBIN8RKzoR6NZj9B0WqrFpkPE=
+        b=k8nmXvNzo91jPdgmdZIHw9f6fnZ+j/gnIaBVnoo5IWg6s0zbdfpsPAp9TNSQwYoV4
+         2o1czqfNytCwtWii9EG24QtcapwxUjAYE47/7pj0WQzkVSkp/5xV/PbjdSPZETGUYj
+         JOxtq2a8y4M5gh+hwTzCz6g2H0ZjqnjqO9mS/4W8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 17/42] net: Fix a data-race around netdev_budget.
-Date:   Fri,  2 Sep 2022 14:18:41 +0200
-Message-Id: <20220902121359.401149952@linuxfoundation.org>
+        stable@vger.kernel.org, Gaosheng Cui <cuigaosheng1@huawei.com>,
+        Jan Kara <jack@suse.cz>, Paul Moore <paul@paul-moore.com>
+Subject: [PATCH 4.14 01/42] audit: fix potential double free on error path from fsnotify_add_inode_mark
+Date:   Fri,  2 Sep 2022 14:18:25 +0200
+Message-Id: <20220902121358.823143232@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121358.773776406@linuxfoundation.org>
 References: <20220902121358.773776406@linuxfoundation.org>
 User-Agent: quilt/0.67
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,36 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Gaosheng Cui <cuigaosheng1@huawei.com>
 
-[ Upstream commit 2e0c42374ee32e72948559d2ae2f7ba3dc6b977c ]
+commit ad982c3be4e60c7d39c03f782733503cbd88fd2a upstream.
 
-While reading netdev_budget, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+Audit_alloc_mark() assign pathname to audit_mark->path, on error path
+from fsnotify_add_inode_mark(), fsnotify_put_mark will free memory
+of audit_mark->path, but the caller of audit_alloc_mark will free
+the pathname again, so there will be double free problem.
 
-Fixes: 51b0bdedb8e7 ("[NET]: Separate two usages of netdev_max_backlog.")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fix this by resetting audit_mark->path to NULL pointer on error path
+from fsnotify_add_inode_mark().
+
+Cc: stable@vger.kernel.org
+Fixes: 7b1293234084d ("fsnotify: Add group pointer in fsnotify_init_mark()")
+Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/dev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/audit_fsnotify.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 51721fb2e30cf..f6d3cbc57425c 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -5649,7 +5649,7 @@ static __latent_entropy void net_rx_action(struct softirq_action *h)
- 	struct softnet_data *sd = this_cpu_ptr(&softnet_data);
- 	unsigned long time_limit = jiffies +
- 		usecs_to_jiffies(netdev_budget_usecs);
--	int budget = netdev_budget;
-+	int budget = READ_ONCE(netdev_budget);
- 	LIST_HEAD(list);
- 	LIST_HEAD(repoll);
+--- a/kernel/audit_fsnotify.c
++++ b/kernel/audit_fsnotify.c
+@@ -111,6 +111,7 @@ struct audit_fsnotify_mark *audit_alloc_
  
--- 
-2.35.1
-
+ 	ret = fsnotify_add_mark(&audit_mark->mark, inode, NULL, true);
+ 	if (ret < 0) {
++		audit_mark->path = NULL;
+ 		fsnotify_put_mark(&audit_mark->mark);
+ 		audit_mark = ERR_PTR(ret);
+ 	}
 
 
