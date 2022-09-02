@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F362ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:39:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 292D8ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:39:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237224AbiIBPjv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 11:39:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34298 "EHLO
+        id S237231AbiIBPjy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 11:39:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237198AbiIBPig (ORCPT
+        with ESMTP id S237232AbiIBPij (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 11:38:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD394ED006
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 08:26:18 -0700 (PDT)
+        Fri, 2 Sep 2022 11:38:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BA2B65825
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 08:26:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662132376;
+        s=mimecast20190719; t=1662132380;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=NimEyZtTzJQVDtCo9T4viDWAW4CqgFOy4rbVvNAhs2E=;
-        b=CtkSgRMFdD+rcFjmgqNQXLQVSeCxoxQ5CP9Aue0OzdDVEoltrQvtzLSDWgUZZP6zNg9H5b
-        L9mDh3OSg42WhYv6xNzyiCg/S15rzXtSjQBYTXfyvwm3jReN8V/Z/RG970EvWNYzxx7mJr
-        f60YoRiWUtQGXtxJjlYr79gLzSo+Hcc=
+        bh=b+EEFoR1hsnuIiJiHIQPhbUi8fFyaPXLGuuGMxFE3I0=;
+        b=Yhl915Pr07j6uHHbwwfDzhEb8WJKAPTfWmA+jBc+DnTzIbjK3n9nKG0tPsRS5uP5XUoKFH
+        nmBrAmVR/dcbudAC6hwoOfQ5ndqXwatPDvJxnDvq/HZDD9BxCfBHV9+IEWWvkxrLw1RQd4
+        XvEGgUp2B5A2cSTx/LiOU3tVOrdPHIg=
 Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
  [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-576-Qftfn_pEMjyy9fCtaV6clA-1; Fri, 02 Sep 2022 11:26:11 -0400
-X-MC-Unique: Qftfn_pEMjyy9fCtaV6clA-1
+ us-mta-49-QkvML-CBMrKS7ltBc-uHlA-1; Fri, 02 Sep 2022 11:26:13 -0400
+X-MC-Unique: QkvML-CBMrKS7ltBc-uHlA-1
 Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E1455380390B;
-        Fri,  2 Sep 2022 15:26:10 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1E52F2919EC7;
+        Fri,  2 Sep 2022 15:26:13 +0000 (UTC)
 Received: from llong.com (unknown [10.22.10.219])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2F36614152E1;
-        Fri,  2 Sep 2022 15:26:10 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6A0DE1415139;
+        Fri,  2 Sep 2022 15:26:12 +0000 (UTC)
 From:   Waiman Long <longman@redhat.com>
 To:     Ingo Molnar <mingo@redhat.com>,
         Peter Zijlstra <peterz@infradead.org>,
@@ -55,9 +55,9 @@ Cc:     linux-kernel@vger.kernel.org,
         Linus Torvalds <torvalds@linux-foundation.org>,
         Lai Jiangshan <jiangshanlai@gmail.com>,
         Waiman Long <longman@redhat.com>
-Subject: [PATCH v7 2/5] sched: Use user_cpus_ptr for saving user provided cpumask in sched_setaffinity()
-Date:   Fri,  2 Sep 2022 11:25:53 -0400
-Message-Id: <20220902152556.373658-3-longman@redhat.com>
+Subject: [PATCH v7 5/5] sched: Fix sched_setaffinity() and fork/clone() race
+Date:   Fri,  2 Sep 2022 11:25:56 -0400
+Message-Id: <20220902152556.373658-6-longman@redhat.com>
 In-Reply-To: <20220902152556.373658-1-longman@redhat.com>
 References: <20220902152556.373658-1-longman@redhat.com>
 MIME-Version: 1.0
@@ -68,223 +68,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The user_cpus_ptr field is added by commit b90ca8badbd1 ("sched:
-Introduce task_struct::user_cpus_ptr to track requested affinity"). It
-is currently used only by arm64 arch due to possible asymmetric CPU
-setup. This patch extends its usage to save user provided cpumask
-when sched_setaffinity() is called for all arches. With this patch
-applied, user_cpus_ptr, once allocated after a successful call to
-sched_setaffinity(), will only be freed when the task exits.
-
-Since user_cpus_ptr is supposed to be used for "requested
-affinity", there is actually no point to save current cpu affinity in
-restrict_cpus_allowed_ptr() if sched_setaffinity() has never been called.
-Modify the logic to set user_cpus_ptr only in sched_setaffinity() and use
-it in restrict_cpus_allowed_ptr() and relax_compatible_cpus_allowed_ptr()
-if defined but not changing it.
-
-This will be some changes in behavior for arm64 systems with asymmetric
-CPUs in some corner cases. For instance, if sched_setaffinity()
-has never been called and there is a cpuset change before
-relax_compatible_cpus_allowed_ptr() is called, its subsequent call will
-follow what the cpuset allows but not what the previous cpu affinity
-setting allows.
+sched_setaffinity() can also race with a concurrent fork/clone() syscall
+calling dup_user_cpus_ptr(). That may lead to a use after free problem.
+Fix that by protecting the cpumask copying using pi_lock of the source
+task.
 
 Signed-off-by: Waiman Long <longman@redhat.com>
 ---
- kernel/sched/core.c  | 82 ++++++++++++++++++++------------------------
- kernel/sched/sched.h |  7 ++++
- 2 files changed, 44 insertions(+), 45 deletions(-)
+ kernel/sched/core.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index b351e6d173b7..c7c0425974c2 100644
+index 618341d0fa51..7157c9a3f31e 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -2850,7 +2850,6 @@ static int __set_cpus_allowed_ptr_locked(struct task_struct *p,
- 	const struct cpumask *cpu_allowed_mask = task_cpu_possible_mask(p);
- 	const struct cpumask *cpu_valid_mask = cpu_active_mask;
- 	bool kthread = p->flags & PF_KTHREAD;
--	struct cpumask *user_mask = NULL;
- 	unsigned int dest_cpu;
- 	int ret = 0;
- 
-@@ -2909,14 +2908,7 @@ static int __set_cpus_allowed_ptr_locked(struct task_struct *p,
- 
- 	__do_set_cpus_allowed(p, new_mask, flags);
- 
--	if (flags & SCA_USER)
--		user_mask = clear_user_cpus_ptr(p);
--
--	ret = affine_move_task(rq, p, rf, dest_cpu, flags);
--
--	kfree(user_mask);
--
--	return ret;
-+	return affine_move_task(rq, p, rf, dest_cpu, flags);
- 
- out:
- 	task_rq_unlock(rq, p, rf);
-@@ -2951,8 +2943,10 @@ EXPORT_SYMBOL_GPL(set_cpus_allowed_ptr);
- 
- /*
-  * Change a given task's CPU affinity to the intersection of its current
-- * affinity mask and @subset_mask, writing the resulting mask to @new_mask
-- * and pointing @p->user_cpus_ptr to a copy of the old mask.
-+ * affinity mask and @subset_mask, writing the resulting mask to @new_mask.
-+ * If user_cpus_ptr is defined, use it as the basis for restricting CPU
-+ * affinity or use cpu_online_mask instead.
-+ *
-  * If the resulting mask is empty, leave the affinity unchanged and return
-  * -EINVAL.
-  */
-@@ -2960,17 +2954,10 @@ static int restrict_cpus_allowed_ptr(struct task_struct *p,
- 				     struct cpumask *new_mask,
- 				     const struct cpumask *subset_mask)
+@@ -2602,6 +2602,8 @@ void do_set_cpus_allowed(struct task_struct *p, const struct cpumask *new_mask)
+ int dup_user_cpus_ptr(struct task_struct *dst, struct task_struct *src,
+ 		      int node)
  {
--	struct cpumask *user_mask = NULL;
- 	struct rq_flags rf;
- 	struct rq *rq;
- 	int err;
++	unsigned long flags;
++
+ 	if (!src->user_cpus_ptr)
+ 		return 0;
  
--	if (!p->user_cpus_ptr) {
--		user_mask = kmalloc(cpumask_size(), GFP_KERNEL);
--		if (!user_mask)
--			return -ENOMEM;
--	}
--
- 	rq = task_rq_lock(p, &rf);
+@@ -2609,7 +2611,10 @@ int dup_user_cpus_ptr(struct task_struct *dst, struct task_struct *src,
+ 	if (!dst->user_cpus_ptr)
+ 		return -ENOMEM;
  
- 	/*
-@@ -2983,25 +2970,15 @@ static int restrict_cpus_allowed_ptr(struct task_struct *p,
- 		goto err_unlock;
- 	}
- 
--	if (!cpumask_and(new_mask, &p->cpus_mask, subset_mask)) {
-+	if (!cpumask_and(new_mask, task_user_cpus(p), subset_mask)) {
- 		err = -EINVAL;
- 		goto err_unlock;
- 	}
- 
--	/*
--	 * We're about to butcher the task affinity, so keep track of what
--	 * the user asked for in case we're able to restore it later on.
--	 */
--	if (user_mask) {
--		cpumask_copy(user_mask, p->cpus_ptr);
--		p->user_cpus_ptr = user_mask;
--	}
--
- 	return __set_cpus_allowed_ptr_locked(p, new_mask, 0, rq, &rf);
- 
- err_unlock:
- 	task_rq_unlock(rq, p, &rf);
--	kfree(user_mask);
- 	return err;
++	/* Use pi_lock to protect content of user_cpus_ptr */
++	raw_spin_lock_irqsave(&src->pi_lock, flags);
+ 	cpumask_copy(dst->user_cpus_ptr, src->user_cpus_ptr);
++	raw_spin_unlock_irqrestore(&src->pi_lock, flags);
+ 	return 0;
  }
  
-@@ -3055,30 +3032,21 @@ __sched_setaffinity(struct task_struct *p, const struct cpumask *mask);
- 
- /*
-  * Restore the affinity of a task @p which was previously restricted by a
-- * call to force_compatible_cpus_allowed_ptr(). This will clear (and free)
-- * @p->user_cpus_ptr.
-+ * call to force_compatible_cpus_allowed_ptr().
-  *
-  * It is the caller's responsibility to serialise this with any calls to
-  * force_compatible_cpus_allowed_ptr(@p).
-  */
- void relax_compatible_cpus_allowed_ptr(struct task_struct *p)
- {
--	struct cpumask *user_mask = p->user_cpus_ptr;
--	unsigned long flags;
-+	int ret;
- 
- 	/*
--	 * Try to restore the old affinity mask. If this fails, then
--	 * we free the mask explicitly to avoid it being inherited across
--	 * a subsequent fork().
-+	 * Try to restore the old affinity mask with __sched_setaffinity().
-+	 * Cpuset masking will be done there too.
- 	 */
--	if (!user_mask || !__sched_setaffinity(p, user_mask))
--		return;
--
--	raw_spin_lock_irqsave(&p->pi_lock, flags);
--	user_mask = clear_user_cpus_ptr(p);
--	raw_spin_unlock_irqrestore(&p->pi_lock, flags);
--
--	kfree(user_mask);
-+	ret = __sched_setaffinity(p, task_user_cpus(p));
-+	WARN_ON_ONCE(ret);
- }
- 
- void set_task_cpu(struct task_struct *p, unsigned int new_cpu)
-@@ -8101,7 +8069,7 @@ __sched_setaffinity(struct task_struct *p, const struct cpumask *mask)
- 	if (retval)
- 		goto out_free_new_mask;
- again:
--	retval = __set_cpus_allowed_ptr(p, new_mask, SCA_CHECK | SCA_USER);
-+	retval = __set_cpus_allowed_ptr(p, new_mask, SCA_CHECK);
- 	if (retval)
- 		goto out_free_new_mask;
- 
-@@ -8124,6 +8092,7 @@ __sched_setaffinity(struct task_struct *p, const struct cpumask *mask)
- 
- long sched_setaffinity(pid_t pid, const struct cpumask *in_mask)
- {
-+	struct cpumask *user_mask;
- 	struct task_struct *p;
- 	int retval;
- 
-@@ -8158,7 +8127,30 @@ long sched_setaffinity(pid_t pid, const struct cpumask *in_mask)
- 	if (retval)
- 		goto out_put_task;
- 
-+	user_mask = kmalloc(cpumask_size(), GFP_KERNEL);
-+	if (!user_mask) {
-+		retval = -ENOMEM;
-+		goto out_put_task;
-+	}
-+	cpumask_copy(user_mask, in_mask);
-+
- 	retval = __sched_setaffinity(p, in_mask);
-+
-+	/*
-+	 * Save in_mask into user_cpus_ptr after a successful
-+	 * __sched_setaffinity() call. pi_lock is used to synchronize
-+	 * changes to user_cpus_ptr.
-+	 */
-+	if (!retval) {
-+		unsigned long flags;
-+
-+		/* Use pi_lock to synchronize changes to user_cpus_ptr */
-+		raw_spin_lock_irqsave(&p->pi_lock, flags);
-+		swap(p->user_cpus_ptr, user_mask);
-+		raw_spin_unlock_irqrestore(&p->pi_lock, flags);
-+	}
-+	kfree(user_mask);
-+
- out_put_task:
- 	put_task_struct(p);
- 	return retval;
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index e26688d387ae..ac235bc8ef08 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -1881,6 +1881,13 @@ static inline void dirty_sched_domain_sysctl(int cpu)
- #endif
- 
- extern int sched_update_scaling(void);
-+
-+static inline const struct cpumask *task_user_cpus(struct task_struct *p)
-+{
-+	if (!p->user_cpus_ptr)
-+		return cpu_possible_mask; /* &init_task.cpus_mask */
-+	return p->user_cpus_ptr;
-+}
- #endif /* CONFIG_SMP */
- 
- #include "stats.h"
 -- 
 2.31.1
 
