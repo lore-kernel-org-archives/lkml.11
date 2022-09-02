@@ -2,90 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BACEAC54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:19:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0108C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:23:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236756AbiIBNTX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:19:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37594 "EHLO
+        id S236503AbiIBNXP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:23:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236092AbiIBNS5 (ORCPT
+        with ESMTP id S236485AbiIBNW5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:18:57 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4D92D4F64;
-        Fri,  2 Sep 2022 05:55:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 77A76CE2E67;
-        Fri,  2 Sep 2022 12:35:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71C65C433D7;
-        Fri,  2 Sep 2022 12:35:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122125;
-        bh=I0grwLaSN42BWeq13VtFyJ/P4Grxplt0kp3cRmVG1sA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yNYgyu9v+rtmEMvmehKoa2RMBETerMYR6bpN+kSYEYUZ/Z1ArmDgHdm+1Blt/bDrC
-         v7+dB6gWVpnXxlsHYUamlxswHPBg15PwxvFnpUiS1HXckkqDPEKlCaAjSeXqPNK8R/
-         /OoAbzaPqZ98n3XXp/QpZmlCAa358itIr38FyQzA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Hansson <newbie13xd@gmail.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.19 20/72] HID: input: fix uclogic tablets
-Date:   Fri,  2 Sep 2022 14:18:56 +0200
-Message-Id: <20220902121405.445523018@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
-References: <20220902121404.772492078@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Fri, 2 Sep 2022 09:22:57 -0400
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5539474E2;
+        Fri,  2 Sep 2022 06:00:18 -0700 (PDT)
+Received: by mail-qt1-x830.google.com with SMTP id x5so1339216qtv.9;
+        Fri, 02 Sep 2022 06:00:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=GaKGM+dpPVOcKQB0I709BWsCafKACGVR73YUNmM0p9M=;
+        b=MzOF0SUMu+LWHqJesHluUKrd/Yms+3BJ4yiX8IZ4kldKwlXIPY6KoRbCzBQ0E9owFd
+         FOSw0LJFW7lY6uNW/5x4vetN/h3aNtuJDktsTt3UxTRjcBEIBqnLW+Hkq5QV7OJWSV4K
+         0ON6XAsbrJLtCVL/5ZilEYsRB7NT3LyKzCjY1RGXUS9kzZmlwR0ZgGBXWCDeyojdnOVs
+         1KUiQMtmLsMbWJ9IE3sCwx6L5p0vlRMSAKSg/Ev1evlOODPx6m+94MdrNxZ8u0qblaQN
+         I/lErX1UA2O/VGKoZLA3AYLgVIFYbMTFI72OWZSTAgWWoJGo07vEfaKmwoGTGCDAGXD0
+         7oUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=GaKGM+dpPVOcKQB0I709BWsCafKACGVR73YUNmM0p9M=;
+        b=z9ld2/Sfz/fn+kvw07RxRqpVlGGTHfpK/s1XNAA3oYybZ5TRflFnMCh43qwa5biHwV
+         QL/6poAGbe9ASOWCKilSFFSnVXiLLmactlI9bM/7CNWNthVNLTKDcvBtK2kcxKcAwueL
+         4VZd9uEDA/yuHDaWm6O8QM9Sy+b8ZbRBjHnW8psyhAXdx+89E1qbC7KT1iroedPp83wR
+         sEXMgMMT7frJTunMh78X2aJPOjeQBfKm+TEN28H3OPrry8TyJnIGGmyuhDZOxfmH8fQu
+         J9kLg1t3dFYgpvzvEn0WyHGfEpG1PPjK2vBFWUrVGFj+nMS/wmiGNdsbCca6I9UuGlvS
+         IL2w==
+X-Gm-Message-State: ACgBeo1hC13jLychm0VHIhMolreLNXNewH2CZIq595+C4KbTRhReI1Za
+        rN1BbK943HSh9X6dUegKjcbrRxWyL0k=
+X-Google-Smtp-Source: AA6agR6ukfEivBRMBVS78MYzMPw2RtR4O1lu1dnKDXXluEBnn1qLr4Sdq/b8RyCi0wQaMU5oUvbymw==
+X-Received: by 2002:ac8:5995:0:b0:343:77a0:7c39 with SMTP id e21-20020ac85995000000b0034377a07c39mr28186140qte.663.1662123450255;
+        Fri, 02 Sep 2022 05:57:30 -0700 (PDT)
+Received: from [10.4.10.38] (146-115-144-188.s4282.c3-0.nwt-cbr1.sbo-nwt.ma.cable.rcncustomer.com. [146.115.144.188])
+        by smtp.gmail.com with ESMTPSA id eb2-20020a05620a480200b006b629f86244sm1209868qkb.50.2022.09.02.05.57.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Sep 2022 05:57:28 -0700 (PDT)
+Message-ID: <bb4804c0-04d2-6e0c-b9db-1243828ca515@gmail.com>
+Date:   Fri, 2 Sep 2022 08:56:53 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.2
+Subject: Re: [PATCH v6 00/10] Add support for i.MXRT1170-evk
+Content-Language: en-US
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     linux-imx@nxp.com, robh+dt@kernel.org, mturquette@baylibre.com,
+        sboyd@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, festevam@gmail.com, aisheng.dong@nxp.com,
+        stefan@agner.ch, daniel.lezcano@linaro.org, tglx@linutronix.de,
+        arnd@arndb.de, olof@lixom.net, soc@kernel.org,
+        linux@armlinux.org.uk, abel.vesa@nxp.com, dev@lynxeye.de,
+        marcel.ziswiler@toradex.com, tharvey@gateworks.com,
+        leoyang.li@nxp.com, sebastian.reichel@collabora.com,
+        cniedermaier@dh-electronics.com, clin@suse.com,
+        giulio.benetti@benettiengineering.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org
+References: <20220901183343.3188903-1-Mr.Bossman075@gmail.com>
+ <CACRpkdb25ikL4F499NDCrv1kf2FGvJxqDW2wk9GNQCqrbX9kKQ@mail.gmail.com>
+From:   Jesse Taube <mr.bossman075@gmail.com>
+In-Reply-To: <CACRpkdb25ikL4F499NDCrv1kf2FGvJxqDW2wk9GNQCqrbX9kKQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-
-commit 8db8be9cfc89935c97d791c7e6264e710a7e8a56 upstream.
-
-commit 87562fcd1342 ("HID: input: remove the need for HID_QUIRK_INVERT")
-made the assumption that it was the only one handling tablets and thus
-kept an internal state regarding the tool.
-
-Turns out that the uclogic driver has a timer to release the in range
-bit, effectively making hid-input ignoring all in range information
-after the very first one.
-
-Fix that by having a more rationale approach which consists in forwarding
-every event and let the input stack filter out the duplicates.
-
-Reported-by: Stefan Hansson <newbie13xd@gmail.com>
-Fixes: 87562fcd1342 ("HID: input: remove the need for HID_QUIRK_INVERT")
-Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/hid/hid-input.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
---- a/drivers/hid/hid-input.c
-+++ b/drivers/hid/hid-input.c
-@@ -1532,7 +1532,10 @@ void hidinput_hid_event(struct hid_devic
- 			 * assume ours
- 			 */
- 			if (!report->tool)
--				hid_report_set_tool(report, input, usage->code);
-+				report->tool = usage->code;
-+
-+			/* drivers may have changed the value behind our back, resend it */
-+			hid_report_set_tool(report, input, report->tool);
- 		} else {
- 			hid_report_release_tool(report, input, usage->code);
- 		}
 
 
+On 9/2/22 04:06, Linus Walleij wrote:
+> On Thu, Sep 1, 2022 at 8:33 PM Jesse Taube <mr.bossman075@gmail.com> wrote:
+> 
+>> This patch contains:
+>> - Update to imxrt_defconfig
+>> - Devicetree
+>> - Clock driver
+>> - Pinctrl driver
+> 
+> No it does not, I already merged that.
+> 
+> I think you should probably split up your series per-subsystem so the
+> clock bindings and changes can be merged separately etc.
+> 
+> Then the DTS files can be added to the ARM SoC tree as a final step.
+> 
+> When you send everything in one bundle like this subsystem maintainers
+> don't know if they can merge e.g. just the clock patches separately
+> and be done with their part (like what I did with pinctrl).
+Do you think its possible to add Docs for Device tree compatibles that 
+aren't added yet?
+
+Thanks,
+Jesse Taube
+> 
+> Yours.
+> Linus Walleij
