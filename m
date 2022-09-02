@@ -2,111 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44200C001B5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:56:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B29CECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:56:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237672AbiIBP4g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 11:56:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40876 "EHLO
+        id S237559AbiIBP4j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 11:56:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237537AbiIBPzF (ORCPT
+        with ESMTP id S237538AbiIBPzF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 11:55:05 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7CE82A975
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 08:49:25 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id n17so2848475wrm.4
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 08:49:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=Fd4lSn+qZVzeO4qkwAmVHFeGiK8e6ML8+dOEILHHB/4=;
-        b=XiV//UgpdOLwA5FX375zPaEh5uHJ95nETjCvXbD5RHNoziJSjUVMvjX/7MheUFKdWv
-         4XgQiHLoK4mKo3DGKbgTviuYGki+Ffli7yUjOCk/N49S8VmaYIR0xjrNLxzInk2JWXak
-         Zy8Qg8jHarHXavYlIz322H9E5ylJpOxb58uypOxaJq6H8cX0V6PlIb5vY6OsqxSRbK5n
-         Bp4bOztqwMZJo5Xv2fJlJ1JLRwaKsuIWPnqo7UIDgiX87KVFSHRxBdKPbD4lLxLXhY3E
-         FXFGhq3shhVEEpKrTQS4SgbT5mRbThwkJULLBeD4i0UTaeUAmySXaoJZExEDvmuFW9UG
-         MVtQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=Fd4lSn+qZVzeO4qkwAmVHFeGiK8e6ML8+dOEILHHB/4=;
-        b=QuRxXXxkuqptmuZKfw01+DWVKFdQ2wUk0uU37P+YJkvLfWXoVwGrjkfmLr9kB/jSkK
-         yefH84qDDCngMw8936xw7K51X/DNGVoAi7NDkpD5DzsonFw+4A10FLxLigCU14XpNeSq
-         BMoG21gMMB2ZElXba8Gyiz5aryvB9VZZb7ojJ9W6bnXQXXoJ7I+BPlaSe/yETd+lSOBY
-         813E8pugICUeOzPFJEvhr0R1sp+k9AvX6CQpui9MdQsFFDrwUffnndmwS2SagWRCM7ux
-         bPodXKwgjDP9cIUFf+0etYRdbVxif8aU8B6tRJiuRRQQhw/cHgGJW70ieh25T3fU0+OB
-         cIow==
-X-Gm-Message-State: ACgBeo1UhrMBDtUV76ctelewjFdnhUQsZBvND4V/rDhCb6n3DxS9whlO
-        ihEncwTcdylkMeyffpYSqq2zdA==
-X-Google-Smtp-Source: AA6agR5G+03+f8b9dEBvjINXiGpiy8LUXZ+MRQyPsER25T7sdZv7lh1PrW+WhiXD62s+5ONKcoJMJw==
-X-Received: by 2002:adf:d1c2:0:b0:226:fa44:bab7 with SMTP id b2-20020adfd1c2000000b00226fa44bab7mr4552046wrd.195.1662133764174;
-        Fri, 02 Sep 2022 08:49:24 -0700 (PDT)
-Received: from hackbox.lan ([94.52.112.99])
-        by smtp.gmail.com with ESMTPSA id b1-20020a05600010c100b002250f9abdefsm2046741wrx.117.2022.09.02.08.49.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 08:49:23 -0700 (PDT)
-From:   Abel Vesa <abel.vesa@linaro.org>
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Amol Maheshwari <amahesh@qti.qualcomm.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Ekansh Gupta <quic_ekagupt@quicinc.com>
-Cc:     Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-arm-msm@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree@vger.kernel.org
-Subject: [PATCH v2 02/10] misc: fastrpc: Add reserved mem support
-Date:   Fri,  2 Sep 2022 18:48:52 +0300
-Message-Id: <20220902154900.3404524-3-abel.vesa@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220902154900.3404524-1-abel.vesa@linaro.org>
-References: <20220902154900.3404524-1-abel.vesa@linaro.org>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 37E1E2BB27
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 08:49:26 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 045BD15A1;
+        Fri,  2 Sep 2022 08:49:32 -0700 (PDT)
+Received: from merodach.members.linode.com (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 73F483F766;
+        Fri,  2 Sep 2022 08:49:23 -0700 (PDT)
+From:   James Morse <james.morse@arm.com>
+To:     x86@kernel.org, linux-kernel@vger.kernel.org
+Cc:     Fenghua Yu <fenghua.yu@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        H Peter Anvin <hpa@zytor.com>,
+        Babu Moger <Babu.Moger@amd.com>,
+        James Morse <james.morse@arm.com>,
+        shameerali.kolothum.thodi@huawei.com,
+        D Scott Phillips OS <scott@os.amperecomputing.com>,
+        lcherian@marvell.com, bobo.shaobowang@huawei.com,
+        tan.shaopeng@fujitsu.com, Jamie Iles <quic_jiles@quicinc.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
+        baolin.wang@linux.alibaba.com
+Subject: [PATCH v6 12/21] x86/resctrl: Calculate bandwidth from the previous __mon_event_count() chunks
+Date:   Fri,  2 Sep 2022 15:48:20 +0000
+Message-Id: <20220902154829.30399-13-james.morse@arm.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220902154829.30399-1-james.morse@arm.com>
+References: <20220902154829.30399-1-james.morse@arm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The reserved mem support is needed for CMA heap support, which will be
-used by AUDIOPD.
+mbm_bw_count() is only called by the mbm_handle_overflow() worker once a
+second. It reads the hardware register, calculates the bandwidth and
+updates m->prev_bw_msr which is used to hold the previous hardware register
+value.
 
-Co-developed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
+Operating directly on hardware register values makes it difficult to make
+this code architecture independent, so that it can be moved to /fs/,
+making the mba_sc feature something resctrl supports with no additional
+support from the architecture.
+Prior to calling mbm_bw_count(), mbm_update() reads from the same hardware
+register using __mon_event_count().
+
+Change mbm_bw_count() to use the current chunks value most recently saved
+by __mon_event_count(). This removes an extra call to __rmid_read().
+Instead of using m->prev_msr to calculate the number of chunks seen,
+use the rr->val that was updated by __mon_event_count(). This removes an
+extra call to mbm_overflow_count() and get_corrected_mbm_count().
+Calculating bandwidth like this means mbm_bw_count() no longer operates
+on hardware register values directly.
+
+Reviewed-by: Jamie Iles <quic_jiles@quicinc.com>
+Tested-by: Xin Hao <xhao@linux.alibaba.com>
+Reviewed-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
+Tested-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
+Tested-by: Cristian Marussi <cristian.marussi@arm.com>
+Reviewed-by: Reinette Chatre <reinette.chatre@intel.com>
+Signed-off-by: James Morse <james.morse@arm.com>
 ---
- drivers/misc/fastrpc.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Changes since v3:
+ * Reset rr.val before each use to avoid over counting.
+ * Fixed typos in kerneldoc.
 
-diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
-index 8d803ee33904..52271f51800d 100644
---- a/drivers/misc/fastrpc.c
-+++ b/drivers/misc/fastrpc.c
-@@ -19,6 +19,7 @@
- #include <linux/slab.h>
- #include <linux/qcom_scm.h>
- #include <uapi/misc/fastrpc.h>
-+#include <linux/of_reserved_mem.h>
+Changes since v2:
+ * Expanded commit message
+
+Changes since v1:
+ * This patch was rewritten
+---
+ arch/x86/kernel/cpu/resctrl/internal.h |  4 ++--
+ arch/x86/kernel/cpu/resctrl/monitor.c  | 25 ++++++++++++++++---------
+ 2 files changed, 18 insertions(+), 11 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/resctrl/internal.h b/arch/x86/kernel/cpu/resctrl/internal.h
+index 3b9e43ba7590..46062099d69e 100644
+--- a/arch/x86/kernel/cpu/resctrl/internal.h
++++ b/arch/x86/kernel/cpu/resctrl/internal.h
+@@ -289,7 +289,7 @@ struct rftype {
+  * struct mbm_state - status for each MBM counter in each domain
+  * @chunks:	Total data moved (multiply by rdt_group.mon_scale to get bytes)
+  * @prev_msr:	Value of IA32_QM_CTR for this RMID last time we read it
+- * @prev_bw_msr:Value of previous IA32_QM_CTR for bandwidth counting
++ * @prev_bw_chunks: Previous chunks value read for bandwidth calculation
+  * @prev_bw:	The most recent bandwidth in MBps
+  * @delta_bw:	Difference between the current and previous bandwidth
+  * @delta_comp:	Indicates whether to compute the delta_bw
+@@ -297,7 +297,7 @@ struct rftype {
+ struct mbm_state {
+ 	u64	chunks;
+ 	u64	prev_msr;
+-	u64	prev_bw_msr;
++	u64	prev_bw_chunks;
+ 	u32	prev_bw;
+ 	u32	delta_bw;
+ 	bool	delta_comp;
+diff --git a/arch/x86/kernel/cpu/resctrl/monitor.c b/arch/x86/kernel/cpu/resctrl/monitor.c
+index 3e69386cfe00..2d81b6cd9632 100644
+--- a/arch/x86/kernel/cpu/resctrl/monitor.c
++++ b/arch/x86/kernel/cpu/resctrl/monitor.c
+@@ -315,7 +315,7 @@ static u64 __mon_event_count(u32 rmid, struct rmid_read *rr)
  
- #define ADSP_DOMAIN_ID (0)
- #define MDSP_DOMAIN_ID (1)
-@@ -2064,6 +2065,9 @@ static int fastrpc_rpmsg_probe(struct rpmsg_device *rpdev)
- 		return -EINVAL;
+ 	if (rr->first) {
+ 		memset(m, 0, sizeof(struct mbm_state));
+-		m->prev_bw_msr = m->prev_msr = tval;
++		m->prev_msr = tval;
+ 		return 0;
  	}
  
-+	if (of_reserved_mem_device_init_by_idx(rdev, rdev->of_node, 0))
-+		dev_info(rdev, "no reserved DMA memory for FASTRPC\n");
-+
- 	vmcount = of_property_read_variable_u32_array(rdev->of_node,
- 				"qcom,vmids", &vmids[0], 0, FASTRPC_MAX_VMIDS);
- 	if (vmcount < 0)
+@@ -329,27 +329,32 @@ static u64 __mon_event_count(u32 rmid, struct rmid_read *rr)
+ }
+ 
+ /*
++ * mbm_bw_count() - Update bw count from values previously read by
++ *		    __mon_event_count().
++ * @rmid:	The rmid used to identify the cached mbm_state.
++ * @rr:		The struct rmid_read populated by __mon_event_count().
++ *
+  * Supporting function to calculate the memory bandwidth
+- * and delta bandwidth in MBps.
++ * and delta bandwidth in MBps. The chunks value previously read by
++ * __mon_event_count() is compared with the chunks value from the previous
++ * invocation. This must be called once per second to maintain values in MBps.
+  */
+ static void mbm_bw_count(u32 rmid, struct rmid_read *rr)
+ {
+ 	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(rr->r);
+ 	struct mbm_state *m = &rr->d->mbm_local[rmid];
+-	u64 tval, cur_bw, chunks;
++	u64 cur_bw, chunks, cur_chunks;
+ 
+-	tval = __rmid_read(rmid, rr->evtid);
+-	if (tval & (RMID_VAL_ERROR | RMID_VAL_UNAVAIL))
+-		return;
++	cur_chunks = rr->val;
++	chunks = cur_chunks - m->prev_bw_chunks;
++	m->prev_bw_chunks = cur_chunks;
+ 
+-	chunks = mbm_overflow_count(m->prev_bw_msr, tval, hw_res->mbm_width);
+-	cur_bw = (get_corrected_mbm_count(rmid, chunks) * hw_res->mon_scale) >> 20;
++	cur_bw = (chunks * hw_res->mon_scale) >> 20;
+ 
+ 	if (m->delta_comp)
+ 		m->delta_bw = abs(cur_bw - m->prev_bw);
+ 	m->delta_comp = false;
+ 	m->prev_bw = cur_bw;
+-	m->prev_bw_msr = tval;
+ }
+ 
+ /*
+@@ -516,10 +521,12 @@ static void mbm_update(struct rdt_resource *r, struct rdt_domain *d, int rmid)
+ 	 */
+ 	if (is_mbm_total_enabled()) {
+ 		rr.evtid = QOS_L3_MBM_TOTAL_EVENT_ID;
++		rr.val = 0;
+ 		__mon_event_count(rmid, &rr);
+ 	}
+ 	if (is_mbm_local_enabled()) {
+ 		rr.evtid = QOS_L3_MBM_LOCAL_EVENT_ID;
++		rr.val = 0;
+ 		__mon_event_count(rmid, &rr);
+ 
+ 		/*
 -- 
-2.34.1
+2.30.2
 
