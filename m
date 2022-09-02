@@ -2,111 +2,229 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 581E0C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:56:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 545C2ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:57:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237005AbiIBO46 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:56:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50966 "EHLO
+        id S235492AbiIBO51 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:57:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236592AbiIBOzk (ORCPT
+        with ESMTP id S236615AbiIBO4I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:55:40 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 054B765658;
-        Fri,  2 Sep 2022 07:20:45 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4MJyHW0l8Cz9slX;
-        Fri,  2 Sep 2022 14:42:47 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id fcDlgJNWUSKR; Fri,  2 Sep 2022 14:42:47 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4MJyHS0804z9sl9;
-        Fri,  2 Sep 2022 14:42:44 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id E21D18B798;
-        Fri,  2 Sep 2022 14:42:43 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id DUTLC8JVCdNe; Fri,  2 Sep 2022 14:42:43 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.232.39])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id D777D8B792;
-        Fri,  2 Sep 2022 14:42:42 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 282CgYaJ2141519
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Fri, 2 Sep 2022 14:42:34 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 282CgYrG2141518;
-        Fri, 2 Sep 2022 14:42:34 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Keerthy <j-keerthy@ti.com>, Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Davide Ciminaghi <ciminaghi@gnudd.com>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-arch@vger.kernel.org,
-        linux-doc@vger.kernel.org, x86@kernel.org,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v2 6/9] Documentation: gpio: Remove text about ARCH_NR_GPIOS
-Date:   Fri,  2 Sep 2022 14:42:06 +0200
-Message-Id: <3a1f82b079a57ea07351ad6e71d7964162a03070.1662116601.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <cover.1662116601.git.christophe.leroy@csgroup.eu>
-References: <cover.1662116601.git.christophe.leroy@csgroup.eu>
+        Fri, 2 Sep 2022 10:56:08 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 645E5C04E0;
+        Fri,  2 Sep 2022 07:21:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662128480; x=1693664480;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=6f+huALnahss6lYz0y0UEQS8/UevmtS+kT7aaSrmY2Q=;
+  b=hE/J+V0ofI5Raoy4pZTztHoHVFL9zpd/GF0mQDGgYlyEndnOoFGON1KG
+   EpF91m1YRMowzsyQO8O+PO4qBQKvbAbk88xTIzRC5S+hhTeemUvgB4a5r
+   Q6LI8TGaXR8Vkd0AlHKB9D9RfFVMD4NjowbLAo6nzLDW8ZvGDoxaZHOgP
+   QeKj0A9ElK4bq/sXxdM7+kiMqKrK8DLscLtkMUprsdtfewCAiLzV95Rdb
+   ub4lZHllbs951O+rITT6DBasK1UObq9fsqGGqUr3goS11vITRCbzaqwl+
+   AVA4WHlPLcx+ugtTxjMTjrKTSH6pZ0MHMhayHaXP34tY5vrFObNmomwIL
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="276391223"
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="276391223"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 07:21:20 -0700
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="674369533"
+Received: from vbykovni-mobl.ger.corp.intel.com ([10.252.53.17])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 07:21:15 -0700
+Date:   Fri, 2 Sep 2022 17:21:14 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jslaby@suse.cz>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Tobias Klauser <tklauser@distanz.ch>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        =?ISO-8859-15?Q?Andreas_F=E4rber?= <afaerber@suse.de>,
+        Manivannan Sadhasivam <mani@kernel.org>
+Subject: Re: [PATCH v2 2/3] tty: serial: use DEFINE_UART_PORT_TX_HELPER()
+In-Reply-To: <20220901110657.3305-3-jslaby@suse.cz>
+Message-ID: <89b44cd-6550-32b2-9bd-ae8dde6b48cd@linux.intel.com>
+References: <20220901110657.3305-1-jslaby@suse.cz> <20220901110657.3305-3-jslaby@suse.cz>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1662122527; l=1475; s=20211009; h=from:subject:message-id; bh=nMrWytdB4dtfJH5pitzlz2TRZRbRFDARsAY3M0xeb40=; b=nrOIc10OdOffIFYCwasvWrqQXePmi36vpW/sWCioLuTrxLCyE0m+9EX4aRa4jyQtGJNvmHhSerTx 4DtEXnYMAAR4fa3TG6FlIYSKwgENjTxNPdGncE6w6sOXlj+cvO30
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="8323329-1885109871-1662128480=:1647"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ARCH_NR_GPIOS have been removed, clean up the documentation.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-After this patch, the only place when ARCH_NR_GPIOS remains is in
-translations/zh_CN/gpio.txt and translations/zh_TW/gpio.txt.
-I don't have the skills to update that, anyway those two files are
-already out of sync as they are still mentionning ARCH_REQUIRE_GPIOLIB
-which was removed by commit 65053e1a7743 ("gpio: delete
-ARCH_[WANTS_OPTIONAL|REQUIRE]_GPIOLIB")
+--8323329-1885109871-1662128480=:1647
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
----
- Documentation/driver-api/gpio/legacy.rst | 5 -----
- 1 file changed, 5 deletions(-)
+On Thu, 1 Sep 2022, Jiri Slaby wrote:
 
-diff --git a/Documentation/driver-api/gpio/legacy.rst b/Documentation/driver-api/gpio/legacy.rst
-index 9b12eeb89170..e17910cc3271 100644
---- a/Documentation/driver-api/gpio/legacy.rst
-+++ b/Documentation/driver-api/gpio/legacy.rst
-@@ -558,11 +558,6 @@ Platform Support
- To force-enable this framework, a platform's Kconfig will "select" GPIOLIB,
- else it is up to the user to configure support for GPIO.
- 
--It may also provide a custom value for ARCH_NR_GPIOS, so that it better
--reflects the number of GPIOs in actual use on that platform, without
--wasting static table space.  (It should count both built-in/SoC GPIOs and
--also ones on GPIO expanders.
--
- If neither of these options are selected, the platform does not support
- GPIOs through GPIO-lib and the code cannot be enabled by the user.
- 
+> DEFINE_UART_PORT_TX_HELPER() is a new helper to send characters to the
+> device. Use it in these drivers.
+> 
+> Cc: Tobias Klauser <tklauser@distanz.ch>
+> Cc: Richard Genoud <richard.genoud@gmail.com>
+> Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
+> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> Cc: Claudiu Beznea <claudiu.beznea@microchip.com>
+> Cc: Vladimir Zapolskiy <vz@mleia.com>
+> Cc: Liviu Dudau <liviu.dudau@arm.com>
+> Cc: Sudeep Holla <sudeep.holla@arm.com>
+> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+> Cc: Shawn Guo <shawnguo@kernel.org>
+> Cc: Sascha Hauer <s.hauer@pengutronix.de>
+> Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+> Cc: Fabio Estevam <festevam@gmail.com>
+> Cc: NXP Linux Team <linux-imx@nxp.com>
+> Cc: "Andreas Färber" <afaerber@suse.de>
+> Cc: Manivannan Sadhasivam <mani@kernel.org>
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> ---
+
+> diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
+> index 3f1986c89694..944686a0d00d 100644
+> --- a/drivers/tty/serial/mpc52xx_uart.c
+> +++ b/drivers/tty/serial/mpc52xx_uart.c
+> @@ -1338,7 +1338,6 @@ mpc52xx_uart_verify_port(struct uart_port *port, struct serial_struct *ser)
+>  	return 0;
+>  }
+>  
+> -
+>  static const struct uart_ops mpc52xx_uart_ops = {
+>  	.tx_empty	= mpc52xx_uart_tx_empty,
+>  	.set_mctrl	= mpc52xx_uart_set_mctrl,
+
+Stray change.
+
+> diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
+> index e64e42a19d1a..738f4b20cb8e 100644
+> --- a/drivers/tty/serial/sa1100.c
+> +++ b/drivers/tty/serial/sa1100.c
+> @@ -226,45 +226,34 @@ sa1100_rx_chars(struct sa1100_port *sport)
+>  	tty_flip_buffer_push(&sport->port.state->port);
+>  }
+>  
+> -static void sa1100_tx_chars(struct sa1100_port *sport)
+> +static bool sa1100_tx_ready(struct uart_port *port)
+>  {
+> -	struct circ_buf *xmit = &sport->port.state->xmit;
+> +	struct sa1100_port *sport =
+> +		container_of(port, struct sa1100_port, port);
+>  
+> -	if (sport->port.x_char) {
+> -		UART_PUT_CHAR(sport, sport->port.x_char);
+> -		sport->port.icount.tx++;
+> -		sport->port.x_char = 0;
+> -		return;
+> -	}
+> +	return UART_GET_UTSR1(sport) & UTSR1_TNF;
+> +}
+> +
+> +static void sa1100_put_char(struct uart_port *port, unsigned char ch)
+> +{
+> +	struct sa1100_port *sport =
+> +		container_of(port, struct sa1100_port, port);
+> +
+> +	UART_PUT_CHAR(sport, ch);
+> +}
+
+Perhaps not to add into this change itself, but I just point out these 
+would be useful in addition to what is changed:
+	- Get rid of UART_PUT_CHAR()
+	- sa1100_console_putchar() could use sa1100_tx_ready()
+
+> diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
+> index 6f08136ce78a..ff430a1cc3a2 100644
+> --- a/drivers/tty/serial/vt8500_serial.c
+> +++ b/drivers/tty/serial/vt8500_serial.c
+> @@ -187,37 +187,17 @@ static void handle_rx(struct uart_port *port)
+>  	tty_flip_buffer_push(tport);
+>  }
+>  
+> -static void handle_tx(struct uart_port *port)
+> +static unsigned int vt8500_tx_empty(struct uart_port *port)
+>  {
+> -	struct circ_buf *xmit = &port->state->xmit;
+> -
+> -	if (port->x_char) {
+> -		writeb(port->x_char, port->membase + VT8500_TXFIFO);
+> -		port->icount.tx++;
+> -		port->x_char = 0;
+> -	}
+> -	if (uart_circ_empty(xmit) || uart_tx_stopped(port)) {
+> -		vt8500_stop_tx(port);
+> -		return;
+> -	}
+> +	unsigned int idx = vt8500_read(port, VT8500_URFIDX) & 0x1f;
+>  
+> -	while ((vt8500_read(port, VT8500_URFIDX) & 0x1f) < 16) {
+> -		if (uart_circ_empty(xmit))
+> -			break;
+> -
+> -		writeb(xmit->buf[xmit->tail], port->membase + VT8500_TXFIFO);
+> -
+> -		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+> -		port->icount.tx++;
+> -	}
+> -
+> -	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+> -		uart_write_wakeup(port);
+> -
+> -	if (uart_circ_empty(xmit))
+> -		vt8500_stop_tx(port);
+> +	return idx < 16 ? TIOCSER_TEMT : 0;
+>  }
+
+So there's just plain move and re-layouting of existing vt8500_tx_empty() 
+embedded here. Why not do it in a separate change beforehand?
+
+I discovered this the hard way, that is, I started to look why tx on 
+earth "FIFO index" < 16 should be called "tx empty", if it would be a 
+separate change it would have been immediately obvious that it was a 
+pre-existing thing.
+
+> +static DEFINE_UART_PORT_TX_HELPER(handle_tx, port, ch,
+> +		vt8500_tx_empty(port),
+> +		writeb(ch, port->membase + VT8500_TXFIFO));
+> +
+>  static void vt8500_start_tx(struct uart_port *port)
+>  {
+>  	struct vt8500_port *vt8500_port = container_of(port,
+> @@ -260,12 +240,6 @@ static irqreturn_t vt8500_irq(int irq, void *dev_id)
+>  	return IRQ_HANDLED;
+>  }
+>  
+> -static unsigned int vt8500_tx_empty(struct uart_port *port)
+> -{
+> -	return (vt8500_read(port, VT8500_URFIDX) & 0x1f) < 16 ?
+> -						TIOCSER_TEMT : 0;
+> -}
+> -
+>  static unsigned int vt8500_get_mctrl(struct uart_port *port)
+>  {
+>  	unsigned int usr;
+> 
+
 -- 
-2.37.1
+ i.
 
+--8323329-1885109871-1662128480=:1647--
