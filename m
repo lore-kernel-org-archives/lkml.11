@@ -2,194 +2,324 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D525AECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 03:17:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A223BECAAD2
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 03:19:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235069AbiIBDRB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 23:17:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48080 "EHLO
+        id S233383AbiIBDTK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 23:19:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234457AbiIBDQy (ORCPT
+        with ESMTP id S231310AbiIBDTE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 23:16:54 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EAC07EFEE
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 20:16:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662088613; x=1693624613;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=PzY+4y2w6s54YP2t8HhQriB1UCF30mNKpCM7R/JOZcQ=;
-  b=C1YZiHadyclTwIt3nQDGN7K18q6GMx834M0+912vrMBBxJcfGIKc66Ru
-   Gk/FI3iFiW8mBa0m707bSaCZPFDYwreRpVJuyMs6SXGVEzCmTwGa44VGK
-   tUKkNUOP6CSG4NDpUoRBj1RipqcCxpQsfwRORAH95FLXEv4h5pdmCxdRb
-   eckyH6qmqjXOpXSlIjLSC3cX/Mp6/06biv+pFwwurbHXEKqLVDrcgvg8J
-   8NC+uaQ0Gbz8XCZIa8NDYRHIm8AQ/Uvsvw+h0gCarqA6p3CyCkR2UjS9n
-   BDRVLQpGqW6hdnNodn34uwy3bRMMASnNwzpSTqfOpSeZJXkcnU263Zru4
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="322037848"
-X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
-   d="scan'208";a="322037848"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 20:16:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
-   d="scan'208";a="563808928"
-Received: from lkp-server02.sh.intel.com (HELO fccc941c3034) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 01 Sep 2022 20:16:50 -0700
-Received: from kbuild by fccc941c3034 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oTxAn-00004B-1F;
-        Fri, 02 Sep 2022 03:16:49 +0000
-Date:   Fri, 2 Sep 2022 11:16:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Kees Cook <keescook@chromium.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Christian Brauner <brauner@kernel.org>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        linux-kernel@vger.kernel.org,
-        syzbot+ab17848fe269b573eb71@syzkaller.appspotmail.com,
-        Ayushman Dutta <ayudutta@amazon.com>
-Subject: Re: [PATCH v1] seccomp: Release filter when copy_process() fails.
-Message-ID: <202209021045.YbjuMbic-lkp@intel.com>
-References: <20220822204436.26631-1-kuniyu@amazon.com>
+        Thu, 1 Sep 2022 23:19:04 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53ED1A00C2;
+        Thu,  1 Sep 2022 20:19:01 -0700 (PDT)
+Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MJjj03mpbzlWhJ;
+        Fri,  2 Sep 2022 11:15:32 +0800 (CST)
+Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
+ dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 2 Sep 2022 11:18:59 +0800
+Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
+ (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 2 Sep
+ 2022 11:18:59 +0800
+From:   Kai Ye <yekai13@huawei.com>
+To:     <gregkh@linuxfoundation.org>, <herbert@gondor.apana.org.au>
+CC:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <wangzhou1@hisilicon.com>, <liulongfang@huawei.com>,
+        <yekai13@huawei.com>
+Subject: [PATCH v8 3/3] crypto: hisilicon/qm - define the device isolation strategy
+Date:   Fri, 2 Sep 2022 03:13:04 +0000
+Message-ID: <20220902031304.37516-4-yekai13@huawei.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220902031304.37516-1-yekai13@huawei.com>
+References: <20220902031304.37516-1-yekai13@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220822204436.26631-1-kuniyu@amazon.com>
+Content-Type: text/plain
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml100012.china.huawei.com (7.185.36.121)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kuniyuki,
+Define the device isolation strategy by the device driver. The
+user configures a frequency value by uacce interface. If the
+slot reset frequency exceeds the value of setting for a certain
+period of time, the device will not be available in user space.
+The time window is one hour. The VF device use the PF device
+isolation strategy. All the hardware errors are processed by PF
+driver. This solution can be used for other drivers.
 
-Thank you for the patch! Yet something to improve:
+Signed-off-by: Kai Ye <yekai13@huawei.com>
+---
+ drivers/crypto/hisilicon/qm.c | 163 +++++++++++++++++++++++++++++++---
+ include/linux/hisi_acc_qm.h   |   9 ++
+ 2 files changed, 160 insertions(+), 12 deletions(-)
 
-[auto build test ERROR on kees/for-next/pstore]
-[also build test ERROR on linus/master v6.0-rc3]
-[cannot apply to kees/for-next/seccomp next-20220901]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Kuniyuki-Iwashima/seccomp-Release-filter-when-copy_process-fails/20220823-044710
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/pstore
-config: s390-buildonly-randconfig-r006-20220901 (https://download.01.org/0day-ci/archive/20220902/202209021045.YbjuMbic-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project c55b41d5199d2394dd6cdb8f52180d8b81d809d4)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install s390 cross compiling tool for clang build
-        # apt-get install binutils-s390x-linux-gnu
-        # https://github.com/intel-lab-lkp/linux/commit/ea0fdd2f2e9a09bd5428bd59e81bac66e949f578
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Kuniyuki-Iwashima/seccomp-Release-filter-when-copy_process-fails/20220823-044710
-        git checkout ea0fdd2f2e9a09bd5428bd59e81bac66e949f578
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from kernel/fork.c:79:
-   In file included from include/linux/tty.h:12:
-   In file included from include/linux/tty_port.h:5:
-   In file included from include/linux/kfifo.h:42:
-   In file included from include/linux/scatterlist.h:9:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __raw_readb(PCI_IOBASE + addr);
-                             ~~~~~~~~~~ ^
-   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
-   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
-                                                             ^
-   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
-   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
-                                                        ^
-   In file included from kernel/fork.c:79:
-   In file included from include/linux/tty.h:12:
-   In file included from include/linux/tty_port.h:5:
-   In file included from include/linux/kfifo.h:42:
-   In file included from include/linux/scatterlist.h:9:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
-   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
-                                                             ^
-   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
-   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
-                                                        ^
-   In file included from kernel/fork.c:79:
-   In file included from include/linux/tty.h:12:
-   In file included from include/linux/tty_port.h:5:
-   In file included from include/linux/kfifo.h:42:
-   In file included from include/linux/scatterlist.h:9:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writeb(value, PCI_IOBASE + addr);
-                               ~~~~~~~~~~ ^
-   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:609:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsb(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:617:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsw(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:625:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsl(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:634:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesb(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   include/asm-generic/io.h:643:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesw(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   include/asm-generic/io.h:652:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesl(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
->> kernel/fork.c:540:28: error: no member named 'filter' in 'struct seccomp'
-           WARN_ON_ONCE(tsk->seccomp.filter);
-                        ~~~~~~~~~~~~ ^
-   include/asm-generic/bug.h:104:25: note: expanded from macro 'WARN_ON_ONCE'
-           int __ret_warn_on = !!(condition);                      \
-                                  ^~~~~~~~~
-   kernel/fork.c:854:20: warning: no previous prototype for function 'arch_task_cache_init' [-Wmissing-prototypes]
-   void __init __weak arch_task_cache_init(void) { }
-                      ^
-   kernel/fork.c:854:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void __init __weak arch_task_cache_init(void) { }
-   ^
-   static 
-   13 warnings and 1 error generated.
-
-
-vim +540 kernel/fork.c
-
-   537	
-   538	void free_task(struct task_struct *tsk)
-   539	{
- > 540		WARN_ON_ONCE(tsk->seccomp.filter);
-   541		release_user_cpus_ptr(tsk);
-   542		scs_release(tsk);
-   543	
-
+diff --git a/drivers/crypto/hisilicon/qm.c b/drivers/crypto/hisilicon/qm.c
+index 187272a16ad7..d63031bf4dad 100644
+--- a/drivers/crypto/hisilicon/qm.c
++++ b/drivers/crypto/hisilicon/qm.c
+@@ -417,6 +417,16 @@ struct hisi_qm_resource {
+ 	struct list_head list;
+ };
+ 
++/**
++ * struct qm_hw_err - Structure describing the device errors
++ * @list: hardware error list
++ * @timestamp: timestamp when the error occurred
++ */
++struct qm_hw_err {
++	struct list_head list;
++	unsigned long long timestamp;
++};
++
+ struct hisi_qm_hw_ops {
+ 	int (*get_vft)(struct hisi_qm *qm, u32 *base, u32 *number);
+ 	void (*qm_db)(struct hisi_qm *qm, u16 qn,
+@@ -3408,6 +3418,111 @@ static long hisi_qm_uacce_ioctl(struct uacce_queue *q, unsigned int cmd,
+ 	return 0;
+ }
+ 
++/**
++ * qm_hw_err_isolate() - Try to isolate the uacce device with its VFs
++ * according to user's configuration of isolation strategy. Warning: this
++ * API should be called while there the users on this device are suspended
++ * by slot resetting preparation of PCI AER.
++ * @qm: the uacce device
++ */
++static int qm_hw_err_isolate(struct hisi_qm *qm)
++{
++	struct qm_hw_err *err, *tmp, *hw_err;
++	struct qm_err_isolate *isolate;
++	u32 count = 0;
++
++	isolate = &qm->isolate_data;
++
++#define SECONDS_PER_HOUR	3600
++
++	/* All the hw errs are processed by PF driver */
++	if (qm->uacce->is_vf || isolate->is_isolate ||
++	    !isolate->hw_err_isolate_hz)
++		return 0;
++
++	hw_err = kzalloc(sizeof(*hw_err), GFP_KERNEL);
++	if (!hw_err)
++		return -ENOMEM;
++
++	mutex_lock(&isolate->isolate_lock);
++	hw_err->timestamp = jiffies;
++	list_for_each_entry_safe(err, tmp, &isolate->uacce_hw_errs, list) {
++		if ((hw_err->timestamp - err->timestamp) / HZ >
++		    SECONDS_PER_HOUR) {
++			list_del(&err->list);
++			kfree(err);
++		} else {
++			count++;
++		}
++	}
++	list_add(&hw_err->list, &isolate->uacce_hw_errs);
++	mutex_unlock(&isolate->isolate_lock);
++
++	if (count >= isolate->hw_err_isolate_hz)
++		isolate->is_isolate = true;
++
++	return 0;
++}
++
++static void qm_hw_err_destroy(struct hisi_qm *qm)
++{
++	struct qm_hw_err *err, *tmp;
++
++	mutex_lock(&qm->isolate_data.isolate_lock);
++	list_for_each_entry_safe(err, tmp, &qm->isolate_data.uacce_hw_errs, list) {
++		list_del(&err->list);
++		kfree(err);
++	}
++	mutex_unlock(&qm->isolate_data.isolate_lock);
++}
++
++static enum uacce_dev_state hisi_qm_get_isolate_state(struct uacce_device *uacce)
++{
++	struct hisi_qm *qm = uacce->priv;
++	struct hisi_qm *pf_qm;
++
++	if (uacce->is_vf)
++		pf_qm = pci_get_drvdata(pci_physfn(qm->pdev));
++	else
++		pf_qm = qm;
++
++	return pf_qm->isolate_data.is_isolate ?
++			UACCE_DEV_ISOLATE : UACCE_DEV_NORMAL;
++}
++
++static int hisi_qm_isolate_strategy_write(struct uacce_device *uacce,
++					  u32 freq)
++{
++	struct hisi_qm *qm = uacce->priv;
++
++	/* Must be set by PF */
++	if (uacce->is_vf)
++		return -EPERM;
++
++	if (qm->isolate_data.is_isolate)
++		return -EPERM;
++
++	qm->isolate_data.hw_err_isolate_hz = freq;
++
++	/* After the policy is updated, need to reset the hardware err list */
++	qm_hw_err_destroy(qm);
++
++	return 0;
++}
++
++static u32 hisi_qm_isolate_strategy_read(struct uacce_device *uacce)
++{
++	struct hisi_qm *qm = uacce->priv;
++	struct hisi_qm *pf_qm;
++
++	if (uacce->is_vf) {
++		pf_qm = pci_get_drvdata(pci_physfn(qm->pdev));
++		return pf_qm->isolate_data.hw_err_isolate_hz;
++	} else {
++		return qm->isolate_data.hw_err_isolate_hz;
++	}
++}
++
+ static const struct uacce_ops uacce_qm_ops = {
+ 	.get_available_instances = hisi_qm_get_available_instances,
+ 	.get_queue = hisi_qm_uacce_get_queue,
+@@ -3417,8 +3532,22 @@ static const struct uacce_ops uacce_qm_ops = {
+ 	.mmap = hisi_qm_uacce_mmap,
+ 	.ioctl = hisi_qm_uacce_ioctl,
+ 	.is_q_updated = hisi_qm_is_q_updated,
++	.get_isolate_state = hisi_qm_get_isolate_state,
++	.isolate_strategy_write = hisi_qm_isolate_strategy_write,
++	.isolate_strategy_read = hisi_qm_isolate_strategy_read,
+ };
+ 
++static void qm_remove_uacce(struct hisi_qm *qm)
++{
++	struct uacce_device *uacce = qm->uacce;
++
++	if (qm->use_sva) {
++		qm_hw_err_destroy(qm);
++		uacce_remove(uacce);
++		qm->uacce = NULL;
++	}
++}
++
+ static int qm_alloc_uacce(struct hisi_qm *qm)
+ {
+ 	struct pci_dev *pdev = qm->pdev;
+@@ -3444,8 +3573,7 @@ static int qm_alloc_uacce(struct hisi_qm *qm)
+ 		qm->use_sva = true;
+ 	} else {
+ 		/* only consider sva case */
+-		uacce_remove(uacce);
+-		qm->uacce = NULL;
++		qm_remove_uacce(qm);
+ 		return -EINVAL;
+ 	}
+ 
+@@ -3477,6 +3605,8 @@ static int qm_alloc_uacce(struct hisi_qm *qm)
+ 	uacce->qf_pg_num[UACCE_QFRT_DUS]  = dus_page_nr;
+ 
+ 	qm->uacce = uacce;
++	INIT_LIST_HEAD(&qm->isolate_data.uacce_hw_errs);
++	mutex_init(&qm->isolate_data.isolate_lock);
+ 
+ 	return 0;
+ }
+@@ -5107,6 +5237,12 @@ static int qm_controller_reset_prepare(struct hisi_qm *qm)
+ 		return ret;
+ 	}
+ 
++	if (qm->use_sva) {
++		ret = qm_hw_err_isolate(qm);
++		if (ret)
++			pci_err(pdev, "failed to isolate hw err!\n");
++	}
++
+ 	ret = qm_wait_vf_prepare_finish(qm);
+ 	if (ret)
+ 		pci_err(pdev, "failed to stop by vfs in soft reset!\n");
+@@ -5434,19 +5570,25 @@ static int qm_controller_reset(struct hisi_qm *qm)
+ 	ret = qm_soft_reset(qm);
+ 	if (ret) {
+ 		pci_err(pdev, "Controller reset failed (%d)\n", ret);
+-		qm_reset_bit_clear(qm);
+-		return ret;
++		goto err_reset;
+ 	}
+ 
+ 	ret = qm_controller_reset_done(qm);
+-	if (ret) {
+-		qm_reset_bit_clear(qm);
+-		return ret;
+-	}
++	if (ret)
++		goto err_reset;
+ 
+ 	pci_info(pdev, "Controller reset complete\n");
+ 
+ 	return 0;
++
++err_reset:
++	pci_err(pdev, "Controller reset failed (%d)\n", ret);
++	qm_reset_bit_clear(qm);
++
++	/* if resetting fails, isolate the device */
++	if (qm->use_sva && !qm->uacce->is_vf)
++		qm->isolate_data.is_isolate = true;
++	return ret;
+ }
+ 
+ /**
+@@ -6244,10 +6386,7 @@ int hisi_qm_init(struct hisi_qm *qm)
+ err_free_qm_memory:
+ 	hisi_qm_memory_uninit(qm);
+ err_alloc_uacce:
+-	if (qm->use_sva) {
+-		uacce_remove(qm->uacce);
+-		qm->uacce = NULL;
+-	}
++	qm_remove_uacce(qm);
+ err_irq_register:
+ 	qm_irq_unregister(qm);
+ err_pci_init:
+diff --git a/include/linux/hisi_acc_qm.h b/include/linux/hisi_acc_qm.h
+index 116e8bd68c99..e7aa6a451ec9 100644
+--- a/include/linux/hisi_acc_qm.h
++++ b/include/linux/hisi_acc_qm.h
+@@ -271,6 +271,14 @@ struct hisi_qm_poll_data {
+ 	u16 *qp_finish_id;
+ };
+ 
++struct qm_err_isolate {
++	struct mutex isolate_lock;
++	/* user cfg freq which triggers isolation */
++	u32 hw_err_isolate_hz;
++	bool is_isolate;
++	struct list_head uacce_hw_errs;
++};
++
+ struct hisi_qm {
+ 	enum qm_hw_ver ver;
+ 	enum qm_fun_type fun_type;
+@@ -335,6 +343,7 @@ struct hisi_qm {
+ 	struct qm_shaper_factor *factor;
+ 	u32 mb_qos;
+ 	u32 type_rate;
++	struct qm_err_isolate isolate_data;
+ };
+ 
+ struct hisi_qp_status {
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.17.1
+
