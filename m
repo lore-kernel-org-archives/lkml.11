@@ -2,168 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DA69C001B5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 16:27:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA3E3C001B5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 16:28:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236095AbiIBQ1Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 12:27:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41512 "EHLO
+        id S236246AbiIBQ2N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 12:28:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236126AbiIBQ1J (ORCPT
+        with ESMTP id S235705AbiIBQ2K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 12:27:09 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20796C5797
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 09:27:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662136028; x=1693672028;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=tkjUjFkkvT7k4t7sI5+L6ksu8JyxeSjAw7yIlsaL1vk=;
-  b=R61eFyN6WydHTyHAc1UmCmFwR3L7VAm4mex3eeqb5dmkrtb/a9HHStyC
-   cUJ01TXnikOaDGY1+iYoC2Q4QJAs+Yqs1br1/Zc9kPwSf+DCLDZ2tb1u9
-   N9wqnbdFGkE5ooCLnyXfTmlegOrs5vZwQzDnFUsZsB/eijE+O9YgHRthk
-   soSsHiD/HDMgVJ2rs+av6MAyLh9R2vqE4ga7eEWk+U3K/5uX0ORlX1N6r
-   39C0i6RESybLYdO/EdiD3Fz4vv9Ff0/ssgEB8vH9/Z4Su6TYe4iblIywa
-   G8Y2OVRrSIX6SVdnfajWI6ib8bph9tkcd3IJy9fe4W7yDsfPBOFuDa5WB
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10458"; a="275759752"
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="275759752"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 09:27:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="564011873"
-Received: from lkp-server02.sh.intel.com (HELO 95dfd251caa2) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 02 Sep 2022 09:27:05 -0700
-Received: from kbuild by 95dfd251caa2 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oU9VZ-0000Il-0I;
-        Fri, 02 Sep 2022 16:27:05 +0000
-Date:   Sat, 3 Sep 2022 00:26:56 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Steev Klimaszewski <steev@kali.org>
-Subject: [steev:sc8280xp-next-20220901 68/110]
- include/asm-generic/div64.h:238:36: error: passing argument 1 of
- '__div64_32' from incompatible pointer type
-Message-ID: <202209030035.c58Nb9kG-lkp@intel.com>
+        Fri, 2 Sep 2022 12:28:10 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 252D2D83D7
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 09:28:06 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id o4so2506844pjp.4
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 09:28:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=wNIc8ao3Yt5CIdYavjbANH3T4X5dkUReDekaysXGDSo=;
+        b=QhH2Cm4lO6x1voUd1Dembk6oOd9z5VY5TRrL41iWRFmmpp8cdizG8V+OUu0UJk4T41
+         aBRwqxgqtgljwySCPWHW60HmpaQYfdGXRRn9TMfCgOZOrcLIYDmjjtbOslwy29nx+HB6
+         /3W7hEuGXsIJnNCIe2Zgw7XYDjOwT1N0H1P2AY4jkvJNMPcvwyHdV8NmdAEMgkPCaxFJ
+         2YOewm0AxPEacPvzTN5gOid4Eqo7tbyICfOHq715O4rt8jVMgZmaCTjZxCgWwYqIXacd
+         TqSNDW+DbtXv484tEbqq+CuR4VMQFe7e/Zcvn9YWgp63KbN3gk41EGKm2NVZOZjgLss2
+         Ej5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=wNIc8ao3Yt5CIdYavjbANH3T4X5dkUReDekaysXGDSo=;
+        b=BecuGsmUVoDuiRrBAaiYMlT0vNgda4K+3Vjnv3H2dxh+3B2rBG3xNqhtc2cyt4j9/r
+         mrBBjD5cEw/WnOCx+GQMHUyvBFxuvBIFYGnY1TUIvxkyJbdNl7pYPnmrM/UKNWXPAW5m
+         Ur/YX/MATUbiPk3U2VXo1hKoNpJmSb4d4ahbQoIvN/Yi5yaWRAYZt7bBdcWSESW1SnUR
+         Qd+kGpJdFZowKoxuxwh+zI5HOjGpj3gutDPq5fjqYv7+6HlvszfcuMo85UGXTVZCaqas
+         BdR6LfCHqBtMuMr4CR5VDmH/SGc94bPh7qFX6uu1Pzuknus4lH8m5MEJmxmoI4niiV9h
+         e1Lg==
+X-Gm-Message-State: ACgBeo0ALf8FQxJ4N0zJ+3RitskXM6JhdoNchulfdnd/UHpGZaeTs+Gf
+        1gxuaPbL49RlP/JV9/xiObFd2orrETRUmbFqEE6hfA==
+X-Google-Smtp-Source: AA6agR5I57h1hhqBtwWvwWZ0317cT8zJVXYKMBQ5KfKg0bf77TfLd7MEyW9C3p5B1iCemxF/BozAyIVMm1z0nMDn7Vk=
+X-Received: by 2002:a17:902:b410:b0:172:c9d1:7501 with SMTP id
+ x16-20020a170902b41000b00172c9d17501mr36380746plr.106.1662136085602; Fri, 02
+ Sep 2022 09:28:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220902152243.479592-1-jiebin.sun@intel.com>
+In-Reply-To: <20220902152243.479592-1-jiebin.sun@intel.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Fri, 2 Sep 2022 09:27:54 -0700
+Message-ID: <CALvZod44uUFnwfF4StC24t+d1s_XE10hkmSCgb04FjtTATo6xQ@mail.gmail.com>
+Subject: Re: [PATCH] ipc/msg.c: mitigate the lock contention with percpu counter
+To:     Jiebin Sun <jiebin.sun@intel.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, vasily.averin@linux.dev,
+        Dennis Zhou <dennis@kernel.org>, Tejun Heo <tj@kernel.org>,
+        Christoph Lameter <cl@linux.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Alexey Gladkov <legion@kernel.org>,
+        Manfred Spraul <manfred@colorfullife.com>,
+        alexander.mikhalitsyn@virtuozzo.com, Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Chen, Tim C" <tim.c.chen@intel.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Huang Ying <ying.huang@intel.com>, tianyou.li@intel.com,
+        wangyang.guo@intel.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/steev/linux sc8280xp-next-20220901
-head:   ca58e418320f76f9ad60cd2c9e8505ed7cf66b64
-commit: 25b84b3f3894a5ad8e04ad8d09659f7e61072178 [68/110] power: supply: Introduce Qualcomm PMIC GLINK power supply
-config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220903/202209030035.c58Nb9kG-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/steev/linux/commit/25b84b3f3894a5ad8e04ad8d09659f7e61072178
-        git remote add steev https://github.com/steev/linux
-        git fetch --no-tags steev sc8280xp-next-20220901
-        git checkout 25b84b3f3894a5ad8e04ad8d09659f7e61072178
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
+On Fri, Sep 2, 2022 at 12:04 AM Jiebin Sun <jiebin.sun@intel.com> wrote:
+>
+> The msg_bytes and msg_hdrs atomic counters are frequently
+> updated when IPC msg queue is in heavy use, causing heavy
+> cache bounce and overhead. Change them to percpu_counters
+> greatly improve the performance. Since there is one unique
+> ipc namespace, additional memory cost is minimal. Reading
+> of the count done in msgctl call, which is infrequent. So
+> the need to sum up the counts in each CPU is infrequent.
+>
+> Apply the patch and test the pts/stress-ng-1.4.0
+> -- system v message passing (160 threads).
+>
+> Score gain: 3.38x
+>
+> CPU: ICX 8380 x 2 sockets
+> Core number: 40 x 2 physical cores
+> Benchmark: pts/stress-ng-1.4.0
+> -- system v message passing (160 threads)
+>
+> Signed-off-by: Jiebin Sun <jiebin.sun@intel.com>
+[...]
+>
+> +void percpu_counter_add_local(struct percpu_counter *fbc, s64 amount)
+> +{
+> +       this_cpu_add(*fbc->counters, amount);
+> +}
+> +EXPORT_SYMBOL(percpu_counter_add_local);
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from ./arch/arc/include/generated/asm/div64.h:1,
-                    from include/linux/math.h:6,
-                    from include/linux/math64.h:6,
-                    from include/linux/time64.h:5,
-                    from include/linux/restart_block.h:10,
-                    from include/linux/thread_info.h:14,
-                    from include/asm-generic/preempt.h:5,
-                    from ./arch/arc/include/generated/asm/preempt.h:1,
-                    from include/linux/preempt.h:78,
-                    from include/linux/rcupdate.h:27,
-                    from include/linux/rculist.h:11,
-                    from include/linux/pid.h:5,
-                    from include/linux/sched.h:14,
-                    from include/linux/ratelimit.h:6,
-                    from include/linux/dev_printk.h:16,
-                    from include/linux/device.h:15,
-                    from include/linux/auxiliary_bus.h:11,
-                    from drivers/power/supply/qcom_battmgr.c:6:
-   drivers/power/supply/qcom_battmgr.c: In function 'qcom_battmgr_sm8350_callback':
-   include/asm-generic/div64.h:222:35: warning: comparison of distinct pointer types lacks a cast
-     222 |         (void)(((typeof((n)) *)0) == ((uint64_t *)0));  \
-         |                                   ^~
-   drivers/power/supply/qcom_battmgr.c:1126:25: note: in expansion of macro 'do_div'
-    1126 |                         do_div(battmgr->status.percent, 100);
-         |                         ^~~~~~
-   In file included from include/linux/dev_printk.h:14:
-   include/asm-generic/div64.h:234:32: warning: right shift count >= width of type [-Wshift-count-overflow]
-     234 |         } else if (likely(((n) >> 32) == 0)) {          \
-         |                                ^~
-   include/linux/compiler.h:77:45: note: in definition of macro 'likely'
-      77 | # define likely(x)      __builtin_expect(!!(x), 1)
-         |                                             ^
-   drivers/power/supply/qcom_battmgr.c:1126:25: note: in expansion of macro 'do_div'
-    1126 |                         do_div(battmgr->status.percent, 100);
-         |                         ^~~~~~
->> include/asm-generic/div64.h:238:36: error: passing argument 1 of '__div64_32' from incompatible pointer type [-Werror=incompatible-pointer-types]
-     238 |                 __rem = __div64_32(&(n), __base);       \
-         |                                    ^~~~
-         |                                    |
-         |                                    unsigned int *
-   drivers/power/supply/qcom_battmgr.c:1126:25: note: in expansion of macro 'do_div'
-    1126 |                         do_div(battmgr->status.percent, 100);
-         |                         ^~~~~~
-   include/asm-generic/div64.h:213:38: note: expected 'uint64_t *' {aka 'long long unsigned int *'} but argument is of type 'unsigned int *'
-     213 | extern uint32_t __div64_32(uint64_t *dividend, uint32_t divisor);
-         |                            ~~~~~~~~~~^~~~~~~~
-   cc1: some warnings being treated as errors
-
-
-vim +/__div64_32 +238 include/asm-generic/div64.h
-
-^1da177e4c3f41 Linus Torvalds     2005-04-16  215  
-^1da177e4c3f41 Linus Torvalds     2005-04-16  216  /* The unnecessary pointer compare is there
-^1da177e4c3f41 Linus Torvalds     2005-04-16  217   * to check for type safety (n must be 64bit)
-^1da177e4c3f41 Linus Torvalds     2005-04-16  218   */
-^1da177e4c3f41 Linus Torvalds     2005-04-16  219  # define do_div(n,base) ({				\
-^1da177e4c3f41 Linus Torvalds     2005-04-16  220  	uint32_t __base = (base);			\
-^1da177e4c3f41 Linus Torvalds     2005-04-16  221  	uint32_t __rem;					\
-^1da177e4c3f41 Linus Torvalds     2005-04-16  222  	(void)(((typeof((n)) *)0) == ((uint64_t *)0));	\
-911918aa7ef6f8 Nicolas Pitre      2015-11-02  223  	if (__builtin_constant_p(__base) &&		\
-911918aa7ef6f8 Nicolas Pitre      2015-11-02  224  	    is_power_of_2(__base)) {			\
-911918aa7ef6f8 Nicolas Pitre      2015-11-02  225  		__rem = (n) & (__base - 1);		\
-911918aa7ef6f8 Nicolas Pitre      2015-11-02  226  		(n) >>= ilog2(__base);			\
-c747ce4706190e Geert Uytterhoeven 2021-08-11  227  	} else if (__builtin_constant_p(__base) &&	\
-461a5e51060c93 Nicolas Pitre      2015-10-30  228  		   __base != 0) {			\
-461a5e51060c93 Nicolas Pitre      2015-10-30  229  		uint32_t __res_lo, __n_lo = (n);	\
-461a5e51060c93 Nicolas Pitre      2015-10-30  230  		(n) = __div64_const32(n, __base);	\
-461a5e51060c93 Nicolas Pitre      2015-10-30  231  		/* the remainder can be computed with 32-bit regs */ \
-461a5e51060c93 Nicolas Pitre      2015-10-30  232  		__res_lo = (n);				\
-461a5e51060c93 Nicolas Pitre      2015-10-30  233  		__rem = __n_lo - __res_lo * __base;	\
-911918aa7ef6f8 Nicolas Pitre      2015-11-02  234  	} else if (likely(((n) >> 32) == 0)) {		\
-^1da177e4c3f41 Linus Torvalds     2005-04-16  235  		__rem = (uint32_t)(n) % __base;		\
-^1da177e4c3f41 Linus Torvalds     2005-04-16  236  		(n) = (uint32_t)(n) / __base;		\
-c747ce4706190e Geert Uytterhoeven 2021-08-11  237  	} else {					\
-^1da177e4c3f41 Linus Torvalds     2005-04-16 @238  		__rem = __div64_32(&(n), __base);	\
-c747ce4706190e Geert Uytterhoeven 2021-08-11  239  	}						\
-^1da177e4c3f41 Linus Torvalds     2005-04-16  240  	__rem;						\
-^1da177e4c3f41 Linus Torvalds     2005-04-16  241   })
-^1da177e4c3f41 Linus Torvalds     2005-04-16  242  
-
-:::::: The code at line 238 was first introduced by commit
-:::::: 1da177e4c3f41524e886b7f1b8a0c1fc7321cac2 Linux-2.6.12-rc2
-
-:::::: TO: Linus Torvalds <torvalds@ppc970.osdl.org>
-:::::: CC: Linus Torvalds <torvalds@ppc970.osdl.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Why not percpu_counter_add()? This may drift the fbc->count more than
+batch*nr_cpus. I am assuming that is not the issue for you as you
+always do an expensive sum in the slow path. As Andrew asked, this
+should be a separate patch.
