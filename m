@@ -2,188 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEFF0ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 10:01:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 520D3C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 10:02:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235950AbiIBKBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 06:01:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51450 "EHLO
+        id S235472AbiIBKCZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 06:02:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235892AbiIBKBn (ORCPT
+        with ESMTP id S234162AbiIBKCM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 06:01:43 -0400
-Received: from mail-ed1-x549.google.com (mail-ed1-x549.google.com [IPv6:2a00:1450:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC68BC7B90
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 03:01:31 -0700 (PDT)
-Received: by mail-ed1-x549.google.com with SMTP id w19-20020a05640234d300b004482dd03feeso1113140edc.0
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 03:01:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date;
-        bh=hEVwDu/wAWLZN7jGwPsqk/ffr8euR5CaDbdaYqqibfI=;
-        b=JIu9bTSkfxJAOBju6JG5WF//6kXI89yIOgwe8A1yOGJPkUiUePf+tIeFCTjldoD1uQ
-         77NCP2scOW/X9cmfCHOPCA+7bUucJM8c81yrD0Eo+H88wVXnwNKj5WZkMXisuvKnvyWQ
-         gzQxBdIrNfjxOOI/FZVd6DVKDilzI8EMgx72Kh7ztiVfyQZcSxhbE5uJ1ffKDkZRw0vP
-         Xw2FG3gbMjtnyM77H4tkep25EwviPWPaV10YVM9rqUJqYNQhpLoOJpmTHXQuVbR2H05r
-         6IXNnyXSZJPn7beCjMhSBN4nhJozIkyuQKXTxas7Br1F1rEANP0SngBHMo2BhScFK25h
-         wJhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=hEVwDu/wAWLZN7jGwPsqk/ffr8euR5CaDbdaYqqibfI=;
-        b=QM3F1Qkpz1n+5sE5JY+pCqSXsIY6etZWOUonBNx0+Q0UBa9ke2sJgDAEnhVkGjn/iS
-         bb2KwtGslS5GqSXfcJuOru+GBxfPH9j/8D5bHPdtYoiOZyVytziJas/YT3foKS9Ei/Nq
-         XljXdVdpJaNIkulVSDQlwrLQrjz4fX67IbQDwRbS0AY7LicXfI5GJjPwcMLAOhgKscaN
-         wBsRnSeKynC4a1sfOyUENSuRI3FD/lolljhi0hLQB/0l3fd9aXQkLigRr0ACuq0qtR8z
-         5NvH5/kS/fYz8j8x8zMXPA8B9cL+khHPEe001S1t+LClGcIfMoSJXEc95+34Hs73HXAD
-         U9Rw==
-X-Gm-Message-State: ACgBeo1/zn5gWP8xFJXO6vTLfx0yvu9e8bWTQuHxeFZqXcTYMEsmy0WC
-        +sVYgs1RwmWP0DkGLlYWhI/eemvVDw==
-X-Google-Smtp-Source: AA6agR6sslFUFrNQQfMzncgbQ1gPeMlxNvonOFUGGsL3d7PWYJCy+X8IPGsB6luBSCI6I5BOx1eJiU61Dw==
-X-Received: from elver.muc.corp.google.com ([2a00:79e0:9c:201:8d53:41f1:1226:8e63])
- (user=elver job=sendgmr) by 2002:a05:6402:1909:b0:447:f0d3:a9b1 with SMTP id
- e9-20020a056402190900b00447f0d3a9b1mr27751544edz.100.1662112889512; Fri, 02
- Sep 2022 03:01:29 -0700 (PDT)
-Date:   Fri,  2 Sep 2022 12:00:57 +0200
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
-Message-ID: <20220902100057.404817-1-elver@google.com>
-Subject: [PATCH] perf: Allow restricted kernel breakpoints on user addresses
-From:   Marco Elver <elver@google.com>
-To:     elver@google.com, Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kasan-dev@googlegroups.com, Dmitry Vyukov <dvyukov@google.com>,
-        Jann Horn <jannh@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 2 Sep 2022 06:02:12 -0400
+Received: from dggsgout12.his.huawei.com (dggsgout12.his.huawei.com [45.249.212.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C5679A9AD;
+        Fri,  2 Sep 2022 03:02:09 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.143])
+        by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4MJth93Yyjz6S93D;
+        Fri,  2 Sep 2022 18:00:25 +0800 (CST)
+Received: from [10.174.176.73] (unknown [10.174.176.73])
+        by APP2 (Coremail) with SMTP id Syh0CgDHGXOe1BFjcdgPAQ--.13112S3;
+        Fri, 02 Sep 2022 18:02:07 +0800 (CST)
+Subject: Re: [PATCH -next 2/3] md/raid10: convert resync_lock to use seqlock
+To:     Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Yu Kuai <yukuai1@huaweicloud.com>, song@kernel.org
+Cc:     linux-raid@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yi.zhang@huawei.com, "yukuai (C)" <yukuai3@huawei.com>
+References: <20220829131502.165356-1-yukuai1@huaweicloud.com>
+ <20220829131502.165356-3-yukuai1@huaweicloud.com>
+ <3d8859bc-80d6-08b0-fd40-8874df4d3419@linux.dev>
+From:   Yu Kuai <yukuai1@huaweicloud.com>
+Message-ID: <1891ec2c-0ccc-681e-31de-fdd28eebce82@huaweicloud.com>
+Date:   Fri, 2 Sep 2022 18:02:05 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <3d8859bc-80d6-08b0-fd40-8874df4d3419@linux.dev>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: Syh0CgDHGXOe1BFjcdgPAQ--.13112S3
+X-Coremail-Antispam: 1UD129KBjvdXoWrKF48Xw47Gw13Wr4fKw1xXwb_yoWfuwc_K3
+        98Wr1DWFW5J3y7Kr1qgr42vr9rtr1jkr1jyan0yF15G3W5GFZ8Jr1rXa95Jr15Gr45Jrnx
+        uryfua43t3WUujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUb4kFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
+        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcVAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCYjI0SjxkI62AI1cAE67vI
+        Y487MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI
+        0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y
+        0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxV
+        WUJVW8JwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8
+        JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUoOJ5UU
+        UUU
+X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow the creation of restricted breakpoint perf events that also fire
-in the kernel (!exclude_kernel), if:
+Hi,
 
-  1. No sample information is requested; samples may contain IPs,
-     registers, or other information that may disclose kernel addresses.
+在 2022/09/02 17:42, Guoqing Jiang 写道:
+> Hi,
+> 
+> On 8/29/22 9:15 PM, Yu Kuai wrote:
+>> +static bool wait_barrier_nolock(struct r10conf *conf)
+>> +{
+>> +    unsigned int seq = raw_read_seqcount(&conf->resync_lock.seqcount);
+>> +
+>> +    if (seq & 1)
+>> +        return false;
+>> +
+>> +    if (READ_ONCE(conf->barrier))
+>> +        return false;
+>> +
+>> +    atomic_inc(&conf->nr_pending);
+>> +    if (!read_seqcount_retry(&conf->resync_lock.seqcount, seq))
+> 
+> I think 'seq' is usually get from read_seqcount_begin.
 
-  2. The breakpoint (viz. data watchpoint) is on a user address.
+read_seqcount_begin will loop untill "req & 1" failed, I'm afraid this
+will cause high cpu usage in come cases.
 
-The rules constrain the allowable perf events such that no sensitive
-kernel information can be disclosed.
+What I try to do here is just try once, and fall back to hold lock and
+wait if failed.
 
-Despite no explicit kernel information disclosure, the following
-questions may need answers:
+What do you think?
 
- 1. Is obtaining information that the kernel accessed a particular
-    user's known memory location revealing new information?
-    Given the kernel's user space ABI, there should be no "surprise
-    accesses" to user space memory in the first place.
-
- 2. Does causing breakpoints on user memory accesses by the kernel
-    potentially impact timing in a sensitive way?
-    Since hardware breakpoints trigger regardless of the state of
-    perf_event_attr::exclude_kernel, but are filtered in the perf
-    subsystem, this possibility already exists independent of the
-    proposed change.
-
-Signed-off-by: Marco Elver <elver@google.com>
----
-
-Changelog
-~~~~~~~~~
-
-v1:
-* Rebase.
-
-RFC: https://lkml.kernel.org/r/20220601093502.364142-1-elver@google.com
----
- include/linux/perf_event.h |  8 +-------
- kernel/events/core.c       | 38 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 39 insertions(+), 7 deletions(-)
-
-diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
-index a784e055002e..907b0e3f1318 100644
---- a/include/linux/perf_event.h
-+++ b/include/linux/perf_event.h
-@@ -1367,13 +1367,7 @@ static inline int perf_is_paranoid(void)
- 	return sysctl_perf_event_paranoid > -1;
- }
- 
--static inline int perf_allow_kernel(struct perf_event_attr *attr)
--{
--	if (sysctl_perf_event_paranoid > 1 && !perfmon_capable())
--		return -EACCES;
--
--	return security_perf_event_open(attr, PERF_SECURITY_KERNEL);
--}
-+extern int perf_allow_kernel(struct perf_event_attr *attr);
- 
- static inline int perf_allow_cpu(struct perf_event_attr *attr)
- {
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 2621fd24ad26..75f5705b6892 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -3176,6 +3176,12 @@ static int perf_event_modify_attr(struct perf_event *event,
- 		return -EOPNOTSUPP;
- 	}
- 
-+	if (!event->attr.exclude_kernel) {
-+		err = perf_allow_kernel(attr);
-+		if (err)
-+			return err;
-+	}
-+
- 	WARN_ON_ONCE(event->ctx->parent_ctx);
- 
- 	mutex_lock(&event->child_mutex);
-@@ -12037,6 +12043,38 @@ perf_check_permission(struct perf_event_attr *attr, struct task_struct *task)
- 	return is_capable || ptrace_may_access(task, ptrace_mode);
- }
- 
-+/*
-+ * Check if unprivileged users are allowed to set up breakpoints on user
-+ * addresses that also count when the kernel accesses them.
-+ */
-+static bool perf_allow_kernel_breakpoint(struct perf_event_attr *attr)
-+{
-+	if (attr->type != PERF_TYPE_BREAKPOINT)
-+		return false;
-+
-+	/*
-+	 * The sample may contain IPs, registers, or other information that may
-+	 * disclose kernel addresses or timing information. Disallow any kind of
-+	 * additional sample information.
-+	 */
-+	if (attr->sample_type)
-+		return false;
-+
-+	/*
-+	 * Only allow kernel breakpoints on user addresses.
-+	 */
-+	return access_ok((void __user *)(unsigned long)attr->bp_addr, attr->bp_len);
-+}
-+
-+int perf_allow_kernel(struct perf_event_attr *attr)
-+{
-+	if (sysctl_perf_event_paranoid > 1 && !perfmon_capable() &&
-+	    !perf_allow_kernel_breakpoint(attr))
-+		return -EACCES;
-+
-+	return security_perf_event_open(attr, PERF_SECURITY_KERNEL);
-+}
-+
- /**
-  * sys_perf_event_open - open a performance event, associate it to a task/cpu
-  *
--- 
-2.37.2.789.g6183377224-goog
+Thanks,
+Kuai
+> 
+>> +        return true;
+>> +
+>> +    atomic_dec(&conf->nr_pending);
+>> +    return false;
+>> +
+> 
+> Thanks,
+> Guoqing
+> .
+> 
 
