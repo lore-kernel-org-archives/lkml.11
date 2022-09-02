@@ -2,117 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 254CDECAAA1
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 06:15:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D307AECAAA1
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 06:16:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235457AbiIBGPt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 02:15:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59476 "EHLO
+        id S235467AbiIBGQY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 02:16:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233121AbiIBGPq (ORCPT
+        with ESMTP id S235465AbiIBGQV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 02:15:46 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0875B7B1FC;
-        Thu,  1 Sep 2022 23:15:46 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id u9-20020a17090a1f0900b001fde6477464so4553392pja.4;
-        Thu, 01 Sep 2022 23:15:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=uI8Pg9oik5wbpVQ38T64kzAVrJGjyN0eDmTJ2VrDPKY=;
-        b=fNTPySEIj7KPHE8EqHb7fXpGGv3hZywUzfShG7i8VtqGxdwFl91S3gAwihJ3wKmYmv
-         fePtXkjMkl6cwwfO6/CRfKl1tJ80PAuOhcwpb68fGDnbA8kfwBcXGCv/dXpRLGckVx5R
-         hyc6aN049B2ZDpiGFn+wHoAFZSPaNRyCV4QtOI+du1TAy9yusHnCGOWjfUSmnJ1nDYob
-         aGPpJy1f38QXODEpYrK0jw7RrzJACxZ2Z0DiodSBQbUpqmkWmyOGMN2m6nr5PT4iMFXK
-         F+PyJ3XmLcjQQc3McB9rfb33aek6HzLYapwHgE6uqVQ1cnx6n0KmVecxjaTMyC3QsRoN
-         DbNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=uI8Pg9oik5wbpVQ38T64kzAVrJGjyN0eDmTJ2VrDPKY=;
-        b=Hpl1T4m5femT916PIDmrMgY/U3wrcV3iqIS70Q3hGtgsCAT1sG7OXoq26r2F3v2qKt
-         CPXhIbW6cGjpVbgkjQGi55o8PZREIlGtG2poebI7F+SZXiPbrq8ATL2M1GComhd2XdTN
-         G4sCvcj2TfKHIPOSizCUVcFIkc0xGX5ch+Ir6Fq2m0IRfA4DW3NAfbKShAOddKpWGiUZ
-         KbypQ4SKy/hWQ9Hg4hR6lMXvMhKKbKu/rq3t3G0dOaEYUGNArU+1RT798mfoH8LHs60F
-         modlXvdHOYNHopOUs61UBPsa4SwUWOOy0ElOEnaEhv76lLovpSCH+ZKsJQ4Ug39DG5Ux
-         uTFA==
-X-Gm-Message-State: ACgBeo3f2+z7pRGjPPeUQoy+236QgLSjaAekxuPAdVKynrtu+aju7bUQ
-        m6tWqs1K37L/CQImMaU5UHIAqQxNrDgwW9UnbrQ=
-X-Google-Smtp-Source: AA6agR4aNy6J7kNSnprb9Q1xqC9EzkQCAYpnyQ0QXI5eye0pGuYALcheSxUW1hji1p74i5LzI0u3pgrgAc3dLum3kyY=
-X-Received: by 2002:a17:90b:350f:b0:1fb:479b:8e51 with SMTP id
- ls15-20020a17090b350f00b001fb479b8e51mr3185156pjb.46.1662099345453; Thu, 01
- Sep 2022 23:15:45 -0700 (PDT)
+        Fri, 2 Sep 2022 02:16:21 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40A888E0CE;
+        Thu,  1 Sep 2022 23:16:20 -0700 (PDT)
+Date:   Fri, 02 Sep 2022 06:16:16 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1662099378;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Yh5nbofxKXDkqZCw/xR+TdYjF6z3LSisPjX1xlymmF0=;
+        b=yr/ratrtsf8EDswM9qS0PGolYp4Atn2sNTcTcpCobWNqtBUE74pQ4skmoBvjD/YYCrlARL
+        ej7QSgq6waWLrStYBCxpSH4nXSbZj1phr0tXItN+uu5uCMCk6sXLRgUA+iP120WiFa4Nzp
+        XF++HVx74UI5wQ5NUdruzJBxcd8Nv1/ayNoAejxPaVpZsZgj/fAT9Sd+WPThU5xoLX/yRp
+        Se4HEy0nokcjVFgucCGcMmgrpSExZcDlD+ZEBGUl+U3Ej9kfv9mx4XAzb8VRe7mDMlhcHb
+        IyqeZ6oUnZNVgTPhMNO0YwCDaoz1MdXT1aujOpB9CY7w18vgDrM1GCKbYjgNjA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1662099378;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Yh5nbofxKXDkqZCw/xR+TdYjF6z3LSisPjX1xlymmF0=;
+        b=hi5+w0JHOCaR643UN4rj1mc44DFnesXEUZ1Ugwl1ibW45EHcEcpkkfZVO1ZrRyTROdW/Ey
+        ePKUBfqdg0PDbRCw==
+From:   "tip-bot2 for Ashok Raj" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/microcode] x86/microcode: Print previous version of
+ microcode after reload
+Cc:     Ashok Raj <ashok.raj@intel.com>, Borislav Petkov <bp@suse.de>,
+        Tony Luck <tony.luck@intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220829181030.722891-1-ashok.raj@intel.com>
+References: <20220829181030.722891-1-ashok.raj@intel.com>
 MIME-Version: 1.0
-References: <20220901202645.1463552-1-irogers@google.com>
-In-Reply-To: <20220901202645.1463552-1-irogers@google.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Fri, 2 Sep 2022 08:15:34 +0200
-Message-ID: <CAJ8uoz0RXAFPfu1v_1UuV-iUZ846ZbHNNB=oCQ=sV=pbLSzvxw@mail.gmail.com>
-Subject: Re: [PATCH v1] selftests/xsk: Avoid use-after-free on ctx
-To:     Ian Rogers <irogers@google.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <166209937647.401.14402365682473849794.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 1, 2022 at 10:56 PM Ian Rogers <irogers@google.com> wrote:
->
-> The put lowers the reference count to 0 and frees ctx, reading it
-> afterwards is invalid. Move the put after the uses and determine the
-> last use by the reference count being 1.
+The following commit has been merged into the x86/microcode branch of tip:
 
-Thanks for spotting and fixing this Ian.
+Commit-ID:     7fce8d6eccbc31a561d07c79f359ad09f0424347
+Gitweb:        https://git.kernel.org/tip/7fce8d6eccbc31a561d07c79f359ad09f0424347
+Author:        Ashok Raj <ashok.raj@intel.com>
+AuthorDate:    Mon, 29 Aug 2022 18:10:30 
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Fri, 02 Sep 2022 08:01:58 +02:00
 
-Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+x86/microcode: Print previous version of microcode after reload
 
-> Fixes: 39e940d4abfa ("selftests/xsk: Destroy BPF resources only when ctx refcount drops to 0")
-> Signed-off-by: Ian Rogers <irogers@google.com>
-> ---
->  tools/testing/selftests/bpf/xsk.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/xsk.c b/tools/testing/selftests/bpf/xsk.c
-> index f2721a4ae7c5..0b3ff49c740d 100644
-> --- a/tools/testing/selftests/bpf/xsk.c
-> +++ b/tools/testing/selftests/bpf/xsk.c
-> @@ -1237,15 +1237,15 @@ void xsk_socket__delete(struct xsk_socket *xsk)
->         ctx = xsk->ctx;
->         umem = ctx->umem;
->
-> -       xsk_put_ctx(ctx, true);
-> -
-> -       if (!ctx->refcount) {
-> +       if (ctx->refcount == 1) {
->                 xsk_delete_bpf_maps(xsk);
->                 close(ctx->prog_fd);
->                 if (ctx->has_bpf_link)
->                         close(ctx->link_fd);
->         }
->
-> +       xsk_put_ctx(ctx, true);
-> +
->         err = xsk_get_mmap_offsets(xsk->fd, &off);
->         if (!err) {
->                 if (xsk->rx) {
-> --
-> 2.37.2.789.g6183377224-goog
->
+Print both old and new versions of microcode after a reload is complete
+because knowing the previous microcode version is sometimes important
+from a debugging perspective.
+
+  [ bp: Massage commit message. ]
+
+Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Acked-by: Tony Luck <tony.luck@intel.com>
+Link: https://lore.kernel.org/r/20220829181030.722891-1-ashok.raj@intel.com
+---
+ arch/x86/kernel/cpu/microcode/core.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/microcode/core.c b/arch/x86/kernel/cpu/microcode/core.c
+index ad57e0e..6a41cee 100644
+--- a/arch/x86/kernel/cpu/microcode/core.c
++++ b/arch/x86/kernel/cpu/microcode/core.c
+@@ -491,7 +491,7 @@ wait_for_siblings:
+  */
+ static int microcode_reload_late(void)
+ {
+-	int ret;
++	int old = boot_cpu_data.microcode, ret;
+ 
+ 	pr_err("Attempting late microcode loading - it is dangerous and taints the kernel.\n");
+ 	pr_err("You should switch to early loading, if possible.\n");
+@@ -503,7 +503,8 @@ static int microcode_reload_late(void)
+ 	if (ret == 0)
+ 		microcode_check();
+ 
+-	pr_info("Reload completed, microcode revision: 0x%x\n", boot_cpu_data.microcode);
++	pr_info("Reload completed, microcode revision: 0x%x -> 0x%x\n",
++		old, boot_cpu_data.microcode);
+ 
+ 	return ret;
+ }
