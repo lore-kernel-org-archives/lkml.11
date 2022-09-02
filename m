@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8E63ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:40:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75CE1C54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:40:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237032AbiIBMkC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:40:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34094 "EHLO
+        id S237066AbiIBMkN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:40:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236947AbiIBMiR (ORCPT
+        with ESMTP id S236960AbiIBMiS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:38:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A52D65E6;
-        Fri,  2 Sep 2022 05:30:00 -0700 (PDT)
+        Fri, 2 Sep 2022 08:38:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77FE626575;
+        Fri,  2 Sep 2022 05:30:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 111B462160;
-        Fri,  2 Sep 2022 12:28:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19934C433C1;
-        Fri,  2 Sep 2022 12:28:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 78498B82A90;
+        Fri,  2 Sep 2022 12:23:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D89F5C433B5;
+        Fri,  2 Sep 2022 12:23:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121723;
-        bh=j/8XAWMQ7PlP+5WrROnEfX7lfhQhIwUDBWAojUg3vvM=;
+        s=korg; t=1662121427;
+        bh=vfB4k2SeQ29GA069iFUDeC8iBhO7QGdaUDS12pAlEZU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bce+ex7L1Isuslx8Z5x0OKXBF8m02AmNP+lbK0/sIMcnvNLZX+f/oVfO9FadtgbEm
-         Bkt+/tdt8ADZc/1+EEgIdCExc3MSiRSNtWJJnhg51a2XGOC4PZqB2tkKDk1cb19/Lo
-         G0mz4nxDjtPvMib5chsCUMoBXgemLyydD/3Lmo8A=
+        b=QUhJoUtBt5mV07XC1rkfGNLAikPxiMbv9bpcucfl5rTcQLFpxLWWgS3qAD67wMUMy
+         oCbkAm8FvkL4U6q/H8k4Vrc/Rm2f98fQKkoJUKdszqoNeW+aNozOy5SR/kD1w8J8Ee
+         peZ3OrdAWNs4Yrt9mrPX0HfhAxLGBGrOptk+XoZU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeremy Linton <Jeremy.Linton@arm.com>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Riwen Lu <luriwen@kylinos.cn>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.4 44/77] ACPI: processor: Remove freq Qos request for all CPUs
-Date:   Fri,  2 Sep 2022 14:18:53 +0200
-Message-Id: <20220902121405.116990661@linuxfoundation.org>
+        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 39/42] s390/hypfs: avoid error message under KVM
+Date:   Fri,  2 Sep 2022 14:19:03 +0200
+Message-Id: <20220902121400.114616456@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
-References: <20220902121403.569927325@linuxfoundation.org>
+In-Reply-To: <20220902121358.773776406@linuxfoundation.org>
+References: <20220902121358.773776406@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,38 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Riwen Lu <luriwen@kylinos.cn>
+From: Juergen Gross <jgross@suse.com>
 
-commit 36527b9d882362567ceb4eea8666813280f30e6f upstream.
+[ Upstream commit 7b6670b03641ac308aaa6fa2e6f964ac993b5ea3 ]
 
-The freq Qos request would be removed repeatedly if the cpufreq policy
-relates to more than one CPU. Then, it would cause the "called for unknown
-object" warning.
+When booting under KVM the following error messages are issued:
 
-Remove the freq Qos request for each CPU relates to the cpufreq policy,
-instead of removing repeatedly for the last CPU of it.
+hypfs.7f5705: The hardware system does not support hypfs
+hypfs.7a79f0: Initialization of hypfs failed with rc=-61
 
-Fixes: a1bb46c36ce3 ("ACPI: processor: Add QoS requests for all CPUs")
-Reported-by: Jeremy Linton <Jeremy.Linton@arm.com>
-Tested-by: Jeremy Linton <jeremy.linton@arm.com>
-Signed-off-by: Riwen Lu <luriwen@kylinos.cn>
-Cc: 5.4+ <stable@vger.kernel.org> # 5.4+
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Demote the severity of first message from "error" to "info" and issue
+the second message only in other error cases.
+
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Acked-by: Heiko Carstens <hca@linux.ibm.com>
+Acked-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220620094534.18967-1-jgross@suse.com
+[arch/s390/hypfs/hypfs_diag.c changed description]
+Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/processor_thermal.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/s390/hypfs/hypfs_diag.c | 2 +-
+ arch/s390/hypfs/inode.c      | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/acpi/processor_thermal.c
-+++ b/drivers/acpi/processor_thermal.c
-@@ -150,7 +150,7 @@ void acpi_thermal_cpufreq_exit(struct cp
- 	unsigned int cpu;
+diff --git a/arch/s390/hypfs/hypfs_diag.c b/arch/s390/hypfs/hypfs_diag.c
+index be8cc53204b50..46338c65c75bf 100644
+--- a/arch/s390/hypfs/hypfs_diag.c
++++ b/arch/s390/hypfs/hypfs_diag.c
+@@ -437,7 +437,7 @@ __init int hypfs_diag_init(void)
+ 	int rc;
  
- 	for_each_cpu(cpu, policy->related_cpus) {
--		struct acpi_processor *pr = per_cpu(processors, policy->cpu);
-+		struct acpi_processor *pr = per_cpu(processors, cpu);
- 
- 		if (pr)
- 			freq_qos_remove_request(&pr->thermal_req);
+ 	if (diag204_probe()) {
+-		pr_err("The hardware system does not support hypfs\n");
++		pr_info("The hardware system does not support hypfs\n");
+ 		return -ENODATA;
+ 	}
+ 	if (diag204_info_type == DIAG204_INFO_EXT) {
+diff --git a/arch/s390/hypfs/inode.c b/arch/s390/hypfs/inode.c
+index 32f5b3fb069f3..2a34c075fef66 100644
+--- a/arch/s390/hypfs/inode.c
++++ b/arch/s390/hypfs/inode.c
+@@ -494,9 +494,9 @@ static int __init hypfs_init(void)
+ 	hypfs_vm_exit();
+ fail_hypfs_diag_exit:
+ 	hypfs_diag_exit();
++	pr_err("Initialization of hypfs failed with rc=%i\n", rc);
+ fail_dbfs_exit:
+ 	hypfs_dbfs_exit();
+-	pr_err("Initialization of hypfs failed with rc=%i\n", rc);
+ 	return rc;
+ }
+ device_initcall(hypfs_init)
+-- 
+2.35.1
+
 
 
