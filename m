@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FB41ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:52:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4EB2C54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:52:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238143AbiIBNwG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:52:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38736 "EHLO
+        id S233539AbiIBNw0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:52:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238108AbiIBNvd (ORCPT
+        with ESMTP id S236787AbiIBNvz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:51:33 -0400
+        Fri, 2 Sep 2022 09:51:55 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14B6110F96F;
-        Fri,  2 Sep 2022 06:26:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA6BAC12E1;
+        Fri,  2 Sep 2022 06:26:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 28C5AB82A96;
-        Fri,  2 Sep 2022 12:31:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C981C433D6;
-        Fri,  2 Sep 2022 12:31:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A55F9B829B6;
+        Fri,  2 Sep 2022 12:29:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDCC9C433D6;
+        Fri,  2 Sep 2022 12:29:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121867;
-        bh=oBwYNBQG2bD4bY5vsoYIcoQiEwSXUi5hobMsxKpEJ7c=;
+        s=korg; t=1662121776;
+        bh=gdQ/KPd8CRekFKLKlOAVuXZbutNkpThhu5T6EwGvljg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fDVl8yEiKy3nK84/M1iqe9kN/DrSSCuK/bLJ3p8rBUfoHVm4YdJoUAiuGmls+yqvE
-         R7hL3F5lQ7icQ72bkBoywGVXXyiaO7qCo2X0oo6gluSp4R9TrMbR0grcvS0UQMDQHh
-         7PaK2gPEL6Z1offDxePHTQIpvPW1LUnYb5HWigFA=
+        b=BeDybXvKbhG4/IKgYCw0SxZp925A7hDJOvLGaR1tDIsukLZNkK7PVeAaWpv3424cv
+         Nb3nfI0ZLPhZoXp1dlLu/MfTv/Xcq6fFf/l8Iyaya3AqjMJ1nhnrQP+lFgGfBWyTWh
+         hgKcw2J+22BSynalx88FhpzeefW2HixjKyfPgyIw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.15 13/73] io_uring: refactor poll update
-Date:   Fri,  2 Sep 2022 14:18:37 +0200
-Message-Id: <20220902121404.867208559@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 30/77] net: Fix a data-race around sysctl_net_busy_poll.
+Date:   Fri,  2 Sep 2022 14:18:39 +0200
+Message-Id: <20220902121404.640131055@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
-References: <20220902121404.435662285@linuxfoundation.org>
+In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
+References: <20220902121403.569927325@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,112 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Begunkov <asml.silence@gmail.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ upstream commmit 2bbb146d96f4b45e17d6aeede300796bc1a96d68 ]
+[ Upstream commit c42b7cddea47503411bfb5f2f93a4154aaffa2d9 ]
 
-Clean up io_poll_update() and unify cancellation paths for remove and
-update.
+While reading sysctl_net_busy_poll, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-Link: https://lore.kernel.org/r/5937138b6265a1285220e2fab1b28132c1d73ce3.1639605189.git.asml.silence@gmail.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-[pavel: backport]
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 060212928670 ("net: add low latency socket poll")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c |   62 ++++++++++++++++++++++++----------------------------------
- 1 file changed, 26 insertions(+), 36 deletions(-)
+ include/net/busy_poll.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -5931,61 +5931,51 @@ static int io_poll_update(struct io_kioc
- 	struct io_ring_ctx *ctx = req->ctx;
- 	struct io_kiocb *preq;
- 	bool completing;
--	int ret;
-+	int ret2, ret = 0;
+diff --git a/include/net/busy_poll.h b/include/net/busy_poll.h
+index 9899b9af7f22f..16258c0c7319e 100644
+--- a/include/net/busy_poll.h
++++ b/include/net/busy_poll.h
+@@ -31,7 +31,7 @@ extern unsigned int sysctl_net_busy_poll __read_mostly;
  
- 	spin_lock(&ctx->completion_lock);
- 	preq = io_poll_find(ctx, req->poll_update.old_user_data, true);
- 	if (!preq) {
- 		ret = -ENOENT;
--		goto err;
--	}
--
--	if (!req->poll_update.update_events && !req->poll_update.update_user_data) {
--		completing = true;
--		ret = io_poll_remove_one(preq) ? 0 : -EALREADY;
--		goto err;
-+fail:
-+		spin_unlock(&ctx->completion_lock);
-+		goto out;
- 	}
--
-+	io_poll_remove_double(preq);
- 	/*
- 	 * Don't allow racy completion with singleshot, as we cannot safely
- 	 * update those. For multishot, if we're racing with completion, just
- 	 * let completion re-add it.
- 	 */
--	io_poll_remove_double(preq);
- 	completing = !__io_poll_remove_one(preq, &preq->poll, false);
- 	if (completing && (preq->poll.events & EPOLLONESHOT)) {
- 		ret = -EALREADY;
--		goto err;
--	}
--	/* we now have a detached poll request. reissue. */
--	ret = 0;
--err:
--	if (ret < 0) {
--		spin_unlock(&ctx->completion_lock);
--		req_set_fail(req);
--		io_req_complete(req, ret);
--		return 0;
--	}
--	/* only mask one event flags, keep behavior flags */
--	if (req->poll_update.update_events) {
--		preq->poll.events &= ~0xffff;
--		preq->poll.events |= req->poll_update.events & 0xffff;
--		preq->poll.events |= IO_POLL_UNMASK;
-+		goto fail;
- 	}
--	if (req->poll_update.update_user_data)
--		preq->user_data = req->poll_update.new_user_data;
- 	spin_unlock(&ctx->completion_lock);
- 
-+	if (req->poll_update.update_events || req->poll_update.update_user_data) {
-+		/* only mask one event flags, keep behavior flags */
-+		if (req->poll_update.update_events) {
-+			preq->poll.events &= ~0xffff;
-+			preq->poll.events |= req->poll_update.events & 0xffff;
-+			preq->poll.events |= IO_POLL_UNMASK;
-+		}
-+		if (req->poll_update.update_user_data)
-+			preq->user_data = req->poll_update.new_user_data;
-+
-+		ret2 = io_poll_add(preq, issue_flags);
-+		/* successfully updated, don't complete poll request */
-+		if (!ret2)
-+			goto out;
-+	}
-+	req_set_fail(preq);
-+	io_req_complete(preq, -ECANCELED);
-+out:
-+	if (ret < 0)
-+		req_set_fail(req);
- 	/* complete update request, we're done with it */
- 	io_req_complete(req, ret);
--
--	if (!completing) {
--		ret = io_poll_add(preq, issue_flags);
--		if (ret < 0) {
--			req_set_fail(preq);
--			io_req_complete(preq, ret);
--		}
--	}
- 	return 0;
+ static inline bool net_busy_loop_on(void)
+ {
+-	return sysctl_net_busy_poll;
++	return READ_ONCE(sysctl_net_busy_poll);
  }
  
+ static inline bool sk_can_busy_loop(const struct sock *sk)
+-- 
+2.35.1
+
 
 
