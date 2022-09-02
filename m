@@ -2,232 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3849ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:47:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58590ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:49:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236895AbiIBNrj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:47:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32990 "EHLO
+        id S237404AbiIBNtF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:49:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237366AbiIBNrN (ORCPT
+        with ESMTP id S237926AbiIBNsX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:47:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9DE11314DA;
-        Fri,  2 Sep 2022 06:22:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 42ECB621DC;
-        Fri,  2 Sep 2022 12:33:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FBE4C4314B;
-        Fri,  2 Sep 2022 12:32:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121980;
-        bh=OPFqOeplPxjLpT7FNeHNIjL3xnGd6cc0XPttc6ZELYQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0ErwuQNIGFoUwh1+WuaOnApFtRsmikA58wFvyEFF3uy1WRoE9VjKO4UoLYCZFkNPB
-         K6Npc70rn38hAgnLbjMq1GcRtO5oRdiIHHUyg7V0pxtjWsR4IS8XtWy6b59ZXfhtMc
-         ATFCoQgysLg33+KXQk9V1upOobUnIkJQbS+h1T0k=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 48/73] btrfs: add and use helper for unlinking inode during log replay
-Date:   Fri,  2 Sep 2022 14:19:12 +0200
-Message-Id: <20220902121406.040599652@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
-References: <20220902121404.435662285@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Fri, 2 Sep 2022 09:48:23 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC2F6A457
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:23:32 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id b16so2309819wru.7
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 06:23:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=melexis.com; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=ne1CzWe4cfOGjFgnqh9c4T9gpw+pVEy0R/dHCBbC3j4=;
+        b=V1FZtHJ8d4R2pTVPWo+Qw3P3sv4CAtBdsbCusbBP+ewYWZygqpwDp2k8T0sNyreoPc
+         7+V1LPHimGgtaQVbkeFo3jwtBBylWxnXlka5WD1VDMI2aUJS0WEJ4A4AmS5Zsk6E854m
+         tC+NEC87TEW7qiZde4EG1EEPKzpUbVeXIpMUzNffzmqOKc9jpkRaGOgxMBXucJNvTII7
+         6cQHltIHmT56UTbOXwlbwO+uxIoGQpTrYaBs5DVbRrI/DYy3aO3pNnXEm58cDv5O4jwM
+         bQbtBCu7TOlW4W4J36BeQwkozY3V6iiyoheQSG2Ry5Uu5OKqNwoq1dpR2hdAQf+OW+mB
+         vmsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=ne1CzWe4cfOGjFgnqh9c4T9gpw+pVEy0R/dHCBbC3j4=;
+        b=I/ON6ww4iU3a8w4QtHZGJUIGzE2eRyCwwz3Awn7+qBucNZszjVpSTZraPS/5w7rpks
+         4b1VhCRjBmYBdNrMLd1VtbCbUN03Q7FuZKnAcTvTRHaTipMMVqZ3T9hlMuByL76Oi1rZ
+         IfKgS/S37LBF+siGFqw+2eVDAZHgXzQuLYEwFGkEG8k/Sj9o0ZUy7ZSVx5Pzj6WErFiy
+         NNZmfyoTP+Oj5QyHJwIOhfF5bEIKfmNdTDw8KKcrGBbUa+bhN1Ghl6lNbv7LuqMXc44j
+         zoWqCgQBXkm/pPdmHAssPZQyLH/3QoiGCEVD2iRKl7C7lYAHP+pCuVG1XF3DJymfMzNc
+         pSSQ==
+X-Gm-Message-State: ACgBeo1BJDU/1UrBt0bls3YMYH+Tx6v3Mfk9rzb3fTlmfXCPIFgj0VF6
+        wmqrm+5TbOfJXyfWZx0kN9QM/BpPUUgfRg==
+X-Google-Smtp-Source: AA6agR65d7VTPa+9d+skBZR8Hb8elzsXjsl6R4k9oV8XaPUR1OtZ1KxL3EqdxP9GfE5CZOns2JNk0w==
+X-Received: by 2002:a17:907:78d:b0:740:33e1:998 with SMTP id xd13-20020a170907078d00b0074033e10998mr23610530ejb.162.1662124413277;
+        Fri, 02 Sep 2022 06:13:33 -0700 (PDT)
+Received: from cmo-ThinkPad-T495.telenet.be ([194.150.35.21])
+        by smtp.gmail.com with ESMTPSA id cy16-20020a0564021c9000b00446ad774ea0sm1454311edb.7.2022.09.02.06.13.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 06:13:31 -0700 (PDT)
+From:   cmo@melexis.com
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Crt Mori <cmo@melexis.com>
+Subject: [PATCH 2/3] iio: temperature: mlx90632 Read sampling frequency
+Date:   Fri,  2 Sep 2022 15:13:28 +0200
+Message-Id: <20220902131328.3316436-1-cmo@melexis.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Crt Mori <cmo@melexis.com>
 
-[ Upstream commit 313ab75399d0c7d0ebc718c545572c1b4d8d22ef ]
+Allow user to read sensor sampling frequency to better plan the
+application measurement requests.
 
-During log replay there is this pattern of running delayed items after
-every inode unlink. To avoid repeating this several times, move the
-logic into an helper function and use it instead of calling
-btrfs_unlink_inode() followed by btrfs_run_delayed_items().
-
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Crt Mori <cmo@melexis.com>
 ---
- fs/btrfs/tree-log.c | 77 +++++++++++++++++----------------------------
- 1 file changed, 29 insertions(+), 48 deletions(-)
+ drivers/iio/temperature/mlx90632.c | 44 ++++++++++++++++++++++++++++++
+ 1 file changed, 44 insertions(+)
 
-diff --git a/fs/btrfs/tree-log.c b/fs/btrfs/tree-log.c
-index 4ab1bbc344760..c56a89d224bbb 100644
---- a/fs/btrfs/tree-log.c
-+++ b/fs/btrfs/tree-log.c
-@@ -884,6 +884,26 @@ static noinline int replay_one_extent(struct btrfs_trans_handle *trans,
+diff --git a/drivers/iio/temperature/mlx90632.c b/drivers/iio/temperature/mlx90632.c
+index 45a1ab51fd0c..63b19ac1484c 100644
+--- a/drivers/iio/temperature/mlx90632.c
++++ b/drivers/iio/temperature/mlx90632.c
+@@ -80,6 +80,9 @@
+ #define MLX90632_PWR_STATUS_CONTINUOUS MLX90632_PWR_STATUS(3) /* continuous*/
+ 
+ #define MLX90632_EE_RR(ee_val) (ee_val & GENMASK(10, 8)) /* Only Refresh Rate bits*/
++#define MLX90632_REFRESH_RATE(ee_val) (MLX90632_EE_RR(ee_val) >> 8)
++					/* Extract Refresh Rate from ee register */
++#define MLX90632_REFRESH_RATE_STATUS(refresh_rate) (refresh_rate << 8)
+ 
+ /* Measurement types */
+ #define MLX90632_MTYP_MEDICAL 0
+@@ -915,6 +918,24 @@ static int mlx90632_calc_ambient_dsp105(struct mlx90632_data *data, int *val)
  	return ret;
  }
  
-+static int unlink_inode_for_log_replay(struct btrfs_trans_handle *trans,
-+				       struct btrfs_inode *dir,
-+				       struct btrfs_inode *inode,
-+				       const char *name,
-+				       int name_len)
++static int mlx90632_get_refresh_rate(struct mlx90632_data *data,
++				     int *refresh_rate)
 +{
 +	int ret;
++	unsigned int meas1;
 +
-+	ret = btrfs_unlink_inode(trans, dir, inode, name, name_len);
-+	if (ret)
++	ret = regmap_read(data->regmap, MLX90632_EE_MEDICAL_MEAS1, &meas1);
++	if (ret < 0)
 +		return ret;
-+	/*
-+	 * Whenever we need to check if a name exists or not, we check the
-+	 * fs/subvolume tree. So after an unlink we must run delayed items, so
-+	 * that future checks for a name during log replay see that the name
-+	 * does not exists anymore.
-+	 */
-+	return btrfs_run_delayed_items(trans);
++
++	*refresh_rate = MLX90632_REFRESH_RATE(meas1);
++
++	return ret;
 +}
 +
- /*
-  * when cleaning up conflicts between the directory names in the
-  * subvolume, directory names in the log and directory names in the
-@@ -926,12 +946,8 @@ static noinline int drop_one_dir_item(struct btrfs_trans_handle *trans,
- 	if (ret)
- 		goto out;
- 
--	ret = btrfs_unlink_inode(trans, dir, BTRFS_I(inode), name,
-+	ret = unlink_inode_for_log_replay(trans, dir, BTRFS_I(inode), name,
- 			name_len);
--	if (ret)
--		goto out;
--	else
--		ret = btrfs_run_delayed_items(trans);
- out:
- 	kfree(name);
- 	iput(inode);
-@@ -1091,12 +1107,9 @@ static inline int __add_inode_ref(struct btrfs_trans_handle *trans,
- 				inc_nlink(&inode->vfs_inode);
- 				btrfs_release_path(path);
- 
--				ret = btrfs_unlink_inode(trans, dir, inode,
-+				ret = unlink_inode_for_log_replay(trans, dir, inode,
- 						victim_name, victim_name_len);
- 				kfree(victim_name);
--				if (ret)
--					return ret;
--				ret = btrfs_run_delayed_items(trans);
- 				if (ret)
- 					return ret;
- 				*search_done = 1;
-@@ -1165,14 +1178,11 @@ static inline int __add_inode_ref(struct btrfs_trans_handle *trans,
- 					inc_nlink(&inode->vfs_inode);
- 					btrfs_release_path(path);
- 
--					ret = btrfs_unlink_inode(trans,
-+					ret = unlink_inode_for_log_replay(trans,
- 							BTRFS_I(victim_parent),
- 							inode,
- 							victim_name,
- 							victim_name_len);
--					if (!ret)
--						ret = btrfs_run_delayed_items(
--								  trans);
- 				}
- 				iput(victim_parent);
- 				kfree(victim_name);
-@@ -1327,19 +1337,10 @@ static int unlink_old_inode_refs(struct btrfs_trans_handle *trans,
- 				kfree(name);
- 				goto out;
- 			}
--			ret = btrfs_unlink_inode(trans, BTRFS_I(dir),
-+			ret = unlink_inode_for_log_replay(trans, BTRFS_I(dir),
- 						 inode, name, namelen);
- 			kfree(name);
- 			iput(dir);
--			/*
--			 * Whenever we need to check if a name exists or not, we
--			 * check the subvolume tree. So after an unlink we must
--			 * run delayed items, so that future checks for a name
--			 * during log replay see that the name does not exists
--			 * anymore.
--			 */
--			if (!ret)
--				ret = btrfs_run_delayed_items(trans);
- 			if (ret)
- 				goto out;
- 			goto again;
-@@ -1434,8 +1435,8 @@ static int add_link(struct btrfs_trans_handle *trans, struct btrfs_root *root,
- 		ret = -ENOENT;
- 		goto out;
++static const int mlx90632_freqs[8][2] = { {0, 500000}, {1, 0}, {2, 0}, {4, 0},
++					  {8, 0}, {16, 0}, {32, 0}, {64, 0} };
++
+ static int mlx90632_pm_interraction_wakeup(struct mlx90632_data *data)
+ {
+ 	unsigned long now;
+@@ -985,6 +1006,15 @@ static int mlx90632_read_raw(struct iio_dev *indio_dev,
+ 		*val = data->object_ambient_temperature;
+ 		ret = IIO_VAL_INT;
+ 		break;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		ret = mlx90632_get_refresh_rate(data, &cr);
++		if (ret < 0)
++			goto mlx90632_read_raw_pm;
++
++		*val = mlx90632_freqs[cr][0];
++		*val2 = mlx90632_freqs[cr][1];
++		ret = IIO_VAL_INT_PLUS_MICRO;
++		break;
+ 	default:
+ 		ret = -EINVAL;
+ 		break;
+@@ -1019,12 +1049,24 @@ static int mlx90632_write_raw(struct iio_dev *indio_dev,
  	}
--	ret = btrfs_unlink_inode(trans, BTRFS_I(dir), BTRFS_I(other_inode),
--				 name, namelen);
-+	ret = unlink_inode_for_log_replay(trans, BTRFS_I(dir), BTRFS_I(other_inode),
-+					  name, namelen);
- 	if (ret)
- 		goto out;
- 	/*
-@@ -1444,10 +1445,6 @@ static int add_link(struct btrfs_trans_handle *trans, struct btrfs_root *root,
- 	 */
- 	if (other_inode->i_nlink == 0)
- 		inc_nlink(other_inode);
--
--	ret = btrfs_run_delayed_items(trans);
--	if (ret)
--		goto out;
- add_link:
- 	ret = btrfs_add_link(trans, BTRFS_I(dir), BTRFS_I(inode),
- 			     name, namelen, 0, ref_index);
-@@ -1580,7 +1577,7 @@ static noinline int add_inode_ref(struct btrfs_trans_handle *trans,
- 			ret = btrfs_inode_ref_exists(inode, dir, key->type,
- 						     name, namelen);
- 			if (ret > 0) {
--				ret = btrfs_unlink_inode(trans,
-+				ret = unlink_inode_for_log_replay(trans,
- 							 BTRFS_I(dir),
- 							 BTRFS_I(inode),
- 							 name, namelen);
-@@ -1591,15 +1588,6 @@ static noinline int add_inode_ref(struct btrfs_trans_handle *trans,
- 				 */
- 				if (!ret && inode->i_nlink == 0)
- 					inc_nlink(inode);
--				/*
--				 * Whenever we need to check if a name exists or
--				 * not, we check the subvolume tree. So after an
--				 * unlink we must run delayed items, so that future
--				 * checks for a name during log replay see that the
--				 * name does not exists anymore.
--				 */
--				if (!ret)
--					ret = btrfs_run_delayed_items(trans);
- 			}
- 			if (ret < 0)
- 				goto out;
-@@ -2339,15 +2327,8 @@ static noinline int check_item_in_log(struct btrfs_trans_handle *trans,
- 		goto out;
+ }
  
- 	inc_nlink(inode);
--	ret = btrfs_unlink_inode(trans, BTRFS_I(dir), BTRFS_I(inode), name,
--				 name_len);
--	if (ret)
--		goto out;
--
--	ret = btrfs_run_delayed_items(trans);
--	if (ret)
--		goto out;
--
-+	ret = unlink_inode_for_log_replay(trans, BTRFS_I(dir), BTRFS_I(inode),
-+					  name, name_len);
- 	/*
- 	 * Unlike dir item keys, dir index keys can only have one name (entry) in
- 	 * them, as there are no key collisions since each key has a unique offset
++static IIO_CONST_ATTR(sampling_frequency_available, "0.5 1 2 4 8 16 32 64");
++
++static struct attribute *mlx90632_attributes[] = {
++	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
++	NULL
++};
++
++static const struct attribute_group mlx90632_attribute_group = {
++	.attrs = mlx90632_attributes,
++};
++
+ static const struct iio_chan_spec mlx90632_channels[] = {
+ 	{
+ 		.type = IIO_TEMP,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_TEMP_AMBIENT,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+ 	},
+ 	{
+ 		.type = IIO_TEMP,
+@@ -1032,12 +1074,14 @@ static const struct iio_chan_spec mlx90632_channels[] = {
+ 		.channel2 = IIO_MOD_TEMP_OBJECT,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+ 			BIT(IIO_CHAN_INFO_CALIBEMISSIVITY) | BIT(IIO_CHAN_INFO_CALIBAMBIENT),
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+ 	},
+ };
+ 
+ static const struct iio_info mlx90632_info = {
+ 	.read_raw = mlx90632_read_raw,
+ 	.write_raw = mlx90632_write_raw,
++	.attrs = &mlx90632_attribute_group,
+ };
+ 
+ static int mlx90632_sleep(struct mlx90632_data *data)
 -- 
-2.35.1
-
-
+2.34.1
 
