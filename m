@@ -2,117 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8BAFC6FA82
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:16:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE9FBC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:18:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235485AbiIBMQm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:16:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39940 "EHLO
+        id S235595AbiIBMSj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:18:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231266AbiIBMQk (ORCPT
+        with ESMTP id S229676AbiIBMSf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:16:40 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA7EC2F92;
-        Fri,  2 Sep 2022 05:16:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662120999; x=1693656999;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=CJ7K6MAmvy9eYTd7oP1wszLEZKBCQJ6tFK2SaopjaYI=;
-  b=Rzs0+2nyXx00SSq6SgHv/p7hUhLoqv/wHOoFB1v12CAXOL2TO6LBzXX/
-   Ky+VtPEcqsqZuXwOaLjckJHMs0HivQkGLU1AV6hgLxb2QJb3hjiA0NnQ7
-   iWaHUVeFKeNfO89VU6k2XFQolGMLbbmmbDvy0L6fydGCEBHgIN9di4EwI
-   lp/KZBOqHEEkApjzi+TPF9tJPqUrio4tVmEqJG2ij47ai2jH/gcYXM0IQ
-   ZVurhisjy74nfCEvQbPWjH/UU5BZQ6rDlIOset0bYF4YjgtvPTjUKTnpX
-   ihHcH5Tx5ZGkKXDqDB4xCry0kNsdwF7wlouRrIo/0E3TmXYMbKXFxvPm5
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="278983881"
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="278983881"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 05:16:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="681270907"
-Received: from lkp-server02.sh.intel.com (HELO 95dfd251caa2) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 02 Sep 2022 05:16:34 -0700
-Received: from kbuild by 95dfd251caa2 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oU5b8-000039-0W;
-        Fri, 02 Sep 2022 12:16:34 +0000
-Date:   Fri, 2 Sep 2022 20:16:24 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Daniel Xu <dxu@dxuuu.xyz>, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, memxor@gmail.com
-Cc:     kbuild-all@lists.01.org, Daniel Xu <dxu@dxuuu.xyz>,
-        pablo@netfilter.org, fw@strlen.de, toke@kernel.org,
-        martin.lau@linux.dev, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next v4 4/5] bpf: Add support for writing to
- nf_conn:mark
-Message-ID: <202209022000.s58TmR9h-lkp@intel.com>
-References: <073173502d762faf87bde0ca23e609c84848dd7e.1661192455.git.dxu@dxuuu.xyz>
+        Fri, 2 Sep 2022 08:18:35 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4325CEB2F
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 05:18:34 -0700 (PDT)
+Received: from fraeml706-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MJxkg4gLFz6J69C;
+        Fri,  2 Sep 2022 20:17:47 +0800 (CST)
+Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
+ fraeml706-chm.china.huawei.com (10.206.15.55) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.31; Fri, 2 Sep 2022 14:18:32 +0200
+Received: from [10.195.34.23] (10.195.34.23) by lhrpeml500003.china.huawei.com
+ (7.191.162.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 2 Sep
+ 2022 13:18:31 +0100
+Message-ID: <e8b232be-dfe9-0a67-c464-83fe5109070e@huawei.com>
+Date:   Fri, 2 Sep 2022 13:18:29 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <073173502d762faf87bde0ca23e609c84848dd7e.1661192455.git.dxu@dxuuu.xyz>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH 0/3] iova: Some misc changes
+From:   John Garry <john.garry@huawei.com>
+To:     <robin.murphy@arm.com>, <joro@8bytes.org>, <will@kernel.org>
+CC:     <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+References: <1660730984-30333-1-git-send-email-john.garry@huawei.com>
+ <11d9f054-fe7b-7646-a8f4-7d45a22e2a96@huawei.com>
+In-Reply-To: <11d9f054-fe7b-7646-a8f4-7d45a22e2a96@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.195.34.23]
+X-ClientProxiedBy: lhrpeml100006.china.huawei.com (7.191.160.224) To
+ lhrpeml500003.china.huawei.com (7.191.162.67)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
+On 17/08/2022 11:24, John Garry wrote:
+> On 17/08/2022 11:09, John Garry wrote:
+>> This series includes:
+>> - remove checks in the code which are not required
+>> - the re-org, which I had originally posted separately
+> 
+> BTW, Can we drop the !IOMMU_IOVA stubs in iova.h? I could not find a 
+> kernel config which actually exercises that code (so testing changes 
+> there is difficult).
 
-Thank you for the patch! Yet something to improve:
+Any thoughts on this? Since I got no review of patch #3 I assume that it 
+is not keenly welcome either.
 
-[auto build test ERROR on bpf-next/master]
+Now I think that I'll just post a new version with patches #1 and #2 so 
+that they don't get lost in limbo.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Daniel-Xu/bpf-Remove-duplicate-PTR_TO_BTF_ID-RO-check/20220823-032643
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220902/202209022000.s58TmR9h-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/496ec6d75c8e8758f93c6b987eee83713c911a05
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Daniel-Xu/bpf-Remove-duplicate-PTR_TO_BTF_ID-RO-check/20220823-032643
-        git checkout 496ec6d75c8e8758f93c6b987eee83713c911a05
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   ld: net/core/filter.o: in function `tc_cls_act_btf_struct_access':
->> net/core/filter.c:8644: undefined reference to `nf_conntrack_btf_struct_access'
-   ld: net/core/filter.o: in function `xdp_btf_struct_access':
-   include/net/net_namespace.h:369: undefined reference to `nf_conntrack_btf_struct_access'
-   pahole: .tmp_vmlinux.btf: No such file or directory
-   .btf.vmlinux.bin.o: file not recognized: file format not recognized
-
-
-vim +8644 net/core/filter.c
-
-  8632	
-  8633	static int tc_cls_act_btf_struct_access(struct bpf_verifier_log *log,
-  8634						const struct btf *btf,
-  8635						const struct btf_type *t, int off,
-  8636						int size, enum bpf_access_type atype,
-  8637						u32 *next_btf_id,
-  8638						enum bpf_type_flag *flag)
-  8639	{
-  8640		if (atype == BPF_READ)
-  8641			return btf_struct_access(log, btf, t, off, size, atype, next_btf_id,
-  8642						 flag);
-  8643	
-> 8644		return nf_conntrack_btf_struct_access(log, btf, t, off, size, atype,
-  8645						      next_btf_id, flag);
-  8646	}
-  8647	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+John
