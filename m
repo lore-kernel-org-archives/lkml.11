@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E57A3C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 09:53:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1581ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 09:53:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235605AbiIBJxK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 05:53:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60738 "EHLO
+        id S235846AbiIBJxP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 05:53:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235715AbiIBJwm (ORCPT
+        with ESMTP id S235723AbiIBJwm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 05:52:42 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D12EDD11FA
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 02:52:36 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id y64so1982004ede.2
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 02:52:36 -0700 (PDT)
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C7A6C6FC8
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 02:52:38 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id c59so1934119edf.10
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 02:52:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=1DfksHW7Ish2UvigiC+OsNMircH0PL3M9sKVGJTg530=;
-        b=GwURQpXCkXATE+oyuEySbyquqLfL6FdQvLFR57Y9myNNAv/qP+Ou99yQ18r0Vw6GNo
-         kAR2W2v1eD/sr/fPmVCE4h9HfHzWuvJ+uXPCvTa9n7QqTTiZk4VDlbvBp79G85MRsmKS
-         sR47+F1D92cK9CEbW87GgJoEp4hRgBXQEs6D5oQrq3qjonZcDvQhmgEaIKJPaEukssaZ
-         5vXcv4DPa3mG8ovOGuFXmJysv2P/EV2qfiap5oC971/5LD9BwS4wlAcX4CWolRkMNbqw
-         vVRDf5jDw+zNiYGYzSSyAv5tFkPMuqyhxw8GVI1JXTGPrqNyz274IDh59YN7nMgjb/YW
-         Fafw==
+        bh=6Aqp2CnBk1QACLxggfiOgjUbjEfen+S7yS/YB9rrdMM=;
+        b=bt439Yd79hZlUveKtb7EfEGN54BN2p9KzmbAr83gDhkEHXHidd+tMd2dUK0XyylgDc
+         b+jbQv8c/JmCYdQp1riLZykWpOjJXIUl02RdM+zyVwaIwXst7BoPKVTPAcmpGQE5ZC1s
+         wRWptBOL69ItcMY4XChm0ej03A7uU6t7pY3k9j/HLSwJ8H+9XrQnArkTepMH3XKFGIsW
+         YxSsXmsrL+LUrUeDsIY1XniFuovduJX5su8XeTA7igmyZsgOhNYpyUqiabhk8UeTacNN
+         AQDQFqXLOyV9rmTYZmgA9khqH5LcUbDYxsiz43fgyaIGaiZhkhZv/qbZLsGu9Qh/bIq4
+         jL8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=1DfksHW7Ish2UvigiC+OsNMircH0PL3M9sKVGJTg530=;
-        b=ePapEXJq4P3rQbjr1PRFT9RbmHHGKdfceGxShAIv+tnORCi7gd9gX9cEDBmHE8+zXP
-         28pHkSKsf0K5zixDg8FsA6b4pgd4apcfMjWiGqJ+Kd7lAri+e2U8YNMl0aY2VueafVfI
-         0p8YiIOehAcaKjWI/fuJWuOICl3q9s3lku2TGGiaHRqI4T6GpNN40vxnFllTReHTnpew
-         WGg/ttOnJofY8G6QL3M0kWpqKaG5GxfbCrFhSEaTV7NYHg6JtW399+eWGsdnJoIxjMR6
-         1tnT5xeSmHLa4SUUOjvJx4bHzlERTDuc6mlngGSCXvkIV6Jj6hPt+O7uZajiIRjr/I4W
-         zIIw==
-X-Gm-Message-State: ACgBeo365ZD3UKZxcE2Bv+ffkkMTvdCXH6vco65Yoa7v05JGiQ7VxEiX
-        /DKv23D8Kg15I3cMX6+iy5k=
-X-Google-Smtp-Source: AA6agR55x2wjYUvZMbG74LyI3iQ3j9xx4uDuayhtH6FQD3FRbSBS5lG6m5cyMaQ3IDBJsEijGQ/y/w==
-X-Received: by 2002:a05:6402:1d54:b0:447:b1f7:9ecf with SMTP id dz20-20020a0564021d5400b00447b1f79ecfmr31881111edb.425.1662112355310;
-        Fri, 02 Sep 2022 02:52:35 -0700 (PDT)
+        bh=6Aqp2CnBk1QACLxggfiOgjUbjEfen+S7yS/YB9rrdMM=;
+        b=kxQe+IPcOfBadL6Zskkjna8bW3Sh6OJxQ+nU7WZi01zPN/q1sYeO3zehZttiwNfjxI
+         Qc9UOE+T1iO32qSESe51UeXkXUu25dIhwuISuZldSUXbnJbdy4SSgjktsWrrp437YGpL
+         Xouyh8graCgAD3xPnpBdv7AncHEYUuDX7/7Qfl0LBu2Shp/ZmMjXHgNFa+7Ay74DfcaR
+         P99G01JWBWXRCOPZcqQvug9S16GuM9KNrpFrpTwAisgVZaG7t9qTmVdpD9I+ps5ek1Cp
+         z7PNaXtHNKexcbj17bHFyHwc89ebndaDWdbxtzFNoKxWEb/P56n0zidy/qhKPDicEbqz
+         eIGQ==
+X-Gm-Message-State: ACgBeo12SgWOzSIlIkoR2+TYiyui778CQhmpNyk/PL2BWM8F3aCe4jWW
+        2bOEOYhPloeT9+0x+X5Dl3R1ioYagJJL8A==
+X-Google-Smtp-Source: AA6agR5eIcQO/SIZCdZKTaAjLVkFC4wgK+jKQhq0Ks6CTQSo4vsoFPVqbSuPlQ1a4Efc0ET4FKSHYQ==
+X-Received: by 2002:a05:6402:26c6:b0:448:6812:7355 with SMTP id x6-20020a05640226c600b0044868127355mr20746614edd.385.1662112356946;
+        Fri, 02 Sep 2022 02:52:36 -0700 (PDT)
 Received: from localhost.localdomain (ip-217-105-46-83.ip.prioritytelecom.net. [217.105.46.83])
-        by smtp.gmail.com with ESMTPSA id h6-20020a170906828600b0073d6234ceebsm959601ejx.160.2022.09.02.02.52.34
+        by smtp.gmail.com with ESMTPSA id h6-20020a170906828600b0073d6234ceebsm959601ejx.160.2022.09.02.02.52.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 02:52:34 -0700 (PDT)
+        Fri, 02 Sep 2022 02:52:36 -0700 (PDT)
 From:   Nam Cao <namcaov@gmail.com>
 To:     Larry.Finger@lwfinger.net, gregkh@linuxfoundation.org,
         hdegoede@redhat.com
 Cc:     namcaov@gmail.com, linux-kernel@vger.kernel.org,
         linux-staging@lists.linux.dev
-Subject: [PATCH 02/10] staging: rtl8723bs: delete function rtw_set_chplan_cmd
-Date:   Fri,  2 Sep 2022 11:51:52 +0200
-Message-Id: <b5a1fe5bc7bc8eb154247ee8eafafe6af266dab9.1662111798.git.namcaov@gmail.com>
+Subject: [PATCH 04/10] staging: rtl8723bs: delete rtw_odm.c and rtw_odm.h
+Date:   Fri,  2 Sep 2022 11:51:54 +0200
+Message-Id: <6870109ce0c51b4ab91ec370d8b2285dc635e5fe.1662111798.git.namcaov@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1662111798.git.namcaov@gmail.com>
 References: <cover.1662111798.git.namcaov@gmail.com>
@@ -66,93 +66,195 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function rtw_set_chplan_cmd is not used. Remove it.
+Remove rtw_odm.c and rtw_odm.h because the content of these files
+is not used.
 
 Signed-off-by: Nam Cao <namcaov@gmail.com>
 ---
- drivers/staging/rtl8723bs/core/rtw_cmd.c    | 55 ---------------------
- drivers/staging/rtl8723bs/include/rtw_cmd.h |  2 -
- 2 files changed, 57 deletions(-)
+ drivers/staging/rtl8723bs/Makefile            |   1 -
+ drivers/staging/rtl8723bs/core/rtw_odm.c      | 116 ------------------
+ drivers/staging/rtl8723bs/include/drv_types.h |   1 -
+ drivers/staging/rtl8723bs/include/rtw_odm.h   |  24 ----
+ 4 files changed, 142 deletions(-)
+ delete mode 100644 drivers/staging/rtl8723bs/core/rtw_odm.c
+ delete mode 100644 drivers/staging/rtl8723bs/include/rtw_odm.h
 
-diff --git a/drivers/staging/rtl8723bs/core/rtw_cmd.c b/drivers/staging/rtl8723bs/core/rtw_cmd.c
-index a5e66b9868ad..5e82d491ad75 100644
---- a/drivers/staging/rtl8723bs/core/rtw_cmd.c
-+++ b/drivers/staging/rtl8723bs/core/rtw_cmd.c
-@@ -1111,61 +1111,6 @@ u8 rtw_dynamic_chk_wk_cmd(struct adapter *padapter)
- 	return res;
- }
- 
--u8 rtw_set_chplan_cmd(struct adapter *padapter, u8 chplan, u8 enqueue, u8 swconfig)
+diff --git a/drivers/staging/rtl8723bs/Makefile b/drivers/staging/rtl8723bs/Makefile
+index bc7ff1dd14f9..590bde02058c 100644
+--- a/drivers/staging/rtl8723bs/Makefile
++++ b/drivers/staging/rtl8723bs/Makefile
+@@ -10,7 +10,6 @@ r8723bs-y = \
+ 		core/rtw_ieee80211.o \
+ 		core/rtw_mlme.o \
+ 		core/rtw_mlme_ext.o \
+-		core/rtw_odm.o \
+ 		core/rtw_pwrctrl.o \
+ 		core/rtw_recv.o \
+ 		core/rtw_rf.o \
+diff --git a/drivers/staging/rtl8723bs/core/rtw_odm.c b/drivers/staging/rtl8723bs/core/rtw_odm.c
+deleted file mode 100644
+index 47fd2ee9bb9f..000000000000
+--- a/drivers/staging/rtl8723bs/core/rtw_odm.c
++++ /dev/null
+@@ -1,116 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-/******************************************************************************
+- *
+- * Copyright(c) 2013 Realtek Corporation. All rights reserved.
+- *
+- ******************************************************************************/
+-
+-#include <drv_types.h>
+-#include <rtw_debug.h>
+-#include <rtw_odm.h>
+-#include <hal_data.h>
+-
+-#define RTW_ODM_COMP_MAX 32
+-
+-static const char * const odm_ability_str[] = {
+-	/* BIT0 */"ODM_BB_DIG",
+-	/* BIT1 */"ODM_BB_RA_MASK",
+-	/* BIT2 */"ODM_BB_DYNAMIC_TXPWR",
+-	/* BIT3 */"ODM_BB_FA_CNT",
+-	/* BIT4 */"ODM_BB_RSSI_MONITOR",
+-	/* BIT5 */"ODM_BB_CCK_PD",
+-	/* BIT6 */"ODM_BB_ANT_DIV",
+-	/* BIT7 */"ODM_BB_PWR_SAVE",
+-	/* BIT8 */"ODM_BB_PWR_TRAIN",
+-	/* BIT9 */"ODM_BB_RATE_ADAPTIVE",
+-	/* BIT10 */"ODM_BB_PATH_DIV",
+-	/* BIT11 */"ODM_BB_PSD",
+-	/* BIT12 */"ODM_BB_RXHP",
+-	/* BIT13 */"ODM_BB_ADAPTIVITY",
+-	/* BIT14 */"ODM_BB_DYNAMIC_ATC",
+-	/* BIT15 */NULL,
+-	/* BIT16 */"ODM_MAC_EDCA_TURBO",
+-	/* BIT17 */"ODM_MAC_EARLY_MODE",
+-	/* BIT18 */NULL,
+-	/* BIT19 */NULL,
+-	/* BIT20 */NULL,
+-	/* BIT21 */NULL,
+-	/* BIT22 */NULL,
+-	/* BIT23 */NULL,
+-	/* BIT24 */"ODM_RF_TX_PWR_TRACK",
+-	/* BIT25 */"ODM_RF_RX_GAIN_TRACK",
+-	/* BIT26 */"ODM_RF_CALIBRATION",
+-};
+-
+-#define RTW_ODM_ABILITY_MAX 27
+-
+-static const char * const odm_dbg_level_str[] = {
+-	NULL,
+-	"ODM_DBG_OFF",
+-	"ODM_DBG_SERIOUS",
+-	"ODM_DBG_WARNING",
+-	"ODM_DBG_LOUD",
+-	"ODM_DBG_TRACE",
+-};
+-
+-#define RTW_ODM_DBG_LEVEL_NUM 6
+-
+-void rtw_odm_dbg_level_msg(void *sel, struct adapter *adapter)
 -{
--	struct	cmd_obj *pcmdobj;
--	struct	SetChannelPlan_param *setChannelPlan_param;
--	struct	cmd_priv   *pcmdpriv = &padapter->cmdpriv;
+-	u32 dbg_level;
+-	int i;
 -
--	u8 res = _SUCCESS;
--
--	/*  check if allow software config */
--	if (swconfig && rtw_hal_is_disable_sw_channel_plan(padapter)) {
--		res = _FAIL;
--		goto exit;
+-	rtw_hal_get_def_var(adapter, HW_DEF_ODM_DBG_LEVEL, &dbg_level);
+-	netdev_dbg(adapter->pnetdev, "odm.DebugLevel = %u\n", dbg_level);
+-	for (i = 0; i < RTW_ODM_DBG_LEVEL_NUM; i++) {
+-		if (odm_dbg_level_str[i])
+-			netdev_dbg(adapter->pnetdev, "%u %s\n", i,
+-				   odm_dbg_level_str[i]);
 -	}
--
--	/* check input parameter */
--	if (!rtw_is_channel_plan_valid(chplan)) {
--		res = _FAIL;
--		goto exit;
--	}
--
--	/* prepare cmd parameter */
--	setChannelPlan_param = rtw_zmalloc(sizeof(struct SetChannelPlan_param));
--	if (!setChannelPlan_param) {
--		res = _FAIL;
--		goto exit;
--	}
--	setChannelPlan_param->channel_plan = chplan;
--
--	if (enqueue) {
--		/* need enqueue, prepare cmd_obj and enqueue */
--		pcmdobj = rtw_zmalloc(sizeof(struct cmd_obj));
--		if (!pcmdobj) {
--			kfree(setChannelPlan_param);
--			res = _FAIL;
--			goto exit;
--		}
--
--		init_h2fwcmd_w_parm_no_rsp(pcmdobj, setChannelPlan_param, GEN_CMD_CODE(_SetChannelPlan));
--		res = rtw_enqueue_cmd(pcmdpriv, pcmdobj);
--	} else {
--		/* no need to enqueue, do the cmd hdl directly and free cmd parameter */
--		if (set_chplan_hdl(padapter, (unsigned char *)setChannelPlan_param) != H2C_SUCCESS)
--			res = _FAIL;
--
--		kfree(setChannelPlan_param);
--	}
--
--	/* do something based on res... */
--	if (res == _SUCCESS)
--		padapter->mlmepriv.ChannelPlan = chplan;
--
--exit:
--	return res;
 -}
 -
- static void collect_traffic_statistics(struct adapter *padapter)
- {
- 	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(padapter);
-diff --git a/drivers/staging/rtl8723bs/include/rtw_cmd.h b/drivers/staging/rtl8723bs/include/rtw_cmd.h
-index 0af8215e2f2f..fe1b03101203 100644
---- a/drivers/staging/rtl8723bs/include/rtw_cmd.h
-+++ b/drivers/staging/rtl8723bs/include/rtw_cmd.h
-@@ -612,8 +612,6 @@ extern u8 rtw_ps_cmd(struct adapter *padapter);
- 
- u8 rtw_chk_hi_queue_cmd(struct adapter *padapter);
- 
--extern u8 rtw_set_chplan_cmd(struct adapter *padapter, u8 chplan, u8 enqueue, u8 swconfig);
+-inline void rtw_odm_dbg_level_set(struct adapter *adapter, u32 level)
+-{
+-	rtw_hal_set_def_var(adapter, HW_DEF_ODM_DBG_LEVEL, &level);
+-}
 -
- extern u8 rtw_c2h_packet_wk_cmd(struct adapter *padapter, u8 *pbuf, u16 length);
- extern u8 rtw_c2h_wk_cmd(struct adapter *padapter, u8 *c2h_evt);
+-void rtw_odm_ability_msg(void *sel, struct adapter *adapter)
+-{
+-	u32 ability = 0;
+-	int i;
+-
+-	rtw_hal_get_hwreg(adapter, HW_VAR_DM_FLAG, (u8 *)&ability);
+-	netdev_dbg(adapter->pnetdev, "odm.SupportAbility = 0x%08x\n", ability);
+-	for (i = 0; i < RTW_ODM_ABILITY_MAX; i++) {
+-		if (odm_ability_str[i])
+-			netdev_dbg(adapter->pnetdev, "%cBIT%-2d %s\n",
+-				   (BIT0 << i) & ability ? '+' : ' ', i,
+-				   odm_ability_str[i]);
+-	}
+-}
+-
+-void rtw_odm_adaptivity_parm_set(struct adapter *adapter, s8 TH_L2H_ini,
+-				 s8 TH_EDCCA_HL_diff, s8 IGI_Base,
+-				 bool ForceEDCCA, u8 AdapEn_RSSI,
+-				 u8 IGI_LowerBound)
+-{
+-	struct hal_com_data *pHalData = GET_HAL_DATA(adapter);
+-	struct dm_odm_t *odm = &pHalData->odmpriv;
+-
+-	odm->TH_L2H_ini = TH_L2H_ini;
+-	odm->TH_EDCCA_HL_diff = TH_EDCCA_HL_diff;
+-	odm->IGI_Base = IGI_Base;
+-	odm->ForceEDCCA = ForceEDCCA;
+-	odm->AdapEn_RSSI = AdapEn_RSSI;
+-	odm->IGI_LowerBound = IGI_LowerBound;
+-}
+-
+-void rtw_odm_get_perpkt_rssi(void *sel, struct adapter *adapter)
+-{
+-	struct hal_com_data *hal_data = GET_HAL_DATA(adapter);
+-	struct dm_odm_t *odm = &hal_data->odmpriv;
+-
+-	netdev_dbg(adapter->pnetdev,
+-		   "RxRate = %s, RSSI_A = %d(%%), RSSI_B = %d(%%)\n",
+-		   HDATA_RATE(odm->RxRate), odm->RSSI_A, odm->RSSI_B);
+-}
+diff --git a/drivers/staging/rtl8723bs/include/drv_types.h b/drivers/staging/rtl8723bs/include/drv_types.h
+index bb4650f0b297..82159e1c7f9b 100644
+--- a/drivers/staging/rtl8723bs/include/drv_types.h
++++ b/drivers/staging/rtl8723bs/include/drv_types.h
+@@ -50,7 +50,6 @@
+ #include <rtw_mlme_ext.h>
+ #include <rtw_ap.h>
+ #include <rtw_version.h>
+-#include <rtw_odm.h>
  
+ #include "ioctl_cfg80211.h"
+ 
+diff --git a/drivers/staging/rtl8723bs/include/rtw_odm.h b/drivers/staging/rtl8723bs/include/rtw_odm.h
+deleted file mode 100644
+index 6a431c121285..000000000000
+--- a/drivers/staging/rtl8723bs/include/rtw_odm.h
++++ /dev/null
+@@ -1,24 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-/******************************************************************************
+- *
+- * Copyright(c) 2013 Realtek Corporation. All rights reserved.
+- *
+- ******************************************************************************/
+-#ifndef __RTW_ODM_H__
+-#define __RTW_ODM_H__
+-
+-#include <drv_types.h>
+-
+-/*
+-* This file provides utilities/wrappers for rtw driver to use ODM
+-*/
+-
+-void rtw_odm_dbg_level_msg(void *sel, struct adapter *adapter);
+-void rtw_odm_dbg_level_set(struct adapter *adapter, u32 level);
+-
+-void rtw_odm_ability_msg(void *sel, struct adapter *adapter);
+-
+-void rtw_odm_adaptivity_parm_set(struct adapter *adapter, s8 TH_L2H_ini, s8 TH_EDCCA_HL_diff,
+-	s8 IGI_Base, bool ForceEDCCA, u8 AdapEn_RSSI, u8 IGI_LowerBound);
+-void rtw_odm_get_perpkt_rssi(void *sel, struct adapter *adapter);
+-#endif /*  __RTW_ODM_H__ */
 -- 
 2.25.1
 
