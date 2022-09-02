@@ -2,129 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7CE1ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F398ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:35:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237303AbiIBNeN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:34:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34552 "EHLO
+        id S237237AbiIBNfF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:35:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236314AbiIBNdt (ORCPT
+        with ESMTP id S237186AbiIBNek (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:33:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 348FE3FA38
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:13:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662124312;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=10S2baNmGpvfbB3rWC8TV3GU8jc51um5+NmqwLplTxA=;
-        b=OaqsduRmC/k7/up3Y+Yxz1BiXMJqaV0IAPC22l2AwBITcWSC+CZXfo7LhGCbDGmcEgvBXk
-        +13oFwN5C3XFgOuP3AHB4BibB6DAMIRuH77cZQkVYGUTn9qB8Pb1jNKAc1r8dCCEV/mUsC
-        CYb97maX0COEjHQJIGernbkIE8nwR5w=
-Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com
- [209.85.216.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-498-VNNnkzr-Npy__uScprD9lA-1; Fri, 02 Sep 2022 09:11:50 -0400
-X-MC-Unique: VNNnkzr-Npy__uScprD9lA-1
-Received: by mail-pj1-f70.google.com with SMTP id z8-20020a17090a014800b001fac4204c7eso1120685pje.8
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 06:11:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=10S2baNmGpvfbB3rWC8TV3GU8jc51um5+NmqwLplTxA=;
-        b=iyB57GtLm77O5Lgg0ouUC/Hl6Pg93OK8DOAW1PvZF+1hxOQRdJqoAxKUXy773FP/Wq
-         2X91eh4mtJZ53Gtzq3FNrQHuGHlWoYSZpBt3GK/yd6OMt4KqyBy1PnSTm4Qg6iZGmsMF
-         FUOkzobW3a5iJqAOEV3jEK5aQgnwVbXgNDHLzXoLSzGRZp1jozAN8sRwUHCXEB6BAQYJ
-         ovLs8JhRgRWRbYYy4ySEmjgQQ/KyZ8rJMxIUSNfi0r4nW6K8sx99xV7ufGqO2TITtE0e
-         hw9CtxLOLYfcs+44RWe3gpHtL92OX0s1HQokyLQLA04sAGWdiRL6MnzSGhBk7lDK+NCr
-         nEjA==
-X-Gm-Message-State: ACgBeo1AiuFptLGJnZNCY+Gt3jHqZIGa1ywpCCwln2PO6nc2zNXu3V79
-        2+4UwaOeqXiBuM0X/p7mT1QNWfeFIAXSRcRjXvvs1LlBCtKFvsPjdSxRK9DNdQdboTVz9hBHg27
-        yPU2Hb0QBnXvq8JhYFzCNPBtuhVuS7SbV312zceNA
-X-Received: by 2002:a17:902:b58a:b0:16e:f91a:486b with SMTP id a10-20020a170902b58a00b0016ef91a486bmr36558498pls.119.1662124309712;
-        Fri, 02 Sep 2022 06:11:49 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR72EpfhkEK4ko7qYW4nPa0blgG/78lQfqmeZeVLgOOiuWSw4Fu8+YGj6zLNMt/u79Hm3xPofVjqghC/L9D7cM4=
-X-Received: by 2002:a17:902:b58a:b0:16e:f91a:486b with SMTP id
- a10-20020a170902b58a00b0016ef91a486bmr36558475pls.119.1662124309461; Fri, 02
- Sep 2022 06:11:49 -0700 (PDT)
+        Fri, 2 Sep 2022 09:34:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08B091208DE;
+        Fri,  2 Sep 2022 06:14:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 45821B82A9B;
+        Fri,  2 Sep 2022 12:34:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90235C433D6;
+        Fri,  2 Sep 2022 12:34:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662122063;
+        bh=ybn3jPN7cjq4pV1zRhzeUGKKFGk64wtqOZEfT7U0lBM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=G5t/OP+zEIb1+nO3uooNic3yoCpO2B1krPtvD3mI7+Tl8k5f/unAxyffotEUIGkKn
+         9d+RclRz89QXiiFEcyP8IoLcmAT7cX7ictaeSF1dmpA2vNOOvu3qV2MkqsNuQn6sis
+         kSK3DcbLxoZCYR7hUUPX62dzD7PgW7+SKRZIztIg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Dusica Milinkovic <Dusica.Milinkovic@amd.com>,
+        Shaoyun Liu <shaoyun.liu@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 62/73] drm/amdgpu: Increase tlb flush timeout for sriov
+Date:   Fri,  2 Sep 2022 14:19:26 +0200
+Message-Id: <20220902121406.465885961@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
+References: <20220902121404.435662285@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-References: <20220824134055.1328882-1-benjamin.tissoires@redhat.com>
- <20220824134055.1328882-2-benjamin.tissoires@redhat.com> <CAADnVQKgkFpLh_URJn6qCiAONteA1dwZHd6=4cZn15g1JCAPag@mail.gmail.com>
- <CAP01T75ec_T0M6DU=JE2tfNsWRZuPSMu_7JHA7ZoOBw5eDh1Bg@mail.gmail.com>
- <CAO-hwJLd9wXx+ppccBYPKZDymO0sk++Nt2E3-R97PY7LbfJfTg@mail.gmail.com>
- <CAADnVQK8dS+2KbWsqktvxoNKhHtdD5UPiaWVfNu=ESdn_OHpgQ@mail.gmail.com>
- <CAO-hwJK9uHTWCg3_6jrPF6UKiamkNfj=cuH5mHauoLX+0udV9w@mail.gmail.com>
- <CAADnVQLuL045Sxdvh8kfcNkmD55+Wz8fHU3RtH+oQyOgePU5Pw@mail.gmail.com>
- <CAO-hwJJJJRtoq2uTXRKCck6QSH8SFDSTpHmvTyOieczY7bdm8g@mail.gmail.com> <CAP01T77SJyiDxv0A++_mNw7JZ-Mzh4B1FAM6zLiP6n75MNY0uQ@mail.gmail.com>
-In-Reply-To: <CAP01T77SJyiDxv0A++_mNw7JZ-Mzh4B1FAM6zLiP6n75MNY0uQ@mail.gmail.com>
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Date:   Fri, 2 Sep 2022 15:11:38 +0200
-Message-ID: <CAO-hwJLbbB0Abw3d4pJPnYTAzQNdtgBTpuNz4zVUTFXCbZEEbQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v9 01/23] bpf/verifier: allow all functions to
- read user provided context
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Sep 2, 2022 at 5:50 AM Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
->
-> On Thu, 1 Sept 2022 at 18:48, Benjamin Tissoires
-> <benjamin.tissoires@redhat.com> wrote:
-> >
-> > [...]
-> > If the above is correct, then yes, it would make sense to me to have 2
-> > distinct functions: one to check for the args types only (does the
-> > function definition in the problem matches BTF), and one to check for
-> > its use.
-> > Behind the scenes, btf_check_subprog_arg_match() calls
-> > btf_check_func_arg_match() which is the one function with entangled
-> > arguments type checking and actually assessing that the values
-> > provided are correct.
-> >
-> > I can try to split that  btf_check_func_arg_match() into 2 distinct
-> > functions, though I am not sure I'll get it right.
->
-> FYI, I've already split them into separate functions in my tree
-> because it had become super ugly at this point with all the new
-> support and I refactored it to add the linked list helpers support
-> using kfuncs (which requires some special handling for the args), so I
-> think you can just leave it with a "processing_call" check in for your
-> series for now.
->
+From: Dusica Milinkovic <Dusica.Milinkovic@amd.com>
 
-great, thanks a lot.
-Actually, writing the patch today with the "processing_call" was
-really easy now that I have turned the problem in my head a lot
-yesterday.
+[ Upstream commit 373008bfc9cdb0f050258947fa5a095f0657e1bc ]
 
-I am about to send v10 with the reviews addressed.
+[Why]
+During multi-vf executing benchmark (Luxmark) observed kiq error timeout.
+It happenes because all of VFs do the tlb invalidation at the same time.
+Although each VF has the invalidate register set, from hardware side
+the invalidate requests are queue to execute.
 
-Cheers,
-Benjamin
+[How]
+In case of 12 VF increase timeout on 12*100ms
+
+Signed-off-by: Dusica Milinkovic <Dusica.Milinkovic@amd.com>
+Acked-by: Shaoyun Liu <shaoyun.liu@amd.com>
+Acked-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/amd/amdgpu/amdgpu.h    | 2 +-
+ drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c | 3 ++-
+ drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c  | 3 ++-
+ 3 files changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu.h b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
+index 5f95d03fd46a0..4f62f422bcb78 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu.h
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
+@@ -312,7 +312,7 @@ enum amdgpu_kiq_irq {
+ 	AMDGPU_CP_KIQ_IRQ_DRIVER0 = 0,
+ 	AMDGPU_CP_KIQ_IRQ_LAST
+ };
+-
++#define SRIOV_USEC_TIMEOUT  1200000 /* wait 12 * 100ms for SRIOV */
+ #define MAX_KIQ_REG_WAIT       5000 /* in usecs, 5ms */
+ #define MAX_KIQ_REG_BAILOUT_INTERVAL   5 /* in msecs, 5ms */
+ #define MAX_KIQ_REG_TRY 1000
+diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
+index 93a4da4284ede..9c07ec8b97327 100644
+--- a/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
+@@ -414,6 +414,7 @@ static int gmc_v10_0_flush_gpu_tlb_pasid(struct amdgpu_device *adev,
+ 	uint32_t seq;
+ 	uint16_t queried_pasid;
+ 	bool ret;
++	u32 usec_timeout = amdgpu_sriov_vf(adev) ? SRIOV_USEC_TIMEOUT : adev->usec_timeout;
+ 	struct amdgpu_ring *ring = &adev->gfx.kiq.ring;
+ 	struct amdgpu_kiq *kiq = &adev->gfx.kiq;
+ 
+@@ -432,7 +433,7 @@ static int gmc_v10_0_flush_gpu_tlb_pasid(struct amdgpu_device *adev,
+ 
+ 		amdgpu_ring_commit(ring);
+ 		spin_unlock(&adev->gfx.kiq.ring_lock);
+-		r = amdgpu_fence_wait_polling(ring, seq, adev->usec_timeout);
++		r = amdgpu_fence_wait_polling(ring, seq, usec_timeout);
+ 		if (r < 1) {
+ 			dev_err(adev->dev, "wait for kiq fence error: %ld.\n", r);
+ 			return -ETIME;
+diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
+index 0e731016921be..70d24b522df8d 100644
+--- a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
+@@ -863,6 +863,7 @@ static int gmc_v9_0_flush_gpu_tlb_pasid(struct amdgpu_device *adev,
+ 	uint32_t seq;
+ 	uint16_t queried_pasid;
+ 	bool ret;
++	u32 usec_timeout = amdgpu_sriov_vf(adev) ? SRIOV_USEC_TIMEOUT : adev->usec_timeout;
+ 	struct amdgpu_ring *ring = &adev->gfx.kiq.ring;
+ 	struct amdgpu_kiq *kiq = &adev->gfx.kiq;
+ 
+@@ -902,7 +903,7 @@ static int gmc_v9_0_flush_gpu_tlb_pasid(struct amdgpu_device *adev,
+ 
+ 		amdgpu_ring_commit(ring);
+ 		spin_unlock(&adev->gfx.kiq.ring_lock);
+-		r = amdgpu_fence_wait_polling(ring, seq, adev->usec_timeout);
++		r = amdgpu_fence_wait_polling(ring, seq, usec_timeout);
+ 		if (r < 1) {
+ 			dev_err(adev->dev, "wait for kiq fence error: %ld.\n", r);
+ 			up_read(&adev->reset_sem);
+-- 
+2.35.1
+
+
 
