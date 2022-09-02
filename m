@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EDABECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:52:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79F35C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:53:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237964AbiIBMww (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:52:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41926 "EHLO
+        id S237977AbiIBMxB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:53:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237811AbiIBMvt (ORCPT
+        with ESMTP id S237892AbiIBMwC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:51:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A08EF8EED;
-        Fri,  2 Sep 2022 05:37:15 -0700 (PDT)
+        Fri, 2 Sep 2022 08:52:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 058D8E394F;
+        Fri,  2 Sep 2022 05:37:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1BAEB82ADF;
-        Fri,  2 Sep 2022 12:35:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E453C433B5;
-        Fri,  2 Sep 2022 12:35:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A1CAD62178;
+        Fri,  2 Sep 2022 12:27:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A83D1C433C1;
+        Fri,  2 Sep 2022 12:27:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122157;
-        bh=mf1teGMEOWSgwfn7Vz5ipwIsBvF8fMKbCe1bwBIL/fU=;
+        s=korg; t=1662121659;
+        bh=b73JFdEEH0L5zpEOhUoRbXlzxwYfjFJus6um4Pn4iT4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nECcDZLZ1JwFbf3cKYxLOHaZPCkD0vCnR9oV60ImdUU+W4k3gCP5dIIngLU45Sglj
-         +Fxd2dN4WJHKQJ5HY4LufSJOOXbyZi/FuBy/wzQFdrHk3FgQfCqHSZoylRJ/DO+kwi
-         sER/pRKOq+l4IaZa4JGpYbY2bFaIUTQ4WhNNYBfs=
+        b=uMwI0YozS9gwT20hpV+MI/o2IdzGpIABI4D8ig+ZygiLsvKNc8JvsszbSbzXH4cRJ
+         ou0HdcCsNL4uQ38GmdG5yS04kYBOgX8BOyaU/MlZfs9MZybjJpSjSkPaeCS2G/8uwb
+         ssWx9DgTYR0ezVOCPDxrMdLD3K5cZp81oo7wfD8Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aditya Garg <gargaditya08@live.com>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.19 23/72] HID: Add Apple Touchbar on T2 Macs in hid_have_special_driver list
-Date:   Fri,  2 Sep 2022 14:18:59 +0200
-Message-Id: <20220902121405.549386554@linuxfoundation.org>
+        Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: [PATCH 5.4 05/77] Revert "selftests/bpf: Fix "dubious pointer arithmetic" test"
+Date:   Fri,  2 Sep 2022 14:18:14 +0200
+Message-Id: <20220902121403.789465369@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
-References: <20220902121404.772492078@linuxfoundation.org>
+In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
+References: <20220902121403.569927325@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,59 +47,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aditya Garg <gargaditya08@live.com>
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
-commit 750ec977288d96e9a11424e3507ede097af732c4 upstream.
+This reverts commit 6098562ed9df1babcc0ba5b89c4fb47715ba3f72.
+It shouldn't be in v5.4 because the commit it fixes is only present in
+v5.9 onward.
 
-The touchbar on Apple T2 Macs has 2 modes, one that shows the function
-keys and other that shows the media controls. The user can use the fn
-key on his keyboard to switch between the 2 modes.
-
-On Linux, if people were using an external keyboard or mouse, the
-touchbar failed to change modes on pressing the fn key with the following
-in dmesg :-
-
-[   10.661445] apple-ib-als 0003:05AC:8262.0001: : USB HID v1.01 Device [Apple Inc. Ambient Light Sensor] on usb-bce-vhci-3/input0
-[   11.830992] apple-ib-touchbar 0003:05AC:8302.0007: input: USB HID v1.01 Keyboard [Apple Inc. Touch Bar Display] on usb-bce-vhci-6/input0
-[   12.139407] apple-ib-touchbar 0003:05AC:8102.0008: : USB HID v1.01 Device [Apple Inc. Touch Bar Backlight] on usb-bce-vhci-7/input0
-[   12.211824] apple-ib-touchbar 0003:05AC:8102.0009: : USB HID v1.01 Device [Apple Inc. Touch Bar Backlight] on usb-bce-vhci-7/input1
-[   14.219759] apple-ib-touchbar 0003:05AC:8302.0007: tb: Failed to set touch bar mode to 2 (-110)
-[   24.395670] apple-ib-touchbar 0003:05AC:8302.0007: tb: Failed to set touch bar mode to 2 (-110)
-[   34.635791] apple-ib-touchbar 0003:05AC:8302.0007: tb: Failed to set touch bar mode to 2 (-110)
-[  269.579233] apple-ib-touchbar 0003:05AC:8302.0007: tb: Failed to set touch bar mode to 1 (-110)
-
-Add the USB IDs of the touchbar found in T2 Macs to HID have special
-driver list to fix the issue.
-
-Signed-off-by: Aditya Garg <gargaditya08@live.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/hid-ids.h    |    2 ++
- drivers/hid/hid-quirks.c |    2 ++
- 2 files changed, 4 insertions(+)
+ tools/testing/selftests/bpf/test_align.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/hid/hid-ids.h
-+++ b/drivers/hid/hid-ids.h
-@@ -185,6 +185,8 @@
- #define USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_2021   0x029c
- #define USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_FINGERPRINT_2021   0x029a
- #define USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_NUMPAD_2021   0x029f
-+#define USB_DEVICE_ID_APPLE_TOUCHBAR_BACKLIGHT 0x8102
-+#define USB_DEVICE_ID_APPLE_TOUCHBAR_DISPLAY 0x8302
- 
- #define USB_VENDOR_ID_ASUS		0x0486
- #define USB_DEVICE_ID_ASUS_T91MT	0x0185
---- a/drivers/hid/hid-quirks.c
-+++ b/drivers/hid/hid-quirks.c
-@@ -314,6 +314,8 @@ static const struct hid_device_id hid_ha
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_GEYSER1_TP_ONLY) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_2021) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_FINGERPRINT_2021) },
-+	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_TOUCHBAR_BACKLIGHT) },
-+	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_TOUCHBAR_DISPLAY) },
- #endif
- #if IS_ENABLED(CONFIG_HID_APPLEIR)
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_IRCONTROL) },
+--- a/tools/testing/selftests/bpf/test_align.c
++++ b/tools/testing/selftests/bpf/test_align.c
+@@ -475,10 +475,10 @@ static struct bpf_align_test tests[] = {
+ 			 */
+ 			{7, "R5_w=inv(id=0,smin_value=-9223372036854775806,smax_value=9223372036854775806,umin_value=2,umax_value=18446744073709551614,var_off=(0x2; 0xfffffffffffffffc)"},
+ 			/* Checked s>=0 */
+-			{9, "R5=inv(id=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc)"},
++			{9, "R5=inv(id=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
+ 			/* packet pointer + nonnegative (4n+2) */
+-			{11, "R6_w=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc)"},
+-			{13, "R4_w=pkt(id=1,off=4,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc)"},
++			{11, "R6_w=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
++			{13, "R4_w=pkt(id=1,off=4,r=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
+ 			/* NET_IP_ALIGN + (4n+2) == (4n), alignment is fine.
+ 			 * We checked the bounds, but it might have been able
+ 			 * to overflow if the packet pointer started in the
+@@ -486,7 +486,7 @@ static struct bpf_align_test tests[] = {
+ 			 * So we did not get a 'range' on R6, and the access
+ 			 * attempt will fail.
+ 			 */
+-			{15, "R6_w=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc)"},
++			{15, "R6_w=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
+ 		}
+ 	},
+ 	{
 
 
