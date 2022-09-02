@@ -2,89 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 712B9ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:49:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F28B7C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:50:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236250AbiIBNtJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:49:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33416 "EHLO
+        id S237618AbiIBNt6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:49:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237838AbiIBNsU (ORCPT
+        with ESMTP id S236960AbiIBNti (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:48:20 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4546E166AA5;
-        Fri,  2 Sep 2022 06:23:17 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Fri, 2 Sep 2022 09:49:38 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AE66132ED1;
+        Fri,  2 Sep 2022 06:24:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id D9D2F5BE03;
-        Fri,  2 Sep 2022 12:34:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1662122070;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZSh2REjiRAk/k5oPQg2yXZGh/unc7sc3tPapfoccmRI=;
-        b=wdEwtN3JZgc/dJfXvHTB2OuHq5iMMkwcvGadpvdtKl82JBp/CVm4q6hNc+Y/iWTf2Xz+aI
-        YGNc8TruF0sa2O/2hm9jHou3PZrcjEVob/160cOGyJ77oxrhQEaONmpuSIM0yX+QUzatCh
-        /RsJEpuKLTyOxrED2kdzlFs5ZvtVXAo=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1662122070;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZSh2REjiRAk/k5oPQg2yXZGh/unc7sc3tPapfoccmRI=;
-        b=KENUHNHD48w8jrLxhOstCJQGwUAg1XngO63jvWwXMV9t3VvgwJ8T1JrqwXS/ustyoxYoL+
-        euH2Gj9JTUuJQ1CQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9A82A13328;
-        Fri,  2 Sep 2022 12:34:30 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id Wbq4JFb4EWMIaQAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Fri, 02 Sep 2022 12:34:30 +0000
-Date:   Fri, 2 Sep 2022 14:29:10 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     "Vishal Moola (Oracle)" <vishal.moola@gmail.com>
-Cc:     linux-fsdevel@vger.kernel.org, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        ceph-devel@vger.kernel.org, linux-cifs@vger.kernel.org,
-        linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
-        cluster-devel@redhat.com, linux-nilfs@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [PATCH 07/23] btrfs: Convert extent_write_cache_pages() to use
- filemap_get_folios_tag()
-Message-ID: <20220902122910.GV13489@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        "Vishal Moola (Oracle)" <vishal.moola@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        ceph-devel@vger.kernel.org, linux-cifs@vger.kernel.org,
-        linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
-        cluster-devel@redhat.com, linux-nilfs@vger.kernel.org,
-        linux-mm@kvack.org
-References: <20220901220138.182896-1-vishal.moola@gmail.com>
- <20220901220138.182896-8-vishal.moola@gmail.com>
+        by sin.source.kernel.org (Postfix) with ESMTPS id B8FAFCE2E6B;
+        Fri,  2 Sep 2022 12:36:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F0E9C433D7;
+        Fri,  2 Sep 2022 12:36:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662122164;
+        bh=coAGS/lQZ4tcWZ/q1MpitTrR7Gs3ITON93+C3oPxELQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rkjwAbHZnY+N4yP5OsHcb1XHsYBTdwP7WnF3gdruhk6ciOt8jEy4rgMJSSPzcO93i
+         FSrtWkAQoi5xenWeGzVg5tOm8MFN+LG+3ChpiQ6+VSrnP9ajag0aMIpf6Ld8bqDZWw
+         39C9zZh4BorOW1fChQSTis9/iG6SGVVypSbS1prU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 33/72] ASoC: sh: rz-ssi: Improve error handling in rz_ssi_probe() error path
+Date:   Fri,  2 Sep 2022 14:19:09 +0200
+Message-Id: <20220902121405.883050423@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
+References: <20220902121404.772492078@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220901220138.182896-8-vishal.moola@gmail.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 01, 2022 at 03:01:22PM -0700, Vishal Moola (Oracle) wrote:
-> Converted function to use folios throughout. This is in preparation for
-> the removal of find_get_pages_range_tag(). Now also supports large
-> folios.
-> 
-> Signed-off-by: Vishal Moola (Oracle) <vishal.moola@gmail.com>
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-Acked-by: David Sterba <dsterba@suse.com>
+[ Upstream commit c75ed9f54ce8d349fee557f2b471a4d637ed2a6b ]
+
+We usually do cleanup in reverse order of init. Currently in case of
+error rz_ssi_release_dma_channels() done in the reverse order. This
+patch improves error handling in rz_ssi_probe() error path.
+
+While at it, use "goto cleanup" style to reduce code duplication.
+
+Reported-by: Pavel Machek <pavel@denx.de>
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Link: https://lore.kernel.org/r/20220728092612.38858-1-biju.das.jz@bp.renesas.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ sound/soc/sh/rz-ssi.c | 26 +++++++++++++++-----------
+ 1 file changed, 15 insertions(+), 11 deletions(-)
+
+diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c
+index e392de7a262ef..3d74acffec11f 100644
+--- a/sound/soc/sh/rz-ssi.c
++++ b/sound/soc/sh/rz-ssi.c
+@@ -1016,32 +1016,36 @@ static int rz_ssi_probe(struct platform_device *pdev)
+ 
+ 	ssi->rstc = devm_reset_control_get_exclusive(&pdev->dev, NULL);
+ 	if (IS_ERR(ssi->rstc)) {
+-		rz_ssi_release_dma_channels(ssi);
+-		return PTR_ERR(ssi->rstc);
++		ret = PTR_ERR(ssi->rstc);
++		goto err_reset;
+ 	}
+ 
+ 	reset_control_deassert(ssi->rstc);
+ 	pm_runtime_enable(&pdev->dev);
+ 	ret = pm_runtime_resume_and_get(&pdev->dev);
+ 	if (ret < 0) {
+-		rz_ssi_release_dma_channels(ssi);
+-		pm_runtime_disable(ssi->dev);
+-		reset_control_assert(ssi->rstc);
+-		return dev_err_probe(ssi->dev, ret, "pm_runtime_resume_and_get failed\n");
++		dev_err(&pdev->dev, "pm_runtime_resume_and_get failed\n");
++		goto err_pm;
+ 	}
+ 
+ 	ret = devm_snd_soc_register_component(&pdev->dev, &rz_ssi_soc_component,
+ 					      rz_ssi_soc_dai,
+ 					      ARRAY_SIZE(rz_ssi_soc_dai));
+ 	if (ret < 0) {
+-		rz_ssi_release_dma_channels(ssi);
+-
+-		pm_runtime_put(ssi->dev);
+-		pm_runtime_disable(ssi->dev);
+-		reset_control_assert(ssi->rstc);
+ 		dev_err(&pdev->dev, "failed to register snd component\n");
++		goto err_snd_soc;
+ 	}
+ 
++	return 0;
++
++err_snd_soc:
++	pm_runtime_put(ssi->dev);
++err_pm:
++	pm_runtime_disable(ssi->dev);
++	reset_control_assert(ssi->rstc);
++err_reset:
++	rz_ssi_release_dma_channels(ssi);
++
+ 	return ret;
+ }
+ 
+-- 
+2.35.1
+
+
+
