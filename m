@@ -2,112 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68B00C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 11:00:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FDF8C54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 11:00:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235490AbiIBLAg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 07:00:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41658 "EHLO
+        id S235543AbiIBLAr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 07:00:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235137AbiIBLAc (ORCPT
+        with ESMTP id S235529AbiIBLAm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 07:00:32 -0400
-Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E75C3FA1E;
-        Fri,  2 Sep 2022 04:00:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazon201209;
-  t=1662116430; x=1693652430;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+NMpbPFe8fp8R+B93WiLknkoUnpXkg4bwQ8Cau7P/jw=;
-  b=eUT3bNHxAbf3EzctDr+zA5d6Z4YI73334F2O5qejKqg7rKmlHlG1RqcR
-   Q7GFw2Us3C1uySQyH5MoWE3btt8BYlBBPQ9NB4nuF+idKgMVWkFnSXkrT
-   xeLkzvatBQ/O4HUf+wn1ImNmXyf3yQctZZcInR/xi3Ng+3fwRG0jllDBI
-   E=;
-X-IronPort-AV: E=Sophos;i="5.93,283,1654560000"; 
-   d="scan'208";a="222899704"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-22c2b493.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 11:00:13 +0000
-Received: from EX13D05EUB003.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2b-22c2b493.us-west-2.amazon.com (Postfix) with ESMTPS id 30D8345037;
-        Fri,  2 Sep 2022 11:00:12 +0000 (UTC)
-Received: from EX13MTAUWA001.ant.amazon.com (10.43.160.58) by
- EX13D05EUB003.ant.amazon.com (10.43.166.253) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Fri, 2 Sep 2022 11:00:10 +0000
-Received: from dev-dsk-mheyne-1b-c1362c4d.eu-west-1.amazon.com (10.15.57.183)
- by mail-relay.amazon.com (10.43.160.118) with Microsoft SMTP Server id
- 15.0.1497.38 via Frontend Transport; Fri, 2 Sep 2022 11:00:09 +0000
-Received: by dev-dsk-mheyne-1b-c1362c4d.eu-west-1.amazon.com (Postfix, from userid 5466572)
-        id D42F2275A; Fri,  2 Sep 2022 11:00:07 +0000 (UTC)
-Date:   Fri, 2 Sep 2022 11:00:07 +0000
-From:   Maximilian Heyne <mheyne@amazon.de>
-To:     SeongJae Park <sj@kernel.org>
-CC:     <jgross@suse.com>, <roger.pau@citrix.com>,
-        <marmarek@invisiblethingslab.com>,
-        <xen-devel@lists.xenproject.org>, <axboe@kernel.dk>,
-        <ptyadav@amazon.de>, <linux-block@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 0/3] xen-blk{front, back}: Fix the broken semantic and
- flow of feature-persistent
-Message-ID: <20220902110007.GA100460@dev-dsk-mheyne-1b-c1362c4d.eu-west-1.amazon.com>
-References: <20220831165824.94815-1-sj@kernel.org>
+        Fri, 2 Sep 2022 07:00:42 -0400
+Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDA7066A55;
+        Fri,  2 Sep 2022 04:00:40 -0700 (PDT)
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
+        id 1oU4PH-000LKk-Nv; Fri, 02 Sep 2022 21:00:16 +1000
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 02 Sep 2022 19:00:15 +0800
+Date:   Fri, 2 Sep 2022 19:00:15 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Kshitiz Varshney <kshitiz.varshney@nxp.com>
+Cc:     Horia Geanta <horia.geanta@nxp.com>,
+        Pankaj Gupta <pankaj.gupta@nxp.com>,
+        Varun Sethi <V.Sethi@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Iuliana Prodan <iuliana.prodan@nxp.com>,
+        Gaurav Jain <gaurav.jain@nxp.com>,
+        Rahul Kumar Yadav <rahulkumar.yadav@nxp.com>,
+        Vabhav Sharma <vabhav.sharma@nxp.com>,
+        Sahil Malhotra <sahil.malhotra@nxp.com>,
+        Matt Mackall <mpm@selenic.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        Steffen Trumtrar <s.trumtrar@pengutronix.de>,
+        PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>,
+        Martin Kaiser <martin@kaiser.cx>, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-imx@nxp.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v1] Moving IRQ handler registering after
+ imx_rngc_irq_mask_clear()
+Message-ID: <YxHiP74MhWdQHiRY@gondor.apana.org.au>
+References: <20220822111903.328957-1-kshitiz.varshney@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220831165824.94815-1-sj@kernel.org>
+In-Reply-To: <20220822111903.328957-1-kshitiz.varshney@nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 04:58:21PM +0000, SeongJae Park wrote:
-> Changes from v1
-> (https://lore.kernel.org/xen-devel/20220825161511.94922-1-sj@kernel.org/)
-> - Fix the wrong feature_persistent caching position of blkfront
-> - Set blkfront's feature_persistent field setting with simple '&&'
->   instead of 'if' (Pratyush Yadav)
+On Mon, Aug 22, 2022 at 01:19:03PM +0200, Kshitiz Varshney wrote:
+> Issue:
+> While servicing interrupt, if the IRQ happens to be because of a SEED_DONE
+> due to a previous boot stage, you end up completing the completion
+> prematurely, hence causing kernel to crash while booting.
 > 
-> This patchset fixes misuse of the 'feature-persistent' advertisement
-> semantic (patches 1 and 2), and the wrong timing of the
-> 'feature_persistent' value caching, which made persistent grants feature
-> always disabled.
+> Fix:
+> Moving IRQ handler registering after imx_rngc_irq_mask_clear()
 > 
-> SeongJae Park (3):
->   xen-blkback: Advertise feature-persistent as user requested
->   xen-blkfront: Advertise feature-persistent as user requested
->   xen-blkfront: Cache feature_persistent value before advertisement
-> 
->  drivers/block/xen-blkback/common.h |  3 +++
->  drivers/block/xen-blkback/xenbus.c |  6 ++++--
->  drivers/block/xen-blkfront.c       | 20 ++++++++++++--------
->  3 files changed, 19 insertions(+), 10 deletions(-)
-> 
-> --
-> 2.25.1
-> 
+> Fixes: 1d5449445bd0 (hwrng: mx-rngc - add a driver for Freescale RNGC)
+> Signed-off-by: Kshitiz Varshney <kshitiz.varshney@nxp.com>
+> ---
+>  drivers/char/hw_random/imx-rngc.c | 16 ++++++++--------
+>  1 file changed, 8 insertions(+), 8 deletions(-)
 
-I've tested this patch series in the following ways:
-* Only applied the blkback patch but not the blkfront patches
-* Only applied the blkfront patches but not the blkback patch
-* Applied both
-
-All scenarios worked, so
-
-Tested-by: Maximilian Heyne <mheyne@amazon.de>
-
-Actually I also wanted to test changing feature_persistent and try reconnecting
-but I don't know how this is done. If anyone has a pointer here, I could test
-that as well.
-
-
-
-Amazon Development Center Germany GmbH
-Krausenstr. 38
-10117 Berlin
-Geschaeftsfuehrung: Christian Schlaeger, Jonathan Weiss
-Eingetragen am Amtsgericht Charlottenburg unter HRB 149173 B
-Sitz: Berlin
-Ust-ID: DE 289 237 879
-
-
-
+Patch applied.  Thanks.
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
