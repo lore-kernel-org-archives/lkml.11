@@ -2,90 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 739D3C54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:42:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFA0CECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:42:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235857AbiIBImb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 04:42:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56738 "EHLO
+        id S235879AbiIBImr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 04:42:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235817AbiIBIm3 (ORCPT
+        with ESMTP id S235817AbiIBImn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 04:42:29 -0400
+        Fri, 2 Sep 2022 04:42:43 -0400
 Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A6829BB6B;
-        Fri,  2 Sep 2022 01:42:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 473529DB54;
+        Fri,  2 Sep 2022 01:42:43 -0700 (PDT)
 Received: from localhost (localhost [127.0.0.1])
-        by comms.puri.sm (Postfix) with ESMTP id ABA96DFD85;
-        Fri,  2 Sep 2022 01:42:27 -0700 (PDT)
+        by comms.puri.sm (Postfix) with ESMTP id 19BDEDFC97;
+        Fri,  2 Sep 2022 01:42:43 -0700 (PDT)
 Received: from comms.puri.sm ([127.0.0.1])
         by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id F4VVKcahdboP; Fri,  2 Sep 2022 01:42:26 -0700 (PDT)
+        with ESMTP id Qth0n9K1XUrE; Fri,  2 Sep 2022 01:42:42 -0700 (PDT)
 From:   Martin Kepplinger <martin.kepplinger@puri.sm>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=puri.sm; s=comms;
-        t=1662108146; bh=Z8NQnvM4CE3GkQthavouozUDfjffo74DWtzt1eBxpmw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=kblbKHDINMmX4v4IjKrOBZYvKPPFTFbdoXfd+FuiZ5ZvJiR6OHdL+PZATJj1tpGAt
-         MOJ/kyFDTDzMLfjrpZ1Q5ik2wqmpbxAc1AIlkQAmnTJNSZsiC7IXVONyDopHxq/jFK
-         x3CBlS++W36BhsgChogDFpwX0B/81PVfeyCG7YZX4Bvw1vfpWnXoMZGi+sJzsTPj+J
-         GSv4unDF9PTbQuamKJIYfscZVRZyvmBxCaD0zhm9BJeoQwbbvx/t/6DcSWSgxYhcq3
-         u5J0u4nABcwbAoIIdJGsUCvade7qOzhk2adyQ3uNuUWoq/VAVjeUcKlFfkVBgmAMOY
-         4Zpu46q0eaIjg==
+        t=1662108162; bh=f5pKOXHbGKD/nYgQOSeg2/+MMasiz7zAAfiGLG+NTJk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=urzOoLmeLNMFJMJGbZH/mv+bUIioZASCyXEWUEs2h6UkYtL9SnNZBry6M8PYWC1P4
+         CSz6PEo2ndgfEJt1dSTtqNONizhTft7zfQVUSFwpco5QwwF15rk+gApgUlhWLhQIGp
+         QMgSIFLU/dfs6ISLZl810Gf3KEJs1wF1EbuktFiwEob0OaPduYK5R7L+Ey2FhusM1Y
+         5atxY7Ecp2uBE9TwFvMGK0XaL8QreXs9toiAt16FHf36VYJ/i7M1HDQXDXNxtrrwta
+         DszHDcvvrwEIMkPqZduprCTOgXGsMY2k1itfV2CUJJxCnF1PcUW36HFfJy1ejLMGNp
+         gpAW/o/inxEVw==
 To:     festevam@gmail.com, shawnguo@kernel.org
 Cc:     martin.kepplinger@puri.sm, devicetree@vger.kernel.org,
         kernel@pengutronix.de, kernel@puri.sm, krzk@kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-imx@nxp.com,
         linux-kernel@vger.kernel.org, phone-devel@vger.kernel.org,
-        robh@kernel.org
-Subject: [PATCH v2 0/6] arm64: dts: imx8mq-librem5: phone DT updates
-Date:   Fri,  2 Sep 2022 10:42:10 +0200
-Message-Id: <20220902084216.1259202-1-martin.kepplinger@puri.sm>
+        robh@kernel.org, Angus Ainslie <angus@akkea.ca>
+Subject: [PATCH v2 5/6] arm64: dts: imx8mq-librem5: add usb-role-switch property to dwc3
+Date:   Fri,  2 Sep 2022 10:42:15 +0200
+Message-Id: <20220902084216.1259202-6-martin.kepplinger@puri.sm>
+In-Reply-To: <20220902084216.1259202-1-martin.kepplinger@puri.sm>
+References: <20220902084216.1259202-1-martin.kepplinger@puri.sm>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hi Shawn and all interested,
+From: Angus Ainslie <angus@akkea.ca>
 
-This is another small number of patches that enables more devices
-or features found on the Librem 5 phone.
+In order to enable (PD and data) role switching on the Librem 5 phone,
+add the usb-role-switch property to imx8mq's dwc3 node.
 
-thank you,
+Signed-off-by: Angus Ainslie <angus@akkea.ca>
+Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
+---
+ arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-                               martin
-
-revision history
-----------------
-v2: (thank you Krzysztof)
-* make led node names generic
-* add a mipi-csi syntax fix
-
-v1:
-https://lore.kernel.org/phone-devel/20220831080301.1092737-1-martin.kepplinger@puri.sm/
-
-
-
-Angus Ainslie (2):
-  arm64: dts: imx8mq-librem5: add USB type-c properties for role
-    switching
-  arm64: dts: imx8mq-librem5: add usb-role-switch property to dwc3
-
-Guido Günther (1):
-  arm64: dts: imx8mq-librem5: add RGB pwm notification leds
-
-Martin Kepplinger (2):
-  arm64: dts: imx8mq-librem5: describe the voice coil motor for focus
-    control
-  arm64: dts: imx8mq-librem5: fix mipi_csi description
-
-Sebastian Krzyszkowiak (1):
-  arm64: dts: imx8mq-librem5: Add bq25895 as max17055's power supply
-
- .../boot/dts/freescale/imx8mq-librem5.dtsi    | 40 ++++++++++++++++++-
- 1 file changed, 38 insertions(+), 2 deletions(-)
-
+diff --git a/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi b/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi
+index f07d1c6e97777..058d6ecf109b2 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi
+@@ -1302,6 +1302,7 @@ &usb_dwc3_0 {
+ 	#size-cells = <0>;
+ 	dr_mode = "otg";
+ 	snps,dis_u3_susphy_quirk;
++	usb-role-switch;
+ 	status = "okay";
+ 
+ 	port@0 {
 -- 
 2.30.2
 
