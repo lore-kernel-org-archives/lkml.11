@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32A0DECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:30:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 228C9ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:30:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236158AbiIBOaY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:30:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56412 "EHLO
+        id S236531AbiIBOae (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:30:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236098AbiIBO1g (ORCPT
+        with ESMTP id S237249AbiIBO1i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:27:36 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B975168A26
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:31 -0700 (PDT)
+        Fri, 2 Sep 2022 10:27:38 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E27741144E0
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
-        Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:In-Reply-To;
-        bh=YUhA2B9hWTAdbvtvLfAUCL48qsFF8kF9euAYgBwVN7c=; b=F1sdS6J0B07JaNau9gs7zg9nAa
-        JFqYigGC2sVpUTdJG0Ry7PoQlkHW5sSmWOwYlDjzxi0d0ZM6ucwdxaOGxu5ED0CyjXB1eFdseUDqN
-        jwYnJJAj/nI/+x1Nn/1VIPrh3UMEkX7GGDXBG01mgtwTMBVmqY6RCMX/1y2nfHXvPnIECNItRa0ai
-        pYFOHwxuBnSyFVrowORsKnxV/Pfj5qX8j1TjDhEXp7dTB7qw+DNU+KCzRAEgHisdvG+FcsW8y+KXb
-        yEr7fHD9l8gWsNkHiG0DwPEbdj52ujSMHBOrxSeGgjq57exmwfsJS4w1PQL9B1AH467E0chEIDvyn
-        ZEur5Odg==;
+        d=infradead.org; s=desiato.20200630; h=Subject:Cc:To:From:Date:Message-ID:
+        Sender:Reply-To:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=FclcwO+wx1zrOA9E8oa1h7zg044eZzefmOyR/N1fxOU=; b=lkGU3GlX6YTWi5kptvbLQRezAo
+        ktIoEFP1iRudX/ZA5ohYQnqz7F2dKKmOwhz3sS/Jrzm7kdcQ4ZpDiAsajptvPDzvbnNkMGn/TfZkp
+        LD+hVuwbNvNgom7yd8ykoWjwqhO2VDvg4kd1dZAdy7HNt8LMY6AI325ZbAvMnAJb5Jp8K1uSHkWKG
+        PbuZo1DX45MUHWKgkTIZ7vQvsgKrFZaCHopwGyYXnWTehPmh8ST2wCCFC5zVQFLgk5bQnJvodVYGR
+        DC9IMW+q3jgVlQ0c2xA3k7HuwtINlkqmYCQoIwpXrc+dPcRhBfA78uqgI0uvmWGQASFS/jhaUDT/J
+        vO2hUgYg==;
 Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oU77M-0074T1-6d; Fri, 02 Sep 2022 13:53:56 +0000
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oU77K-008g7m-N4; Fri, 02 Sep 2022 13:53:55 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 00E8430069C;
-        Fri,  2 Sep 2022 15:53:54 +0200 (CEST)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 582223004C3;
+        Fri,  2 Sep 2022 15:53:52 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 3F8F32B077D23; Fri,  2 Sep 2022 15:53:52 +0200 (CEST)
-Message-ID: <20220902130947.190618587@infradead.org>
+        id 11DB82024E169; Fri,  2 Sep 2022 15:53:52 +0200 (CEST)
+Message-ID: <20220902130625.217071627@infradead.org>
 User-Agent: quilt/0.66
-Date:   Fri, 02 Sep 2022 15:06:33 +0200
+Date:   Fri, 02 Sep 2022 15:06:25 +0200
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     Thomas Gleixner <tglx@linutronix.de>
 Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
@@ -59,90 +59,155 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
         Daniel Borkmann <daniel@iogearbox.net>,
         K Prateek Nayak <kprateek.nayak@amd.com>,
         Eric Dumazet <edumazet@google.com>
-Subject: [PATCH v2 08/59] x86/build: Ensure proper function alignment
-References: <20220902130625.217071627@infradead.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Subject: [PATCH v2 00/59] x86/retbleed: Call depth tracking mitigation
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Gleixner <tglx@linutronix.de>
 
-The Intel Architectures Optimization Reference Manual explains that
-functions should be aligned at 16 bytes because for a lot of (Intel)
-uarchs the I-fetch width is 16 bytes. The AMD Software Optimization
-Guide (for recent chips) mentions a 32 byte I-fetch window but a 16
-byte decode window.
+Hi!
 
-Follow this advice and align functions to 16 bytes to optimize
-instruction delivery to decode and reduce front-end bottlenecks.
+At long last a new version of the call depth tracking patches.
 
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
----
- arch/x86/Kconfig.cpu              |    6 ++++++
- arch/x86/Makefile                 |    4 ++++
- arch/x86/include/asm/linkage.h    |    7 ++++---
- include/asm-generic/vmlinux.lds.h |    7 ++++++-
- 4 files changed, 20 insertions(+), 4 deletions(-)
+  v1: https://lkml.kernel.org/r/20220716230344.239749011@linutronix.de
 
---- a/arch/x86/Kconfig.cpu
-+++ b/arch/x86/Kconfig.cpu
-@@ -517,3 +517,9 @@ config CPU_SUP_VORTEX_32
- 	  makes the kernel a tiny bit smaller.
- 
- 	  If unsure, say N.
-+
-+# Defined here so it is defined for UM too
-+config FUNCTION_ALIGNMENT
-+	int
-+	default 16 if X86_64 || X86_ALIGNMENT_16
-+	default 8
---- a/arch/x86/Makefile
-+++ b/arch/x86/Makefile
-@@ -84,6 +84,10 @@ else
- KBUILD_CFLAGS += $(call cc-option,-fcf-protection=none)
- endif
- 
-+ifneq ($(CONFIG_DEBUG_FORCE_FUNCTION_ALIGN_64B),y)
-+KBUILD_CFLAGS += -falign-functions=$(CONFIG_FUNCTION_ALIGNMENT)
-+endif
-+
- ifeq ($(CONFIG_X86_32),y)
-         BITS := 32
-         UTS_MACHINE := i386
---- a/arch/x86/include/asm/linkage.h
-+++ b/arch/x86/include/asm/linkage.h
-@@ -14,9 +14,10 @@
- 
- #ifdef __ASSEMBLY__
- 
--#if defined(CONFIG_X86_64) || defined(CONFIG_X86_ALIGNMENT_16)
--#define __ALIGN		.p2align 4, 0x90
--#define __ALIGN_STR	__stringify(__ALIGN)
-+#if CONFIG_FUNCTION_ALIGNMENT == 16
-+#define __ALIGN			.p2align 4, 0x90
-+#define __ALIGN_STR		__stringify(__ALIGN)
-+#define FUNCTION_ALIGNMENT	16
- #endif
- 
- #if defined(CONFIG_RETHUNK) && !defined(__DISABLE_EXPORTS) && !defined(BUILD_VDSO)
---- a/include/asm-generic/vmlinux.lds.h
-+++ b/include/asm-generic/vmlinux.lds.h
-@@ -82,7 +82,12 @@
- #endif
- 
- /* Align . to a 8 byte boundary equals to maximum function alignment. */
--#define ALIGN_FUNCTION()  . = ALIGN(8)
-+#ifndef CONFIG_FUNCTION_ALIGNMENT
-+#define __FUNCTION_ALIGNMENT	8
-+#else
-+#define __FUNCTION_ALIGNMENT	CONFIG_FUNCTION_ALIGNMENT
-+#endif
-+#define ALIGN_FUNCTION()  . = ALIGN(__FUNCTION_ALIGNMENT)
- 
- /*
-  * LD_DEAD_CODE_DATA_ELIMINATION option enables -fdata-sections, which
+This version is significantly different from the last in that it no longer
+makes use of external call thunks allocated from the module space. Instead
+every function gets aligned to 16 bytes and gets 16 bytes of (pre-symbol)
+padding. (This padding will also come in handy for other things, like the
+kCFI/FineIBT work.)
+
+Prior to these patches function alignment is basically non-existent, as such
+any instruction fetch for the first instructions of a function will have (on
+average) half the fetch window filled with whatever comes before. By pushing
+the alignment up to 16 bytes this improves matters for chips that happen to
+have a 16 byte i-fetch window size (Intel) while not making matters worse for
+chips that have a larger 32 byte i-fetch window (AMD Zen). In fact, it improves
+the worst case for Zen from 31 bytes of garbage to 16 bytes of garbage.
+
+As such the first many patches of the series fix up lots of alignment quirks.
+
+
+The second big difference is the introduction of struct pcpu_hot. Because the
+compiler managed to place two adjacent (in code) DEFINE_PER_CPU() variables in
+random cachelines (it is absolutely free to do so) the introduction of the
+per-cpu x86_call_depth variable sometimes introduced significant additional
+cache pressure, while other times it would sit nicely in the same line with
+preempt_count and not show up at all.
+
+In order to alleviate this problem; introduce struct pcpu_hot and collect a
+number of hot per-cpu variables in a way the compiler can't mess up.
+
+
+Since these changes are 'unconditional', Mel was gracious enough to help test
+this on his test setup across all the relevant uarchs (very much including both
+Intel and AMD machines) and found that while these changes cause some very
+small wins and losses across the board it is mostly noise.
+
+
+Aside from these changes; the core of the depth tracking is still the same.
+
+ - objtool creates a list of (function) call sites.
+
+ - for every call; overwrite the padding of the target function with the
+   accounting thunk (if not already done) and adjust the call site to
+   target this thunk.
+
+ - the retbleed return thunk mechanism is used for a custom return thunk
+   that includes return accounting and does RSB stuffing when required.
+
+This ensures no new compiler is required and avoids almost all overhead for
+non affected machines. This new option can still be selected using:
+
+  "retbleed=stuff"
+
+on the kernel command line.
+
+
+As a refresher; the theory behind call depth tracking is:
+
+The Return-Stack-Buffer (RSB) is a 16 deep stack that is filled on every call.
+On the return path speculation will "pop" an entry and takes that as the return
+target. Once the RSB is empty, the CPU falls back to other predictors, e.g. the
+Branch History Buffer, which can be mistrained by user space and misguides the
+(return) speculation path to a disclosure gadget of your choice -- as described
+in the retbleed paper.
+
+Call depth tracking is designed to break this speculation path by stuffing
+speculation trap calls into the RSB whenver the RSB is running low. This way
+the speculation stalls and never falls back to other predictors.
+
+The assumption is that stuffing at the 12th return is sufficient to break the
+speculation before it hits the underflow and the fallback to the other
+predictors. Testing confirms that it works. Johannes, one of the retbleed
+researchers, tried to attack this approach and confirmed that it brings the
+signal to noise ratio down to the crystal ball level.
+
+
+Excerpts from IBRS vs stuff from Mel's testing:
+
+perfsyscall
+
+		6.0.0-rc1		6.0.0-rc1
+                tglx-mit-spectre-ibrs	tglx-mit-spectre-retpoline-retstuff
+Duration User         136.16		   69.10
+Duration System       100.50		   33.04
+Duration Elapsed      237.20		  102.65
+
+That's a massive improvement with a major reduction in system CPU usage.
+
+Kernel compilation is variable. Skylake-X was modest with 2-18% gain depending
+on degree of parallelisation.
+
+Git checkouts are roughly 14% faster on Skylake-X
+
+Network test were localhost only so are limited but even so, the gain is
+large. Skylake-X again;
+
+Netperf-TCP
+                                  6.0.0-rc1              6.0.0-rc1
+                      tglx-mit-spectre-ibrs  tglx-mit-spectre-retpoline-retstuff
+Hmean     send-64         241.39 (   0.00%)      298.00 *  23.45%*
+Hmean     send-128        489.55 (   0.00%)      610.46 *  24.70%*
+Hmean     send-256        990.85 (   0.00%)     1201.73 *  21.28%*
+Hmean     send-1024      4051.84 (   0.00%)     5006.19 *  23.55%*
+Hmean     send-2048      7924.75 (   0.00%)     9777.14 *  23.37%*
+Hmean     send-3312     12319.98 (   0.00%)    15210.07 *  23.46%*
+Hmean     send-4096     14770.62 (   0.00%)    17941.32 *  21.47%*
+Hmean     send-8192     26302.00 (   0.00%)    30170.04 *  14.71%*
+Hmean     send-16384    42449.51 (   0.00%)    48036.45 *  13.16%*
+
+While this is UDP_STREAM, TCP_STREAM is similarly impressive.
+
+FIO measurements done by Tim Chen:
+
+read (kIOPs)            Mean    stdev   mitigations=off retbleed=off    CPU util
+================================================================================
+mitigations=off         357.33  3.79    0.00%           6.14%           98.93%
+retbleed=off            336.67  6.43    -5.78%          0.00%           99.01%
+retbleed=ibrs           242.00  0.00    -32.28%         -28.12%         99.41%
+retbleed=stuff (pad)    314.33  1.53    -12.03%         -6.63%          99.31%
+
+read/write                              Baseline        Baseline
+70/30 (kIOPs)           Mean    stdev   mitigations=off retbleed=off    CPU util
+================================================================================
+mitigations=off         349.00  5.29    0.00%           9.06%           96.66%
+retbleed=off            320.00  5.05    -8.31%          0.00%           95.54%
+retbleed=ibrs           238.60  0.17    -31.63%         -25.44%         98.18%
+retbleed=stuff (pad)    293.37  0.81    -15.94%         -8.32%          97.71%
+
+                                        Baseline        Baseline
+write (kIOPs)           Mean    stdev   mitigations=off retbleed=off    CPU util
+================================================================================
+mitigations=off         296.33  8.08    0.00%           6.21%           93.96%
+retbleed=off            279.00  2.65    -5.85%          0.00%           93.63%
+retbleed=ibrs           230.33  0.58    -22.27%         -17.44%         95.92%
+retbleed=stuff (pad)    266.67  1.53    -10.01%         -4.42%          94.75%
+
+
+The patches can also be found in git here:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/tglx/devel.git depthtracking
+
 
 
