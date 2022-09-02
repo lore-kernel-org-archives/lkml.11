@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B943EC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:29:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38417ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:29:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236597AbiIBM3x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:29:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36672 "EHLO
+        id S236634AbiIBM34 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:29:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236417AbiIBM2a (ORCPT
+        with ESMTP id S236520AbiIBM2c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:28:30 -0400
+        Fri, 2 Sep 2022 08:28:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E37D6DCFF8;
-        Fri,  2 Sep 2022 05:24:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA7095FE7;
+        Fri,  2 Sep 2022 05:24:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 53B6C620F0;
-        Fri,  2 Sep 2022 12:22:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C694C433C1;
-        Fri,  2 Sep 2022 12:22:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E86986210A;
+        Fri,  2 Sep 2022 12:23:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB6B6C433D7;
+        Fri,  2 Sep 2022 12:23:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121375;
-        bh=+0RIXtjL4dCGFnZcWvWmOCTGFsuswLnX0WkQWCR8Q18=;
+        s=korg; t=1662121415;
+        bh=HCozxiwfuRdOkCThfE6MAv65G6TqAXwpnaKlKnXiZpM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CVMyTI/33qtSAzs5/3lCerMzOkxVkkaMp+bVfjHg6qDMWAllTESyXau7VlTN6IaJH
-         QMrxQ42kHRVR2RWSRcY5Jkl+i7dj6tEbGbOxamhQdK+1pcE/WE1FG2cQnHe4oPcWfj
-         4uhCpahItRbqL+eRRZLZHo/ZxwPtE8Mlb2E39eS4=
+        b=ovw0sxi5piyST3asPeFV0HJpuSicyaLZwi6QrD4IbdtHIiaYStLaQQFKEZ+dw3smI
+         rJZ5c7E7gn4J6TEUGmDkAnGnq6S1GlX5+ylR/25G/HTQuCjSZm9Lij1MqDRTDMcp4y
+         AXP4NWuk4BYNp7UwBOJmoXLiXJf+0G7wf4KifkgQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Gayatri Kammela <gayatri.kammela@intel.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Rahul Tanwar <rahul.tanwar@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@kernel.org>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Subject: [PATCH 4.14 29/42] x86/cpu: Add Tiger Lake to Intel family
-Date:   Fri,  2 Sep 2022 14:18:53 +0200
-Message-Id: <20220902121359.810537853@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 12/42] net: Fix data-races around weight_p and dev_weight_[rt]x_bias.
+Date:   Fri,  2 Sep 2022 14:18:36 +0200
+Message-Id: <20220902121359.234283065@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121358.773776406@linuxfoundation.org>
 References: <20220902121358.773776406@linuxfoundation.org>
@@ -54,40 +49,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gayatri Kammela <gayatri.kammela@intel.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 6e1c32c5dbb4b90eea8f964c2869d0bde050dbe0 upstream.
+[ Upstream commit bf955b5ab8f6f7b0632cdef8e36b14e4f6e77829 ]
 
-Add the model numbers/CPUIDs of Tiger Lake mobile and desktop to the
-Intel family.
+While reading weight_p, it can be changed concurrently.  Thus, we need
+to add READ_ONCE() to its reader.
 
-Suggested-by: Tony Luck <tony.luck@intel.com>
-Signed-off-by: Gayatri Kammela <gayatri.kammela@intel.com>
-Signed-off-by: Tony Luck <tony.luck@intel.com>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Rahul Tanwar <rahul.tanwar@linux.intel.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lkml.kernel.org/r/20190905193020.14707-2-tony.luck@intel.com
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Also, dev_[rt]x_weight can be read/written at the same time.  So, we
+need to use READ_ONCE() and WRITE_ONCE() for its access.  Moreover, to
+use the same weight_p while changing dev_[rt]x_weight, we add a mutex
+in proc_do_dev_weight().
+
+Fixes: 3d48b53fb2ae ("net: dev_weight: TX/RX orthogonality")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/intel-family.h |    3 +++
- 1 file changed, 3 insertions(+)
+ net/core/dev.c             |  2 +-
+ net/core/sysctl_net_core.c | 15 +++++++++------
+ net/sched/sch_generic.c    |  2 +-
+ 3 files changed, 11 insertions(+), 8 deletions(-)
 
---- a/arch/x86/include/asm/intel-family.h
-+++ b/arch/x86/include/asm/intel-family.h
-@@ -71,6 +71,9 @@
- #define INTEL_FAM6_ALDERLAKE		0x97
- #define INTEL_FAM6_ALDERLAKE_L		0x9A
+diff --git a/net/core/dev.c b/net/core/dev.c
+index ea09e0809c122..51721fb2e30cf 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -5186,7 +5186,7 @@ static int process_backlog(struct napi_struct *napi, int quota)
+ 		net_rps_action_and_irq_enable(sd);
+ 	}
  
-+#define INTEL_FAM6_TIGERLAKE_L		0x8C
-+#define INTEL_FAM6_TIGERLAKE		0x8D
-+
- /* "Small Core" Processors (Atom) */
+-	napi->weight = dev_rx_weight;
++	napi->weight = READ_ONCE(dev_rx_weight);
+ 	while (again) {
+ 		struct sk_buff *skb;
  
- #define INTEL_FAM6_ATOM_BONNELL		0x1C /* Diamondville, Pineview */
+diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
+index ac1a32d5cad3c..1b5749f2ef9c0 100644
+--- a/net/core/sysctl_net_core.c
++++ b/net/core/sysctl_net_core.c
+@@ -229,14 +229,17 @@ static int set_default_qdisc(struct ctl_table *table, int write,
+ static int proc_do_dev_weight(struct ctl_table *table, int write,
+ 			   void __user *buffer, size_t *lenp, loff_t *ppos)
+ {
+-	int ret;
++	static DEFINE_MUTEX(dev_weight_mutex);
++	int ret, weight;
+ 
++	mutex_lock(&dev_weight_mutex);
+ 	ret = proc_dointvec(table, write, buffer, lenp, ppos);
+-	if (ret != 0)
+-		return ret;
+-
+-	dev_rx_weight = weight_p * dev_weight_rx_bias;
+-	dev_tx_weight = weight_p * dev_weight_tx_bias;
++	if (!ret && write) {
++		weight = READ_ONCE(weight_p);
++		WRITE_ONCE(dev_rx_weight, weight * dev_weight_rx_bias);
++		WRITE_ONCE(dev_tx_weight, weight * dev_weight_tx_bias);
++	}
++	mutex_unlock(&dev_weight_mutex);
+ 
+ 	return ret;
+ }
+diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+index 82752dcbf2a2c..4a76ceeca6fdd 100644
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -251,7 +251,7 @@ static inline int qdisc_restart(struct Qdisc *q, int *packets)
+ 
+ void __qdisc_run(struct Qdisc *q)
+ {
+-	int quota = dev_tx_weight;
++	int quota = READ_ONCE(dev_tx_weight);
+ 	int packets;
+ 
+ 	while (qdisc_restart(q, &packets)) {
+-- 
+2.35.1
+
 
 
