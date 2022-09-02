@@ -2,109 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3FDCECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:42:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30707C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:42:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237273AbiIBMmU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:42:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35000 "EHLO
+        id S237299AbiIBMma (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:42:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237261AbiIBMlC (ORCPT
+        with ESMTP id S237278AbiIBMlH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:41:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A77E725E;
+        Fri, 2 Sep 2022 08:41:07 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3798E868D;
         Fri,  2 Sep 2022 05:31:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 309A6B82A8E;
-        Fri,  2 Sep 2022 12:29:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 834A5C433C1;
-        Fri,  2 Sep 2022 12:29:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121795;
-        bh=88JnIP67Dou7CqPdf10PNQ7CLyF2nEZpaadM9YCR9bs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rQB7AoxmATXv0dkdMp9Yp07eNRc6C9p31dRIwWvn1qKLj0jkTyBErMbmnvBHo565D
-         rOQgdbiuZv/ocQbl2Vivh2O2StqAoh8AQ+1TWVdSKtxHzYEgXhmpNiENUu0zzEMpz8
-         Bw2AUQHB4LNdgtTHHx0kr7/n7Eobm3glocv4VTX0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 68/77] s390/hypfs: avoid error message under KVM
-Date:   Fri,  2 Sep 2022 14:19:17 +0200
-Message-Id: <20220902121405.946095239@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
-References: <20220902121403.569927325@linuxfoundation.org>
-User-Agent: quilt/0.67
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662121886; x=1693657886;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=fDpXS+mwMN4S7KTgnVwvjs5feZwWXlXraJAIEBzDX2M=;
+  b=X5d4yMTdb9rqtJD/vFsu0rl5cEeihbax9+NUBhn3Tz/9DdE4C77fA9/x
+   GoZxapb2TGuT6GuW9i0/rpEFS202ZVzf43K/cWLgLOHFal5NcV2llukp5
+   hX93eW6BqcrWARumP4aPweBKwUO4zGhuhVSB1mVvFnix2jUoMwJODE0A3
+   IjSrGO3s0+ewxi+P4F9JbmuTxkYsiRVkI6qi7Zqs2115FRKiEpVRzjmmR
+   4CGGTnIPsPPChV5v0UoXcmiamjo+uaDcv5GNc24O8JU0Y1KkhBbb/xVJn
+   RW0T3o4nBWLF0srw1o5c96COprmU6l6nr/Z5RnWNsI2MP8/yLkYTGjHeu
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="382268005"
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="382268005"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 05:30:23 -0700
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="674338766"
+Received: from azmijews-mobl2.ger.corp.intel.com (HELO box.shutemov.name) ([10.252.45.129])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 05:30:12 -0700
+Received: by box.shutemov.name (Postfix, from userid 1000)
+        id 5AC6D10484B; Fri,  2 Sep 2022 15:30:10 +0300 (+03)
+Date:   Fri, 2 Sep 2022 15:30:10 +0300
+From:   "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Chao Peng <chao.p.peng@linux.intel.com>
+Cc:     Hugh Dickins <hughd@google.com>,
+        "Kirill A. Shutemov" <kirill@shutemov.name>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
+        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
+        linux-kselftest@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>, luto@kernel.org,
+        jun.nakajima@intel.com, dave.hansen@intel.com, ak@linux.intel.com,
+        david@redhat.com, aarcange@redhat.com, ddutile@redhat.com,
+        dhildenb@redhat.com, Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
+        Muchun Song <songmuchun@bytedance.com>,
+        "Gupta, Pankaj" <pankaj.gupta@amd.com>,
+        Elena Reshetova <elena.reshetova@intel.com>
+Subject: Re: [PATCH v7 00/14] KVM: mm: fd-based approach for supporting KVM
+ guest private memory
+Message-ID: <20220902123010.zfyv6apmo3v67a2i@box.shutemov.name>
+References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+ <ff5c5b97-acdf-9745-ebe5-c6609dd6322e@google.com>
+ <20220818132421.6xmjqduempmxnnu2@box>
+ <c6ccbb96-5849-2e2f-3b49-4ea711af525d@google.com>
+ <20220820002700.6yflrxklmpsavdzi@box.shutemov.name>
+ <c194262b-b634-4baf-abf0-dc727e8f1d7@google.com>
+ <20220831142439.65q2gi4g2d2z4ofh@box.shutemov.name>
+ <20220902102757.GB1712673@chaop.bj.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220902102757.GB1712673@chaop.bj.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+On Fri, Sep 02, 2022 at 06:27:57PM +0800, Chao Peng wrote:
+> > +	if (flags & MFD_INACCESSIBLE) {
+> > +		struct file *inaccessible_file;
+> > +
+> > +		inaccessible_file = memfd_mkinaccessible(file);
+> > +		if (IS_ERR(inaccessible_file)) {
+> > +			error = PTR_ERR(inaccessible_file);
+> > +			goto err_file;
+> > +		}
+> 
+> The new file should alse be marked as O_LARGEFILE otherwise setting the
+> initial size greater than 2^31 on the fd will be refused by ftruncate().
+> 
+> +               inaccessible_file->f_flags |= O_LARGEFILE;
+> +
 
-[ Upstream commit 7b6670b03641ac308aaa6fa2e6f964ac993b5ea3 ]
+Good catch. Thanks.
 
-When booting under KVM the following error messages are issued:
+I will modify memfd_mkinaccessible() to do this.
 
-hypfs.7f5705: The hardware system does not support hypfs
-hypfs.7a79f0: Initialization of hypfs failed with rc=-61
-
-Demote the severity of first message from "error" to "info" and issue
-the second message only in other error cases.
-
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Acked-by: Heiko Carstens <hca@linux.ibm.com>
-Acked-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220620094534.18967-1-jgross@suse.com
-[arch/s390/hypfs/hypfs_diag.c changed description]
-Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/s390/hypfs/hypfs_diag.c | 2 +-
- arch/s390/hypfs/inode.c      | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/arch/s390/hypfs/hypfs_diag.c b/arch/s390/hypfs/hypfs_diag.c
-index f0bc4dc3e9bf0..6511d15ace45e 100644
---- a/arch/s390/hypfs/hypfs_diag.c
-+++ b/arch/s390/hypfs/hypfs_diag.c
-@@ -437,7 +437,7 @@ __init int hypfs_diag_init(void)
- 	int rc;
- 
- 	if (diag204_probe()) {
--		pr_err("The hardware system does not support hypfs\n");
-+		pr_info("The hardware system does not support hypfs\n");
- 		return -ENODATA;
- 	}
- 
-diff --git a/arch/s390/hypfs/inode.c b/arch/s390/hypfs/inode.c
-index 70139d0791b61..ca4fc66a361fb 100644
---- a/arch/s390/hypfs/inode.c
-+++ b/arch/s390/hypfs/inode.c
-@@ -501,9 +501,9 @@ static int __init hypfs_init(void)
- 	hypfs_vm_exit();
- fail_hypfs_diag_exit:
- 	hypfs_diag_exit();
-+	pr_err("Initialization of hypfs failed with rc=%i\n", rc);
- fail_dbfs_exit:
- 	hypfs_dbfs_exit();
--	pr_err("Initialization of hypfs failed with rc=%i\n", rc);
- 	return rc;
- }
- device_initcall(hypfs_init)
 -- 
-2.35.1
-
-
-
+  Kiryl Shutsemau / Kirill A. Shutemov
