@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2949C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:51:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2804C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:51:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237814AbiIBMvF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:51:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46426 "EHLO
+        id S237822AbiIBMvJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:51:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237713AbiIBMuL (ORCPT
+        with ESMTP id S237722AbiIBMuS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:50:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD2D4F5CE1;
-        Fri,  2 Sep 2022 05:36:24 -0700 (PDT)
+        Fri, 2 Sep 2022 08:50:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2271DF4D3;
+        Fri,  2 Sep 2022 05:36:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E9EED621C1;
-        Fri,  2 Sep 2022 12:34:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACAB2C433B5;
-        Fri,  2 Sep 2022 12:34:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE861B82AA1;
+        Fri,  2 Sep 2022 12:34:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4039EC433D7;
+        Fri,  2 Sep 2022 12:34:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122072;
-        bh=+wY6rbuHzDJ0l7WdqIxDX1NCcw+KRXSlQbe6Gf7RwLI=;
+        s=korg; t=1662122078;
+        bh=knT3uueV/ENLY9CDN0+fzzioxGuXtKwDCsdc/eHsMrQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W2mwpFuKw8XzebCnerI64GrV71+tuuR3YelINmdo86GZbbR+wyGnlptHmPQ65TQq3
-         koIsz2iRH5IkHkiERrTM0VKbbQglqMm6oHqrx+hPHhbm6tEhHbhwmbjMAkV4BlsJsw
-         j/pQD5j/tDkM0ioqco27hVv/uLQRwM1cWH5DdU/4=
+        b=Kn3fDf5qBZ0pcd7GfuUo2Y6y2Me09cVZ9RSt+ETjguFcoY+k7NCiaBL65IHd7Dqm5
+         /YNTqTfxiP90weth/Esme6hVmJCVytgZ9DTM5zu29jkOG+gbeiSgeZkyDBTyfDI20B
+         BVNj+RxxhppImsGcBvFhyIWZSIFfh/a/fPVl6Hi4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
+        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 65/73] testing: selftests: nft_flowtable.sh: use random netns names
-Date:   Fri,  2 Sep 2022 14:19:29 +0200
-Message-Id: <20220902121406.551838064@linuxfoundation.org>
+Subject: [PATCH 5.15 67/73] btrfs: fix lockdep splat with reloc root extent buffers
+Date:   Fri,  2 Sep 2022 14:19:31 +0200
+Message-Id: <20220902121406.607732311@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
 References: <20220902121404.435662285@linuxfoundation.org>
@@ -48,427 +49,365 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Josef Bacik <josef@toxicpanda.com>
 
-[ Upstream commit b71b7bfeac38c7a21c423ddafb29aa6258949df8 ]
+[ Upstream commit b40130b23ca4a08c5785d5a3559805916bddba3c ]
 
-"ns1" is a too generic name, use a random suffix to avoid
-errors when such a netns exists.  Also allows to run multiple
-instances of the script in parallel.
+We have been hitting the following lockdep splat with btrfs/187 recently
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
+  WARNING: possible circular locking dependency detected
+  5.19.0-rc8+ #775 Not tainted
+  ------------------------------------------------------
+  btrfs/752500 is trying to acquire lock:
+  ffff97e1875a97b8 (btrfs-treloc-02#2){+.+.}-{3:3}, at: __btrfs_tree_lock+0x24/0x110
+
+  but task is already holding lock:
+  ffff97e1875a9278 (btrfs-tree-01/1){+.+.}-{3:3}, at: __btrfs_tree_lock+0x24/0x110
+
+  which lock already depends on the new lock.
+
+  the existing dependency chain (in reverse order) is:
+
+  -> #2 (btrfs-tree-01/1){+.+.}-{3:3}:
+	 down_write_nested+0x41/0x80
+	 __btrfs_tree_lock+0x24/0x110
+	 btrfs_init_new_buffer+0x7d/0x2c0
+	 btrfs_alloc_tree_block+0x120/0x3b0
+	 __btrfs_cow_block+0x136/0x600
+	 btrfs_cow_block+0x10b/0x230
+	 btrfs_search_slot+0x53b/0xb70
+	 btrfs_lookup_inode+0x2a/0xa0
+	 __btrfs_update_delayed_inode+0x5f/0x280
+	 btrfs_async_run_delayed_root+0x24c/0x290
+	 btrfs_work_helper+0xf2/0x3e0
+	 process_one_work+0x271/0x590
+	 worker_thread+0x52/0x3b0
+	 kthread+0xf0/0x120
+	 ret_from_fork+0x1f/0x30
+
+  -> #1 (btrfs-tree-01){++++}-{3:3}:
+	 down_write_nested+0x41/0x80
+	 __btrfs_tree_lock+0x24/0x110
+	 btrfs_search_slot+0x3c3/0xb70
+	 do_relocation+0x10c/0x6b0
+	 relocate_tree_blocks+0x317/0x6d0
+	 relocate_block_group+0x1f1/0x560
+	 btrfs_relocate_block_group+0x23e/0x400
+	 btrfs_relocate_chunk+0x4c/0x140
+	 btrfs_balance+0x755/0xe40
+	 btrfs_ioctl+0x1ea2/0x2c90
+	 __x64_sys_ioctl+0x88/0xc0
+	 do_syscall_64+0x38/0x90
+	 entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+  -> #0 (btrfs-treloc-02#2){+.+.}-{3:3}:
+	 __lock_acquire+0x1122/0x1e10
+	 lock_acquire+0xc2/0x2d0
+	 down_write_nested+0x41/0x80
+	 __btrfs_tree_lock+0x24/0x110
+	 btrfs_lock_root_node+0x31/0x50
+	 btrfs_search_slot+0x1cb/0xb70
+	 replace_path+0x541/0x9f0
+	 merge_reloc_root+0x1d6/0x610
+	 merge_reloc_roots+0xe2/0x260
+	 relocate_block_group+0x2c8/0x560
+	 btrfs_relocate_block_group+0x23e/0x400
+	 btrfs_relocate_chunk+0x4c/0x140
+	 btrfs_balance+0x755/0xe40
+	 btrfs_ioctl+0x1ea2/0x2c90
+	 __x64_sys_ioctl+0x88/0xc0
+	 do_syscall_64+0x38/0x90
+	 entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+  other info that might help us debug this:
+
+  Chain exists of:
+    btrfs-treloc-02#2 --> btrfs-tree-01 --> btrfs-tree-01/1
+
+   Possible unsafe locking scenario:
+
+	 CPU0                    CPU1
+	 ----                    ----
+    lock(btrfs-tree-01/1);
+				 lock(btrfs-tree-01);
+				 lock(btrfs-tree-01/1);
+    lock(btrfs-treloc-02#2);
+
+   *** DEADLOCK ***
+
+  7 locks held by btrfs/752500:
+   #0: ffff97e292fdf460 (sb_writers#12){.+.+}-{0:0}, at: btrfs_ioctl+0x208/0x2c90
+   #1: ffff97e284c02050 (&fs_info->reclaim_bgs_lock){+.+.}-{3:3}, at: btrfs_balance+0x55f/0xe40
+   #2: ffff97e284c00878 (&fs_info->cleaner_mutex){+.+.}-{3:3}, at: btrfs_relocate_block_group+0x236/0x400
+   #3: ffff97e292fdf650 (sb_internal#2){.+.+}-{0:0}, at: merge_reloc_root+0xef/0x610
+   #4: ffff97e284c02378 (btrfs_trans_num_writers){++++}-{0:0}, at: join_transaction+0x1a8/0x5a0
+   #5: ffff97e284c023a0 (btrfs_trans_num_extwriters){++++}-{0:0}, at: join_transaction+0x1a8/0x5a0
+   #6: ffff97e1875a9278 (btrfs-tree-01/1){+.+.}-{3:3}, at: __btrfs_tree_lock+0x24/0x110
+
+  stack backtrace:
+  CPU: 1 PID: 752500 Comm: btrfs Not tainted 5.19.0-rc8+ #775
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.13.0-2.fc32 04/01/2014
+  Call Trace:
+
+   dump_stack_lvl+0x56/0x73
+   check_noncircular+0xd6/0x100
+   ? lock_is_held_type+0xe2/0x140
+   __lock_acquire+0x1122/0x1e10
+   lock_acquire+0xc2/0x2d0
+   ? __btrfs_tree_lock+0x24/0x110
+   down_write_nested+0x41/0x80
+   ? __btrfs_tree_lock+0x24/0x110
+   __btrfs_tree_lock+0x24/0x110
+   btrfs_lock_root_node+0x31/0x50
+   btrfs_search_slot+0x1cb/0xb70
+   ? lock_release+0x137/0x2d0
+   ? _raw_spin_unlock+0x29/0x50
+   ? release_extent_buffer+0x128/0x180
+   replace_path+0x541/0x9f0
+   merge_reloc_root+0x1d6/0x610
+   merge_reloc_roots+0xe2/0x260
+   relocate_block_group+0x2c8/0x560
+   btrfs_relocate_block_group+0x23e/0x400
+   btrfs_relocate_chunk+0x4c/0x140
+   btrfs_balance+0x755/0xe40
+   btrfs_ioctl+0x1ea2/0x2c90
+   ? lock_is_held_type+0xe2/0x140
+   ? lock_is_held_type+0xe2/0x140
+   ? __x64_sys_ioctl+0x88/0xc0
+   __x64_sys_ioctl+0x88/0xc0
+   do_syscall_64+0x38/0x90
+   entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+This isn't necessarily new, it's just tricky to hit in practice.  There
+are two competing things going on here.  With relocation we create a
+snapshot of every fs tree with a reloc tree.  Any extent buffers that
+get initialized here are initialized with the reloc root lockdep key.
+However since it is a snapshot, any blocks that are currently in cache
+that originally belonged to the fs tree will have the normal tree
+lockdep key set.  This creates the lock dependency of
+
+  reloc tree -> normal tree
+
+for the extent buffer locking during the first phase of the relocation
+as we walk down the reloc root to relocate blocks.
+
+However this is problematic because the final phase of the relocation is
+merging the reloc root into the original fs root.  This involves
+searching down to any keys that exist in the original fs root and then
+swapping the relocated block and the original fs root block.  We have to
+search down to the fs root first, and then go search the reloc root for
+the block we need to replace.  This creates the dependency of
+
+  normal tree -> reloc tree
+
+which is why lockdep complains.
+
+Additionally even if we were to fix this particular mismatch with a
+different nesting for the merge case, we're still slotting in a block
+that has a owner of the reloc root objectid into a normal tree, so that
+block will have its lockdep key set to the tree reloc root, and create a
+lockdep splat later on when we wander into that block from the fs root.
+
+Unfortunately the only solution here is to make sure we do not set the
+lockdep key to the reloc tree lockdep key normally, and then reset any
+blocks we wander into from the reloc root when we're doing the merged.
+
+This solves the problem of having mixed tree reloc keys intermixed with
+normal tree keys, and then allows us to make sure in the merge case we
+maintain the lock order of
+
+  normal tree -> reloc tree
+
+We handle this by setting a bit on the reloc root when we do the search
+for the block we want to relocate, and any block we search into or COW
+at that point gets set to the reloc tree key.  This works correctly
+because we only ever COW down to the parent node, so we aren't resetting
+the key for the block we're linking into the fs root.
+
+With this patch we no longer have the lockdep splat in btrfs/187.
+
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../selftests/netfilter/nft_flowtable.sh      | 246 +++++++++---------
- 1 file changed, 128 insertions(+), 118 deletions(-)
+ fs/btrfs/ctree.c       |  3 +++
+ fs/btrfs/ctree.h       |  2 ++
+ fs/btrfs/extent-tree.c | 18 +++++++++++++++++-
+ fs/btrfs/extent_io.c   | 11 ++++++++++-
+ fs/btrfs/locking.c     | 11 +++++++++++
+ fs/btrfs/locking.h     |  5 +++++
+ fs/btrfs/relocation.c  |  2 ++
+ 7 files changed, 50 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/netfilter/nft_flowtable.sh b/tools/testing/selftests/netfilter/nft_flowtable.sh
-index d4ffebb989f88..c336e6c148d1f 100755
---- a/tools/testing/selftests/netfilter/nft_flowtable.sh
-+++ b/tools/testing/selftests/netfilter/nft_flowtable.sh
-@@ -14,6 +14,11 @@
- # nft_flowtable.sh -o8000 -l1500 -r2000
- #
+diff --git a/fs/btrfs/ctree.c b/fs/btrfs/ctree.c
+index 341ce90d24b15..fb7e331b69756 100644
+--- a/fs/btrfs/ctree.c
++++ b/fs/btrfs/ctree.c
+@@ -1938,6 +1938,9 @@ int btrfs_search_slot(struct btrfs_trans_handle *trans, struct btrfs_root *root,
  
-+sfx=$(mktemp -u "XXXXXXXX")
-+ns1="ns1-$sfx"
-+ns2="ns2-$sfx"
-+nsr1="nsr1-$sfx"
-+nsr2="nsr2-$sfx"
- 
- # Kselftest framework requirement - SKIP code is 4.
- ksft_skip=4
-@@ -36,18 +41,17 @@ checktool (){
- checktool "nft --version" "run test without nft tool"
- checktool "ip -Version" "run test without ip tool"
- checktool "which nc" "run test without nc (netcat)"
--checktool "ip netns add nsr1" "create net namespace"
-+checktool "ip netns add $nsr1" "create net namespace $nsr1"
- 
--ip netns add ns1
--ip netns add ns2
--
--ip netns add nsr2
-+ip netns add $ns1
-+ip netns add $ns2
-+ip netns add $nsr2
- 
- cleanup() {
--	for i in 1 2; do
--		ip netns del ns$i
--		ip netns del nsr$i
--	done
-+	ip netns del $ns1
-+	ip netns del $ns2
-+	ip netns del $nsr1
-+	ip netns del $nsr2
- 
- 	rm -f "$ns1in" "$ns1out"
- 	rm -f "$ns2in" "$ns2out"
-@@ -59,22 +63,21 @@ trap cleanup EXIT
- 
- sysctl -q net.netfilter.nf_log_all_netns=1
- 
--ip link add veth0 netns nsr1 type veth peer name eth0 netns ns1
--ip link add veth1 netns nsr1 type veth peer name veth0 netns nsr2
-+ip link add veth0 netns $nsr1 type veth peer name eth0 netns $ns1
-+ip link add veth1 netns $nsr1 type veth peer name veth0 netns $nsr2
- 
--ip link add veth1 netns nsr2 type veth peer name eth0 netns ns2
-+ip link add veth1 netns $nsr2 type veth peer name eth0 netns $ns2
- 
- for dev in lo veth0 veth1; do
--  for i in 1 2; do
--    ip -net nsr$i link set $dev up
--  done
-+    ip -net $nsr1 link set $dev up
-+    ip -net $nsr2 link set $dev up
- done
- 
--ip -net nsr1 addr add 10.0.1.1/24 dev veth0
--ip -net nsr1 addr add dead:1::1/64 dev veth0
-+ip -net $nsr1 addr add 10.0.1.1/24 dev veth0
-+ip -net $nsr1 addr add dead:1::1/64 dev veth0
- 
--ip -net nsr2 addr add 10.0.2.1/24 dev veth1
--ip -net nsr2 addr add dead:2::1/64 dev veth1
-+ip -net $nsr2 addr add 10.0.2.1/24 dev veth1
-+ip -net $nsr2 addr add dead:2::1/64 dev veth1
- 
- # set different MTUs so we need to push packets coming from ns1 (large MTU)
- # to ns2 (smaller MTU) to stack either to perform fragmentation (ip_no_pmtu_disc=1),
-@@ -106,49 +109,56 @@ do
- 	esac
- done
- 
--if ! ip -net nsr1 link set veth0 mtu $omtu; then
-+if ! ip -net $nsr1 link set veth0 mtu $omtu; then
- 	exit 1
- fi
- 
--ip -net ns1 link set eth0 mtu $omtu
-+ip -net $ns1 link set eth0 mtu $omtu
- 
--if ! ip -net nsr2 link set veth1 mtu $rmtu; then
-+if ! ip -net $nsr2 link set veth1 mtu $rmtu; then
- 	exit 1
- fi
- 
--ip -net ns2 link set eth0 mtu $rmtu
-+ip -net $ns2 link set eth0 mtu $rmtu
- 
- # transfer-net between nsr1 and nsr2.
- # these addresses are not used for connections.
--ip -net nsr1 addr add 192.168.10.1/24 dev veth1
--ip -net nsr1 addr add fee1:2::1/64 dev veth1
--
--ip -net nsr2 addr add 192.168.10.2/24 dev veth0
--ip -net nsr2 addr add fee1:2::2/64 dev veth0
--
--for i in 1 2; do
--  ip netns exec nsr$i sysctl net.ipv4.conf.veth0.forwarding=1 > /dev/null
--  ip netns exec nsr$i sysctl net.ipv4.conf.veth1.forwarding=1 > /dev/null
--
--  ip -net ns$i link set lo up
--  ip -net ns$i link set eth0 up
--  ip -net ns$i addr add 10.0.$i.99/24 dev eth0
--  ip -net ns$i route add default via 10.0.$i.1
--  ip -net ns$i addr add dead:$i::99/64 dev eth0
--  ip -net ns$i route add default via dead:$i::1
--  if ! ip netns exec ns$i sysctl net.ipv4.tcp_no_metrics_save=1 > /dev/null; then
-+ip -net $nsr1 addr add 192.168.10.1/24 dev veth1
-+ip -net $nsr1 addr add fee1:2::1/64 dev veth1
+ 		if (!p->skip_locking) {
+ 			level = btrfs_header_level(b);
 +
-+ip -net $nsr2 addr add 192.168.10.2/24 dev veth0
-+ip -net $nsr2 addr add fee1:2::2/64 dev veth0
++			btrfs_maybe_reset_lockdep_class(root, b);
 +
-+for i in 0 1; do
-+  ip netns exec $nsr1 sysctl net.ipv4.conf.veth$i.forwarding=1 > /dev/null
-+  ip netns exec $nsr2 sysctl net.ipv4.conf.veth$i.forwarding=1 > /dev/null
-+done
+ 			if (level <= write_lock_level) {
+ 				btrfs_tree_lock(b);
+ 				p->locks[level] = BTRFS_WRITE_LOCK;
+diff --git a/fs/btrfs/ctree.h b/fs/btrfs/ctree.h
+index cd72570d11f65..319af4c4fffbe 100644
+--- a/fs/btrfs/ctree.h
++++ b/fs/btrfs/ctree.h
+@@ -1105,6 +1105,8 @@ enum {
+ 	BTRFS_ROOT_QGROUP_FLUSHING,
+ 	/* This root has a drop operation that was started previously. */
+ 	BTRFS_ROOT_UNFINISHED_DROP,
++	/* This reloc root needs to have its buffers lockdep class reset. */
++	BTRFS_ROOT_RESET_LOCKDEP_CLASS,
+ };
+ 
+ static inline void btrfs_wake_unfinished_drop(struct btrfs_fs_info *fs_info)
+diff --git a/fs/btrfs/extent-tree.c b/fs/btrfs/extent-tree.c
+index 248ea15c97346..c71f6480d4d4c 100644
+--- a/fs/btrfs/extent-tree.c
++++ b/fs/btrfs/extent-tree.c
+@@ -4781,6 +4781,7 @@ btrfs_init_new_buffer(struct btrfs_trans_handle *trans, struct btrfs_root *root,
+ {
+ 	struct btrfs_fs_info *fs_info = root->fs_info;
+ 	struct extent_buffer *buf;
++	u64 lockdep_owner = owner;
+ 
+ 	buf = btrfs_find_create_tree_block(fs_info, bytenr, owner, level);
+ 	if (IS_ERR(buf))
+@@ -4799,12 +4800,27 @@ btrfs_init_new_buffer(struct btrfs_trans_handle *trans, struct btrfs_root *root,
+ 		return ERR_PTR(-EUCLEAN);
+ 	}
+ 
++	/*
++	 * The reloc trees are just snapshots, so we need them to appear to be
++	 * just like any other fs tree WRT lockdep.
++	 *
++	 * The exception however is in replace_path() in relocation, where we
++	 * hold the lock on the original fs root and then search for the reloc
++	 * root.  At that point we need to make sure any reloc root buffers are
++	 * set to the BTRFS_TREE_RELOC_OBJECTID lockdep class in order to make
++	 * lockdep happy.
++	 */
++	if (lockdep_owner == BTRFS_TREE_RELOC_OBJECTID &&
++	    !test_bit(BTRFS_ROOT_RESET_LOCKDEP_CLASS, &root->state))
++		lockdep_owner = BTRFS_FS_TREE_OBJECTID;
 +
-+for ns in $ns1 $ns2;do
-+  ip -net $ns link set lo up
-+  ip -net $ns link set eth0 up
+ 	/*
+ 	 * This needs to stay, because we could allocate a freed block from an
+ 	 * old tree into a new tree, so we need to make sure this new block is
+ 	 * set to the appropriate level and owner.
+ 	 */
+-	btrfs_set_buffer_lockdep_class(owner, buf, level);
++	btrfs_set_buffer_lockdep_class(lockdep_owner, buf, level);
 +
-+  if ! ip netns exec $ns sysctl net.ipv4.tcp_no_metrics_save=1 > /dev/null; then
- 	echo "ERROR: Check Originator/Responder values (problem during address addition)"
- 	exit 1
-   fi
--
-   # don't set ip DF bit for first two tests
--  ip netns exec ns$i sysctl net.ipv4.ip_no_pmtu_disc=1 > /dev/null
-+  ip netns exec $ns sysctl net.ipv4.ip_no_pmtu_disc=1 > /dev/null
- done
+ 	__btrfs_tree_lock(buf, nest);
+ 	btrfs_clean_tree_block(buf);
+ 	clear_bit(EXTENT_BUFFER_STALE, &buf->bflags);
+diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
+index a72a8d4d4a72e..7bd704779a99b 100644
+--- a/fs/btrfs/extent_io.c
++++ b/fs/btrfs/extent_io.c
+@@ -6109,6 +6109,7 @@ struct extent_buffer *alloc_extent_buffer(struct btrfs_fs_info *fs_info,
+ 	struct extent_buffer *exists = NULL;
+ 	struct page *p;
+ 	struct address_space *mapping = fs_info->btree_inode->i_mapping;
++	u64 lockdep_owner = owner_root;
+ 	int uptodate = 1;
+ 	int ret;
  
--ip -net nsr1 route add default via 192.168.10.2
--ip -net nsr2 route add default via 192.168.10.1
-+ip -net $ns1 addr add 10.0.1.99/24 dev eth0
-+ip -net $ns2 addr add 10.0.2.99/24 dev eth0
-+ip -net $ns1 route add default via 10.0.1.1
-+ip -net $ns2 route add default via 10.0.2.1
-+ip -net $ns1 addr add dead:1::99/64 dev eth0
-+ip -net $ns2 addr add dead:2::99/64 dev eth0
-+ip -net $ns1 route add default via dead:1::1
-+ip -net $ns2 route add default via dead:2::1
+@@ -6143,7 +6144,15 @@ struct extent_buffer *alloc_extent_buffer(struct btrfs_fs_info *fs_info,
+ 	eb = __alloc_extent_buffer(fs_info, start, len);
+ 	if (!eb)
+ 		return ERR_PTR(-ENOMEM);
+-	btrfs_set_buffer_lockdep_class(owner_root, eb, level);
 +
-+ip -net $nsr1 route add default via 192.168.10.2
-+ip -net $nsr2 route add default via 192.168.10.1
- 
--ip netns exec nsr1 nft -f - <<EOF
-+ip netns exec $nsr1 nft -f - <<EOF
- table inet filter {
-   flowtable f1 {
-      hook ingress priority 0
-@@ -197,18 +207,18 @@ if [ $? -ne 0 ]; then
- fi
- 
- # test basic connectivity
--if ! ip netns exec ns1 ping -c 1 -q 10.0.2.99 > /dev/null; then
--  echo "ERROR: ns1 cannot reach ns2" 1>&2
-+if ! ip netns exec $ns1 ping -c 1 -q 10.0.2.99 > /dev/null; then
-+  echo "ERROR: $ns1 cannot reach ns2" 1>&2
-   exit 1
- fi
- 
--if ! ip netns exec ns2 ping -c 1 -q 10.0.1.99 > /dev/null; then
--  echo "ERROR: ns2 cannot reach ns1" 1>&2
-+if ! ip netns exec $ns2 ping -c 1 -q 10.0.1.99 > /dev/null; then
-+  echo "ERROR: $ns2 cannot reach $ns1" 1>&2
-   exit 1
- fi
- 
- if [ $ret -eq 0 ];then
--	echo "PASS: netns routing/connectivity: ns1 can reach ns2"
-+	echo "PASS: netns routing/connectivity: $ns1 can reach $ns2"
- fi
- 
- ns1in=$(mktemp)
-@@ -312,24 +322,24 @@ make_file "$ns2in"
- 
- # First test:
- # No PMTU discovery, nsr1 is expected to fragment packets from ns1 to ns2 as needed.
--if test_tcp_forwarding ns1 ns2; then
-+if test_tcp_forwarding $ns1 $ns2; then
- 	echo "PASS: flow offloaded for ns1/ns2"
- else
- 	echo "FAIL: flow offload for ns1/ns2:" 1>&2
--	ip netns exec nsr1 nft list ruleset
-+	ip netns exec $nsr1 nft list ruleset
- 	ret=1
- fi
- 
- # delete default route, i.e. ns2 won't be able to reach ns1 and
- # will depend on ns1 being masqueraded in nsr1.
- # expect ns1 has nsr1 address.
--ip -net ns2 route del default via 10.0.2.1
--ip -net ns2 route del default via dead:2::1
--ip -net ns2 route add 192.168.10.1 via 10.0.2.1
-+ip -net $ns2 route del default via 10.0.2.1
-+ip -net $ns2 route del default via dead:2::1
-+ip -net $ns2 route add 192.168.10.1 via 10.0.2.1
- 
- # Second test:
- # Same, but with NAT enabled.
--ip netns exec nsr1 nft -f - <<EOF
-+ip netns exec $nsr1 nft -f - <<EOF
- table ip nat {
-    chain prerouting {
-       type nat hook prerouting priority 0; policy accept;
-@@ -343,47 +353,47 @@ table ip nat {
- }
- EOF
- 
--if test_tcp_forwarding_nat ns1 ns2; then
-+if test_tcp_forwarding_nat $ns1 $ns2; then
- 	echo "PASS: flow offloaded for ns1/ns2 with NAT"
- else
- 	echo "FAIL: flow offload for ns1/ns2 with NAT" 1>&2
--	ip netns exec nsr1 nft list ruleset
-+	ip netns exec $nsr1 nft list ruleset
- 	ret=1
- fi
- 
- # Third test:
- # Same as second test, but with PMTU discovery enabled.
--handle=$(ip netns exec nsr1 nft -a list table inet filter | grep something-to-grep-for | cut -d \# -f 2)
-+handle=$(ip netns exec $nsr1 nft -a list table inet filter | grep something-to-grep-for | cut -d \# -f 2)
- 
--if ! ip netns exec nsr1 nft delete rule inet filter forward $handle; then
-+if ! ip netns exec $nsr1 nft delete rule inet filter forward $handle; then
- 	echo "FAIL: Could not delete large-packet accept rule"
- 	exit 1
- fi
- 
--ip netns exec ns1 sysctl net.ipv4.ip_no_pmtu_disc=0 > /dev/null
--ip netns exec ns2 sysctl net.ipv4.ip_no_pmtu_disc=0 > /dev/null
-+ip netns exec $ns1 sysctl net.ipv4.ip_no_pmtu_disc=0 > /dev/null
-+ip netns exec $ns2 sysctl net.ipv4.ip_no_pmtu_disc=0 > /dev/null
- 
--if test_tcp_forwarding_nat ns1 ns2; then
-+if test_tcp_forwarding_nat $ns1 $ns2; then
- 	echo "PASS: flow offloaded for ns1/ns2 with NAT and pmtu discovery"
- else
- 	echo "FAIL: flow offload for ns1/ns2 with NAT and pmtu discovery" 1>&2
--	ip netns exec nsr1 nft list ruleset
-+	ip netns exec $nsr1 nft list ruleset
- fi
- 
- # Another test:
- # Add bridge interface br0 to Router1, with NAT enabled.
--ip -net nsr1 link add name br0 type bridge
--ip -net nsr1 addr flush dev veth0
--ip -net nsr1 link set up dev veth0
--ip -net nsr1 link set veth0 master br0
--ip -net nsr1 addr add 10.0.1.1/24 dev br0
--ip -net nsr1 addr add dead:1::1/64 dev br0
--ip -net nsr1 link set up dev br0
-+ip -net $nsr1 link add name br0 type bridge
-+ip -net $nsr1 addr flush dev veth0
-+ip -net $nsr1 link set up dev veth0
-+ip -net $nsr1 link set veth0 master br0
-+ip -net $nsr1 addr add 10.0.1.1/24 dev br0
-+ip -net $nsr1 addr add dead:1::1/64 dev br0
-+ip -net $nsr1 link set up dev br0
- 
--ip netns exec nsr1 sysctl net.ipv4.conf.br0.forwarding=1 > /dev/null
-+ip netns exec $nsr1 sysctl net.ipv4.conf.br0.forwarding=1 > /dev/null
- 
- # br0 with NAT enabled.
--ip netns exec nsr1 nft -f - <<EOF
-+ip netns exec $nsr1 nft -f - <<EOF
- flush table ip nat
- table ip nat {
-    chain prerouting {
-@@ -398,59 +408,59 @@ table ip nat {
- }
- EOF
- 
--if test_tcp_forwarding_nat ns1 ns2; then
-+if test_tcp_forwarding_nat $ns1 $ns2; then
- 	echo "PASS: flow offloaded for ns1/ns2 with bridge NAT"
- else
- 	echo "FAIL: flow offload for ns1/ns2 with bridge NAT" 1>&2
--	ip netns exec nsr1 nft list ruleset
-+	ip netns exec $nsr1 nft list ruleset
- 	ret=1
- fi
- 
- # Another test:
- # Add bridge interface br0 to Router1, with NAT and VLAN.
--ip -net nsr1 link set veth0 nomaster
--ip -net nsr1 link set down dev veth0
--ip -net nsr1 link add link veth0 name veth0.10 type vlan id 10
--ip -net nsr1 link set up dev veth0
--ip -net nsr1 link set up dev veth0.10
--ip -net nsr1 link set veth0.10 master br0
--
--ip -net ns1 addr flush dev eth0
--ip -net ns1 link add link eth0 name eth0.10 type vlan id 10
--ip -net ns1 link set eth0 up
--ip -net ns1 link set eth0.10 up
--ip -net ns1 addr add 10.0.1.99/24 dev eth0.10
--ip -net ns1 route add default via 10.0.1.1
--ip -net ns1 addr add dead:1::99/64 dev eth0.10
--
--if test_tcp_forwarding_nat ns1 ns2; then
-+ip -net $nsr1 link set veth0 nomaster
-+ip -net $nsr1 link set down dev veth0
-+ip -net $nsr1 link add link veth0 name veth0.10 type vlan id 10
-+ip -net $nsr1 link set up dev veth0
-+ip -net $nsr1 link set up dev veth0.10
-+ip -net $nsr1 link set veth0.10 master br0
++	/*
++	 * The reloc trees are just snapshots, so we need them to appear to be
++	 * just like any other fs tree WRT lockdep.
++	 */
++	if (lockdep_owner == BTRFS_TREE_RELOC_OBJECTID)
++		lockdep_owner = BTRFS_FS_TREE_OBJECTID;
 +
-+ip -net $ns1 addr flush dev eth0
-+ip -net $ns1 link add link eth0 name eth0.10 type vlan id 10
-+ip -net $ns1 link set eth0 up
-+ip -net $ns1 link set eth0.10 up
-+ip -net $ns1 addr add 10.0.1.99/24 dev eth0.10
-+ip -net $ns1 route add default via 10.0.1.1
-+ip -net $ns1 addr add dead:1::99/64 dev eth0.10
-+
-+if test_tcp_forwarding_nat $ns1 $ns2; then
- 	echo "PASS: flow offloaded for ns1/ns2 with bridge NAT and VLAN"
- else
- 	echo "FAIL: flow offload for ns1/ns2 with bridge NAT and VLAN" 1>&2
--	ip netns exec nsr1 nft list ruleset
-+	ip netns exec $nsr1 nft list ruleset
- 	ret=1
- fi
++	btrfs_set_buffer_lockdep_class(lockdep_owner, eb, level);
  
- # restore test topology (remove bridge and VLAN)
--ip -net nsr1 link set veth0 nomaster
--ip -net nsr1 link set veth0 down
--ip -net nsr1 link set veth0.10 down
--ip -net nsr1 link delete veth0.10 type vlan
--ip -net nsr1 link delete br0 type bridge
--ip -net ns1 addr flush dev eth0.10
--ip -net ns1 link set eth0.10 down
--ip -net ns1 link set eth0 down
--ip -net ns1 link delete eth0.10 type vlan
-+ip -net $nsr1 link set veth0 nomaster
-+ip -net $nsr1 link set veth0 down
-+ip -net $nsr1 link set veth0.10 down
-+ip -net $nsr1 link delete veth0.10 type vlan
-+ip -net $nsr1 link delete br0 type bridge
-+ip -net $ns1 addr flush dev eth0.10
-+ip -net $ns1 link set eth0.10 down
-+ip -net $ns1 link set eth0 down
-+ip -net $ns1 link delete eth0.10 type vlan
- 
- # restore address in ns1 and nsr1
--ip -net ns1 link set eth0 up
--ip -net ns1 addr add 10.0.1.99/24 dev eth0
--ip -net ns1 route add default via 10.0.1.1
--ip -net ns1 addr add dead:1::99/64 dev eth0
--ip -net ns1 route add default via dead:1::1
--ip -net nsr1 addr add 10.0.1.1/24 dev veth0
--ip -net nsr1 addr add dead:1::1/64 dev veth0
--ip -net nsr1 link set up dev veth0
-+ip -net $ns1 link set eth0 up
-+ip -net $ns1 addr add 10.0.1.99/24 dev eth0
-+ip -net $ns1 route add default via 10.0.1.1
-+ip -net $ns1 addr add dead:1::99/64 dev eth0
-+ip -net $ns1 route add default via dead:1::1
-+ip -net $nsr1 addr add 10.0.1.1/24 dev veth0
-+ip -net $nsr1 addr add dead:1::1/64 dev veth0
-+ip -net $nsr1 link set up dev veth0
- 
- KEY_SHA="0x"$(ps -xaf | sha1sum | cut -d " " -f 1)
- KEY_AES="0x"$(ps -xaf | md5sum | cut -d " " -f 1)
-@@ -480,23 +490,23 @@ do_esp() {
- 
+ 	num_pages = num_extent_pages(eb);
+ 	for (i = 0; i < num_pages; i++, index++) {
+diff --git a/fs/btrfs/locking.c b/fs/btrfs/locking.c
+index 5747c63929df7..9063072b399bd 100644
+--- a/fs/btrfs/locking.c
++++ b/fs/btrfs/locking.c
+@@ -91,6 +91,13 @@ void btrfs_set_buffer_lockdep_class(u64 objectid, struct extent_buffer *eb, int
+ 	lockdep_set_class_and_name(&eb->lock, &ks->keys[level], ks->names[level]);
  }
  
--do_esp nsr1 192.168.10.1 192.168.10.2 10.0.1.0/24 10.0.2.0/24 $SPI1 $SPI2
-+do_esp $nsr1 192.168.10.1 192.168.10.2 10.0.1.0/24 10.0.2.0/24 $SPI1 $SPI2
++void btrfs_maybe_reset_lockdep_class(struct btrfs_root *root, struct extent_buffer *eb)
++{
++	if (test_bit(BTRFS_ROOT_RESET_LOCKDEP_CLASS, &root->state))
++		btrfs_set_buffer_lockdep_class(root->root_key.objectid,
++					       eb, btrfs_header_level(eb));
++}
++
+ #endif
  
--do_esp nsr2 192.168.10.2 192.168.10.1 10.0.2.0/24 10.0.1.0/24 $SPI2 $SPI1
-+do_esp $nsr2 192.168.10.2 192.168.10.1 10.0.2.0/24 10.0.1.0/24 $SPI2 $SPI1
+ /*
+@@ -244,6 +251,8 @@ struct extent_buffer *btrfs_lock_root_node(struct btrfs_root *root)
  
--ip netns exec nsr1 nft delete table ip nat
-+ip netns exec $nsr1 nft delete table ip nat
+ 	while (1) {
+ 		eb = btrfs_root_node(root);
++
++		btrfs_maybe_reset_lockdep_class(root, eb);
+ 		btrfs_tree_lock(eb);
+ 		if (eb == root->node)
+ 			break;
+@@ -265,6 +274,8 @@ struct extent_buffer *btrfs_read_lock_root_node(struct btrfs_root *root)
  
- # restore default routes
--ip -net ns2 route del 192.168.10.1 via 10.0.2.1
--ip -net ns2 route add default via 10.0.2.1
--ip -net ns2 route add default via dead:2::1
-+ip -net $ns2 route del 192.168.10.1 via 10.0.2.1
-+ip -net $ns2 route add default via 10.0.2.1
-+ip -net $ns2 route add default via dead:2::1
+ 	while (1) {
+ 		eb = btrfs_root_node(root);
++
++		btrfs_maybe_reset_lockdep_class(root, eb);
+ 		btrfs_tree_read_lock(eb);
+ 		if (eb == root->node)
+ 			break;
+diff --git a/fs/btrfs/locking.h b/fs/btrfs/locking.h
+index 97370ec0cd297..26a2f962c268e 100644
+--- a/fs/btrfs/locking.h
++++ b/fs/btrfs/locking.h
+@@ -132,11 +132,16 @@ void btrfs_drew_read_unlock(struct btrfs_drew_lock *lock);
  
--if test_tcp_forwarding ns1 ns2; then
-+if test_tcp_forwarding $ns1 $ns2; then
- 	echo "PASS: ipsec tunnel mode for ns1/ns2"
- else
- 	echo "FAIL: ipsec tunnel mode for ns1/ns2"
--	ip netns exec nsr1 nft list ruleset 1>&2
--	ip netns exec nsr1 cat /proc/net/xfrm_stat 1>&2
-+	ip netns exec $nsr1 nft list ruleset 1>&2
-+	ip netns exec $nsr1 cat /proc/net/xfrm_stat 1>&2
- fi
+ #ifdef CONFIG_DEBUG_LOCK_ALLOC
+ void btrfs_set_buffer_lockdep_class(u64 objectid, struct extent_buffer *eb, int level);
++void btrfs_maybe_reset_lockdep_class(struct btrfs_root *root, struct extent_buffer *eb);
+ #else
+ static inline void btrfs_set_buffer_lockdep_class(u64 objectid,
+ 					struct extent_buffer *eb, int level)
+ {
+ }
++static inline void btrfs_maybe_reset_lockdep_class(struct btrfs_root *root,
++						   struct extent_buffer *eb)
++{
++}
+ #endif
  
- exit $ret
+ #endif
+diff --git a/fs/btrfs/relocation.c b/fs/btrfs/relocation.c
+index 673e11fcf3fc9..becf3396d533d 100644
+--- a/fs/btrfs/relocation.c
++++ b/fs/btrfs/relocation.c
+@@ -1326,7 +1326,9 @@ int replace_path(struct btrfs_trans_handle *trans, struct reloc_control *rc,
+ 		btrfs_release_path(path);
+ 
+ 		path->lowest_level = level;
++		set_bit(BTRFS_ROOT_RESET_LOCKDEP_CLASS, &src->state);
+ 		ret = btrfs_search_slot(trans, src, &key, path, 0, 1);
++		clear_bit(BTRFS_ROOT_RESET_LOCKDEP_CLASS, &src->state);
+ 		path->lowest_level = 0;
+ 		if (ret) {
+ 			if (ret > 0)
 -- 
 2.35.1
 
