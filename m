@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82799C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:03:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE245C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:04:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238570AbiIBNDh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:03:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51894 "EHLO
+        id S238695AbiIBNDl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:03:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238556AbiIBNCy (ORCPT
+        with ESMTP id S236362AbiIBNDE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:02:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B647F10DE5E;
-        Fri,  2 Sep 2022 05:41:43 -0700 (PDT)
+        Fri, 2 Sep 2022 09:03:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FEDC10DE72;
+        Fri,  2 Sep 2022 05:41:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E1C87621D7;
-        Fri,  2 Sep 2022 12:34:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FE08C433D7;
-        Fri,  2 Sep 2022 12:34:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 58C6462162;
+        Fri,  2 Sep 2022 12:27:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CA3EC433D6;
+        Fri,  2 Sep 2022 12:27:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122053;
-        bh=LxmUgb6DHu/nEN9Ip8AAMCJvj0MtM154amp6n9cA3RQ=;
+        s=korg; t=1662121625;
+        bh=ApNfnb3FFa3CMZAD9qK8lMfCD5QMDVBULyhY9SBxFn0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DXlDhQFkpQYrxcFZj+0ENpDUhEtmry/1n7c6tBTscAJ4gn7f3ksxokrUlg0BiRRSA
-         0A5P+PDVXAjSw7f1LwAavifajzSApCx2O08mk/DUhqV50hhTMLpIeebI1CidvM2UFS
-         bQby0Ickpg2cMDWMVysPM7y8NMhAaAza+id0aU5Y=
+        b=Lai89Atjv8L3hmrlkt463ckhLCklHyoJwpR1imTccwhf4hUED02pF/0HpAi4hsaCw
+         JzBR6LSKR/xiI+KptCSOieQpeimx8KiA/mVKN+ESDbPu6dY0piLeOzVyLmPEFnS8WS
+         PfbogGrk8I536HGUHu4jNUq/RZkvEFE4ALoFin2E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+5ea725c25d06fb9114c4@syzkaller.appspotmail.com,
-        Zhengchao Shao <shaozhengchao@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 72/73] net/af_packet: check len when min_header_len equals to 0
-Date:   Fri,  2 Sep 2022 14:19:36 +0200
-Message-Id: <20220902121406.775375295@linuxfoundation.org>
+        stable@vger.kernel.org, Abhishek Shah <abhishek.shah@columbia.edu>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 13/77] af_key: Do not call xfrm_probe_algs in parallel
+Date:   Fri,  2 Sep 2022 14:18:22 +0200
+Message-Id: <20220902121404.080846598@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
-References: <20220902121404.435662285@linuxfoundation.org>
+In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
+References: <20220902121403.569927325@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,35 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhengchao Shao <shaozhengchao@huawei.com>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 
-commit dc633700f00f726e027846a318c5ffeb8deaaeda upstream.
+[ Upstream commit ba953a9d89a00c078b85f4b190bc1dde66fe16b5 ]
 
-User can use AF_PACKET socket to send packets with the length of 0.
-When min_header_len equals to 0, packet_snd will call __dev_queue_xmit
-to send packets, and sock->type can be any type.
+When namespace support was added to xfrm/afkey, it caused the
+previously single-threaded call to xfrm_probe_algs to become
+multi-threaded.  This is buggy and needs to be fixed with a mutex.
 
-Reported-by: syzbot+5ea725c25d06fb9114c4@syzkaller.appspotmail.com
-Fixes: fd1894224407 ("bpf: Don't redirect packets with invalid pkt_len")
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Abhishek Shah <abhishek.shah@columbia.edu>
+Fixes: 283bc9f35bbb ("xfrm: Namespacify xfrm state/policy locks")
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/packet/af_packet.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/key/af_key.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -2989,8 +2989,8 @@ static int packet_snd(struct socket *soc
- 	if (err)
- 		goto out_free;
- 
--	if (sock->type == SOCK_RAW &&
--	    !dev_validate_header(dev, skb->data, len)) {
-+	if ((sock->type == SOCK_RAW &&
-+	     !dev_validate_header(dev, skb->data, len)) || !skb->len) {
- 		err = -EINVAL;
- 		goto out_free;
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index 32fe99cd01fc8..c06cc48c68c90 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -1701,9 +1701,12 @@ static int pfkey_register(struct sock *sk, struct sk_buff *skb, const struct sad
+ 		pfk->registered |= (1<<hdr->sadb_msg_satype);
  	}
+ 
++	mutex_lock(&pfkey_mutex);
+ 	xfrm_probe_algs();
+ 
+ 	supp_skb = compose_sadb_supported(hdr, GFP_KERNEL | __GFP_ZERO);
++	mutex_unlock(&pfkey_mutex);
++
+ 	if (!supp_skb) {
+ 		if (hdr->sadb_msg_satype != SADB_SATYPE_UNSPEC)
+ 			pfk->registered &= ~(1<<hdr->sadb_msg_satype);
+-- 
+2.35.1
+
 
 
