@@ -2,253 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92012C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:22:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CB6BC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:24:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236412AbiIBOWI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:22:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45532 "EHLO
+        id S237675AbiIBOY3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:24:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236470AbiIBOVg (ORCPT
+        with ESMTP id S236769AbiIBOYJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:21:36 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA451131DEE;
-        Fri,  2 Sep 2022 06:47:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1662126455; x=1693662455;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=jEoEzGR/2pqAx8fVHLpN9lwBLnTKIJh5Zhp/P7sSGGg=;
-  b=2hAeYQrOJkamDYOp65XMt9IbJNnZsdXQ2fPFNGd2FZSn0xnunKVRsk3C
-   RIWRjbbrdUnyScdDv+14rjMLaOg7cN20ivQ1O2D523jO/BurezMZt/f8H
-   07lxN4jsWbgtgl6kJrkaBmqe/xCpA5HRhOv8IgL9S1JNX4xLkk3zNYEFC
-   +q8SnHgsSarEeu4msZdTJGevxjVrUmeKg4AVY3Ca8E7R+5AF3laoTY/Oh
-   Z5SPb7oX/f/G3ZW1kexTPG9SBKrhK5A5TP9Qs6r3JagTe4Z75lvVZelGn
-   ouitc5ipM/4qT+cMz4vtStuD6y3tj432nEQ3liNXqsCdIAbJbkzw0bRwI
-   g==;
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="172132011"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 Sep 2022 05:40:23 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Fri, 2 Sep 2022 05:40:22 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Fri, 2 Sep 2022 05:40:21 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <linus.walleij@linaro.org>, <andy.shevchenko@gmail.com>,
-        <UNGLinuxDriver@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH] pinctrl: ocelot: Fix interrupt controller
-Date:   Fri, 2 Sep 2022 14:43:54 +0200
-Message-ID: <20220902124354.630826-1-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+        Fri, 2 Sep 2022 10:24:09 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 626E66BCCD
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:51:05 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id f12so1889827plb.11
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 06:51:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=zNUF4pLM2gZEdiAVUHg/D43GzpVxrjgPWBN3pmIBL4Q=;
+        b=OWTK6Y3PL2yw7UqNBd3BKxNCZm3WWdoiwL1O1myrStMFLYjzS/PshODfkZouf8TdyM
+         34cfblzJlfbsqzNTY6EcRcNxJC+uL41ewK3gT6X1TwMuFzMCqa191Inwq/0gtQUyzuNO
+         cddhry2HZJMnpVcKm2BU+YBLOvZt/QL7bUiOR4zophKpy1XohzLV0QP4JcY1npbc9+x/
+         vnpntCAk0tMhTT0Ghf1CTgl2cxobFno1trWx76Ijdugmfyr5paHVZm2dJ1CWMxpUWtRU
+         FfyyJzCZoPRyw/CXk4ycMlyeefC51asE+FfRfTG42UBFQ5JYu76DePVZJ+j8JUeA6X/c
+         SD7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=zNUF4pLM2gZEdiAVUHg/D43GzpVxrjgPWBN3pmIBL4Q=;
+        b=Pxb20gsNH1YJAYQqETyPylFEyWF8Wu+AyY7IlG51NGzt7eUMvUKrz1w9jBuGlpj3dU
+         nCn1iNx8vOvaaKMJX16KMPMhMya6GlrbByiZlbujJhX47AY+5QXZ3/KZ1/noQU8jQHtf
+         oqsFElhlGljPQ9fIb1Dz4v35ZXSheDD/zFc2SF6sgMXzHktcxZ9QXcWXqc5PoTgSPW6f
+         ABBoLgdXSm0hsEo/g+A1Kf4SAvKqRn/+uywO028kE6lisCYafEQL9wTM4XV2bFsLf5Ka
+         Vo2TlbPJyMP+cAJiWgH2YW6D6TnTMwb3OosDXW32plQq2Ww3sfdN2CBYBeVzq/ZWvgye
+         Li/Q==
+X-Gm-Message-State: ACgBeo2WcI95LLlDEaOYambuUu0OxQ+T6/4vDkh2PkuwnFrfCaG4FaK5
+        uM0mdkREqyWoZoNXKEdZRNj6TYXrMf1lLA==
+X-Google-Smtp-Source: AA6agR62SVCb2fOMwXF20SiASjjKCcM0ENGQ/zfWNHw3aYk/dQ1Z0bmkeiGXxhGn8OHTbPIjNQ3wbw==
+X-Received: by 2002:a17:902:f64d:b0:172:d004:8b2d with SMTP id m13-20020a170902f64d00b00172d0048b2dmr36077767plg.14.1662126664789;
+        Fri, 02 Sep 2022 06:51:04 -0700 (PDT)
+Received: from localhost.localdomain ([49.77.180.166])
+        by smtp.gmail.com with ESMTPSA id e16-20020aa798d0000000b005360da6b26bsm1733739pfm.159.2022.09.02.06.51.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 06:51:04 -0700 (PDT)
+From:   Yue Hu <zbestahu@gmail.com>
+To:     xiang@kernel.org, chao@kernel.org
+Cc:     linux-erofs@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        zhangwen@coolpad.com, Yue Hu <huyue2@coolpad.com>
+Subject: [RFC PATCH v2] erofs: support uncompressed pcluster with more than 1 block
+Date:   Fri,  2 Sep 2022 21:50:36 +0800
+Message-Id: <20220902135036.11595-1-zbestahu@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When an external device generated a level based interrupt then the
-interrupt controller could miss the interrupt. The reason is that the
-interrupt controller can detect only link changes.
+From: Yue Hu <huyue2@coolpad.com>
 
-In the following example, if there is a PHY that generates an interrupt
-then the following would be happen. The GPIO detected that the interrupt
-line changed, and then the 'ocelot_irq_handler' will be called. Here it
-detects which GPIO line seen the change and for that will call the
-following:
-1. irq_mask
-2. phy interrupt routine
-3. irq_eoi
-4. irq_unmask
+The length of uncompressed pcluster may exceed one block in some new
+scenarios such as non 4K-sized lcluster (which will be supported later).
+So, let's support the decompression for this firstly.
 
-And this works fine for simple cases, but if the PHY generates many
-interrupts, for example when doing PTP timestamping, then the following
-could happen. Again the function 'ocelot_irq_handler' will be called
-and then from here the following could happen:
-1. irq_mask
-2. phy interrupt routine
-3. irq_eoi
-4. irq_unmask
-
-Right before step 3(irq_eoi), the PHY will generate another interrupt.
-Now the interrupt controller will acknowledge the change in the
-interrupt line. So we miss the interrupt.
-
-A solution will be to use 'handle_level_irq' instead of
-'handle_fasteoi_irq', because for this will change routine order of
-handling the interrupt.
-1. irq_mask
-2. irq_ack
-3. phy interrupt routine
-4. irq_unmask
-
-And now if the PHY will generate a new interrupt before irq_unmask, the
-interrupt controller will detect this because it already acknowledge the
-change in interrupt line at step 2(irq_ack).
-
-But this is not the full solution because there is another issue. In
-case there are 2 PHYs that shared the interrupt line. For example phy1
-generates an interruot, then the following can happen:
-1.irq_mask
-2.irq_ack
-3.phy0 interrupt routine
-4.phy1 interrupt routine
-5.irq_unmask
-
-In case phy0 will generate an interrupt while clearing the interrupt
-source in phy1, then the interrupt line will be kept down by phy0. So
-the interrupt controller will not see any changes in the interrupt line.
-The solution here is to update 'irq_unmask' such that it can detect if
-the interrupt line is still active or not. And if it is active then call
-again the procedure to clear the interrupts. But we don't want to do it
-every time, only if we know that the interrupt controller have not seen
-already that the interrupt line has changed.
-
-While at this, add support also for IRQ_TYPE_LEVEL_LOW.
-
-Fixes: be36abb71d878f ("pinctrl: ocelot: add support for interrupt controller")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+Signed-off-by: Yue Hu <huyue2@coolpad.com>
 ---
- drivers/pinctrl/pinctrl-ocelot.c | 93 ++++++++++++++++++++++++++++----
- 1 file changed, 84 insertions(+), 9 deletions(-)
+v2: fix tail data length.
 
-diff --git a/drivers/pinctrl/pinctrl-ocelot.c b/drivers/pinctrl/pinctrl-ocelot.c
-index c5fd154990c8..ae734345c606 100644
---- a/drivers/pinctrl/pinctrl-ocelot.c
-+++ b/drivers/pinctrl/pinctrl-ocelot.c
-@@ -338,6 +338,11 @@ struct ocelot_match_data {
- 	struct ocelot_pincfg_data pincfg_data;
- };
+ fs/erofs/decompressor.c | 64 ++++++++++++++++++++++++++---------------
+ 1 file changed, 41 insertions(+), 23 deletions(-)
+
+diff --git a/fs/erofs/decompressor.c b/fs/erofs/decompressor.c
+index 2d55569f96ac..77d2b6cb6eda 100644
+--- a/fs/erofs/decompressor.c
++++ b/fs/erofs/decompressor.c
+@@ -320,41 +320,59 @@ static int z_erofs_lz4_decompress(struct z_erofs_decompress_req *rq,
+ static int z_erofs_shifted_transform(struct z_erofs_decompress_req *rq,
+ 				     struct page **pagepool)
+ {
++	const unsigned int nrpages_in = rq->inputsize >> PAGE_SHIFT;
+ 	const unsigned int nrpages_out =
+ 		PAGE_ALIGN(rq->pageofs_out + rq->outputsize) >> PAGE_SHIFT;
+-	const unsigned int righthalf = min_t(unsigned int, rq->outputsize,
+-					     PAGE_SIZE - rq->pageofs_out);
+-	const unsigned int lefthalf = rq->outputsize - righthalf;
++	unsigned int righthalf, lefthalf, i;
+ 	unsigned char *src, *dst;
  
-+struct ocelot_irq_work {
-+	struct work_struct irq_work;
-+	struct irq_desc *irq_desc;
-+};
+-	if (nrpages_out > 2) {
++	if (nrpages_in == 1 && nrpages_out > 2) {
+ 		DBG_BUGON(1);
+ 		return -EIO;
+ 	}
+ 
+-	if (rq->out[0] == *rq->in) {
+-		DBG_BUGON(nrpages_out != 1);
+-		return 0;
+-	}
++	i = 0;
++	do {
++		unsigned int outputsize = rq->outputsize;
 +
- #define LUTON_P(p, f0, f1)						\
- static struct ocelot_pin_caps luton_pin_##p = {				\
- 	.pin = p,							\
-@@ -1813,6 +1818,77 @@ static void ocelot_irq_mask(struct irq_data *data)
- 	gpiochip_disable_irq(chip, gpio);
++		righthalf = min_t(unsigned int, outputsize,
++				  PAGE_SIZE - rq->pageofs_out);
++		lefthalf = min_t(unsigned int, outputsize - righthalf,
++				 PAGE_SIZE - righthalf);
++
++		src = kmap_atomic(rq->in[i]) + rq->pageofs_in;
++		if (rq->out[i]) {
++			if (rq->out[i] == rq->in[i]) {
++				DBG_BUGON(nrpages_in == 1 && nrpages_out != 1);
++			} else {
++				dst = kmap_atomic(rq->out[i]);
++				memcpy(dst + rq->pageofs_out, src, righthalf);
++				kunmap_atomic(dst);
++			}
++		}
+ 
+-	src = kmap_atomic(*rq->in) + rq->pageofs_in;
+-	if (rq->out[0]) {
+-		dst = kmap_atomic(rq->out[0]);
+-		memcpy(dst + rq->pageofs_out, src, righthalf);
+-		kunmap_atomic(dst);
+-	}
++		if (i + 1 == nrpages_out) {
++			kunmap_atomic(src);
++			break;
++		}
+ 
+-	if (nrpages_out == 2) {
+-		DBG_BUGON(!rq->out[1]);
+-		if (rq->out[1] == *rq->in) {
+-			memmove(src, src + righthalf, lefthalf);
++		if (rq->out[i + 1]) {
++			if (rq->out[i + 1] == rq->in[i]) {
++				memmove(src, src + righthalf, lefthalf);
++			} else {
++				dst = kmap_atomic(rq->out[i + 1]);
++				memcpy(dst, src + righthalf, lefthalf);
++				kunmap_atomic(dst);
++			}
+ 		} else {
+-			dst = kmap_atomic(rq->out[1]);
+-			memcpy(dst, src + righthalf, lefthalf);
+-			kunmap_atomic(dst);
++			DBG_BUGON(nrpages_in == 1 && nrpages_out == 2);
+ 		}
+-	}
+-	kunmap_atomic(src);
++		kunmap_atomic(src);
++
++		if (outputsize > PAGE_SIZE)
++			outputsize -= PAGE_SIZE;
++	} while (++i < nrpages_in);
++
+ 	return 0;
  }
  
-+static void ocelot_irq_work(struct work_struct *work)
-+{
-+	struct ocelot_irq_work *w = container_of(work, struct ocelot_irq_work, irq_work);
-+	struct irq_chip *parent_chip = irq_desc_get_chip(w->irq_desc);
-+	struct gpio_chip *chip = irq_desc_get_chip_data(w->irq_desc);
-+	struct irq_data *data = irq_desc_get_irq_data(w->irq_desc);
-+	unsigned int gpio = irqd_to_hwirq(data);
-+
-+	local_irq_disable();
-+	chained_irq_enter(parent_chip, w->irq_desc);
-+	generic_handle_domain_irq(chip->irq.domain, gpio);
-+	chained_irq_exit(parent_chip, w->irq_desc);
-+	local_irq_enable();
-+
-+	kfree(w);
-+}
-+
-+static void ocelot_irq_unmask_level(struct irq_data *data)
-+{
-+	struct gpio_chip *chip = irq_data_get_irq_chip_data(data);
-+	struct ocelot_pinctrl *info = gpiochip_get_data(chip);
-+	struct irq_desc *desc = irq_data_to_desc(data);
-+	unsigned int gpio = irqd_to_hwirq(data);
-+	bool ack = false, active = false;
-+	u8 trigger_level = IRQ_TYPE_NONE;
-+	int val;
-+
-+	/*
-+	 * It is enough to read only one action because the trigger level is the
-+	 * same for all of them.
-+	 */
-+	if (desc->action)
-+		trigger_level = desc->action->flags & IRQ_TYPE_SENSE_MASK;
-+
-+	/* Check if the interrupt line is still active */
-+	regmap_read(info->map, REG(OCELOT_GPIO_IN, info, gpio), &val);
-+	if ((!(val & BIT(gpio % 32)) && trigger_level == IRQ_TYPE_LEVEL_LOW) ||
-+	      (val & BIT(gpio % 32) && trigger_level == IRQ_TYPE_LEVEL_HIGH))
-+		active = true;
-+
-+	/*
-+	 * Check if the interrupt controller has seen any changes in the
-+	 * interrupt line
-+	 */
-+	regmap_read(info->map, REG(OCELOT_GPIO_INTR, info, gpio), &val);
-+	if (val & BIT(gpio % 32))
-+		ack = true;
-+
-+	/* Enable the interrupt now */
-+	gpiochip_enable_irq(chip, gpio);
-+	regmap_update_bits(info->map, REG(OCELOT_GPIO_INTR_ENA, info, gpio),
-+			   BIT(gpio % 32), BIT(gpio % 32));
-+
-+	/*
-+	 * In case the interrupt line is still active and the interrupt
-+	 * controller has not seen any changes in the interrupt line, then it
-+	 * means that there happen another interrupt while the line was active.
-+	 * So we missed that one, so we need to kick again the interrupt handler
-+	 */
-+	if (active && !ack) {
-+		struct ocelot_irq_work *work = kmalloc(sizeof(*work), GFP_ATOMIC);
-+
-+		if (!work)
-+			return;
-+
-+		work->irq_desc = desc;
-+		INIT_WORK(&work->irq_work, ocelot_irq_work);
-+		queue_work(system_wq, &work->irq_work);
-+	}
-+}
-+
- static void ocelot_irq_unmask(struct irq_data *data)
- {
- 	struct gpio_chip *chip = irq_data_get_irq_chip_data(data);
-@@ -1836,13 +1912,12 @@ static void ocelot_irq_ack(struct irq_data *data)
- 
- static int ocelot_irq_set_type(struct irq_data *data, unsigned int type);
- 
--static struct irq_chip ocelot_eoi_irqchip = {
-+static struct irq_chip ocelot_level_irqchip = {
- 	.name		= "gpio",
- 	.irq_mask	= ocelot_irq_mask,
--	.irq_eoi	= ocelot_irq_ack,
--	.irq_unmask	= ocelot_irq_unmask,
--	.flags          = IRQCHIP_EOI_THREADED | IRQCHIP_EOI_IF_HANDLED |
--			  IRQCHIP_IMMUTABLE,
-+	.irq_ack	= ocelot_irq_ack,
-+	.irq_unmask	= ocelot_irq_unmask_level,
-+	.flags		= IRQCHIP_IMMUTABLE,
- 	.irq_set_type	= ocelot_irq_set_type,
- 	GPIOCHIP_IRQ_RESOURCE_HELPERS
- };
-@@ -1861,12 +1936,12 @@ static int ocelot_irq_set_type(struct irq_data *data, unsigned int type)
- {
- 	type &= IRQ_TYPE_SENSE_MASK;
- 
--	if (!(type & (IRQ_TYPE_EDGE_BOTH | IRQ_TYPE_LEVEL_HIGH)))
-+	if (type == IRQ_TYPE_NONE)
- 		return -EINVAL;
- 
--	if (type & IRQ_TYPE_LEVEL_HIGH)
--		irq_set_chip_handler_name_locked(data, &ocelot_eoi_irqchip,
--						 handle_fasteoi_irq, NULL);
-+	if (type & (IRQ_TYPE_LEVEL_HIGH | IRQ_TYPE_LEVEL_LOW))
-+		irq_set_chip_handler_name_locked(data, &ocelot_level_irqchip,
-+						 handle_level_irq, NULL);
- 	if (type & IRQ_TYPE_EDGE_BOTH)
- 		irq_set_chip_handler_name_locked(data, &ocelot_irqchip,
- 						 handle_edge_irq, NULL);
 -- 
-2.33.0
+2.17.1
 
