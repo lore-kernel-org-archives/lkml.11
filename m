@@ -2,349 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E507ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:41:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B8DEC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:42:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236961AbiIBNlV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:41:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40624 "EHLO
+        id S237816AbiIBNmc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:42:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237782AbiIBNk4 (ORCPT
+        with ESMTP id S237431AbiIBNmO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:40:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE164161DDF;
-        Fri,  2 Sep 2022 06:18:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ED768B829E0;
-        Fri,  2 Sep 2022 12:32:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF923C433B5;
-        Fri,  2 Sep 2022 12:32:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121977;
-        bh=ziVxvl07FZJezI/7I9ibZmcYd2eWyl3wZ1FTUaU40Yg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xwj1ZKvDGcsH0xNNrN/5ObN9LAXqGPnKnBAQwWzvv1XLxJw16PtVAM8iYQw7kcoKO
-         00mV47WLXgBV3l96ysZ1AYPQQjJp8/GbLyosBFxrBNdKXwVLH+r8WR0meyOi+XcV0S
-         WfcxUdofB/8TODTFLBOX7v35P/LMzrWtTl9zAw5g=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
-        Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 47/73] btrfs: remove no longer needed logic for replaying directory deletes
-Date:   Fri,  2 Sep 2022 14:19:11 +0200
-Message-Id: <20220902121406.013105463@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
-References: <20220902121404.435662285@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Fri, 2 Sep 2022 09:42:14 -0400
+Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9BB2356D1
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:18:59 -0700 (PDT)
+Received: by mail-ej1-f53.google.com with SMTP id u9so3809854ejy.5
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 06:18:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=melexis.com; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=yJzALTHOqe6QfIve70YAaeVz9nTrBVF/M11ycFDNp24=;
+        b=eFgGQSodHUN4MdqbSOoaPRy6Ygqxtz0Yjc3JL0GXIySm/S2cj2nytxdq9aDHq5iq9K
+         OW2WpoFBVAc125W6YSj1u1t2AE3n6cX5jfOCzg7EtBHKR0twuoXBHdTXcwg1GugHLVhf
+         aM3c+epDVCAOBpW+o2VrTYXSQ9Ki+yWHomeBhTjHpBPYscuKXde7/WIAJkGqFV1/qavl
+         zI/OPUD5Oe10jgW4TqCEkpDKxtQCsrQWsURZooKGO1KLOGs3LVHa7h6eFTefS1YxIVYf
+         xoZ9KqLmSgj+LYZB4ygFbnbSwR0wQTQJiqBpN9R2YUBFtQq4V+tPUF1NQnPxfWVZtgUK
+         KkOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=yJzALTHOqe6QfIve70YAaeVz9nTrBVF/M11ycFDNp24=;
+        b=HpZYsA17swRiZlHL6UpAytGAw+s9kyRXrSd5BKoy1im+k40C87w9sNi4E7TJN4LHz0
+         VzovHGfyNxqWosuiyAWXk1+wkh+B8PtNDhYNojc8Rxp97dyZ/YIDNn4E6h9lkkHFDxJ2
+         oY/W/YhgfnSJx1OVaVqFlNhNco/xjY9VkIAt8GhCsKZSnHd5OSSwl9XNOQJ4qpWMla2J
+         4yi3bIHPp+5p+wRodUoNYDT1rWMklN4+w/8xDc9RHBKE27NrYywdurK34mj+yAVth52D
+         qEXgzZ5An2ExWEiitsMAG3hhQeMB3qPU9J5iqB8eejhPAF1zGxs/wOA8KeO90868OuBY
+         iyBA==
+X-Gm-Message-State: ACgBeo2VI8VQxhEGwYnOEpCbJRLROvqlaTe1Lx0jtf4w343Oav6dGeIW
+        4OsIYCFt7k7T6FTbLDHQ8buhhQ==
+X-Google-Smtp-Source: AA6agR7rKNmnZfJhKmVwR5qy2gB0K/NDDZuacrO5wNDa9phlXV34WsFsTRZMZGPf0hlpMvmvtRt6Ug==
+X-Received: by 2002:a17:907:7b95:b0:731:113a:d7a2 with SMTP id ne21-20020a1709077b9500b00731113ad7a2mr26274699ejc.377.1662124358992;
+        Fri, 02 Sep 2022 06:12:38 -0700 (PDT)
+Received: from cmo-ThinkPad-T495.telenet.be ([194.150.35.21])
+        by smtp.gmail.com with ESMTPSA id gz28-20020a170907a05c00b0072b92daef1csm1243371ejc.146.2022.09.02.06.12.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 06:12:37 -0700 (PDT)
+From:   cmo@melexis.com
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Crt Mori <cmo@melexis.com>
+Subject: [PATCH 0/3] iio: temperature: mlx90632: Add powermanagement
+Date:   Fri,  2 Sep 2022 15:12:10 +0200
+Message-Id: <20220902131210.3316286-1-cmo@melexis.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Crt Mori <cmo@melexis.com>
 
-[ Upstream commit ccae4a19c9140a34a0c5f0658812496dd8bbdeaf ]
+As discussed previously on the group under the
+"Controlling device power management from terminal" thread the mlx90632
+sensor provides measurement capabilities under sleep_step mode. This
+series runtime suspends the unused chip to sleep step mode to save power
+but in case of continuous sequential reading it switches to continuous
+mode for faster readouts. This value is hardcoded to
+MLX90632_MEAS_MAX_TIME (with some buffer) and not user configurable.
 
-Now that we log only dir index keys when logging a directory, we no longer
-need to deal with dir item keys in the log replay code for replaying
-directory deletes. This is also true for the case when we replay a log
-tree created by a kernel that still logs dir items.
+The sensor runtime suspension is set to MLX90632_SLEEP_DELAY_MS which is
+hardcoded to 3 times as much as MEAS_MAX_TIME.
 
-So remove the remaining code of the replay of directory deletes algorithm
-that deals with dir item keys.
+Crt Mori (3):
+  iio: temperature: mlx90632 Add runtime powermanagement modes
+  iio: temperature: mlx90632 Read sampling frequency
+  iio: temperature: mlx90632 Change return value of sensor measurement
+    channel
 
-Reviewed-by: Josef Bacik <josef@toxicpanda.com>
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/btrfs/tree-log.c             | 158 ++++++++++++++------------------
- include/uapi/linux/btrfs_tree.h |   4 +-
- 2 files changed, 72 insertions(+), 90 deletions(-)
+ drivers/iio/temperature/mlx90632.c | 355 ++++++++++++++++++++++++++---
+ 1 file changed, 317 insertions(+), 38 deletions(-)
 
-diff --git a/fs/btrfs/tree-log.c b/fs/btrfs/tree-log.c
-index 6f51c4d922d48..4ab1bbc344760 100644
---- a/fs/btrfs/tree-log.c
-+++ b/fs/btrfs/tree-log.c
-@@ -2197,7 +2197,7 @@ static noinline int replay_one_dir_item(struct btrfs_trans_handle *trans,
-  */
- static noinline int find_dir_range(struct btrfs_root *root,
- 				   struct btrfs_path *path,
--				   u64 dirid, int key_type,
-+				   u64 dirid,
- 				   u64 *start_ret, u64 *end_ret)
- {
- 	struct btrfs_key key;
-@@ -2210,7 +2210,7 @@ static noinline int find_dir_range(struct btrfs_root *root,
- 		return 1;
- 
- 	key.objectid = dirid;
--	key.type = key_type;
-+	key.type = BTRFS_DIR_LOG_INDEX_KEY;
- 	key.offset = *start_ret;
- 
- 	ret = btrfs_search_slot(NULL, root, &key, path, 0, 0);
-@@ -2224,7 +2224,7 @@ static noinline int find_dir_range(struct btrfs_root *root,
- 	if (ret != 0)
- 		btrfs_item_key_to_cpu(path->nodes[0], &key, path->slots[0]);
- 
--	if (key.type != key_type || key.objectid != dirid) {
-+	if (key.type != BTRFS_DIR_LOG_INDEX_KEY || key.objectid != dirid) {
- 		ret = 1;
- 		goto next;
- 	}
-@@ -2251,7 +2251,7 @@ static noinline int find_dir_range(struct btrfs_root *root,
- 
- 	btrfs_item_key_to_cpu(path->nodes[0], &key, path->slots[0]);
- 
--	if (key.type != key_type || key.objectid != dirid) {
-+	if (key.type != BTRFS_DIR_LOG_INDEX_KEY || key.objectid != dirid) {
- 		ret = 1;
- 		goto out;
- 	}
-@@ -2282,95 +2282,82 @@ static noinline int check_item_in_log(struct btrfs_trans_handle *trans,
- 	int ret;
- 	struct extent_buffer *eb;
- 	int slot;
--	u32 item_size;
- 	struct btrfs_dir_item *di;
--	struct btrfs_dir_item *log_di;
- 	int name_len;
--	unsigned long ptr;
--	unsigned long ptr_end;
- 	char *name;
--	struct inode *inode;
-+	struct inode *inode = NULL;
- 	struct btrfs_key location;
- 
--again:
-+	/*
-+	 * Currenly we only log dir index keys. Even if we replay a log created
-+	 * by an older kernel that logged both dir index and dir item keys, all
-+	 * we need to do is process the dir index keys, we (and our caller) can
-+	 * safely ignore dir item keys (key type BTRFS_DIR_ITEM_KEY).
-+	 */
-+	ASSERT(dir_key->type == BTRFS_DIR_INDEX_KEY);
-+
- 	eb = path->nodes[0];
- 	slot = path->slots[0];
--	item_size = btrfs_item_size_nr(eb, slot);
--	ptr = btrfs_item_ptr_offset(eb, slot);
--	ptr_end = ptr + item_size;
--	while (ptr < ptr_end) {
--		di = (struct btrfs_dir_item *)ptr;
--		name_len = btrfs_dir_name_len(eb, di);
--		name = kmalloc(name_len, GFP_NOFS);
--		if (!name) {
--			ret = -ENOMEM;
--			goto out;
--		}
--		read_extent_buffer(eb, name, (unsigned long)(di + 1),
--				  name_len);
--		log_di = NULL;
--		if (log && dir_key->type == BTRFS_DIR_ITEM_KEY) {
--			log_di = btrfs_lookup_dir_item(trans, log, log_path,
--						       dir_key->objectid,
--						       name, name_len, 0);
--		} else if (log && dir_key->type == BTRFS_DIR_INDEX_KEY) {
--			log_di = btrfs_lookup_dir_index_item(trans, log,
--						     log_path,
--						     dir_key->objectid,
--						     dir_key->offset,
--						     name, name_len, 0);
--		}
--		if (!log_di) {
--			btrfs_dir_item_key_to_cpu(eb, di, &location);
--			btrfs_release_path(path);
--			btrfs_release_path(log_path);
--			inode = read_one_inode(root, location.objectid);
--			if (!inode) {
--				kfree(name);
--				return -EIO;
--			}
-+	di = btrfs_item_ptr(eb, slot, struct btrfs_dir_item);
-+	name_len = btrfs_dir_name_len(eb, di);
-+	name = kmalloc(name_len, GFP_NOFS);
-+	if (!name) {
-+		ret = -ENOMEM;
-+		goto out;
-+	}
- 
--			ret = link_to_fixup_dir(trans, root,
--						path, location.objectid);
--			if (ret) {
--				kfree(name);
--				iput(inode);
--				goto out;
--			}
-+	read_extent_buffer(eb, name, (unsigned long)(di + 1), name_len);
- 
--			inc_nlink(inode);
--			ret = btrfs_unlink_inode(trans, BTRFS_I(dir),
--					BTRFS_I(inode), name, name_len);
--			if (!ret)
--				ret = btrfs_run_delayed_items(trans);
--			kfree(name);
--			iput(inode);
--			if (ret)
--				goto out;
-+	if (log) {
-+		struct btrfs_dir_item *log_di;
- 
--			/* there might still be more names under this key
--			 * check and repeat if required
--			 */
--			ret = btrfs_search_slot(NULL, root, dir_key, path,
--						0, 0);
--			if (ret == 0)
--				goto again;
-+		log_di = btrfs_lookup_dir_index_item(trans, log, log_path,
-+						     dir_key->objectid,
-+						     dir_key->offset,
-+						     name, name_len, 0);
-+		if (IS_ERR(log_di)) {
-+			ret = PTR_ERR(log_di);
-+			goto out;
-+		} else if (log_di) {
-+			/* The dentry exists in the log, we have nothing to do. */
- 			ret = 0;
- 			goto out;
--		} else if (IS_ERR(log_di)) {
--			kfree(name);
--			return PTR_ERR(log_di);
- 		}
--		btrfs_release_path(log_path);
--		kfree(name);
-+	}
- 
--		ptr = (unsigned long)(di + 1);
--		ptr += name_len;
-+	btrfs_dir_item_key_to_cpu(eb, di, &location);
-+	btrfs_release_path(path);
-+	btrfs_release_path(log_path);
-+	inode = read_one_inode(root, location.objectid);
-+	if (!inode) {
-+		ret = -EIO;
-+		goto out;
- 	}
--	ret = 0;
-+
-+	ret = link_to_fixup_dir(trans, root, path, location.objectid);
-+	if (ret)
-+		goto out;
-+
-+	inc_nlink(inode);
-+	ret = btrfs_unlink_inode(trans, BTRFS_I(dir), BTRFS_I(inode), name,
-+				 name_len);
-+	if (ret)
-+		goto out;
-+
-+	ret = btrfs_run_delayed_items(trans);
-+	if (ret)
-+		goto out;
-+
-+	/*
-+	 * Unlike dir item keys, dir index keys can only have one name (entry) in
-+	 * them, as there are no key collisions since each key has a unique offset
-+	 * (an index number), so we're done.
-+	 */
- out:
- 	btrfs_release_path(path);
- 	btrfs_release_path(log_path);
-+	kfree(name);
-+	iput(inode);
- 	return ret;
- }
- 
-@@ -2490,7 +2477,6 @@ static noinline int replay_dir_deletes(struct btrfs_trans_handle *trans,
- {
- 	u64 range_start;
- 	u64 range_end;
--	int key_type = BTRFS_DIR_LOG_ITEM_KEY;
- 	int ret = 0;
- 	struct btrfs_key dir_key;
- 	struct btrfs_key found_key;
-@@ -2498,7 +2484,7 @@ static noinline int replay_dir_deletes(struct btrfs_trans_handle *trans,
- 	struct inode *dir;
- 
- 	dir_key.objectid = dirid;
--	dir_key.type = BTRFS_DIR_ITEM_KEY;
-+	dir_key.type = BTRFS_DIR_INDEX_KEY;
- 	log_path = btrfs_alloc_path();
- 	if (!log_path)
- 		return -ENOMEM;
-@@ -2512,14 +2498,14 @@ static noinline int replay_dir_deletes(struct btrfs_trans_handle *trans,
- 		btrfs_free_path(log_path);
- 		return 0;
- 	}
--again:
-+
- 	range_start = 0;
- 	range_end = 0;
- 	while (1) {
- 		if (del_all)
- 			range_end = (u64)-1;
- 		else {
--			ret = find_dir_range(log, path, dirid, key_type,
-+			ret = find_dir_range(log, path, dirid,
- 					     &range_start, &range_end);
- 			if (ret < 0)
- 				goto out;
-@@ -2546,8 +2532,10 @@ static noinline int replay_dir_deletes(struct btrfs_trans_handle *trans,
- 			btrfs_item_key_to_cpu(path->nodes[0], &found_key,
- 					      path->slots[0]);
- 			if (found_key.objectid != dirid ||
--			    found_key.type != dir_key.type)
--				goto next_type;
-+			    found_key.type != dir_key.type) {
-+				ret = 0;
-+				goto out;
-+			}
- 
- 			if (found_key.offset > range_end)
- 				break;
-@@ -2566,15 +2554,7 @@ static noinline int replay_dir_deletes(struct btrfs_trans_handle *trans,
- 			break;
- 		range_start = range_end + 1;
- 	}
--
--next_type:
- 	ret = 0;
--	if (key_type == BTRFS_DIR_LOG_ITEM_KEY) {
--		key_type = BTRFS_DIR_LOG_INDEX_KEY;
--		dir_key.type = BTRFS_DIR_INDEX_KEY;
--		btrfs_release_path(path);
--		goto again;
--	}
- out:
- 	btrfs_release_path(path);
- 	btrfs_free_path(log_path);
-diff --git a/include/uapi/linux/btrfs_tree.h b/include/uapi/linux/btrfs_tree.h
-index e1c4c732aabac..5416f1f1a77a8 100644
---- a/include/uapi/linux/btrfs_tree.h
-+++ b/include/uapi/linux/btrfs_tree.h
-@@ -146,7 +146,9 @@
- 
- /*
-  * dir items are the name -> inode pointers in a directory.  There is one
-- * for every name in a directory.
-+ * for every name in a directory.  BTRFS_DIR_LOG_ITEM_KEY is no longer used
-+ * but it's still defined here for documentation purposes and to help avoid
-+ * having its numerical value reused in the future.
-  */
- #define BTRFS_DIR_LOG_ITEM_KEY  60
- #define BTRFS_DIR_LOG_INDEX_KEY 72
 -- 
-2.35.1
-
-
+2.34.1
 
