@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 115D2ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:27:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67ACCC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:28:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236340AbiIBM1m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:27:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51418 "EHLO
+        id S236498AbiIBM1z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:27:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236363AbiIBM1Q (ORCPT
+        with ESMTP id S236431AbiIBM12 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:27:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 828C3DDAA2;
-        Fri,  2 Sep 2022 05:23:48 -0700 (PDT)
+        Fri, 2 Sep 2022 08:27:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 726DBDA3CE;
+        Fri,  2 Sep 2022 05:24:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5ADFBB82A8F;
-        Fri,  2 Sep 2022 12:22:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA1E0C433C1;
-        Fri,  2 Sep 2022 12:22:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B8A2620E6;
+        Fri,  2 Sep 2022 12:23:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30498C433C1;
+        Fri,  2 Sep 2022 12:23:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121355;
-        bh=/vUfvoVjM8YHAz6X8BDDMo3LD+0clPvNLObkX/HL5xQ=;
+        s=korg; t=1662121393;
+        bh=ggkzR7fXpZd66zV4XncdCKBI8YV+okgrGR8z07c89yk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jNcIzsbWuQLSqw51k6C+wySJ0kt6JdrSXVdJT0N5HgpepyvNNe/Loo1Log89P+Ioh
-         cMkG1Y9GuezVAIJP6a8a34NyLTevDiyvETT3d+jqNsegec5ezQ3CoSDBghIepMX4xL
-         Us/mNo9GN8RtpgCpg/0zZlPJiQHAcMYiXvTtL4m0=
+        b=q5vyUS4vqCaoOJulRyWWWC+pgCFduTaufkDcIf7rRoBAA5oU/VP/6hbnnBCbUCd48
+         wSdcwury+SitAR13BWH/JDuIiJ89008FwK9WxtClPlII23ANSRmMzJyPdjkS4mtx0P
+         fGFEkfEI8VV6oWCN/mKc0NfqNgO8JjJxKxxIyvpM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Quanyang Wang <quanyang.wang@windriver.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Thierry Reding <treding@nvidia.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 4.14 23/42] asm-generic: sections: refactor memory_intersects
-Date:   Fri,  2 Sep 2022 14:18:47 +0200
-Message-Id: <20220902121359.606580799@linuxfoundation.org>
+        syzbot+f59100a0428e6ded9443@syzkaller.appspotmail.com,
+        Karthik Alapati <mail@karthek.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 4.14 34/42] HID: hidraw: fix memory leak in hidraw_release()
+Date:   Fri,  2 Sep 2022 14:18:58 +0200
+Message-Id: <20220902121359.966089852@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121358.773776406@linuxfoundation.org>
 References: <20220902121358.773776406@linuxfoundation.org>
@@ -52,96 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quanyang Wang <quanyang.wang@windriver.com>
+From: Karthik Alapati <mail@karthek.com>
 
-commit 0c7d7cc2b4fe2e74ef8728f030f0f1674f9f6aee upstream.
+commit a5623a203cffe2d2b84d2f6c989d9017db1856af upstream.
 
-There are two problems with the current code of memory_intersects:
+Free the buffered reports before deleting the list entry.
 
-First, it doesn't check whether the region (begin, end) falls inside the
-region (virt, vend), that is (virt < begin && vend > end).
+BUG: memory leak
+unreferenced object 0xffff88810e72f180 (size 32):
+  comm "softirq", pid 0, jiffies 4294945143 (age 16.080s)
+  hex dump (first 32 bytes):
+    64 f3 c6 6a d1 88 07 04 00 00 00 00 00 00 00 00  d..j............
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff814ac6c3>] kmemdup+0x23/0x50 mm/util.c:128
+    [<ffffffff8357c1d2>] kmemdup include/linux/fortify-string.h:440 [inline]
+    [<ffffffff8357c1d2>] hidraw_report_event+0xa2/0x150 drivers/hid/hidraw.c:521
+    [<ffffffff8356ddad>] hid_report_raw_event+0x27d/0x740 drivers/hid/hid-core.c:1992
+    [<ffffffff8356e41e>] hid_input_report+0x1ae/0x270 drivers/hid/hid-core.c:2065
+    [<ffffffff835f0d3f>] hid_irq_in+0x1ff/0x250 drivers/hid/usbhid/hid-core.c:284
+    [<ffffffff82d3c7f9>] __usb_hcd_giveback_urb+0xf9/0x230 drivers/usb/core/hcd.c:1670
+    [<ffffffff82d3cc26>] usb_hcd_giveback_urb+0x1b6/0x1d0 drivers/usb/core/hcd.c:1747
+    [<ffffffff82ef1e14>] dummy_timer+0x8e4/0x14c0 drivers/usb/gadget/udc/dummy_hcd.c:1988
+    [<ffffffff812f50a8>] call_timer_fn+0x38/0x200 kernel/time/timer.c:1474
+    [<ffffffff812f5586>] expire_timers kernel/time/timer.c:1519 [inline]
+    [<ffffffff812f5586>] __run_timers.part.0+0x316/0x430 kernel/time/timer.c:1790
+    [<ffffffff812f56e4>] __run_timers kernel/time/timer.c:1768 [inline]
+    [<ffffffff812f56e4>] run_timer_softirq+0x44/0x90 kernel/time/timer.c:1803
+    [<ffffffff848000e6>] __do_softirq+0xe6/0x2ea kernel/softirq.c:571
+    [<ffffffff81246db0>] invoke_softirq kernel/softirq.c:445 [inline]
+    [<ffffffff81246db0>] __irq_exit_rcu kernel/softirq.c:650 [inline]
+    [<ffffffff81246db0>] irq_exit_rcu+0xc0/0x110 kernel/softirq.c:662
+    [<ffffffff84574f02>] sysvec_apic_timer_interrupt+0xa2/0xd0 arch/x86/kernel/apic/apic.c:1106
+    [<ffffffff84600c8b>] asm_sysvec_apic_timer_interrupt+0x1b/0x20 arch/x86/include/asm/idtentry.h:649
+    [<ffffffff8458a070>] native_safe_halt arch/x86/include/asm/irqflags.h:51 [inline]
+    [<ffffffff8458a070>] arch_safe_halt arch/x86/include/asm/irqflags.h:89 [inline]
+    [<ffffffff8458a070>] acpi_safe_halt drivers/acpi/processor_idle.c:111 [inline]
+    [<ffffffff8458a070>] acpi_idle_do_entry+0xc0/0xd0 drivers/acpi/processor_idle.c:554
 
-The second problem is if vend is equal to begin, it will return true but
-this is wrong since vend (virt + size) is not the last address of the
-memory region but (virt + size -1) is.  The wrong determination will
-trigger the misreporting when the function check_for_illegal_area calls
-memory_intersects to check if the dma region intersects with stext region.
-
-The misreporting is as below (stext is at 0x80100000):
- WARNING: CPU: 0 PID: 77 at kernel/dma/debug.c:1073 check_for_illegal_area+0x130/0x168
- DMA-API: chipidea-usb2 e0002000.usb: device driver maps memory from kernel text or rodata [addr=800f0000] [len=65536]
- Modules linked in:
- CPU: 1 PID: 77 Comm: usb-storage Not tainted 5.19.0-yocto-standard #5
- Hardware name: Xilinx Zynq Platform
-  unwind_backtrace from show_stack+0x18/0x1c
-  show_stack from dump_stack_lvl+0x58/0x70
-  dump_stack_lvl from __warn+0xb0/0x198
-  __warn from warn_slowpath_fmt+0x80/0xb4
-  warn_slowpath_fmt from check_for_illegal_area+0x130/0x168
-  check_for_illegal_area from debug_dma_map_sg+0x94/0x368
-  debug_dma_map_sg from __dma_map_sg_attrs+0x114/0x128
-  __dma_map_sg_attrs from dma_map_sg_attrs+0x18/0x24
-  dma_map_sg_attrs from usb_hcd_map_urb_for_dma+0x250/0x3b4
-  usb_hcd_map_urb_for_dma from usb_hcd_submit_urb+0x194/0x214
-  usb_hcd_submit_urb from usb_sg_wait+0xa4/0x118
-  usb_sg_wait from usb_stor_bulk_transfer_sglist+0xa0/0xec
-  usb_stor_bulk_transfer_sglist from usb_stor_bulk_srb+0x38/0x70
-  usb_stor_bulk_srb from usb_stor_Bulk_transport+0x150/0x360
-  usb_stor_Bulk_transport from usb_stor_invoke_transport+0x38/0x440
-  usb_stor_invoke_transport from usb_stor_control_thread+0x1e0/0x238
-  usb_stor_control_thread from kthread+0xf8/0x104
-  kthread from ret_from_fork+0x14/0x2c
-
-Refactor memory_intersects to fix the two problems above.
-
-Before the 1d7db834a027e ("dma-debug: use memory_intersects()
-directly"), memory_intersects is called only by printk_late_init:
-
-printk_late_init -> init_section_intersects ->memory_intersects.
-
-There were few places where memory_intersects was called.
-
-When commit 1d7db834a027e ("dma-debug: use memory_intersects()
-directly") was merged and CONFIG_DMA_API_DEBUG is enabled, the DMA
-subsystem uses it to check for an illegal area and the calltrace above
-is triggered.
-
-[akpm@linux-foundation.org: fix nearby comment typo]
-Link: https://lkml.kernel.org/r/20220819081145.948016-1-quanyang.wang@windriver.com
-Fixes: 979559362516 ("asm/sections: add helpers to check for section data")
-Signed-off-by: Quanyang Wang <quanyang.wang@windriver.com>
-Cc: Ard Biesheuvel <ardb@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Thierry Reding <treding@nvidia.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Link: https://syzkaller.appspot.com/bug?id=19a04b43c75ed1092021010419b5e560a8172c4f
+Reported-by: syzbot+f59100a0428e6ded9443@syzkaller.appspotmail.com
+Signed-off-by: Karthik Alapati <mail@karthek.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/asm-generic/sections.h |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/hid/hidraw.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/include/asm-generic/sections.h
-+++ b/include/asm-generic/sections.h
-@@ -92,7 +92,7 @@ static inline bool memory_contains(void
- /**
-  * memory_intersects - checks if the region occupied by an object intersects
-  *                     with another memory region
-- * @begin: virtual address of the beginning of the memory regien
-+ * @begin: virtual address of the beginning of the memory region
-  * @end: virtual address of the end of the memory region
-  * @virt: virtual address of the memory object
-  * @size: size of the memory object
-@@ -105,7 +105,10 @@ static inline bool memory_intersects(voi
- {
- 	void *vend = virt + size;
+--- a/drivers/hid/hidraw.c
++++ b/drivers/hid/hidraw.c
+@@ -354,10 +354,13 @@ static int hidraw_release(struct inode *
+ 	unsigned int minor = iminor(inode);
+ 	struct hidraw_list *list = file->private_data;
+ 	unsigned long flags;
++	int i;
  
--	return (virt >= begin && virt < end) || (vend >= begin && vend < end);
-+	if (virt < end && vend > begin)
-+		return true;
-+
-+	return false;
- }
+ 	mutex_lock(&minors_lock);
  
- /**
+ 	spin_lock_irqsave(&hidraw_table[minor]->list_lock, flags);
++	for (i = list->tail; i < list->head; i++)
++		kfree(list->buffer[i].value);
+ 	list_del(&list->node);
+ 	spin_unlock_irqrestore(&hidraw_table[minor]->list_lock, flags);
+ 	kfree(list);
 
 
