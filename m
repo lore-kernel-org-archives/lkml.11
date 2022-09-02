@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92C1DECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:58:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29DEAC001B5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:58:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237662AbiIBP6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 11:58:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40972 "EHLO
+        id S237574AbiIBP6V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 11:58:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237615AbiIBPz7 (ORCPT
+        with ESMTP id S237625AbiIBP4J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 11:55:59 -0400
+        Fri, 2 Sep 2022 11:56:09 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2E2DC18E1F
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 08:49:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6314C643D
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 08:49:49 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2084415DB;
-        Fri,  2 Sep 2022 08:49:50 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 504B11650;
+        Fri,  2 Sep 2022 08:49:55 -0700 (PDT)
 Received: from merodach.members.linode.com (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8FB383F766;
-        Fri,  2 Sep 2022 08:49:41 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BF9193F766;
+        Fri,  2 Sep 2022 08:49:46 -0700 (PDT)
 From:   James Morse <james.morse@arm.com>
 To:     x86@kernel.org, linux-kernel@vger.kernel.org
 Cc:     Fenghua Yu <fenghua.yu@intel.com>,
@@ -37,9 +37,9 @@ Cc:     Fenghua Yu <fenghua.yu@intel.com>,
         Cristian Marussi <cristian.marussi@arm.com>,
         Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
         baolin.wang@linux.alibaba.com
-Subject: [PATCH v6 19/21] x86/resctrl: Rename and change the units of resctrl_cqm_threshold
-Date:   Fri,  2 Sep 2022 15:48:27 +0000
-Message-Id: <20220902154829.30399-20-james.morse@arm.com>
+Subject: [PATCH v6 21/21] x86/resctrl: Make resctrl_arch_rmid_read() return values in bytes
+Date:   Fri,  2 Sep 2022 15:48:29 +0000
+Message-Id: <20220902154829.30399-22-james.morse@arm.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220902154829.30399-1-james.morse@arm.com>
 References: <20220902154829.30399-1-james.morse@arm.com>
@@ -49,24 +49,16 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-resctrl_cqm_threshold is stored in a hardware specific chunk size,
-but exposed to user-space as bytes.
+resctrl_arch_rmid_read() returns a value in chunks, as read from the
+hardware. This needs scaling to bytes by mon_scale, as provided by
+the architecture code.
 
-This means the filesystem parts of resctrl need to know how the hardware
-counts, to convert the user provided byte value to chunks. The interface
-between the architecture's resctrl code and the filesystem ought to
-treat everything as bytes.
+Now that resctrl_arch_rmid_read() performs the overflow and corrections
+itself, it may as well return a value in bytes directly. This allows
+the accesses to the architecture specific 'hw' structure to be removed.
 
-Change the unit of resctrl_cqm_threshold to bytes. resctrl_arch_rmid_read()
-still returns its value in chunks, so this needs converting to bytes.
-As all the users have been touched, rename the variable to
-resctrl_rmid_realloc_threshold, which describes what the value is for.
-
-Neither r->num_rmid nor hw_res->mon_scale are guaranteed to be a power
-of 2, so the existing code introduces a rounding error from resctrl's
-theoretical fraction of the cache usage. This behaviour is kept as it
-ensures the user visible value matches the value read from hardware
-when the rmid will be reallocated.
+Move the mon_scale conversion into resctrl_arch_rmid_read().
+mbm_bw_count() is updated to calculate bandwidth from bytes.
 
 Reviewed-by: Jamie Iles <quic_jiles@quicinc.com>
 Tested-by: Xin Hao <xhao@linux.alibaba.com>
@@ -76,221 +68,171 @@ Tested-by: Cristian Marussi <cristian.marussi@arm.com>
 Reviewed-by: Reinette Chatre <reinette.chatre@intel.com>
 Signed-off-by: James Morse <james.morse@arm.com>
 ---
-Changes since v4:
- * Added resctrl_arch_round_mon_val() to fix the user provided value.
- * Keep the 'hw counts in chunks' comment.
-
 Changes since v3:
- * Preserved the rounding errors.
+ * Only set val in one place in restrl_arch_rmid_read()
+ * Use SZ_1M to improve readability
 ---
- arch/x86/include/asm/resctrl.h         |  9 ++++++
- arch/x86/kernel/cpu/resctrl/internal.h |  1 -
- arch/x86/kernel/cpu/resctrl/monitor.c  | 43 ++++++++++++++++----------
- arch/x86/kernel/cpu/resctrl/rdtgroup.c |  9 ++----
- include/linux/resctrl.h                |  2 ++
- 5 files changed, 39 insertions(+), 25 deletions(-)
+ arch/x86/kernel/cpu/resctrl/ctrlmondata.c |  6 ++----
+ arch/x86/kernel/cpu/resctrl/internal.h    |  4 ++--
+ arch/x86/kernel/cpu/resctrl/monitor.c     | 24 +++++++++++------------
+ include/linux/resctrl.h                   |  2 +-
+ 4 files changed, 16 insertions(+), 20 deletions(-)
 
-diff --git a/arch/x86/include/asm/resctrl.h b/arch/x86/include/asm/resctrl.h
-index d60ed0668a59..d24b04ebf950 100644
---- a/arch/x86/include/asm/resctrl.h
-+++ b/arch/x86/include/asm/resctrl.h
-@@ -81,6 +81,15 @@ static void __resctrl_sched_in(void)
- 	}
- }
- 
-+static inline unsigned int resctrl_arch_round_mon_val(unsigned int val)
-+{
-+	unsigned int scale = boot_cpu_data.x86_cache_occ_scale;
-+
-+	/* h/w works in units of "boot_cpu_data.x86_cache_occ_scale" */
-+	val /= scale;
-+	return val * scale;
-+}
-+
- static inline void resctrl_sched_in(void)
+diff --git a/arch/x86/kernel/cpu/resctrl/ctrlmondata.c b/arch/x86/kernel/cpu/resctrl/ctrlmondata.c
+index d3f7eb2ac14b..03fc91d8bc9f 100644
+--- a/arch/x86/kernel/cpu/resctrl/ctrlmondata.c
++++ b/arch/x86/kernel/cpu/resctrl/ctrlmondata.c
+@@ -549,7 +549,6 @@ void mon_event_read(struct rmid_read *rr, struct rdt_resource *r,
+ int rdtgroup_mondata_show(struct seq_file *m, void *arg)
  {
- 	if (static_branch_likely(&rdt_enable_key))
+ 	struct kernfs_open_file *of = m->private;
+-	struct rdt_hw_resource *hw_res;
+ 	u32 resid, evtid, domid;
+ 	struct rdtgroup *rdtgrp;
+ 	struct rdt_resource *r;
+@@ -569,8 +568,7 @@ int rdtgroup_mondata_show(struct seq_file *m, void *arg)
+ 	domid = md.u.domid;
+ 	evtid = md.u.evtid;
+ 
+-	hw_res = &rdt_resources_all[resid];
+-	r = &hw_res->r_resctrl;
++	r = &rdt_resources_all[resid].r_resctrl;
+ 	d = rdt_find_domain(r, domid, NULL);
+ 	if (IS_ERR_OR_NULL(d)) {
+ 		ret = -ENOENT;
+@@ -584,7 +582,7 @@ int rdtgroup_mondata_show(struct seq_file *m, void *arg)
+ 	else if (rr.err == -EINVAL)
+ 		seq_puts(m, "Unavailable\n");
+ 	else
+-		seq_printf(m, "%llu\n", rr.val * hw_res->mon_scale);
++		seq_printf(m, "%llu\n", rr.val);
+ 
+ out:
+ 	rdtgroup_kn_unlock(of->kn);
 diff --git a/arch/x86/kernel/cpu/resctrl/internal.h b/arch/x86/kernel/cpu/resctrl/internal.h
-index bdb55c2fbdd3..c05e9b7cf77a 100644
+index c05e9b7cf77a..5f7128686cfd 100644
 --- a/arch/x86/kernel/cpu/resctrl/internal.h
 +++ b/arch/x86/kernel/cpu/resctrl/internal.h
-@@ -98,7 +98,6 @@ struct rmid_read {
- 	u64			val;
- };
+@@ -279,13 +279,13 @@ struct rftype {
  
--extern unsigned int resctrl_cqm_threshold;
- extern bool rdt_alloc_capable;
- extern bool rdt_mon_capable;
- extern unsigned int rdt_mon_features;
+ /**
+  * struct mbm_state - status for each MBM counter in each domain
+- * @prev_bw_chunks: Previous chunks value read for bandwidth calculation
++ * @prev_bw_bytes: Previous bytes value read for bandwidth calculation
+  * @prev_bw:	The most recent bandwidth in MBps
+  * @delta_bw:	Difference between the current and previous bandwidth
+  * @delta_comp:	Indicates whether to compute the delta_bw
+  */
+ struct mbm_state {
+-	u64	prev_bw_chunks;
++	u64	prev_bw_bytes;
+ 	u32	prev_bw;
+ 	u32	delta_bw;
+ 	bool	delta_comp;
 diff --git a/arch/x86/kernel/cpu/resctrl/monitor.c b/arch/x86/kernel/cpu/resctrl/monitor.c
-index 27bb4947a176..e91afe99b763 100644
+index 8d15568d7121..efe0c30d3a12 100644
 --- a/arch/x86/kernel/cpu/resctrl/monitor.c
 +++ b/arch/x86/kernel/cpu/resctrl/monitor.c
-@@ -17,7 +17,10 @@
+@@ -16,6 +16,7 @@
+  */
  
  #include <linux/module.h>
++#include <linux/sizes.h>
  #include <linux/slab.h>
-+
+ 
  #include <asm/cpu_device_id.h>
-+#include <asm/resctrl.h>
+@@ -189,7 +190,7 @@ int resctrl_arch_rmid_read(struct rdt_resource *r, struct rdt_domain *d,
+ 	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
+ 	struct rdt_hw_domain *hw_dom = resctrl_to_arch_dom(d);
+ 	struct arch_mbm_state *am;
+-	u64 msr_val;
++	u64 msr_val, chunks;
+ 
+ 	if (!cpumask_test_cpu(smp_processor_id(), &d->cpu_mask))
+ 		return -EINVAL;
+@@ -214,12 +215,14 @@ int resctrl_arch_rmid_read(struct rdt_resource *r, struct rdt_domain *d,
+ 	if (am) {
+ 		am->chunks += mbm_overflow_count(am->prev_msr, msr_val,
+ 						 hw_res->mbm_width);
+-		*val = get_corrected_mbm_count(rmid, am->chunks);
++		chunks = get_corrected_mbm_count(rmid, am->chunks);
+ 		am->prev_msr = msr_val;
+ 	} else {
+-		*val = msr_val;
++		chunks = msr_val;
+ 	}
+ 
++	*val = chunks * hw_res->mon_scale;
 +
- #include "internal.h"
+ 	return 0;
+ }
  
- struct rmid_entry {
-@@ -37,8 +40,8 @@ static LIST_HEAD(rmid_free_lru);
-  * @rmid_limbo_count     count of currently unused but (potentially)
-  *     dirty RMIDs.
-  *     This counts RMIDs that no one is currently using but that
-- *     may have a occupancy value > intel_cqm_threshold. User can change
-- *     the threshold occupancy value.
-+ *     may have a occupancy value > resctrl_rmid_realloc_threshold. User can
-+ *     change the threshold occupancy value.
-  */
- static unsigned int rmid_limbo_count;
- 
-@@ -59,10 +62,10 @@ bool rdt_mon_capable;
- unsigned int rdt_mon_features;
- 
- /*
-- * This is the threshold cache occupancy at which we will consider an
-+ * This is the threshold cache occupancy in bytes at which we will consider an
-  * RMID available for re-allocation.
-  */
--unsigned int resctrl_cqm_threshold;
-+unsigned int resctrl_rmid_realloc_threshold;
- 
- #define CF(cf)	((unsigned long)(1048576 * (cf) + 0.5))
- 
-@@ -223,14 +226,13 @@ int resctrl_arch_rmid_read(struct rdt_resource *r, struct rdt_domain *d,
-  */
+@@ -232,7 +235,6 @@ int resctrl_arch_rmid_read(struct rdt_resource *r, struct rdt_domain *d,
  void __check_limbo(struct rdt_domain *d, bool force_free)
  {
-+	struct rdt_resource *r = &rdt_resources_all[RDT_RESOURCE_L3].r_resctrl;
-+	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
+ 	struct rdt_resource *r = &rdt_resources_all[RDT_RESOURCE_L3].r_resctrl;
+-	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
  	struct rmid_entry *entry;
--	struct rdt_resource *r;
  	u32 crmid = 1, nrmid;
  	bool rmid_dirty;
- 	u64 val = 0;
- 
--	r = &rdt_resources_all[RDT_RESOURCE_L3].r_resctrl;
--
- 	/*
- 	 * Skip RMID 0 and start from RMID 1 and check all the RMIDs that
- 	 * are marked as busy for occupancy < threshold. If the occupancy
-@@ -245,10 +247,12 @@ void __check_limbo(struct rdt_domain *d, bool force_free)
- 		entry = __rmid_entry(nrmid);
- 
- 		if (resctrl_arch_rmid_read(r, d, entry->rmid,
--					   QOS_L3_OCCUP_EVENT_ID, &val))
-+					   QOS_L3_OCCUP_EVENT_ID, &val)) {
+@@ -255,7 +257,6 @@ void __check_limbo(struct rdt_domain *d, bool force_free)
+ 					   QOS_L3_OCCUP_EVENT_ID, &val)) {
  			rmid_dirty = true;
--		else
--			rmid_dirty = (val >= resctrl_cqm_threshold);
-+		} else {
-+			val *= hw_res->mon_scale;
-+			rmid_dirty = (val >= resctrl_rmid_realloc_threshold);
-+		}
+ 		} else {
+-			val *= hw_res->mon_scale;
+ 			rmid_dirty = (val >= resctrl_rmid_realloc_threshold);
+ 		}
  
- 		if (force_free || !rmid_dirty) {
- 			clear_bit(entry->rmid, d->rmid_busy_llc);
-@@ -289,13 +293,12 @@ int alloc_rmid(void)
- 
+@@ -299,7 +300,6 @@ int alloc_rmid(void)
  static void add_rmid_to_limbo(struct rmid_entry *entry)
  {
--	struct rdt_resource *r;
-+	struct rdt_resource *r = &rdt_resources_all[RDT_RESOURCE_L3].r_resctrl;
-+	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
+ 	struct rdt_resource *r = &rdt_resources_all[RDT_RESOURCE_L3].r_resctrl;
+-	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
  	struct rdt_domain *d;
  	int cpu, err;
  	u64 val = 0;
- 
--	r = &rdt_resources_all[RDT_RESOURCE_L3].r_resctrl;
--
- 	entry->busy = 0;
- 	cpu = get_cpu();
- 	list_for_each_entry(d, &r->domains, list) {
-@@ -303,7 +306,8 @@ static void add_rmid_to_limbo(struct rmid_entry *entry)
+@@ -311,7 +311,6 @@ static void add_rmid_to_limbo(struct rmid_entry *entry)
  			err = resctrl_arch_rmid_read(r, d, entry->rmid,
  						     QOS_L3_OCCUP_EVENT_ID,
  						     &val);
--			if (err || val <= resctrl_cqm_threshold)
-+			val *= hw_res->mon_scale;
-+			if (err || val <= resctrl_rmid_realloc_threshold)
+-			val *= hw_res->mon_scale;
+ 			if (err || val <= resctrl_rmid_realloc_threshold)
  				continue;
  		}
- 
-@@ -744,6 +748,7 @@ int rdt_get_mon_l3_config(struct rdt_resource *r)
- 	unsigned int mbm_offset = boot_cpu_data.x86_cache_mbm_width_offset;
- 	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
- 	unsigned int cl_size = boot_cpu_data.x86_cache_size;
-+	unsigned int threshold;
- 	int ret;
- 
- 	hw_res->mon_scale = boot_cpu_data.x86_cache_occ_scale;
-@@ -762,10 +767,14 @@ int rdt_get_mon_l3_config(struct rdt_resource *r)
- 	 *
- 	 * For a 35MB LLC and 56 RMIDs, this is ~1.8% of the LLC.
- 	 */
--	resctrl_cqm_threshold = cl_size * 1024 / r->num_rmid;
-+	threshold = cl_size * 1024 / r->num_rmid;
- 
--	/* h/w works in units of "boot_cpu_data.x86_cache_occ_scale" */
--	resctrl_cqm_threshold /= hw_res->mon_scale;
-+	/*
-+	 * Because num_rmid may not be a power of two, round the value
-+	 * to the nearest multiple of hw_res->mon_scale so it matches a
-+	 * value the hardware will measure. mon_scale may not be a power of 2.
-+	 */
-+	resctrl_rmid_realloc_threshold = resctrl_arch_round_mon_val(threshold);
- 
- 	ret = dom_data_init(r);
- 	if (ret)
-diff --git a/arch/x86/kernel/cpu/resctrl/rdtgroup.c b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-index 6c33dfe7ea53..849bdec37217 100644
---- a/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-+++ b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-@@ -1030,10 +1030,7 @@ static int rdt_delay_linear_show(struct kernfs_open_file *of,
- static int max_threshold_occ_show(struct kernfs_open_file *of,
- 				  struct seq_file *seq, void *v)
+@@ -403,15 +402,14 @@ static int __mon_event_count(u32 rmid, struct rmid_read *rr)
+  */
+ static void mbm_bw_count(u32 rmid, struct rmid_read *rr)
  {
--	struct rdt_resource *r = of->kn->parent->priv;
--	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
--
--	seq_printf(seq, "%u\n", resctrl_cqm_threshold * hw_res->mon_scale);
-+	seq_printf(seq, "%u\n", resctrl_rmid_realloc_threshold);
+-	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(rr->r);
+ 	struct mbm_state *m = &rr->d->mbm_local[rmid];
+-	u64 cur_bw, chunks, cur_chunks;
++	u64 cur_bw, bytes, cur_bytes;
  
- 	return 0;
- }
-@@ -1055,7 +1052,6 @@ static int rdt_thread_throttle_mode_show(struct kernfs_open_file *of,
- static ssize_t max_threshold_occ_write(struct kernfs_open_file *of,
- 				       char *buf, size_t nbytes, loff_t off)
- {
--	struct rdt_hw_resource *hw_res;
- 	unsigned int bytes;
- 	int ret;
+-	cur_chunks = rr->val;
+-	chunks = cur_chunks - m->prev_bw_chunks;
+-	m->prev_bw_chunks = cur_chunks;
++	cur_bytes = rr->val;
++	bytes = cur_bytes - m->prev_bw_bytes;
++	m->prev_bw_bytes = cur_bytes;
  
-@@ -1066,8 +1062,7 @@ static ssize_t max_threshold_occ_write(struct kernfs_open_file *of,
- 	if (bytes > (boot_cpu_data.x86_cache_size * 1024))
- 		return -EINVAL;
+-	cur_bw = (chunks * hw_res->mon_scale) >> 20;
++	cur_bw = bytes / SZ_1M;
  
--	hw_res = resctrl_to_arch_res(of->kn->parent->priv);
--	resctrl_cqm_threshold = bytes / hw_res->mon_scale;
-+	resctrl_rmid_realloc_threshold = resctrl_arch_round_mon_val(bytes);
- 
- 	return nbytes;
- }
+ 	if (m->delta_comp)
+ 		m->delta_bw = abs(cur_bw - m->prev_bw);
 diff --git a/include/linux/resctrl.h b/include/linux/resctrl.h
-index 7ccfa0d1bb34..9995d043650a 100644
+index cb857f753322..0cf5b20c6ddf 100644
 --- a/include/linux/resctrl.h
 +++ b/include/linux/resctrl.h
-@@ -250,4 +250,6 @@ int resctrl_arch_rmid_read(struct rdt_resource *r, struct rdt_domain *d,
- void resctrl_arch_reset_rmid(struct rdt_resource *r, struct rdt_domain *d,
- 			     u32 rmid, enum resctrl_event_id eventid);
- 
-+extern unsigned int resctrl_rmid_realloc_threshold;
-+
- #endif /* _RESCTRL_H */
+@@ -227,7 +227,7 @@ void resctrl_offline_domain(struct rdt_resource *r, struct rdt_domain *d);
+  * @d:			domain that the counter should be read from.
+  * @rmid:		rmid of the counter to read.
+  * @eventid:		eventid to read, e.g. L3 occupancy.
+- * @val:		result of the counter read in chunks.
++ * @val:		result of the counter read in bytes.
+  *
+  * Call from process context on a CPU that belongs to domain @d.
+  *
 -- 
 2.30.2
 
