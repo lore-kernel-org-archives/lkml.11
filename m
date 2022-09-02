@@ -2,148 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB22AECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 00:57:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E7C7ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 01:00:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234758AbiIBA5P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 20:57:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52124 "EHLO
+        id S234653AbiIBBAZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 21:00:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234723AbiIBA5M (ORCPT
+        with ESMTP id S231752AbiIBBAV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 20:57:12 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7230A346B
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 17:57:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662080231; x=1693616231;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=sqI32UP29Yc5IxqawJxrzwP7cjo3i7gGmmmLnqaDDZc=;
-  b=K7vGXk4ZENhaPJ2NchDXmfRM11Z9a8br89JI7nDcG2baSxkh3SfoT2bU
-   fJYjliYHLQ4mZs50j4TGkefZ4c6bp1AP6P/y1w0wX8OwCp72BJkqurPP1
-   4HJSboWLK1FNgsFEbEgB62nWF6l6LNBgfgPfGLL5QFZ6prvkaH+I0UuuU
-   RgWZzsFmtHvuZW3vupADX7vjxtTjd42vWP5Z1n6j8NleBYI1KKj1wNSDb
-   ol0I3c1mknC5B2lVCFpa0/jGmOXWNY6ma4goksw243dAef9hKJyEyUwf5
-   dbNr8RLmT/dZJvWGx0XUlvkGQxm+P9Tuyv2i5l8EeN8du8BQJEp8XgmA4
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="282849829"
-X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
-   d="scan'208";a="282849829"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 17:57:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
-   d="scan'208";a="563733999"
-Received: from lkp-server02.sh.intel.com (HELO b138c9e8658c) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 01 Sep 2022 17:57:08 -0700
-Received: from kbuild by b138c9e8658c with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oTuzc-0000xG-0s;
-        Fri, 02 Sep 2022 00:57:08 +0000
-Date:   Fri, 2 Sep 2022 08:56:30 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Oscar Salvador <osalvador@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        linux-kernel@vger.kernel.org, Michal Hocko <mhocko@suse.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Eric Dumazet <edumazet@google.com>,
-        Waiman Long <longman@redhat.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Oscar Salvador <osalvador@suse.de>
-Subject: Re: [PATCH 2/3] mm, page_owner: Add page_owner_stacks file to print
- out only stacks and their counter
-Message-ID: <202209020818.s1RIxKyP-lkp@intel.com>
-References: <20220901044249.4624-3-osalvador@suse.de>
+        Thu, 1 Sep 2022 21:00:21 -0400
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00D4527CE8
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 18:00:17 -0700 (PDT)
+Received: from localhost.localdomain (unknown [182.2.38.99])
+        by gnuweeb.org (Postfix) with ESMTPSA id 5BCF78060F;
+        Fri,  2 Sep 2022 01:00:13 +0000 (UTC)
+X-GW-Data: lPqxHiMPbJw1wb7CM9QUryAGzr0yq5atzVDdxTR0iA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1662080417;
+        bh=VO/rnidcgujqXxV0CuQhSoMG8kd2wmNu8KfPPyEJ1sI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=TYb+MtmCBzmGA63u+TygMGSyZoh8osMcQtX3hD4YhyZzZGSS2svO5TqNrz0BkBPTX
+         R4Qx6k0O2JXuOB8jBGjfTrVGgoVRiDEX3ZUKZMkXNzNvPTktuxDcbhj4V0nJIBoGWp
+         ADkY+kIN6VstQRtb17dY1XeMeJAg802GIXEB0wdQGsT22/mF2XYCQ6MFihB+CVsycp
+         pGLkbM94NgkgpOe3x7zUl+8tenmY6N4tFvpYLR4c+olmPRCmLWobSn/OIA42/Q6I43
+         atAepwx6taS3/mI+Iv2TFPOFGzZoTSC78/1zZBZNDl1ldwN+2poSeW2O2hzeNAv8c5
+         hxplegWhsjzmw==
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        Dylan Yudaken <dylany@fb.com>,
+        Facebook Kernel Team <kernel-team@fb.com>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Kanna Scarlet <knscarlet@gnuweeb.org>,
+        Muhammad Rizki <kiizuha@gnuweeb.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        io-uring Mailing List <io-uring@vger.gnuweeb.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: [PATCH liburing v1 00/12] Introducing t_bind_ephemeral_port() function
+Date:   Fri,  2 Sep 2022 07:59:34 +0700
+Message-Id: <20220902005825.2484023-1-ammar.faizi@intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220901044249.4624-3-osalvador@suse.de>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Oscar,
+From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
 
-I love your patch! Yet something to improve:
+Hi,
 
-[auto build test ERROR on linus/master]
-[also build test ERROR on v6.0-rc3]
-[cannot apply to akpm-mm/mm-everything next-20220901]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+After discussing an intermittent bind() issue with Dylan, I decided to
+introduce a new helper function, t_bind_ephemeral_port().
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Oscar-Salvador/page_owner-print-stacks-and-their-counter/20220901-124408
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git c5e4d5e99162ba8025d58a3af7ad103f155d2df7
-config: arc-randconfig-r043-20220901 (https://download.01.org/0day-ci/archive/20220902/202209020818.s1RIxKyP-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/18d3054fb57a70676be763adab8c8881a1baa504
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Oscar-Salvador/page_owner-print-stacks-and-their-counter/20220901-124408
-        git checkout 18d3054fb57a70676be763adab8c8881a1baa504
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
+## Problem:
+We have many places where we need to bind() a socket to any unused port
+number. To achieve that, the current approach does one of the following
+mechanisms:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+  1) Randomly brute force the port number until the bind() syscall
+     succeeds.
 
-All errors (new ones prefixed by >>):
+  2) Use a static port at compile time (randomly chosen too).
 
-   lib/stackdepot.c: In function 'stack_depot_print_stacks_threshold':
->> lib/stackdepot.c:603:17: error: 'STACK_HASH_SIZE' undeclared (first use in this function); did you mean 'STACK_HASH_SEED'?
-     603 |         if (i < STACK_HASH_SIZE)
-         |                 ^~~~~~~~~~~~~~~
-         |                 STACK_HASH_SEED
-   lib/stackdepot.c:603:17: note: each undeclared identifier is reported only once for each function it appears in
+This is not reliable and it results in an intermittent issue (test
+fails when the selected port is in use).
+
+## Solution:
+Setting @addr->sin_port to zero on a bind() syscall lets the kernel
+choose a port number that is not in use. The caller then can know the
+port number to be bound by invoking a getsockname() syscall after
+bind() succeeds.
+
+Wrap this procedure in a new function called t_bind_ephemeral_port().
+The selected port will be returned into @addr->sin_port, the caller
+can use it later to connect() or whatever they need.
+
+## Patchset summary:
+There are 12 patches in this series, summary:
+1) Patch #1 introduces a new helper function t_bind_ephemeral_port().
+2) Patch #2 to #6 get rid of the port number brute force mechanism.
+3) Patch #7 to #12 stop using a static port number.
+
+Link: https://lore.kernel.org/r/918facd1-78ba-2de7-693a-5f8c65ea2fcd@gnuweeb.org
+Cc: Dylan Yudaken <dylany@fb.com>
+Cc: Facebook Kernel Team <kernel-team@fb.com>
+Cc: Pavel Begunkov <asml.silence@gmail.com>
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+---
+
+Ammar Faizi (12):
+  test/helpers: Add `t_bind_ephemeral_port()` function
+  t/poll-link: Don't brute force the port number
+  t/socket-rw: Don't brute force the port number
+  t/socket-rw-eagain: Don't brute force the port number
+  t/socket-rw-offset: Don't brute force the port number
+  t/files-exit-hang-poll: Don't brute force the port number
+  t/socket: Don't use a static port number
+  t/connect: Don't use a static port number
+  t/shutdown: Don't use a static port number
+  t/recv-msgall: Don't use a static port number
+  t/232c93d07b74: Don't use a static port number
+  t/recv-msgall-stream: Don't use a static port number
+
+ test/232c93d07b74.c         | 10 ++++------
+ test/accept.c               |  5 +----
+ test/files-exit-hang-poll.c | 23 +++--------------------
+ test/helpers.c              | 18 ++++++++++++++++++
+ test/helpers.h              |  7 +++++++
+ test/poll-link.c            | 20 ++++++--------------
+ test/recv-msgall-stream.c   | 22 ++++++++++------------
+ test/recv-msgall.c          | 10 ++++------
+ test/shutdown.c             |  7 +++----
+ test/socket-rw-eagain.c     | 14 ++------------
+ test/socket-rw-offset.c     | 13 ++-----------
+ test/socket-rw.c            | 13 ++-----------
+ test/socket.c               | 11 ++++++-----
+ 13 files changed, 68 insertions(+), 105 deletions(-)
 
 
-vim +603 lib/stackdepot.c
-
-   568	
-   569	int stack_depot_print_stacks_threshold(char *buf, size_t size, loff_t *pos,
-   570					       unsigned long *last_stack)
-   571	{
-   572		struct stack_record *stack = NULL, *last;
-   573		struct stack_record **stacks;
-   574		int i = *pos, ret = 0;
-   575	
-   576		/* Continue from the last week if we have one */
-   577		if (*last_stack) {
-   578			last = (struct stack_record *)*last_stack;
-   579			stack = last->next;
-   580		} else {
-   581	new_table:
-   582			stacks = &stack_table[i];
-   583			stack = (struct stack_record *)stacks;
-   584		}
-   585	
-   586		for (; stack; stack = stack->next) {
-   587			if (!stack->size || stack->size < 0 ||
-   588			    stack->size > size || stack->handle.valid != 1 ||
-   589			    refcount_read(&stack->count) < 1)
-   590				continue;
-   591	
-   592			ret += stack_trace_snprint(buf, size, stack->entries, stack->size, 0);
-   593			ret += scnprintf(buf + ret, size - ret, "stack count: %d\n\n",
-   594					 refcount_read(&stack->count));
-   595			*last_stack = (unsigned long)stack;
-   596			return ret;
-   597		}
-   598	
-   599		i++;
-   600		*pos = i;
-   601	
-   602		/* Keep looking all tables for valid stacks */
- > 603		if (i < STACK_HASH_SIZE)
-
+base-commit: b8c37f02662faa4f2b61840b123201ccc5678fb1
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Ammar Faizi
+
