@@ -2,70 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0EE4ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 17:49:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6E1BC6FA82
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 17:59:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236189AbiIBRtg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 13:49:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60318 "EHLO
+        id S235880AbiIBR7n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 13:59:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235317AbiIBRte (ORCPT
+        with ESMTP id S234778AbiIBR7l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 13:49:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AA15F2C9D;
-        Fri,  2 Sep 2022 10:49:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 06DCC62223;
-        Fri,  2 Sep 2022 17:49:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF0C4C433C1;
-        Fri,  2 Sep 2022 17:49:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662140972;
-        bh=GOSNtRWEY0DYm6BP44LdjM1cTRDgHCPLtmZEbPDLPik=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bHWKYkw6yIb+UI2eNRUngsCmD7q/Td5OnsfwFtyU+5Dh+lRM+vjZaow8hx8QdQE45
-         bJlMdvKZ/VQBvGu4i6Xl15rMSnEaOVUu7V9eok5eWrmd2WLHjCFtCuF65otHQQVSPy
-         zwqXBRm53/JjTRuh973hFznlavubMlT2Q/O1RhAfmFfoB3szOMHGQcbiJCXzVE0Xzy
-         WR9l2HaG6nuHzvxu2uYkozRRmhC37p73SDjhCzxR74qzPa35jW09A8EtjgPSr0UCII
-         LQcm1vv7IX++7P65SlslniXwFJROMYUbPpyBAjEakTbO1nTsLeGteu/G0kEoevorqE
-         WGw2e5f0lMz3g==
-Date:   Fri, 2 Sep 2022 23:19:28 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Richard Zhu <hongxing.zhu@nxp.com>
-Cc:     a.fatoum@pengutronix.de, l.stach@pengutronix.de,
-        bhelgaas@google.com, lorenzo.pieralisi@arm.com,
-        marcel.ziswiler@toradex.com, kishon@ti.com,
-        linux-phy@lists.infradead.org, linux-pci@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, linux-imx@nxp.com
-Subject: Re: [PATCH v2] phy: freescale: imx8m-pcie: Fix the wrong order of
- phy_init() and phy_power_on()
-Message-ID: <YxJCKEuuVvJRD7wF@matsya>
-References: <1661928956-12727-1-git-send-email-hongxing.zhu@nxp.com>
+        Fri, 2 Sep 2022 13:59:41 -0400
+Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ACAB2CDFD
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 10:59:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=jDC7BqYo1R92jQlcphXp72QFerhqQBqx/36u1nEWo8I=; b=Pn7d4Cl4P8/i9GBaN50WiffbYK
+        TKDYFY8U3yBtZN+zJ+3zSxzCAtxn/lkMvLobXg5x1mq4iN4hxADhMn7S5tEXeirHu2uW70ML6Xh2n
+        uQnAcUbaaebbkJ/wa9yjIAz37GOKdKxhWvXubVPc/dFY96cc0QSVBUgEikDzSNGhat3o3gqAgCmjA
+        jhdRluR1HqbYhXX2Ov0jDcgZpVAfa5ZyFLZ12uTpr6GRpl3ZUil2SJ9SjjkYy5uXb9AOSIT4bIaC+
+        4BQ99DEmyac5wgNxcTIktHmEt3+RODZ83fsAgJCxECMOqKSFbuMsowsT9sH04pA0dCheJ5EzREgWB
+        LynoUUFQ==;
+Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
+        id 1oUAx7-00BPZr-1h;
+        Fri, 02 Sep 2022 17:59:37 +0000
+Date:   Fri, 2 Sep 2022 18:59:37 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Andrew Jones <ajones@ventanamicro.com>
+Cc:     linux-riscv@lists.infradead.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] riscv: fix a nasty sigreturn bug...
+Message-ID: <YxJEiSq/CGaL6Gm9@ZenIV>
+References: <YU0wDzeS/jXwkAca@zeniv-ca.linux.org.uk>
+ <20220902092245.ande6fvievnbn35h@kamzik>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1661928956-12727-1-git-send-email-hongxing.zhu@nxp.com>
+In-Reply-To: <20220902092245.ande6fvievnbn35h@kamzik>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 31-08-22, 14:55, Richard Zhu wrote:
-> Refer to phy_core driver, phy_init() must be called before phy_power_on().
-> Fix the wrong order of phy_init() and phy_power_on() here.
-> Squash the changes into one patch to avoid the possible bi-section hole.
+On Fri, Sep 02, 2022 at 11:22:45AM +0200, Andrew Jones wrote:
+
+> So, for riscv, where in do_signal and handle_signal syscall restarting
+> is avoided when regs->cause != EXC_SYSCALL and it's common to set cause
+> to -1 to avoid it, then it makes sense to set regs->cause != EXEC_SYSCALL
+> in rt_sigreturn or in restore_sigcontext, which rt_sigreturn calls, as
+> well.
 > 
-> Fixes: 1aa97b002258 ("phy: freescale: pcie: Initialize the imx8 pcie standalone phy driver")
-> Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
-> Tested-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-> ---
->  drivers/pci/controller/dwc/pci-imx6.c      | 6 +++---
->  drivers/phy/freescale/phy-fsl-imx8m-pcie.c | 8 ++++----
+> So the only question I have is whether or not the cause assignment
+> is better in restore_sigcontext() like other architectures? At least,
+> since rt_sigreturn is the only caller of restore_sigcontext, it can't
+> break anything putting it there atm...
 
-Acked-By: Vinod Koul <vkoul@kernel.org>
+	The only reason for doing that in restore_sigcontext() is that for
+old architectures there'd been separate sigreturn(2) and rt_sigreturn(2).
+Doing that in the helper shared by both avoided duplication; since
+there's no such thing on riscv...
 
--- 
-~Vinod
+	Matter of taste, really - I have a slight preference for doing that
+closer to the syscall surface, but it's no more than that.
