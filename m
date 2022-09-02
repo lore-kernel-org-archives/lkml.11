@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8169CECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:51:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA066C54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:51:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237851AbiIBMvg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:51:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44688 "EHLO
+        id S237864AbiIBMvp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:51:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237785AbiIBMun (ORCPT
+        with ESMTP id S237793AbiIBMup (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:50:43 -0400
+        Fri, 2 Sep 2022 08:50:45 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C16E2F72EA;
-        Fri,  2 Sep 2022 05:36:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5179F7B34;
+        Fri,  2 Sep 2022 05:36:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05F2CB82A8B;
-        Fri,  2 Sep 2022 12:24:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50201C433C1;
-        Fri,  2 Sep 2022 12:24:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 48906B82AC5;
+        Fri,  2 Sep 2022 12:29:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89EC0C433D7;
+        Fri,  2 Sep 2022 12:29:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121486;
-        bh=BVmSj4j2lKWMzSNLk4z5AdM2bjhzmLxnEzZSY88b4KU=;
+        s=korg; t=1662121786;
+        bh=hyX6Zt3IU6MpFRjst+F6f9W4NLmMoAVAbz38sQFz9OE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pljeTm/vK7m0na7EMDzPKf70UEtlK562dqIpGPRl98NV14rKUZ8mbEIJ86z1CW98J
-         okbmWAwOFCsVA+JQ8Plu1gSVU43Ui0qsZG5L7ytvKMJ7unIEBMWJ3WWHo5p9fkvEdo
-         nf0w9DLSRwoBuwPZAeEgrbk6gX8w3pOfM7E1y+N4=
+        b=KW/LoE49bIJliGodYzvVANdym1m/RqpyWs7rrtE9dcUcoTciXKnDRfFBN6Ru9OwJJ
+         AkqWJ5ZswRMVSPDLEcGX+LrTe0OqEaS2iJxWXvNrHNOTN96ZrQaz2/Yzl7azR6m7Ua
+         UsbLfLwpt7yrLSVSnyCLdSP/Y7GPOG0ki9SpC/34=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Josip Pavic <Josip.Pavic@amd.com>,
+        Jun Lei <Jun.Lei@amd.com>, Alex Hung <alex.hung@amd.com>,
+        Aric Cyr <aric.cyr@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 23/56] net: Fix a data-race around sysctl_net_busy_poll.
-Date:   Fri,  2 Sep 2022 14:18:43 +0200
-Message-Id: <20220902121400.993054915@linuxfoundation.org>
+Subject: [PATCH 5.4 65/77] drm/amd/display: Avoid MPC infinite loop
+Date:   Fri,  2 Sep 2022 14:19:14 +0200
+Message-Id: <20220902121405.847824457@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
-References: <20220902121400.219861128@linuxfoundation.org>
+In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
+References: <20220902121403.569927325@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,34 +52,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Josip Pavic <Josip.Pavic@amd.com>
 
-[ Upstream commit c42b7cddea47503411bfb5f2f93a4154aaffa2d9 ]
+[ Upstream commit 8de297dc046c180651c0500f8611663ae1c3828a ]
 
-While reading sysctl_net_busy_poll, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+[why]
+In some cases MPC tree bottom pipe ends up point to itself.  This causes
+iterating from top to bottom to hang the system in an infinite loop.
 
-Fixes: 060212928670 ("net: add low latency socket poll")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+[how]
+When looping to next MPC bottom pipe, check that the pointer is not same
+as current to avoid infinite loop.
+
+Reviewed-by: Josip Pavic <Josip.Pavic@amd.com>
+Reviewed-by: Jun Lei <Jun.Lei@amd.com>
+Acked-by: Alex Hung <alex.hung@amd.com>
+Signed-off-by: Aric Cyr <aric.cyr@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/busy_poll.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c | 6 ++++++
+ drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c | 6 ++++++
+ 2 files changed, 12 insertions(+)
 
-diff --git a/include/net/busy_poll.h b/include/net/busy_poll.h
-index c76a5e9894dac..8f42f6f3af86f 100644
---- a/include/net/busy_poll.h
-+++ b/include/net/busy_poll.h
-@@ -43,7 +43,7 @@ extern unsigned int sysctl_net_busy_poll __read_mostly;
- 
- static inline bool net_busy_loop_on(void)
- {
--	return sysctl_net_busy_poll;
-+	return READ_ONCE(sysctl_net_busy_poll);
- }
- 
- static inline bool sk_can_busy_loop(const struct sock *sk)
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c
+index 8b2f29f6dabd2..068e79fa3490d 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c
+@@ -118,6 +118,12 @@ struct mpcc *mpc1_get_mpcc_for_dpp(struct mpc_tree *tree, int dpp_id)
+ 	while (tmp_mpcc != NULL) {
+ 		if (tmp_mpcc->dpp_id == dpp_id)
+ 			return tmp_mpcc;
++
++		/* avoid circular linked list */
++		ASSERT(tmp_mpcc != tmp_mpcc->mpcc_bot);
++		if (tmp_mpcc == tmp_mpcc->mpcc_bot)
++			break;
++
+ 		tmp_mpcc = tmp_mpcc->mpcc_bot;
+ 	}
+ 	return NULL;
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c
+index 5a188b2bc033c..0a00bd8e00abc 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c
+@@ -488,6 +488,12 @@ struct mpcc *mpc2_get_mpcc_for_dpp(struct mpc_tree *tree, int dpp_id)
+ 	while (tmp_mpcc != NULL) {
+ 		if (tmp_mpcc->dpp_id == 0xf || tmp_mpcc->dpp_id == dpp_id)
+ 			return tmp_mpcc;
++
++		/* avoid circular linked list */
++		ASSERT(tmp_mpcc != tmp_mpcc->mpcc_bot);
++		if (tmp_mpcc == tmp_mpcc->mpcc_bot)
++			break;
++
+ 		tmp_mpcc = tmp_mpcc->mpcc_bot;
+ 	}
+ 	return NULL;
 -- 
 2.35.1
 
