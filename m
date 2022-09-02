@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 883CBECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:31:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B077C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:31:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236615AbiIBMbb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:31:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36730 "EHLO
+        id S236522AbiIBMbg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:31:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235485AbiIBMaw (ORCPT
+        with ESMTP id S236287AbiIBMaz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:30:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1816ED6327;
-        Fri,  2 Sep 2022 05:26:10 -0700 (PDT)
+        Fri, 2 Sep 2022 08:30:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB5A6DFB4F;
+        Fri,  2 Sep 2022 05:26:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B08306215E;
-        Fri,  2 Sep 2022 12:24:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3255C4347C;
-        Fri,  2 Sep 2022 12:24:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A5F94B82A93;
+        Fri,  2 Sep 2022 12:23:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED5B1C433D7;
+        Fri,  2 Sep 2022 12:23:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121466;
-        bh=XwbvCBuKWs1pUPEvLzPzAd/1J26EpwfkKxzyqqfmeQg=;
+        s=korg; t=1662121436;
+        bh=2UKLF3KgzUGUMQjH0LyH0mhDriRRyZ5EqXbokM/8s8g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bTt32Ht0GiSxss757xWRr9P9VpfT+tsP3JRpI7EwUjuumBI/F2JPMLmU3HhhlL/e4
-         S5ByOUchuG+5eBHV8O+gq7zRwLEd4wJauGPUnejI2L8QxeiYbb6ArqUD95f+TrfkeE
-         8IkYff3b1UknygSkcrlxUaMc9gkC2D90aMeNaD+0=
+        b=1NS7oPuu3dIHe0gBiTzepqMhlhq2DbUmxDkPLCJS1XiEcdOkL0dDdlo/dFfhVEWec
+         xxlwZcRJN/AYhoZSD6mLwbqrW13Hyf4vIdih06o9pbOGYOdtbZLnqklNEBDMWVB/J6
+         7VRSxognrSKAqUjHqqfGgp4ylo9EMuzLKIPVslno=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 17/56] netfilter: nft_osf: restrict osf to ipv4, ipv6 and inet families
-Date:   Fri,  2 Sep 2022 14:18:37 +0200
-Message-Id: <20220902121400.776804908@linuxfoundation.org>
+        stable@vger.kernel.org, "Denis V. Lunev" <den@openvz.org>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.14 42/42] net: neigh: dont call kfree_skb() under spin_lock_irqsave()
+Date:   Fri,  2 Sep 2022 14:19:06 +0200
+Message-Id: <20220902121400.202901677@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
-References: <20220902121400.219861128@linuxfoundation.org>
+In-Reply-To: <20220902121358.773776406@linuxfoundation.org>
+References: <20220902121358.773776406@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,50 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 5f3b7aae14a706d0d7da9f9e39def52ff5fc3d39 ]
+commit d5485d9dd24e1d04e5509916515260186eb1455c upstream.
 
-As it was originally intended, restrict extension to supported families.
+It is not allowed to call kfree_skb() from hardware interrupt
+context or with interrupts being disabled. So add all skb to
+a tmp list, then free them after spin_unlock_irqrestore() at
+once.
 
-Fixes: b96af92d6eaf ("netfilter: nf_tables: implement Passive OS fingerprint module in nft_osf")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 66ba215cb513 ("neigh: fix possible DoS due to net iface start/stop loop")
+Suggested-by: Denis V. Lunev <den@openvz.org>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nft_osf.c | 18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
+ net/core/neighbour.c |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/net/netfilter/nft_osf.c b/net/netfilter/nft_osf.c
-index e259454b6a643..4fac2d9a4b885 100644
---- a/net/netfilter/nft_osf.c
-+++ b/net/netfilter/nft_osf.c
-@@ -81,9 +81,21 @@ static int nft_osf_validate(const struct nft_ctx *ctx,
- 			    const struct nft_expr *expr,
- 			    const struct nft_data **data)
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -224,21 +224,27 @@ static int neigh_del_timer(struct neighb
+ 
+ static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
  {
--	return nft_chain_validate_hooks(ctx->chain, (1 << NF_INET_LOCAL_IN) |
--						    (1 << NF_INET_PRE_ROUTING) |
--						    (1 << NF_INET_FORWARD));
-+	unsigned int hooks;
++	struct sk_buff_head tmp;
+ 	unsigned long flags;
+ 	struct sk_buff *skb;
+ 
++	skb_queue_head_init(&tmp);
+ 	spin_lock_irqsave(&list->lock, flags);
+ 	skb = skb_peek(list);
+ 	while (skb != NULL) {
+ 		struct sk_buff *skb_next = skb_peek_next(skb, list);
+ 		if (net == NULL || net_eq(dev_net(skb->dev), net)) {
+ 			__skb_unlink(skb, list);
+-			dev_put(skb->dev);
+-			kfree_skb(skb);
++			__skb_queue_tail(&tmp, skb);
+ 		}
+ 		skb = skb_next;
+ 	}
+ 	spin_unlock_irqrestore(&list->lock, flags);
 +
-+	switch (ctx->family) {
-+	case NFPROTO_IPV4:
-+	case NFPROTO_IPV6:
-+	case NFPROTO_INET:
-+		hooks = (1 << NF_INET_LOCAL_IN) |
-+			(1 << NF_INET_PRE_ROUTING) |
-+			(1 << NF_INET_FORWARD);
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
++	while ((skb = __skb_dequeue(&tmp))) {
++		dev_put(skb->dev);
++		kfree_skb(skb);
 +	}
-+
-+	return nft_chain_validate_hooks(ctx->chain, hooks);
  }
  
- static struct nft_expr_type nft_osf_type;
--- 
-2.35.1
-
+ static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev)
 
 
