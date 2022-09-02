@@ -2,140 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6663DECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:26:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B39DC54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:27:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235734AbiIBI0H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 04:26:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51752 "EHLO
+        id S235360AbiIBI1y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 04:27:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234788AbiIBI0D (ORCPT
+        with ESMTP id S233014AbiIBI1u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 04:26:03 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60B5B57201
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 01:26:02 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id w19so1497242ljj.7
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 01:26:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=yZ7GI/H/npr8l+qVhno9QYWaE882wgaDO0sWPEtrVzI=;
-        b=gBY8OG2XpP3vttfs1RSHEWup1a1iLXJ18Xy6iShnIE/HNIwJph+Hjv9vUaXz/axDCA
-         iVd1PNmFNZKCy8mr44bY9s780B3kBdRpDdSAJLWzZqHmPPNv0MmgLE8FgQmGk6MeCYim
-         eQbCsVHw1nBiOsX3PwmKhBjTPYGZVbKvKvCNCB/j2NGcUvVfUG4QtfkZm/n90RiUuuse
-         +6ym92aIJpO96LxYalFyXhF3gMayHDtAM6TI9mvOcTspQlr/goaxcGLOxLzkGjyKhYiq
-         8M4XEf/deUHsFxD1OItXh9OiVX+tlJIFa2OFbUvSmaoB/oipSXfs/TyVEQ1VFlQH8aM6
-         HOjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=yZ7GI/H/npr8l+qVhno9QYWaE882wgaDO0sWPEtrVzI=;
-        b=3WFVq33qqjLlfq86ZjQeyk6EBwi+wtewx0g6i1MTUnB4aE9rdq7NrnfOieb2z21eWU
-         trgbQ7pnjaoQV+q05d+JZcZ0RCFbWBKCVw3h8OTDK3ZbN8iFedqdg6q+vr9GC829jqcg
-         SBw92MGw81GwFNmOHG7L1GmkqBZlQjtm1I0PQUN+Xr+q5rbKKT8xazzMmvy9suAa+9mN
-         8Wo07JaB41NzPGO6/3od7oMqXVpnQRGdLsW3OPt4GH/zx1XYAm3/DLjEgpNsr0jPRNwc
-         iXqtsRcwjX7sy7fXOcZ2r4JenUa6v8ecCVLEJ1hM0+mD7D5MemtqInxcrQ7BJ4VKnhwf
-         L4oA==
-X-Gm-Message-State: ACgBeo1wRgU2KZVbRHDmc6BgPU7KFAeo7W/ya573gnuqOqK8EJOeMfrF
-        3X7N4SBS9IXe7RzOfOq9hvcslihRFAJ17HbdZVQ=
-X-Google-Smtp-Source: AA6agR6HICholv9FC7LpKeoDOUnCvQdkHZTOJxhZ4iQqo4eM6ddVDLKACblmrSS4Nk3c0VjJ0a6i03hsVPNs8Hjweq0=
-X-Received: by 2002:a2e:9e48:0:b0:261:c713:37dd with SMTP id
- g8-20020a2e9e48000000b00261c71337ddmr10154143ljk.385.1662107160591; Fri, 02
- Sep 2022 01:26:00 -0700 (PDT)
+        Fri, 2 Sep 2022 04:27:50 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0BBA72689
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 01:27:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662107269; x=1693643269;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=l+2HdTQyQnhLRptMYm8iUYbsJXK1WnyHw8b4HtZvMA0=;
+  b=UPpBcqnywyi/ZrNPduQeK1ISyUVGmqRzPZIwGAS7NFdtT5mEuAGKJtI7
+   NNWhmsxQr8CjYnB76NaYBFWQ6tXXXxk0ZV/zhBhEMgT/f5FpVzxAFvzQv
+   t/x37ZXwbSrhMYTp2W6c6fmyRAbMkU+LzK9LdBYzBCJMfj2dhMOiyW80u
+   i9rEdLdXcncRep5lT7mxEGYwStnxgeW7Z1LYwjsqvjLJW/VK7iwgSuJoY
+   X7ECbb3dFvVe+MeJvgqR8/zIhZoQ+1BOQaThAUZMGZnN/kFoFnqopx7ZN
+   zydqtAZR2WoHb8y90KzDpfRPOHGllM+FmidC+S97RzIsMI+ONQJGLZ0id
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="295939539"
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="295939539"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 01:27:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="788585272"
+Received: from lkp-server02.sh.intel.com (HELO fccc941c3034) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 02 Sep 2022 01:27:24 -0700
+Received: from kbuild by fccc941c3034 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oU21L-0000OH-1T;
+        Fri, 02 Sep 2022 08:27:23 +0000
+Date:   Fri, 2 Sep 2022 16:27:10 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     kbuild-all@lists.01.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:viro/vfs/next.tty 8/8]
+ arch/parisc/include/asm/uaccess.h:89:15: warning: assignment to 'void *'
+ from 'unsigned int' makes pointer from integer without a cast
+Message-ID: <202209021628.FSjVTR8L-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220806122636.43068-1-tomas.winkler@intel.com> <20220806122636.43068-15-tomas.winkler@intel.com>
-In-Reply-To: <20220806122636.43068-15-tomas.winkler@intel.com>
-From:   Matthew Auld <matthew.william.auld@gmail.com>
-Date:   Fri, 2 Sep 2022 09:25:33 +0100
-Message-ID: <CAM0jSHO7sDegQysvZgfOXf5B-h6oe7nmfHeuH+KMAmFtnM3d2w@mail.gmail.com>
-Subject: Re: [Intel-gfx] [PATCH v7 14/15] drm/i915/gsc: allocate extended
- operational memory in LMEM
-To:     Tomas Winkler <tomas.winkler@intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Alan Previn <alan.previn.teres.alexis@intel.com>,
-        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        Alexander Usyskin <alexander.usyskin@intel.com>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Vitaly Lubart <vitaly.lubart@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 6 Aug 2022 at 13:34, Tomas Winkler <tomas.winkler@intel.com> wrote:
->
-> GSC requires more operational memory than available on chip.
-> Reserve 4M of LMEM for GSC operation. The memory is provided to the
-> GSC as struct resource to the auxiliary data of the child device.
->
-> Cc: Alan Previn <alan.previn.teres.alexis@intel.com>
-> Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
-> Signed-off-by: Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
-> Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
-> ---
->  drivers/gpu/drm/i915/gt/intel_gsc.c | 91 ++++++++++++++++++++++++++---
->  drivers/gpu/drm/i915/gt/intel_gsc.h |  3 +
->  2 files changed, 87 insertions(+), 7 deletions(-)
->
-> diff --git a/drivers/gpu/drm/i915/gt/intel_gsc.c b/drivers/gpu/drm/i915/gt/intel_gsc.c
-> index e1040c8f2fd3..162bea57fbb5 100644
-> --- a/drivers/gpu/drm/i915/gt/intel_gsc.c
-> +++ b/drivers/gpu/drm/i915/gt/intel_gsc.c
-> @@ -7,6 +7,7 @@
->  #include <linux/mei_aux.h>
->  #include "i915_drv.h"
->  #include "i915_reg.h"
-> +#include "gem/i915_gem_region.h"
->  #include "gt/intel_gsc.h"
->  #include "gt/intel_gt.h"
->
-> @@ -36,12 +37,68 @@ static int gsc_irq_init(int irq)
->         return irq_set_chip_data(irq, NULL);
->  }
->
-> +static int
-> +gsc_ext_om_alloc(struct intel_gsc *gsc, struct intel_gsc_intf *intf, size_t size)
-> +{
-> +       struct intel_gt *gt = gsc_to_gt(gsc);
-> +       struct drm_i915_gem_object *obj;
-> +       void *vaddr;
-> +       int err;
-> +
-> +       obj = i915_gem_object_create_lmem(gt->i915, size, I915_BO_ALLOC_CONTIGUOUS);
-> +       if (IS_ERR(obj)) {
-> +               drm_err(&gt->i915->drm, "Failed to allocate gsc memory\n");
-> +               return PTR_ERR(obj);
-> +       }
-> +
-> +       err = i915_gem_object_pin_pages_unlocked(obj);
-> +       if (err) {
-> +               drm_err(&gt->i915->drm, "Failed to pin pages for gsc memory\n");
-> +               goto out_put;
-> +       }
-> +
-> +       vaddr = i915_gem_object_pin_map_unlocked(obj, i915_coherent_map_type(gt->i915, obj, true));
-> +       if (IS_ERR(vaddr)) {
-> +               err = PTR_ERR(vaddr);
-> +               drm_err(&gt->i915->drm, "Failed to map gsc memory\n");
-> +               goto out_unpin;
-> +       }
-> +
-> +       memset(vaddr, 0, obj->base.size);
-> +
-> +       i915_gem_object_unpin_map(obj);
+tree:   https://github.com/ammarfaizi2/linux-block viro/vfs/next.tty
+head:   6890ade9a0f2c360dbc86f39afc1ef852f4a83c6
+commit: 6890ade9a0f2c360dbc86f39afc1ef852f4a83c6 [8/8] saner tty_mode_ioctl() prototype
+config: parisc-allyesconfig (https://download.01.org/0day-ci/archive/20220902/202209021628.FSjVTR8L-lkp@intel.com/config)
+compiler: hppa-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/6890ade9a0f2c360dbc86f39afc1ef852f4a83c6
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block viro/vfs/next.tty
+        git checkout 6890ade9a0f2c360dbc86f39afc1ef852f4a83c6
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=parisc SHELL=/bin/bash drivers/
 
-I think this was mentioned before, here we should rather use:
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-create_lmem(gt->i915, size,
-                      I915_BO_ALLOC_CONTIGUOUS |
-                      I915_BO_ALLOC_CPU_CLEAR);
+All warnings (new ones prefixed by >>):
 
-That way we don't need to manually map and clear it here. Instead when
-first allocating the pages (like with pin_pages), the clear will be
-done for you.
+   In file included from include/linux/uaccess.h:11,
+                    from include/linux/sched/task.h:11,
+                    from include/linux/sched/signal.h:9,
+                    from drivers/tty/tty_ioctl.c:13:
+   drivers/tty/tty_ioctl.c: In function 'tty_mode_ioctl':
+>> arch/parisc/include/asm/uaccess.h:89:15: warning: assignment to 'void *' from 'unsigned int' makes pointer from integer without a cast [-Wint-conversion]
+      89 |         (val) = (__force __typeof__(*(ptr))) __gu_val;  \
+         |               ^
+   arch/parisc/include/asm/uaccess.h:64:17: note: in expansion of macro '__get_user_asm'
+      64 |         case 1: __get_user_asm(sr, val, "ldb", ptr); break; \
+         |                 ^~~~~~~~~~~~~~
+   arch/parisc/include/asm/uaccess.h:76:9: note: in expansion of macro '__get_user_internal'
+      76 |         __get_user_internal(SR_USER, val, ptr); \
+         |         ^~~~~~~~~~~~~~~~~~~
+   arch/parisc/include/asm/uaccess.h:19:18: note: in expansion of macro '__get_user'
+      19 | #define get_user __get_user
+         |                  ^~~~~~~~~~
+   drivers/tty/tty_ioctl.c:879:21: note: in expansion of macro 'get_user'
+     879 |                 if (get_user(arg, (unsigned int __user *) arg))
+         |                     ^~~~~~~~
+>> arch/parisc/include/asm/uaccess.h:89:15: warning: assignment to 'void *' from 'unsigned int' makes pointer from integer without a cast [-Wint-conversion]
+      89 |         (val) = (__force __typeof__(*(ptr))) __gu_val;  \
+         |               ^
+   arch/parisc/include/asm/uaccess.h:65:17: note: in expansion of macro '__get_user_asm'
+      65 |         case 2: __get_user_asm(sr, val, "ldh", ptr); break; \
+         |                 ^~~~~~~~~~~~~~
+   arch/parisc/include/asm/uaccess.h:76:9: note: in expansion of macro '__get_user_internal'
+      76 |         __get_user_internal(SR_USER, val, ptr); \
+         |         ^~~~~~~~~~~~~~~~~~~
+   arch/parisc/include/asm/uaccess.h:19:18: note: in expansion of macro '__get_user'
+      19 | #define get_user __get_user
+         |                  ^~~~~~~~~~
+   drivers/tty/tty_ioctl.c:879:21: note: in expansion of macro 'get_user'
+     879 |                 if (get_user(arg, (unsigned int __user *) arg))
+         |                     ^~~~~~~~
+>> arch/parisc/include/asm/uaccess.h:89:15: warning: assignment to 'void *' from 'unsigned int' makes pointer from integer without a cast [-Wint-conversion]
+      89 |         (val) = (__force __typeof__(*(ptr))) __gu_val;  \
+         |               ^
+   arch/parisc/include/asm/uaccess.h:66:17: note: in expansion of macro '__get_user_asm'
+      66 |         case 4: __get_user_asm(sr, val, "ldw", ptr); break; \
+         |                 ^~~~~~~~~~~~~~
+   arch/parisc/include/asm/uaccess.h:76:9: note: in expansion of macro '__get_user_internal'
+      76 |         __get_user_internal(SR_USER, val, ptr); \
+         |         ^~~~~~~~~~~~~~~~~~~
+   arch/parisc/include/asm/uaccess.h:19:18: note: in expansion of macro '__get_user'
+      19 | #define get_user __get_user
+         |                  ^~~~~~~~~~
+   drivers/tty/tty_ioctl.c:879:21: note: in expansion of macro 'get_user'
+     879 |                 if (get_user(arg, (unsigned int __user *) arg))
+         |                     ^~~~~~~~
+   arch/parisc/include/asm/uaccess.h:122:15: warning: assignment to 'void *' from 'unsigned int' makes pointer from integer without a cast [-Wint-conversion]
+     122 |         (val) = __gu_tmp.t;                             \
+         |               ^
+   arch/parisc/include/asm/uaccess.h:22:33: note: in expansion of macro '__get_user_asm64'
+      22 | #define LDD_USER(sr, val, ptr)  __get_user_asm64(sr, val, ptr)
+         |                                 ^~~~~~~~~~~~~~~~
+   arch/parisc/include/asm/uaccess.h:67:17: note: in expansion of macro 'LDD_USER'
+      67 |         case 8: LDD_USER(sr, val, ptr); break;          \
+         |                 ^~~~~~~~
+   arch/parisc/include/asm/uaccess.h:76:9: note: in expansion of macro '__get_user_internal'
+      76 |         __get_user_internal(SR_USER, val, ptr); \
+         |         ^~~~~~~~~~~~~~~~~~~
+   arch/parisc/include/asm/uaccess.h:19:18: note: in expansion of macro '__get_user'
+      19 | #define get_user __get_user
+         |                  ^~~~~~~~~~
+   drivers/tty/tty_ioctl.c:879:21: note: in expansion of macro 'get_user'
+     879 |                 if (get_user(arg, (unsigned int __user *) arg))
+         |                     ^~~~~~~~
+   drivers/tty/tty_ioctl.c:881:53: warning: passing argument 2 of 'tty_change_softcar' makes integer from pointer without a cast [-Wint-conversion]
+     881 |                 return tty_change_softcar(real_tty, arg);
+         |                                                     ^~~
+         |                                                     |
+         |                                                     void *
+   drivers/tty/tty_ioctl.c:734:59: note: expected 'int' but argument is of type 'void *'
+     734 | static int tty_change_softcar(struct tty_struct *tty, int arg)
+         |                                                       ~~~~^~~
+
+
+vim +89 arch/parisc/include/asm/uaccess.h
+
+3f795cef0ecdf9 arch/parisc/include/asm/uaccess.h Helge Deller   2017-04-16  78  
+671028728083e8 arch/parisc/include/asm/uaccess.h Helge Deller   2021-09-09  79  #define __get_user_asm(sr, val, ldx, ptr)		\
+3f795cef0ecdf9 arch/parisc/include/asm/uaccess.h Helge Deller   2017-04-16  80  {							\
+3f795cef0ecdf9 arch/parisc/include/asm/uaccess.h Helge Deller   2017-04-16  81  	register long __gu_val;				\
+3f795cef0ecdf9 arch/parisc/include/asm/uaccess.h Helge Deller   2017-04-16  82  							\
+5613a930857ecf arch/parisc/include/asm/uaccess.h Helge Deller   2022-02-16  83  	__asm__("1: " ldx " 0(%%sr%2,%3),%0\n"		\
+d19f5e41b344a0 arch/parisc/include/asm/uaccess.h Helge Deller   2017-03-25  84  		"9:\n"					\
+d19f5e41b344a0 arch/parisc/include/asm/uaccess.h Helge Deller   2017-03-25  85  		ASM_EXCEPTIONTABLE_ENTRY_EFAULT(1b, 9b)	\
+dbd0b42350d571 arch/parisc/include/asm/uaccess.h Helge Deller   2022-02-13  86  		: "=r"(__gu_val), "+r"(__gu_err)        \
+5613a930857ecf arch/parisc/include/asm/uaccess.h Helge Deller   2022-02-16  87  		: "i"(sr), "r"(ptr));			\
+3f795cef0ecdf9 arch/parisc/include/asm/uaccess.h Helge Deller   2017-04-16  88  							\
+3f795cef0ecdf9 arch/parisc/include/asm/uaccess.h Helge Deller   2017-04-16 @89  	(val) = (__force __typeof__(*(ptr))) __gu_val;	\
+3f795cef0ecdf9 arch/parisc/include/asm/uaccess.h Helge Deller   2017-04-16  90  }
+^1da177e4c3f41 include/asm-parisc/uaccess.h      Linus Torvalds 2005-04-16  91  
+
+:::::: The code at line 89 was first introduced by commit
+:::::: 3f795cef0ecdf9bc980dd058d49bdab4b19af1d3 parisc: Fix get_user() for 64-bit value on 32-bit kernel
+
+:::::: TO: Helge Deller <deller@gmx.de>
+:::::: CC: Helge Deller <deller@gmx.de>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
