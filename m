@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D91A4ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:52:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6198C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:52:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237783AbiIBMwb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:52:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44606 "EHLO
+        id S237862AbiIBMwi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:52:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237839AbiIBMvW (ORCPT
+        with ESMTP id S237790AbiIBMvn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:51:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD14EF8278;
-        Fri,  2 Sep 2022 05:37:05 -0700 (PDT)
+        Fri, 2 Sep 2022 08:51:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD245FFA;
+        Fri,  2 Sep 2022 05:37:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A0A8E6217E;
-        Fri,  2 Sep 2022 12:28:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 965F5C433B5;
-        Fri,  2 Sep 2022 12:28:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 541A8B82AC1;
+        Fri,  2 Sep 2022 12:30:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95C9DC43148;
+        Fri,  2 Sep 2022 12:30:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121693;
-        bh=OO1G1jDZihidEmUZy6sJubKsxM9ByjH1uhBM6pruH74=;
+        s=korg; t=1662121808;
+        bh=ZJbxRJ0vFFPJ1uzFC8Exro17QL7g+4rklVQcPUsnADc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MhhEwzMFk/cxJOg7Q85jsK/oTvMcQPBK6QbX0P1xhpeATjxhdiPKSGE/HlKIjBFrw
-         WIYpffvzKZYrMgQoT5TcbwmHCWPuzh7u9/eCutVfIR7JOlwfDTeeeaHeREcg7wMF8E
-         2Qy+6QXCFQW8T0C2gjXUZdXRBpFMcVGjLgZhI/Ys=
+        b=sGX6QNimB9EWpHzKf5CsUx9aTG8LWqUzjPyfIm+VT28l4O0eCQVKOmgZWY1cwiDaE
+         7K8gsLEZYM/g9Hxql0oyguFo3msjumGXt9swBwJh/fuJq1bBdq04jdf59JneXFwO2D
+         zTpjcdKaehbp8P4ldWmvDqzmx7+tSiC0+OZ9Q4s0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Steve Payne <spayne@aurora.tech>,
-        Ilya Evenbach <ievenbach@aurora.tech>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 5.4 35/77] ixgbe: stop resetting SYSTIME in ixgbe_ptp_start_cyclecounter
-Date:   Fri,  2 Sep 2022 14:18:44 +0200
-Message-Id: <20220902121404.810415471@linuxfoundation.org>
+        stable@vger.kernel.org, Christophe Leroy <christophe.leroy@c-s.fr>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 72/77] lib/vdso: Let do_coarse() return 0 to simplify the callsite
+Date:   Fri,  2 Sep 2022 14:19:21 +0200
+Message-Id: <20220902121406.079699178@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
 References: <20220902121403.569927325@linuxfoundation.org>
@@ -52,135 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jacob Keller <jacob.e.keller@intel.com>
+From: Christophe Leroy <christophe.leroy@c-s.fr>
 
-[ Upstream commit 25d7a5f5a6bb15a2dae0a3f39ea5dda215024726 ]
+[ Upstream commit 8463cf80529d0fd80b84cd5ab8b9b952b01c7eb9 ]
 
-The ixgbe_ptp_start_cyclecounter is intended to be called whenever the
-cyclecounter parameters need to be changed.
+do_coarse() is similar to do_hres() except that it never fails.
 
-Since commit a9763f3cb54c ("ixgbe: Update PTP to support X550EM_x
-devices"), this function has cleared the SYSTIME registers and reset the
-TSAUXC DISABLE_SYSTIME bit.
+Change its type to int instead of void and let it always return success (0)
+to simplify the call site.
 
-While these need to be cleared during ixgbe_ptp_reset, it is wrong to clear
-them during ixgbe_ptp_start_cyclecounter. This function may be called
-during both reset and link status change. When link changes, the SYSTIME
-counter is still operating normally, but the cyclecounter should be updated
-to account for the possibly changed parameters.
-
-Clearing SYSTIME when link changes causes the timecounter to jump because
-the cycle counter now reads zero.
-
-Extract the SYSTIME initialization out to a new function and call this
-during ixgbe_ptp_reset. This prevents the timecounter adjustment and avoids
-an unnecessary reset of the current time.
-
-This also restores the original SYSTIME clearing that occurred during
-ixgbe_ptp_reset before the commit above.
-
-Reported-by: Steve Payne <spayne@aurora.tech>
-Reported-by: Ilya Evenbach <ievenbach@aurora.tech>
-Fixes: a9763f3cb54c ("ixgbe: Update PTP to support X550EM_x devices")
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Christophe Leroy <christophe.leroy@c-s.fr>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/r/21e8afa38c02ca8672c2690307383507fe63b454.1577111367.git.christophe.leroy@c-s.fr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c | 59 +++++++++++++++-----
- 1 file changed, 46 insertions(+), 13 deletions(-)
+ lib/vdso/gettimeofday.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
-index 0be13a90ff792..d155181b939e4 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
-@@ -1211,7 +1211,6 @@ void ixgbe_ptp_start_cyclecounter(struct ixgbe_adapter *adapter)
- 	struct cyclecounter cc;
- 	unsigned long flags;
- 	u32 incval = 0;
--	u32 tsauxc = 0;
- 	u32 fuse0 = 0;
- 
- 	/* For some of the boards below this mask is technically incorrect.
-@@ -1246,18 +1245,6 @@ void ixgbe_ptp_start_cyclecounter(struct ixgbe_adapter *adapter)
- 	case ixgbe_mac_x550em_a:
- 	case ixgbe_mac_X550:
- 		cc.read = ixgbe_ptp_read_X550;
--
--		/* enable SYSTIME counter */
--		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMR, 0);
--		IXGBE_WRITE_REG(hw, IXGBE_SYSTIML, 0);
--		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMH, 0);
--		tsauxc = IXGBE_READ_REG(hw, IXGBE_TSAUXC);
--		IXGBE_WRITE_REG(hw, IXGBE_TSAUXC,
--				tsauxc & ~IXGBE_TSAUXC_DISABLE_SYSTIME);
--		IXGBE_WRITE_REG(hw, IXGBE_TSIM, IXGBE_TSIM_TXTS);
--		IXGBE_WRITE_REG(hw, IXGBE_EIMS, IXGBE_EIMS_TIMESYNC);
--
--		IXGBE_WRITE_FLUSH(hw);
- 		break;
- 	case ixgbe_mac_X540:
- 		cc.read = ixgbe_ptp_read_82599;
-@@ -1289,6 +1276,50 @@ void ixgbe_ptp_start_cyclecounter(struct ixgbe_adapter *adapter)
- 	spin_unlock_irqrestore(&adapter->tmreg_lock, flags);
+diff --git a/lib/vdso/gettimeofday.c b/lib/vdso/gettimeofday.c
+index 45f57fd2db649..c549e72758aa0 100644
+--- a/lib/vdso/gettimeofday.c
++++ b/lib/vdso/gettimeofday.c
+@@ -68,7 +68,7 @@ static int do_hres(const struct vdso_data *vd, clockid_t clk,
+ 	return 0;
  }
  
-+/**
-+ * ixgbe_ptp_init_systime - Initialize SYSTIME registers
-+ * @adapter: the ixgbe private board structure
-+ *
-+ * Initialize and start the SYSTIME registers.
-+ */
-+static void ixgbe_ptp_init_systime(struct ixgbe_adapter *adapter)
-+{
-+	struct ixgbe_hw *hw = &adapter->hw;
-+	u32 tsauxc;
+-static void do_coarse(const struct vdso_data *vd, clockid_t clk,
++static int do_coarse(const struct vdso_data *vd, clockid_t clk,
+ 		      struct __kernel_timespec *ts)
+ {
+ 	const struct vdso_timestamp *vdso_ts = &vd->basetime[clk];
+@@ -79,6 +79,8 @@ static void do_coarse(const struct vdso_data *vd, clockid_t clk,
+ 		ts->tv_sec = vdso_ts->sec;
+ 		ts->tv_nsec = vdso_ts->nsec;
+ 	} while (unlikely(vdso_read_retry(vd, seq)));
 +
-+	switch (hw->mac.type) {
-+	case ixgbe_mac_X550EM_x:
-+	case ixgbe_mac_x550em_a:
-+	case ixgbe_mac_X550:
-+		tsauxc = IXGBE_READ_REG(hw, IXGBE_TSAUXC);
-+
-+		/* Reset SYSTIME registers to 0 */
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMR, 0);
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIML, 0);
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMH, 0);
-+
-+		/* Reset interrupt settings */
-+		IXGBE_WRITE_REG(hw, IXGBE_TSIM, IXGBE_TSIM_TXTS);
-+		IXGBE_WRITE_REG(hw, IXGBE_EIMS, IXGBE_EIMS_TIMESYNC);
-+
-+		/* Activate the SYSTIME counter */
-+		IXGBE_WRITE_REG(hw, IXGBE_TSAUXC,
-+				tsauxc & ~IXGBE_TSAUXC_DISABLE_SYSTIME);
-+		break;
-+	case ixgbe_mac_X540:
-+	case ixgbe_mac_82599EB:
-+		/* Reset SYSTIME registers to 0 */
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIML, 0);
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMH, 0);
-+		break;
-+	default:
-+		/* Other devices aren't supported */
-+		return;
-+	};
-+
-+	IXGBE_WRITE_FLUSH(hw);
-+}
-+
- /**
-  * ixgbe_ptp_reset
-  * @adapter: the ixgbe private board structure
-@@ -1315,6 +1346,8 @@ void ixgbe_ptp_reset(struct ixgbe_adapter *adapter)
++	return 0;
+ }
  
- 	ixgbe_ptp_start_cyclecounter(adapter);
- 
-+	ixgbe_ptp_init_systime(adapter);
+ static __maybe_unused int
+@@ -96,14 +98,13 @@ __cvdso_clock_gettime_common(clockid_t clock, struct __kernel_timespec *ts)
+ 	 * clocks are handled in the VDSO directly.
+ 	 */
+ 	msk = 1U << clock;
+-	if (likely(msk & VDSO_HRES)) {
++	if (likely(msk & VDSO_HRES))
+ 		return do_hres(&vd[CS_HRES_COARSE], clock, ts);
+-	} else if (msk & VDSO_COARSE) {
+-		do_coarse(&vd[CS_HRES_COARSE], clock, ts);
+-		return 0;
+-	} else if (msk & VDSO_RAW) {
++	else if (msk & VDSO_COARSE)
++		return do_coarse(&vd[CS_HRES_COARSE], clock, ts);
++	else if (msk & VDSO_RAW)
+ 		return do_hres(&vd[CS_RAW], clock, ts);
+-	}
 +
- 	spin_lock_irqsave(&adapter->tmreg_lock, flags);
- 	timecounter_init(&adapter->hw_tc, &adapter->hw_cc,
- 			 ktime_to_ns(ktime_get_real()));
+ 	return -1;
+ }
+ 
 -- 
 2.35.1
 
