@@ -2,89 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1715DECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:10:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11647C54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:10:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235870AbiIBMKZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:10:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57274 "EHLO
+        id S235881AbiIBMKh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:10:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235854AbiIBMKU (ORCPT
+        with ESMTP id S235485AbiIBMKb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:10:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B22572A73E;
-        Fri,  2 Sep 2022 05:10:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE2EF620D1;
-        Fri,  2 Sep 2022 12:10:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 59A17C433B5;
-        Fri,  2 Sep 2022 12:10:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662120616;
-        bh=cfLV+hYmpTeGN4Jr6uIQCPnEFumTwBtZQ2Qc4OquoBs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=noAS4ZqhKh2VfXz2bKLz9WBA1M3CECYi24vq7zaHqMNueSfJQmbsU7Kbp8WEH8prT
-         HOs28qruw4CU0X1KGU9sXTJ8x9TqYs5sSOQyqSwxta4R0f9dPyjIfEvbzM33AoHuoh
-         T9rdD3XbTcm7z49wKHZ4x2DkuFRidKSfRnnLSmq8lrh8H5HHe4OeHW/+Ed4rme0JYU
-         CwZKVtI2JLtHOmE+40yLIPCu8C8kzDacGfkyllq4351Uxnfl+8XhqIPm6UQlxWnIMk
-         dfjrPHl4fspRwCz9diZGIFXC6UzLrfJjWHA8H5onf8TIhK3VSKr+NbA1Uv6bWxrQhF
-         /AmiBgYfDBhVg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3DC06E924E4;
-        Fri,  2 Sep 2022 12:10:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Fri, 2 Sep 2022 08:10:31 -0400
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2E32CDF2
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 05:10:28 -0700 (PDT)
+Received: by mail-qt1-x836.google.com with SMTP id e28so1277939qts.1
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 05:10:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=qJ+5rTllUEXndIRwC16RHfyczOD9RZjJHDBMLq4xn4E=;
+        b=XaF2OHSYSjd/Fqxdc4+3zeMhvsBqz15UidzNsC5nH/007NQpqThnifZOoVqbq6t29E
+         dSyWf4f1nyv+THgFu/+cz8aC7+9AbbpiRx3hz6ombHwsAxsCuix8DP53TanwVExanCKv
+         cKnHm0NUeis4XIOC8CVuVjX3H9JRgSN+SySnTinHOMutnm1RDxRQQvFBZdqDo2TpVOAh
+         Fh8dogbj3GRfv8ax5yVDWY44RLv4qbiuEB0BHEWkjMogudEfDBT/KlOaVC86Jqnw2zCF
+         aNvAs9YZFjCxP6PLT3Mi8ZVQy8sFuwSwARI+6qGmT0J4kfRti5VlReZgWrKHZFZ9qUCC
+         adgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=qJ+5rTllUEXndIRwC16RHfyczOD9RZjJHDBMLq4xn4E=;
+        b=QaeZilC+FjdNzw4mAHc5Kd5JkKufxYhVOX4DO7dDBefKQwmeDTc790FZm9wz5ZV8hX
+         yVSfVHMyZzhXGzDMBB4F/mYT0gWl0e2eveeBWu4GKsNHyby7gUkoSFGm855cKLXbe+Fr
+         N5he7Qqp+X8jSMPF8FKmKD/z4jzNLc6vm1NjnUuO6Pz4BlKW/6CTQxypzj4ZSDbcQe3c
+         q3l4wUaypbWk/mV22cUVCGwlJmvnf3Do97v9qZXZNIYtDSDhgmbZmC6HbRquToFnY56M
+         vG4rxHPu0DshU9I1rTNFpSyVWJ/yTPBxr0e5Ax+INVWEqSuD0gN4aKEVFVCtO62aYEna
+         vYlg==
+X-Gm-Message-State: ACgBeo3OiHdN1HfU03GCUv5rSmOKUL/0vEsDRswiBgCsvhW7OF2UCTi5
+        L9JYPEg6pjuNR4Zb1VHlY/Th0w==
+X-Google-Smtp-Source: AA6agR6UYujj0TrldztrCNZ0SxUDA5y4BY/uqML7IvPjp2zmQ/NTSUnCZBHGB1Yzieck2yayQmSsuA==
+X-Received: by 2002:a05:622a:1485:b0:343:781b:d1b with SMTP id t5-20020a05622a148500b00343781b0d1bmr27951187qtx.536.1662120627781;
+        Fri, 02 Sep 2022 05:10:27 -0700 (PDT)
+Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id l5-20020ac81485000000b0031f41ea94easm915395qtj.28.2022.09.02.05.10.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 05:10:26 -0700 (PDT)
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     linux-iio@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        William Breathitt Gray <william.gray@linaro.org>,
+        Yanteng Si <siyanteng@loongson.cn>
+Subject: [PATCH] counter: Realign counter_comp comment block to 80 characters
+Date:   Fri,  2 Sep 2022 08:08:39 -0400
+Message-Id: <20220902120839.4260-1-william.gray@linaro.org>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v3 0/6] rxrpc: Miscellaneous fixes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166212061624.16201.6479351109057474742.git-patchwork-notify@kernel.org>
-Date:   Fri, 02 Sep 2022 12:10:16 +0000
-References: <166203518656.271364.567426359603115318.stgit@warthog.procyon.org.uk>
-In-Reply-To: <166203518656.271364.567426359603115318.stgit@warthog.procyon.org.uk>
-To:     David Howells <dhowells@redhat.com>
-Cc:     netdev@vger.kernel.org, marc.dionne@auristor.com,
-        jaltman@auristor.com, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+The member documentation comment lines for struct counter_comp extend
+past the 80-characters column boundary due to extra identation at the
+start of each section. This patch realigns the comment block within the
+80-characters boundary by removing these superfluous indents.
 
-This series was applied to netdev/net.git (master)
-by David Howells <dhowells@redhat.com>:
+Cc: Yanteng Si <siyanteng@loongson.cn>
+Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
+---
+ include/linux/counter.h | 40 ++++++++++++++++++++--------------------
+ 1 file changed, 20 insertions(+), 20 deletions(-)
 
-On Thu, 01 Sep 2022 13:26:26 +0100 you wrote:
-> Here are some fixes for AF_RXRPC:
-> 
->  (1) Fix the handling of ICMP/ICMP6 packets.  This is a problem due to
->      rxrpc being switched to acting as a UDP tunnel, thereby allowing it to
->      steal the packets before they go through the UDP Rx queue.  UDP
->      tunnels can't get ICMP/ICMP6 packets, however.  This patch adds an
->      additional encap hook so that they can.
-> 
-> [...]
+diff --git a/include/linux/counter.h b/include/linux/counter.h
+index 1fe17f5adb09..a81234bc8ea8 100644
+--- a/include/linux/counter.h
++++ b/include/linux/counter.h
+@@ -38,64 +38,64 @@ enum counter_comp_type {
+  * @type:		Counter component data type
+  * @name:		device-specific component name
+  * @priv:		component-relevant data
+- * @action_read:		Synapse action mode read callback. The read value of the
++ * @action_read:	Synapse action mode read callback. The read value of the
+  *			respective Synapse action mode should be passed back via
+  *			the action parameter.
+- * @device_u8_read:		Device u8 component read callback. The read value of the
++ * @device_u8_read:	Device u8 component read callback. The read value of the
+  *			respective Device u8 component should be passed back via
+  *			the val parameter.
+- * @count_u8_read:		Count u8 component read callback. The read value of the
++ * @count_u8_read:	Count u8 component read callback. The read value of the
+  *			respective Count u8 component should be passed back via
+  *			the val parameter.
+- * @signal_u8_read:		Signal u8 component read callback. The read value of the
++ * @signal_u8_read:	Signal u8 component read callback. The read value of the
+  *			respective Signal u8 component should be passed back via
+  *			the val parameter.
+- * @device_u32_read:		Device u32 component read callback. The read value of
++ * @device_u32_read:	Device u32 component read callback. The read value of
+  *			the respective Device u32 component should be passed
+  *			back via the val parameter.
+- * @count_u32_read:		Count u32 component read callback. The read value of the
++ * @count_u32_read:	Count u32 component read callback. The read value of the
+  *			respective Count u32 component should be passed back via
+  *			the val parameter.
+- * @signal_u32_read:		Signal u32 component read callback. The read value of
++ * @signal_u32_read:	Signal u32 component read callback. The read value of
+  *			the respective Signal u32 component should be passed
+  *			back via the val parameter.
+- * @device_u64_read:		Device u64 component read callback. The read value of
++ * @device_u64_read:	Device u64 component read callback. The read value of
+  *			the respective Device u64 component should be passed
+  *			back via the val parameter.
+- * @count_u64_read:		Count u64 component read callback. The read value of the
++ * @count_u64_read:	Count u64 component read callback. The read value of the
+  *			respective Count u64 component should be passed back via
+  *			the val parameter.
+- * @signal_u64_read:		Signal u64 component read callback. The read value of
++ * @signal_u64_read:	Signal u64 component read callback. The read value of
+  *			the respective Signal u64 component should be passed
+  *			back via the val parameter.
+- * @action_write:		Synapse action mode write callback. The write value of
++ * @action_write:	Synapse action mode write callback. The write value of
+  *			the respective Synapse action mode is passed via the
+  *			action parameter.
+- * @device_u8_write:		Device u8 component write callback. The write value of
++ * @device_u8_write:	Device u8 component write callback. The write value of
+  *			the respective Device u8 component is passed via the val
+  *			parameter.
+- * @count_u8_write:		Count u8 component write callback. The write value of
++ * @count_u8_write:	Count u8 component write callback. The write value of
+  *			the respective Count u8 component is passed via the val
+  *			parameter.
+- * @signal_u8_write:		Signal u8 component write callback. The write value of
++ * @signal_u8_write:	Signal u8 component write callback. The write value of
+  *			the respective Signal u8 component is passed via the val
+  *			parameter.
+- * @device_u32_write:		Device u32 component write callback. The write value of
++ * @device_u32_write:	Device u32 component write callback. The write value of
+  *			the respective Device u32 component is passed via the
+  *			val parameter.
+- * @count_u32_write:		Count u32 component write callback. The write value of
++ * @count_u32_write:	Count u32 component write callback. The write value of
+  *			the respective Count u32 component is passed via the val
+  *			parameter.
+- * @signal_u32_write:		Signal u32 component write callback. The write value of
++ * @signal_u32_write:	Signal u32 component write callback. The write value of
+  *			the respective Signal u32 component is passed via the
+  *			val parameter.
+- * @device_u64_write:		Device u64 component write callback. The write value of
++ * @device_u64_write:	Device u64 component write callback. The write value of
+  *			the respective Device u64 component is passed via the
+  *			val parameter.
+- * @count_u64_write:		Count u64 component write callback. The write value of
++ * @count_u64_write:	Count u64 component write callback. The write value of
+  *			the respective Count u64 component is passed via the val
+  *			parameter.
+- * @signal_u64_write:		Signal u64 component write callback. The write value of
++ * @signal_u64_write:	Signal u64 component write callback. The write value of
+  *			the respective Signal u64 component is passed via the
+  *			val parameter.
+  */
 
-Here is the summary with links:
-  - [net,v3,1/6] rxrpc: Fix ICMP/ICMP6 error handling
-    https://git.kernel.org/netdev/net/c/ac56a0b48da8
-  - [net,v3,2/6] rxrpc: Fix an insufficiently large sglist in rxkad_verify_packet_2()
-    https://git.kernel.org/netdev/net/c/0d40f728e283
-  - [net,v3,3/6] rxrpc: Fix local destruction being repeated
-    https://git.kernel.org/netdev/net/c/d3d863036d68
-  - [net,v3,4/6] rxrpc: Fix calc of resend age
-    https://git.kernel.org/netdev/net/c/214a9dc7d852
-  - [net,v3,5/6] afs: Use the operation issue time instead of the reply time for callbacks
-    https://git.kernel.org/netdev/net/c/7903192c4b4a
-  - [net,v3,6/6] rxrpc: Remove rxrpc_get_reply_time() which is no longer used
-    https://git.kernel.org/netdev/net/c/21457f4a91cb
-
-You are awesome, thank you!
+base-commit: a12224997bec72d231a8dd642876e6364decdc45
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.37.2
 
