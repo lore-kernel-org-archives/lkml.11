@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51ACEC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:54:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52B76C6FA85
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:54:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237907AbiIBMyd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:54:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43838 "EHLO
+        id S237945AbiIBMyg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:54:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237979AbiIBMxC (ORCPT
+        with ESMTP id S237847AbiIBMxR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:53:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61D5CE42D5;
-        Fri,  2 Sep 2022 05:37:53 -0700 (PDT)
+        Fri, 2 Sep 2022 08:53:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E224F8FE4;
+        Fri,  2 Sep 2022 05:37:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 96A236217F;
-        Fri,  2 Sep 2022 12:37:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CB18C433C1;
-        Fri,  2 Sep 2022 12:37:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 866BAB82A91;
+        Fri,  2 Sep 2022 12:36:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D06FBC433C1;
+        Fri,  2 Sep 2022 12:36:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122233;
-        bh=i87cCrxbkQKgJvrfdkSNDrBEMTO9Be5lcR1DFeOK1W8=;
+        s=korg; t=1662122198;
+        bh=RtY/8ZtIdexA5KplFfjBrgI2nAZ6OSMG37qt/NcJDC4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bp4VT2bfLivhDV/wQr6y78zqfL2kzqqaz+/GSXU/XOk7y4B+aTWnNyx/c2R6li6JI
-         BxTFuRgycfgIOSiXvo10fkzTJajJ/RukYDOQcw3nVlAX4sERTZn4YHkLizdPahlnvG
-         iKng+n/2u/GvmqZCvcAkpnYeTfRYPx0zVKtTUjgs=
+        b=O7PS2vrAme0yGFNLgUW/oY33g1rSgNWv+h1KkfLF3V4orxb634szyCotEKmAcbJH9
+         QnmXx7DMFa6oBZT4zi3uXuPkFWcAQeQtlUB5im9JE0LogS9GhRUQbfOkz7+yOwBG74
+         XByFydVBhAC5L5Te1t7VJ1YA8F8IWW7divnza7+Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Evan Quan <evan.quan@amd.com>,
+        stable@vger.kernel.org, Kenneth Feng <kenneth.feng@amd.com>,
+        Feifei Xu <Feifei.Xu@amd.com>,
         Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 53/72] drm/amd/pm: add missing ->fini_microcode interface for Sienna Cichlid
-Date:   Fri,  2 Sep 2022 14:19:29 +0200
-Message-Id: <20220902121406.512297315@linuxfoundation.org>
+Subject: [PATCH 5.19 43/72] drm/amd/pm: skip pptable override for smu_v13_0_7
+Date:   Fri,  2 Sep 2022 14:19:19 +0200
+Message-Id: <20220902121406.185535938@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
 References: <20220902121404.772492078@linuxfoundation.org>
@@ -49,32 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evan Quan <evan.quan@amd.com>
+From: Kenneth Feng <kenneth.feng@amd.com>
 
-[ Upstream commit 0a2d922a5618377cdf8fa476351362733ef55342 ]
+[ Upstream commit 4e64b529c5b04e7944b41de554ee686ecab00744 ]
 
-To avoid any potential memory leak.
+skip pptable override for smu_v13_0_7 secure boards only.
 
-Signed-off-by: Evan Quan <evan.quan@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Kenneth Feng <kenneth.feng@amd.com>
+Reviewed-by: Feifei Xu <Feifei.Xu@amd.com>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
-index 78f3d9e722bb7..32bb6b1d95261 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
-@@ -4281,6 +4281,7 @@ static const struct pptable_funcs sienna_cichlid_ppt_funcs = {
- 	.dump_pptable = sienna_cichlid_dump_pptable,
- 	.init_microcode = smu_v11_0_init_microcode,
- 	.load_microcode = smu_v11_0_load_microcode,
-+	.fini_microcode = smu_v11_0_fini_microcode,
- 	.init_smc_tables = sienna_cichlid_init_smc_tables,
- 	.fini_smc_tables = smu_v11_0_fini_smc_tables,
- 	.init_power = smu_v11_0_init_power,
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c
+index 5aa08c031f721..1d8a9e5b3cc08 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c
+@@ -203,6 +203,9 @@ int smu_v13_0_init_pptable_microcode(struct smu_context *smu)
+ 	if (!adev->scpm_enabled)
+ 		return 0;
+ 
++	if (adev->ip_versions[MP1_HWIP][0] == IP_VERSION(13, 0, 7))
++		return 0;
++
+ 	/* override pptable_id from driver parameter */
+ 	if (amdgpu_smu_pptable_id >= 0) {
+ 		pptable_id = amdgpu_smu_pptable_id;
+@@ -210,13 +213,6 @@ int smu_v13_0_init_pptable_microcode(struct smu_context *smu)
+ 	} else {
+ 		pptable_id = smu->smu_table.boot_values.pp_table_id;
+ 
+-		if (adev->ip_versions[MP1_HWIP][0] == IP_VERSION(13, 0, 7) &&
+-			pptable_id == 3667)
+-			pptable_id = 36671;
+-
+-		if (adev->ip_versions[MP1_HWIP][0] == IP_VERSION(13, 0, 7) &&
+-			pptable_id == 3688)
+-			pptable_id = 36881;
+ 		/*
+ 		 * Temporary solution for SMU V13.0.0 with SCPM enabled:
+ 		 *   - use 36831 signed pptable when pp_table_id is 3683
 -- 
 2.35.1
 
