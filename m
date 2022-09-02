@@ -2,244 +2,254 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC5E4ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:05:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B40F9C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:05:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237244AbiIBOFE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:05:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54458 "EHLO
+        id S238867AbiIBOF5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:05:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238737AbiIBOE3 (ORCPT
+        with ESMTP id S238859AbiIBOFa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:04:29 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2086.outbound.protection.outlook.com [40.107.94.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D1F71306F9;
-        Fri,  2 Sep 2022 06:32:58 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NRpKBM2g1osUSemPWeI9cptUWvoCUhZ6LAZc/3FpQ4p8sZ+fZKbcX1/5a9ENtLAtSZSowEREYToBerulsQJPiowEZtjU5Ux018XbFR8UCXfgVspLuDBBGKuotRRSHT8qZ/knMA5QFIT9GX4H/rp6ICn1On+HgsSAqjxAVUgKYHg8jD5qvbC587ighe5R61WPEerLBLyHWvrrvsIAOv2lZ3N1i/PmVUeF4zEVCeS0Dcq/XmR3Bd/eYmt7ZN75TMCLZRO0BeDPCB4iZA5PefvwSCgpdYTGswonziXjJpWmzSO4HvUeTw9oqGuuaGUCbyDshW6HB1waPf8AM20cyCRuww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=frYyJI7rxtJ8aohvFi48VRL2wgE2ycxmCHYOEfPB9MA=;
- b=eG0dOddGzFbmkHQ8nNmfHh8J5pyL9hfHqMvZkCYfLUT0wShZgYp8RhmPn1FZ268eerlKzY3owvgUnQvWqvClUWgGqKgxGQ04vpk028kIIYttXx73QaHBA3iu8sKYPA2i3xXagTTzuJorAFWg51Q+OI94IPhNkid5GnjlE2EX7gPcW4rJ+5TW/AsbqrDj29YyBs4HqtC09nRE9ms3kj+hLg8rT4sl+QNJUj8daokZNfexZHf4EjGvu34YqJybAUQhyxKAqVM9H/O8ApiFRcmrumcdrw2/nF/9TPlmlWxYvC3aIUPCUeXVDK0YkxkD+2oLiD+uLcjKjHWJkn7jbet9EA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=frYyJI7rxtJ8aohvFi48VRL2wgE2ycxmCHYOEfPB9MA=;
- b=UwKnskhV3do2JaQepXErnj5nVbhwS9im9csvYmreG9q0aDACs5Bjulhtb5lD9Ukjn+JFXBoXYSoSfS4BfKhzoqiTP0G1fH34zC+W/TXUAaxZ9ucQWrjRr0sxeiV/sgBHbrsnjhm74i3wOb3RC8/d7ommm0DN9dt7guKQvuEhRb8=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from MN0PR12MB6101.namprd12.prod.outlook.com (2603:10b6:208:3cb::10)
- by SA1PR12MB6799.namprd12.prod.outlook.com (2603:10b6:806:25b::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Fri, 2 Sep
- 2022 13:32:44 +0000
-Received: from MN0PR12MB6101.namprd12.prod.outlook.com
- ([fe80::e00a:1f8c:dcd1:afc3]) by MN0PR12MB6101.namprd12.prod.outlook.com
- ([fe80::e00a:1f8c:dcd1:afc3%5]) with mapi id 15.20.5588.012; Fri, 2 Sep 2022
- 13:32:44 +0000
-Message-ID: <a71d8b25-ac83-92fc-ef4a-99a673362364@amd.com>
-Date:   Fri, 2 Sep 2022 08:32:41 -0500
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v8 3/3] thunderbolt: To extend ASMedia NVM formats.
-Content-Language: en-US
-To:     Szuying Chen <chensiying21@gmail.com>, gregkh@linuxfoundation.org,
-        mika.westerberg@linux.intel.com, andreas.noever@gmail.com,
-        michael.jamet@intel.com, YehezkelShB@gmail.com,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Yd_Tseng@asmedia.com.tw, Chloe_Chen@asmedia.com.tw,
-        Richard_Hsu@asmedia.com.tw
-References: <20220902094010.2170-1-chensiying21@gmail.com>
- <20220902094010.2170-4-chensiying21@gmail.com>
-From:   "Limonciello, Mario" <mario.limonciello@amd.com>
-In-Reply-To: <20220902094010.2170-4-chensiying21@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MN2PR13CA0031.namprd13.prod.outlook.com
- (2603:10b6:208:160::44) To MN0PR12MB6101.namprd12.prod.outlook.com
- (2603:10b6:208:3cb::10)
+        Fri, 2 Sep 2022 10:05:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE221135B81
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:33:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662125616;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mUIlNK2rA96IyytNgoYJrxTqfnhDywitiW4OmrkZv8o=;
+        b=Ejf32v0Ty60IiwnZQ6uMtNzfekWm3VT1RGcttwzO239oB6viHIPS95wtBljD7A1tkEPGVx
+        b07TI9mu83nmVdfN7jiIsJ33Zp6GfAts3vk8w699O8wzTakuiuebeY8+ajT0sfHWl9eFiV
+        Pd+BX/W1Zjg8XDVg2nmGC3L0KwiroSM=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-9-stroSBnfPZqidsLKrjg2kA-1; Fri, 02 Sep 2022 09:30:20 -0400
+X-MC-Unique: stroSBnfPZqidsLKrjg2kA-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3CDB2823F1E;
+        Fri,  2 Sep 2022 13:30:19 +0000 (UTC)
+Received: from plouf.redhat.com (unknown [10.39.193.218])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6A3EB492C3B;
+        Fri,  2 Sep 2022 13:30:15 +0000 (UTC)
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>
+Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Subject: [PATCH bpf-next v10 09/23] HID: export hid_report_type to uapi
+Date:   Fri,  2 Sep 2022 15:29:24 +0200
+Message-Id: <20220902132938.2409206-10-benjamin.tissoires@redhat.com>
+In-Reply-To: <20220902132938.2409206-1-benjamin.tissoires@redhat.com>
+References: <20220902132938.2409206-1-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3906e84c-a31a-461c-ac29-08da8ce79dfa
-X-MS-TrafficTypeDiagnostic: SA1PR12MB6799:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ve1y5iS0e1VwsI6uo+AtAxM505pFOBbBJQ0kGxYRhCpDNAKCadM6igLv3A6xkQ3IQlQfw1QZcGszeXyDIlm/liQ+YRqKdDIQSMROFmevIsh7MQ6ykK7cxuylgFU5FmP/2oSYKngInKqBZRAMulWmjyY/Zs9xL6665qhA/B/5DEUgyl8STNTJpbU6mUNYoIKt+z5MRmMZAWxBmTCDEgsix5oLNz5RD0++raYdkw5SzRa2uAqWGZtJeOmQ4PUeLWa7/VGx6UVD2ldwPGM58E6lLFICuEEl7f14UFoele4BR7CzF/OMWUcGAlwOZnTs/MoJSqn9IyF2ije9c4f/e8XCb/wE/C+VMG6N2Cqex8MImf77k+zU+oCyOfAYSOPFghJ4XYH5c+0BUbxp+v8ME+1CXj7u91q/C6Tyv5JrBCLqhSjpZgQ8o9R6TbSgdwynLey/wImFQ4eUxbKBUV1XbC043JWQOScKk7QZH78ObTVKy2G1bmIPXNh/YWFnCCLh+uD8ZfHG6jr+fNos8V5Tr3FG3ZHunLUn6o1M8KIfCwQOtVgSeexrHHL09ftTIeIo5dEIiMT4/Q0CjZMaNUx11qmaIiJjAf1ePvrUyBNTvc8E4j1c79iD2Y3EHszgINpzO3kQgM+K7m/c4eF2ZHrWTfzoDQDVUT49KOmqcMTgp9ER64I73wACW/fI4hmKTbg86phlHv9IClEBmqi8iqn4XIixZlKvgus7piqFxnX3TrTSaZYfKT+/X4PUTcO9Pnehhvk/a4zsjOPBj4LfODfat4TFEKioUSTMX54kqEK7kFmhjpY=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR12MB6101.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(136003)(366004)(39860400002)(376002)(346002)(6666004)(26005)(478600001)(6486002)(41300700001)(6512007)(7416002)(6506007)(83380400001)(2906002)(8936002)(2616005)(5660300002)(66574015)(53546011)(186003)(316002)(38100700002)(66476007)(66946007)(66556008)(8676002)(31686004)(36756003)(86362001)(4326008)(31696002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bnNuQlIyVTdxajNoZHYvR1VMdlpSdFVVbWxKTmFaK1M1alZNdnZwckVCUnh1?=
- =?utf-8?B?KzhTOUpLdWVVenE0SnNaQjJ2aWtJY3BQYUtWNUx3Z1FOVHBxekcyeWMxbEVK?=
- =?utf-8?B?RnhPb3hZdU5TekdtWm5YRy9GalB1MGRidGFOY1ZhZzRTalhHSDJBMkh3RVNT?=
- =?utf-8?B?bkpCdDVIQ1R2NlBSVjdQTWFobkJKcXovV0EwNzZ5Zi91Q29DUGNLci93K0th?=
- =?utf-8?B?ZDRLYXVqV285Qmg5L08xekZsM0ErS2N1VGVvTHM4a0lEYlU1Q1ZxL0dFN0RE?=
- =?utf-8?B?cGRXTlJhVmJRN2g3bitFS2xTZU9zVmx2ZlY5dXEwUCtndVdxU3Z6Qk56aXli?=
- =?utf-8?B?bXJHVU5YK0FZRUFjYzRyZnlMbE1EZUxGaTcyNVlBM3ZhWXZIcmQvT1UvS0tu?=
- =?utf-8?B?dllKSjlUbDc0WWpGYU9CT1c1UVFBNFZ6T0FFMWlITkZsbzEwZFN5UjJNUER5?=
- =?utf-8?B?V3hVK3NtcUJrUWcxc0dGMzMyRzFkdTZRRGh3ZTI1NDlrLzhzMTN1cGF0M0th?=
- =?utf-8?B?MzRRWUJ0MDZNa3Qrb2VQS2JWT1hWRFg4b3ZmSUR0N2VQUENWRDRlTlJHNVVG?=
- =?utf-8?B?U0lDOG1YYi95T1UwdHJzUXo3c1YzYVBjM1pXTHh5L2dFRnJMejhra0lnUVRF?=
- =?utf-8?B?aFQwYmt1Yk1DbmFTK0p6RkZYdVVFNmZHbVVLQkZKVi9GSEFkSTZZNmhOaWt6?=
- =?utf-8?B?eGVjZ3VvR1Q4ZnNWN05mMlE3dUZwZ1BoeUZmRmo4Z0hXSk5LUWRScUFNZE8v?=
- =?utf-8?B?U2hKZHVxaElaRmpZL0dFVTBFeURJK1p4OEQxRllLR3Z5M3BtK0ZqT3dqOTIy?=
- =?utf-8?B?RXhIeXhQam93b1YzaFlNcno3VGVpQUh6Q3owR3J1SGoxRDhiRmVaVVhSSDZx?=
- =?utf-8?B?TzhpaFlWNGhXZkttakJzNmd3WHpPWkJ5VTUya3dJby8wVk5aWkhwUlgrc0Z1?=
- =?utf-8?B?UVd0QmZWZngvYTFTZFVMWFN2dVpQTzRVSkI3VUdtWU1SN0ozZ1pyendxTjNq?=
- =?utf-8?B?Z1hnN3c2OHJJMFB4QmwrcVZyL2xBL2F2NTJKcVJrTU54NTJBdzFRcmo3ZlMy?=
- =?utf-8?B?N0Y0aHkvdnoxOWYyaDFvSjVaMisySHNyUW9JOGZDQnJlRU1DblNwME5VMHlm?=
- =?utf-8?B?K0ZvMENPc1hkQmdsclU3T3k4OU9ra3IweHRRVGZ1U1JURzI4bmtML1hNYzlt?=
- =?utf-8?B?K0VsU2dmVlBTYS9uREVqc0RlYWEyZVpJM0xGdDRRbnpQQldtcjljcVJ0cndQ?=
- =?utf-8?B?a1VaRW1Bdjh2bEZYbHcvdEd3RTVRTFRibW5CSUlWb0d4Yk9tYkczbnk2ZVkv?=
- =?utf-8?B?Qy9zUG1CZjd2NGs1VlVBNzJ2dldOWHJlWHN5UzY5UEIyek50cVlPZzRoc2NL?=
- =?utf-8?B?TllLNEhBM2tyTnQ3dllzalRIZFZHTHVqelQ5VWUvdkJ1T25mRytWcG4zaUVu?=
- =?utf-8?B?QnRpVFlnOVZNVHZlTkVYWi9SVDZEQmVHYTRtTmNzdkM1NkFscXJHalBCMW5s?=
- =?utf-8?B?clV4akJFSXZMR1pGZ1BMV3JxVzArTHJLUUdFc2NwK1hQMzZkZ2lIQVBsOTBI?=
- =?utf-8?B?OHVUMGRBUVJucVRUT0orZkJsTEo3WnYwUWRKTXlQWU9Sck05ZTdsWkJuSExU?=
- =?utf-8?B?eERDK2tHaDRoSjF2TVdPcFVSWFNGN3VaZzd4QUFDS1hFZ0F6K0svVXN5alpN?=
- =?utf-8?B?MWJUUWR0VGxHZjAyQjU0VjZqSE8rcGQydE9yVUxreVdaVU40Ykt2bHJrYkha?=
- =?utf-8?B?VGNGOVREc1c5WEtlQVo1ZUdDaUhqeDRwaWVTN3J3aHRBQ2ovdjc2bk5LejZS?=
- =?utf-8?B?bXZxbHFHUmZnQjdXaUM3ejQ4WXUxcUtPR2wvMkNZZEVFUmNXZGIzR3gzeWc1?=
- =?utf-8?B?TXdSeDJRVTVwZDdtREptN0tON2FTblI0aitFMVd2Wk9RVzduRzRKT3UvTGNo?=
- =?utf-8?B?WG9ETXpaTVVhUGdld2QxbnVNNk4rdllPQUgyWEhOS2dHOWQ4dENTTUZhK1dl?=
- =?utf-8?B?eklLak9wWWE4WXdHQ0VaV0ExNGt2a3hRK2h6M0d4VWZCWU9tSlhwbzVWY3RE?=
- =?utf-8?B?cExzT1NXK090dFM2ME1VUEVBU1BVdFZMcXlhQ3ljZWtRUjlEVDJLemhCRFBw?=
- =?utf-8?Q?1Aulq+NuvQww/pmJDiXancGEf?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3906e84c-a31a-461c-ac29-08da8ce79dfa
-X-MS-Exchange-CrossTenant-AuthSource: MN0PR12MB6101.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Sep 2022 13:32:44.3381
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sV59fPHTV2Tw3vNUJ/MHhfHF0oxbKD00i4jtScvZP2lKqdCjkDeU51YmBD/QmT4Sxz5Eq+BRmIGstwtqJ6eGwg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB6799
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 9/2/2022 04:40, Szuying Chen wrote:
-> From: Szuying Chen <Chloe_Chen@asmedia.com.tw>
-> 
-> The patch add ASMedia NVM formats.
-> 
-> Signed-off-by: Szuying Chen <Chloe_Chen@asmedia.com.tw>
-> ---
-> v7->v8: Fix the no_nvm_upgrade bit setting on suggestion by Mika.
-> 
->   drivers/thunderbolt/nvm.c | 40 +++++++++++++++++++++++++++++++++++++++
->   drivers/thunderbolt/tb.c  |  2 +-
->   2 files changed, 41 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/thunderbolt/nvm.c b/drivers/thunderbolt/nvm.c
-> index 878d705bd0cb..8393d82dd108 100644
-> --- a/drivers/thunderbolt/nvm.c
-> +++ b/drivers/thunderbolt/nvm.c
-> @@ -12,9 +12,16 @@
-> 
->   #include "tb.h"
-> 
-> +/* ID of Router */
-> +#define ROUTER_VENDOR_ID_ASMEDIA 0x174c
-> +
->   /* Switch NVM support */
->   #define NVM_CSS		0x10
-> 
-> +/* ASMedia specific NVM offsets */
-> +#define ASMEDIA_NVM_DATE	0x1c
-> +#define ASMEDIA_NVM_VERSION	0x28
-> +
->   static DEFINE_IDA(nvm_ida);
-> 
->   /**
-> @@ -120,11 +127,43 @@ static int intel_nvm_validate(struct tb_switch *sw)
->   	return 0;
->   }
-> 
-> +static int asmedia_nvm_version(struct tb_switch *sw)
-> +{
-> +	struct tb_nvm *nvm = sw->nvm;
-> +	u32 val;
-> +	int ret;
-> +
-> +	/* ASMedia get version and date format is xxxxxx.xxxxxx */
-> +	ret = nvm_read(sw, ASMEDIA_NVM_VERSION, &val, sizeof(val));
-> +	if (ret)
-> +		return ret;
-> +
-> +	nvm->major = (((u8)val) << 0x10 | ((u8)(val >> 0x8)) << 0x8 | (u8)(val >> 0x10));
-> +
-> +	ret = nvm_read(sw, ASMEDIA_NVM_DATE, &val, sizeof(val));
-> +	if (ret)
-> +		return ret;
-> +
-> +	nvm->minor = (((u8)val) << 0x10 | ((u8)(val >> 0x8)) << 0x8 | (u8)(val >> 0x10));
-> +
-> +	/*
-> +	 * Asmedia NVM size fixed on 512K. We currently have no plan
-> +	 * to increase size in the future.
-> +	 */
-> +	nvm->nvm_size = SZ_512K;
+When we are dealing with eBPF, we need to have access to the report type.
+Currently our implementation differs from the USB standard, making it
+impossible for users to know the exact value besides hardcoding it
+themselves.
 
-Any chance this can also be gleamed from your NVM?  It would future 
-proof the kernel code if you did come up with a need to change it in the 
-future some day rather than hardcoding.
+And instead of a blank define, convert it as an enum.
 
-> +
-> +	return 0;
-> +}
-> +
->   static const struct tb_nvm_vendor_ops intel_switch_nvm_ops = {
->   	.read_version = intel_nvm_version,
->   	.validate = intel_nvm_validate,
->   };
-> 
-> +static const struct tb_nvm_vendor_ops asmedia_switch_nvm_ops = {
-> +	.read_version = asmedia_nvm_version,
+Note that we need to also do change in the ll_driver API, but given
+that this will have a wider impact outside of this tree, we leave this
+as a TODO for the future.
 
-I recall an earlier version of your patch series was reading the 
-customer ID as well.  Would it make sense to have an 
-`asmedia_nvm_validate` that checks this matches?
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
-Or any other safety validation that the image is good the kernel might 
-want to do?  Checksum or signature or anything?
+---
 
-Even if the hardware does all these verifications it's much easier to 
-debug problems if the kernel can do a first line verification to tell 
-you what is wrong with the image instead of trying to trace an error 
-code from the hardware.
+no changes in v10
 
-> +};
-> +
->   struct switch_nvm_vendor {
->   	u16 vendor;
->   	const struct tb_nvm_vendor_ops *vops;
-> @@ -133,6 +172,7 @@ struct switch_nvm_vendor {
->   static const struct switch_nvm_vendor switch_nvm_vendors[] = {
->   	{ PCI_VENDOR_ID_INTEL, &intel_switch_nvm_ops },
->   	{ 0x8087, &intel_switch_nvm_ops },
-> +	{ ROUTER_VENDOR_ID_ASMEDIA, &asmedia_switch_nvm_ops },
->   };
-> 
->   /**
-> diff --git a/drivers/thunderbolt/tb.c b/drivers/thunderbolt/tb.c
-> index 9853f6c7e81d..55faa1b5f815 100644
-> --- a/drivers/thunderbolt/tb.c
-> +++ b/drivers/thunderbolt/tb.c
-> @@ -1417,7 +1417,7 @@ static int tb_start(struct tb *tb)
->   	 * mode that is not available so disable firmware upgrade of the
->   	 * root switch.
->   	 */
-> -	tb->root_switch->no_nvm_upgrade = true;
-> +	tb->root_switch->no_nvm_upgrade = !tb_switch_is_usb4(tb->root_switch);
->   	/* All USB4 routers support runtime PM */
->   	tb->root_switch->rpm = tb_switch_is_usb4(tb->root_switch);
-> 
-> --
-> 2.34.1
-> 
+no changes in v9
+
+no changes in v8
+
+no changes in v7
+
+changes in v6:
+- add missing change for hid_hw_raw_request()
+
+new in v5
+---
+ drivers/hid/hid-core.c   | 13 +++++++------
+ include/linux/hid.h      | 24 ++++++++----------------
+ include/uapi/linux/hid.h | 12 ++++++++++++
+ 3 files changed, 27 insertions(+), 22 deletions(-)
+
+diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
+index a00dd43db8bf..ab98754522d9 100644
+--- a/drivers/hid/hid-core.c
++++ b/drivers/hid/hid-core.c
+@@ -55,7 +55,7 @@ MODULE_PARM_DESC(ignore_special_drivers, "Ignore any special drivers and handle
+  */
+ 
+ struct hid_report *hid_register_report(struct hid_device *device,
+-				       unsigned int type, unsigned int id,
++				       enum hid_report_type type, unsigned int id,
+ 				       unsigned int application)
+ {
+ 	struct hid_report_enum *report_enum = device->report_enum + type;
+@@ -967,7 +967,7 @@ static const char * const hid_report_names[] = {
+  * parsing.
+  */
+ struct hid_report *hid_validate_values(struct hid_device *hid,
+-				       unsigned int type, unsigned int id,
++				       enum hid_report_type type, unsigned int id,
+ 				       unsigned int field_index,
+ 				       unsigned int report_counts)
+ {
+@@ -1954,8 +1954,8 @@ int __hid_request(struct hid_device *hid, struct hid_report *report,
+ }
+ EXPORT_SYMBOL_GPL(__hid_request);
+ 
+-int hid_report_raw_event(struct hid_device *hid, int type, u8 *data, u32 size,
+-		int interrupt)
++int hid_report_raw_event(struct hid_device *hid, enum hid_report_type type, u8 *data, u32 size,
++			 int interrupt)
+ {
+ 	struct hid_report_enum *report_enum = hid->report_enum + type;
+ 	struct hid_report *report;
+@@ -2019,7 +2019,8 @@ EXPORT_SYMBOL_GPL(hid_report_raw_event);
+  *
+  * This is data entry for lower layers.
+  */
+-int hid_input_report(struct hid_device *hid, int type, u8 *data, u32 size, int interrupt)
++int hid_input_report(struct hid_device *hid, enum hid_report_type type, u8 *data, u32 size,
++		     int interrupt)
+ {
+ 	struct hid_report_enum *report_enum;
+ 	struct hid_driver *hdrv;
+@@ -2377,7 +2378,7 @@ EXPORT_SYMBOL_GPL(hid_hw_request);
+  */
+ int hid_hw_raw_request(struct hid_device *hdev,
+ 		       unsigned char reportnum, __u8 *buf,
+-		       size_t len, unsigned char rtype, int reqtype)
++		       size_t len, enum hid_report_type rtype, int reqtype)
+ {
+ 	if (len < 1 || len > HID_MAX_BUFFER_SIZE || !buf)
+ 		return -EINVAL;
+diff --git a/include/linux/hid.h b/include/linux/hid.h
+index a43dd17bc78f..b1a33dbbc78e 100644
+--- a/include/linux/hid.h
++++ b/include/linux/hid.h
+@@ -314,15 +314,6 @@ struct hid_item {
+ #define HID_BAT_ABSOLUTESTATEOFCHARGE	0x00850065
+ 
+ #define HID_VD_ASUS_CUSTOM_MEDIA_KEYS	0xff310076
+-/*
+- * HID report types --- Ouch! HID spec says 1 2 3!
+- */
+-
+-#define HID_INPUT_REPORT	0
+-#define HID_OUTPUT_REPORT	1
+-#define HID_FEATURE_REPORT	2
+-
+-#define HID_REPORT_TYPES	3
+ 
+ /*
+  * HID connect requests
+@@ -509,7 +500,7 @@ struct hid_report {
+ 	struct list_head hidinput_list;
+ 	struct list_head field_entry_list;		/* ordered list of input fields */
+ 	unsigned int id;				/* id of this report */
+-	unsigned int type;				/* report type */
++	enum hid_report_type type;			/* report type */
+ 	unsigned int application;			/* application usage for this report */
+ 	struct hid_field *field[HID_MAX_FIELDS];	/* fields of the report */
+ 	struct hid_field_entry *field_entries;		/* allocated memory of input field_entry */
+@@ -926,7 +917,8 @@ extern int hidinput_connect(struct hid_device *hid, unsigned int force);
+ extern void hidinput_disconnect(struct hid_device *);
+ 
+ int hid_set_field(struct hid_field *, unsigned, __s32);
+-int hid_input_report(struct hid_device *, int type, u8 *, u32, int);
++int hid_input_report(struct hid_device *hid, enum hid_report_type type, u8 *data, u32 size,
++		     int interrupt);
+ struct hid_field *hidinput_get_led_field(struct hid_device *hid);
+ unsigned int hidinput_count_leds(struct hid_device *hid);
+ __s32 hidinput_calc_abs_res(const struct hid_field *field, __u16 code);
+@@ -935,11 +927,11 @@ int __hid_request(struct hid_device *hid, struct hid_report *rep, int reqtype);
+ u8 *hid_alloc_report_buf(struct hid_report *report, gfp_t flags);
+ struct hid_device *hid_allocate_device(void);
+ struct hid_report *hid_register_report(struct hid_device *device,
+-				       unsigned int type, unsigned int id,
++				       enum hid_report_type type, unsigned int id,
+ 				       unsigned int application);
+ int hid_parse_report(struct hid_device *hid, __u8 *start, unsigned size);
+ struct hid_report *hid_validate_values(struct hid_device *hid,
+-				       unsigned int type, unsigned int id,
++				       enum hid_report_type type, unsigned int id,
+ 				       unsigned int field_index,
+ 				       unsigned int report_counts);
+ 
+@@ -1111,7 +1103,7 @@ void hid_hw_request(struct hid_device *hdev,
+ 		    struct hid_report *report, int reqtype);
+ int hid_hw_raw_request(struct hid_device *hdev,
+ 		       unsigned char reportnum, __u8 *buf,
+-		       size_t len, unsigned char rtype, int reqtype);
++		       size_t len, enum hid_report_type rtype, int reqtype);
+ int hid_hw_output_report(struct hid_device *hdev, __u8 *buf, size_t len);
+ 
+ /**
+@@ -1184,8 +1176,8 @@ static inline u32 hid_report_len(struct hid_report *report)
+ 	return DIV_ROUND_UP(report->size, 8) + (report->id > 0);
+ }
+ 
+-int hid_report_raw_event(struct hid_device *hid, int type, u8 *data, u32 size,
+-		int interrupt);
++int hid_report_raw_event(struct hid_device *hid, enum hid_report_type type, u8 *data, u32 size,
++			 int interrupt);
+ 
+ /* HID quirks API */
+ unsigned long hid_lookup_quirk(const struct hid_device *hdev);
+diff --git a/include/uapi/linux/hid.h b/include/uapi/linux/hid.h
+index b34492a87a8a..b25b0bacaff2 100644
+--- a/include/uapi/linux/hid.h
++++ b/include/uapi/linux/hid.h
+@@ -42,6 +42,18 @@
+ #define USB_INTERFACE_PROTOCOL_KEYBOARD	1
+ #define USB_INTERFACE_PROTOCOL_MOUSE	2
+ 
++/*
++ * HID report types --- Ouch! HID spec says 1 2 3!
++ */
++
++enum hid_report_type {
++	HID_INPUT_REPORT		= 0,
++	HID_OUTPUT_REPORT		= 1,
++	HID_FEATURE_REPORT		= 2,
++
++	HID_REPORT_TYPES,
++};
++
+ /*
+  * HID class requests
+  */
+-- 
+2.36.1
 
