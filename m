@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CF26C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:30:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A36DC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:30:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236651AbiIBMaA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:30:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36280 "EHLO
+        id S236048AbiIBMaG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:30:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236604AbiIBM2s (ORCPT
+        with ESMTP id S236610AbiIBM2s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 08:28:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 248551EAF2;
-        Fri,  2 Sep 2022 05:24:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4BB728716;
+        Fri,  2 Sep 2022 05:25:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6456F620F0;
-        Fri,  2 Sep 2022 12:24:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5915DC433C1;
-        Fri,  2 Sep 2022 12:24:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B18762159;
+        Fri,  2 Sep 2022 12:25:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 625C5C433C1;
+        Fri,  2 Sep 2022 12:25:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121498;
-        bh=t1+9ZyLredsBU/XEAMtgk9KW8FhRU65i9SlYct5eK7E=;
+        s=korg; t=1662121501;
+        bh=U7GMaY2it9Z4WBOXUdiR9o362PqChtpkJaBmnyMrYZA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1Jy5wuOhWfAbWJjZTD5e1+oYi7KmxI1lTJielDye2/atqTzGPiDakwWu6v/j8B2ZZ
-         FGQ6g9wVrSW8lON67u49+C2uPkUqux78bKSF4sDTqQyMNumPiiFSq/uUYIkmwUGYjn
-         6eyvN7zcbP1Z663ksVkJcQdIHYiGXSYJ2kTQZyog=
+        b=CQsRf3uzB6mh2SvFuIfC002gEiIkLmHhyV73CVS1qzC5lkoswzclCeoOkSR9n6nGJ
+         dkHs8r67qvxCApGjP1aEbr0pcU6Dk3po/3YyuErNvJ9D96LjQNfQp4zwN4xmbmpXrN
+         7WOj3g1fHzJKcYXLauJ7dQLW03hV7jH+lxA5nDAY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 4.19 04/56] pinctrl: amd: Dont save/restore interrupt status and wake status bits
-Date:   Fri,  2 Sep 2022 14:18:24 +0200
-Message-Id: <20220902121400.358080677@linuxfoundation.org>
+        "srivatsab@vmware.com, srivatsa@csail.mit.edu, akaher@vmware.com,
+        amakhalov@vmware.com, vsirnapalli@vmware.com, sturlapati@vmware.com,
+        bordoloih@vmware.com, keerthanak@vmware.com, Ankit Jain" 
+        <ankitja@vmware.com>, Mark Simmons <msimmons@redhat.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Ankit Jain <ankitja@vmware.com>
+Subject: [PATCH 4.19 05/56] sched/deadline: Unthrottle PI boosted threads while enqueuing
+Date:   Fri,  2 Sep 2022 14:18:25 +0200
+Message-Id: <20220902121400.390643885@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
 References: <20220902121400.219861128@linuxfoundation.org>
@@ -50,64 +55,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
+From: Daniel Bristot de Oliveira <bristot@redhat.com>
 
-commit b8c824a869f220c6b46df724f85794349bafbf23 upstream.
+commit feff2e65efd8d84cf831668e182b2ce73c604bbb upstream.
 
-Saving/restoring interrupt and wake status bits across suspend can
-cause the suspend to fail if an IRQ is serviced across the
-suspend cycle.
+stress-ng has a test (stress-ng --cyclic) that creates a set of threads
+under SCHED_DEADLINE with the following parameters:
 
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
-Fixes: 79d2c8bede2c ("pinctrl/amd: save pin registers over suspend/resume")
-Link: https://lore.kernel.org/r/20220613064127.220416-3-Basavaraj.Natikar@amd.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+    dl_runtime   =  10000 (10 us)
+    dl_deadline  = 100000 (100 us)
+    dl_period    = 100000 (100 us)
+
+These parameters are very aggressive. When using a system without HRTICK
+set, these threads can easily execute longer than the dl_runtime because
+the throttling happens with 1/HZ resolution.
+
+During the main part of the test, the system works just fine because
+the workload does not try to run over the 10 us. The problem happens at
+the end of the test, on the exit() path. During exit(), the threads need
+to do some cleanups that require real-time mutex locks, mainly those
+related to memory management, resulting in this scenario:
+
+Note: locks are rt_mutexes...
+ ------------------------------------------------------------------------
+    TASK A:		TASK B:				TASK C:
+    activation
+							activation
+			activation
+
+    lock(a): OK!	lock(b): OK!
+    			<overrun runtime>
+    			lock(a)
+    			-> block (task A owns it)
+			  -> self notice/set throttled
+ +--<			  -> arm replenished timer
+ |    			switch-out
+ |    							lock(b)
+ |    							-> <C prio > B prio>
+ |    							-> boost TASK B
+ |  unlock(a)						switch-out
+ |  -> handle lock a to B
+ |    -> wakeup(B)
+ |      -> B is throttled:
+ |        -> do not enqueue
+ |     switch-out
+ |
+ |
+ +---------------------> replenishment timer
+			-> TASK B is boosted:
+			  -> do not enqueue
+ ------------------------------------------------------------------------
+
+BOOM: TASK B is runnable but !enqueued, holding TASK C: the system
+crashes with hung task C.
+
+This problem is avoided by removing the throttle state from the boosted
+thread while boosting it (by TASK A in the example above), allowing it to
+be queued and run boosted.
+
+The next replenishment will take care of the runtime overrun, pushing
+the deadline further away. See the "while (dl_se->runtime <= 0)" on
+replenish_dl_entity() for more information.
+
+Reported-by: Mark Simmons <msimmons@redhat.com>
+Signed-off-by: Daniel Bristot de Oliveira <bristot@redhat.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Juri Lelli <juri.lelli@redhat.com>
+Tested-by: Mark Simmons <msimmons@redhat.com>
+Link: https://lkml.kernel.org/r/5076e003450835ec74e6fa5917d02c4fa41687e6.1600170294.git.bristot@redhat.com
+[Ankit: Regenerated the patch for v4.19.y]
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/pinctrl-amd.c |   11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ kernel/sched/deadline.c |   21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
---- a/drivers/pinctrl/pinctrl-amd.c
-+++ b/drivers/pinctrl/pinctrl-amd.c
-@@ -798,6 +798,7 @@ static int amd_gpio_suspend(struct devic
- 	struct platform_device *pdev = to_platform_device(dev);
- 	struct amd_gpio *gpio_dev = platform_get_drvdata(pdev);
- 	struct pinctrl_desc *desc = gpio_dev->pctrl->desc;
-+	unsigned long flags;
- 	int i;
- 
- 	for (i = 0; i < desc->npins; i++) {
-@@ -806,7 +807,9 @@ static int amd_gpio_suspend(struct devic
- 		if (!amd_gpio_should_save(gpio_dev, pin))
- 			continue;
- 
--		gpio_dev->saved_regs[i] = readl(gpio_dev->base + pin*4);
-+		raw_spin_lock_irqsave(&gpio_dev->lock, flags);
-+		gpio_dev->saved_regs[i] = readl(gpio_dev->base + pin * 4) & ~PIN_IRQ_PENDING;
-+		raw_spin_unlock_irqrestore(&gpio_dev->lock, flags);
- 	}
- 
- 	return 0;
-@@ -817,6 +820,7 @@ static int amd_gpio_resume(struct device
- 	struct platform_device *pdev = to_platform_device(dev);
- 	struct amd_gpio *gpio_dev = platform_get_drvdata(pdev);
- 	struct pinctrl_desc *desc = gpio_dev->pctrl->desc;
-+	unsigned long flags;
- 	int i;
- 
- 	for (i = 0; i < desc->npins; i++) {
-@@ -825,7 +829,10 @@ static int amd_gpio_resume(struct device
- 		if (!amd_gpio_should_save(gpio_dev, pin))
- 			continue;
- 
--		writel(gpio_dev->saved_regs[i], gpio_dev->base + pin*4);
-+		raw_spin_lock_irqsave(&gpio_dev->lock, flags);
-+		gpio_dev->saved_regs[i] |= readl(gpio_dev->base + pin * 4) & PIN_IRQ_PENDING;
-+		writel(gpio_dev->saved_regs[i], gpio_dev->base + pin * 4);
-+		raw_spin_unlock_irqrestore(&gpio_dev->lock, flags);
- 	}
- 
- 	return 0;
+--- a/kernel/sched/deadline.c
++++ b/kernel/sched/deadline.c
+@@ -1484,6 +1484,27 @@ static void enqueue_task_dl(struct rq *r
+ 	 */
+ 	if (pi_task && dl_prio(pi_task->normal_prio) && p->dl.dl_boosted) {
+ 		pi_se = &pi_task->dl;
++		/*
++		 * Because of delays in the detection of the overrun of a
++		 * thread's runtime, it might be the case that a thread
++		 * goes to sleep in a rt mutex with negative runtime. As
++		 * a consequence, the thread will be throttled.
++		 *
++		 * While waiting for the mutex, this thread can also be
++		 * boosted via PI, resulting in a thread that is throttled
++		 * and boosted at the same time.
++		 *
++		 * In this case, the boost overrides the throttle.
++		 */
++		if (p->dl.dl_throttled) {
++			/*
++			 * The replenish timer needs to be canceled. No
++			 * problem if it fires concurrently: boosted threads
++			 * are ignored in dl_task_timer().
++			 */
++			hrtimer_try_to_cancel(&p->dl.dl_timer);
++			p->dl.dl_throttled = 0;
++		}
+ 	} else if (!dl_prio(p->normal_prio)) {
+ 		/*
+ 		 * Special case in which we have a !SCHED_DEADLINE task
 
 
