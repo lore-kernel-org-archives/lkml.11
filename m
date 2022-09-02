@@ -2,109 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 168E0C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:15:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12292C001B5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:17:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236643AbiIBPPG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 11:15:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57310 "EHLO
+        id S236138AbiIBPRG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 11:17:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236433AbiIBPOc (ORCPT
+        with ESMTP id S235589AbiIBPQm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 11:14:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4086012DA05;
-        Fri,  2 Sep 2022 07:46:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AAB43B82C4E;
-        Fri,  2 Sep 2022 14:46:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 540AEC433D6;
-        Fri,  2 Sep 2022 14:46:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662129989;
-        bh=twCq4L5d3vlzAeCsNCl4PJSXLjKOaJZ0A4O4iMXSBpo=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=dMg4a4KMo+iHy1mOVMxe1pxd4INzedd3EJHWfWCuLtDIi7OQczgSBWgspdACa0dqL
-         uuCwCNkaEzR4O6aUADzYVuISOlWz1TGhGbKTfauoJ5pX87mqUgfNqlBP6+AOlbwjzP
-         9lSxWVv7uc8uh4MWBU3HkU2Q4/dY41MpUVTTdUWICpwY+wxNunuf5JL8era8+OyBDe
-         D0A9krV8ySP+8c4aU75Y53eX7wwR74P+53s42L7riUFIcs93K89FVAKWZweV6YoEkM
-         TyLzeGJJRLMgqNDj+GJ8iq8doXQgC4fnWqrKKmgOU8Jp3yI+kmQCL6FuY6WQTLBeJn
-         DC6aKQ0Zcp/CA==
-Received: by mail-ua1-f53.google.com with SMTP id q21so865286uam.13;
-        Fri, 02 Sep 2022 07:46:29 -0700 (PDT)
-X-Gm-Message-State: ACgBeo2KS+LbfHTrdkkVBJte952PvzWb0ME+pfIBbBIAIlC2D88FEhP/
-        uFYy9UiKKrGvwQm9/+0XKG8JLRRWHsMh6Ecmmw==
-X-Google-Smtp-Source: AA6agR52Kh0Dbhi3VztuJbeK42EbCe4sUJNFg+rKAUbLSf4r+sTjrEN5l2h5PdQUIkLNHkfWz735OBuroaDYeDSvV2k=
-X-Received: by 2002:ab0:32d1:0:b0:3ab:7f86:2121 with SMTP id
- f17-20020ab032d1000000b003ab7f862121mr267135uao.86.1662129988100; Fri, 02 Sep
- 2022 07:46:28 -0700 (PDT)
+        Fri, 2 Sep 2022 11:16:42 -0400
+Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 25C87578B9
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 07:49:32 -0700 (PDT)
+Received: (qmail 273620 invoked by uid 1000); 2 Sep 2022 10:49:30 -0400
+Date:   Fri, 2 Sep 2022 10:49:30 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Ray Chi <raychi@google.com>
+Cc:     gregkh@linuxfoundation.org, mathias.nyman@linux.intel.com,
+        albertccwang@google.com, badhri@google.com, pumahsu@google.com,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [Patch v2] usb: core: stop USB enumeration if too many retries
+Message-ID: <YxIX+jqWFfwAWYot@rowland.harvard.edu>
+References: <20220902091535.3572333-1-raychi@google.com>
 MIME-Version: 1.0
-References: <20220825214423.903672-1-michael@walle.cc> <20220825214423.903672-9-michael@walle.cc>
- <20220831214809.GA282739-robh@kernel.org> <60308ba420cdd072ea19e11e2e5e7d4b@walle.cc>
-In-Reply-To: <60308ba420cdd072ea19e11e2e5e7d4b@walle.cc>
-From:   Rob Herring <robh@kernel.org>
-Date:   Fri, 2 Sep 2022 09:46:16 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqKFf4Op-4X0_4CF9xKSCLwrWBEYQ6oe3MgAKs6rRRUDng@mail.gmail.com>
-Message-ID: <CAL_JsqKFf4Op-4X0_4CF9xKSCLwrWBEYQ6oe3MgAKs6rRRUDng@mail.gmail.com>
-Subject: Re: [PATCH v1 08/14] dt-bindings: mtd: relax the nvmem compatible string
-To:     Michael Walle <michael@walle.cc>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        netdev <netdev@vger.kernel.org>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220902091535.3572333-1-raychi@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 5:30 PM Michael Walle <michael@walle.cc> wrote:
->
-> Am 2022-08-31 23:48, schrieb Rob Herring:
-> > On Thu, Aug 25, 2022 at 11:44:17PM +0200, Michael Walle wrote:
-> >> The "user-otp" and "factory-otp" compatible string just depicts a
-> >> generic NVMEM device. But an actual device tree node might as well
-> >> contain a more specific compatible string. Make it possible to add
-> >> more specific binding elsewere and just match part of the compatibles
-> >> here.
-> >>
-> >> Signed-off-by: Michael Walle <michael@walle.cc>
-> >> ---
-> >>  Documentation/devicetree/bindings/mtd/mtd.yaml | 7 ++++---
-> >>  1 file changed, 4 insertions(+), 3 deletions(-)
-> >
-> > In hindsight it looks like we are mixing 2 different purposes of 'which
-> > instance is this' and 'what is this'. 'compatible' is supposed to be
-> > the
-> > latter.
-> >
-> > Maybe there's a better way to handle user/factory? There's a similar
-> > need with partitions for A/B or factory/update.
->
-> I'm not sure I understand what you mean. It has nothing to with
-> user and factory provisionings.
->
-> SPI flashes have a user programmable and a factory programmable
-> area, some have just one of them. Whereas with A/B you (as in the
-> user or the board manufacturer) defines an area within a memory device
-> to be either slot A or slot B. But here the flash dictates what's
-> factory and what's user storage. It's in the datasheet.
+On Fri, Sep 02, 2022 at 05:15:35PM +0800, Ray Chi wrote:
+> If a broken accessory connected to a USB host, usbcore might
+> keep doing enumeration retries and it will take a long time to
+> cause system unstable.
+> 
+> This patch provides a quirk to specific USB ports of the hub to
+> stop USB enumeration if needed.
 
-Ah, right. Nevermind...
+This seems very awkward.  Why not have a quirk that prevents USB 
+enumeration completely, instead of after some number of retries?  After 
+all, if the port is connected to a broken accessory, there's no reason 
+to try enumerating it even once.
 
-Rob
+For that matter, have you tried using the existing "disabled" port 
+attribute instead of adding a new quirk?  Does it already solve your 
+problem?
+
+> 
+> Signed-off-by: Ray Chi <raychi@google.com>
+> ---
+> Changes since v1:
+>  - remove usb_hub_set_port_power()
+>  - add a variable ignore_connect into struct port_dev
+>  - modify hub_port_stop_enumerate() and set ignore_connect in
+>    this function
+>  - avoid calling hub_port_connect_change() in port_event()
+> ---
+>  drivers/usb/core/hub.c | 40 ++++++++++++++++++++++++++++++++++++++++
+>  drivers/usb/core/hub.h |  2 ++
+>  include/linux/usb.h    |  3 +++
+>  3 files changed, 45 insertions(+)
+> 
+> diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
+> index 2633acde7ac1..7f34ee8bb81e 100644
+> --- a/drivers/usb/core/hub.c
+> +++ b/drivers/usb/core/hub.c
+> @@ -3081,6 +3081,30 @@ static int hub_port_reset(struct usb_hub *hub, int port1,
+>  	return status;
+>  }
+>  
+> +/* Stop enumerate if the port met errors and quirk is set */
+> +static bool hub_port_stop_enumerate(struct usb_hub *hub, int port1, int retries)
+> +{
+> +	struct usb_port *port_dev = hub->ports[port1 - 1];
+> +
+> +	if (port_dev->quirks & USB_PORT_QUIRK_STOP_ENUM) {
+> +		if (port_dev->ignore_connect)
+> +			return true;
+> +
+> +		if (retries < (PORT_INIT_TRIES - 1) / 2)
+> +			return false;
+> +
+> +		/*
+> +		 * Some USB hosts can't take a long time to keep doing enumeration
+> +		 * retry. After doing half of the retries, we would turn off the port
+> +		 * power to stop enumeration if the quirk is set.
+
+What made you decide that half of the retries was the right place to 
+stop?  Why not do all the retries?
+
+> +		 */
+> +		port_dev->ignore_connect = true;
+> +	} else
+> +		port_dev->ignore_connect = false;
+> +
+> +	return port_dev->ignore_connect;
+> +}
+
+If the quirk prevented enumeration completely then this function 
+wouldn't be needed.
+
+> +
+>  /* Check if a port is power on */
+>  int usb_port_is_power_on(struct usb_hub *hub, unsigned int portstatus)
+>  {
+> @@ -4855,6 +4879,11 @@ hub_port_init(struct usb_hub *hub, struct usb_device *udev, int port1,
+>  					buf->bMaxPacketSize0;
+>  			kfree(buf);
+>  
+> +			if (r < 0 && (port_dev->quirks & USB_PORT_QUIRK_STOP_ENUM)) {
+
+How come this line tests the quirk but doesn't call 
+hub_port_stop_enumerate()?
+
+> +				retval = r;
+> +				goto fail;
+> +			}
+> +
+>  			retval = hub_port_reset(hub, port1, udev, delay, false);
+>  			if (retval < 0)		/* error or disconnect */
+>  				goto fail;
+> @@ -5387,6 +5416,9 @@ static void hub_port_connect(struct usb_hub *hub, int port1, u16 portstatus,
+>  		if ((status == -ENOTCONN) || (status == -ENOTSUPP))
+>  			break;
+>  
+> +		if (hub_port_stop_enumerate(hub, port1, i))
+> +			break;
+> +
+>  		/* When halfway through our retry count, power-cycle the port */
+>  		if (i == (PORT_INIT_TRIES - 1) / 2) {
+>  			dev_info(&port_dev->dev, "attempt power cycle\n");
+> @@ -5550,6 +5582,9 @@ static void port_event(struct usb_hub *hub, int port1)
+>  	if (usb_hub_port_status(hub, port1, &portstatus, &portchange) < 0)
+>  		return;
+>  
+> +	if (hub_port_stop_enumerate(hub, port1, 0))
+> +		return;
+
+This test is in the wrong place.  It should go right next to the check 
+for pm_runtime_active(&port_dev->dev); even though the port isn't being 
+used we still want to turn off the port-change bits in the port status.
+
+> +
+>  	if (portchange & USB_PORT_STAT_C_CONNECTION) {
+>  		usb_clear_port_feature(hdev, port1, USB_PORT_FEAT_C_CONNECTION);
+>  		connect_change = 1;
+> @@ -5934,6 +5969,9 @@ static int usb_reset_and_verify_device(struct usb_device *udev)
+>  		ret = hub_port_init(parent_hub, udev, port1, i);
+>  		if (ret >= 0 || ret == -ENOTCONN || ret == -ENODEV)
+>  			break;
+> +
+> +		if (hub_port_stop_enumerate(parent_hub, port1, i))
+> +			goto stop_enumerate;
+
+Also this -- the purpose is to avoid calling hub_port_init() for ports 
+with the quirk, so this test belongs before the call to hub_port_init(), 
+not after.
+
+>  	}
+>  	mutex_unlock(hcd->address0_mutex);
+>  
+> @@ -6022,6 +6060,8 @@ static int usb_reset_and_verify_device(struct usb_device *udev)
+>  	udev->bos = bos;
+>  	return 0;
+>  
+> +stop_enumerate:
+> +	mutex_unlock(hcd->address0_mutex);
+>  re_enumerate:
+>  	usb_release_bos_descriptor(udev);
+>  	udev->bos = bos;
+> diff --git a/drivers/usb/core/hub.h b/drivers/usb/core/hub.h
+> index b2925856b4cb..f0aa718f4c7f 100644
+> --- a/drivers/usb/core/hub.h
+> +++ b/drivers/usb/core/hub.h
+> @@ -90,6 +90,7 @@ struct usb_hub {
+>   * @is_superspeed cache super-speed status
+>   * @usb3_lpm_u1_permit: whether USB3 U1 LPM is permitted.
+>   * @usb3_lpm_u2_permit: whether USB3 U2 LPM is permitted.
+> + * @ignore_connect: ignore the connection or not
+>   */
+>  struct usb_port {
+>  	struct usb_device *child;
+> @@ -103,6 +104,7 @@ struct usb_port {
+>  	u32 over_current_count;
+>  	u8 portnum;
+>  	u32 quirks;
+> +	bool ignore_connect;
+
+This should be a bitfield like the following entries.  It's okay to make 
+it a bool rather than unsigned int.  But you may find that you don't 
+need this field at all.
+
+>  	unsigned int is_superspeed:1;
+>  	unsigned int usb3_lpm_u1_permit:1;
+>  	unsigned int usb3_lpm_u2_permit:1;
+> diff --git a/include/linux/usb.h b/include/linux/usb.h
+> index f7a9914fc97f..fc0fef58c706 100644
+> --- a/include/linux/usb.h
+> +++ b/include/linux/usb.h
+> @@ -490,6 +490,9 @@ enum usb_port_connect_type {
+>  /* Decrease TRSTRCY to 10ms during device enumeration. */
+>  #define USB_PORT_QUIRK_FAST_ENUM	BIT(1)
+>  
+> +/* Stop the enumeration for the given port if there are too many failures*/
+> +#define USB_PORT_QUIRK_STOP_ENUM	BIT(2)
+
+When you define a new port quirk, you have to document it in the 
+/sys/bus/usb/devices/.../<hub_interface>/port<X>/quirks section of 
+Documentation/ABI/testing/sysfs-bus-usb.
+
+Alan Stern
+
+> +
+>  /*
+>   * USB 2.0 Link Power Management (LPM) parameters.
+>   */
+> -- 
+> 2.37.2.789.g6183377224-goog
+> 
