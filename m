@@ -2,84 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEEF8ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:12:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE053ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:12:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238966AbiIBOMN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:12:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44070 "EHLO
+        id S238725AbiIBOMS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:12:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238908AbiIBOLm (ORCPT
+        with ESMTP id S235543AbiIBOLo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:11:42 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 794C2BF48
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:39:48 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C7EFAD6E;
-        Fri,  2 Sep 2022 05:40:45 -0700 (PDT)
-Received: from usa.arm.com (e103737-lin.cambridge.arm.com [10.1.197.49])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 4AC3B3F766;
-        Fri,  2 Sep 2022 05:40:38 -0700 (PDT)
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        op-tee@lists.trustedfirmware.org
-Cc:     Sudeep Holla <sudeep.holla@arm.com>,
-        Marc Bonnici <marc.bonnici@arm.com>,
-        Achin Gupta <achin.gupta@arm.com>,
-        Jens Wiklander <jens.wiklander@linaro.org>,
-        Valentin Laurent <valentin.laurent@trustonic.com>,
-        Lukas Hanel <lukas.hanel@trustonic.com>,
-        Coboy Chen <coboy.chen@mediatek.com>
-Subject: [PATCH v2 00/10] firmware: arm_ffa: Refactoring and initial/minor v1.1 update
-Date:   Fri,  2 Sep 2022 13:40:22 +0100
-Message-Id: <20220902124032.788488-1-sudeep.holla@arm.com>
-X-Mailer: git-send-email 2.37.3
+        Fri, 2 Sep 2022 10:11:44 -0400
+X-Greylist: delayed 276 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 02 Sep 2022 06:39:45 PDT
+Received: from condef-04.nifty.com (condef-04.nifty.com [202.248.20.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6CB029C;
+        Fri,  2 Sep 2022 06:39:44 -0700 (PDT)
+Received: from conuserg-08.nifty.com ([10.126.8.71])by condef-04.nifty.com with ESMTP id 282DBpdd029154;
+        Fri, 2 Sep 2022 22:11:51 +0900
+Received: from zoe.. (133-32-182-133.west.xps.vectant.ne.jp [133.32.182.133]) (authenticated)
+        by conuserg-08.nifty.com with ESMTP id 282D8u4t015655;
+        Fri, 2 Sep 2022 22:09:54 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com 282D8u4t015655
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1662124194;
+        bh=4dyKSCwv1RuBVxoRRl8+r1I2FIxdbUPQmkn7fQPLx+s=;
+        h=From:To:Cc:Subject:Date:From;
+        b=jRXxtqI6uli/WimRxJVT0qUGZnA5uL/TjKU9Gq9wky/bAhgJEKH9+sIXWQ4on2KwS
+         F6guS2TljGxHa3N+gzoEJPB4R2AWygKYWHGczYdDjKTPfxIP3TWRQAcnBTzikwUYTy
+         zx0bonPyUPr+DXduqe9zFYaFvDaZqBTAW1M2BeLbp7r97wKPkobq3T26Kvqt2Nezf9
+         itGVvTtDixlORHSlwEG89BAqVT7ZGtAR5/LEv4rFqkD8Ww7FImNwdYyiePdfbKjazS
+         FIWZJjSFUqyux9XGLm1oWis7DByEjhlaj48+RPhgiE3TDIeoQ8V6JaBab7gImsbJDG
+         LW/6mFCRl/PDw==
+X-Nifty-SrcIP: [133.32.182.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] kbuild: use objtool-args-y to clean up objtool arguments
+Date:   Fri,  2 Sep 2022 22:08:45 +0900
+Message-Id: <20220902130846.654526-1-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi All,
+Based on Linus' patch.
 
-This series is just some refactoring in preparation to add FF-A v1.1
-support. It doesn't have any memory layout or notification changes
-supported in v1.1 yet.
+Link: https://lore.kernel.org/lkml/CAHk-=wgjTMQgiKzBZTmb=uWGDEQxDdyF1+qxBkODYciuNsmwnw@mail.gmail.com/
+Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
 
-Regards,
-Sudeep
+ scripts/Makefile.lib       | 31 ++++++++++++++++---------------
+ scripts/Makefile.vmlinux_o | 17 ++++++++---------
+ 2 files changed, 24 insertions(+), 24 deletions(-)
 
-v1[1]->v2:
-	- Merged dropping of ffa_ops in optee_ffa structure and using
-	  ffa_dev->ops into single patch
-	- Added separate patch(didn't fit any patch strictly to fit in)
-	  to rename ffa_dev_ops as ffa_ops as suggested by Sumit
-	- Fixed some minor comments, handling size > structure size in
-	  partition_info_get and added extra parameter to ffa_features
-	  to get both possible output/interface properties.
-
-[1] https://lore.kernel.org/all/20220830100700.344594-1-sudeep.holla@arm.com/
-
-Sudeep Holla (10):
-  firmware: arm_ffa: Add pointer to the ffa_dev_ops in struct ffa_dev
-  tee: optee: Drop ffa_ops in optee_ffa structure using ffa_dev->ops directly
-  firmware: arm_ffa: Remove ffa_dev_ops_get()
-  firmware: arm_ffa: Add support for querying FF-A features
-  firmware: arm_ffa: Use FFA_FEATURES to detect if native versions are supported
-  firmware: arm_ffa: Make memory apis ffa_device independent
-  firmware: arm_ffa: Rename ffa_dev_ops as ffa_ops
-  firmware: arm_ffa: Add v1.1 get_partition_info support
-  firmware: arm_ffa: Set up 32bit execution mode flag using partiion property
-  firmware: arm_ffa: Split up ffa_ops into info, message and memory operations
-
- drivers/firmware/arm_ffa/bus.c    |   4 +-
- drivers/firmware/arm_ffa/driver.c | 130 +++++++++++++++++++++++-------
- drivers/tee/optee/ffa_abi.c       |  46 +++++------
- drivers/tee/optee/optee_private.h |   1 -
- include/linux/arm_ffa.h           |  36 ++++++---
- 5 files changed, 150 insertions(+), 67 deletions(-)
-
+diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
+index b594705d571a..731f735240f8 100644
+--- a/scripts/Makefile.lib
++++ b/scripts/Makefile.lib
+@@ -229,25 +229,26 @@ ifdef CONFIG_OBJTOOL
+ 
+ objtool := $(objtree)/tools/objtool/objtool
+ 
+-objtool_args =								\
+-	$(if $(CONFIG_HAVE_JUMP_LABEL_HACK), --hacks=jump_label)	\
+-	$(if $(CONFIG_HAVE_NOINSTR_HACK), --hacks=noinstr)		\
+-	$(if $(CONFIG_X86_KERNEL_IBT), --ibt)				\
+-	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
+-	$(if $(CONFIG_UNWINDER_ORC), --orc)				\
+-	$(if $(CONFIG_RETPOLINE), --retpoline)				\
+-	$(if $(CONFIG_RETHUNK), --rethunk)				\
+-	$(if $(CONFIG_SLS), --sls)					\
+-	$(if $(CONFIG_STACK_VALIDATION), --stackval)			\
+-	$(if $(CONFIG_HAVE_STATIC_CALL_INLINE), --static-call)		\
+-	$(if $(CONFIG_HAVE_UACCESS_VALIDATION), --uaccess)		\
++objtool-args-$(CONFIG_HAVE_JUMP_LABEL_HACK)		+= --hacks=jump_label
++objtool-args-$(CONFIG_HAVE_NOINSTR_HACK)		+= --hacks=noinstr
++objtool-args-$(CONFIG_X86_KERNEL_IBT)			+= --ibt
++objtool-args-$(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL)	+= --mcount
++objtool-args-$(CONFIG_UNWINDER_ORC)			+= --orc
++objtool-args-$(CONFIG_RETPOLINE)			+= --retpoline
++objtool-args-$(CONFIG_RETHUNK)				+= --rethunk
++objtool-args-$(CONFIG_SLS)				+= --sls
++objtool-args-$(CONFIG_STACK_VALIDATION)			+= --stackval
++objtool-args-$(CONFIG_HAVE_STATIC_CALL_INLINE)		+= --static-call
++objtool-args-$(CONFIG_HAVE_UACCESS_VALIDATION)		+= --uaccess
++objtool-args-$(CONFIG_GCOV_KERNEL)			+= --no-unreachable
++
++objtool-args = $(objtool-args-y)					\
+ 	$(if $(delay-objtool), --link)					\
+-	$(if $(part-of-module), --module)				\
+-	$(if $(CONFIG_GCOV_KERNEL), --no-unreachable)
++	$(if $(part-of-module), --module)
+ 
+ delay-objtool := $(or $(CONFIG_LTO_CLANG),$(CONFIG_X86_KERNEL_IBT))
+ 
+-cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool_args) $@)
++cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool-args) $@)
+ cmd_gen_objtooldep = $(if $(objtool-enabled), { echo ; echo '$@: $$(wildcard $(objtool))' ; } >> $(dot-target).cmd)
+ 
+ endif # CONFIG_OBJTOOL
+diff --git a/scripts/Makefile.vmlinux_o b/scripts/Makefile.vmlinux_o
+index 81a4e0484457..df928a6717a1 100644
+--- a/scripts/Makefile.vmlinux_o
++++ b/scripts/Makefile.vmlinux_o
+@@ -35,18 +35,17 @@ endif
+ 
+ objtool-enabled := $(or $(delay-objtool),$(CONFIG_NOINSTR_VALIDATION))
+ 
+-# Reuse objtool_args defined in scripts/Makefile.lib if LTO or IBT is enabled.
++# Reuse objtool-args-y defined in scripts/Makefile.lib if LTO or IBT is enabled.
++# (Expand objtool-args-y to a simple variable to avoid circular reference)
+ #
+ # Add some more flags as needed.
+-# --no-unreachable and --link might be added twice, but it is fine.
+-#
+-# Expand objtool_args to a simple variable to avoid circular reference.
++# --no-unreachable might be added twice, but it is fine.
++
++objtool-args-$(delay-objtool)			:= $(objtool-args-y)
++objtool-args-$(CONFIG_GCOV_KERNEL)		+= --no-unreachable
++objtool-args-$(CONFIG_NOINSTR_VALIDATION)	+= --noinstr $(if $(CONFIG_CPU_UNRET_ENTRY), --unret))
+ 
+-objtool_args := \
+-	$(if $(delay-objtool),$(objtool_args)) \
+-	$(if $(CONFIG_NOINSTR_VALIDATION), --noinstr $(if $(CONFIG_CPU_UNRET_ENTRY), --unret)) \
+-	$(if $(CONFIG_GCOV_KERNEL), --no-unreachable) \
+-	--link
++objtool-args = $(objtool-args-y) --link
+ 
+ # Link of vmlinux.o used for section mismatch analysis
+ # ---------------------------------------------------------------------------
 -- 
-2.37.3
+2.34.1
 
