@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1A20ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:57:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87108ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:57:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238302AbiIBM5G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:57:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58332 "EHLO
+        id S238310AbiIBM5R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:57:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238294AbiIBMyS (ORCPT
+        with ESMTP id S238297AbiIBMyS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 08:54:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AB91C28;
-        Fri,  2 Sep 2022 05:38:33 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EBE02E9EE;
+        Fri,  2 Sep 2022 05:38:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6D028B82A94;
-        Fri,  2 Sep 2022 12:38:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6F17C433C1;
-        Fri,  2 Sep 2022 12:38:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BFA4762201;
+        Fri,  2 Sep 2022 12:36:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B378BC433D7;
+        Fri,  2 Sep 2022 12:36:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122312;
-        bh=BKT47hdXyQQv+39ld2l9XOMwbvm0fUxwowvfvQIMnoo=;
+        s=korg; t=1662122167;
+        bh=BaSsjwnDE85Wh8aHli0vywtZ1D1KO4NAanwGkKufopA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lqo3O4cPRwwFYW/teYmfVDlNnEbx5XM2N+VZuyXqUU1Rbad6NRMCd+56qwUHnVdX5
-         hjETvZn0vh+Gwqo7oRv3VHH3dVWU3dJPrkmCPBKvSJFMQtpTqIhInyok3zYVk8KSF1
-         Rh1B9X90F+AzGvpvK579cc7n7mIccfJjqvgBacL4=
+        b=0rvpDsVELRR56bP6VjBqgFMa+sjPLOxJFPPqMaWUw9NIDcEmhcen+D68n1xYECs/q
+         YYRq3crwRboXH2ivRcE5dsbKtz6Q8BnqXbnfmyomupFL4+HZPORpkTHIdRhI//EtAy
+         WKoPGrjLhb3IyRn/DjE280ulMlD6YONnqY6OhQiY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 64/72] platform/x86: serial-multi-instantiate: Add CLSA0101 Laptop
-Date:   Fri,  2 Sep 2022 14:19:40 +0200
-Message-Id: <20220902121406.879105622@linuxfoundation.org>
+        stable@vger.kernel.org, Oder Chiou <oder_chiou@realtek.com>,
+        Mohan Kumar D <mkumard@nvidia.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 34/72] ASoC: rt5640: Fix the JD voltage dropping issue
+Date:   Fri,  2 Sep 2022 14:19:10 +0200
+Message-Id: <20220902121405.912516755@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
 References: <20220902121404.772492078@linuxfoundation.org>
@@ -49,34 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Tanure <tanureal@opensource.cirrus.com>
+From: Oder Chiou <oder_chiou@realtek.com>
 
-[ Upstream commit 88392a0dd0ab263edb4ca416ebdecabd8289158a ]
+[ Upstream commit afb176d45870048eea540991b082208270824037 ]
 
-The device CLSA0101 has two instances of CS35L41
-connected by I2C.
+The patch fixes the JD voltage dropping issue in the HDA JD using.
 
-Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220727095924.80884-5-tanureal@opensource.cirrus.com
-Link: https://lore.kernel.org/r/20220816194639.13870-1-cam@neo-zeon.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Oder Chiou <oder_chiou@realtek.com>
+Reported-by: Mohan Kumar D <mkumard@nvidia.com>
+Link: https://lore.kernel.org/r/20220808052836.25791-1-oder_chiou@realtek.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/x86/serial-multi-instantiate.c | 1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/codecs/rt5640.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/platform/x86/serial-multi-instantiate.c b/drivers/platform/x86/serial-multi-instantiate.c
-index 1e8063b7c169e..e98007197cf52 100644
---- a/drivers/platform/x86/serial-multi-instantiate.c
-+++ b/drivers/platform/x86/serial-multi-instantiate.c
-@@ -329,6 +329,7 @@ static const struct acpi_device_id smi_acpi_ids[] = {
- 	{ "CSC3551", (unsigned long)&cs35l41_hda },
- 	/* Non-conforming _HID for Cirrus Logic already released */
- 	{ "CLSA0100", (unsigned long)&cs35l41_hda },
-+	{ "CLSA0101", (unsigned long)&cs35l41_hda },
- 	{ }
- };
- MODULE_DEVICE_TABLE(acpi, smi_acpi_ids);
+diff --git a/sound/soc/codecs/rt5640.c b/sound/soc/codecs/rt5640.c
+index 18b3da9211e32..5ada0d318d0ff 100644
+--- a/sound/soc/codecs/rt5640.c
++++ b/sound/soc/codecs/rt5640.c
+@@ -1986,7 +1986,7 @@ static int rt5640_set_bias_level(struct snd_soc_component *component,
+ 		snd_soc_component_write(component, RT5640_PWR_MIXER, 0x0000);
+ 		if (rt5640->jd_src == RT5640_JD_SRC_HDA_HEADER)
+ 			snd_soc_component_write(component, RT5640_PWR_ANLG1,
+-				0x0018);
++				0x2818);
+ 		else
+ 			snd_soc_component_write(component, RT5640_PWR_ANLG1,
+ 				0x0000);
+@@ -2592,7 +2592,8 @@ static void rt5640_enable_hda_jack_detect(
+ 	snd_soc_component_update_bits(component, RT5640_DUMMY1, 0x400, 0x0);
+ 
+ 	snd_soc_component_update_bits(component, RT5640_PWR_ANLG1,
+-		RT5640_PWR_VREF2, RT5640_PWR_VREF2);
++		RT5640_PWR_VREF2 | RT5640_PWR_MB | RT5640_PWR_BG,
++		RT5640_PWR_VREF2 | RT5640_PWR_MB | RT5640_PWR_BG);
+ 	usleep_range(10000, 15000);
+ 	snd_soc_component_update_bits(component, RT5640_PWR_ANLG1,
+ 		RT5640_PWR_FV2, RT5640_PWR_FV2);
 -- 
 2.35.1
 
