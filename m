@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF594ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:53:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91C21C54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:53:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237998AbiIBMxT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:53:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56926 "EHLO
+        id S237959AbiIBMxY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:53:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236398AbiIBMwc (ORCPT
+        with ESMTP id S237789AbiIBMwd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:52:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB5A75C9CE;
+        Fri, 2 Sep 2022 08:52:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C557B40E38;
         Fri,  2 Sep 2022 05:37:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3622FB82A71;
-        Fri,  2 Sep 2022 12:36:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68DCBC433C1;
-        Fri,  2 Sep 2022 12:36:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 822AD6216B;
+        Fri,  2 Sep 2022 12:27:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C21DC433D6;
+        Fri,  2 Sep 2022 12:27:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122179;
-        bh=V3FkCwM9i+GoSL/R/1gavDi9ac9+8/zlCT8RN7PV1BA=;
+        s=korg; t=1662121641;
+        bh=gt0UaEL2EYFti/7td2KjomCYoDqgD0W6yquoeZjAdmw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OsdJUfyo17IzaeVidKDeFfptxkMNu3tgtx6KSL6bjTUZvA2LHYA5y6LpKj91OX79H
-         K4e+b9AGmGhHHllZIlPKRdQcnu2L5XwvS3rotqBCV60fRDCfnd/H+uDEzb730oMwfH
-         HFX5d8EhxqdoxkMYqpB8Y+zAFsFz6hrU5Ygd1Cs8=
+        b=RcGff9eCakdeaIV/3OM2AjxMXft7xoW7H/AeQQZ3OQn3eHMUxrjYdDVTrYjJW7ZOA
+         XS0Znjy+XtJvwsnMVwF1H98YRn64amY0fLaOmTN9qKoDEX44NhdXHmOY71uyKLK1S7
+         XBHrAPxy6Sr5yIEvFjpcQaIs+nNYlM/nMYW+hPb0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josip Pavic <Josip.Pavic@amd.com>,
-        Jun Lei <Jun.Lei@amd.com>, Alex Hung <alex.hung@amd.com>,
-        Aric Cyr <aric.cyr@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Jonathan Toppins <jtoppins@redhat.com>,
+        Jay Vosburgh <jay.vosburgh@canonical.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 38/72] drm/amd/display: Avoid MPC infinite loop
-Date:   Fri,  2 Sep 2022 14:19:14 +0200
-Message-Id: <20220902121406.033457164@linuxfoundation.org>
+Subject: [PATCH 5.4 18/77] bonding: 802.3ad: fix no transmission of LACPDUs
+Date:   Fri,  2 Sep 2022 14:18:27 +0200
+Message-Id: <20220902121404.250299542@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
-References: <20220902121404.772492078@linuxfoundation.org>
+In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
+References: <20220902121403.569927325@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,64 +50,135 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josip Pavic <Josip.Pavic@amd.com>
+From: Jonathan Toppins <jtoppins@redhat.com>
 
-[ Upstream commit 8de297dc046c180651c0500f8611663ae1c3828a ]
+[ Upstream commit d745b5062ad2b5da90a5e728d7ca884fc07315fd ]
 
-[why]
-In some cases MPC tree bottom pipe ends up point to itself.  This causes
-iterating from top to bottom to hang the system in an infinite loop.
+This is caused by the global variable ad_ticks_per_sec being zero as
+demonstrated by the reproducer script discussed below. This causes
+all timer values in __ad_timer_to_ticks to be zero, resulting
+in the periodic timer to never fire.
 
-[how]
-When looping to next MPC bottom pipe, check that the pointer is not same
-as current to avoid infinite loop.
+To reproduce:
+Run the script in
+`tools/testing/selftests/drivers/net/bonding/bond-break-lacpdu-tx.sh` which
+puts bonding into a state where it never transmits LACPDUs.
 
-Reviewed-by: Josip Pavic <Josip.Pavic@amd.com>
-Reviewed-by: Jun Lei <Jun.Lei@amd.com>
-Acked-by: Alex Hung <alex.hung@amd.com>
-Signed-off-by: Aric Cyr <aric.cyr@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+line 44: ip link add fbond type bond mode 4 miimon 200 \
+            xmit_hash_policy 1 ad_actor_sys_prio 65535 lacp_rate fast
+setting bond param: ad_actor_sys_prio
+given:
+    params.ad_actor_system = 0
+call stack:
+    bond_option_ad_actor_sys_prio()
+    -> bond_3ad_update_ad_actor_settings()
+       -> set ad.system.sys_priority = bond->params.ad_actor_sys_prio
+       -> ad.system.sys_mac_addr = bond->dev->dev_addr; because
+            params.ad_actor_system == 0
+results:
+     ad.system.sys_mac_addr = bond->dev->dev_addr
+
+line 48: ip link set fbond address 52:54:00:3B:7C:A6
+setting bond MAC addr
+call stack:
+    bond->dev->dev_addr = new_mac
+
+line 52: ip link set fbond type bond ad_actor_sys_prio 65535
+setting bond param: ad_actor_sys_prio
+given:
+    params.ad_actor_system = 0
+call stack:
+    bond_option_ad_actor_sys_prio()
+    -> bond_3ad_update_ad_actor_settings()
+       -> set ad.system.sys_priority = bond->params.ad_actor_sys_prio
+       -> ad.system.sys_mac_addr = bond->dev->dev_addr; because
+            params.ad_actor_system == 0
+results:
+     ad.system.sys_mac_addr = bond->dev->dev_addr
+
+line 60: ip link set veth1-bond down master fbond
+given:
+    params.ad_actor_system = 0
+    params.mode = BOND_MODE_8023AD
+    ad.system.sys_mac_addr == bond->dev->dev_addr
+call stack:
+    bond_enslave
+    -> bond_3ad_initialize(); because first slave
+       -> if ad.system.sys_mac_addr != bond->dev->dev_addr
+          return
+results:
+     Nothing is run in bond_3ad_initialize() because dev_addr equals
+     sys_mac_addr leaving the global ad_ticks_per_sec zero as it is
+     never initialized anywhere else.
+
+The if check around the contents of bond_3ad_initialize() is no longer
+needed due to commit 5ee14e6d336f ("bonding: 3ad: apply ad_actor settings
+changes immediately") which sets ad.system.sys_mac_addr if any one of
+the bonding parameters whos set function calls
+bond_3ad_update_ad_actor_settings(). This is because if
+ad.system.sys_mac_addr is zero it will be set to the current bond mac
+address, this causes the if check to never be true.
+
+Fixes: 5ee14e6d336f ("bonding: 3ad: apply ad_actor settings changes immediately")
+Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c | 6 ++++++
- drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c | 6 ++++++
- 2 files changed, 12 insertions(+)
+ drivers/net/bonding/bond_3ad.c | 38 ++++++++++++++--------------------
+ 1 file changed, 16 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c
-index 11019c2c62ccb..8192f1967e924 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c
-@@ -126,6 +126,12 @@ struct mpcc *mpc1_get_mpcc_for_dpp(struct mpc_tree *tree, int dpp_id)
- 	while (tmp_mpcc != NULL) {
- 		if (tmp_mpcc->dpp_id == dpp_id)
- 			return tmp_mpcc;
-+
-+		/* avoid circular linked list */
-+		ASSERT(tmp_mpcc != tmp_mpcc->mpcc_bot);
-+		if (tmp_mpcc == tmp_mpcc->mpcc_bot)
-+			break;
-+
- 		tmp_mpcc = tmp_mpcc->mpcc_bot;
- 	}
- 	return NULL;
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c
-index 15734db0cdea4..f3c311d093197 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c
-@@ -531,6 +531,12 @@ static struct mpcc *mpc2_get_mpcc_for_dpp(struct mpc_tree *tree, int dpp_id)
- 	while (tmp_mpcc != NULL) {
- 		if (tmp_mpcc->dpp_id == 0xf || tmp_mpcc->dpp_id == dpp_id)
- 			return tmp_mpcc;
-+
-+		/* avoid circular linked list */
-+		ASSERT(tmp_mpcc != tmp_mpcc->mpcc_bot);
-+		if (tmp_mpcc == tmp_mpcc->mpcc_bot)
-+			break;
-+
- 		tmp_mpcc = tmp_mpcc->mpcc_bot;
- 	}
- 	return NULL;
+diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
+index 31ed7616e84e7..0d6cd2a4cc416 100644
+--- a/drivers/net/bonding/bond_3ad.c
++++ b/drivers/net/bonding/bond_3ad.c
+@@ -1997,30 +1997,24 @@ void bond_3ad_initiate_agg_selection(struct bonding *bond, int timeout)
+  */
+ void bond_3ad_initialize(struct bonding *bond, u16 tick_resolution)
+ {
+-	/* check that the bond is not initialized yet */
+-	if (!MAC_ADDRESS_EQUAL(&(BOND_AD_INFO(bond).system.sys_mac_addr),
+-				bond->dev->dev_addr)) {
+-
+-		BOND_AD_INFO(bond).aggregator_identifier = 0;
+-
+-		BOND_AD_INFO(bond).system.sys_priority =
+-			bond->params.ad_actor_sys_prio;
+-		if (is_zero_ether_addr(bond->params.ad_actor_system))
+-			BOND_AD_INFO(bond).system.sys_mac_addr =
+-			    *((struct mac_addr *)bond->dev->dev_addr);
+-		else
+-			BOND_AD_INFO(bond).system.sys_mac_addr =
+-			    *((struct mac_addr *)bond->params.ad_actor_system);
++	BOND_AD_INFO(bond).aggregator_identifier = 0;
++	BOND_AD_INFO(bond).system.sys_priority =
++		bond->params.ad_actor_sys_prio;
++	if (is_zero_ether_addr(bond->params.ad_actor_system))
++		BOND_AD_INFO(bond).system.sys_mac_addr =
++		    *((struct mac_addr *)bond->dev->dev_addr);
++	else
++		BOND_AD_INFO(bond).system.sys_mac_addr =
++		    *((struct mac_addr *)bond->params.ad_actor_system);
+ 
+-		/* initialize how many times this module is called in one
+-		 * second (should be about every 100ms)
+-		 */
+-		ad_ticks_per_sec = tick_resolution;
++	/* initialize how many times this module is called in one
++	 * second (should be about every 100ms)
++	 */
++	ad_ticks_per_sec = tick_resolution;
+ 
+-		bond_3ad_initiate_agg_selection(bond,
+-						AD_AGGREGATOR_SELECTION_TIMER *
+-						ad_ticks_per_sec);
+-	}
++	bond_3ad_initiate_agg_selection(bond,
++					AD_AGGREGATOR_SELECTION_TIMER *
++					ad_ticks_per_sec);
+ }
+ 
+ /**
 -- 
 2.35.1
 
