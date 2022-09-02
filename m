@@ -2,186 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AA4FECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:56:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF93EC001B5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:56:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237681AbiIBP4t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 11:56:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40874 "EHLO
+        id S237687AbiIBP4w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 11:56:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237542AbiIBPzG (ORCPT
+        with ESMTP id S237553AbiIBPzS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 11:55:06 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A355C399E8
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 08:49:28 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 95A841595;
-        Fri,  2 Sep 2022 08:49:34 -0700 (PDT)
-Received: from merodach.members.linode.com (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 10B193F766;
-        Fri,  2 Sep 2022 08:49:25 -0700 (PDT)
-From:   James Morse <james.morse@arm.com>
-To:     x86@kernel.org, linux-kernel@vger.kernel.org
-Cc:     Fenghua Yu <fenghua.yu@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        H Peter Anvin <hpa@zytor.com>,
-        Babu Moger <Babu.Moger@amd.com>,
-        James Morse <james.morse@arm.com>,
-        shameerali.kolothum.thodi@huawei.com,
-        D Scott Phillips OS <scott@os.amperecomputing.com>,
-        lcherian@marvell.com, bobo.shaobowang@huawei.com,
-        tan.shaopeng@fujitsu.com, Jamie Iles <quic_jiles@quicinc.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
-        baolin.wang@linux.alibaba.com
-Subject: [PATCH v6 13/21] x86/resctrl: Add per-rmid arch private storage for overflow and chunks
-Date:   Fri,  2 Sep 2022 15:48:21 +0000
-Message-Id: <20220902154829.30399-14-james.morse@arm.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220902154829.30399-1-james.morse@arm.com>
-References: <20220902154829.30399-1-james.morse@arm.com>
+        Fri, 2 Sep 2022 11:55:18 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32A1533427
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 08:49:31 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id b16so2836554wru.7
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 08:49:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=f3juMO/QwGZ+BjBeOfHfdqcLNOZRF7cyhCYwluCkxeQ=;
+        b=l6ZMiuaH2GBS48BynCtAjlqvYjt+j0meLlxoqtvlQIy2VFUyzHDqSj7S0QuCQG9bYf
+         +eNClJ+N3e/bqFwgs5VFwMpE5BKjK+k1GNj69Vth/U+SUC0IP2w2QsdZYlPp9yVuft/L
+         iosNY3HcYryovoH1KnjgnrO0uc3x/K3kjq74Ej4QTvzz/fzMszyyswCX5HRIpB/3TbaG
+         cDFE0sa0RbmCOjybqV02ZRezr2vXaHJFEvZJlrS20ErLKDXmGdElFWS6f9+04pgIr9CO
+         hzhv+QhL9ksiKW5G4Mok2vxDfVR4K/XYO+Uh2XifS+55yw9RfkoC2EDXyE7VhfpYq1Mz
+         FdPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=f3juMO/QwGZ+BjBeOfHfdqcLNOZRF7cyhCYwluCkxeQ=;
+        b=WkI3jqoEYQ249NDZ4a+FitfWPK5my30jEf0cnY4YMxws6i6s5v/AwxNbWpNhgFKd9+
+         KNZBnQfyKY+mhigUYOEHdx4Dana0b5d7zRYJLrM6AYTTIGf567nSjOpm1VIh/4GKuLZl
+         uqpxYh0xZ/BGVSMOQKl0OrsfgXYcvrJb+OQIMDnPEgi7JPvBrUm6kOW0h9xX6w7F5AVT
+         eef1DqVIRyeZboObN2bZg960dH+HRAtDaeBtc6Ve/TcsRkWODoIcAvMlwWTQhVnmBrlp
+         5TewUacZspXSS9Ue+jL5m4oMawfJUJaZt0fPSRY0sVli5Hy6kgD0KbMxCbtsReNN2mBJ
+         1JXA==
+X-Gm-Message-State: ACgBeo2rJGNFNpBh+9foWYe6NBYGrv00UWLtV/V8N7wqBH1G+vXsYE9p
+        Z61n0kcTf8dEj63xkjqxWjZBKQ==
+X-Google-Smtp-Source: AA6agR67PrNtPxy6XyYWdGT3MvB/MdDSK3BWUvCd3mqVMFpV0l+bZKI/hbR5S2TOWliiUndMK9aNPg==
+X-Received: by 2002:a5d:64e1:0:b0:226:db58:868b with SMTP id g1-20020a5d64e1000000b00226db58868bmr14746743wri.79.1662133769552;
+        Fri, 02 Sep 2022 08:49:29 -0700 (PDT)
+Received: from hackbox.lan ([94.52.112.99])
+        by smtp.gmail.com with ESMTPSA id b1-20020a05600010c100b002250f9abdefsm2046741wrx.117.2022.09.02.08.49.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 08:49:29 -0700 (PDT)
+From:   Abel Vesa <abel.vesa@linaro.org>
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Amol Maheshwari <amahesh@qti.qualcomm.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Ekansh Gupta <quic_ekagupt@quicinc.com>
+Cc:     Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-arm-msm@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree@vger.kernel.org
+Subject: [PATCH v2 05/10] misc: fastrpc: Use fastrpc_map_put in fastrpc_map_create on fail
+Date:   Fri,  2 Sep 2022 18:48:55 +0300
+Message-Id: <20220902154900.3404524-6-abel.vesa@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220902154900.3404524-1-abel.vesa@linaro.org>
+References: <20220902154900.3404524-1-abel.vesa@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A renamed __rmid_read() is intended as the function that an
-architecture agnostic resctrl filesystem driver can use to
-read a value in bytes from a counter. Currently the function returns
-the MBM values in chunks directly from hardware. For bandwidth
-counters the resctrl filesystem uses this to calculate the number of
-bytes ever seen.
+Move the kref_init right after the allocation so that we can use
+fastrpc_map_put on any following error case.
 
-MPAM's scaling of counters can be changed at runtime, reducing the
-resolution but increasing the range. When this is changed the prev_msr
-values need to be converted by the architecture code.
-
-Add an array for per-rmid private storage. The prev_msr and chunks
-values will move here to allow resctrl_arch_rmid_read() to always
-return the number of bytes read by this counter without assistance
-from the filesystem. The values are moved in later patches when
-the overflow and correction calls are moved into __rmid_read().
-
-Reviewed-by: Jamie Iles <quic_jiles@quicinc.com>
-Tested-by: Xin Hao <xhao@linux.alibaba.com>
-Reviewed-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
-Tested-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
-Tested-by: Cristian Marussi <cristian.marussi@arm.com>
-Reviewed-by: Reinette Chatre <reinette.chatre@intel.com>
-Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
 ---
-Changes since v2:
- * Capitalisation
- * Use __rmid_read() as this patch is earlier in the series.
- * kfree() one array in arch_domain_mbm_alloc() when allocating the other
-   fails, instead of relying on domain_free().
- * Remove the documentation that domain_free() has to be called to cleanup
-   if this call fails.
----
- arch/x86/kernel/cpu/resctrl/core.c     | 35 ++++++++++++++++++++++++++
- arch/x86/kernel/cpu/resctrl/internal.h | 14 +++++++++++
- 2 files changed, 49 insertions(+)
+ drivers/misc/fastrpc.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kernel/cpu/resctrl/core.c b/arch/x86/kernel/cpu/resctrl/core.c
-index 90ebb7d71af2..de62b0b87ced 100644
---- a/arch/x86/kernel/cpu/resctrl/core.c
-+++ b/arch/x86/kernel/cpu/resctrl/core.c
-@@ -413,6 +413,8 @@ static void setup_default_ctrlval(struct rdt_resource *r, u32 *dc)
+diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
+index 6730aa324e10..5eececd9b6bd 100644
+--- a/drivers/misc/fastrpc.c
++++ b/drivers/misc/fastrpc.c
+@@ -745,6 +745,8 @@ static int fastrpc_map_create(struct fastrpc_user *fl, int fd,
+ 		return -ENOMEM;
  
- static void domain_free(struct rdt_hw_domain *hw_dom)
- {
-+	kfree(hw_dom->arch_mbm_total);
-+	kfree(hw_dom->arch_mbm_local);
- 	kfree(hw_dom->ctrl_val);
- 	kfree(hw_dom);
+ 	INIT_LIST_HEAD(&map->node);
++	kref_init(&map->refcount);
++
+ 	map->fl = fl;
+ 	map->fd = fd;
+ 	map->buf = dma_buf_get(fd);
+@@ -771,7 +773,6 @@ static int fastrpc_map_create(struct fastrpc_user *fl, int fd,
+ 	map->size = len;
+ 	map->va = sg_virt(map->table->sgl);
+ 	map->len = len;
+-	kref_init(&map->refcount);
+ 
+ 	if (attr & FASTRPC_ATTR_SECUREMAP) {
+ 		/*
+@@ -801,7 +802,7 @@ static int fastrpc_map_create(struct fastrpc_user *fl, int fd,
+ attach_err:
+ 	dma_buf_put(map->buf);
+ get_err:
+-	kfree(map);
++	fastrpc_map_put(map);
+ 
+ 	return err;
  }
-@@ -438,6 +440,34 @@ static int domain_setup_ctrlval(struct rdt_resource *r, struct rdt_domain *d)
- 	return 0;
- }
- 
-+/**
-+ * arch_domain_mbm_alloc() - Allocate arch private storage for the MBM counters
-+ * @num_rmid:	The size of the MBM counter array
-+ * @hw_dom:	The domain that owns the allocated arrays
-+ */
-+static int arch_domain_mbm_alloc(u32 num_rmid, struct rdt_hw_domain *hw_dom)
-+{
-+	size_t tsize;
-+
-+	if (is_mbm_total_enabled()) {
-+		tsize = sizeof(*hw_dom->arch_mbm_total);
-+		hw_dom->arch_mbm_total = kcalloc(num_rmid, tsize, GFP_KERNEL);
-+		if (!hw_dom->arch_mbm_total)
-+			return -ENOMEM;
-+	}
-+	if (is_mbm_local_enabled()) {
-+		tsize = sizeof(*hw_dom->arch_mbm_local);
-+		hw_dom->arch_mbm_local = kcalloc(num_rmid, tsize, GFP_KERNEL);
-+		if (!hw_dom->arch_mbm_local) {
-+			kfree(hw_dom->arch_mbm_total);
-+			hw_dom->arch_mbm_total = NULL;
-+			return -ENOMEM;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
- /*
-  * domain_add_cpu - Add a cpu to a resource's domain list.
-  *
-@@ -487,6 +517,11 @@ static void domain_add_cpu(int cpu, struct rdt_resource *r)
- 		return;
- 	}
- 
-+	if (r->mon_capable && arch_domain_mbm_alloc(r->num_rmid, hw_dom)) {
-+		domain_free(hw_dom);
-+		return;
-+	}
-+
- 	list_add_tail(&d->list, add_pos);
- 
- 	err = resctrl_online_domain(r, d);
-diff --git a/arch/x86/kernel/cpu/resctrl/internal.h b/arch/x86/kernel/cpu/resctrl/internal.h
-index 46062099d69e..4de8e5bb93e1 100644
---- a/arch/x86/kernel/cpu/resctrl/internal.h
-+++ b/arch/x86/kernel/cpu/resctrl/internal.h
-@@ -303,17 +303,31 @@ struct mbm_state {
- 	bool	delta_comp;
- };
- 
-+/**
-+ * struct arch_mbm_state - values used to compute resctrl_arch_rmid_read()s
-+ *			   return value.
-+ * @prev_msr:	Value of IA32_QM_CTR last time it was read for the RMID used to
-+ *		find this struct.
-+ */
-+struct arch_mbm_state {
-+	u64	prev_msr;
-+};
-+
- /**
-  * struct rdt_hw_domain - Arch private attributes of a set of CPUs that share
-  *			  a resource
-  * @d_resctrl:	Properties exposed to the resctrl file system
-  * @ctrl_val:	array of cache or mem ctrl values (indexed by CLOSID)
-+ * @arch_mbm_total:	arch private state for MBM total bandwidth
-+ * @arch_mbm_local:	arch private state for MBM local bandwidth
-  *
-  * Members of this structure are accessed via helpers that provide abstraction.
-  */
- struct rdt_hw_domain {
- 	struct rdt_domain		d_resctrl;
- 	u32				*ctrl_val;
-+	struct arch_mbm_state		*arch_mbm_total;
-+	struct arch_mbm_state		*arch_mbm_local;
- };
- 
- static inline struct rdt_hw_domain *resctrl_to_arch_dom(struct rdt_domain *r)
 -- 
-2.30.2
+2.34.1
 
