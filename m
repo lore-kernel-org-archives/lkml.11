@@ -2,104 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EBBFC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:38:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CB14ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:39:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237112AbiIBMic (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:38:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40274 "EHLO
+        id S237151AbiIBMii (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:38:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237085AbiIBMhs (ORCPT
+        with ESMTP id S237113AbiIBMhx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:37:48 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1DEC2FC
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 05:19:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662121184; x=1693657184;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=fS3Zg6CR41DlCRJ3YlObPpVsOET9vzxsmZZDS1sOMxU=;
-  b=SH/scYvvmnMCUsLpGS8cvXdETz61DaPLMRCCwWxQ0Innso3urnAiF9La
-   62BRhlDaqh8dpkJo9ICeEmbLWps7M6YRzJLSURpLG9GCEW+EOHXJ4otTX
-   82ZHsrerHCxaNxOGH+oAZAYzDSGb/+AKLM0ahyAj9kt5laTo2qFferDJh
-   utT2VqwU7M1aAqVFQKNxKz2ASOxj4OIWZiWy4c/0ANcpYYpxFrg0eXDB0
-   CquqgYSa/qHU/L19Up/Lm20GbqOX0H+3G/qzI8n+/qVVRA77TOALtZCcI
-   2/tmHoHtXslpBFR1YUnBtvbeP8N2u93HBMS7rtRAJdUx4tz5PldWuKn7f
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="295974597"
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="295974597"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 05:19:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="563946986"
-Received: from crojewsk-ctrl.igk.intel.com ([10.102.9.28])
-  by orsmga003.jf.intel.com with ESMTP; 02 Sep 2022 05:19:40 -0700
-From:   Cezary Rojewski <cezary.rojewski@intel.com>
-To:     alsa-devel@alsa-project.org, broonie@kernel.org
-Cc:     tiwai@suse.com, perex@perex.cz,
-        amadeuszx.slawinski@linux.intel.com,
-        pierre-louis.bossart@linux.intel.com, hdegoede@redhat.com,
-        lgirdwood@gmail.com, kai.vehmanen@linux.intel.com,
-        peter.ujfalusi@linux.intel.com, ranjani.sridharan@linux.intel.com,
-        yung-chuan.liao@linux.intel.com, willy@infradead.org,
-        linux-kernel@vger.kernel.org, andy@kernel.org,
-        intel-poland@eclists.intel.com, andy.shevchenko@gmail.com,
-        Cezary Rojewski <cezary.rojewski@intel.com>
-Subject: [PATCH v4 0/2] lib/string_helpers: Introduce parse_int_array_user()
-Date:   Fri,  2 Sep 2022 14:29:26 +0200
-Message-Id: <20220902122928.632602-1-cezary.rojewski@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 2 Sep 2022 08:37:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBDD76582B;
+        Fri,  2 Sep 2022 05:29:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C29D7B82AA0;
+        Fri,  2 Sep 2022 12:28:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22A2AC433C1;
+        Fri,  2 Sep 2022 12:28:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662121702;
+        bh=zNWRUZADOgj+xnYc4FqfxSrVRPcHNXVyJfRGwVPcYK4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Lc+UacfzIW3DyGxmd3fLp9VUMYiY7rsL251NMV9ToSOuIkUd5rzIqLL03s+6qbJRP
+         6B7N7Qn7fiHK1n5VwtuPJ/WlMQg1RFE2Cd2SHpJJJfIi3C2YUlVHV/CZ+/2NVTYepO
+         mOWuPrQfMfr2w6bgEnHGRekq0nj6ZEV+ygr5zBjQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Samuel Greiner <samuel@balkonien.org>,
+        Anand Jain <anand.jain@oracle.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.4 38/77] btrfs: add info when mount fails due to stale replace target
+Date:   Fri,  2 Sep 2022 14:18:47 +0200
+Message-Id: <20220902121404.916620561@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
+References: <20220902121403.569927325@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Continuation of recent upstream discussion [1] regarding user string
-tokenization.
+From: Anand Jain <anand.jain@oracle.com>
 
-First, parse_int_array_user() is introduced to allow for splitting
-specified user string into a sequence of integers. Makes use of
-get_options() internally so the parsing logic is not duplicated.
+commit f2c3bec215694fb8bc0ef5010f2a758d1906fc2d upstream.
 
-With that done, redundant parts of the sound driver are removed.
+If the replace target device reappears after the suspended replace is
+cancelled, it blocks the mount operation as it can't find the matching
+replace-item in the metadata. As shown below,
 
-Originally similar functionality was added for the SOF sound driver. As
-more users are on the horizon, it is desirable to update existing
-string_helpers code and provide a unified solution.
+   BTRFS error (device sda5): replace devid present without an active replace item
 
+To overcome this situation, the user can run the command
 
-Changes in v4:
-- renamed the function to parse_int_array_user()
-- at the name several local variable names have been reworded to match
-  the above
+   btrfs device scan --forget <replace target device>
 
-Changes in v3:
-- relocated tokenize_user_input() implementation to string_helpers as
-  requested by Matthew
+and try the mount command again. And also, to avoid repeating the issue,
+superblock on the devid=0 must be wiped.
 
-Changes in v2:
-- reused get_options() so no parsing logic is duplicated
-- simplified __user variant with help of memdup_user_nul()
-  Both suggested by Andy, thanks for thourough review
+   wipefs -a device-path-to-devid=0.
 
+This patch adds some info when this situation occurs.
 
-[1]: https://lore.kernel.org/alsa-devel/20220707091301.1282291-1-cezary.rojewski@intel.com/
+Reported-by: Samuel Greiner <samuel@balkonien.org>
+Link: https://lore.kernel.org/linux-btrfs/b4f62b10-b295-26ea-71f9-9a5c9299d42c@balkonien.org/T/
+CC: stable@vger.kernel.org # 5.0+
+Signed-off-by: Anand Jain <anand.jain@oracle.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/btrfs/dev-replace.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+--- a/fs/btrfs/dev-replace.c
++++ b/fs/btrfs/dev-replace.c
+@@ -125,7 +125,7 @@ no_valid_dev_replace_entry_found:
+ 		if (btrfs_find_device(fs_info->fs_devices,
+ 				      BTRFS_DEV_REPLACE_DEVID, NULL, NULL, false)) {
+ 			btrfs_err(fs_info,
+-			"replace devid present without an active replace item");
++"replace without active item, run 'device scan --forget' on the target device");
+ 			ret = -EUCLEAN;
+ 		} else {
+ 			dev_replace->srcdev = NULL;
 
-Cezary Rojewski (2):
-  lib/string_helpers: Introduce parse_int_array_user()
-  ASoC: SOF: Remove strsplit_u32() and tokenize_input()
-
- include/linux/string_helpers.h    |   2 +
- lib/string_helpers.c              |  45 +++++++++++++
- sound/soc/sof/sof-client-probes.c | 104 ++++++------------------------
- 3 files changed, 65 insertions(+), 86 deletions(-)
-
--- 
-2.25.1
 
