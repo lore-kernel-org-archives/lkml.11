@@ -2,111 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6012C6FA81
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 09:03:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCE6DC54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 09:04:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235942AbiIBJD3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 05:03:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41978 "EHLO
+        id S235988AbiIBJEf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 05:04:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235223AbiIBJDX (ORCPT
+        with ESMTP id S235676AbiIBJEd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 05:03:23 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4587A1D19;
-        Fri,  2 Sep 2022 02:03:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662109401; x=1693645401;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=PjiMaqOiXtXbGzUpzVo9H2Dd8g2N0f0rVIBAjHIDQGA=;
-  b=E4375lV7v5aEjfaq4B3VayAVpltVObOpY2KkvIy1+T+q/wuTKMie+xOG
-   GXBZC4z/cy208K0QpNAnXu7rcu1WbScZFWFA06OA3L94n95kvecLg7ISU
-   LxUhuNtbncmXDhQiAtvSEPmrYISLvW7069g7epQcG9Emv0CEhkdPOWiq5
-   gz/OTiTJNlFU+mE47WvkRw9c80aEKZ/WdhAObSBYO2eA2B0pLIRU21U3K
-   T97M8QFSf654TKAcv+xHPcoEWLZ4JidqSoPi5IszJYO9HlUBY0t1xkIfM
-   Q+bk2a4kWAFqeEpOWaOxsU4O/ePgWIVglXauApagBYIkX06vtwwnP8Sv9
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="296721082"
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="296721082"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 02:03:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="941218617"
-Received: from liuzhao-optiplex-7080.sh.intel.com ([10.239.160.132])
-  by fmsmga005.fm.intel.com with ESMTP; 02 Sep 2022 02:03:17 -0700
-From:   Zhao Liu <zhao1.liu@linux.intel.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Ira Weiny <ira.weiny@intel.com>,
-        "Fabio M . De Francesco" <fmdefrancesco@gmail.com>,
-        Zhenyu Wang <zhenyu.z.wang@intel.com>,
-        Zhao Liu <zhao1.liu@intel.com>
-Subject: [PATCH] KVM: SVM: Replace kmap_atomic() with kmap_local_page()
-Date:   Fri,  2 Sep 2022 17:08:11 +0800
-Message-Id: <20220902090811.2430228-1-zhao1.liu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+        Fri, 2 Sep 2022 05:04:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6656EA61CC
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 02:04:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662109471;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=paxwFROiQn9wOtjKP9jQhB8HGgVytBOJmG9Pfk5FrI8=;
+        b=Ym7QC7urelg04VilciKN2ySDVCwsYyn3c0r5pboX/r4+eY8jp/RjOJJ5xfsD39EeZ0Ai2v
+        xWpbBg5NBgFyJstmDyhwZMg/0VYc/Ss47IbkoyCgK5G8sgzryAbe6Qavhiw0XhLWT41fD3
+        CDuw8yfn/WcrIeeqYf1n7jrkqneshsQ=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-319-mfPD1UO0MDmeXy6N3EmjQw-1; Fri, 02 Sep 2022 05:04:30 -0400
+X-MC-Unique: mfPD1UO0MDmeXy6N3EmjQw-1
+Received: by mail-wm1-f72.google.com with SMTP id j19-20020a05600c1c1300b003ab73e4c45dso282339wms.0
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 02:04:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date;
+        bh=paxwFROiQn9wOtjKP9jQhB8HGgVytBOJmG9Pfk5FrI8=;
+        b=uTiFso8/+XuL3Hua7eBcGFE/5xKJJIl1ynVp+Ww1SEIwciECZVZTuOOSRvBCdb4oa6
+         ggp/XKt2iM78mPxrUS7eV+bwFIO4ExSfp5x71yQWyH2qjs3F1HCOdADES3eVAxZc+nt0
+         9cqC6YoUIMpLwSsqnZAJZ6XBJAnpf9e2YULlEaC3apLmNOThLZcjk0tsffoP3GLjIUQH
+         vobd+vmAMGxi4iml5wP9F2WFyP40yRbpPE453uY1fWA3NY6gJyS+iQNieqA5371sw9k9
+         GHPvhHyHYjxn+4QQdDffswBt5rTOKXEPjGEGJX6D6mRFwiEai9E/qn6WMrFJfkiZbwvo
+         HqOw==
+X-Gm-Message-State: ACgBeo3OFB7H3Dn1XJaxgjlMgeWHjwrnQS1J8H/8YN2YR1ohlmVuDB/J
+        wRwMYj7fB+e9d39sU5J4yAhUMrc1sAr/E645TtAKrQHmfkG6wRbf3ymxElO6JRKPT5p8gaK2E86
+        39eDf3yx5TIM/+fB517jS7qMh
+X-Received: by 2002:a5d:47a8:0:b0:226:f124:ad74 with SMTP id 8-20020a5d47a8000000b00226f124ad74mr5404359wrb.18.1662109469324;
+        Fri, 02 Sep 2022 02:04:29 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7o0F14ZjvEQ5J/Rss8luacwzgiVxFd0EhKqD9UZ3nWybxgIF5Tgqi1IhueaMgSHkye0kMBjw==
+X-Received: by 2002:a5d:47a8:0:b0:226:f124:ad74 with SMTP id 8-20020a5d47a8000000b00226f124ad74mr5404340wrb.18.1662109469068;
+        Fri, 02 Sep 2022 02:04:29 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c714:4800:2077:1bf6:40e7:2833? (p200300cbc714480020771bf640e72833.dip0.t-ipconnect.de. [2003:cb:c714:4800:2077:1bf6:40e7:2833])
+        by smtp.gmail.com with ESMTPSA id x13-20020a1c7c0d000000b003a5ca627333sm7456722wmc.8.2022.09.02.02.04.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Sep 2022 02:04:28 -0700 (PDT)
+Message-ID: <2e7945e5-b0b0-bc44-c5eb-48d67532f78f@redhat.com>
+Date:   Fri, 2 Sep 2022 11:04:27 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 2/2] mm: add pageblock_aligned() macro
+Content-Language: en-US
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
+Cc:     Mike Rapoport <rppt@kernel.org>,
+        Oscar Salvador <osalvador@suse.de>,
+        linux-kernel@vger.kernel.org, Vlastimil Babka <vbabka@suse.cz>
+References: <20220902064751.17890-1-wangkefeng.wang@huawei.com>
+ <20220902064751.17890-2-wangkefeng.wang@huawei.com>
+ <e0405abb-d1ea-977b-6d16-859a56bf3027@redhat.com>
+ <79d05f57-8b3a-2450-43bf-f45de53a8c8e@huawei.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <79d05f57-8b3a-2450-43bf-f45de53a8c8e@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhao Liu <zhao1.liu@intel.com>
+On 02.09.22 11:02, Kefeng Wang wrote:
+> 
+> On 2022/9/2 16:42, David Hildenbrand wrote:
+>> On 02.09.22 08:47, Kefeng Wang wrote:
+>>> Add pageblock_aligned() and use it to simplify code.
+>>>
+>>> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+>>> ---
+>> [...]
+>>
+>>> -	unsigned long nr_pgmask = pageblock_nr_pages - 1;
+>>>  	int nid = zone_to_nid(zone);
+>>>  	unsigned long nr_pages = 0;
+>>>  	int zid = zone_idx(zone);
+>>> @@ -1977,7 +1974,7 @@ static unsigned long  __init deferred_init_pages(struct zone *zone,
+>>>  		if (!deferred_pfn_valid(pfn)) {
+>>>  			page = NULL;
+>>>  			continue;
+>>> -		} else if (!page || !(pfn & nr_pgmask)) {
+>> I didn't sleep too well this night and am tired, please tell me why I'm
+>> wrong :)
+> Wish you have a good reset :)
 
-The use of kmap_atomic() is being deprecated in favor of
-kmap_local_page()[1].
+Thanks, the headache isn't helping :D
 
-In arch/x86/kvm/svm/sev.c, the function sev_clflush_pages() doesn't
-need to disable pagefaults and preemption in kmap_atomic(). It can
-simply use kmap_local_page() / kunmap_local() that can instead do the
-mapping / unmapping regardless of the context.
+>> "pfn & (pageblock_nr_pages - 1)" is true if the pageblock is not aligned
+>>
+>> E.g., pfn = 1, pageblock_nr_pages = 512
+>>
+>> pfn & (pageblock_nr_pages - 1)
+>> -> 1 & (512 - 1)
+>> -> 1 & 511
+>> -> true
+>>
+>> "!(pfn & (pageblock_nr_pages - 1))" is true if the pageblock is aligned
+>> -> !(true)
+>> -> false
+>>
+>>
+>> However, "!pageblock_aligned(1)" = true
+>>
+>>
+>>> +		} else if (!page || !pageblock_aligned(pfn)) {
+> 
+> pageblock_aligned(pfn) IS_ALIGNED((unsigned long)(pfn), pageblock_nr_pages)
+> 
+> #define IS_ALIGNED(x, a) (((x) & ((typeof(x))(a) - 1)) == 0) (((pfn) &
+> (pageblock_nr_pages - 1)) == 0) -> ((1 & 512 -1) == 0) -> ((1 & 511) ==
+> 0) -> ((511) == 0) -> false
+> right ? 
 
-With kmap_local_page(), the mapping is per thread, CPU local and not
-globally visible. Therefore, sev_clflush_pages() is a function where
-the use of kmap_local_page() in place of kmap_atomic() is correctly
-suited.
+yes ... and inverting that would give you "true", which is not what we want?
 
-Convert the calls of kmap_atomic() / kunmap_atomic() to
-kmap_local_page() / kunmap_local().
 
-[1]: https://lore.kernel.org/all/20220813220034.806698-1-ira.weiny@intel.com
+Again, sorry if I'm wrong ...
 
-Suggested-by: Ira Weiny <ira.weiny@intel.com>
-Suggested-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-Signed-off-by: Zhao Liu <zhao1.liu@intel.com>
----
-Suggested by credits.
-        Ira: Referred to his task document and review comments.
-        Fabio: Referred to his boiler plate commit message.
----
- arch/x86/kvm/svm/sev.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-index 28064060413a..12747c7bda4e 100644
---- a/arch/x86/kvm/svm/sev.c
-+++ b/arch/x86/kvm/svm/sev.c
-@@ -465,9 +465,9 @@ static void sev_clflush_pages(struct page *pages[], unsigned long npages)
- 		return;
- 
- 	for (i = 0; i < npages; i++) {
--		page_virtual = kmap_atomic(pages[i]);
-+		page_virtual = kmap_local_page(pages[i]);
- 		clflush_cache_range(page_virtual, PAGE_SIZE);
--		kunmap_atomic(page_virtual);
-+		kunmap_local(page_virtual);
- 		cond_resched();
- 	}
- }
 -- 
-2.34.1
+Thanks,
+
+David / dhildenb
 
