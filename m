@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E016EECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:57:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8AEDECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:58:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238032AbiIBM5h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:57:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38668 "EHLO
+        id S238104AbiIBM5v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:57:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238177AbiIBMzO (ORCPT
+        with ESMTP id S238240AbiIBM4J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:55:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03A89FB2AC;
-        Fri,  2 Sep 2022 05:39:09 -0700 (PDT)
+        Fri, 2 Sep 2022 08:56:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46F1820F5C;
+        Fri,  2 Sep 2022 05:39:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D5739B81CCF;
-        Fri,  2 Sep 2022 12:39:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A872C433D6;
-        Fri,  2 Sep 2022 12:39:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D32C620FE;
+        Fri,  2 Sep 2022 12:24:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AB69C433D7;
+        Fri,  2 Sep 2022 12:24:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122345;
-        bh=Q0SVH1IxXT81b8t8CBT7NGPcmgYDkaNz/BIVC8rNBs0=;
+        s=korg; t=1662121480;
+        bh=0VtpXqFvjdzolSkUYnkn3ks1g0xBS+pk9oJcQgLaFCA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ye8mUTqnLZYEYpMKugVoLD3QQO8KFtmvJmxR7QOShX9fbp21uRjoB1xCjOHM0MYwX
-         pzkQNplfQ73Yefo4gXiOr6r8a9fEmBn5lsgX2KbYGb1XwugZLEMbnB10WzM+loWmCG
-         P1ZnOuYe7ymLef1Nb+m6Zt83TR1ACk80mmzS6pP8=
+        b=zDhL7TfXn1V6wmU4MH6DCIvp8qjaooqj+MKMJIr+gTKBsQZfKpaeDy/pOiZhO+aLw
+         qMgob9QzcwrtTueMtqRI6S3QRGZHyrYZgejJx4Zn6LmLwy48AX516ACrTFG5wOYwc6
+         A+TBI/2rjAW+jNFxuI/FZa60WmUBT99Fp0/99VGI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wenbin Mei <wenbin.mei@mediatek.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 18/37] mmc: mtk-sd: Clear interrupts when cqe off/disable
-Date:   Fri,  2 Sep 2022 14:19:40 +0200
-Message-Id: <20220902121359.744176795@linuxfoundation.org>
+Subject: [PATCH 4.19 21/56] ratelimit: Fix data-races in ___ratelimit().
+Date:   Fri,  2 Sep 2022 14:18:41 +0200
+Message-Id: <20220902121400.922441166@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121359.177846782@linuxfoundation.org>
-References: <20220902121359.177846782@linuxfoundation.org>
+In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
+References: <20220902121400.219861128@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,58 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wenbin Mei <wenbin.mei@mediatek.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit cc5d1692600613e72f32af60e27330fe0c79f4fe ]
+[ Upstream commit 6bae8ceb90ba76cdba39496db936164fa672b9be ]
 
-Currently we don't clear MSDC interrupts when cqe off/disable, which led
-to the data complete interrupt will be reserved for the next command.
-If the next command with data transfer after cqe off/disable, we process
-the CMD ready interrupt and trigger DMA start for data, but the data
-complete interrupt is already exists, then SW assume that the data transfer
-is complete, SW will trigger DMA stop, but the data may not be transmitted
-yet or is transmitting, so we may encounter the following error:
-mtk-msdc 11230000.mmc: CMD bus busy detected.
+While reading rs->interval and rs->burst, they can be changed
+concurrently via sysctl (e.g. net_ratelimit_state).  Thus, we
+need to add READ_ONCE() to their readers.
 
-Signed-off-by: Wenbin Mei <wenbin.mei@mediatek.com>
-Fixes: 88bd652b3c74 ("mmc: mediatek: command queue support")
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220728080048.21336-1-wenbin.mei@mediatek.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/mtk-sd.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ lib/ratelimit.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/mmc/host/mtk-sd.c b/drivers/mmc/host/mtk-sd.c
-index f5c965da95013..d71c113f428f6 100644
---- a/drivers/mmc/host/mtk-sd.c
-+++ b/drivers/mmc/host/mtk-sd.c
-@@ -2293,6 +2293,9 @@ static void msdc_cqe_disable(struct mmc_host *mmc, bool recovery)
- 	/* disable busy check */
- 	sdr_clr_bits(host->base + MSDC_PATCH_BIT1, MSDC_PB1_BUSY_CHECK_SEL);
- 
-+	val = readl(host->base + MSDC_INT);
-+	writel(val, host->base + MSDC_INT);
-+
- 	if (recovery) {
- 		sdr_set_field(host->base + MSDC_DMA_CTRL,
- 			      MSDC_DMA_CTRL_STOP, 1);
-@@ -2693,11 +2696,14 @@ static int __maybe_unused msdc_suspend(struct device *dev)
+diff --git a/lib/ratelimit.c b/lib/ratelimit.c
+index d01f471352390..b805702de84dd 100644
+--- a/lib/ratelimit.c
++++ b/lib/ratelimit.c
+@@ -27,10 +27,16 @@
+  */
+ int ___ratelimit(struct ratelimit_state *rs, const char *func)
  {
- 	struct mmc_host *mmc = dev_get_drvdata(dev);
++	/* Paired with WRITE_ONCE() in .proc_handler().
++	 * Changing two values seperately could be inconsistent
++	 * and some message could be lost.  (See: net_ratelimit_state).
++	 */
++	int interval = READ_ONCE(rs->interval);
++	int burst = READ_ONCE(rs->burst);
+ 	unsigned long flags;
  	int ret;
-+	u32 val;
  
- 	if (mmc->caps2 & MMC_CAP2_CQE) {
- 		ret = cqhci_suspend(mmc);
- 		if (ret)
- 			return ret;
-+		val = readl(((struct msdc_host *)mmc_priv(mmc))->base + MSDC_INT);
-+		writel(val, ((struct msdc_host *)mmc_priv(mmc))->base + MSDC_INT);
+-	if (!rs->interval)
++	if (!interval)
+ 		return 1;
+ 
+ 	/*
+@@ -45,7 +51,7 @@ int ___ratelimit(struct ratelimit_state *rs, const char *func)
+ 	if (!rs->begin)
+ 		rs->begin = jiffies;
+ 
+-	if (time_is_before_jiffies(rs->begin + rs->interval)) {
++	if (time_is_before_jiffies(rs->begin + interval)) {
+ 		if (rs->missed) {
+ 			if (!(rs->flags & RATELIMIT_MSG_ON_RELEASE)) {
+ 				printk_deferred(KERN_WARNING
+@@ -57,7 +63,7 @@ int ___ratelimit(struct ratelimit_state *rs, const char *func)
+ 		rs->begin   = jiffies;
+ 		rs->printed = 0;
  	}
- 
- 	return pm_runtime_force_suspend(dev);
+-	if (rs->burst && rs->burst > rs->printed) {
++	if (burst && burst > rs->printed) {
+ 		rs->printed++;
+ 		ret = 1;
+ 	} else {
 -- 
 2.35.1
 
