@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93511ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 02:20:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94AB2ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 02:20:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235412AbiIBCT7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 22:19:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59646 "EHLO
+        id S235424AbiIBCUH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 22:20:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234852AbiIBCS3 (ORCPT
+        with ESMTP id S235121AbiIBCSg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 22:18:29 -0400
+        Thu, 1 Sep 2022 22:18:36 -0400
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07EABAB04B;
-        Thu,  1 Sep 2022 19:18:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1A09AB063;
+        Thu,  1 Sep 2022 19:18:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662085101; x=1693621101;
+  t=1662085102; x=1693621102;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=n2jr9DdfRbZsXaFA0LJya90JyQP+3BfsD0hNGT1Sqww=;
-  b=ksyNIr5dmVGSsnno3StbWgY01nRAWKXmZeCbX1tyIHyPs6EDQW3l9xkC
-   y3HSe4zbGbdf6X9aR7DVId38L3EoUHAZANyD48v2fOob35rsm7FNiQmmv
-   rL9OYMw4lHbVDPcvf2LfBuQGxRAfjpUqH/NvwAjysSnbG7kp6I193gwAa
-   Zaf0Htrm71va5E4O7un0LW5NwhAScmuaEBSeABYMo/I3T3gV1xQdzJEEj
-   FhT6AuOhV6sX7mFRd1qpLnLinxRTpbLi6cqTNJ2WIhUA8N7q9F4nvpwpY
-   MAgokRQ8mIXXPRwhHGGpszOr4e5RQfTpSZNjZ+xuV76yTerB89rCQN2Zs
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="297157866"
+  bh=57ttahtbdOqHQIPSI7KxaFSjGG8TYsYsmPLjXygJNGg=;
+  b=DvjvnbmUYipU8AY9GSjzx1+4IPPyJWWYVf9/ZjzczTODBX7ZxQzRKBBs
+   isAcrx3NI/feFQsG54kcluVBV1LWgcPj1HlFCyZJNiQ6RbZiBdRG7clj7
+   rRc4vLCS3XJrCIGWfa51W8olk37QPCfEwvGkbzGl1vUM0cUpdiqXt4w0A
+   aBKnv7NKeBIIFoQIDsXXQ3pQEfvm0hrjjDXgyoPXK1hx6WENKRA5CQ7Co
+   zoQ/iOb3JK+hgVFLwozNy4Gyxbt+6FH9h70LWNJLh5slL9W3lM6aLnEI1
+   YoD064jIKVVH/WyTQb7F0w4+ng3YC3MHozP/t6nt86iDsrTXgwBO1ujmo
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="297157869"
 X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
-   d="scan'208";a="297157866"
+   d="scan'208";a="297157869"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 19:18:20 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 19:18:22 -0700
 X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
-   d="scan'208";a="608835668"
+   d="scan'208";a="608835683"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 19:18:20 -0700
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 19:18:22 -0700
 From:   isaku.yamahata@intel.com
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
         Paolo Bonzini <pbonzini@redhat.com>,
@@ -54,9 +54,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Huacai Chen <chenhuacai@kernel.org>,
         Dave Hansen <dave.hansen@linux.intel.com>,
         Borislav Petkov <bp@alien8.de>
-Subject: [PATCH v3 19/22] KVM: x86: Delete kvm_arch_hardware_enable/disable()
-Date:   Thu,  1 Sep 2022 19:17:54 -0700
-Message-Id: <ced5fb5b451d141dec5d8de3e3cadb4bf2a88f10.1662084396.git.isaku.yamahata@intel.com>
+Subject: [PATCH v3 22/22] RFC: KVM: Remove cpus_hardware_enabled and related sanity check
+Date:   Thu,  1 Sep 2022 19:17:57 -0700
+Message-Id: <b4fa9880c9d6001e1fb600c2e182750c28dc1162.1662084396.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1662084396.git.isaku.yamahata@intel.com>
 References: <cover.1662084396.git.isaku.yamahata@intel.com>
@@ -68,89 +68,58 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-Now they're function call and there is no point to keep them.
-Opportunistically make kvm_arch_pre_hardware_unsetup() empty.
+cpus_hardware_enabled mask seems incomplete protection against other kernel
+component using CPU virtualization feature.  Because it's obscure and
+incomplete, remove the check.
 
-Suggested-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/x86.c | 24 ++++++++----------------
- 1 file changed, 8 insertions(+), 16 deletions(-)
+ virt/kvm/kvm_arch.c | 15 +--------------
+ 1 file changed, 1 insertion(+), 14 deletions(-)
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index fa68bea655f0..f0382f3d5baf 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -354,7 +354,7 @@ static void kvm_on_user_return(struct user_return_notifier *urn)
+diff --git a/virt/kvm/kvm_arch.c b/virt/kvm/kvm_arch.c
+index bcd82b75fa17..4142f2cb1922 100644
+--- a/virt/kvm/kvm_arch.c
++++ b/virt/kvm/kvm_arch.c
+@@ -12,23 +12,16 @@
  
- 	/*
- 	 * Disabling irqs at this point since the following code could be
--	 * interrupted and executed through kvm_arch_hardware_disable()
-+	 * interrupted and executed through hardware_disable()
- 	 */
- 	local_irq_save(flags);
- 	if (msrs->registered) {
-@@ -11834,17 +11834,6 @@ void kvm_vcpu_deliver_sipi_vector(struct kvm_vcpu *vcpu, u8 vector)
- }
- EXPORT_SYMBOL_GPL(kvm_vcpu_deliver_sipi_vector);
+ #include <linux/kvm_host.h>
  
--int kvm_arch_hardware_enable(void)
--{
--	return static_call(kvm_x86_hardware_enable)();
--}
+-static cpumask_t cpus_hardware_enabled = CPU_MASK_NONE;
 -
--void kvm_arch_hardware_disable(void)
--{
--	static_call(kvm_x86_hardware_disable)();
--	drop_user_return_notifiers();
--}
--
- static cpumask_t cpus_hardware_enabled = CPU_MASK_NONE;
- 
  static int __hardware_enable(void *caller_name)
-@@ -11856,7 +11845,7 @@ static int __hardware_enable(void *caller_name)
+ {
+-	int cpu = raw_smp_processor_id();
+ 	int r;
  
- 	if (cpumask_test_cpu(cpu, &cpus_hardware_enabled))
- 		return 0;
--	r = kvm_arch_hardware_enable();
-+	r = static_call(kvm_x86_hardware_enable)();
+ 	WARN_ON_ONCE(preemptible());
+ 
+-	if (cpumask_test_cpu(cpu, &cpus_hardware_enabled))
+-		return 0;
+ 	r = kvm_arch_hardware_enable();
  	if (r)
  		pr_warn("kvm: enabling virtualization on CPU%d failed during %s()\n",
- 			cpu, (const char *)caller_name);
-@@ -11882,12 +11871,13 @@ static void hardware_disable(void *junk)
- 	if (!cpumask_test_cpu(cpu, &cpus_hardware_enabled))
- 		return;
- 	cpumask_clear_cpu(cpu, &cpus_hardware_enabled);
--	kvm_arch_hardware_disable();
-+	static_call(kvm_x86_hardware_disable)();
-+	drop_user_return_notifiers();
+-			cpu, (const char *)caller_name);
+-	else
+-		cpumask_set_cpu(cpu, &cpus_hardware_enabled);
++			smp_processor_id(), (const char *)caller_name);
+ 	return r;
  }
  
- void kvm_arch_pre_hardware_unsetup(void)
+@@ -42,13 +35,7 @@ static void hardware_enable(void *arg)
+ 
+ static void hardware_disable(void *junk)
  {
--	on_each_cpu(hardware_disable, NULL, 1);
-+	/* TODO: eliminate this function */
+-	int cpu = raw_smp_processor_id();
+-
+ 	WARN_ON_ONCE(preemptible());
+-
+-	if (!cpumask_test_cpu(cpu, &cpus_hardware_enabled))
+-		return;
+-	cpumask_clear_cpu(cpu, &cpus_hardware_enabled);
+ 	kvm_arch_hardware_disable();
  }
  
- /*
-@@ -11978,7 +11968,7 @@ void kvm_arch_resume(int usage_count)
- 
- 	if (kvm_arch_check_processor_compat())
- 		return;
--	if (kvm_arch_hardware_enable())
-+	if (static_call(kvm_x86_hardware_enable)())
- 		return;
- 
- 	local_tsc = rdtsc();
-@@ -12119,6 +12109,8 @@ int kvm_arch_hardware_setup(void *opaque)
- 
- void kvm_arch_hardware_unsetup(void)
- {
-+	on_each_cpu(hardware_disable, NULL, 1);
-+
- 	kvm_unregister_perf_callbacks();
- 
- 	static_call(kvm_x86_hardware_unsetup)();
 -- 
 2.25.1
 
