@@ -2,97 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D28F2C6FA81
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:47:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF708ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:47:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235994AbiIBIrK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 04:47:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35030 "EHLO
+        id S236062AbiIBIrP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 04:47:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235971AbiIBIqe (ORCPT
+        with ESMTP id S235982AbiIBIqe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 04:46:34 -0400
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EDAD1E0;
-        Fri,  2 Sep 2022 01:46:19 -0700 (PDT)
-Received: by mail-qt1-f175.google.com with SMTP id x5so946831qtv.9;
-        Fri, 02 Sep 2022 01:46:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=+efSmKPMaUF86xAxusmh16dSBB12tESjJF0BtlEmxmw=;
-        b=jPzqRRuor7SJ7HMvNwdj3I+k1mi2CwIxHu+GyMnLqU2SUopDKdMdeR3eZukJfkvlP/
-         ibwxGeX2ZuaQAGhxiFaMVW5sGllSbsmy+0fRz9DcdcCevizh/QNoqmZfvtzDfP6srvV+
-         6E2qNnWIzwPKs5TCfSzMmA1uh25AqsJu20IYO1+t05DcGuPFmATud0fWUOGbgVxccxzA
-         0ygeWfYjwzy1VjadbpB9nDTjC+a2SHXGP1GtelFzVFuwL1iQfGl06VZX5XDZf0vGgktA
-         8b6dU5htMtqgK7LIIeElE+3V5+5Ez7ksj1lRzMdJJ+EurFz/lPaTUozsXVBh3ZD270yw
-         AKow==
-X-Gm-Message-State: ACgBeo2k7FAWXwHusG3zJlOSNHtjtOTj8ruzRb6e2i+TDUPAnmhVUdFF
-        1L4ge6HQDiC6ALzusvIqpDOqG46JYM3x7g==
-X-Google-Smtp-Source: AA6agR7Qvn/DQB3kq2qlQU2CbMq3/chM20GUAOdh/1wLHBdLYyHsm0xTcDcbLWGdA8HRsVasKS3Z3Q==
-X-Received: by 2002:a05:622a:1ba9:b0:343:786c:3bb1 with SMTP id bp41-20020a05622a1ba900b00343786c3bb1mr26766823qtb.125.1662108378489;
-        Fri, 02 Sep 2022 01:46:18 -0700 (PDT)
-Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com. [209.85.128.176])
-        by smtp.gmail.com with ESMTPSA id u4-20020a05620a0c4400b006bc1512986esm994628qki.97.2022.09.02.01.46.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Sep 2022 01:46:18 -0700 (PDT)
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-33dc345ad78so10211467b3.3;
-        Fri, 02 Sep 2022 01:46:17 -0700 (PDT)
-X-Received: by 2002:a81:83c8:0:b0:341:4b7b:3d9e with SMTP id
- t191-20020a8183c8000000b003414b7b3d9emr18102137ywf.47.1662108377701; Fri, 02
- Sep 2022 01:46:17 -0700 (PDT)
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95995EB3
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 01:46:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=QMuzxgLSDAbY7uCZIWNERWN6PvdXJ1azGf+yFLHGh6I=; b=LYttA+hMsMgenMBW+9+RTpPkJa
+        CEZfoBRZl8lfJjgPjCLAvU50HS+4zlxL9Q+x7JHo1EqrUCpgsYtmsxQoEdERYyZ2pfYNwZcUMiR7Y
+        3GOzumQj25RbE00b98zZmDrur0pa5EXWqiEQAVBLf3wGcBVdGRE/2XVQ+UvTbfDES1UMch4fGIcS2
+        19Rzku/Ywxd0BYG7WJDI+VHFi8OLPcRpgEWvVCjg9HIWfxf8qQ/nKQ6oADhPdNJDE26QN0/d5mXb7
+        vudxGMCVTK6vD6R9tRc1Q2hpqdtJwW1f5grTAF2UAeqnxlGlbCgW5FKuej3HGdvd23jNDzJgiGec/
+        qWb+V2jg==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oU2JJ-008crS-QJ; Fri, 02 Sep 2022 08:45:58 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 6E900300244;
+        Fri,  2 Sep 2022 10:45:57 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 5DA4A2B8A3BF1; Fri,  2 Sep 2022 10:45:57 +0200 (CEST)
+Date:   Fri, 2 Sep 2022 10:45:57 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Dietmar Eggemann <dietmar.eggemann@arm.com>
+Cc:     Vincent Guittot <vincent.guittot@linaro.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Morten Rasmussen <morten.rasmussen@arm.com>,
+        Vincent Donnefort <vdonnefort@google.com>,
+        Quentin Perret <qperret@google.com>,
+        Patrick Bellasi <patrick.bellasi@matbug.net>,
+        Abhijeet Dharmapurikar <adharmap@quicinc.com>,
+        Jian-Min <Jian-Min.Liu@mediatek.com>,
+        Qais Yousef <qais.yousef@arm.com>, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 1/1] sched/pelt: Introduce PELT multiplier
+Message-ID: <YxHCxfm0m6dGTIaK@hirez.programming.kicks-ass.net>
+References: <20220829055450.1703092-1-dietmar.eggemann@arm.com>
+ <20220829055450.1703092-2-dietmar.eggemann@arm.com>
+ <Ywxz7cuR+/+1CFMR@hirez.programming.kicks-ass.net>
+ <YwyOzgbbUbB+JmSH@hirez.programming.kicks-ass.net>
+ <CAKfTPtAnC4escfufhjJkqsYyhDPzpmQH4xYT4nj=EjCP7gzifg@mail.gmail.com>
+ <12b3443a-6456-4a57-95b3-dd6be5b10873@arm.com>
 MIME-Version: 1.0
-References: <20220829215128.5983-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <963693d9-6016-f279-a543-22e9be802d87@linaro.org>
-In-Reply-To: <963693d9-6016-f279-a543-22e9be802d87@linaro.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 2 Sep 2022 10:46:06 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdX2a3uR-Hq9S3DkfrTir_9nPmw56QovxLN1fMgJ+1yxEg@mail.gmail.com>
-Message-ID: <CAMuHMdX2a3uR-Hq9S3DkfrTir_9nPmw56QovxLN1fMgJ+1yxEg@mail.gmail.com>
-Subject: Re: [PATCH] arm64: dts: renesas: Drop clock-names property from RPC node
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <12b3443a-6456-4a57-95b3-dd6be5b10873@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
+On Fri, Sep 02, 2022 at 09:53:50AM +0200, Dietmar Eggemann wrote:
 
-On Tue, Aug 30, 2022 at 11:19 AM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
-> On 30/08/2022 00:51, Lad Prabhakar wrote:
-> > With 'unevaluatedProperties' support implemented, there's a number of
-> > warnings when running dtbs_check:
-> >
-> > arch/arm64/boot/dts/renesas/r8a774b1-hihope-rzg2n-rev2-ex-idk-1110wr.dtb: spi@ee200000: Unevaluated properties are not allowed ('clock-names' was unexpected)
-> >       From schema: Documentation/devicetree/bindings/memory-controllers/renesas,rpc-if.yaml
-> >
-> > The main problem is that SoC DTSI's are including clock-names, whereas the
-> > renesas,rpc-if.yaml has 'unevaluatedProperties: false'. So just drop
-> > clock-names property from the SoC DTSI's.
->
-> This is not the main problem. The main problem is that bindings do not
-> allow clock-names. Commit msg should reflect that.
+> But AFAIK at least some of the Android folks want to change this during
+> runtime and they don't have debugfs mounted.
 
-Thank you, I'm amending the commit message.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+They want; I want an explanation of what exact problem is fixed how ;-)
