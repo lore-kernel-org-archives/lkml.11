@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D79BEECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:36:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB2AAC54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:37:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236722AbiIBNgx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:36:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39146 "EHLO
+        id S236735AbiIBNhB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:37:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235498AbiIBNgP (ORCPT
+        with ESMTP id S237411AbiIBNgU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:36:15 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE38686059
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:15:28 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id j26so1253571wms.0
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 06:15:28 -0700 (PDT)
+        Fri, 2 Sep 2022 09:36:20 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3406C1224
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:15:32 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id bp20so1793071wrb.9
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 06:15:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=GsvQueQuCTUrKAHOrPXoQPRv2C01zYCjLMtVZuJnKZk=;
-        b=PCk9KUCqb/mq9dLj7ZTKK3yD9RQLUT3BM/3S0+OKecwlv8d8Jx2Fh7MSUCA4LvN13S
-         Lzu4UCX9NaAOnjnUrHpZqX79A+uhnVTA4cQiXQIcZrVpW2rx5yCrQdbksA2cIqfaJJMH
-         q78+lkxPOYJUgwVWeinqlJgYeWunDBPSLbiciT0wMMKYuBbRP9/ebV+TgGIffXwRMp/k
-         DZibjJHbKI81hF7STFHVjTxFwlOT0+edHalYGoTWz+Li++4qxMqXQ+50JlygJ+o5Uv4L
-         /HHVQWOBwIOuGSu2KsFvOHMWSTqNrX48Qd/Gu7ymNflipM7tVLpW+dmY4TvRNyYLkJ43
-         HAaA==
+        bh=1fcl6Kulh1x6/Y+M+GkZaGHNlzH6/YOoS5vivMb0MlE=;
+        b=jYtnCcq11fPJFVWuACWwCv8StrnrBoj1r/h5QOzjdQptXS5XE/AOZ1xecQj/7sc9dz
+         SQBHt8+2x9+XIKEm3Wxs+aE2fUEVI3PGsNepnHlV2Pa2Hcc+chx7J0cKEavR5748bD9R
+         gdwL3crCVGS8PlPRtrF3Cw1RRkzG1JDltQxp5kgFIf2UnprP9sH4XIqYtiRbbBxd5jj7
+         ExfBCasVJLh4ZJ3EORG1iVuibSuA/szOSF8nPEgnij4aDnLjJYwf/NgUZUA1xgxnnacX
+         H075E4UvQkUU+vqdYBL/s1hoT0INggDWhXvPCDJJ5yRzFkqg9z2I7FKB2FsyVPh+UtQw
+         Exgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=GsvQueQuCTUrKAHOrPXoQPRv2C01zYCjLMtVZuJnKZk=;
-        b=LGU1dVq5n0oekq8ywx6EKxWjmPMsJ63P01HI8JzIyxrkc1BM+olOqkA7ikfpi7HJoD
-         ANvPxsA1ZEPjyCqvRd4XbRYDrZ4O+AOx11lVw+XnrbccmSh8J/0EQIjiHmbTQTgY16+q
-         YcVY1Yy/n5fNU6twcuVHeSc28D+djxKaYFAIaGjoLZLTO1L4qX6149vThK2jm1Ll3W/l
-         ZjoihEGY+J4oe2Xn7MtYT5enTM1tKb0rNeiZl2awSINzL/pW4nhRc1/xqGn+3RW/Cnae
-         dqpljjf2gKImRuUwDgazeCRZRCeU28IixrpXIoapIe4G55zfu5qH6ZuQPcOU2ynLOWYz
-         3Wbg==
-X-Gm-Message-State: ACgBeo2AClmHLiaVmG+t1SBRvTlV3BrGkstBq4xpLDC7FjzXjFUKUoT5
-        cB9luB8pLG3Vu6BFiFqB0y4e9g==
-X-Google-Smtp-Source: AA6agR7ctgyVF+7Fp5xZ/ldtg0xNTR57lgO0mN4bcjBdcgcRGSGK8/aPmh8jDH664AV8gtaFa6q4Rg==
-X-Received: by 2002:a05:600c:3ac9:b0:3a5:f114:1f8 with SMTP id d9-20020a05600c3ac900b003a5f11401f8mr2755993wms.204.1662124461131;
-        Fri, 02 Sep 2022 06:14:21 -0700 (PDT)
+        bh=1fcl6Kulh1x6/Y+M+GkZaGHNlzH6/YOoS5vivMb0MlE=;
+        b=t8Hr8wQ4uRW8+jMsUQxNVNE4xOySVgVT/crroM/Kg9XcEgJBBDDnh8FV2n8+iyB8gK
+         VMyHzVVpvCZIE8vMx6Otj7ZBwgAS1jxhqU/bB+3t06CxXXsNHOvzPKpLf1XxjsdRkZJS
+         4gNfF8IEfJnv+8qraARbh2QZzXLve78n+5lE+n+Q7fRVkR15J243g8S06qEGv4/MPFTy
+         YBfYCyEt1+q1mzeFsTZV39QLcaD17FRb6Xkaq0VcHwht5sBgIcqmbEN+LYB5qa0/3HwN
+         KBQVfojsbWJWg5w0w44Rc/Y+oGlV63ZfRQioeP0ZbSQNV+brsG2IdGo8sZg328VQNbdV
+         fb3Q==
+X-Gm-Message-State: ACgBeo1nXjrqTCrLFXa9p+KVEBs0iW1I5e5FhOPCRwiqIwpkuticJCXl
+        34eiFJ2c4s6DweZa88htUPBNGA==
+X-Google-Smtp-Source: AA6agR74ahPptcNrG18gQjunnP/JImLsIRID6lpLSAw9N2eDslUUyr/HPEnbg4sccZhv39qXwi8+BQ==
+X-Received: by 2002:a5d:6609:0:b0:226:ced9:be58 with SMTP id n9-20020a5d6609000000b00226ced9be58mr16701330wru.80.1662124470743;
+        Fri, 02 Sep 2022 06:14:30 -0700 (PDT)
 Received: from hackbox.lan ([94.52.112.99])
-        by smtp.gmail.com with ESMTPSA id v14-20020a5d43ce000000b002253fd19a6asm1766253wrr.18.2022.09.02.06.14.19
+        by smtp.gmail.com with ESMTPSA id v14-20020a5d43ce000000b002253fd19a6asm1766253wrr.18.2022.09.02.06.14.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 06:14:20 -0700 (PDT)
+        Fri, 02 Sep 2022 06:14:30 -0700 (PDT)
 From:   Abel Vesa <abel.vesa@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorande@qti.qualcomm.com>,
@@ -61,11 +61,10 @@ To:     Andy Gross <agross@kernel.org>,
 Cc:     Arnd Bergmann <arnd@arndb.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Ola Jeppsson <ola@snap.com>
-Subject: [PATCH 01/14] misc: fastrpc: Fix use-after-free and race in fastrpc_map_find
-Date:   Fri,  2 Sep 2022 16:13:31 +0300
-Message-Id: <20220902131344.3029826-2-abel.vesa@linaro.org>
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: [PATCH 07/14] misc: fastrpc: Add fastrpc_remote_heap_alloc
+Date:   Fri,  2 Sep 2022 16:13:37 +0300
+Message-Id: <20220902131344.3029826-8-abel.vesa@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220902131344.3029826-1-abel.vesa@linaro.org>
 References: <20220902131344.3029826-1-abel.vesa@linaro.org>
@@ -75,95 +74,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, there is a race window between the point when the mutex is
-unlocked in fastrpc_map_lookup and the reference count increasing
-(fastrpc_map_get) in fastrpc_map_find, which can also lead to
-use-after-free.
+Split fastrpc_buf_alloc in such a way it allows allocation of remote
+heap too and add fastrpc_remote_heap_alloc to do so.
 
-So lets merge fastrpc_map_find into fastrpc_map_lookup which allows us
-to both protect the maps list by also taking the &fl->lock spinlock and
-the reference count, since the spinlock will be released only after.
-Add take_ref argument to make this suitable for all callers.
-
-Co-developed-by: Ola Jeppsson <ola@snap.com>
-Signed-off-by: Ola Jeppsson <ola@snap.com>
+Co-developed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
 ---
- drivers/misc/fastrpc.c | 41 +++++++++++++++++++++--------------------
- 1 file changed, 21 insertions(+), 20 deletions(-)
+ drivers/misc/fastrpc.c | 29 ++++++++++++++++++++++++++---
+ 1 file changed, 26 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
-index 93ebd174d848..0c816a11eeec 100644
+index 52271f51800d..6730aa324e10 100644
 --- a/drivers/misc/fastrpc.c
 +++ b/drivers/misc/fastrpc.c
-@@ -333,30 +333,31 @@ static void fastrpc_map_get(struct fastrpc_map *map)
- 
- 
- static int fastrpc_map_lookup(struct fastrpc_user *fl, int fd,
--			    struct fastrpc_map **ppmap)
-+			    struct fastrpc_map **ppmap, bool take_ref)
- {
-+	struct fastrpc_session_ctx *sess = fl->sctx;
- 	struct fastrpc_map *map = NULL;
-+	int ret = -ENOENT;
- 
--	mutex_lock(&fl->mutex);
-+	spin_lock(&fl->lock);
- 	list_for_each_entry(map, &fl->maps, node) {
--		if (map->fd == fd) {
--			*ppmap = map;
--			mutex_unlock(&fl->mutex);
--			return 0;
--		}
--	}
--	mutex_unlock(&fl->mutex);
--
--	return -ENOENT;
--}
-+		if (map->fd != fd)
-+			continue;
- 
--static int fastrpc_map_find(struct fastrpc_user *fl, int fd,
--			    struct fastrpc_map **ppmap)
--{
--	int ret = fastrpc_map_lookup(fl, fd, ppmap);
-+		if (take_ref) {
-+			ret = fastrpc_map_get(map);
-+			if (ret) {
-+				dev_dbg(sess->dev, "%s: Failed to get map fd=%d ret=%d\n",
-+					__func__, fd, ret);
-+				break;
-+			}
-+		}
- 
--	if (!ret)
--		fastrpc_map_get(*ppmap);
-+		*ppmap = map;
-+		ret = 0;
-+		break;
-+	}
-+	spin_unlock(&fl->lock);
- 
- 	return ret;
+@@ -379,7 +379,7 @@ static void fastrpc_buf_free(struct fastrpc_buf *buf)
+ 	kfree(buf);
  }
-@@ -703,7 +704,7 @@ static int fastrpc_map_create(struct fastrpc_user *fl, int fd,
- 	struct fastrpc_map *map = NULL;
- 	int err = 0;
  
--	if (!fastrpc_map_find(fl, fd, ppmap))
-+	if (!fastrpc_map_lookup(fl, fd, ppmap, true))
- 		return 0;
- 
- 	map = kzalloc(sizeof(*map), GFP_KERNEL);
-@@ -1026,7 +1027,7 @@ static int fastrpc_put_args(struct fastrpc_invoke_ctx *ctx,
- 	for (i = 0; i < FASTRPC_MAX_FDLIST; i++) {
- 		if (!fdlist[i])
- 			break;
--		if (!fastrpc_map_lookup(fl, (int)fdlist[i], &mmap))
-+		if (!fastrpc_map_lookup(fl, (int)fdlist[i], &mmap, false))
- 			fastrpc_map_put(mmap);
+-static int fastrpc_buf_alloc(struct fastrpc_user *fl, struct device *dev,
++static int __fastrpc_buf_alloc(struct fastrpc_user *fl, struct device *dev,
+ 			     u64 size, struct fastrpc_buf **obuf)
+ {
+ 	struct fastrpc_buf *buf;
+@@ -407,14 +407,37 @@ static int fastrpc_buf_alloc(struct fastrpc_user *fl, struct device *dev,
+ 		return -ENOMEM;
  	}
  
++	*obuf = buf;
++
++	return 0;
++}
++
++static int fastrpc_buf_alloc(struct fastrpc_user *fl, struct device *dev,
++			     u64 size, struct fastrpc_buf **obuf)
++{
++	int ret;
++	struct fastrpc_buf *buf;
++
++	ret = __fastrpc_buf_alloc(fl, dev, size, obuf);
++	if (ret)
++		return ret;
++
++	buf = *obuf;
++
+ 	if (fl->sctx && fl->sctx->sid)
+ 		buf->phys += ((u64)fl->sctx->sid << 32);
+ 
+-	*obuf = buf;
+-
+ 	return 0;
+ }
+ 
++static int fastrpc_remote_heap_alloc(struct fastrpc_user *fl, struct device *dev,
++				     u64 size, struct fastrpc_buf **obuf)
++{
++	struct device *rdev = &fl->cctx->rpdev->dev;
++
++	return  __fastrpc_buf_alloc(fl, rdev, size, obuf);
++}
++
+ static void fastrpc_channel_ctx_free(struct kref *ref)
+ {
+ 	struct fastrpc_channel_ctx *cctx;
 -- 
 2.34.1
 
