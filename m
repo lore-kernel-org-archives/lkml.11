@@ -2,106 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B3EAC54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 09:05:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20E91C54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 09:05:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235731AbiIBJFL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 05:05:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44010 "EHLO
+        id S232705AbiIBJFR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 05:05:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236088AbiIBJE5 (ORCPT
+        with ESMTP id S236094AbiIBJFD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 05:04:57 -0400
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F91C1057F
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 02:04:56 -0700 (PDT)
-Received: by mail-qt1-x836.google.com with SMTP id x5so970602qtv.9
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 02:04:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=A0lRx9LcG2f6vdkkySTxdBxFyRczSLUlrhv0k8CVfMQ=;
-        b=PqG6a4MKk2roT2Ce/PJEt8kCVddWYbqLQh141ATH+SE8SYCKK/ZFS9/OCHdfbfSgP8
-         mQREKuMuSelAb6SBLEEu74TKUjSBBmwZ8WjygarTrIA/KvHYGyMp8a2J70T92Jg3Pcrb
-         kcjEtRkQqjOXCQllUJDzs4CbTXcsIuMEFmKFSormg00PlTnX1F1InK7vkFbhfO4twbjw
-         wX8s3+vO/eXcBlAlq1ZPFwMRXYokbFEoLvKUt2HuPvjJ+iL9BHtDGUWj4Z7VTMBrr1UC
-         L7HTZSBcu84jPm1mYMiEOrw0O3Q0JaNpk4QrVKItYAbCjz/FlYGhDCg+mGNEqLY5iH3A
-         0oww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=A0lRx9LcG2f6vdkkySTxdBxFyRczSLUlrhv0k8CVfMQ=;
-        b=OddTsxKWlZVwlZaO+UZXNq+LjKgLLjZ3zuicp5+w+OoOS2izx1kwHTgPTBj0UWRm8G
-         tfmVxgoWAOaV7mK5FQGLCoqemHkYfRzYMfdmifrin+ZchRwtAwrRSsr0iGndI2tTUVRn
-         jOHmqAbccRbHCBJNNEab21PnDB3YYi5T/UzxwFF86g4UBE78fT1bLgUE1LQcp08Fsn/c
-         Fnb+r4T1XhOdLegskFhWmvBMzd8eTkvHa9Pg4z+rKzC7xemI0yYEMNcwdSHJ+CsC5Fol
-         ySOieGgd74HA0nBZLlEKp8v7nI4uAIpx07hnsrFVBiTd6czJNAhhwJfGVlHFguTmgZLt
-         08gg==
-X-Gm-Message-State: ACgBeo1FRElTGUwwAKhDbdmi8VEr+asNP0A9KTTybwEhcoTAepfbru/v
-        GPhcHlnQNkvdddayCyPatMIAQOTqMRqHANL1iks=
-X-Google-Smtp-Source: AA6agR7C4/X8eo8OV4IEGqRGWP09L1le/kpVLIzKikXVS/h8SIICiTqB0VGNInh/3lWYFp6j5asmpgMaMlwtPWel10o=
-X-Received: by 2002:ac8:7dd0:0:b0:344:afc1:b11d with SMTP id
- c16-20020ac87dd0000000b00344afc1b11dmr26659521qte.195.1662109495202; Fri, 02
- Sep 2022 02:04:55 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220901175022.334824-1-cezary.rojewski@intel.com>
- <20220901175022.334824-2-cezary.rojewski@intel.com> <CAHp75VfO7_ASHGdpkcb1dwvhyHPT31eYuAkCm2q7B+2WmtZC4g@mail.gmail.com>
- <e8a06f76-9414-6391-0582-667cf817dbcc@intel.com>
-In-Reply-To: <e8a06f76-9414-6391-0582-667cf817dbcc@intel.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 2 Sep 2022 12:04:19 +0300
-Message-ID: <CAHp75VdCwJMSzVD0_tniFOwshR-5mJqgwL58=aV99XFXgK5Obw@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] lib/string_helpers: Introduce tokenize_user_input()
-To:     Cezary Rojewski <cezary.rojewski@intel.com>
-Cc:     ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        amadeuszx.slawinski@linux.intel.com,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        =?UTF-8?Q?P=C3=A9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Andy Shevchenko <andy@kernel.org>,
+        Fri, 2 Sep 2022 05:05:03 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A900165B4
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 02:04:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662109498; x=1693645498;
+  h=from:to:cc:subject:references:date:in-reply-to:
+   message-id:mime-version;
+  bh=+uvbB2ryl//T87TRTZlLEPk15pWjZP7QXw7HS4tbRE8=;
+  b=fgn4R/ykFNd4vqS1WVY/A4Rn89uYw7uRMwsiQt00FIRWUGACzzQVsGGA
+   RmfJZtkiKWnMYqIBmWFeRaOrv67CBhLxossHAP6c5Pl5wFWPnuhbSyBME
+   uKT2EHNZ0fRptvryDb5WPqFQwIBm26IY4pCvO2/LEvqOUoBsIjByNVZtJ
+   KZHh1FhWMboJofX/rLMvQHnGeGNK8a57jy/N0DK8wDefPeQTaCM5KnKP5
+   yAz957Sozeu/64gmN8BkdmZKv4oJLxA3Gmkyulm0IjzgWKuw2Y3OCqJDS
+   +zGVGGrVeiaVMNoo9Hwa6wstXcwM3J9W3KfG9Fpp5q6W/6JDvI5hkI8hd
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="282926264"
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="282926264"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 02:04:57 -0700
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="941219190"
+Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.238.208.55])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 02:04:52 -0700
+From:   "Huang, Ying" <ying.huang@intel.com>
+To:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
+Cc:     Wei Xu <weixugc@google.com>, Johannes Weiner <hannes@cmpxchg.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Michal Hocko <mhocko@kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Matthew Wilcox <willy@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        jvgediya.oss@gmail.com, Bharata B Rao <bharata@amd.com>,
+        Greg Thelen <gthelen@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: Re: [PATCH v3 updated] mm/demotion: Expose memory tier details via
+ sysfs
+References: <20220830081736.119281-1-aneesh.kumar@linux.ibm.com>
+        <87tu5rzigc.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <ad19e105-9290-922d-59e6-e6813a30f5f0@linux.ibm.com>
+        <87pmgezkhp.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <CAAPL-u8MEs04DkHy6kaS788VjdYZZjAYOgzMnioOzDXbc0ZhhQ@mail.gmail.com>
+        <d91beb53-e940-e02a-f9ca-3326bf914da7@linux.ibm.com>
+        <87fshaz63h.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <698120ce-d4df-3d13-dea9-a8f5c298783c@linux.ibm.com>
+        <87bkryz4nh.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <2b4ddc45-74ae-27df-d973-6724f61f4e18@linux.ibm.com>
+        <877d2mz3c1.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <45488760-02b5-115b-c16d-5219303f2f33@linux.ibm.com>
+        <CAAPL-u_UoAQ9koo892sG-Tx4bi4xDRe9PUtjmFSsn90uU-n31g@mail.gmail.com>
+        <871qsuyzr2.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <672e528d-40b7-fc12-9b0c-1591d586c079@linux.ibm.com>
+Date:   Fri, 02 Sep 2022 17:04:51 +0800
+In-Reply-To: <672e528d-40b7-fc12-9b0c-1591d586c079@linux.ibm.com> (Aneesh
+        Kumar K. V.'s message of "Fri, 2 Sep 2022 14:18:40 +0530")
+Message-ID: <87wnamxi30.fsf@yhuang6-desk2.ccr.corp.intel.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ascii
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Sep 2, 2022 at 10:46 AM Cezary Rojewski
-<cezary.rojewski@intel.com> wrote:
-> On 2022-09-01 9:34 PM, Andy Shevchenko wrote:
-> > On Thu, Sep 1, 2022 at 8:40 PM Cezary Rojewski
-> > <cezary.rojewski@intel.com> wrote:
+Aneesh Kumar K V <aneesh.kumar@linux.ibm.com> writes:
 
-...
-
-> >> +int tokenize_user_input(const char __user *from, size_t count, int **tkns);
-> >
-> > Not sure how I can deduct from the name what function is actually
-> > doing. Suggested new name: int_array_parse_user().
-> >
-> > int int_array_parse_user(const char __user *from, size_t count, int **array);
-> >
-> > (Note that we have _user suffix for many APIs in the kernel that does
-> > interact with user space memory)
+> On 9/2/22 1:27 PM, Huang, Ying wrote:
+>> Wei Xu <weixugc@google.com> writes:
+>> 
+>>> On Thu, Sep 1, 2022 at 11:44 PM Aneesh Kumar K V
+>>> <aneesh.kumar@linux.ibm.com> wrote:
+>>>>
+>>>> On 9/2/22 12:10 PM, Huang, Ying wrote:
+>>>>> Aneesh Kumar K V <aneesh.kumar@linux.ibm.com> writes:
+>>>>>
+>>>>>> On 9/2/22 11:42 AM, Huang, Ying wrote:
+>>>>>>> Aneesh Kumar K V <aneesh.kumar@linux.ibm.com> writes:
+>>>>>>>
+>>>>>>>> On 9/2/22 11:10 AM, Huang, Ying wrote:
+>>>>>>>>> Aneesh Kumar K V <aneesh.kumar@linux.ibm.com> writes:
+>>>>>>>>>
+>>>>>>>>>> On 9/2/22 10:39 AM, Wei Xu wrote:
+>>>>>>>>>>> On Thu, Sep 1, 2022 at 5:33 PM Huang, Ying <ying.huang@intel.com> wrote:
+>>>>>>>>>>>>
+>>>>>>>>>>>> Aneesh Kumar K V <aneesh.kumar@linux.ibm.com> writes:
+>>>>>>>>>>>>
+>>>>>>>>>>>>> On 9/1/22 12:31 PM, Huang, Ying wrote:
+>>>>>>>>>>>>>> "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> This patch adds /sys/devices/virtual/memory_tiering/ where all memory tier
+>>>>>>>>>>>>>>> related details can be found. All allocated memory tiers will be listed
+>>>>>>>>>>>>>>> there as /sys/devices/virtual/memory_tiering/memory_tierN/
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> The nodes which are part of a specific memory tier can be listed via
+>>>>>>>>>>>>>>> /sys/devices/virtual/memory_tiering/memory_tierN/nodes
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> I think "memory_tier" is a better subsystem/bus name than
+>>>>>>>>>>>>>> memory_tiering.  Because we have a set of memory_tierN devices inside.
+>>>>>>>>>>>>>> "memory_tier" sounds more natural.  I know this is subjective, just my
+>>>>>>>>>>>>>> preference.
+>>>>>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> I missed replying to this earlier. I will keep memory_tiering as subsystem name in v4
+>>>>>>>>>> because we would want it to a susbsystem where all memory tiering related details can be found
+>>>>>>>>>> including memory type in the future. This is as per discussion
+>>>>>>>>>>
+>>>>>>>>>> https://lore.kernel.org/linux-mm/CAAPL-u9TKbHGztAF=r-io3gkX7gorUunS2UfstudCWuihrA=0g@mail.gmail.com
+>>>>>>>>>
+>>>>>>>>> I don't think that it's a good idea to mix 2 types of devices in one
+>>>>>>>>> subsystem (bus).  If my understanding were correct, that breaks the
+>>>>>>>>> driver core convention.
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> All these are virtual devices .I am not sure i follow what you mean by 2 types of devices.
+>>>>>>>> memory_tiering is a subsystem that represents all the details w.r.t memory tiering. It shows
+>>>>>>>> details of memory tiers and can possibly contain details of different memory types .
+>>>>>>>
+>>>>>>> IMHO, memory_tier and memory_type are 2 kind of devices.  They have
+>>>>>>> almost totally different attributes (sysfs file).  So, we should create
+>>>>>>> 2 buses for them.  Each has its own attribute group.  "virtual" itself
+>>>>>>> isn't a subsystem.
+>>>>>>
+>>>>>> Considering both the details are related to memory tiering, wouldn't it be much simpler we consolidate
+>>>>>> them within the same subdirectory? I am still not clear why you are suggesting they need to be in different
+>>>>>> sysfs hierarchy.  It doesn't break any driver core convention as you mentioned earlier.
+>>>>>>
+>>>>>> /sys/devices/virtual/memory_tiering/memory_tierN
+>>>>>> /sys/devices/virtual/memory_tiering/memory_typeN
+>>>>>
+>>>>> I think we should add
+>>>>>
+>>>>>  /sys/devices/virtual/memory_tier/memory_tierN
+>>>>>  /sys/devices/virtual/memory_type/memory_typeN
+>>>>>
+>>>>
+>>>> I am trying to find if there is a technical reason to do the same?
+>>>>
+>>>>> I don't think this is complex.  Devices of same bus/subsystem should
+>>>>> have mostly same attributes.  This is my understanding of driver core
+>>>>> convention.
+>>>>>
+>>>>
+>>>> I was not looking at this from code complexity point. Instead of having multiple directories
+>>>> with details w.r.t memory tiering, I was looking at consolidating the details
+>>>> within the directory /sys/devices/virtual/memory_tiering. (similar to all virtual devices
+>>>> are consolidated within /sys/devics/virtual/).
+>>>>
+>>>> -aneesh
+>>>
+>>> Here is an example of /sys/bus/nd/devices (I know it is not under
+>>> /sys/devices/virtual, but it can still serve as a reference):
+>>>
+>>> ls -1 /sys/bus/nd/devices
+>>>
+>>> namespace2.0
+>>> namespace3.0
+>>> ndbus0
+>>> nmem0
+>>> nmem1
+>>> region0
+>>> region1
+>>> region2
+>>> region3
+>>>
+>>> So I think it is not unreasonable if we want to group memory tiering
+>>> related interfaces within a single top directory.
+>> 
+>> Thanks for pointing this out.  My original understanding of driver core
+>> isn't correct.
+>> 
+>> But I still think it's better to separate instead of mixing memory_tier
+>> and memory_type.  Per my understanding, memory_type shows information
+>> (abstract distance, latency, bandwidth, etc.) of memory types (and
+>> nodes), it can be useful even without memory tiers.  That is, memory
+>> types describes the physical characteristics, while memory tier reflects
+>> the policy.
+>>
 >
-> That's why I've added '_user_' in the middle! Anyway, I guess the
-> expectation is that it's a suffix - precisely at the end of the name.
+> The latency and bandwidth details are already exposed via 
 >
-> Could we reorder it a bit: "parse_int_array_user"?
+> 	/sys/devices/system/node/nodeY/access0/initiators/
+>
+> Documentation/admin-guide/mm/numaperf.rst
+>
+> That is the interface that libraries like libmemkind will look at for finding
+> details w.r.t latency/bandwidth
 
-Most of the exported functions that have 'parse' word, have it after
-namespace, but in this case there is no dedicated namespace and it
-also will be in alignment with parse_options_str. That said, go for
-it.
+Yes.  Only with that, it's still inconvenient to find out which nodes
+belong to same memory type (has same performance, same topology, managed
+by same driver, etc).  So memory types can still provide useful
+information even without memory tiering.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Best Regards,
+Huang, Ying
