@@ -2,82 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D0E6ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:31:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E3B8ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:31:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230024AbiIBSbU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 14:31:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47618 "EHLO
+        id S229850AbiIBSbd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 14:31:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229796AbiIBSa6 (ORCPT
+        with ESMTP id S229966AbiIBSbS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 14:30:58 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1B7C70E4F;
-        Fri,  2 Sep 2022 11:30:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662143456; x=1693679456;
-  h=from:to:subject:date:message-id:in-reply-to:references:
-   mime-version:content-transfer-encoding;
-  bh=DniUnueTY3Xs7L6hV7C4s2m6UQ2FC9TCsvhg8kdaFrQ=;
-  b=IgT1fpbSUT4sSxNNv0R2P3dtJwlkyMMc33x2DcAwPHH1c9GLytkdgdJM
-   0o7XTKrqocaC1cW09CfroksE1d5lD9qRHlootSpxSnUxMnn3wK8srjTk8
-   x51Z/KOIg175JcIpNoED5RUFm3oHpdF4IKucM/Y7vW++XkCIwgLA8HYMm
-   ILAmzUQ+Ebr1io+KOEvzDkwaLdetYKSt6HemVGqRfS/N64uujlKnkshcE
-   w8j5LCzYTG8UOLQbLkd10i3NeZ9PnsGLBE6sS6a+rUCbwp3KN2BdrnNHJ
-   ZGlp0TpfzA863+91Ki5rTiQiYpn6GoI94JkMPVGySy07p2EZY/J19eCdU
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10458"; a="294790980"
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="294790980"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 11:26:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="613125405"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga002.jf.intel.com with ESMTP; 02 Sep 2022 11:26:44 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 043FC1C3; Fri,  2 Sep 2022 21:26:59 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Patrick Rudolph <patrick.rudolph@9elements.com>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 04/17] pinctrl: cy8c95x0: Fix return value in cy8c95x0_detect()
-Date:   Fri,  2 Sep 2022 21:26:37 +0300
-Message-Id: <20220902182650.83098-4-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220902182650.83098-1-andriy.shevchenko@linux.intel.com>
-References: <20220902182650.83098-1-andriy.shevchenko@linux.intel.com>
+        Fri, 2 Sep 2022 14:31:18 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF91AFCA35
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 11:31:12 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id v16so3339375wrm.8
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 11:31:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=UiGnkmWH9iLnrdhPrU2lDZgR3mZDj/1lVrghpfS4bgc=;
+        b=Nz69+sv63l6vAT/d+MeZEexuMUrgEJ61UWVjbKzAJch/Mt4H6DOUcOmfORfFfGTDVI
+         v5zBB/pJgK0ndGYjp11XbxRVZw1rCbg7xMqYYP87XQ3V/LM4twIPcmT7Xst90Zc+He+8
+         IGDrjE+OuD+G7Bot3CYPEj+cetiAiaQ11nL5OdA2xzvcykzMRqlj78MiGAfsWROYF//R
+         fo6eP/zgQoMR8Nc+WFOJU4cKlT5qR71aB8zYwEK+YVRmfzNd68akIEdeQW/hvvClTb5v
+         mZyLf3vKP1X+NF72hKAacRjfEnn7vrqgCalQNzQigXEElEovQQJpduLQ2rKBVZgEkz6H
+         2qzw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=UiGnkmWH9iLnrdhPrU2lDZgR3mZDj/1lVrghpfS4bgc=;
+        b=idPlwt7Wu1rG2yCHZshoIyuvLxMMu2FNUZTOy50ZFOscWOrqW+QalJr4prNi/8whtU
+         lWgiN2hcd8pfqxVMh3FXeGJs7QdBniV19czDkTRUnr3WYG9x73qma6enD87GrhK7Zxhe
+         R/LrRFcjxL+YxiqzZ4L8LgxoO19si+KyiKGzeYy4/wBJez0D+ShP8C+IN4gO7PY7rVbm
+         d3tY16m/VbA4ggWfVG9lqKiasiaDRAtKI94ddRNk3dCrMaI05jGbmPka3fRBYvb63kSz
+         mCZwSs+vw0hz3hzBu0xcHbpuuORZ1zBbGnHA5OUUI0cXetHIeOftHXpTKhFGhABLUVmU
+         Fy+w==
+X-Gm-Message-State: ACgBeo1HstIhasihJatncVghuk4Gxnu6S0TimHzxSv4sjEbCYC7U5PWJ
+        iuIF+xcDivR3oi3Birhd4R5BpA==
+X-Google-Smtp-Source: AA6agR6eS6uSXkalS5S5mkAzDMTgTkYyNru/CqV+NIhwqEG+B0Lv2KKm4WvxlXq2+4qR5ux20YX6YQ==
+X-Received: by 2002:a5d:47a6:0:b0:228:473c:b84b with SMTP id 6-20020a5d47a6000000b00228473cb84bmr1957625wrb.556.1662143470250;
+        Fri, 02 Sep 2022 11:31:10 -0700 (PDT)
+Received: from linaro.org ([94.52.112.99])
+        by smtp.gmail.com with ESMTPSA id w10-20020a05600c014a00b003a4efb794d7sm2787122wmm.36.2022.09.02.11.31.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 11:31:09 -0700 (PDT)
+Date:   Fri, 2 Sep 2022 21:31:06 +0300
+From:   Abel Vesa <abel.vesa@linaro.org>
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
+        Stephen Boyd <sboyd@kernel.org>
+Cc:     abelvesa@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Peng Fan <peng.fan@nxp.com>, kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH V3 2/8] clk: imx93: drop of_match_ptr
+Message-ID: <YxJL6re6XuCPGlta@linaro.org>
+References: <20220830033137.4149542-1-peng.fan@oss.nxp.com>
+ <20220830033137.4149542-3-peng.fan@oss.nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220830033137.4149542-3-peng.fan@oss.nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It's an obvious typo in never tested piece of code that
-successful detection shouldn't fail. Fix that.
+On 22-08-30 11:31:31, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
+> 
+> There is build warning when CONFIG_OF is not selected.
+> >> drivers/clk/imx/clk-imx93.c:324:34: warning: 'imx93_clk_of_match'
+> >> defined but not used [-Wunused-const-variable=]
+>      324 | static const struct of_device_id imx93_clk_of_match[] = {
+>          |                                  ^~~~~~~~~~~~~~~~~~
+> 
+> The driver only support DT table, no sense to use of_match_ptr.
+> 
+> Fixes: 24defbe194b6 ("clk: imx: add i.MX93 clk")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/pinctrl/pinctrl-cy8c95x0.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Reviewed-by: Abel Vesa <abel.vesa@linaro.org>
 
-diff --git a/drivers/pinctrl/pinctrl-cy8c95x0.c b/drivers/pinctrl/pinctrl-cy8c95x0.c
-index 5ef772d29a36..f016c283af57 100644
---- a/drivers/pinctrl/pinctrl-cy8c95x0.c
-+++ b/drivers/pinctrl/pinctrl-cy8c95x0.c
-@@ -1255,7 +1255,7 @@ static int cy8c95x0_detect(struct i2c_client *client,
- 	dev_info(&client->dev, "Found a %s chip at 0x%02x.\n", name, client->addr);
- 	strscpy(info->type, name, I2C_NAME_SIZE);
- 
--	return -ENODEV;
-+	return 0;
- }
- 
- static int cy8c95x0_probe(struct i2c_client *client)
--- 
-2.35.1
+Stephen will you pick this patch?
 
+I'll take the rest through my tree.
+
+> ---
+>  drivers/clk/imx/clk-imx93.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/clk/imx/clk-imx93.c b/drivers/clk/imx/clk-imx93.c
+> index f5c9fa40491c..dcc41d178238 100644
+> --- a/drivers/clk/imx/clk-imx93.c
+> +++ b/drivers/clk/imx/clk-imx93.c
+> @@ -332,7 +332,7 @@ static struct platform_driver imx93_clk_driver = {
+>  	.driver = {
+>  		.name = "imx93-ccm",
+>  		.suppress_bind_attrs = true,
+> -		.of_match_table = of_match_ptr(imx93_clk_of_match),
+> +		.of_match_table = imx93_clk_of_match,
+>  	},
+>  };
+>  module_platform_driver(imx93_clk_driver);
+> -- 
+> 2.37.1
+> 
