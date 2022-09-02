@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3F33C54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:32:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7AE7C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:32:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236518AbiIBMcA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:32:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37136 "EHLO
+        id S236568AbiIBMcG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:32:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236500AbiIBMbN (ORCPT
+        with ESMTP id S236533AbiIBMbN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 08:31:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57D38E0FEA;
-        Fri,  2 Sep 2022 05:26:37 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BB66DB047;
+        Fri,  2 Sep 2022 05:26:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8C24EB82A9B;
-        Fri,  2 Sep 2022 12:24:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE9D1C433C1;
-        Fri,  2 Sep 2022 12:24:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EC1146215B;
+        Fri,  2 Sep 2022 12:24:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2537C433C1;
+        Fri,  2 Sep 2022 12:24:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121469;
-        bh=XhSA6i78gRXQyA/gUEzf/4yuSlQlvNRY85EE198trDE=;
+        s=korg; t=1662121454;
+        bh=c38qPjBlwIU12u9Uk9yjYbiD99ZrXmEcOmC9gitduTY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C4dYrNBggteu2XOwHl8UmJ3QpNS2elrWJqBIZaN4+wwgHQ/wc7mZTe/RcsL0odpq+
-         s9eASFWSOVXl/Fcy0mhZRH05ZvxyA4oy5et5v+ej+dWZtH9xZ2G8SHfWcpyXNX9HEY
-         U598Yml+ezZGbZVOM2ZGQ73YxPikSgzaNuMnAk64=
+        b=VcRQF5KKekYNNvIcV0Rs6pNr4HoORtluqhNcMw3DEfRe7HLCEg4a/hMkpTDadPz4s
+         nmqFnBpIyYJytgvTfcRF+wP4CShoTbOceqAalHgQbmfGzZaUwL1+pd3KOvaHjjCHRk
+         o3czDyteucpyOl1+F4XHslMhg5joMV0UL0Wo8PxQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Mahesh Bandewar <maheshb@google.com>,
+        Sainath Grandhi <sainath.grandhi@intel.com>,
+        =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 18/56] netfilter: nft_tunnel: restrict it to netdev family
-Date:   Fri,  2 Sep 2022 14:18:38 +0200
-Message-Id: <20220902121400.805271386@linuxfoundation.org>
+Subject: [PATCH 4.19 13/56] net: ipvtap - add __init/__exit annotations to module init/exit funcs
+Date:   Fri,  2 Sep 2022 14:18:33 +0200
+Message-Id: <20220902121400.633843066@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
 References: <20220902121400.219861128@linuxfoundation.org>
@@ -48,31 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Maciej Żenczykowski <maze@google.com>
 
-[ Upstream commit 01e4092d53bc4fe122a6e4b6d664adbd57528ca3 ]
+[ Upstream commit 4b2e3a17e9f279325712b79fb01d1493f9e3e005 ]
 
-Only allow to use this expression from NFPROTO_NETDEV family.
+Looks to have been left out in an oversight.
 
-Fixes: af308b94a2a4 ("netfilter: nf_tables: add tunnel support")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Cc: Mahesh Bandewar <maheshb@google.com>
+Cc: Sainath Grandhi <sainath.grandhi@intel.com>
+Fixes: 235a9d89da97 ('ipvtap: IP-VLAN based tap driver')
+Signed-off-by: Maciej Żenczykowski <maze@google.com>
+Link: https://lore.kernel.org/r/20220821130808.12143-1-zenczykowski@gmail.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nft_tunnel.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ipvlan/ipvtap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/netfilter/nft_tunnel.c b/net/netfilter/nft_tunnel.c
-index 8ae948fd9dcfc..3fc55c81f16ac 100644
---- a/net/netfilter/nft_tunnel.c
-+++ b/net/netfilter/nft_tunnel.c
-@@ -104,6 +104,7 @@ static const struct nft_expr_ops nft_tunnel_get_ops = {
+diff --git a/drivers/net/ipvlan/ipvtap.c b/drivers/net/ipvlan/ipvtap.c
+index 0bcc07f346c3e..2e517e30c5ac1 100644
+--- a/drivers/net/ipvlan/ipvtap.c
++++ b/drivers/net/ipvlan/ipvtap.c
+@@ -193,7 +193,7 @@ static struct notifier_block ipvtap_notifier_block __read_mostly = {
+ 	.notifier_call	= ipvtap_device_event,
+ };
  
- static struct nft_expr_type nft_tunnel_type __read_mostly = {
- 	.name		= "tunnel",
-+	.family		= NFPROTO_NETDEV,
- 	.ops		= &nft_tunnel_get_ops,
- 	.policy		= nft_tunnel_policy,
- 	.maxattr	= NFTA_TUNNEL_MAX,
+-static int ipvtap_init(void)
++static int __init ipvtap_init(void)
+ {
+ 	int err;
+ 
+@@ -227,7 +227,7 @@ static int ipvtap_init(void)
+ }
+ module_init(ipvtap_init);
+ 
+-static void ipvtap_exit(void)
++static void __exit ipvtap_exit(void)
+ {
+ 	rtnl_link_unregister(&ipvtap_link_ops);
+ 	unregister_netdevice_notifier(&ipvtap_notifier_block);
 -- 
 2.35.1
 
