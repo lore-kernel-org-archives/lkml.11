@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27BF9C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:51:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B917C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:51:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237782AbiIBMv0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:51:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45378 "EHLO
+        id S236450AbiIBMvb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:51:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237726AbiIBMuk (ORCPT
+        with ESMTP id S237777AbiIBMum (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:50:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECBF6F5CC9;
-        Fri,  2 Sep 2022 05:36:38 -0700 (PDT)
+        Fri, 2 Sep 2022 08:50:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF4FBF5CE8;
+        Fri,  2 Sep 2022 05:36:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 231D46216C;
-        Fri,  2 Sep 2022 12:26:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25E99C433D7;
-        Fri,  2 Sep 2022 12:26:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AA02CB82AAC;
+        Fri,  2 Sep 2022 12:25:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0002BC433C1;
+        Fri,  2 Sep 2022 12:25:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121607;
-        bh=lld00jnRazyIp1idkj2pDXO/PPUz3pRby4+jl04HsU4=;
+        s=korg; t=1662121557;
+        bh=xkYuqx3KLa0XCdCrelZKq/YQPOXAWHnoGd327J82GBY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OrufL0a8UEmZ1FA/EP2PhVPyDa0dBr4XgSodq69uu6Y2y9tzjctH/4wk9YMSsSPBB
-         roR9jAyPQAvxFzbQ2K29mO7d/fPUJCyjSRLPDit1d4dYM8QqkhOqUG6cvWDX4n/Vvx
-         y0Izw1lqdseiNaz4bPETFalWkXoSANf5ok7x7E4U=
+        b=SmRgRH1apztUlKBu97XnaFwdS55I+tZ+syoXpPWaUQVRXMUZQbjmHC9vy+5ww8FZ7
+         ibolI4C0U2GlIYRtN7TqfL1WNP2RWJMUqy1vi0wPRXVm1MTwPqBLbgpJIL1QRt3GDD
+         9gBpfy9YcjMzSsZ+TXBVh5HmzZplttLjS/HBUp5w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Song Liu <song@kernel.org>
-Subject: [PATCH 4.19 35/56] md: call __md_stop_writes in md_stop
-Date:   Fri,  2 Sep 2022 14:18:55 +0200
-Message-Id: <20220902121401.514605197@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+77b432d57c4791183ed4@syzkaller.appspotmail.com,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH 4.19 46/56] media: pvrusb2: fix memory leak in pvr_probe
+Date:   Fri,  2 Sep 2022 14:19:06 +0200
+Message-Id: <20220902121401.999055471@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
 References: <20220902121400.219861128@linuxfoundation.org>
@@ -49,36 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guoqing Jiang <guoqing.jiang@linux.dev>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-commit 0dd84b319352bb8ba64752d4e45396d8b13e6018 upstream.
+commit 945a9a8e448b65bec055d37eba58f711b39f66f0 upstream.
 
->From the link [1], we can see raid1d was running even after the path
-raid_dtr -> md_stop -> __md_stop.
+The error handling code in pvr2_hdw_create forgets to unregister the
+v4l2 device. When pvr2_hdw_create returns back to pvr2_context_create,
+it calls pvr2_context_destroy to destroy context, but mp->hdw is NULL,
+which leads to that pvr2_hdw_destroy directly returns.
 
-Let's stop write first in destructor to align with normal md-raid to
-fix the KASAN issue.
+Fix this by adding v4l2_device_unregister to decrease the refcount of
+usb interface.
 
-[1]. https://lore.kernel.org/linux-raid/CAPhsuW5gc4AakdGNdF8ubpezAuDLFOYUO_sfMZcec6hQFm8nhg@mail.gmail.com/T/#m7f12bf90481c02c6d2da68c64aeed4779b7df74a
-
-Fixes: 48df498daf62 ("md: move bitmap_destroy to the beginning of __md_stop")
-Reported-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Guoqing Jiang <guoqing.jiang@linux.dev>
-Signed-off-by: Song Liu <song@kernel.org>
+Reported-by: syzbot+77b432d57c4791183ed4@syzkaller.appspotmail.com
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/md.c |    1 +
+ drivers/media/usb/pvrusb2/pvrusb2-hdw.c |    1 +
  1 file changed, 1 insertion(+)
 
---- a/drivers/md/md.c
-+++ b/drivers/md/md.c
-@@ -5937,6 +5937,7 @@ void md_stop(struct mddev *mddev)
- 	/* stop the array and free an attached data structures.
- 	 * This is called from dm-raid
- 	 */
-+	__md_stop_writes(mddev);
- 	__md_stop(mddev);
- 	bioset_exit(&mddev->bio_set);
- 	bioset_exit(&mddev->sync_set);
+--- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
++++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
+@@ -2602,6 +2602,7 @@ struct pvr2_hdw *pvr2_hdw_create(struct
+ 		del_timer_sync(&hdw->encoder_run_timer);
+ 		del_timer_sync(&hdw->encoder_wait_timer);
+ 		flush_work(&hdw->workpoll);
++		v4l2_device_unregister(&hdw->v4l2_dev);
+ 		usb_free_urb(hdw->ctl_read_urb);
+ 		usb_free_urb(hdw->ctl_write_urb);
+ 		kfree(hdw->ctl_read_buffer);
 
 
