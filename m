@@ -2,76 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B96DEC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:40:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 677FCC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:40:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236882AbiIBOkH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:40:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55016 "EHLO
+        id S237014AbiIBOk0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:40:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237108AbiIBOit (ORCPT
+        with ESMTP id S237973AbiIBOjm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:38:49 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF6DA1583D
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:59:18 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id s3-20020a17090a5d0300b001fb3ac54a03so1084638pji.2
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 06:59:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date;
-        bh=oN5uSrVstmrmpjZNjpC0MkyDD5rjW/MPwKNf9i5pnNc=;
-        b=o+Lsa+2foF5sCCgfrc7ezOOg1N50QrhT6WR0lKZS9r+zxfU/D9FKMVuxEAEXxEHUkX
-         4023LM4orS+Xa6f0wcOXSpNRjc9RF5Z1aA99E5sLPYAlDlL4ZWTENpnQLxLJYD96Sgii
-         GMakGniU5YUfOGTTc9o2Alam/Ni9ZdjP330b7KPOL/vX5FFjxu3kopt0hAgo3o6QNjzA
-         yqpx1XnMXGvJotFbkxsZljt4moyhknjjCPcLjs8P3pwvvlrA2xJ9Y/yAMxYH2vtUFk4Q
-         r1DwI+/lqaZjN5nRXgdegS+0uqD+/iJG8FBSvLybqDyWYUfPrSd7NBDMvmpUQEf420KA
-         km1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=oN5uSrVstmrmpjZNjpC0MkyDD5rjW/MPwKNf9i5pnNc=;
-        b=HimLXc9Alpx+R8yP38DuqQBcAEkY/yYomWSjKu59rYUO5HweJ1J6r1yUa6zDtUssjK
-         KvflPJrnmsmjzgQdQ7yW3gVzNJGjHQdmVlfI9HHWQv8fC8eIot09TWd1TWAwoscOlivG
-         vFz39vY4UaaUWF320DyAluIgx2hYCzKdcNmslPFcw81bsY9uoXCpW27J0tRIaJwwTh0q
-         dCQdzGxPiwsErDC+hrOxJHtzdRV7YZFqfptUhvY6GNAKSX8tTgvsV7V09pTQKM0j/reD
-         HnMbrFfr1kROTFGrqSVl+K0TLhxgBtFRI7p6ZF9i75BoxF6dVww/kKz3Jx7PMUCUo3U7
-         tLWw==
-X-Gm-Message-State: ACgBeo0BOxg6fC8H6CVJmnZ+b+dCJy45gMlZuJ6RBxq6fKsts9TtJNNv
-        uTluh6NhF+zCFHwXBfxh3TKuxCMSnWAfIFHaLw==
-X-Google-Smtp-Source: AA6agR54EWg2sgqmKFoaPLZA7WYfFsWIYBZkRNebscj7qllbI0jp4jyOkQdEH2hM+LuA89xIf+dP/XSfCqclvkGGPA==
-X-Received: from varshat.c.googlers.com ([fda3:e722:ac3:cc00:24:72f4:c0a8:a35])
- (user=teratipally job=sendgmr) by 2002:a05:6a00:2db:b0:537:f78b:222e with
- SMTP id b27-20020a056a0002db00b00537f78b222emr30233530pft.35.1662127158481;
- Fri, 02 Sep 2022 06:59:18 -0700 (PDT)
-Date:   Fri,  2 Sep 2022 13:59:11 +0000
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
-Message-ID: <20220902135912.816188-1-teratipally@google.com>
-Subject: Request to cherry-pick 20401d1058f3f841f35a594ac2fc1293710e55b9 to
- v5.10 and v5.4
-From:   Varsha Teratipally <teratipally@google.com>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Manfred Spraul <manfred@colorfullife.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Davidlohr Bueso <dbueso@suse.de>,
-        Rafael Aquini <aquini@redhat.com>,
-        Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 2 Sep 2022 10:39:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95DFFA6C0F;
+        Fri,  2 Sep 2022 07:00:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7E392B82ACB;
+        Fri,  2 Sep 2022 12:35:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AE90C4314C;
+        Fri,  2 Sep 2022 12:35:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662122136;
+        bh=K07g13l32rClJcNoxbLcDmonK4zHo/OsvyUnY5GNgG8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=V/8N6ZDJnbbSITTj8U0O8qTSAzu2+CY2PZPNGFx24w9esp6bs3T6ozvn7BEH8kBnS
+         5QZx+kck0AFChUHUYElP/HGDCMICFi7jFsLH16WLiRWvaF4fu6FV47KXEcef3kr3ed
+         A5H9zopVAK0K4/V1taXytQR91SIlv1g8zeMRjZvE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.19 04/72] crypto: lib - remove unneeded selection of XOR_BLOCKS
+Date:   Fri,  2 Sep 2022 14:18:40 +0200
+Message-Id: <20220902121404.919335468@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
+References: <20220902121404.772492078@linuxfoundation.org>
+User-Agent: quilt/0.67
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+From: Eric Biggers <ebiggers@google.com>
 
-Commit 20401d1058f3f841f35a594ac2fc1293710e55b9("ipc: replace costly
-bailout check in sysvipc_find_ipc()" fixes a high cve and optimizes the
-costly loop by adding a checkpoint, which I think might be a good
-candidate for the stable branches
+commit 874b301985ef2f89b8b592ad255e03fb6fbfe605 upstream.
 
-Let me know what you think
+CRYPTO_LIB_CHACHA_GENERIC doesn't need to select XOR_BLOCKS.  It perhaps
+was thought that it's needed for __crypto_xor, but that's not the case.
+
+Enabling XOR_BLOCKS is problematic because the XOR_BLOCKS code runs a
+benchmark when it is initialized.  That causes a boot time regression on
+systems that didn't have it enabled before.
+
+Therefore, remove this unnecessary and problematic selection.
+
+Fixes: e56e18985596 ("lib/crypto: add prompts back to crypto libraries")
+Cc: stable@vger.kernel.org
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ lib/crypto/Kconfig |    1 -
+ 1 file changed, 1 deletion(-)
+
+--- a/lib/crypto/Kconfig
++++ b/lib/crypto/Kconfig
+@@ -33,7 +33,6 @@ config CRYPTO_ARCH_HAVE_LIB_CHACHA
+ 
+ config CRYPTO_LIB_CHACHA_GENERIC
+ 	tristate
+-	select XOR_BLOCKS
+ 	help
+ 	  This symbol can be depended upon by arch implementations of the
+ 	  ChaCha library interface that require the generic code as a
 
 
