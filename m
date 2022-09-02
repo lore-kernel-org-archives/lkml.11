@@ -2,103 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B884DC54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 09:04:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B3EAC54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 09:05:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236077AbiIBJE5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 05:04:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43586 "EHLO
+        id S235731AbiIBJFL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 05:05:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235583AbiIBJEy (ORCPT
+        with ESMTP id S236088AbiIBJE5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 05:04:54 -0400
-Received: from smtp-42ad.mail.infomaniak.ch (smtp-42ad.mail.infomaniak.ch [IPv6:2001:1600:3:17::42ad])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8617C265C
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 02:04:52 -0700 (PDT)
-Received: from smtp-2-0001.mail.infomaniak.ch (unknown [10.5.36.108])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4MJsS03HjszMqjlt;
-        Fri,  2 Sep 2022 11:04:48 +0200 (CEST)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-2-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4MJsRz5lbVzlh8lH;
-        Fri,  2 Sep 2022 11:04:47 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1662109488;
-        bh=cLxOY9wlVoRMnN4dWMLMl4REsqNlOpSRc3tnYKpdr+k=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=CAXI4b1gjUuIbXJS5MS5nhP2IhaGyEBVkw4j3Q5ZsuVACT8D0QFiUgwPmj8Wt5X70
-         ll77zOcrEUuXFBmrXCI7yIZRQcK8YSKiSbn68h/g9Y5HvngM4vjp+39dZojAZj97Ws
-         ozmD/6YoR3/bHvJT9DV8tS87QrVupRocrtE8ETmc=
-Message-ID: <b079d162-fa10-8cf0-bfc9-91f72a440e34@digikod.net>
-Date:   Fri, 2 Sep 2022 11:04:46 +0200
+        Fri, 2 Sep 2022 05:04:57 -0400
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F91C1057F
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 02:04:56 -0700 (PDT)
+Received: by mail-qt1-x836.google.com with SMTP id x5so970602qtv.9
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 02:04:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=A0lRx9LcG2f6vdkkySTxdBxFyRczSLUlrhv0k8CVfMQ=;
+        b=PqG6a4MKk2roT2Ce/PJEt8kCVddWYbqLQh141ATH+SE8SYCKK/ZFS9/OCHdfbfSgP8
+         mQREKuMuSelAb6SBLEEu74TKUjSBBmwZ8WjygarTrIA/KvHYGyMp8a2J70T92Jg3Pcrb
+         kcjEtRkQqjOXCQllUJDzs4CbTXcsIuMEFmKFSormg00PlTnX1F1InK7vkFbhfO4twbjw
+         wX8s3+vO/eXcBlAlq1ZPFwMRXYokbFEoLvKUt2HuPvjJ+iL9BHtDGUWj4Z7VTMBrr1UC
+         L7HTZSBcu84jPm1mYMiEOrw0O3Q0JaNpk4QrVKItYAbCjz/FlYGhDCg+mGNEqLY5iH3A
+         0oww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=A0lRx9LcG2f6vdkkySTxdBxFyRczSLUlrhv0k8CVfMQ=;
+        b=OddTsxKWlZVwlZaO+UZXNq+LjKgLLjZ3zuicp5+w+OoOS2izx1kwHTgPTBj0UWRm8G
+         tfmVxgoWAOaV7mK5FQGLCoqemHkYfRzYMfdmifrin+ZchRwtAwrRSsr0iGndI2tTUVRn
+         jOHmqAbccRbHCBJNNEab21PnDB3YYi5T/UzxwFF86g4UBE78fT1bLgUE1LQcp08Fsn/c
+         Fnb+r4T1XhOdLegskFhWmvBMzd8eTkvHa9Pg4z+rKzC7xemI0yYEMNcwdSHJ+CsC5Fol
+         ySOieGgd74HA0nBZLlEKp8v7nI4uAIpx07hnsrFVBiTd6czJNAhhwJfGVlHFguTmgZLt
+         08gg==
+X-Gm-Message-State: ACgBeo1FRElTGUwwAKhDbdmi8VEr+asNP0A9KTTybwEhcoTAepfbru/v
+        GPhcHlnQNkvdddayCyPatMIAQOTqMRqHANL1iks=
+X-Google-Smtp-Source: AA6agR7C4/X8eo8OV4IEGqRGWP09L1le/kpVLIzKikXVS/h8SIICiTqB0VGNInh/3lWYFp6j5asmpgMaMlwtPWel10o=
+X-Received: by 2002:ac8:7dd0:0:b0:344:afc1:b11d with SMTP id
+ c16-20020ac87dd0000000b00344afc1b11dmr26659521qte.195.1662109495202; Fri, 02
+ Sep 2022 02:04:55 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: 
-Subject: Re: [RFC PATCH v1] checkpatch: Handle FILE pointer type
-Content-Language: en-US
-To:     Joe Perches <joe@perches.com>, Andy Whitcroft <apw@canonical.com>
-Cc:     Dwaipayan Ray <dwaipayanray1@gmail.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Jerome Forissier <jerome.forissier@linaro.org>
-References: <20220901145948.1456353-1-mic@digikod.net>
- <4f958a0c7c0aa2fce613371348477c002aa58e90.camel@perches.com>
- <b028cf83798fd562f5d1b992d2651d53e21acaa2.camel@perches.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-In-Reply-To: <b028cf83798fd562f5d1b992d2651d53e21acaa2.camel@perches.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220901175022.334824-1-cezary.rojewski@intel.com>
+ <20220901175022.334824-2-cezary.rojewski@intel.com> <CAHp75VfO7_ASHGdpkcb1dwvhyHPT31eYuAkCm2q7B+2WmtZC4g@mail.gmail.com>
+ <e8a06f76-9414-6391-0582-667cf817dbcc@intel.com>
+In-Reply-To: <e8a06f76-9414-6391-0582-667cf817dbcc@intel.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 2 Sep 2022 12:04:19 +0300
+Message-ID: <CAHp75VdCwJMSzVD0_tniFOwshR-5mJqgwL58=aV99XFXgK5Obw@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] lib/string_helpers: Introduce tokenize_user_input()
+To:     Cezary Rojewski <cezary.rojewski@intel.com>
+Cc:     ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        amadeuszx.slawinski@linux.intel.com,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        =?UTF-8?Q?P=C3=A9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Matthew Wilcox <willy@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Sep 2, 2022 at 10:46 AM Cezary Rojewski
+<cezary.rojewski@intel.com> wrote:
+> On 2022-09-01 9:34 PM, Andy Shevchenko wrote:
+> > On Thu, Sep 1, 2022 at 8:40 PM Cezary Rojewski
+> > <cezary.rojewski@intel.com> wrote:
 
+...
 
-On 01/09/2022 20:22, Joe Perches wrote:
-> On Thu, 2022-09-01 at 11:49 -0400, Joe Perches wrote:
->> On Thu, 2022-09-01 at 16:59 +0200, Mickaël Salaün wrote:
->>> When using a "FILE *" type, checkpatch considers this an error.  Fix
->>> this by explicitly defining "FILE" as a common type.
->> []
->>> Another error may be throw when we use FIXTURE_{DATA,VARIANT}() structs,
->>> as defined in kselftest_harness.h .
->> []
->>> diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
->> []
->>> @@ -576,10 +576,17 @@ our $typeKernelTypedefs = qr{(?x:
->>>   	(?:__)?(?:u|s|be|le)(?:8|16|32|64)|
->>>   	atomic_t
->>>   )};
->>> +our $typeStdioTypedefs = qr{(?x:
->>> +	FILE
->>> +)};
->>
->> I'm fine with this.
->>
->>> +# our $typeKselftestHarnessTypedefs = qr{(?x:
->>> +# 	FIXTURE_(?:DATA|VARIANT)\($Ident\)
->>> +# )};
->>
->> But not this.  Random userspace typedefs should likely
->> be kept in some local version of checkpatch.
->>
->> Or maybe add a command line option like --additional_typedefs=<file>.
-> 
-> Oops.  I forgot it already exists:
-> 
->    --typedefsfile             Read additional types from this file
-> 
-> commit 75ad8c575a5ad105e2afc2051c68abceb9c65431
-> Author: Jerome Forissier <jerome.forissier@linaro.org>
-> Date:   Mon May 8 15:56:00 2017 -0700
-> 
->      checkpatch: add --typedefsfile
->      
->      When using checkpatch on out-of-tree code, it may occur that some
->      project-specific types are used, which will cause spurious warnings.
->      Add the --typedefsfile option as a way to extend the known types and
->      deal with this issue.
-> 
+> >> +int tokenize_user_input(const char __user *from, size_t count, int **tkns);
+> >
+> > Not sure how I can deduct from the name what function is actually
+> > doing. Suggested new name: int_array_parse_user().
+> >
+> > int int_array_parse_user(const char __user *from, size_t count, int **array);
+> >
+> > (Note that we have _user suffix for many APIs in the kernel that does
+> > interact with user space memory)
+>
+> That's why I've added '_user_' in the middle! Anyway, I guess the
+> expectation is that it's a suffix - precisely at the end of the name.
+>
+> Could we reorder it a bit: "parse_int_array_user"?
 
-This doesn't work for the FIXTURE_DATA() case. And I'm not sure how 
-contributors would know that they need to use this option with a 
-specific file.
+Most of the exported functions that have 'parse' word, have it after
+namespace, but in this case there is no dedicated namespace and it
+also will be in alignment with parse_options_str. That said, go for
+it.
+
+-- 
+With Best Regards,
+Andy Shevchenko
