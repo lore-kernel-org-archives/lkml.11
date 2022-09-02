@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C706ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 061F8ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:34:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236809AbiIBOdi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:33:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38932 "EHLO
+        id S236199AbiIBOeW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:34:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237072AbiIBOav (ORCPT
+        with ESMTP id S236489AbiIBOcd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:30:51 -0400
+        Fri, 2 Sep 2022 10:32:33 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96392201A4;
-        Fri,  2 Sep 2022 06:55:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 961671FCD3;
+        Fri,  2 Sep 2022 06:55:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74FA4B82AAC;
-        Fri,  2 Sep 2022 12:39:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9DEEC433D6;
-        Fri,  2 Sep 2022 12:38:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7AB20B82A77;
+        Fri,  2 Sep 2022 12:37:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E515C433C1;
+        Fri,  2 Sep 2022 12:37:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122339;
-        bh=grrOAlYIZGyqwrMbbVHIL1tatlu+W0H81mTS44QmifQ=;
+        s=korg; t=1662122236;
+        bh=bCF/wtT9qhY2o2fiAbXiqrUVuVfn3Hpp0lo+dq3HfM8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x4j+pr9lj3Yfi8s83ixAKCgJNvqnhYeBJYPxRivY8nzH7NVYonq16nv78Zn5pe+hc
-         fZf2jyH96iy9GuNZFA593plCxMf5dWiJyXh6TviValFNr+7agDIPgl/ZWUCLuwFrhr
-         J6nUrRgcCmA/dW/Wd5HBfYzosdQ8/dJZDB38u+Bw=
+        b=ZaOLC5WBG5/zwZnMsP3XmwoE+3LAI9xg1437s5C/7Cz3uW3MJuAUd1gD3Y1Qu85mi
+         P07fg1O7ZCyO+cOq7EfyRk00yG2I+6SA63Sk3xLlmpYmcH+GrGZ/Hlym070EzwQvF0
+         +qXmf9plJjovKGSR0TKl7jTcm5Nph5WM/EkFpWLc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com,
-        Zhengchao Shao <shaozhengchao@huawei.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.10 16/37] bpf: Dont redirect packets with invalid pkt_len
-Date:   Fri,  2 Sep 2022 14:19:38 +0200
-Message-Id: <20220902121359.686245488@linuxfoundation.org>
+        stable@vger.kernel.org, Evan Quan <evan.quan@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 54/72] drm/amd/pm: add missing ->fini_xxxx interfaces for some SMU13 asics
+Date:   Fri,  2 Sep 2022 14:19:30 +0200
+Message-Id: <20220902121406.540255185@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121359.177846782@linuxfoundation.org>
-References: <20220902121359.177846782@linuxfoundation.org>
+In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
+References: <20220902121404.772492078@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,70 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhengchao Shao <shaozhengchao@huawei.com>
+From: Evan Quan <evan.quan@amd.com>
 
-commit fd1894224407c484f652ad456e1ce423e89bb3eb upstream.
+[ Upstream commit 4bac1c846eff8042dd59ddecd0a43f3b9de5fd23 ]
 
-Syzbot found an issue [1]: fq_codel_drop() try to drop a flow whitout any
-skbs, that is, the flow->head is null.
-The root cause, as the [2] says, is because that bpf_prog_test_run_skb()
-run a bpf prog which redirects empty skbs.
-So we should determine whether the length of the packet modified by bpf
-prog or others like bpf_prog_test is valid before forwarding it directly.
+Without these, potential memory leak may be induced.
 
-LINK: [1] https://syzkaller.appspot.com/bug?id=0b84da80c2917757915afa89f7738a9d16ec96c5
-LINK: [2] https://www.spinics.net/lists/netdev/msg777503.html
-
-Reported-by: syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-Reviewed-by: Stanislav Fomichev <sdf@google.com>
-Link: https://lore.kernel.org/r/20220715115559.139691-1-shaozhengchao@huawei.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Evan Quan <evan.quan@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/skbuff.h |    8 ++++++++
- net/bpf/test_run.c     |    3 +++
- net/core/dev.c         |    1 +
- 3 files changed, 12 insertions(+)
+ drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c | 2 ++
+ drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_7_ppt.c | 2 ++
+ 2 files changed, 4 insertions(+)
 
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -2222,6 +2222,14 @@ static inline void skb_set_tail_pointer(
- 
- #endif /* NET_SKBUFF_DATA_USES_OFFSET */
- 
-+static inline void skb_assert_len(struct sk_buff *skb)
-+{
-+#ifdef CONFIG_DEBUG_NET
-+	if (WARN_ONCE(!skb->len, "%s\n", __func__))
-+		DO_ONCE_LITE(skb_dump, KERN_ERR, skb, false);
-+#endif /* CONFIG_DEBUG_NET */
-+}
-+
- /*
-  *	Add data to an sk_buff
-  */
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -441,6 +441,9 @@ static int convert___skb_to_skb(struct s
- {
- 	struct qdisc_skb_cb *cb = (struct qdisc_skb_cb *)skb->cb;
- 
-+	if (!skb->len)
-+		return -EINVAL;
-+
- 	if (!__skb)
- 		return 0;
- 
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4097,6 +4097,7 @@ static int __dev_queue_xmit(struct sk_bu
- 	bool again = false;
- 
- 	skb_reset_mac_header(skb);
-+	skb_assert_len(skb);
- 
- 	if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_SCHED_TSTAMP))
- 		__skb_tstamp_tx(skb, NULL, skb->sk, SCM_TSTAMP_SCHED);
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c
+index 7432b3e76d3d7..201546c369945 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c
+@@ -1583,7 +1583,9 @@ static const struct pptable_funcs smu_v13_0_0_ppt_funcs = {
+ 	.dump_pptable = smu_v13_0_0_dump_pptable,
+ 	.init_microcode = smu_v13_0_init_microcode,
+ 	.load_microcode = smu_v13_0_load_microcode,
++	.fini_microcode = smu_v13_0_fini_microcode,
+ 	.init_smc_tables = smu_v13_0_0_init_smc_tables,
++	.fini_smc_tables = smu_v13_0_fini_smc_tables,
+ 	.init_power = smu_v13_0_init_power,
+ 	.fini_power = smu_v13_0_fini_power,
+ 	.check_fw_status = smu_v13_0_check_fw_status,
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_7_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_7_ppt.c
+index 4e1861fb2c6a4..9cde13b07dd26 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_7_ppt.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_7_ppt.c
+@@ -1539,7 +1539,9 @@ static const struct pptable_funcs smu_v13_0_7_ppt_funcs = {
+ 	.dump_pptable = smu_v13_0_7_dump_pptable,
+ 	.init_microcode = smu_v13_0_init_microcode,
+ 	.load_microcode = smu_v13_0_load_microcode,
++	.fini_microcode = smu_v13_0_fini_microcode,
+ 	.init_smc_tables = smu_v13_0_7_init_smc_tables,
++	.fini_smc_tables = smu_v13_0_fini_smc_tables,
+ 	.init_power = smu_v13_0_init_power,
+ 	.check_fw_status = smu_v13_0_7_check_fw_status,
+ 	.setup_pptable = smu_v13_0_7_setup_pptable,
+-- 
+2.35.1
+
 
 
