@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B341BECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:32:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75266ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:32:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236753AbiIBMc2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:32:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34226 "EHLO
+        id S236607AbiIBMcc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:32:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236594AbiIBMb0 (ORCPT
+        with ESMTP id S236627AbiIBMbd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:31:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4BB3E115C;
-        Fri,  2 Sep 2022 05:26:49 -0700 (PDT)
+        Fri, 2 Sep 2022 08:31:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40E53E0FEB;
+        Fri,  2 Sep 2022 05:26:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ECD40B82AB3;
-        Fri,  2 Sep 2022 12:26:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44462C433D6;
-        Fri,  2 Sep 2022 12:26:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E01E2B82AB4;
+        Fri,  2 Sep 2022 12:26:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47E5DC433C1;
+        Fri,  2 Sep 2022 12:26:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121580;
-        bh=Hj38pyWanDvKQObSmn2HNMLU/27HD7DpIs7cUPJS0/M=;
+        s=korg; t=1662121589;
+        bh=bBMehq7U4qeyLV9FM0POOT2U6AtqLtjlHUK6iYBBqbs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=slGGRvcRiQ1ce2qZOjkTYWcSAIuJ3KigTox6BGaASvqndXD9LzJCmuTgcAb0O+4C3
-         Yhcu9mjxAoCcz+ClA8SqXSrigo8HtRf05dBnbLgnunfA7JzoqQSwKTv+fuqaloG2g1
-         m1dKh4avFhxuhYgGrkeou3RVHmhXd/wj11qcqt1M=
+        b=s0HJhWG2HcXePpx0QnT5PHtQXyJZOJ4ZGBLgCPtILpgz8reJCq4fskLte5xebZlAQ
+         P/2mU63MTxfYRI099CzkwDqm4i5b/JgGuegkmVEB/Qa9sJczZPOOsezFWm+l/8aYaA
+         1ZmhsSZENWVf6YQfghPZ9Woc4trbl2/+dumf4jSU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
-        Florian Westphal <fw@strlen.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 54/56] netfilter: conntrack: NF_CONNTRACK_PROCFS should no longer default to y
-Date:   Fri,  2 Sep 2022 14:19:14 +0200
-Message-Id: <20220902121402.335598665@linuxfoundation.org>
+        stable@vger.kernel.org, "Denis V. Lunev" <den@openvz.org>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.19 56/56] net: neigh: dont call kfree_skb() under spin_lock_irqsave()
+Date:   Fri,  2 Sep 2022 14:19:16 +0200
+Message-Id: <20220902121402.407009737@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
 References: <20220902121400.219861128@linuxfoundation.org>
@@ -49,35 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert@linux-m68k.org>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit aa5762c34213aba7a72dc58e70601370805fa794 ]
+commit d5485d9dd24e1d04e5509916515260186eb1455c upstream.
 
-NF_CONNTRACK_PROCFS was marked obsolete in commit 54b07dca68557b09
-("netfilter: provide config option to disable ancient procfs parts") in
-v3.3.
+It is not allowed to call kfree_skb() from hardware interrupt
+context or with interrupts being disabled. So add all skb to
+a tmp list, then free them after spin_unlock_irqrestore() at
+once.
 
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 66ba215cb513 ("neigh: fix possible DoS due to net iface start/stop loop")
+Suggested-by: Denis V. Lunev <den@openvz.org>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+ net/core/neighbour.c |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/net/netfilter/Kconfig b/net/netfilter/Kconfig
-index 56cddadb65d0c..92e0514f624fa 100644
---- a/net/netfilter/Kconfig
-+++ b/net/netfilter/Kconfig
-@@ -117,7 +117,6 @@ config NF_CONNTRACK_ZONES
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -226,21 +226,27 @@ static int neigh_del_timer(struct neighb
  
- config NF_CONNTRACK_PROCFS
- 	bool "Supply CT list in procfs (OBSOLETE)"
--	default y
- 	depends on PROC_FS
- 	---help---
- 	This option enables for the list of known conntrack entries
--- 
-2.35.1
-
+ static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
+ {
++	struct sk_buff_head tmp;
+ 	unsigned long flags;
+ 	struct sk_buff *skb;
+ 
++	skb_queue_head_init(&tmp);
+ 	spin_lock_irqsave(&list->lock, flags);
+ 	skb = skb_peek(list);
+ 	while (skb != NULL) {
+ 		struct sk_buff *skb_next = skb_peek_next(skb, list);
+ 		if (net == NULL || net_eq(dev_net(skb->dev), net)) {
+ 			__skb_unlink(skb, list);
+-			dev_put(skb->dev);
+-			kfree_skb(skb);
++			__skb_queue_tail(&tmp, skb);
+ 		}
+ 		skb = skb_next;
+ 	}
+ 	spin_unlock_irqrestore(&list->lock, flags);
++
++	while ((skb = __skb_dequeue(&tmp))) {
++		dev_put(skb->dev);
++		kfree_skb(skb);
++	}
+ }
+ 
+ static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev)
 
 
