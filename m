@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3F16ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:29:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB8EFC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:29:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236210AbiIBO3p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:29:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54284 "EHLO
+        id S236388AbiIBO3v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:29:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236805AbiIBO1c (ORCPT
+        with ESMTP id S236959AbiIBO1d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:27:32 -0400
+        Fri, 2 Sep 2022 10:27:33 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4F32168A3B
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47F911581AC
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=tmkbhGubwHT7U0oeakCgE2xWz6Q0qYpLFWybSMdPCks=; b=QF5DWXiNDuHWPE4zS5CJJsIWAA
-        FbPDAeX4b0xcpmmizBpTeskPrSGd85F21nMgg/J8i38hJiUEnma9kNBHjxAGati1yergjdyT1O4w7
-        +B/mJ2JyN295QFTqm5/aI4nB05F6oxN0rwULvVN5Grs0d3L3ue7RSNU492zAC4zowQ6WUBvkcokbT
-        Ew1GtA1flEWlZBwRVbAmPNabxm3rYgFAq/tzf5JXI3ahODkU64QK62TGhhZto9Xj4awVYBr2+x0Q/
-        0X4//FGDU0gyS4xMvtJnWsNjN1VCErYADeCj6cAefyVK98DfXQcBpTLWLSiIwWz36gJGr+WlRx+bd
-        bP4gMijg==;
+        bh=O5PdF8HIrWFo7pNjLhP8ffWoE9Ddd7vvjM+ehcZizzE=; b=FjhkDCOGmXUNe2wXedgrU3T1nQ
+        ZPcYHDUEqSmTbFe+xPafLNNZ2aI9l1MAZR8PNDc8AZu8p3JNoWQ7keihSIIBUJW3iMfDF10IEo9Uo
+        lrA9TxFKAAe41CocmSYE9yc8aul9bt5PkZaQDAp5fPdg7a0n76YMjgIieNSuUDz8Brxj57E2K9x0J
+        e93Hrz01rYmycbMRU+S0+YDFABA9ZVvX3XIKBZ9riAYOUJb7NqfTDj7Up2KdEc9kNYo37DwJRurJ4
+        7koISDoX5uIwbQDl6e6T8R6INU+ZsiKcttYQmSXiNYzvXm/CMG3rvWmlkPdiw76hdULtbyNvsokwB
+        0afw55RA==;
 Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
         by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oU77O-0074UE-EK; Fri, 02 Sep 2022 13:53:59 +0000
+        id 1oU77L-0074St-Hp; Fri, 02 Sep 2022 13:53:56 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 3DD17302D76;
-        Fri,  2 Sep 2022 15:53:54 +0200 (CEST)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 546513002C7;
+        Fri,  2 Sep 2022 15:53:52 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 8885A2B8EFB5C; Fri,  2 Sep 2022 15:53:53 +0200 (CEST)
-Message-ID: <20220902130951.545005716@infradead.org>
+        id 1E02229A333FB; Fri,  2 Sep 2022 15:53:52 +0200 (CEST)
+Message-ID: <20220902130946.669965052@infradead.org>
 User-Agent: quilt/0.66
-Date:   Fri, 02 Sep 2022 15:07:15 +0200
+Date:   Fri, 02 Sep 2022 15:06:28 +0200
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     Thomas Gleixner <tglx@linutronix.de>
 Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
@@ -59,7 +59,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
         Daniel Borkmann <daniel@iogearbox.net>,
         K Prateek Nayak <kprateek.nayak@amd.com>,
         Eric Dumazet <edumazet@google.com>
-Subject: [PATCH v2 50/59] x86/retbleed: Add SKL call thunk
+Subject: [PATCH v2 03/59] x86/cpu: Get rid of redundant switch_to_new_gdt() invocations
 References: <20220902130625.217071627@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -69,72 +69,111 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Thomas Gleixner <tglx@linutronix.de>
 
-Add the actual SKL call thunk for call depth accounting.
+The only place where switch_to_new_gdt() is required is early boot to
+switch from the early GDT to the direct GDT. Any other invocation is
+completely redundant because it does not change anything.
+
+Secondary CPUs come out of the ASM code with GDT and GSBASE correctly set
+up. The same is true for XEN_PV.
+
+Remove all the voodoo invocations which are left overs from the ancient
+past, rename the function to switch_gdt_and_percpu_base() and mark it init.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/x86/kernel/callthunks.c |   25 ++++++++++++++++++++-----
- 1 file changed, 20 insertions(+), 5 deletions(-)
+V2: Rename it (Linus)
+---
+ arch/x86/include/asm/processor.h |    2 +-
+ arch/x86/kernel/cpu/common.c     |   17 ++++++-----------
+ arch/x86/kernel/setup_percpu.c   |    2 +-
+ arch/x86/kernel/smpboot.c        |    6 +++++-
+ arch/x86/xen/enlighten_pv.c      |    2 +-
+ 5 files changed, 14 insertions(+), 15 deletions(-)
 
---- a/arch/x86/kernel/callthunks.c
-+++ b/arch/x86/kernel/callthunks.c
-@@ -7,6 +7,7 @@
- #include <linux/moduleloader.h>
+--- a/arch/x86/include/asm/processor.h
++++ b/arch/x86/include/asm/processor.h
+@@ -670,7 +670,7 @@ extern int sysenter_setup(void);
+ /* Defined in head.S */
+ extern struct desc_ptr		early_gdt_descr;
  
- #include <asm/alternative.h>
-+#include <asm/asm-offsets.h>
- #include <asm/cpu.h>
- #include <asm/ftrace.h>
- #include <asm/insn.h>
-@@ -55,7 +56,21 @@ static const struct core_text builtin_co
- 	.name = "builtin",
- };
+-extern void switch_to_new_gdt(int);
++extern void switch_gdt_and_percpu_base(int);
+ extern void load_direct_gdt(int);
+ extern void load_fixmap_gdt(int);
+ extern void cpu_init(void);
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -729,14 +729,15 @@ void load_fixmap_gdt(int cpu)
+ EXPORT_SYMBOL_GPL(load_fixmap_gdt);
  
--static struct thunk_desc callthunk_desc __ro_after_init;
-+asm (
-+	".pushsection .rodata				\n"
-+	".global skl_call_thunk_template		\n"
-+	"skl_call_thunk_template:			\n"
-+		__stringify(INCREMENT_CALL_DEPTH)"	\n"
-+	".global skl_call_thunk_tail			\n"
-+	"skl_call_thunk_tail:				\n"
-+	".popsection					\n"
-+);
-+
-+extern u8 skl_call_thunk_template[];
-+extern u8 skl_call_thunk_tail[];
-+
-+#define SKL_TMPL_SIZE \
-+	((unsigned int)(skl_call_thunk_tail - skl_call_thunk_template))
- 
- extern void error_entry(void);
- extern void xen_error_entry(void);
-@@ -157,11 +172,11 @@ static const u8 nops[] = {
- 
- static __init_or_module void *patch_dest(void *dest, bool direct)
+ /**
+- * switch_to_new_gdt - Switch form early GDT to the direct one
++ * switch_gdt_and_percpu_base - Switch to direct GDT and runtime per CPU base
+  * @cpu:	The CPU number for which this is invoked
+  *
+- * Invoked during early boot to switch from early GDT and early per CPU
+- * (%fs on 32bit, GS_BASE on 64bit) to the direct GDT and the runtime per
+- * CPU area.
++ * Invoked during early boot to switch from early GDT and early per CPU to
++ * the direct GDT and the runtime per CPU area. On 32-bit the percpu base
++ * switch is implicit by loading the direct GDT. On 64bit this requires
++ * to update GSBASE.
+  */
+-void switch_to_new_gdt(int cpu)
++void __init switch_gdt_and_percpu_base(int cpu)
  {
--	unsigned int tsize = callthunk_desc.template_size;
-+	unsigned int tsize = SKL_TMPL_SIZE;
- 	u8 *pad = dest - tsize;
+ 	load_direct_gdt(cpu);
  
- 	/* Already patched? */
--	if (!bcmp(pad, callthunk_desc.template, tsize))
-+	if (!bcmp(pad, skl_call_thunk_template, tsize))
- 		return pad;
+@@ -2251,12 +2252,6 @@ void cpu_init(void)
+ 	    boot_cpu_has(X86_FEATURE_TSC) || boot_cpu_has(X86_FEATURE_DE))
+ 		cr4_clear_bits(X86_CR4_VME|X86_CR4_PVI|X86_CR4_TSD|X86_CR4_DE);
  
- 	/* Ensure there are nops */
-@@ -171,9 +186,9 @@ static __init_or_module void *patch_dest
+-	/*
+-	 * Initialize the per-CPU GDT with the boot GDT,
+-	 * and set up the GDT descriptor:
+-	 */
+-	switch_to_new_gdt(cpu);
+-
+ 	if (IS_ENABLED(CONFIG_X86_64)) {
+ 		loadsegment(fs, 0);
+ 		memset(cur->thread.tls_array, 0, GDT_ENTRY_TLS_ENTRIES * 8);
+--- a/arch/x86/kernel/setup_percpu.c
++++ b/arch/x86/kernel/setup_percpu.c
+@@ -211,7 +211,7 @@ void __init setup_per_cpu_areas(void)
+ 		 * area.  Reload any changed state for the boot CPU.
+ 		 */
+ 		if (!cpu)
+-			switch_to_new_gdt(cpu);
++			switch_gdt_and_percpu_base(cpu);
  	}
  
- 	if (direct)
--		memcpy(pad, callthunk_desc.template, tsize);
-+		memcpy(pad, skl_call_thunk_template, tsize);
- 	else
--		text_poke_copy_locked(pad, callthunk_desc.template, tsize, true);
-+		text_poke_copy_locked(pad, skl_call_thunk_template, tsize, true);
- 	return pad;
- }
+ 	/* indicate the early static arrays will soon be gone */
+--- a/arch/x86/kernel/smpboot.c
++++ b/arch/x86/kernel/smpboot.c
+@@ -1453,7 +1453,11 @@ void arch_thaw_secondary_cpus_end(void)
+ void __init native_smp_prepare_boot_cpu(void)
+ {
+ 	int me = smp_processor_id();
+-	switch_to_new_gdt(me);
++
++	/* SMP handles this from setup_per_cpu_areas() */
++	if (!IS_ENABLED(CONFIG_SMP))
++		switch_gdt_and_percpu_base(me);
++
+ 	/* already set me in cpu_online_mask in boot_cpu_init() */
+ 	cpumask_set_cpu(me, cpu_callout_mask);
+ 	cpu_set_state_online(me);
+--- a/arch/x86/xen/enlighten_pv.c
++++ b/arch/x86/xen/enlighten_pv.c
+@@ -1167,7 +1167,7 @@ static void __init xen_setup_gdt(int cpu
+ 	pv_ops.cpu.write_gdt_entry = xen_write_gdt_entry_boot;
+ 	pv_ops.cpu.load_gdt = xen_load_gdt_boot;
  
+-	switch_to_new_gdt(cpu);
++	switch_gdt_and_percpu_base(cpu);
+ 
+ 	pv_ops.cpu.write_gdt_entry = xen_write_gdt_entry;
+ 	pv_ops.cpu.load_gdt = xen_load_gdt;
 
 
