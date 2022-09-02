@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8929ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:00:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87E66ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:00:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238412AbiIBNAq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:00:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51978 "EHLO
+        id S238551AbiIBNAw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:00:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238639AbiIBM7N (ORCPT
+        with ESMTP id S238647AbiIBM7O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:59:13 -0400
+        Fri, 2 Sep 2022 08:59:14 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 917B7C7B9E;
-        Fri,  2 Sep 2022 05:40:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1682BD5DCB;
+        Fri,  2 Sep 2022 05:40:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8295B82AC7;
-        Fri,  2 Sep 2022 12:31:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28EFFC433D6;
-        Fri,  2 Sep 2022 12:31:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4A9C2B82A95;
+        Fri,  2 Sep 2022 12:25:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A052AC433C1;
+        Fri,  2 Sep 2022 12:25:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121918;
-        bh=/GzZFNJ4zbZE3yw3cxjtkbCmRfMDh5qUScV5IZLRNnw=;
+        s=korg; t=1662121511;
+        bh=JPy/xrZXxNcdbj1iowz4GQ8lByASYODcJqylTdob+MA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2nT1A7IpGpyIyGUM9BhO5wZK5UAiAsZJ/kQCn6ViCSCtihCC6jBcdp8N8Hs+YPGsn
-         KQWZhYLeTFKUvapXBwVZ+/CSyst33TP34LT8v+bE7AoiCVDCX7xx1ae0bdA5vhh/KT
-         8970r1P6BLgDrYmddRdTQSm/CVKvPLlwguXXepRo=
+        b=cWECyqW/I9wHgw0tHd3/qTmX8LhA0Xj+40TQbDNyVT9KjBgDlIoqBgteuCMC26YXC
+         FBcVmng1B9EKU/2mhCpYNy3x3qIwXQEa/QD1GDYp+XE6FdRnRxE6gqmqffllmwcq82
+         oZGXuwS/LdIHcvuIb83jcz+Xcr2TLAdlmYKNpPQM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Timo Alho <talho@nvidia.com>,
-        Mikko Perttunen <mperttunen@nvidia.com>,
-        Thierry Reding <treding@nvidia.com>,
-        Jon Hunter <jonathanh@nvidia.com>
-Subject: [PATCH 5.15 06/73] firmware: tegra: bpmp: Do only aligned access to IPC memory area
-Date:   Fri,  2 Sep 2022 14:18:30 +0200
-Message-Id: <20220902121404.657506377@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "srivatsab@vmware.com, srivatsa@csail.mit.edu, akaher@vmware.com,
+        amakhalov@vmware.com, vsirnapalli@vmware.com, sturlapati@vmware.com,
+        bordoloih@vmware.com, keerthanak@vmware.com, Ankit Jain" 
+        <ankitja@vmware.com>, Hui Su <suhui_kernel@163.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Ankit Jain <ankitja@vmware.com>
+Subject: [PATCH 4.19 08/56] kernel/sched: Remove dl_boosted flag comment
+Date:   Fri,  2 Sep 2022 14:18:28 +0200
+Message-Id: <20220902121400.478281825@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
-References: <20220902121404.435662285@linuxfoundation.org>
+In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
+References: <20220902121400.219861128@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,53 +54,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Timo Alho <talho@nvidia.com>
+From: Hui Su <suhui_kernel@163.com>
 
-commit a4740b148a04dc60e14fe6a1dfe216d3bae214fd upstream.
+commit 0e3872499de1a1230cef5221607d71aa09264bd5 upstream.
 
-Use memcpy_toio and memcpy_fromio variants of memcpy to guarantee no
-unaligned access to IPC memory area. This is to allow the IPC memory to
-be mapped as Device memory to further suppress speculative reads from
-happening within the 64 kB memory area above the IPC memory when 64 kB
-memory pages are used.
+since commit 2279f540ea7d ("sched/deadline: Fix priority
+inheritance with multiple scheduling classes"), we should not
+keep it here.
 
-Signed-off-by: Timo Alho <talho@nvidia.com>
-Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
-Signed-off-by: Thierry Reding <treding@nvidia.com>
-Cc: Jon Hunter <jonathanh@nvidia.com>
+Signed-off-by: Hui Su <suhui_kernel@163.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Daniel Bristot de Oliveira <bristot@redhat.com>
+Link: https://lore.kernel.org/r/20220107095254.GA49258@localhost.localdomain
+[Ankit: Regenerated the patch for v4.19.y]
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firmware/tegra/bpmp.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ include/linux/sched.h |    4 ----
+ 1 file changed, 4 deletions(-)
 
---- a/drivers/firmware/tegra/bpmp.c
-+++ b/drivers/firmware/tegra/bpmp.c
-@@ -201,7 +201,7 @@ static ssize_t __tegra_bpmp_channel_read
- 	int err;
- 
- 	if (data && size > 0)
--		memcpy(data, channel->ib->data, size);
-+		memcpy_fromio(data, channel->ib->data, size);
- 
- 	err = tegra_bpmp_ack_response(channel);
- 	if (err < 0)
-@@ -245,7 +245,7 @@ static ssize_t __tegra_bpmp_channel_writ
- 	channel->ob->flags = flags;
- 
- 	if (data && size > 0)
--		memcpy(channel->ob->data, data, size);
-+		memcpy_toio(channel->ob->data, data, size);
- 
- 	return tegra_bpmp_post_request(channel);
- }
-@@ -420,7 +420,7 @@ void tegra_bpmp_mrq_return(struct tegra_
- 	channel->ob->code = code;
- 
- 	if (data && size > 0)
--		memcpy(channel->ob->data, data, size);
-+		memcpy_toio(channel->ob->data, data, size);
- 
- 	err = tegra_bpmp_post_response(channel);
- 	if (WARN_ON(err < 0))
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -528,10 +528,6 @@ struct sched_dl_entity {
+ 	 * task has to wait for a replenishment to be performed at the
+ 	 * next firing of dl_timer.
+ 	 *
+-	 * @dl_boosted tells if we are boosted due to DI. If so we are
+-	 * outside bandwidth enforcement mechanism (but only until we
+-	 * exit the critical section);
+-	 *
+ 	 * @dl_yielded tells if task gave up the CPU before consuming
+ 	 * all its available runtime during the last job.
+ 	 *
 
 
