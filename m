@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A25FECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:40:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E507ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:41:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236723AbiIBNkx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:40:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52114 "EHLO
+        id S236961AbiIBNlV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:41:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236490AbiIBNkO (ORCPT
+        with ESMTP id S237782AbiIBNk4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:40:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E460CF8F6B;
-        Fri,  2 Sep 2022 06:17:48 -0700 (PDT)
+        Fri, 2 Sep 2022 09:40:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE164161DDF;
+        Fri,  2 Sep 2022 06:18:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EFED6218F;
-        Fri,  2 Sep 2022 12:29:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D58EC433D6;
-        Fri,  2 Sep 2022 12:29:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED768B829E0;
+        Fri,  2 Sep 2022 12:32:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF923C433B5;
+        Fri,  2 Sep 2022 12:32:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121751;
-        bh=eD8hPXiqhltoVaonaNs7OuOm9CRuggKzV8BzNUVDAgs=;
+        s=korg; t=1662121977;
+        bh=ziVxvl07FZJezI/7I9ibZmcYd2eWyl3wZ1FTUaU40Yg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JY6oaeTaHlikcg3UQFCsRHSJ9dDQgzUjPVKXFdF4QdD9CYKrFc9sz8+GktbQ2sW6x
-         Rbalq9gcWiHC0yfBZ9TQtihk6yjS2PYGzo3OZqzTC9BEVXjXwJnM+rSIM8lRfw4eES
-         G1fN9wYnZEetjFYsNMb/LEGMe70lHF3Nob6lbVks=
+        b=xwj1ZKvDGcsH0xNNrN/5ObN9LAXqGPnKnBAQwWzvv1XLxJw16PtVAM8iYQw7kcoKO
+         00mV47WLXgBV3l96ysZ1AYPQQjJp8/GbLyosBFxrBNdKXwVLH+r8WR0meyOi+XcV0S
+         WfcxUdofB/8TODTFLBOX7v35P/LMzrWtTl9zAw5g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jing Leng <jleng@ambarella.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nicolas Schier <n.schier@avm.de>
-Subject: [PATCH 5.4 52/77] kbuild: Fix include path in scripts/Makefile.modpost
-Date:   Fri,  2 Sep 2022 14:19:01 +0200
-Message-Id: <20220902121405.386283923@linuxfoundation.org>
+        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
+        Filipe Manana <fdmanana@suse.com>,
+        David Sterba <dsterba@suse.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 47/73] btrfs: remove no longer needed logic for replaying directory deletes
+Date:   Fri,  2 Sep 2022 14:19:11 +0200
+Message-Id: <20220902121406.013105463@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
-References: <20220902121403.569927325@linuxfoundation.org>
+In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
+References: <20220902121404.435662285@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,44 +50,301 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Leng <jleng@ambarella.com>
+From: Filipe Manana <fdmanana@suse.com>
 
-commit 23a0cb8e3225122496bfa79172005c587c2d64bf upstream.
+[ Upstream commit ccae4a19c9140a34a0c5f0658812496dd8bbdeaf ]
 
-When building an external module, if users don't need to separate the
-compilation output and source code, they run the following command:
-"make -C $(LINUX_SRC_DIR) M=$(PWD)". At this point, "$(KBUILD_EXTMOD)"
-and "$(src)" are the same.
+Now that we log only dir index keys when logging a directory, we no longer
+need to deal with dir item keys in the log replay code for replaying
+directory deletes. This is also true for the case when we replay a log
+tree created by a kernel that still logs dir items.
 
-If they need to separate them, they run "make -C $(KERNEL_SRC_DIR)
-O=$(KERNEL_OUT_DIR) M=$(OUT_DIR) src=$(PWD)". Before running the
-command, they need to copy "Kbuild" or "Makefile" to "$(OUT_DIR)" to
-prevent compilation failure.
+So remove the remaining code of the replay of directory deletes algorithm
+that deals with dir item keys.
 
-So the kernel should change the included path to avoid the copy operation.
-
-Signed-off-by: Jing Leng <jleng@ambarella.com>
-[masahiro: I do not think "M=$(OUT_DIR) src=$(PWD)" is the official way,
-but this patch is a nice clean up anyway.]
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-[nsc: updated context for v4.19]
-Signed-off-by: Nicolas Schier <n.schier@avm.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Josef Bacik <josef@toxicpanda.com>
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/Makefile.modpost |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ fs/btrfs/tree-log.c             | 158 ++++++++++++++------------------
+ include/uapi/linux/btrfs_tree.h |   4 +-
+ 2 files changed, 72 insertions(+), 90 deletions(-)
 
---- a/scripts/Makefile.modpost
-+++ b/scripts/Makefile.modpost
-@@ -75,8 +75,7 @@ obj := $(KBUILD_EXTMOD)
- src := $(obj)
+diff --git a/fs/btrfs/tree-log.c b/fs/btrfs/tree-log.c
+index 6f51c4d922d48..4ab1bbc344760 100644
+--- a/fs/btrfs/tree-log.c
++++ b/fs/btrfs/tree-log.c
+@@ -2197,7 +2197,7 @@ static noinline int replay_one_dir_item(struct btrfs_trans_handle *trans,
+  */
+ static noinline int find_dir_range(struct btrfs_root *root,
+ 				   struct btrfs_path *path,
+-				   u64 dirid, int key_type,
++				   u64 dirid,
+ 				   u64 *start_ret, u64 *end_ret)
+ {
+ 	struct btrfs_key key;
+@@ -2210,7 +2210,7 @@ static noinline int find_dir_range(struct btrfs_root *root,
+ 		return 1;
  
- # Include the module's Makefile to find KBUILD_EXTRA_SYMBOLS
--include $(if $(wildcard $(KBUILD_EXTMOD)/Kbuild), \
--             $(KBUILD_EXTMOD)/Kbuild, $(KBUILD_EXTMOD)/Makefile)
-+include $(if $(wildcard $(src)/Kbuild), $(src)/Kbuild, $(src)/Makefile)
- endif
+ 	key.objectid = dirid;
+-	key.type = key_type;
++	key.type = BTRFS_DIR_LOG_INDEX_KEY;
+ 	key.offset = *start_ret;
  
- MODPOST += $(subst -i,-n,$(filter -i,$(MAKEFLAGS))) -s -T - $(wildcard vmlinux)
+ 	ret = btrfs_search_slot(NULL, root, &key, path, 0, 0);
+@@ -2224,7 +2224,7 @@ static noinline int find_dir_range(struct btrfs_root *root,
+ 	if (ret != 0)
+ 		btrfs_item_key_to_cpu(path->nodes[0], &key, path->slots[0]);
+ 
+-	if (key.type != key_type || key.objectid != dirid) {
++	if (key.type != BTRFS_DIR_LOG_INDEX_KEY || key.objectid != dirid) {
+ 		ret = 1;
+ 		goto next;
+ 	}
+@@ -2251,7 +2251,7 @@ static noinline int find_dir_range(struct btrfs_root *root,
+ 
+ 	btrfs_item_key_to_cpu(path->nodes[0], &key, path->slots[0]);
+ 
+-	if (key.type != key_type || key.objectid != dirid) {
++	if (key.type != BTRFS_DIR_LOG_INDEX_KEY || key.objectid != dirid) {
+ 		ret = 1;
+ 		goto out;
+ 	}
+@@ -2282,95 +2282,82 @@ static noinline int check_item_in_log(struct btrfs_trans_handle *trans,
+ 	int ret;
+ 	struct extent_buffer *eb;
+ 	int slot;
+-	u32 item_size;
+ 	struct btrfs_dir_item *di;
+-	struct btrfs_dir_item *log_di;
+ 	int name_len;
+-	unsigned long ptr;
+-	unsigned long ptr_end;
+ 	char *name;
+-	struct inode *inode;
++	struct inode *inode = NULL;
+ 	struct btrfs_key location;
+ 
+-again:
++	/*
++	 * Currenly we only log dir index keys. Even if we replay a log created
++	 * by an older kernel that logged both dir index and dir item keys, all
++	 * we need to do is process the dir index keys, we (and our caller) can
++	 * safely ignore dir item keys (key type BTRFS_DIR_ITEM_KEY).
++	 */
++	ASSERT(dir_key->type == BTRFS_DIR_INDEX_KEY);
++
+ 	eb = path->nodes[0];
+ 	slot = path->slots[0];
+-	item_size = btrfs_item_size_nr(eb, slot);
+-	ptr = btrfs_item_ptr_offset(eb, slot);
+-	ptr_end = ptr + item_size;
+-	while (ptr < ptr_end) {
+-		di = (struct btrfs_dir_item *)ptr;
+-		name_len = btrfs_dir_name_len(eb, di);
+-		name = kmalloc(name_len, GFP_NOFS);
+-		if (!name) {
+-			ret = -ENOMEM;
+-			goto out;
+-		}
+-		read_extent_buffer(eb, name, (unsigned long)(di + 1),
+-				  name_len);
+-		log_di = NULL;
+-		if (log && dir_key->type == BTRFS_DIR_ITEM_KEY) {
+-			log_di = btrfs_lookup_dir_item(trans, log, log_path,
+-						       dir_key->objectid,
+-						       name, name_len, 0);
+-		} else if (log && dir_key->type == BTRFS_DIR_INDEX_KEY) {
+-			log_di = btrfs_lookup_dir_index_item(trans, log,
+-						     log_path,
+-						     dir_key->objectid,
+-						     dir_key->offset,
+-						     name, name_len, 0);
+-		}
+-		if (!log_di) {
+-			btrfs_dir_item_key_to_cpu(eb, di, &location);
+-			btrfs_release_path(path);
+-			btrfs_release_path(log_path);
+-			inode = read_one_inode(root, location.objectid);
+-			if (!inode) {
+-				kfree(name);
+-				return -EIO;
+-			}
++	di = btrfs_item_ptr(eb, slot, struct btrfs_dir_item);
++	name_len = btrfs_dir_name_len(eb, di);
++	name = kmalloc(name_len, GFP_NOFS);
++	if (!name) {
++		ret = -ENOMEM;
++		goto out;
++	}
+ 
+-			ret = link_to_fixup_dir(trans, root,
+-						path, location.objectid);
+-			if (ret) {
+-				kfree(name);
+-				iput(inode);
+-				goto out;
+-			}
++	read_extent_buffer(eb, name, (unsigned long)(di + 1), name_len);
+ 
+-			inc_nlink(inode);
+-			ret = btrfs_unlink_inode(trans, BTRFS_I(dir),
+-					BTRFS_I(inode), name, name_len);
+-			if (!ret)
+-				ret = btrfs_run_delayed_items(trans);
+-			kfree(name);
+-			iput(inode);
+-			if (ret)
+-				goto out;
++	if (log) {
++		struct btrfs_dir_item *log_di;
+ 
+-			/* there might still be more names under this key
+-			 * check and repeat if required
+-			 */
+-			ret = btrfs_search_slot(NULL, root, dir_key, path,
+-						0, 0);
+-			if (ret == 0)
+-				goto again;
++		log_di = btrfs_lookup_dir_index_item(trans, log, log_path,
++						     dir_key->objectid,
++						     dir_key->offset,
++						     name, name_len, 0);
++		if (IS_ERR(log_di)) {
++			ret = PTR_ERR(log_di);
++			goto out;
++		} else if (log_di) {
++			/* The dentry exists in the log, we have nothing to do. */
+ 			ret = 0;
+ 			goto out;
+-		} else if (IS_ERR(log_di)) {
+-			kfree(name);
+-			return PTR_ERR(log_di);
+ 		}
+-		btrfs_release_path(log_path);
+-		kfree(name);
++	}
+ 
+-		ptr = (unsigned long)(di + 1);
+-		ptr += name_len;
++	btrfs_dir_item_key_to_cpu(eb, di, &location);
++	btrfs_release_path(path);
++	btrfs_release_path(log_path);
++	inode = read_one_inode(root, location.objectid);
++	if (!inode) {
++		ret = -EIO;
++		goto out;
+ 	}
+-	ret = 0;
++
++	ret = link_to_fixup_dir(trans, root, path, location.objectid);
++	if (ret)
++		goto out;
++
++	inc_nlink(inode);
++	ret = btrfs_unlink_inode(trans, BTRFS_I(dir), BTRFS_I(inode), name,
++				 name_len);
++	if (ret)
++		goto out;
++
++	ret = btrfs_run_delayed_items(trans);
++	if (ret)
++		goto out;
++
++	/*
++	 * Unlike dir item keys, dir index keys can only have one name (entry) in
++	 * them, as there are no key collisions since each key has a unique offset
++	 * (an index number), so we're done.
++	 */
+ out:
+ 	btrfs_release_path(path);
+ 	btrfs_release_path(log_path);
++	kfree(name);
++	iput(inode);
+ 	return ret;
+ }
+ 
+@@ -2490,7 +2477,6 @@ static noinline int replay_dir_deletes(struct btrfs_trans_handle *trans,
+ {
+ 	u64 range_start;
+ 	u64 range_end;
+-	int key_type = BTRFS_DIR_LOG_ITEM_KEY;
+ 	int ret = 0;
+ 	struct btrfs_key dir_key;
+ 	struct btrfs_key found_key;
+@@ -2498,7 +2484,7 @@ static noinline int replay_dir_deletes(struct btrfs_trans_handle *trans,
+ 	struct inode *dir;
+ 
+ 	dir_key.objectid = dirid;
+-	dir_key.type = BTRFS_DIR_ITEM_KEY;
++	dir_key.type = BTRFS_DIR_INDEX_KEY;
+ 	log_path = btrfs_alloc_path();
+ 	if (!log_path)
+ 		return -ENOMEM;
+@@ -2512,14 +2498,14 @@ static noinline int replay_dir_deletes(struct btrfs_trans_handle *trans,
+ 		btrfs_free_path(log_path);
+ 		return 0;
+ 	}
+-again:
++
+ 	range_start = 0;
+ 	range_end = 0;
+ 	while (1) {
+ 		if (del_all)
+ 			range_end = (u64)-1;
+ 		else {
+-			ret = find_dir_range(log, path, dirid, key_type,
++			ret = find_dir_range(log, path, dirid,
+ 					     &range_start, &range_end);
+ 			if (ret < 0)
+ 				goto out;
+@@ -2546,8 +2532,10 @@ static noinline int replay_dir_deletes(struct btrfs_trans_handle *trans,
+ 			btrfs_item_key_to_cpu(path->nodes[0], &found_key,
+ 					      path->slots[0]);
+ 			if (found_key.objectid != dirid ||
+-			    found_key.type != dir_key.type)
+-				goto next_type;
++			    found_key.type != dir_key.type) {
++				ret = 0;
++				goto out;
++			}
+ 
+ 			if (found_key.offset > range_end)
+ 				break;
+@@ -2566,15 +2554,7 @@ static noinline int replay_dir_deletes(struct btrfs_trans_handle *trans,
+ 			break;
+ 		range_start = range_end + 1;
+ 	}
+-
+-next_type:
+ 	ret = 0;
+-	if (key_type == BTRFS_DIR_LOG_ITEM_KEY) {
+-		key_type = BTRFS_DIR_LOG_INDEX_KEY;
+-		dir_key.type = BTRFS_DIR_INDEX_KEY;
+-		btrfs_release_path(path);
+-		goto again;
+-	}
+ out:
+ 	btrfs_release_path(path);
+ 	btrfs_free_path(log_path);
+diff --git a/include/uapi/linux/btrfs_tree.h b/include/uapi/linux/btrfs_tree.h
+index e1c4c732aabac..5416f1f1a77a8 100644
+--- a/include/uapi/linux/btrfs_tree.h
++++ b/include/uapi/linux/btrfs_tree.h
+@@ -146,7 +146,9 @@
+ 
+ /*
+  * dir items are the name -> inode pointers in a directory.  There is one
+- * for every name in a directory.
++ * for every name in a directory.  BTRFS_DIR_LOG_ITEM_KEY is no longer used
++ * but it's still defined here for documentation purposes and to help avoid
++ * having its numerical value reused in the future.
+  */
+ #define BTRFS_DIR_LOG_ITEM_KEY  60
+ #define BTRFS_DIR_LOG_INDEX_KEY 72
+-- 
+2.35.1
+
 
 
