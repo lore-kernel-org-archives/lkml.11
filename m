@@ -2,116 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05754ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:29:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4496FECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:30:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236288AbiIBP3K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 11:29:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34624 "EHLO
+        id S236222AbiIBPaV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 11:30:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237073AbiIBP2f (ORCPT
+        with ESMTP id S236609AbiIBPaD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 11:28:35 -0400
-X-Greylist: delayed 598 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 02 Sep 2022 08:04:48 PDT
-Received: from ext6.scm.com (ext6.scm.com [5.9.60.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E09F5F60;
-        Fri,  2 Sep 2022 08:04:48 -0700 (PDT)
-Received: from mintaka.ncbr.muni.cz (mintaka.ncbr.muni.cz [147.251.90.119])
-        by ext6.scm.com (Postfix) with ESMTPSA id 8E07E7E803ED;
-        Fri,  2 Sep 2022 16:46:47 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=scm.com;
-        s=dkim20220819; t=1662130007;
-        bh=QipHUAFLlQN8U0AxHQTuwbsAVXcDR9FKYRB7FW1CTBE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=AfN0yqr9om7o+c6a7MhakZ4jromiLK15f5sJbWN7DQA4RyZ2XOttED2bN0E3my+be
-         nHIPjP6PqX8PXXsB5TJ3BcUr2vhHKR5RKXAxpU9guMzDPG8R8ZPFg+QtAYAAvoPUjS
-         kpwegXHb/+DcEBQDVhNspRiMVqSu3C7R8jafQj9ZnR+J8SuI0RO7/kZycDbUUSEqsF
-         XqOQewDqkXvefRyzntnvFQusutDT+fjVL18/mooXF/BdPvikrRR0Pd6uZdWd9rceTx
-         Sv2Td07oph8vEvSQOYBtxS/YG55kbrtWUslb7gpNySf+J0gD5H6Ka+fAz/YCysLM0K
-         7UzCyVyjyvfcQ==
-From:   =?utf-8?B?VG9tw6HFoQ==?= Trnka <trnka@scm.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Adrian Hunter <adrian.hunter@intel.com>
-Subject: perf top -p broken for multithreaded processes since 5.19
-Date:   Fri, 02 Sep 2022 16:46:45 +0200
-Message-ID: <10137382.nUPlyArG6x@mintaka.ncbr.muni.cz>
+        Fri, 2 Sep 2022 11:30:03 -0400
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40780DF26
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 08:09:13 -0700 (PDT)
+Received: by mail-qt1-x82a.google.com with SMTP id c20so1651770qtw.8
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 08:09:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=joelfernandes.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=MgFEkju7aDa57SZcgAzeFGulkvAIZ2x+6v5qRawISdk=;
+        b=ocYYfzHESRjQ7FCwHGNEZZU7NUkK29AyJijb5HJ+3OWkymojw7yEUKEX6c8UzFCDrN
+         weqW4TwnZkwbOQL2AV+hX3rfITAChYAcqezgq3AtQ8z9B+N1bxbxhvvYsCpeNrTD//8m
+         /BOR2K0lmHOaIq5tky2YsgjwOvPsHIKQ98hr4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=MgFEkju7aDa57SZcgAzeFGulkvAIZ2x+6v5qRawISdk=;
+        b=LH9vvprDYTljNlwApNJJ6BiQTnlUN2hQBBe7dBNpaKypN6wpPN6XlCy6VbdHeq2xZN
+         CV9Y5I+8pz9WJk15MsZwcOtD2ISCL+6nCE3xi9CMWThT11PKGYzaZLysirepsFP8m6Bk
+         k9kc9abIztbovLodbpFwGxgEmCx4TFevoKtpMkxVnqhvbSExUDulm/rRLKYTUhG+1rZj
+         KrmMIljdY/anBBsAlh8TmrJT/Z8eQDwpnmsvjDPy7MV4DrkWv9BZLiOEb2N08QWEwmeb
+         DxeUkIdJsClgt5T1201mND6lTDOU8cejyxyqUmYVbDEgeSIOV155VStw/D98RS5PO7Wk
+         GknA==
+X-Gm-Message-State: ACgBeo35O0p7Tm5VXMf8Ukvll4dOQPgkfbbZUQNDCVtlCey3Pu5b0TNH
+        FP5HbMw2u9okLbUNQYyRZL79pw==
+X-Google-Smtp-Source: AA6agR54q25QXGJy3h+W0QbAKmNR68p+5BSzNjwS+rYD46HFDTfgExtB7LFixE7h/4CWmJ7+aHwkqw==
+X-Received: by 2002:ac8:7d96:0:b0:344:8cb0:ae8b with SMTP id c22-20020ac87d96000000b003448cb0ae8bmr28853995qtd.628.1662131352283;
+        Fri, 02 Sep 2022 08:09:12 -0700 (PDT)
+Received: from [10.0.0.40] (c-73-148-104-166.hsd1.va.comcast.net. [73.148.104.166])
+        by smtp.gmail.com with ESMTPSA id 2-20020ac85742000000b003434f7483a1sm1182641qtx.32.2022.09.02.08.09.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Sep 2022 08:09:11 -0700 (PDT)
+Message-ID: <013ca416-72de-8059-a5d5-cd63c92ef119@joelfernandes.org>
+Date:   Fri, 2 Sep 2022 11:09:08 -0400
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH v5 02/18] mm/sl[au]b: rearrange struct slab fields to
+ allow larger rcu_head
+Content-Language: en-US
+To:     Vlastimil Babka <vbabka@suse.cz>, rcu@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, rushikesh.s.kadam@intel.com,
+        urezki@gmail.com, neeraj.iitr10@gmail.com, frederic@kernel.org,
+        paulmck@kernel.org, rostedt@goodmis.org, vineeth@bitbyteword.org,
+        boqun.feng@gmail.com, Hyeonggon Yoo <42.hyeyoo@gmail.com>
+References: <20220901221720.1105021-1-joel@joelfernandes.org>
+ <20220901221720.1105021-3-joel@joelfernandes.org>
+ <e84c90f2-d76f-83d4-d40b-403f894eda33@suse.cz>
+ <75ad3ed3-7dcd-474c-472c-ca32c1734281@suse.cz>
+From:   Joel Fernandes <joel@joelfernandes.org>
+In-Reply-To: <75ad3ed3-7dcd-474c-472c-ca32c1734281@suse.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
-
-A bug in perf v5.19 and newer completely breaks monitoring multithreaded
-processes using "perf top -p". The tool fails to start with "Failed to mmap
-with 22 (Invalid argument)". It still seems to work fine on single-threaded
-processes. "perf record" is also unaffected.
-
-I have bisected the issue to the following commit:
-
-commit ae4f8ae16a07896403c90305d4b9be27f657c1fc
-Author: Adrian Hunter <adrian.hunter@intel.com>
-Date:   Tue May 24 10:54:31 2022 +0300
-
-    libperf evlist: Allow mixing per-thread and per-cpu mmaps
-   =20
-    mmap_per_evsel() will skip events that do not match the CPU, so all CPUs
-    can be iterated in any case.
-
-The issue can be easily reproduced using the following test:
-
-$ python - <<EOF
-import time
-import threading
-th =3D threading.Thread(target=3Dtime.sleep, args=3D(3600,))
-th.start()
-th.join()
-EOF
-
-stracing "perf top -p $(pgrep python)" yields this:
-
-145184 perf_event_open({type=3DPERF_TYPE_HARDWARE, size=3DPERF_ATTR_SIZE_VE=
-R7, config=3DPERF_COUNT_HW_CPU_CYCLES, sample_freq=3D4000, sample_type=3DPE=
-RF_SAMPLE_IP|PERF_SAMPLE_TID|PERF_SAMPLE_TIME|PERF_SAMPLE_PERIOD, read_form=
-at=3DPERF_FORMAT_ID, disabled=3D1, exclude_kernel=3D1, mmap=3D1, comm=3D1, =
-freq=3D1, task=3D1, precise_ip=3D0 /* arbitrary skid */, sample_id_all=3D1,=
- mmap2=3D1, comm_exec=3D1, ksymbol=3D1, ...}, 92061, -1, -1, PERF_FLAG_FD_C=
-LOEXEC) =3D 3
- > tools/perf/perf(evsel__open_cpu+0x287) [0x4c8ad7]
- > tools/perf/perf(cmd_top+0x1996) [0x439b26]
- > tools/perf/perf(run_builtin+0x68) [0x4a91f8]
- > tools/perf/perf(main+0x645) [0x40cad5]
-145184 perf_event_open({type=3DPERF_TYPE_HARDWARE, size=3DPERF_ATTR_SIZE_VE=
-R7, config=3DPERF_COUNT_HW_CPU_CYCLES, sample_freq=3D4000, sample_type=3DPE=
-RF_SAMPLE_IP|PERF_SAMPLE_TID|PERF_SAMPLE_TIME|PERF_SAMPLE_PERIOD, read_form=
-at=3DPERF_FORMAT_ID, disabled=3D1, exclude_kernel=3D1, mmap=3D1, comm=3D1, =
-freq=3D1, task=3D1, precise_ip=3D0 /* arbitrary skid */, sample_id_all=3D1,=
- mmap2=3D1, comm_exec=3D1, ksymbol=3D1, ...}, 104619, -1, -1, PERF_FLAG_FD_=
-CLOEXEC) =3D 5
- > tools/perf/perf(evsel__open_cpu+0x287) [0x4c8ad7]
- > tools/perf/perf(cmd_top+0x1996) [0x439b26]
- > tools/perf/perf(run_builtin+0x68) [0x4a91f8]
- > tools/perf/perf(main+0x645) [0x40cad5]
-=E2=80=A6(snip)=E2=80=A6
-145184 ioctl(5, PERF_EVENT_IOC_SET_OUTPUT, 3) =3D -1 EINVAL (Invalid argume=
-nt)
- > tools/perf/perf(perf_evlist__mmap_ops+0x2cf) [0x5d497f]
- > tools/perf/perf(evlist__mmap+0xa7) [0x4c09b7]
- > perf/perf(cmd_top+0x1ccd) [0x439e5d]
- > tools/perf/perf(run_builtin+0x68) [0x4a91f8]
- > tools/perf/perf(main+0x645) [0x40cad5]
-
-Best regards,
-
-Tom=C3=A1=C5=A1
-=2D-
-Tom=C3=A1=C5=A1 Trnka
-Software for Chemistry & Materials B.V.
 
 
+On 9/2/2022 5:30 AM, Vlastimil Babka wrote:
+> On 9/2/22 11:26, Vlastimil Babka wrote:
+>> On 9/2/22 00:17, Joel Fernandes (Google) wrote:
+>>> From: Vlastimil Babka <vbabka@suse.cz>
+>>>
+>>> Joel reports [1] that increasing the rcu_head size for debugging
+>>> purposes used to work before struct slab was split from struct page, but
+>>> now runs into the various SLAB_MATCH() sanity checks of the layout.
+>>>
+>>> This is because the rcu_head in struct page is in union with large
+>>> sub-structures and has space to grow without exceeding their size, while
+>>> in struct slab (for SLAB and SLUB) it's in union only with a list_head.
+>>>
+>>> On closer inspection (and after the previous patch) we can put all
+>>> fields except slab_cache to a union with rcu_head, as slab_cache is
+>>> sufficient for the rcu freeing callbacks to work and the rest can be
+>>> overwritten by rcu_head without causing issues.
+>>>
+>>> This is only somewhat complicated by the need to keep SLUB's
+>>> freelist+counters aligned for cmpxchg_double. As a result the fields
+>>> need to be reordered so that slab_cache is first (after page flags) and
+>>> the union with rcu_head follows. For consistency, do that for SLAB as
+>>> well, although not necessary there.
+>>>
+>>> As a result, the rcu_head field in struct page and struct slab is no
+>>> longer at the same offset, but that doesn't matter as there is no
+>>> casting that would rely on that in the slab freeing callbacks, so we can
+>>> just drop the respective SLAB_MATCH() check.
+>>>
+>>> Also we need to update the SLAB_MATCH() for compound_head to reflect the
+>>> new ordering.
+>>>
+>>> While at it, also add a static_assert to check the alignment needed for
+>>> cmpxchg_double so mistakes are found sooner than a runtime GPF.
+>>>
+>>> [1] https://lore.kernel.org/all/85afd876-d8bb-0804-b2c5-48ed3055e702@joelfernandes.org/
+>>>
+>>> Reported-by: Joel Fernandes <joel@joelfernandes.org>
+>>> Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
+>>
+>> I've added patches 01 and 02 to slab tree for -next exposure before Joel's
+>> full series posting, but it should be also ok if rcu tree carries them with
+>> the whole patchset. I can then drop them from slab tree (there are no
+>> dependencies with other stuff there) so we don't introduce duplicite commits
+>> needlessly, just give me a heads up.
+> 
+> Ah but in that case please apply the reviews from my posting [1]
+> 
+> patch 1:
+> Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+> 
+> patch 2
+> Acked-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+> 
+> [1] https://lore.kernel.org/all/20220826090912.11292-1-vbabka@suse.cz/
 
+
+Sorry for injecting confusion - my main intent with including the mm patches in
+this series is to make it easier for other reviewers/testers to backport the
+series to their kernels in one shot. Some reviewers expressed interested in
+trying out the series.
+
+I think it is best to let the -mm patches in the series go through the slab
+tree, as you also have the Acks/Reviews there and will take sure those
+dependencies are out of the way.
+
+My lesson here is to be more clear, I could have added some notes for context
+below the "---" of those mm patches.
+
+Thanks again for your help,
+
+- Joel
