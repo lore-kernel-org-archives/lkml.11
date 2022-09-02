@@ -2,53 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FE9AECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:41:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA5FAC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:41:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237291AbiIBMlK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:41:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42526 "EHLO
+        id S237297AbiIBMlO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:41:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237232AbiIBMiv (ORCPT
+        with ESMTP id S237246AbiIBMix (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:38:51 -0400
+        Fri, 2 Sep 2022 08:38:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ABEF474D6;
-        Fri,  2 Sep 2022 05:30:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7872B52E73;
+        Fri,  2 Sep 2022 05:30:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 73F4762196;
-        Fri,  2 Sep 2022 12:29:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 497C4C433C1;
-        Fri,  2 Sep 2022 12:29:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 759FC620DD;
+        Fri,  2 Sep 2022 12:30:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 838F8C433C1;
+        Fri,  2 Sep 2022 12:30:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121791;
-        bh=0qF/oYmMy+Nd9dHjixWzVS8ZidgujaNkK2EyJt3lh8c=;
+        s=korg; t=1662121804;
+        bh=WElrGm0ivZCuPHTPNPzioR0z3KnhJG8+yewOgMjfT0c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x4xPb0+eomvKU9feZyFtAPKvAF9YVm5+atKcNT1bcfFLm8wY+qTRLm33gn5wsrwi8
-         LVz8EjjgV4C8D5udQ3FxIZAgKJ+Kd8GC5UB2jm+H41RvZ+W/PMhdEZ9moMS6TkB2NY
-         3h1Wtglv716SPabVE6a4oqEKp18AMqH5ZT/2XOdU=
+        b=kRZybh5D8+oJSJzXJ7cyg086lyGqiQpSzwnG5Pk+MBZ+MVHOwUqRpcSLB9KPy7pSS
+         +I9959QDDsi8h4z/QM99cBcjGVnSvIIbNGdHG65uR/iRjoYIKN5MuaXhJhcSifJDYU
+         VVd4lb24YsXyXqO5lKBhL+Cgz2SLCENJ2fT0JSP0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Ahern <dsahern@kernel.org>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Christian Brauner <brauner@kernel.org>, netdev@vger.kernel.org,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
-        Konstantin Khorenko <khorenko@virtuozzo.com>,
-        kernel@openvz.org, devel@openvz.org,
-        "Denis V. Lunev" <den@openvz.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 67/77] neigh: fix possible DoS due to net iface start/stop loop
-Date:   Fri,  2 Sep 2022 14:19:16 +0200
-Message-Id: <20220902121405.911113172@linuxfoundation.org>
+        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 71/77] btrfs: tree-checker: check for overlapping extent items
+Date:   Fri,  2 Sep 2022 14:19:20 +0200
+Message-Id: <20220902121406.042078995@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
 References: <20220902121403.569927325@linuxfoundation.org>
@@ -60,127 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Denis V. Lunev <den@openvz.org>
+From: Josef Bacik <josef@toxicpanda.com>
 
-[ Upstream commit 66ba215cb51323e4e55e38fd5f250e0fae0cbc94 ]
+[ Upstream commit 899b7f69f244e539ea5df1b4d756046337de44a5 ]
 
-Normal processing of ARP request (usually this is Ethernet broadcast
-packet) coming to the host is looking like the following:
-* the packet comes to arp_process() call and is passed through routing
-  procedure
-* the request is put into the queue using pneigh_enqueue() if
-  corresponding ARP record is not local (common case for container
-  records on the host)
-* the request is processed by timer (within 80 jiffies by default) and
-  ARP reply is sent from the same arp_process() using
-  NEIGH_CB(skb)->flags & LOCALLY_ENQUEUED condition (flag is set inside
-  pneigh_enqueue())
+We're seeing a weird problem in production where we have overlapping
+extent items in the extent tree.  It's unclear where these are coming
+from, and in debugging we realized there's no check in the tree checker
+for this sort of problem.  Add a check to the tree-checker to make sure
+that the extents do not overlap each other.
 
-And here the problem comes. Linux kernel calls pneigh_queue_purge()
-which destroys the whole queue of ARP requests on ANY network interface
-start/stop event through __neigh_ifdown().
-
-This is actually not a problem within the original world as network
-interface start/stop was accessible to the host 'root' only, which
-could do more destructive things. But the world is changed and there
-are Linux containers available. Here container 'root' has an access
-to this API and could be considered as untrusted user in the hosting
-(container's) world.
-
-Thus there is an attack vector to other containers on node when
-container's root will endlessly start/stop interfaces. We have observed
-similar situation on a real production node when docker container was
-doing such activity and thus other containers on the node become not
-accessible.
-
-The patch proposed doing very simple thing. It drops only packets from
-the same namespace in the pneigh_queue_purge() where network interface
-state change is detected. This is enough to prevent the problem for the
-whole node preserving original semantics of the code.
-
-v2:
-	- do del_timer_sync() if queue is empty after pneigh_queue_purge()
-v3:
-	- rebase to net tree
-
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: David Ahern <dsahern@kernel.org>
-Cc: Yajun Deng <yajun.deng@linux.dev>
-Cc: Roopa Prabhu <roopa@nvidia.com>
-Cc: Christian Brauner <brauner@kernel.org>
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-Cc: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-Cc: Konstantin Khorenko <khorenko@virtuozzo.com>
-Cc: kernel@openvz.org
-Cc: devel@openvz.org
-Investigated-by: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-Signed-off-by: Denis V. Lunev <den@openvz.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reviewed-by: Qu Wenruo <wqu@suse.com>
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/neighbour.c | 25 +++++++++++++++++--------
- 1 file changed, 17 insertions(+), 8 deletions(-)
+ fs/btrfs/tree-checker.c | 25 +++++++++++++++++++++++--
+ 1 file changed, 23 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index 8b6140e67e7f8..6056b8e545658 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -280,14 +280,23 @@ static int neigh_del_timer(struct neighbour *n)
- 	return 0;
+diff --git a/fs/btrfs/tree-checker.c b/fs/btrfs/tree-checker.c
+index 368c43c6cbd08..d15de5abb562d 100644
+--- a/fs/btrfs/tree-checker.c
++++ b/fs/btrfs/tree-checker.c
+@@ -1019,7 +1019,8 @@ static void extent_err(const struct extent_buffer *eb, int slot,
  }
  
--static void pneigh_queue_purge(struct sk_buff_head *list)
-+static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
+ static int check_extent_item(struct extent_buffer *leaf,
+-			     struct btrfs_key *key, int slot)
++			     struct btrfs_key *key, int slot,
++			     struct btrfs_key *prev_key)
  {
-+	unsigned long flags;
- 	struct sk_buff *skb;
- 
--	while ((skb = skb_dequeue(list)) != NULL) {
--		dev_put(skb->dev);
--		kfree_skb(skb);
-+	spin_lock_irqsave(&list->lock, flags);
-+	skb = skb_peek(list);
-+	while (skb != NULL) {
-+		struct sk_buff *skb_next = skb_peek_next(skb, list);
-+		if (net == NULL || net_eq(dev_net(skb->dev), net)) {
-+			__skb_unlink(skb, list);
-+			dev_put(skb->dev);
-+			kfree_skb(skb);
-+		}
-+		skb = skb_next;
+ 	struct btrfs_fs_info *fs_info = leaf->fs_info;
+ 	struct btrfs_extent_item *ei;
+@@ -1230,6 +1231,26 @@ static int check_extent_item(struct extent_buffer *leaf,
+ 			   total_refs, inline_refs);
+ 		return -EUCLEAN;
  	}
-+	spin_unlock_irqrestore(&list->lock, flags);
- }
- 
- static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev,
-@@ -358,9 +367,9 @@ static int __neigh_ifdown(struct neigh_table *tbl, struct net_device *dev,
- 	write_lock_bh(&tbl->lock);
- 	neigh_flush_dev(tbl, dev, skip_perm);
- 	pneigh_ifdown_and_unlock(tbl, dev);
--
--	del_timer_sync(&tbl->proxy_timer);
--	pneigh_queue_purge(&tbl->proxy_queue);
-+	pneigh_queue_purge(&tbl->proxy_queue, dev_net(dev));
-+	if (skb_queue_empty_lockless(&tbl->proxy_queue))
-+		del_timer_sync(&tbl->proxy_timer);
++
++	if ((prev_key->type == BTRFS_EXTENT_ITEM_KEY) ||
++	    (prev_key->type == BTRFS_METADATA_ITEM_KEY)) {
++		u64 prev_end = prev_key->objectid;
++
++		if (prev_key->type == BTRFS_METADATA_ITEM_KEY)
++			prev_end += fs_info->nodesize;
++		else
++			prev_end += prev_key->offset;
++
++		if (unlikely(prev_end > key->objectid)) {
++			extent_err(leaf, slot,
++	"previous extent [%llu %u %llu] overlaps current extent [%llu %u %llu]",
++				   prev_key->objectid, prev_key->type,
++				   prev_key->offset, key->objectid, key->type,
++				   key->offset);
++			return -EUCLEAN;
++		}
++	}
++
  	return 0;
  }
  
-@@ -1741,7 +1750,7 @@ int neigh_table_clear(int index, struct neigh_table *tbl)
- 	/* It is not clean... Fix it to unload IPv6 module safely */
- 	cancel_delayed_work_sync(&tbl->gc_work);
- 	del_timer_sync(&tbl->proxy_timer);
--	pneigh_queue_purge(&tbl->proxy_queue);
-+	pneigh_queue_purge(&tbl->proxy_queue, NULL);
- 	neigh_ifdown(tbl, NULL);
- 	if (atomic_read(&tbl->entries))
- 		pr_crit("neighbour leakage\n");
+@@ -1343,7 +1364,7 @@ static int check_leaf_item(struct extent_buffer *leaf,
+ 		break;
+ 	case BTRFS_EXTENT_ITEM_KEY:
+ 	case BTRFS_METADATA_ITEM_KEY:
+-		ret = check_extent_item(leaf, key, slot);
++		ret = check_extent_item(leaf, key, slot, prev_key);
+ 		break;
+ 	case BTRFS_TREE_BLOCK_REF_KEY:
+ 	case BTRFS_SHARED_DATA_REF_KEY:
 -- 
 2.35.1
 
