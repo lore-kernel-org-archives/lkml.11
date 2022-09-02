@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B37AC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:31:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62EE3C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:31:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236219AbiIBMbj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:31:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34570 "EHLO
+        id S236685AbiIBMbm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:31:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235949AbiIBMaz (ORCPT
+        with ESMTP id S236430AbiIBMbK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:30:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 462CDDC081;
-        Fri,  2 Sep 2022 05:26:27 -0700 (PDT)
+        Fri, 2 Sep 2022 08:31:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0B33D4778;
+        Fri,  2 Sep 2022 05:26:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6014B82AA5;
-        Fri,  2 Sep 2022 12:25:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AFFEC433C1;
-        Fri,  2 Sep 2022 12:25:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 457CFB829B6;
+        Fri,  2 Sep 2022 12:24:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E6BEC433C1;
+        Fri,  2 Sep 2022 12:24:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121554;
-        bh=EDral1MergIKIBDfNCfqq2/5n6WX0jOlMuekLNB2UFA=;
+        s=korg; t=1662121478;
+        bh=W7P9K7FzgMUNUKNsBnmBsRhOguERmdhPslUkvp9BVQs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2FcHDWNjV2Og+V1MYFessvp1QjKcwuE2qT9hMt+ypl+zPS0qXke/WVueBYyp9cQgx
-         wgJ0nlbDZns5M+OWiy5nF83+KyIdU0DxbrsoJJRJ05KP2De/yfdkHg0Viz29z5DsMj
-         61QXWjibkwxTyItSF5Li/gw/4de5lNlBYfy9uAE0=
+        b=x8TQL3ah3G8pxgBRKUuAYimZmJzELApyIQWUdEma+E+s4bCgIGGHGuVVooboM+oIV
+         svImbDota7HWOhsgp7r1M6lWGigmEV76tsBwh+MiRUv5qh4MVhHgI0o/zi40QfCtox
+         DSNcbEbph82UW60xKqe3Eg0adilzKwa+AZi5Gm4I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Steve Payne <spayne@aurora.tech>,
-        Ilya Evenbach <ievenbach@aurora.tech>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 4.19 28/56] ixgbe: stop resetting SYSTIME in ixgbe_ptp_start_cyclecounter
-Date:   Fri,  2 Sep 2022 14:18:48 +0200
-Message-Id: <20220902121401.213619464@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 20/56] net: Fix data-races around netdev_tstamp_prequeue.
+Date:   Fri,  2 Sep 2022 14:18:40 +0200
+Message-Id: <20220902121400.882884721@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
 References: <20220902121400.219861128@linuxfoundation.org>
@@ -52,135 +49,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jacob Keller <jacob.e.keller@intel.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 25d7a5f5a6bb15a2dae0a3f39ea5dda215024726 ]
+[ Upstream commit 61adf447e38664447526698872e21c04623afb8e ]
 
-The ixgbe_ptp_start_cyclecounter is intended to be called whenever the
-cyclecounter parameters need to be changed.
+While reading netdev_tstamp_prequeue, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-Since commit a9763f3cb54c ("ixgbe: Update PTP to support X550EM_x
-devices"), this function has cleared the SYSTIME registers and reset the
-TSAUXC DISABLE_SYSTIME bit.
-
-While these need to be cleared during ixgbe_ptp_reset, it is wrong to clear
-them during ixgbe_ptp_start_cyclecounter. This function may be called
-during both reset and link status change. When link changes, the SYSTIME
-counter is still operating normally, but the cyclecounter should be updated
-to account for the possibly changed parameters.
-
-Clearing SYSTIME when link changes causes the timecounter to jump because
-the cycle counter now reads zero.
-
-Extract the SYSTIME initialization out to a new function and call this
-during ixgbe_ptp_reset. This prevents the timecounter adjustment and avoids
-an unnecessary reset of the current time.
-
-This also restores the original SYSTIME clearing that occurred during
-ixgbe_ptp_reset before the commit above.
-
-Reported-by: Steve Payne <spayne@aurora.tech>
-Reported-by: Ilya Evenbach <ievenbach@aurora.tech>
-Fixes: a9763f3cb54c ("ixgbe: Update PTP to support X550EM_x devices")
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: 3b098e2d7c69 ("net: Consistent skb timestamping")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c | 59 +++++++++++++++-----
- 1 file changed, 46 insertions(+), 13 deletions(-)
+ net/core/dev.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
-index b3e0d8bb5cbd8..eec68cc9288c8 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
-@@ -1066,7 +1066,6 @@ void ixgbe_ptp_start_cyclecounter(struct ixgbe_adapter *adapter)
- 	struct cyclecounter cc;
- 	unsigned long flags;
- 	u32 incval = 0;
--	u32 tsauxc = 0;
- 	u32 fuse0 = 0;
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 6ee4390863fbe..d5bef2bb0b7c8 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4474,7 +4474,7 @@ static int netif_rx_internal(struct sk_buff *skb)
+ {
+ 	int ret;
  
- 	/* For some of the boards below this mask is technically incorrect.
-@@ -1101,18 +1100,6 @@ void ixgbe_ptp_start_cyclecounter(struct ixgbe_adapter *adapter)
- 	case ixgbe_mac_x550em_a:
- 	case ixgbe_mac_X550:
- 		cc.read = ixgbe_ptp_read_X550;
--
--		/* enable SYSTIME counter */
--		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMR, 0);
--		IXGBE_WRITE_REG(hw, IXGBE_SYSTIML, 0);
--		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMH, 0);
--		tsauxc = IXGBE_READ_REG(hw, IXGBE_TSAUXC);
--		IXGBE_WRITE_REG(hw, IXGBE_TSAUXC,
--				tsauxc & ~IXGBE_TSAUXC_DISABLE_SYSTIME);
--		IXGBE_WRITE_REG(hw, IXGBE_TSIM, IXGBE_TSIM_TXTS);
--		IXGBE_WRITE_REG(hw, IXGBE_EIMS, IXGBE_EIMS_TIMESYNC);
--
--		IXGBE_WRITE_FLUSH(hw);
- 		break;
- 	case ixgbe_mac_X540:
- 		cc.read = ixgbe_ptp_read_82599;
-@@ -1144,6 +1131,50 @@ void ixgbe_ptp_start_cyclecounter(struct ixgbe_adapter *adapter)
- 	spin_unlock_irqrestore(&adapter->tmreg_lock, flags);
- }
+-	net_timestamp_check(netdev_tstamp_prequeue, skb);
++	net_timestamp_check(READ_ONCE(netdev_tstamp_prequeue), skb);
  
-+/**
-+ * ixgbe_ptp_init_systime - Initialize SYSTIME registers
-+ * @adapter: the ixgbe private board structure
-+ *
-+ * Initialize and start the SYSTIME registers.
-+ */
-+static void ixgbe_ptp_init_systime(struct ixgbe_adapter *adapter)
-+{
-+	struct ixgbe_hw *hw = &adapter->hw;
-+	u32 tsauxc;
-+
-+	switch (hw->mac.type) {
-+	case ixgbe_mac_X550EM_x:
-+	case ixgbe_mac_x550em_a:
-+	case ixgbe_mac_X550:
-+		tsauxc = IXGBE_READ_REG(hw, IXGBE_TSAUXC);
-+
-+		/* Reset SYSTIME registers to 0 */
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMR, 0);
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIML, 0);
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMH, 0);
-+
-+		/* Reset interrupt settings */
-+		IXGBE_WRITE_REG(hw, IXGBE_TSIM, IXGBE_TSIM_TXTS);
-+		IXGBE_WRITE_REG(hw, IXGBE_EIMS, IXGBE_EIMS_TIMESYNC);
-+
-+		/* Activate the SYSTIME counter */
-+		IXGBE_WRITE_REG(hw, IXGBE_TSAUXC,
-+				tsauxc & ~IXGBE_TSAUXC_DISABLE_SYSTIME);
-+		break;
-+	case ixgbe_mac_X540:
-+	case ixgbe_mac_82599EB:
-+		/* Reset SYSTIME registers to 0 */
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIML, 0);
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMH, 0);
-+		break;
-+	default:
-+		/* Other devices aren't supported */
-+		return;
-+	};
-+
-+	IXGBE_WRITE_FLUSH(hw);
-+}
-+
- /**
-  * ixgbe_ptp_reset
-  * @adapter: the ixgbe private board structure
-@@ -1170,6 +1201,8 @@ void ixgbe_ptp_reset(struct ixgbe_adapter *adapter)
+ 	trace_netif_rx(skb);
  
- 	ixgbe_ptp_start_cyclecounter(adapter);
+@@ -4794,7 +4794,7 @@ static int __netif_receive_skb_core(struct sk_buff **pskb, bool pfmemalloc,
+ 	int ret = NET_RX_DROP;
+ 	__be16 type;
  
-+	ixgbe_ptp_init_systime(adapter);
-+
- 	spin_lock_irqsave(&adapter->tmreg_lock, flags);
- 	timecounter_init(&adapter->hw_tc, &adapter->hw_cc,
- 			 ktime_to_ns(ktime_get_real()));
+-	net_timestamp_check(!netdev_tstamp_prequeue, skb);
++	net_timestamp_check(!READ_ONCE(netdev_tstamp_prequeue), skb);
+ 
+ 	trace_netif_receive_skb(skb);
+ 
+@@ -5146,7 +5146,7 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
+ {
+ 	int ret;
+ 
+-	net_timestamp_check(netdev_tstamp_prequeue, skb);
++	net_timestamp_check(READ_ONCE(netdev_tstamp_prequeue), skb);
+ 
+ 	if (skb_defer_rx_timestamp(skb))
+ 		return NET_RX_SUCCESS;
+@@ -5176,7 +5176,7 @@ static void netif_receive_skb_list_internal(struct list_head *head)
+ 
+ 	INIT_LIST_HEAD(&sublist);
+ 	list_for_each_entry_safe(skb, next, head, list) {
+-		net_timestamp_check(netdev_tstamp_prequeue, skb);
++		net_timestamp_check(READ_ONCE(netdev_tstamp_prequeue), skb);
+ 		skb_list_del_init(skb);
+ 		if (!skb_defer_rx_timestamp(skb))
+ 			list_add_tail(&skb->list, &sublist);
 -- 
 2.35.1
 
