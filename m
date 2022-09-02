@@ -2,87 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31E3DECAAA1
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:02:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE3CEC54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:04:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235622AbiIBICU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 04:02:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34964 "EHLO
+        id S235630AbiIBIEQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 04:04:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235585AbiIBICQ (ORCPT
+        with ESMTP id S235585AbiIBIEM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 04:02:16 -0400
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52FDAB249C;
-        Fri,  2 Sep 2022 01:02:15 -0700 (PDT)
-Received: by mail-ej1-f52.google.com with SMTP id nc14so2265808ejc.4;
-        Fri, 02 Sep 2022 01:02:15 -0700 (PDT)
+        Fri, 2 Sep 2022 04:04:12 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 628ECB7281
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 01:04:08 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id mj6so1315727pjb.1
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 01:04:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=xoQDghImqhS/6zj7SGq6Ohv76jgSNxfDTje/23luiDU=;
+        b=NnS+8SedQ4bz6H/oZQ1r2rl1gOu8h2hljraTclYGG0SXW4GsDCNk2TJNSSffzRM1zx
+         Yccpx43h5qtuL3gBQptoagxx1lNxQMdML75CvVHkf6ZEwq8cYcSgNWnGNSFLBczwd5Ga
+         ztKJ5126sthQ4MOk67HUBHslAqxzIB1Ig2yJd7BDiqJ38IfPilF69EPUl6evMArGMR8F
+         j5pKdcvmBFKHF/BhoU7iGtc+QAKR8mAn/j6UXYRJN4bCA+/8S9EAh/IndwCg1LRG+iPO
+         bq8qrbdsEwxOmMQmaLqUg3eqGQbM3oMbaKNrS72frXo+MD5iQIsd+f8mzYkYq/kdMUry
+         IWgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=sVHA2PIxhZltK2Dfyk3TDE/QZAokEtcUU7z8nmxHpkI=;
-        b=1TPbCNyTsjg8bMU/2NCqFio1rJj4rBYlCW9tWENRbWlyl1CCCg0Uz8yTZN3BzIQQdT
-         r7hoS6ogQ1+qcu/6tj0/TUM7wwHtHIwuUrRYQvVm3p1qXFeO7Kq8fzUMg8tMvUXem+jm
-         4IbBgcSE3SyToBcR5Ukf3DhuIqJ/cQHWFzSdWRFtQhz512OQO1jOR9nDEjWELeNwvbAu
-         Ck4wIRa9Y2DD0HoPShPe0WVNfkarrg71jT+FtJTjrmONoM53gS4ZrLPT04/t8IrLqsOK
-         btHUe0w+6Pmj3YAK0QXaGyB8yNTkOPmAQ/UY5D/UmtSj7iP/u+IQByHr6S7NGIYJgTWB
-         7czw==
-X-Gm-Message-State: ACgBeo1JjJerkexIID0kr0ytwcbrCDNKKH0USqPNLKADVDYrufJkPZyH
-        gtYgx/a9PK+9O9ooIQG62RVH4qgimWI=
-X-Google-Smtp-Source: AA6agR7CTVOadiUfFEBCaCf//Ww4rYb7KEZxVTfxrvfHvDP4XiRWaJRapgsaEy2aPgJsiLG5Jl67WQ==
-X-Received: by 2002:a17:907:3da4:b0:742:747e:4bc8 with SMTP id he36-20020a1709073da400b00742747e4bc8mr11338124ejc.555.1662105733586;
-        Fri, 02 Sep 2022 01:02:13 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id dc4-20020a170906c7c400b0073bf84be798sm842218ejb.142.2022.09.02.01.02.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Sep 2022 01:02:12 -0700 (PDT)
-Message-ID: <febf72d0-da17-9325-b65e-e28e2a3b13d3@kernel.org>
-Date:   Fri, 2 Sep 2022 10:02:11 +0200
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=xoQDghImqhS/6zj7SGq6Ohv76jgSNxfDTje/23luiDU=;
+        b=2fgaS56mNfo9uqByf1IkfSvD63cP4v1JHhob8PBLElBY8nCb6VfwygFfgMWvjJLHN9
+         O44AYlIq9fDW3BXndZiOmnYhElPQB+2tftBbvwkezcHIIquyrOlNGz+OOYmY1TRViZhj
+         NdTaBcl3edRkOh879v1zcAtDTd041S1zidSlqw/GiZozO5DLGAL4l4kNNqgUIeK/RXio
+         3ROtOdhskd9mTnOxpWyUpMEaGYdsbTeT8XB0v0/q7XGIoMFi7L82zDDmdF/yEkASDFc8
+         IUqHD6tkaEL+vXwFKUb/x6uvp3PoqBaEm06zF1cm6GXZemu7mB5Pu0z/+XzlWiRWLfpm
+         Tm/A==
+X-Gm-Message-State: ACgBeo0A1QRJGnDs+IXj36TUqGVMCA2PvmhfyIE05Eoy7tWXO89/JCOt
+        RGI63+W+FoyIQnMcYlJkOFI=
+X-Google-Smtp-Source: AA6agR5s2iXThen35iy1rvWxabUcM2CsCsvtmeSug61sb89oguI2Y19eHb4TmPs1cyoyuERCO1hycg==
+X-Received: by 2002:a17:90a:174a:b0:1fd:f273:de03 with SMTP id 10-20020a17090a174a00b001fdf273de03mr3546160pjm.188.1662105847930;
+        Fri, 02 Sep 2022 01:04:07 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id c201-20020a624ed2000000b00535bf24008asm975545pfb.207.2022.09.02.01.04.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 01:04:07 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: zhang.songyi@zte.com.cn
+To:     alexander.deucher@amd.com
+Cc:     christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, Hawking.Zhang@amd.com, Likun.Gao@amd.com,
+        zhang.songyi@zte.com.cn, ray.huang@amd.com, Stanley.Yang@amd.com,
+        Jack.Xiao@amd.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next] drm/amdgpu: Remove the unneeded result variable
+Date:   Fri,  2 Sep 2022 08:04:01 +0000
+Message-Id: <20220902080401.320050-1-zhang.songyi@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH v2 1/3] tty: serial: introduce transmit helper generators
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220901110657.3305-1-jslaby@suse.cz>
- <20220901110657.3305-2-jslaby@suse.cz> <YxCkqmz32qMAZAPh@kroah.com>
- <e122fe60-484b-fd50-d166-4a21e08d4775@kernel.org>
- <YxGTXK452NwcQEGC@kroah.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <YxGTXK452NwcQEGC@kroah.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02. 09. 22, 7:23, Greg KH wrote:
-> On Fri, Sep 02, 2022 at 07:16:58AM +0200, Jiri Slaby wrote:
->> On 01. 09. 22, 14:25, Greg KH wrote:
->>> Much nicer, but:
->>>
->>>> +#define __DEFINE_UART_PORT_TX_HELPER(name, port, ch, tx_ready, put_char,  \
->>>> +		tx_done, for_test, for_post, ...)			  \
->>>
->>> Do you really need "port" and "ch" as part of this macro?  You always
->>> set that to the same thing in your patches, so is it really needed?
->>
->> Not really, just to make obvious that those are the names that can be used
->> in tx_ready, put_char... I can remove it, if you prefer, of course.
-> 
-> I'd recommend just removing it as it's a hard macro to read as-is.  That
-> would make it a bit more simple as then you are just passing in the name
-> and the callback functions, which makes a bit more sense to me.
+From: zhang songyi <zhang.songyi@zte.com.cn>
 
-OK, I'll wait a couple of days if more comments/acks/reviews come and 
-will send a v3.
+Return the sdma_v6_0_start() directly instead of storing it in another
+redundant variable.
 
-thanks,
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: zhang songyi <zhang.songyi@zte.com.cn>
+---
+ drivers/gpu/drm/amd/amdgpu/sdma_v6_0.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/sdma_v6_0.c b/drivers/gpu/drm/amd/amdgpu/sdma_v6_0.c
+index 2bc1407e885e..2cc2d851b4eb 100644
+--- a/drivers/gpu/drm/amd/amdgpu/sdma_v6_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/sdma_v6_0.c
+@@ -1373,12 +1373,9 @@ static int sdma_v6_0_sw_fini(void *handle)
+ 
+ static int sdma_v6_0_hw_init(void *handle)
+ {
+-	int r;
+ 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
+ 
+-	r = sdma_v6_0_start(adev);
+-
+-	return r;
++	return sdma_v6_0_start(adev);
+ }
+ 
+ static int sdma_v6_0_hw_fini(void *handle)
 -- 
-js
-suse labs
+2.25.1
+
 
