@@ -2,103 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A986AECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:56:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F114EECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 15:56:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236861AbiIBP4F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 11:56:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41780 "EHLO
+        id S237630AbiIBP4L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 11:56:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237437AbiIBPzB (ORCPT
+        with ESMTP id S236939AbiIBPzA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 11:55:01 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E8D226AC5
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 08:49:21 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id e13so2863977wrm.1
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 08:49:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=A8QQlHJvfCbaBzS2PU/2MLWW0321DP7okLoPDVol5xw=;
-        b=L1XAi25oPDm1oqbBc0NuoKX6xUAiKUJPv/QUBAj3BkAK6+stxtIFbCLBLDdIuWO1dO
-         Nn0pRB4aPwhsg8Oy8hWyF0m8BzX5dkv7w5R/m0X6jxLh94EakrU74/tmhjAgpGP1Ma4U
-         J44U1OC32lBeC26XYKILdz4k5P24ml1aNIrO6k0uv82UA7Gh0xu43C9UyhrAc6U26G3d
-         jhTxQvCt2RbBjSgMK3toWoLYYGOrohjNzaneN2FQTv5RjXQN87dHWGYQkgGHnFSV7mf0
-         JIvpTHf73ZVN+X4dq5XuQP6nJ6SGUR5YHLq/wV47eWYj0OwNfJgqzByOiLtLvLnTbkd4
-         BGmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=A8QQlHJvfCbaBzS2PU/2MLWW0321DP7okLoPDVol5xw=;
-        b=a0uVTlYR1tkuZ2R/tb9SCJZ8YWElayOUEbh9z1sCJeEyMly+M0qEtyo3kSNhUkb97m
-         kCMCbgZk1XSdDcnpIWnHIYbFCvyNf6SzUC8RqnHwaSx30gM4L1vk9ggxgAzp6vxWI8Xu
-         hPrubmnOQXRXwEgdqqUQUPGWqnROAOElq1OblaJIj0mI7/gsD2yws1dgBPOJFK8fYpgj
-         GlAPM2kwp+EahW5EqjGuXo0mtznSWp9BQb8cY0kA7nBA5+r/ugi6+3wf1oN4oKy/PAk6
-         4Znlhes+ASBvbmNjNJdutMm8E4vXNO8cu7BBnOAhvHZ/+NuSbjFNxdBSn4ByQN6As5xU
-         6VMw==
-X-Gm-Message-State: ACgBeo1ugVmPe596TYOA8wYV7Y6ec6grNBevkj5lkKk5MjuKHpawR/dS
-        a9jdQ5qiP660rc6Lhkhic7mOYg==
-X-Google-Smtp-Source: AA6agR4VhQ06SJnCyHhZEG+L586fFuHuQTr0G87F4kmmMfOUykSVSJAybuueleO+BSeFErj5j4IXvw==
-X-Received: by 2002:a05:6000:1a86:b0:226:fd9b:7357 with SMTP id f6-20020a0560001a8600b00226fd9b7357mr3863759wry.458.1662133759948;
-        Fri, 02 Sep 2022 08:49:19 -0700 (PDT)
-Received: from hackbox.lan ([94.52.112.99])
-        by smtp.gmail.com with ESMTPSA id b1-20020a05600010c100b002250f9abdefsm2046741wrx.117.2022.09.02.08.49.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 08:49:19 -0700 (PDT)
-From:   Abel Vesa <abel.vesa@linaro.org>
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Amol Maheshwari <amahesh@qti.qualcomm.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Ekansh Gupta <quic_ekagupt@quicinc.com>
-Cc:     Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-arm-msm@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree@vger.kernel.org
-Subject: [PATCH v2 00/10] misc: fastrpc: Add audiopd support
-Date:   Fri,  2 Sep 2022 18:48:50 +0300
-Message-Id: <20220902154900.3404524-1-abel.vesa@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        Fri, 2 Sep 2022 11:55:00 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DC35B140A5
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 08:49:20 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CEF291596;
+        Fri,  2 Sep 2022 08:49:26 -0700 (PDT)
+Received: from merodach.members.linode.com (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4A4EA3F766;
+        Fri,  2 Sep 2022 08:49:18 -0700 (PDT)
+From:   James Morse <james.morse@arm.com>
+To:     x86@kernel.org, linux-kernel@vger.kernel.org
+Cc:     Fenghua Yu <fenghua.yu@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        H Peter Anvin <hpa@zytor.com>,
+        Babu Moger <Babu.Moger@amd.com>,
+        James Morse <james.morse@arm.com>,
+        shameerali.kolothum.thodi@huawei.com,
+        D Scott Phillips OS <scott@os.amperecomputing.com>,
+        lcherian@marvell.com, bobo.shaobowang@huawei.com,
+        tan.shaopeng@fujitsu.com, Jamie Iles <quic_jiles@quicinc.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
+        baolin.wang@linux.alibaba.com
+Subject: [PATCH v6 10/21] x86/resctrl: Remove architecture copy of mbps_val
+Date:   Fri,  2 Sep 2022 15:48:18 +0000
+Message-Id: <20220902154829.30399-11-james.morse@arm.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220902154829.30399-1-james.morse@arm.com>
+References: <20220902154829.30399-1-james.morse@arm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patchset adds audiopd support to fastrpc.
+The resctrl arch code provides a second configuration array mbps_val[]
+for the MBA software controller.
 
-The first version is here:
-https://lore.kernel.org/all/20220902131344.3029826-1-abel.vesa@linaro.org/
+Since resctrl switched over to allocating and freeing its own array
+when needed, nothing uses the arch code version.
+
+Remove it.
+
+Reviewed-by: Jamie Iles <quic_jiles@quicinc.com>
+Tested-by: Xin Hao <xhao@linux.alibaba.com>
+Reviewed-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
+Tested-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
+Tested-by: Cristian Marussi <cristian.marussi@arm.com>
+Reviewed-by: Reinette Chatre <reinette.chatre@intel.com>
+Signed-off-by: James Morse <james.morse@arm.com>
+---
+Changes since v2:
+ * Made setup_default_ctrlval() static.
 
 Changes since v1:
- * dropped the patch 13:
-   "misc: fastrpc: Remove unnecessary if braces in fastrpc_internal_invoke"
- * sent patches 1, 2 and 3 as a separate patchset
+ * Fixed spelling mistake
+ * Capitalisation
+---
+ arch/x86/kernel/cpu/resctrl/core.c     | 20 ++++----------------
+ arch/x86/kernel/cpu/resctrl/internal.h |  3 ---
+ arch/x86/kernel/cpu/resctrl/rdtgroup.c |  4 +---
+ 3 files changed, 5 insertions(+), 22 deletions(-)
 
-Abel Vesa (10):
-  misc: fastrpc: Rename audio protection domain to root
-  misc: fastrpc: Add reserved mem support
-  dt-bindings: misc: fastrpc: Document memory-region property
-  misc: fastrpc: Add fastrpc_remote_heap_alloc
-  misc: fastrpc: Use fastrpc_map_put in fastrpc_map_create on fail
-  misc: fastrpc: Rework fastrpc_req_munmap
-  misc: fastrpc: Add support for audiopd
-  misc: fastrpc: Safekeep mmaps on interrupted invoke
-  misc: fastrpc: Add mmap request assigning for static PD pool
-  misc: fastrpc: Add dma_mask to fastrpc_channel_ctx
-
- .../devicetree/bindings/misc/qcom,fastrpc.txt |   5 +
- drivers/misc/fastrpc.c                        | 267 +++++++++++++++---
- include/uapi/misc/fastrpc.h                   |   7 +
- 3 files changed, 247 insertions(+), 32 deletions(-)
-
+diff --git a/arch/x86/kernel/cpu/resctrl/core.c b/arch/x86/kernel/cpu/resctrl/core.c
+index f69182973175..f0e2820af475 100644
+--- a/arch/x86/kernel/cpu/resctrl/core.c
++++ b/arch/x86/kernel/cpu/resctrl/core.c
+@@ -397,7 +397,7 @@ struct rdt_domain *rdt_find_domain(struct rdt_resource *r, int id,
+ 	return NULL;
+ }
+ 
+-void setup_default_ctrlval(struct rdt_resource *r, u32 *dc, u32 *dm)
++static void setup_default_ctrlval(struct rdt_resource *r, u32 *dc)
+ {
+ 	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
+ 	int i;
+@@ -406,18 +406,14 @@ void setup_default_ctrlval(struct rdt_resource *r, u32 *dc, u32 *dm)
+ 	 * Initialize the Control MSRs to having no control.
+ 	 * For Cache Allocation: Set all bits in cbm
+ 	 * For Memory Allocation: Set b/w requested to 100%
+-	 * and the bandwidth in MBps to U32_MAX
+ 	 */
+-	for (i = 0; i < hw_res->num_closid; i++, dc++, dm++) {
++	for (i = 0; i < hw_res->num_closid; i++, dc++)
+ 		*dc = r->default_ctrl;
+-		*dm = MBA_MAX_MBPS;
+-	}
+ }
+ 
+ static void domain_free(struct rdt_hw_domain *hw_dom)
+ {
+ 	kfree(hw_dom->ctrl_val);
+-	kfree(hw_dom->mbps_val);
+ 	kfree(hw_dom);
+ }
+ 
+@@ -426,23 +422,15 @@ static int domain_setup_ctrlval(struct rdt_resource *r, struct rdt_domain *d)
+ 	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
+ 	struct rdt_hw_domain *hw_dom = resctrl_to_arch_dom(d);
+ 	struct msr_param m;
+-	u32 *dc, *dm;
++	u32 *dc;
+ 
+ 	dc = kmalloc_array(hw_res->num_closid, sizeof(*hw_dom->ctrl_val),
+ 			   GFP_KERNEL);
+ 	if (!dc)
+ 		return -ENOMEM;
+ 
+-	dm = kmalloc_array(hw_res->num_closid, sizeof(*hw_dom->mbps_val),
+-			   GFP_KERNEL);
+-	if (!dm) {
+-		kfree(dc);
+-		return -ENOMEM;
+-	}
+-
+ 	hw_dom->ctrl_val = dc;
+-	hw_dom->mbps_val = dm;
+-	setup_default_ctrlval(r, dc, dm);
++	setup_default_ctrlval(r, dc);
+ 
+ 	m.low = 0;
+ 	m.high = hw_res->num_closid;
+diff --git a/arch/x86/kernel/cpu/resctrl/internal.h b/arch/x86/kernel/cpu/resctrl/internal.h
+index a7e2cbce29d5..373aaba53ecd 100644
+--- a/arch/x86/kernel/cpu/resctrl/internal.h
++++ b/arch/x86/kernel/cpu/resctrl/internal.h
+@@ -308,14 +308,12 @@ struct mbm_state {
+  *			  a resource
+  * @d_resctrl:	Properties exposed to the resctrl file system
+  * @ctrl_val:	array of cache or mem ctrl values (indexed by CLOSID)
+- * @mbps_val:	When mba_sc is enabled, this holds the bandwidth in MBps
+  *
+  * Members of this structure are accessed via helpers that provide abstraction.
+  */
+ struct rdt_hw_domain {
+ 	struct rdt_domain		d_resctrl;
+ 	u32				*ctrl_val;
+-	u32				*mbps_val;
+ };
+ 
+ static inline struct rdt_hw_domain *resctrl_to_arch_dom(struct rdt_domain *r)
+@@ -529,7 +527,6 @@ void mbm_setup_overflow_handler(struct rdt_domain *dom,
+ void mbm_handle_overflow(struct work_struct *work);
+ void __init intel_rdt_mbm_apply_quirk(void);
+ bool is_mba_sc(struct rdt_resource *r);
+-void setup_default_ctrlval(struct rdt_resource *r, u32 *dc, u32 *dm);
+ u32 delay_bw_map(unsigned long bw, struct rdt_resource *r);
+ void cqm_setup_limbo_handler(struct rdt_domain *dom, unsigned long delay_ms);
+ void cqm_handle_limbo(struct work_struct *work);
+diff --git a/arch/x86/kernel/cpu/resctrl/rdtgroup.c b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
+index 55d8a12287c3..6c33dfe7ea53 100644
+--- a/arch/x86/kernel/cpu/resctrl/rdtgroup.c
++++ b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
+@@ -2370,10 +2370,8 @@ static int reset_all_ctrls(struct rdt_resource *r)
+ 		hw_dom = resctrl_to_arch_dom(d);
+ 		cpumask_set_cpu(cpumask_any(&d->cpu_mask), cpu_mask);
+ 
+-		for (i = 0; i < hw_res->num_closid; i++) {
++		for (i = 0; i < hw_res->num_closid; i++)
+ 			hw_dom->ctrl_val[i] = r->default_ctrl;
+-			hw_dom->mbps_val[i] = MBA_MAX_MBPS;
+-		}
+ 	}
+ 	cpu = get_cpu();
+ 	/* Update CBM on this cpu if it's in cpu_mask. */
 -- 
-2.34.1
+2.30.2
 
