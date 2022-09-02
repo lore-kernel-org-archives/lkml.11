@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59A6EC54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:44:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 599FDC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:45:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237440AbiIBMow (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:44:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41764 "EHLO
+        id S237454AbiIBMo6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:44:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236453AbiIBMmx (ORCPT
+        with ESMTP id S236562AbiIBMmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:42:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84672E097B;
-        Fri,  2 Sep 2022 05:32:08 -0700 (PDT)
+        Fri, 2 Sep 2022 08:42:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59FC9DD765;
+        Fri,  2 Sep 2022 05:32:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 964B4B82ACA;
-        Fri,  2 Sep 2022 12:31:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94D5CC433B5;
-        Fri,  2 Sep 2022 12:31:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F3F25621B1;
+        Fri,  2 Sep 2022 12:31:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9D72C433D6;
+        Fri,  2 Sep 2022 12:31:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121889;
-        bh=Yf0GyPVtGLFY7mUBC87iG8NI72I00Kg6i/hzhR2+838=;
+        s=korg; t=1662121912;
+        bh=xSCL2GfrESDYTSmLQBmuhprtKU9fxNc2EuGxf2rpy8E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DyRNAILHuuJREQxD6u6QcMV1oqa7TFjgAFLPsCmLW+NfHCR/6kfPxiukBcjSg1dUL
-         z0oTfnEexVDazK9527d0jRyDRH0xHkLVUj/Uv9Ga8vmidsIRSh63RUf9Yp9sHCNDEj
-         SruqKX4SBsVZaViD+NR99HHoV+6aBFnM17BfGurY=
+        b=PqPqjwQAyLdJF+rN9a/G5WnHaKBf77GGpNOlpbcYNZE6tZQVS+9GDmNnZzIkfI8D8
+         6u4frMmyxp8aWXvkHzXOBLphgMrkEbT/7tr1f7tIVLXZ/JHbRIrztPzDheetLT3OGK
+         m6lqHYC05Icco4cDl34micd4XOiCczDJJ8jIOJFQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Maxime Ripard <maxime@cerno.tech>
-Subject: [PATCH 5.15 02/73] drm/bridge: Add stubs for devm_drm_of_get_bridge when OF is disabled
-Date:   Fri,  2 Sep 2022 14:18:26 +0200
-Message-Id: <20220902121404.517094115@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 5.15 04/73] drm/vc4: hdmi: Rework power up
+Date:   Fri,  2 Sep 2022 14:18:28 +0200
+Message-Id: <20220902121404.592194557@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
 References: <20220902121404.435662285@linuxfoundation.org>
@@ -50,45 +52,73 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Maxime Ripard <maxime@cerno.tech>
 
-commit 59050d783848d9b62e9d8fb6ce0cd00771c2bf87 upstream.
+commit 258e483a4d5e97a6a8caa74381ddc1f395ac1c71 upstream.
 
-If CONFIG_OF is disabled, devm_drm_of_get_bridge won't be compiled in
-and drivers using that function will fail to build.
+The current code tries to handle the case where CONFIG_PM isn't selected
+by first calling our runtime_resume implementation and then properly
+report the power state to the runtime_pm core.
 
-Add an inline stub so that we can still build-test those cases.
+This allows to have a functionning device even if pm_runtime_get_*
+functions are nops.
 
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
+However, the device power state if CONFIG_PM is enabled is
+RPM_SUSPENDED, and thus our vc4_hdmi_write() and vc4_hdmi_read() calls
+in the runtime_pm hooks will now report a warning since the device might
+not be properly powered.
+
+Even more so, we need CONFIG_PM enabled since the previous RaspberryPi
+have a power domain that needs to be powered up for the HDMI controller
+to be usable.
+
+The previous patch has created a dependency on CONFIG_PM, now we can
+just assume it's there and only call pm_runtime_resume_and_get() to make
+sure our device is powered in bind.
+
+Link: https://lore.kernel.org/r/20220629123510.1915022-39-maxime@cerno.tech
+Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
+Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
 Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Acked-by: Randy Dunlap <rdunlap@infradead.org> # build-tested
-Link: https://patchwork.freedesktop.org/patch/msgid/20210928181333.1176840-1-maxime@cerno.tech
+(cherry picked from commit 53565c28e6af2cef6bbf438c34250135e3564459)
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Cc: "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/drm/drm_bridge.h |   13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c |   15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
---- a/include/drm/drm_bridge.h
-+++ b/include/drm/drm_bridge.h
-@@ -911,9 +911,20 @@ struct drm_bridge *devm_drm_panel_bridge
- struct drm_bridge *devm_drm_panel_bridge_add_typed(struct device *dev,
- 						   struct drm_panel *panel,
- 						   u32 connector_type);
-+struct drm_connector *drm_panel_bridge_connector(struct drm_bridge *bridge);
-+#endif
-+
-+#if defined(CONFIG_OF) && defined(CONFIG_DRM_PANEL_BRIDGE)
- struct drm_bridge *devm_drm_of_get_bridge(struct device *dev, struct device_node *node,
- 					  u32 port, u32 endpoint);
--struct drm_connector *drm_panel_bridge_connector(struct drm_bridge *bridge);
-+#else
-+static inline struct drm_bridge *devm_drm_of_get_bridge(struct device *dev,
-+							struct device_node *node,
-+							u32 port,
-+							u32 endpoint)
-+{
-+	return ERR_PTR(-ENODEV);
-+}
- #endif
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -2219,17 +2219,15 @@ static int vc4_hdmi_bind(struct device *
+ 	if (ret)
+ 		goto err_put_ddc;
  
- #endif
++	pm_runtime_enable(dev);
++
+ 	/*
+-	 * We need to have the device powered up at this point to call
+-	 * our reset hook and for the CEC init.
++	 *  We need to have the device powered up at this point to call
++	 *  our reset hook and for the CEC init.
+ 	 */
+-	ret = vc4_hdmi_runtime_resume(dev);
++	ret = pm_runtime_resume_and_get(dev);
+ 	if (ret)
+-		goto err_put_ddc;
+-
+-	pm_runtime_get_noresume(dev);
+-	pm_runtime_set_active(dev);
+-	pm_runtime_enable(dev);
++		goto err_disable_runtime_pm;
+ 
+ 	if (vc4_hdmi->variant->reset)
+ 		vc4_hdmi->variant->reset(vc4_hdmi);
+@@ -2278,6 +2276,7 @@ err_destroy_conn:
+ err_destroy_encoder:
+ 	drm_encoder_cleanup(encoder);
+ 	pm_runtime_put_sync(dev);
++err_disable_runtime_pm:
+ 	pm_runtime_disable(dev);
+ err_put_ddc:
+ 	put_device(&vc4_hdmi->ddc->dev);
 
 
