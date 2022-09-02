@@ -2,82 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51C2DC6FA89
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 03:20:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D030ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 03:21:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235080AbiIBDUv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 23:20:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52962 "EHLO
+        id S235136AbiIBDU6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 23:20:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234641AbiIBDU3 (ORCPT
+        with ESMTP id S229602AbiIBDUl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 23:20:29 -0400
-Received: from cstnet.cn (smtp23.cstnet.cn [159.226.251.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 13B9313F91
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 20:20:06 -0700 (PDT)
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-03 (Coremail) with SMTP id rQCowABXX0tjdhFjm_xwAA--.15986S2;
-        Fri, 02 Sep 2022 11:20:04 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     johan@kernel.org, gregkh@linuxfoundation.org
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] USB: serial: ftdi_sio: Add check for create_sysfs_attrs
-Date:   Fri,  2 Sep 2022 11:20:02 +0800
-Message-Id: <20220902032002.3859368-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 1 Sep 2022 23:20:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DD2429A;
+        Thu,  1 Sep 2022 20:20:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B8DBE61EA7;
+        Fri,  2 Sep 2022 03:20:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD6FEC433D7;
+        Fri,  2 Sep 2022 03:20:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662088838;
+        bh=BsOHRM4pj/Cx8jQlerkEmWkvN1ZmISnL0o3Je+RC3rw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GKaUWEyjbUEJRtygq8yOuDVsk1O04YnbRJGoh7VvhNd2P1rxWx4bnXqflp21EoP8j
+         buEgk7J+cWUd5w63K33u1gmvuBgvleQoLczdUYEHhIe4b/bHpJk3wpa9oun5xIUUQn
+         EeCzn7anOLNmtAKSVDDC6xGqxiaJwsAWqKnd8bg0koKtrvKoo5/BUx2g8iCvQd2l9R
+         OsHcjQ2UoQlUNW460HYHQRSfenZNJxl2XpHCWCIjP/2mlhVWuKAcwFPKzQsBlnCJ5J
+         Tku/VFuscSdEsr3TD912gdlFXx+DBeNh233eWt1mF7hudLkeKk1xz5AJ5hwz4dfmNU
+         RjmGqaz32M8jg==
+Date:   Fri, 2 Sep 2022 06:20:33 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Stefan Berger <stefanb@linux.ibm.com>
+Cc:     kexec@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, nayna@linux.ibm.com,
+        nasastry@in.ibm.com, mpe@ellerman.id.au,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Nageswara R Sastry <rnsastry@linux.ibm.com>,
+        Coiby Xu <coxu@redhat.com>
+Subject: Re: [PATCH v8 2/4] tpm: of: Make of-tree specific function commonly
+ available
+Message-ID: <YxF2gTw4vlfwxhpl@kernel.org>
+References: <20220901214610.768645-1-stefanb@linux.ibm.com>
+ <20220901214610.768645-3-stefanb@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: rQCowABXX0tjdhFjm_xwAA--.15986S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7GFy5GrW3JFWkurWUur48JFb_yoWfCFXE9w
-        1UWFsxXryYkFyfJwn2k3yrArWYgws5ZF48uF12gFyfta4DJFZxXrs2v39xGr4UXr4kAr9x
-        Cwn8ua4xAay0gjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb4kFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
-        6F4UJwA2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87Iv6xkF7I0E14v26F
-        4UJVW0owAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
-        7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCjc4AY6r
-        1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_
-        Gr4l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxV
-        WUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI
-        7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r
-        1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVW8JVWx
-        JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUjhL8DU
-        UUU
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220901214610.768645-3-stefanb@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As create_sysfs_attrs() can return error number,
-it should be better to check the return value and
-deal with the exception.
+On Thu, Sep 01, 2022 at 05:46:08PM -0400, Stefan Berger wrote:
+> Simplify tpm_read_log_of() by moving reusable parts of the code into
+> an inline function that makes it commonly available so it can be
+> used also for kexec support. Call the new of_tpm_get_sml_parameters()
+> function from the TPM Open Firmware driver.
+> 
+> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+> Cc: Jarkko Sakkinen <jarkko@kernel.org>
+> Cc: Jason Gunthorpe <jgg@ziepe.ca>
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Cc: Frank Rowand <frowand.list@gmail.com>
+> Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
+> Tested-by: Nageswara R Sastry <rnsastry@linux.ibm.com>
+> Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+> Tested-by: Coiby Xu <coxu@redhat.com>
+> 
+> ---
+> v7:
+>  - Added original comment back into inlined function
+> 
+> v4:
+>  - converted to inline function
+> ---
+>  drivers/char/tpm/eventlog/of.c | 31 +++++------------------------
+>  include/linux/tpm.h            | 36 ++++++++++++++++++++++++++++++++++
+>  2 files changed, 41 insertions(+), 26 deletions(-)
+> 
+> diff --git a/drivers/char/tpm/eventlog/of.c b/drivers/char/tpm/eventlog/of.c
+> index a9ce66d09a75..f9462d19632e 100644
+> --- a/drivers/char/tpm/eventlog/of.c
+> +++ b/drivers/char/tpm/eventlog/of.c
+> @@ -12,6 +12,7 @@
+>  
+>  #include <linux/slab.h>
+>  #include <linux/of.h>
+> +#include <linux/tpm.h>
+>  #include <linux/tpm_eventlog.h>
+>  
+>  #include "../tpm.h"
+> @@ -20,11 +21,10 @@
+>  int tpm_read_log_of(struct tpm_chip *chip)
+>  {
+>  	struct device_node *np;
+> -	const u32 *sizep;
+> -	const u64 *basep;
+>  	struct tpm_bios_log *log;
+>  	u32 size;
+>  	u64 base;
+> +	int ret;
+>  
+>  	log = &chip->log;
+>  	if (chip->dev.parent && chip->dev.parent->of_node)
+> @@ -35,30 +35,9 @@ int tpm_read_log_of(struct tpm_chip *chip)
+>  	if (of_property_read_bool(np, "powered-while-suspended"))
+>  		chip->flags |= TPM_CHIP_FLAG_ALWAYS_POWERED;
+>  
+> -	sizep = of_get_property(np, "linux,sml-size", NULL);
+> -	basep = of_get_property(np, "linux,sml-base", NULL);
+> -	if (sizep == NULL && basep == NULL)
+> -		return -ENODEV;
+> -	if (sizep == NULL || basep == NULL)
+> -		return -EIO;
+> -
+> -	/*
+> -	 * For both vtpm/tpm, firmware has log addr and log size in big
+> -	 * endian format. But in case of vtpm, there is a method called
+> -	 * sml-handover which is run during kernel init even before
+> -	 * device tree is setup. This sml-handover function takes care
+> -	 * of endianness and writes to sml-base and sml-size in little
+> -	 * endian format. For this reason, vtpm doesn't need conversion
+> -	 * but physical tpm needs the conversion.
+> -	 */
+> -	if (of_property_match_string(np, "compatible", "IBM,vtpm") < 0 &&
+> -	    of_property_match_string(np, "compatible", "IBM,vtpm20") < 0) {
+> -		size = be32_to_cpup((__force __be32 *)sizep);
+> -		base = be64_to_cpup((__force __be64 *)basep);
+> -	} else {
+> -		size = *sizep;
+> -		base = *basep;
+> -	}
+> +	ret = of_tpm_get_sml_parameters(np, &base, &size);
+> +	if (ret < 0)
+> +		return ret;
+>  
+>  	if (size == 0) {
+>  		dev_warn(&chip->dev, "%s: Event log area empty\n", __func__);
+> diff --git a/include/linux/tpm.h b/include/linux/tpm.h
+> index dfeb25a0362d..6356baaa1393 100644
+> --- a/include/linux/tpm.h
+> +++ b/include/linux/tpm.h
+> @@ -460,4 +460,40 @@ static inline struct tpm_chip *tpm_default_chip(void)
+>  	return NULL;
+>  }
+>  #endif
+> +
+> +#ifdef CONFIG_OF
+> +static inline int of_tpm_get_sml_parameters(struct device_node *np,
+> +					    u64 *base, u32 *size)
+> +{
+> +	const u32 *sizep;
+> +	const u64 *basep;
+> +
+> +	sizep = of_get_property(np, "linux,sml-size", NULL);
+> +	basep = of_get_property(np, "linux,sml-base", NULL);
+> +	if (sizep == NULL && basep == NULL)
+> +		return -ENODEV;
+> +	if (sizep == NULL || basep == NULL)
+> +		return -EIO;
+> +
+> +	/*
+> +	 * For both vtpm/tpm, firmware has log addr and log size in big
+> +	 * endian format. But in case of vtpm, there is a method called
+> +	 * sml-handover which is run during kernel init even before
+> +	 * device tree is setup. This sml-handover function takes care
+> +	 * of endianness and writes to sml-base and sml-size in little
+> +	 * endian format. For this reason, vtpm doesn't need conversion
+> +	 * but physical tpm needs the conversion.
+> +	 */
+> +	if (of_property_match_string(np, "compatible", "IBM,vtpm") < 0 &&
+> +	    of_property_match_string(np, "compatible", "IBM,vtpm20") < 0) {
+> +		*size = be32_to_cpup((__force __be32 *)sizep);
+> +		*base = be64_to_cpup((__force __be64 *)basep);
+> +	} else {
+> +		*size = *sizep;
+> +		*base = *basep;
+> +	}
+> +	return 0;
+> +}
+> +#endif
+> +
+>  #endif
+> -- 
+> 2.35.1
+> 
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- drivers/usb/serial/ftdi_sio.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Acked-by: Jarkko Sakkinen <jarkko@kernel.org>
 
-diff --git a/drivers/usb/serial/ftdi_sio.c b/drivers/usb/serial/ftdi_sio.c
-index d5a3986dfee7..c28f894430a5 100644
---- a/drivers/usb/serial/ftdi_sio.c
-+++ b/drivers/usb/serial/ftdi_sio.c
-@@ -2251,7 +2251,11 @@ static int ftdi_sio_port_probe(struct usb_serial_port *port)
- 	if (read_latency_timer(port) < 0)
- 		priv->latency = 16;
- 	write_latency_timer(port);
--	create_sysfs_attrs(port);
-+	result = create_sysfs_attrs(port);
-+	if (result) {
-+		remove_sysfs_attrs(port);
-+		return result;
-+	}
- 
- 	result = ftdi_gpio_init(port);
- 	if (result < 0) {
--- 
-2.25.1
-
+BR, Jarkko
