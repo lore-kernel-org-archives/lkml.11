@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1942CECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:53:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF594ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:53:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237986AbiIBMxK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:53:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44668 "EHLO
+        id S237998AbiIBMxT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:53:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237772AbiIBMw3 (ORCPT
+        with ESMTP id S236398AbiIBMwc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:52:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE70F8EF3;
-        Fri,  2 Sep 2022 05:37:31 -0700 (PDT)
+        Fri, 2 Sep 2022 08:52:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB5A75C9CE;
+        Fri,  2 Sep 2022 05:37:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C03DB82AE1;
-        Fri,  2 Sep 2022 12:36:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BB3EC433D6;
-        Fri,  2 Sep 2022 12:36:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3622FB82A71;
+        Fri,  2 Sep 2022 12:36:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68DCBC433C1;
+        Fri,  2 Sep 2022 12:36:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122186;
-        bh=8Bzd14O19A2258YjjDY4ZPQow/ufTIN14o0tuAKVt7w=;
+        s=korg; t=1662122179;
+        bh=V3FkCwM9i+GoSL/R/1gavDi9ac9+8/zlCT8RN7PV1BA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lTglJVPe00RAkQHIr5Vixggcgxee1G+PZaMQ5ST2OAUOpVtK/fLF0zEuunibkggUx
-         thGSySdQ6YoN0kQcN+7c2jb8oDMtncatJSenBxklve6FbOu8+gbGg5l+SUBIo9GN5p
-         YTsjzqrNK+SEc+Q/AXOpmrlurKyWtONRWZAFeb7A=
+        b=OsdJUfyo17IzaeVidKDeFfptxkMNu3tgtx6KSL6bjTUZvA2LHYA5y6LpKj91OX79H
+         K4e+b9AGmGhHHllZIlPKRdQcnu2L5XwvS3rotqBCV60fRDCfnd/H+uDEzb730oMwfH
+         HFX5d8EhxqdoxkMYqpB8Y+zAFsFz6hrU5Ygd1Cs8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Martin Leung <Martin.Leung@amd.com>,
-        Tom Chung <chiahsuan.chung@amd.com>,
-        Alvin Lee <alvin.lee2@amd.com>,
+        stable@vger.kernel.org, Josip Pavic <Josip.Pavic@amd.com>,
+        Jun Lei <Jun.Lei@amd.com>, Alex Hung <alex.hung@amd.com>,
+        Aric Cyr <aric.cyr@amd.com>,
         Daniel Wheeler <daniel.wheeler@amd.com>,
         Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 40/72] drm/amd/display: For stereo keep "FLIP_ANY_FRAME"
-Date:   Fri,  2 Sep 2022 14:19:16 +0200
-Message-Id: <20220902121406.089729673@linuxfoundation.org>
+Subject: [PATCH 5.19 38/72] drm/amd/display: Avoid MPC infinite loop
+Date:   Fri,  2 Sep 2022 14:19:14 +0200
+Message-Id: <20220902121406.033457164@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
 References: <20220902121404.772492078@linuxfoundation.org>
@@ -52,38 +52,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alvin Lee <alvin.lee2@amd.com>
+From: Josip Pavic <Josip.Pavic@amd.com>
 
-[ Upstream commit 84ef99c728079dfd21d6bc70b4c3e4af20602b3c ]
+[ Upstream commit 8de297dc046c180651c0500f8611663ae1c3828a ]
 
-[Description]
-Observed in stereomode that programming FLIP_LEFT_EYE
-can cause hangs. Keep FLIP_ANY_FRAME in stereo mode so
-the surface flip can take place before left or right eye
+[why]
+In some cases MPC tree bottom pipe ends up point to itself.  This causes
+iterating from top to bottom to hang the system in an infinite loop.
 
-Reviewed-by: Martin Leung <Martin.Leung@amd.com>
-Acked-by: Tom Chung <chiahsuan.chung@amd.com>
-Signed-off-by: Alvin Lee <alvin.lee2@amd.com>
+[how]
+When looping to next MPC bottom pipe, check that the pointer is not same
+as current to avoid infinite loop.
+
+Reviewed-by: Josip Pavic <Josip.Pavic@amd.com>
+Reviewed-by: Jun Lei <Jun.Lei@amd.com>
+Acked-by: Alex Hung <alex.hung@amd.com>
+Signed-off-by: Aric Cyr <aric.cyr@amd.com>
 Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hubp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c | 6 ++++++
+ drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c | 6 ++++++
+ 2 files changed, 12 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hubp.c b/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hubp.c
-index 6a4dcafb9bba5..dc3e8df706b34 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hubp.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hubp.c
-@@ -86,7 +86,7 @@ bool hubp3_program_surface_flip_and_addr(
- 			VMID, address->vmid);
- 
- 	if (address->type == PLN_ADDR_TYPE_GRPH_STEREO) {
--		REG_UPDATE(DCSURF_FLIP_CONTROL, SURFACE_FLIP_MODE_FOR_STEREOSYNC, 0x1);
-+		REG_UPDATE(DCSURF_FLIP_CONTROL, SURFACE_FLIP_MODE_FOR_STEREOSYNC, 0);
- 		REG_UPDATE(DCSURF_FLIP_CONTROL, SURFACE_FLIP_IN_STEREOSYNC, 0x1);
- 
- 	} else {
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c
+index 11019c2c62ccb..8192f1967e924 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c
+@@ -126,6 +126,12 @@ struct mpcc *mpc1_get_mpcc_for_dpp(struct mpc_tree *tree, int dpp_id)
+ 	while (tmp_mpcc != NULL) {
+ 		if (tmp_mpcc->dpp_id == dpp_id)
+ 			return tmp_mpcc;
++
++		/* avoid circular linked list */
++		ASSERT(tmp_mpcc != tmp_mpcc->mpcc_bot);
++		if (tmp_mpcc == tmp_mpcc->mpcc_bot)
++			break;
++
+ 		tmp_mpcc = tmp_mpcc->mpcc_bot;
+ 	}
+ 	return NULL;
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c
+index 15734db0cdea4..f3c311d093197 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c
+@@ -531,6 +531,12 @@ static struct mpcc *mpc2_get_mpcc_for_dpp(struct mpc_tree *tree, int dpp_id)
+ 	while (tmp_mpcc != NULL) {
+ 		if (tmp_mpcc->dpp_id == 0xf || tmp_mpcc->dpp_id == dpp_id)
+ 			return tmp_mpcc;
++
++		/* avoid circular linked list */
++		ASSERT(tmp_mpcc != tmp_mpcc->mpcc_bot);
++		if (tmp_mpcc == tmp_mpcc->mpcc_bot)
++			break;
++
+ 		tmp_mpcc = tmp_mpcc->mpcc_bot;
+ 	}
+ 	return NULL;
 -- 
 2.35.1
 
