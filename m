@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ACB9C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:48:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A52A6ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:48:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237296AbiIBMsJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:48:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34780 "EHLO
+        id S237544AbiIBMsZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:48:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237572AbiIBMrY (ORCPT
+        with ESMTP id S237518AbiIBMsD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:47:24 -0400
+        Fri, 2 Sep 2022 08:48:03 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 765AEF14FF;
-        Fri,  2 Sep 2022 05:34:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D91B0F2430;
+        Fri,  2 Sep 2022 05:34:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F2E0621C1;
-        Fri,  2 Sep 2022 12:34:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A769C433B5;
-        Fri,  2 Sep 2022 12:34:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A24C9621AF;
+        Fri,  2 Sep 2022 12:32:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5320C433D6;
+        Fri,  2 Sep 2022 12:32:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122056;
-        bh=AcWu4cgXKwS3nNRbSLJnvoB8c05TCYcRjmk6dXBJUw4=;
+        s=korg; t=1662121950;
+        bh=qoyw/ywdNO6sZyo1tUQ3AoaTQwR0eePql9n0oiR6GcI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PPMSMxp97rEw55wLOCXqeaxJHjnhvoDeq7cT+A1j4oE0muxG/JAZ1goC3DTh/m6bZ
-         r7qfqI/uFZ1DZOEBUnXjlfqX3NRT6V8xVtddV0FKKjfFsuDdG7yM8RfZ6QQtbJwYKe
-         +obsXfq9/G/qGqnStM0uT8ZuwVB7XmQ+EW2jq3iY=
+        b=tjSCePsB+G6UUZ6fv8prV0bPPcJpCqB2jZNwSmcn7/HNEWhYHxXUUNTK898jDrfD9
+         BHnTJGBYx6tnQlKNw3npqk6TUKmTAG1vSbTAs5KjeqhW/4TEMkChxPFw9s1s5Pe2nR
+         rFjFRQ0GUmsqNduEax5d0H7HKfIS6Odwihzq2FW0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Denis V. Lunev" <den@openvz.org>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 73/73] net: neigh: dont call kfree_skb() under spin_lock_irqsave()
-Date:   Fri,  2 Sep 2022 14:19:37 +0200
-Message-Id: <20220902121406.818357232@linuxfoundation.org>
+        stable@vger.kernel.org, Josh Kilmer <srjek2@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.15 39/73] HID: asus: ROG NKey: Ignore portion of 0x5a report
+Date:   Fri,  2 Sep 2022 14:19:03 +0200
+Message-Id: <20220902121405.718984071@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
 References: <20220902121404.435662285@linuxfoundation.org>
@@ -50,56 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Josh Kilmer <srjek2@gmail.com>
 
-commit d5485d9dd24e1d04e5509916515260186eb1455c upstream.
+commit 1c0cc9d11c665020cbeb80e660fb8929164407f4 upstream.
 
-It is not allowed to call kfree_skb() from hardware interrupt
-context or with interrupts being disabled. So add all skb to
-a tmp list, then free them after spin_unlock_irqrestore() at
-once.
+On an Asus G513QY, of the 5 bytes in a 0x5a report, only the first byte
+is a meaningful keycode. The other bytes are zeroed out or hold garbage
+from the last packet sent to the keyboard.
 
-Fixes: 66ba215cb513 ("neigh: fix possible DoS due to net iface start/stop loop")
-Suggested-by: Denis V. Lunev <den@openvz.org>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+This patch fixes up the report descriptor for this event so that the
+general hid code will only process 1 byte for keycodes, avoiding
+spurious key events and unmapped Asus vendor usagepage code warnings.
+
+Signed-off-by: Josh Kilmer <srjek2@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/neighbour.c |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/hid/hid-asus.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -281,21 +281,27 @@ static int neigh_del_timer(struct neighb
- 
- static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
- {
-+	struct sk_buff_head tmp;
- 	unsigned long flags;
- 	struct sk_buff *skb;
- 
-+	skb_queue_head_init(&tmp);
- 	spin_lock_irqsave(&list->lock, flags);
- 	skb = skb_peek(list);
- 	while (skb != NULL) {
- 		struct sk_buff *skb_next = skb_peek_next(skb, list);
- 		if (net == NULL || net_eq(dev_net(skb->dev), net)) {
- 			__skb_unlink(skb, list);
--			dev_put(skb->dev);
--			kfree_skb(skb);
-+			__skb_queue_tail(&tmp, skb);
- 		}
- 		skb = skb_next;
+--- a/drivers/hid/hid-asus.c
++++ b/drivers/hid/hid-asus.c
+@@ -1212,6 +1212,13 @@ static __u8 *asus_report_fixup(struct hi
+ 		rdesc = new_rdesc;
  	}
- 	spin_unlock_irqrestore(&list->lock, flags);
-+
-+	while ((skb = __skb_dequeue(&tmp))) {
-+		dev_put(skb->dev);
-+		kfree_skb(skb);
+ 
++	if (drvdata->quirks & QUIRK_ROG_NKEY_KEYBOARD &&
++			*rsize == 331 && rdesc[190] == 0x85 && rdesc[191] == 0x5a &&
++			rdesc[204] == 0x95 && rdesc[205] == 0x05) {
++		hid_info(hdev, "Fixing up Asus N-KEY keyb report descriptor\n");
++		rdesc[205] = 0x01;
 +	}
++
+ 	return rdesc;
  }
  
- static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev,
 
 
