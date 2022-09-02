@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BCABC54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:58:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F26BECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:58:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238173AbiIBM6P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:58:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37540 "EHLO
+        id S238240AbiIBM6T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:58:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238083AbiIBM4U (ORCPT
+        with ESMTP id S238196AbiIBM4m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:56:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 198EBFC10D;
-        Fri,  2 Sep 2022 05:39:21 -0700 (PDT)
+        Fri, 2 Sep 2022 08:56:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEC266B8D4;
+        Fri,  2 Sep 2022 05:39:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5B98B82A8B;
-        Fri,  2 Sep 2022 12:39:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FC42C433D6;
-        Fri,  2 Sep 2022 12:39:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC4B0620C5;
+        Fri,  2 Sep 2022 12:28:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2F84C433D7;
+        Fri,  2 Sep 2022 12:28:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122348;
-        bh=7lhXcAHIL3TDkoMSC25OC0sjHdnQIJIiGV0yYCdlsQ4=;
+        s=korg; t=1662121699;
+        bh=viyntUJVeoiLePXjjdQmgHgxrdmmNar39wGScCadoLk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YbrIHCP7ImV9if2JakiCsNFMgG4SMIm3pL3a6h0YGQcq49C2B8fvgTc81d1MqOuW8
-         Xdll++W9fg5z4uW0BnPOP5txfmkC4e+1TKXjt4lMA5YqfjuHYcNvXRfaKVVKNmub0K
-         lWec/pn2waM+8iOQeBZOYfarJ/r842tKuC7qxXcg=
+        b=XpI0XTIjBa4bKcMB2/9hMXr4BLtNptcVzgUoE4vbCsYGgpoU5nj5bhIZ62c6QairJ
+         PHnH3k1K8EnuyP5JB1mTqEa24ewDTo0gM5RP96/GuBkQJfVNkP+cFjhXRz7YuZwPwX
+         KBfLA/NYw6gLOl0hqb+prnsH7e6pHXXkZEsnfvfo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josip Pavic <Josip.Pavic@amd.com>,
-        Jun Lei <Jun.Lei@amd.com>, Alex Hung <alex.hung@amd.com>,
-        Aric Cyr <aric.cyr@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 19/37] drm/amd/display: Avoid MPC infinite loop
-Date:   Fri,  2 Sep 2022 14:19:41 +0200
-Message-Id: <20220902121359.772125162@linuxfoundation.org>
+        stable@vger.kernel.org, Anand Jain <anand.jain@oracle.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.4 37/77] btrfs: replace: drop assert for suspended replace
+Date:   Fri,  2 Sep 2022 14:18:46 +0200
+Message-Id: <20220902121404.886346717@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121359.177846782@linuxfoundation.org>
-References: <20220902121359.177846782@linuxfoundation.org>
+In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
+References: <20220902121403.569927325@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,66 +48,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josip Pavic <Josip.Pavic@amd.com>
+From: Anand Jain <anand.jain@oracle.com>
 
-[ Upstream commit 8de297dc046c180651c0500f8611663ae1c3828a ]
+commit 59a3991984dbc1fc47e5651a265c5200bd85464e upstream.
 
-[why]
-In some cases MPC tree bottom pipe ends up point to itself.  This causes
-iterating from top to bottom to hang the system in an infinite loop.
+If the filesystem mounts with the replace-operation in a suspended state
+and try to cancel the suspended replace-operation, we hit the assert. The
+assert came from the commit fe97e2e173af ("btrfs: dev-replace: replace's
+scrub must not be running in suspended state") that was actually not
+required. So just remove it.
 
-[how]
-When looping to next MPC bottom pipe, check that the pointer is not same
-as current to avoid infinite loop.
+ $ mount /dev/sda5 /btrfs
 
-Reviewed-by: Josip Pavic <Josip.Pavic@amd.com>
-Reviewed-by: Jun Lei <Jun.Lei@amd.com>
-Acked-by: Alex Hung <alex.hung@amd.com>
-Signed-off-by: Aric Cyr <aric.cyr@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+    BTRFS info (device sda5): cannot continue dev_replace, tgtdev is missing
+    BTRFS info (device sda5): you may cancel the operation after 'mount -o degraded'
+
+ $ mount -o degraded /dev/sda5 /btrfs <-- success.
+
+ $ btrfs replace cancel /btrfs
+
+    kernel: assertion failed: ret != -ENOTCONN, in fs/btrfs/dev-replace.c:1131
+    kernel: ------------[ cut here ]------------
+    kernel: kernel BUG at fs/btrfs/ctree.h:3750!
+
+After the patch:
+
+ $ btrfs replace cancel /btrfs
+
+    BTRFS info (device sda5): suspended dev_replace from /dev/sda5 (devid 1) to <missing disk> canceled
+
+Fixes: fe97e2e173af ("btrfs: dev-replace: replace's scrub must not be running in suspended state")
+CC: stable@vger.kernel.org # 5.0+
+Signed-off-by: Anand Jain <anand.jain@oracle.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c | 6 ++++++
- drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c | 6 ++++++
- 2 files changed, 12 insertions(+)
+ fs/btrfs/dev-replace.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c
-index 3fcd408e91032..855682590c1bb 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c
-@@ -125,6 +125,12 @@ struct mpcc *mpc1_get_mpcc_for_dpp(struct mpc_tree *tree, int dpp_id)
- 	while (tmp_mpcc != NULL) {
- 		if (tmp_mpcc->dpp_id == dpp_id)
- 			return tmp_mpcc;
-+
-+		/* avoid circular linked list */
-+		ASSERT(tmp_mpcc != tmp_mpcc->mpcc_bot);
-+		if (tmp_mpcc == tmp_mpcc->mpcc_bot)
-+			break;
-+
- 		tmp_mpcc = tmp_mpcc->mpcc_bot;
- 	}
- 	return NULL;
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c
-index 99cc095dc33c7..a701ea56c0aa0 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c
-@@ -533,6 +533,12 @@ struct mpcc *mpc2_get_mpcc_for_dpp(struct mpc_tree *tree, int dpp_id)
- 	while (tmp_mpcc != NULL) {
- 		if (tmp_mpcc->dpp_id == 0xf || tmp_mpcc->dpp_id == dpp_id)
- 			return tmp_mpcc;
-+
-+		/* avoid circular linked list */
-+		ASSERT(tmp_mpcc != tmp_mpcc->mpcc_bot);
-+		if (tmp_mpcc == tmp_mpcc->mpcc_bot)
-+			break;
-+
- 		tmp_mpcc = tmp_mpcc->mpcc_bot;
- 	}
- 	return NULL;
--- 
-2.35.1
-
+--- a/fs/btrfs/dev-replace.c
++++ b/fs/btrfs/dev-replace.c
+@@ -918,8 +918,7 @@ int btrfs_dev_replace_cancel(struct btrf
+ 		up_write(&dev_replace->rwsem);
+ 
+ 		/* Scrub for replace must not be running in suspended state */
+-		ret = btrfs_scrub_cancel(fs_info);
+-		ASSERT(ret != -ENOTCONN);
++		btrfs_scrub_cancel(fs_info);
+ 
+ 		trans = btrfs_start_transaction(root, 0);
+ 		if (IS_ERR(trans)) {
 
 
