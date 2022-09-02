@@ -2,102 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DA46ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 02:56:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9A5BECAAD3
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 03:04:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234737AbiIBC4H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 22:56:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46554 "EHLO
+        id S234622AbiIBDEF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 23:04:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232291AbiIBC4E (ORCPT
+        with ESMTP id S231936AbiIBDEB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 22:56:04 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F40744055D;
-        Thu,  1 Sep 2022 19:56:02 -0700 (PDT)
-X-UUID: 2b3cadce884e4bcf8f16a137ebccec15-20220902
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=oLNGlCRUkI7WrIyYgZdRutE3RCvGTE+Yyyht7nl8QoM=;
-        b=Hl/27i9aiGprfachLfClDJVGEBaUfD/QmFmhOVsoGyT9VKsZkM56TGpbSioSn2Cs2kAMwqeLzZ9mi566OqO6BtiePOip0X/UlaTYIj3yMXGq+QmGlIRysQ6qr0Vf2ekNXnrAqsOZyECtm75gDXnbYpiSKjWKQDgoOya7VBKLg0Q=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.10,REQID:86a3920d-ea40-4d27-9909-185b469a346d,OB:0,L
-        OB:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release
-        _Ham,ACTION:release,TS:-5
-X-CID-META: VersionHash:84eae18,CLOUDID:189a64d0-20bd-4e5e-ace8-00692b7ab380,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 2b3cadce884e4bcf8f16a137ebccec15-20220902
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
-        (envelope-from <moudy.ho@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1541283790; Fri, 02 Sep 2022 10:55:56 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 2 Sep 2022 10:55:55 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 2 Sep 2022 10:55:55 +0800
-Message-ID: <e213e9d8ef900db665fee08b484181e1d47c5171.camel@mediatek.com>
-Subject: Re: linux-next: Tree for Sep 1 (Kconfig for VIDEO_MEDIATEK_VPU)
-From:   moudy ho <moudy.ho@mediatek.com>
-To:     Randy Dunlap <rdunlap@infradead.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-CC:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Date:   Fri, 2 Sep 2022 10:55:55 +0800
-In-Reply-To: <f19684d4-9ef0-6308-8245-73c9a4511e67@infradead.org>
-References: <20220901171832.78d88aed@canb.auug.org.au>
-         <f19684d4-9ef0-6308-8245-73c9a4511e67@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Thu, 1 Sep 2022 23:04:01 -0400
+X-Greylist: delayed 471 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 01 Sep 2022 20:03:59 PDT
+Received: from cstnet.cn (smtp23.cstnet.cn [159.226.251.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E00A89F8E6;
+        Thu,  1 Sep 2022 20:03:59 -0700 (PDT)
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-03 (Coremail) with SMTP id rQCowAD37FHMcBFjLoZuAA--.13835S2;
+        Fri, 02 Sep 2022 10:56:12 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     deller@gmx.de, broonie@kernel.org,
+        maarten.lankhorst@linux.intel.com, daniel.vetter@ffwll.ch
+Cc:     linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH 2/2] video: fbdev: gbefb: Remove unproper information
+Date:   Fri,  2 Sep 2022 10:56:12 +0800
+Message-Id: <20220902025612.3833972-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: rQCowAD37FHMcBFjLoZuAA--.13835S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7Jw4DKw4kKF13Jw1xGr15Jwb_yoW3JFcEkw
+        s8ZFZxWryqkr1vg3W8Kr4Y9ry0kF1qqFy3XFn3Kryft343Ar1rX34UZr1Fg398ZF4jvFnx
+        X3Z09r4xZ3sakjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbcAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
+        6F4UJwA2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87Iv6xkF7I0E14v26F
+        4UJVW0owAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
+        7VC0I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCjc4AY6r
+        1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_
+        Gr1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxV
+        WUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI
+        7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r
+        4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVW8JVW3JwCI42IY6I8E87Iv67AKxVW8JVWxJwCI
+        42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUOyCGUUUUU
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Randy,
+When drivers are working properly, they are quiet.
+Therefore, the fb_info() should be removed.
 
-Thanks for your efforts on this matter, the warning is due to not
-setting V4L_MEM2MEM_DRIVERS on defconfig which the VIDEO_MEDIATEK_VPU
-depends.
-Could I send a patch to add a V4L_MEM2MEM_DRIVERS selection in MDP3
-Kconfig to avoid this warning?
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+ drivers/video/fbdev/gbefb.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-Regards,
-Moudy
-
-On Thu, 2022-09-01 at 13:38 -0700, Randy Dunlap wrote:
-> 
-> On 9/1/22 00:18, Stephen Rothwell wrote:
-> > Hi all,
-> > 
-> > News: there will be no linux-next releases tomorrow or on Monday.
-> > 
-> > Changes since 20220831:
-> > 
-> 
-> on i386 or x86_64:
-> 
-> WARNING: unmet direct dependencies detected for VIDEO_MEDIATEK_VPU
->   Depends on [n]: MEDIA_SUPPORT [=y] && MEDIA_PLATFORM_SUPPORT [=y]
-> && MEDIA_PLATFORM_DRIVERS [=y] && V4L_MEM2MEM_DRIVERS [=n] &&
-> VIDEO_DEV [=y] && (ARCH_MEDIATEK || COMPILE_TEST [=y])
->   Selected by [y]:
->   - VIDEO_MEDIATEK_MDP3 [=y] && MEDIA_SUPPORT [=y] &&
-> MEDIA_PLATFORM_SUPPORT [=y] && MEDIA_PLATFORM_DRIVERS [=y] &&
-> (MTK_IOMMU [=n] || COMPILE_TEST [=y]) && VIDEO_DEV [=y] &&
-> (ARCH_MEDIATEK || COMPILE_TEST [=y]) && HAS_DMA [=y] && REMOTEPROC
-> [=y]
-> 
-> 
-> 
-> Full x86_64 randconfig file is attached.
-> 
+diff --git a/drivers/video/fbdev/gbefb.c b/drivers/video/fbdev/gbefb.c
+index 1582c718329c..7e39ab939691 100644
+--- a/drivers/video/fbdev/gbefb.c
++++ b/drivers/video/fbdev/gbefb.c
+@@ -1217,10 +1217,6 @@ static int gbefb_probe(struct platform_device *p_dev)
+ 
+ 	platform_set_drvdata(p_dev, info);
+ 
+-	fb_info(info, "%s rev %d @ 0x%08x using %dkB memory\n",
+-		info->fix.id, gbe_revision, (unsigned)GBE_BASE,
+-		gbe_mem_size >> 10);
+-
+ 	return 0;
+ 
+ out_gbe_unmap:
+-- 
+2.25.1
 
