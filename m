@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 260C0C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:56:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAFD1C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:56:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238249AbiIBM4y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:56:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45358 "EHLO
+        id S238283AbiIBM46 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:56:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238049AbiIBMxk (ORCPT
+        with ESMTP id S238284AbiIBMyR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:53:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E794CFAC56;
-        Fri,  2 Sep 2022 05:38:09 -0700 (PDT)
+        Fri, 2 Sep 2022 08:54:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D228913F59;
+        Fri,  2 Sep 2022 05:38:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 37D7AB82AC5;
-        Fri,  2 Sep 2022 12:37:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9865BC433C1;
-        Fri,  2 Sep 2022 12:37:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AF49A62119;
+        Fri,  2 Sep 2022 12:38:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3822C433C1;
+        Fri,  2 Sep 2022 12:38:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122223;
-        bh=2gkOyJHEOnhy8KuSVDxmg+uLWkfhEMajGgSqFWI+bi4=;
+        s=korg; t=1662122318;
+        bh=56qpjWB8mJKn1eLnKq9RG+xLWF2hplTX40XmhiVK548=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kEyHwzieAe1li/IrzoObLuUpyZBUW2Bi7KC+gtsaOTiHJQ9UssRsKmm/RraGCWPHJ
-         TNoecoK+XsWw6nKRKMmwqVzwSB4ShOYuQX/2KhPqBjfQ91ZSd0Uhsalty3OPVYsLm/
-         rpk5t2RTZaW5qEjtIelw9yquviCEpOfPd0pD1i10=
+        b=Wq0LdSDgEBtYQYuWc8mI/7k+bwksLfSJOJUzE5tINQFzXzVDXiKvP0OZgffEmmEPa
+         W9SPG41ywKBBY60t/Nk0eH6ArklKlLTD6KTDJwJ8EPcvcXp+77CYb5qEDB3Hb8dlKU
+         7sBD14BQ7+S8gFN7oieIik+ltLnfmQ6oisBC6XGk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
-        Hyunchul Lee <hyc.lee@gmail.com>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 51/72] ksmbd: dont remove dos attribute xattr on O_TRUNC open
-Date:   Fri,  2 Sep 2022 14:19:27 +0200
-Message-Id: <20220902121406.446240162@linuxfoundation.org>
+        Jann Horn <jannh@google.com>
+Subject: [PATCH 5.10 01/37] mm: Force TLB flush for PFNMAP mappings before unlink_file_vma()
+Date:   Fri,  2 Sep 2022 14:19:23 +0200
+Message-Id: <20220902121359.222008856@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
-References: <20220902121404.772492078@linuxfoundation.org>
+In-Reply-To: <20220902121359.177846782@linuxfoundation.org>
+References: <20220902121359.177846782@linuxfoundation.org>
 User-Agent: quilt/0.67
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,55 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namjae Jeon <linkinjeon@kernel.org>
+From: Jann Horn <jannh@google.com>
 
-[ Upstream commit 17661ecf6a64eb11ae7f1108fe88686388b2acd5 ]
+commit b67fbebd4cf980aecbcc750e1462128bffe8ae15 upstream.
 
-When smb client open file in ksmbd share with O_TRUNC, dos attribute
-xattr is removed as well as data in file. This cause the FSCTL_SET_SPARSE
-request from the client fails because ksmbd can't update the dos attribute
-after setting ATTR_SPARSE_FILE. And this patch fix xfstests generic/469
-test also.
+Some drivers rely on having all VMAs through which a PFN might be
+accessible listed in the rmap for correctness.
+However, on X86, it was possible for a VMA with stale TLB entries
+to not be listed in the rmap.
 
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
-Reviewed-by: Hyunchul Lee <hyc.lee@gmail.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This was fixed in mainline with
+commit b67fbebd4cf9 ("mmu_gather: Force tlb-flush VM_PFNMAP vmas"),
+but that commit relies on preceding refactoring in
+commit 18ba064e42df3 ("mmu_gather: Let there be one tlb_{start,end}_vma()
+implementation") and commit 1e9fdf21a4339 ("mmu_gather: Remove per arch
+tlb_{start,end}_vma()").
+
+This patch provides equivalent protection without needing that
+refactoring, by forcing a TLB flush between removing PTEs in
+unmap_vmas() and the call to unlink_file_vma() in free_pgtables().
+
+[This is a stable-specific rewrite of the upstream commit!]
+Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ksmbd/smb2pdu.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ mm/mmap.c |   12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
-index bbb3958b6469d..35f5ea1c9dfcd 100644
---- a/fs/ksmbd/smb2pdu.c
-+++ b/fs/ksmbd/smb2pdu.c
-@@ -2315,15 +2315,15 @@ static int smb2_remove_smb_xattrs(struct path *path)
- 			name += strlen(name) + 1) {
- 		ksmbd_debug(SMB, "%s, len %zd\n", name, strlen(name));
- 
--		if (strncmp(name, XATTR_USER_PREFIX, XATTR_USER_PREFIX_LEN) &&
--		    strncmp(&name[XATTR_USER_PREFIX_LEN], DOS_ATTRIBUTE_PREFIX,
--			    DOS_ATTRIBUTE_PREFIX_LEN) &&
--		    strncmp(&name[XATTR_USER_PREFIX_LEN], STREAM_PREFIX, STREAM_PREFIX_LEN))
--			continue;
--
--		err = ksmbd_vfs_remove_xattr(user_ns, path->dentry, name);
--		if (err)
--			ksmbd_debug(SMB, "remove xattr failed : %s\n", name);
-+		if (!strncmp(name, XATTR_USER_PREFIX, XATTR_USER_PREFIX_LEN) &&
-+		    !strncmp(&name[XATTR_USER_PREFIX_LEN], STREAM_PREFIX,
-+			     STREAM_PREFIX_LEN)) {
-+			err = ksmbd_vfs_remove_xattr(user_ns, path->dentry,
-+						     name);
-+			if (err)
-+				ksmbd_debug(SMB, "remove xattr failed : %s\n",
-+					    name);
-+		}
- 	}
- out:
- 	kvfree(xattr_list);
--- 
-2.35.1
-
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -2669,6 +2669,18 @@ static void unmap_region(struct mm_struc
+ 	tlb_gather_mmu(&tlb, mm, start, end);
+ 	update_hiwater_rss(mm);
+ 	unmap_vmas(&tlb, vma, start, end);
++
++	/*
++	 * Ensure we have no stale TLB entries by the time this mapping is
++	 * removed from the rmap.
++	 * Note that we don't have to worry about nested flushes here because
++	 * we're holding the mm semaphore for removing the mapping - so any
++	 * concurrent flush in this region has to be coming through the rmap,
++	 * and we synchronize against that using the rmap lock.
++	 */
++	if ((vma->vm_flags & (VM_PFNMAP|VM_MIXEDMAP)) != 0)
++		tlb_flush_mmu(&tlb);
++
+ 	free_pgtables(&tlb, vma, prev ? prev->vm_end : FIRST_USER_ADDRESS,
+ 				 next ? next->vm_start : USER_PGTABLES_CEILING);
+ 	tlb_finish_mmu(&tlb, start, end);
 
 
