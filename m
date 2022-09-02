@@ -2,61 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBD2BC54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 07:51:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4756BECAAA1
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 07:51:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233014AbiIBHvK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 03:51:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39456 "EHLO
+        id S235466AbiIBHvz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 03:51:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232221AbiIBHvI (ORCPT
+        with ESMTP id S235297AbiIBHvx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 03:51:08 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A56569F50;
-        Fri,  2 Sep 2022 00:51:07 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id u1-20020a17090a410100b001fff314d14fso1372975pjf.5;
-        Fri, 02 Sep 2022 00:51:07 -0700 (PDT)
+        Fri, 2 Sep 2022 03:51:53 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E32CBABF32;
+        Fri,  2 Sep 2022 00:51:52 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id x19so1159822pfr.1;
+        Fri, 02 Sep 2022 00:51:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date;
-        bh=l7PysdDE7wN+ye8WRTKSRcfMHgYlvrUlNtFAwiTdfkc=;
-        b=MSeXIxsWfHMOPCblIr986Y0cCuP9gohYjJX8CZpxJOj+F/Qdm13qgTB/AjfPZMageB
-         5iKcHihidqHEK3RxY/s/LXyUmETkKkkDhr3uQfjm3mhShonwTMJ7BmqDv3wxWobVgZDl
-         dYNq8+SrHrFN6ZErkysqCJNbw37QycEasVoMOoaRsPn6OWRmxImcdBUB5Jbc0Mt8Fluy
-         SsGube0vuJdG27vF5l1g1sGP3Ca+AJAUEOvL+IciEDPkd9alb2sWMWGGHDwoHLpn8IEt
-         f6gkb5/s7mGLrW1JnwT1MUrws8Xa6IyKIa+FEaU/T8UE/lo9QwDvb1JS8M7bTd+iFG1U
-         YnHw==
+        bh=ytaS2HDgiOt5YedCmHjB6NzOPHEeyztGDe+t4/ynB9g=;
+        b=IHU8HZzHDz1NEVK1FUbzsCmji46rKwPkkP6V5APfvELxfEBciQ/CRE6h9rPnWVJutq
+         lXwvQcNCOo23Lx17Ed09B1zXE0eK9xg6qUjPVvL64o8BZHVHQeXSCLIb68p9UOGYV8db
+         IZrg70C0r8OepEyY6Pit6wqxkDgo8olaiAG7uStVg352gB/08tYVa8YKcPKMSah+rhCj
+         amg1gp9KU3rxAsvjTbgaRJQbgtjg6YflC3BqlaI+O5J+BJEzt84kJgv2igjgi19nwm9d
+         GUDqD9SXI0qRZnvIv8SVgp3t6Gab7Dky/FgR8kF9pjS1PEgk+hZ1bgGTi+5Ck9curGXv
+         SaAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=l7PysdDE7wN+ye8WRTKSRcfMHgYlvrUlNtFAwiTdfkc=;
-        b=IwCPn7uNHdJOc4xcKfEVhwGR7qK+nIfpgxrAVM/3dbduDdiLs+fon00mr5/vfsRQpt
-         tWpZXeN2kLn3Tpcmi8wOkIwLW9VaC+1XOLoR64hYo2cVxQrZpPxnQDOQMht9EF/LOJmN
-         KOBS8JRw8UBS6dspnW++WN5yEjl4kdEIAP68ci3EDQ3dfgxaVO9+0cDvAfNREp2+fAkc
-         QA9jMRLtyregHZNDx9HZVD0gFOfhRk8QT2QJXnVUTfbJZic0N+Ix7Y7ClldgmgjTggvO
-         wxe/qVww5PccBdeNPjBvHo3nlYrJtDkLV7rUY3AHsO+D3a/fP6haF1smKaYgOAvmQPcz
-         6WmA==
-X-Gm-Message-State: ACgBeo0r1MynZkAAYT4+2HD7Huz2gPmPpXlCME/z1TJyjRrGnEj+hwlM
-        imuZOUhM6CoJrikEU2l/cZfOYKaMNOM2jQ==
-X-Google-Smtp-Source: AA6agR4vsKeAwluDf0MR9ibQbnCUn+oeddwtCawAP9LGB2Ll3wWNF7w6acCv2BDoKD6LvXwB07ftiw==
-X-Received: by 2002:a17:903:41c6:b0:16e:fb38:e2c7 with SMTP id u6-20020a17090341c600b0016efb38e2c7mr34737565ple.75.1662105066815;
-        Fri, 02 Sep 2022 00:51:06 -0700 (PDT)
-Received: from localhost.localdomain (lily-optiplex-3070.dynamic.ucsd.edu. [2607:f720:1300:3033::1:4dd])
-        by smtp.googlemail.com with ESMTPSA id l10-20020a170903120a00b0016ef87334aesm911341plh.162.2022.09.02.00.51.05
+        bh=ytaS2HDgiOt5YedCmHjB6NzOPHEeyztGDe+t4/ynB9g=;
+        b=fKfT6+rkgqyxVOCaA4nNzl524fNd/uHr/CCmIeX51MfknEJPHaU0bidnt4feMAUdXC
+         vEaHIzL+USfFKV2SHtE7hqXtwqZJgOujTK2FJRl0hr8CuEIDC/V+phxHm8Xa8JBIHcDE
+         bQbDKL60hXiFr2eOPejOIgz+9aAhFLBpWvWxpXO3Khyh4JwuxLEiISrfsd88UOTieNle
+         OqIAjnHVYnpv3EWd/dUKQ+VqTyK/oQTaxuA2grRTT3CthvF2t5nB8cPcJAJX8RT7If5t
+         GU3Srs2urDSymQaROHK5oxNOfSALPflpEzHmQUyb3PERZ28fVeM5gyVppKJ6b4kr6LbV
+         7LdA==
+X-Gm-Message-State: ACgBeo32WuiHTq6VHwjX3wdQPICPsD+h9h9xsbhRzi2EOm0SNYHz8ZAO
+        f6it/XK3Pb8fJyeYt0GX49g/YE6pR1vN3jCs
+X-Google-Smtp-Source: AA6agR4c8S/vuJdq6qi+8Z/hdP5FiMeDGwDeuB/GfKYqAnrtTz7U1k0exR83AM0TwSLRrB00WK5vRw==
+X-Received: by 2002:a63:8643:0:b0:42b:66ab:b051 with SMTP id x64-20020a638643000000b0042b66abb051mr30526063pgd.259.1662105112467;
+        Fri, 02 Sep 2022 00:51:52 -0700 (PDT)
+Received: from localhost ([166.111.139.139])
+        by smtp.gmail.com with ESMTPSA id s22-20020a170902b19600b00174fa8cbf6dsm898927plr.161.2022.09.02.00.51.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 00:51:06 -0700 (PDT)
-From:   Li Zhong <floridsleeves@gmail.com>
-To:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
-Cc:     rafael@kernel.org, len.brown@intel.com, pavel@ucw.cz,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        Li Zhong <floridsleeves@gmail.com>
-Subject: [PATCH v1] arch/x86/kernel/acpi: check the return value of mp_find_ioapic()
-Date:   Fri,  2 Sep 2022 00:50:53 -0700
-Message-Id: <20220902075053.2212595-1-floridsleeves@gmail.com>
+        Fri, 02 Sep 2022 00:51:51 -0700 (PDT)
+From:   Zixuan Fu <r33s3n6@gmail.com>
+To:     kashyap.desai@broadcom.com, sumit.saxena@broadcom.com,
+        shivasharan.srikanteshwara@broadcom.com, jejb@linux.ibm.com,
+        martin.petersen@oracle.com
+Cc:     megaraidlinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, baijiaju1990@gmail.com,
+        TOTE Robot <oslab@tsinghua.edu.cn>
+Subject: [BUG] scsi: megaraid_sas: possible null pointer dereference in megasas_slave_alloc()
+Date:   Fri,  2 Sep 2022 15:51:48 +0800
+Message-Id: <20220902075148.2391710-1-r33s3n6@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -64,30 +65,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Check the return value of mp_find_ioapic(), which could be -1. Since
-ioapic will be used as index in mpc_ioapic_id(), we should check the
-return value ioapic here.
+Hello,
 
-Signed-off-by: Li Zhong <floridsleeves@gmail.com>
----
- arch/x86/kernel/acpi/boot.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Our fault injection tool finds a possible null-pointer dereference in the
+megaraid_sas driver in Linux 5.10.0:
 
-diff --git a/arch/x86/kernel/acpi/boot.c b/arch/x86/kernel/acpi/boot.c
-index 907cc98b1938..687111adfb90 100644
---- a/arch/x86/kernel/acpi/boot.c
-+++ b/arch/x86/kernel/acpi/boot.c
-@@ -463,6 +463,10 @@ static void mp_config_acpi_gsi(struct device *dev, u32 gsi, int trigger,
- 	mp_irq.srcbus = number;
- 	mp_irq.srcbusirq = (((devfn >> 3) & 0x1f) << 2) | ((pin - 1) & 3);
- 	ioapic = mp_find_ioapic(gsi);
-+	if (ioapic < 0) {
-+		pr_warn("Failed to find ioapic for gsi : %u\n", gsi);
-+		return;
-+	}
- 	mp_irq.dstapic = mpc_ioapic_id(ioapic);
- 	mp_irq.dstirq = mp_find_ioapic_pin(ioapic, gsi);
- 
--- 
-2.25.1
+In the file drivers/scsi/megaraid/megaraid_sas_base.c:
+In megasas_get_seq_num(), the call to dma_alloc_coherent() may fail: 
+6459: el_info = dma_alloc_coherent(&instance->pdev->dev,
+                                   sizeof(struct megasas_evt_log_info),
+                                   &el_info_h,
+                                   GFP_KERNEL);
 
+This error is propagated to its caller megasas_start_aen().
+6749: if (megasas_get_seq_num(instance, &eli))
+6750:     return -1;
+
+Then it is propagated again to its caller megasas_probe_one().
+7428: if (megasas_start_aen(instance)) {
+7429:     dev_printk(KERN_DEBUG, &pdev->dev, "start aen failed\n");
+7430:     goto fail_start_aen;
+7431: }
+
+In error handling code of megasas_probe_one(), it removes the pointer
+`instance` from `megasas_mgmt_info.instance`:
+7445: megasas_mgmt_info.instance[megasas_mgmt_info.max_index] = NULL;
+
+But it stores the pointer `instance` in the pdev by calling pci_set_drvdata()
+before and do nothing about it in error handling code:
+7401: pci_set_drvdata(pdev, instance);
+
+Then, in another thread, megasas_slave_alloc() is called. This function calls
+megasas_lookup_instance() to get the pointer `instance`, which can not be
+found in `megasas_mgmt_info.instance`. Therefore, NULL is returned:
+2087: instance = megasas_lookup_instance(sdev->host->host_no);
+
+This causes a null-pointer dereference bug:
+2095: if ((instance->pd_list_not_supported || 
+           instance->pd_list[pd_index].driveState == MR_PD_STATE_SYSTEM))
+
+If we just add a check for `instance`, another bug is found.
+megasas_fault_detect_work() is called by a thread. and it retrieves the
+pointer `instance` from `work`:
+In the file drivers/scsi/megaraid/megaraid_sas_base.c:
+1901: struct megasas_instance *instance = 
+        container_of(work, struct megasas_instance, fw_fault_work.work);
+
+Because the structure `instance` points to is broken, the following calls
+about `instance` causes some page-faults:
+1907: fw_state = instance->instancet->read_fw_status_reg(instance) &
+                 MFI_STATE_MASK;
+1911: dma_state = instance->instancet->read_fw_status_reg(instance) &
+                  MFI_STATE_DMADONE;
+...
+
+I am not quite sure how to fix this possible bug. Any feedback would be
+appreciated, thanks!
+
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+
+Best wishes,
+Zixuan Fu
