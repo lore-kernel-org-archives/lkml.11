@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38671ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:02:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E8E4ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:02:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238459AbiIBNCD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:02:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48836 "EHLO
+        id S238566AbiIBNCI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:02:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238398AbiIBM7w (ORCPT
+        with ESMTP id S238402AbiIBM7w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 08:59:52 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 676D6FC32F;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6746FFC32D;
         Fri,  2 Sep 2022 05:40:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 06693B82ADF;
-        Fri,  2 Sep 2022 12:40:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 508D9C433D6;
-        Fri,  2 Sep 2022 12:40:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D69E3B82AE0;
+        Fri,  2 Sep 2022 12:40:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 184D4C433C1;
+        Fri,  2 Sep 2022 12:40:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122410;
-        bh=qJtlZbyOTsV51PIP1uTB7gctPH/B6Gl+DB+pExHFlyw=;
+        s=korg; t=1662122404;
+        bh=B3TWZtAIrgKyArLCCITDfgSyhqaG2UKQiJWQ25NpFcU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cLcVk9RbfRpPHpATjxZ0FUVlW6m0JrenCE2v61mLeGb9n8ZMDZp0cNpYHFyoyWhSD
-         Q2IzTVFp3LeRO9fzk3Bdyc1ADl/PMTqwVhWf34I9mW27Bd3OsU3tpekU87T4qG37rl
-         dqzkXuQVPW/8pRGxqk6Cjit6OeZylF23AtjkG48U=
+        b=vL+h5qCV7nJP83IpSjfN3+aR5ss3V5R6vU9EK9RLzNpvablBJ0eEb137CAPQxRKpU
+         KmlmvZ9aTsv3J5onjV1yLLgTaGEZFdXH7BaXVMRd/nfGiWm+fdtx0otza2uT6PcgIe
+         Bz8PDPJj3Ln8C3rbmejVd0EwSzCah4O7kgr5UjaQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Denis V. Lunev" <den@openvz.org>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 37/37] net: neigh: dont call kfree_skb() under spin_lock_irqsave()
-Date:   Fri,  2 Sep 2022 14:19:59 +0200
-Message-Id: <20220902121400.327532774@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Sandeen <sandeen@redhat.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Dave Chinner <dchinner@redhat.com>,
+        Dave Chinner <david@fromorbit.com>,
+        Amir Goldstein <amir73il@gmail.com>
+Subject: [PATCH 5.10 35/37] xfs: revert "xfs: actually bump warning counts when we send warnings"
+Date:   Fri,  2 Sep 2022 14:19:57 +0200
+Message-Id: <20220902121400.268955285@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121359.177846782@linuxfoundation.org>
 References: <20220902121359.177846782@linuxfoundation.org>
@@ -50,56 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Eric Sandeen <sandeen@redhat.com>
 
-commit d5485d9dd24e1d04e5509916515260186eb1455c upstream.
+commit bc37e4fb5cac2925b2e286b1f1d4fc2b519f7d92 upstream.
 
-It is not allowed to call kfree_skb() from hardware interrupt
-context or with interrupts being disabled. So add all skb to
-a tmp list, then free them after spin_unlock_irqrestore() at
-once.
+This reverts commit 4b8628d57b725b32616965e66975fcdebe008fe7.
 
-Fixes: 66ba215cb513 ("neigh: fix possible DoS due to net iface start/stop loop")
-Suggested-by: Denis V. Lunev <den@openvz.org>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+XFS quota has had the concept of a "quota warning limit" since
+the earliest Irix implementation, but a mechanism for incrementing
+the warning counter was never implemented, as documented in the
+xfs_quota(8) man page. We do know from the historical archive that
+it was never incremented at runtime during quota reservation
+operations.
+
+With this commit, the warning counter quickly increments for every
+allocation attempt after the user has crossed a quote soft
+limit threshold, and this in turn transitions the user to hard
+quota failures, rendering soft quota thresholds and timers useless.
+This was reported as a regression by users.
+
+Because the intended behavior of this warning counter has never been
+understood or documented, and the result of this change is a regression
+in soft quota functionality, revert this commit to make soft quota
+limits and timers operable again.
+
+Fixes: 4b8628d57b72 ("xfs: actually bump warning counts when we send warnings)
+Signed-off-by: Eric Sandeen <sandeen@redhat.com>
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+Reviewed-by: Dave Chinner <dchinner@redhat.com>
+Signed-off-by: Dave Chinner <david@fromorbit.com>
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Acked-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/neighbour.c |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ fs/xfs/xfs_trans_dquot.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -282,21 +282,27 @@ static int neigh_del_timer(struct neighb
- 
- static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
- {
-+	struct sk_buff_head tmp;
- 	unsigned long flags;
- 	struct sk_buff *skb;
- 
-+	skb_queue_head_init(&tmp);
- 	spin_lock_irqsave(&list->lock, flags);
- 	skb = skb_peek(list);
- 	while (skb != NULL) {
- 		struct sk_buff *skb_next = skb_peek_next(skb, list);
- 		if (net == NULL || net_eq(dev_net(skb->dev), net)) {
- 			__skb_unlink(skb, list);
--			dev_put(skb->dev);
--			kfree_skb(skb);
-+			__skb_queue_tail(&tmp, skb);
+--- a/fs/xfs/xfs_trans_dquot.c
++++ b/fs/xfs/xfs_trans_dquot.c
+@@ -615,7 +615,6 @@ xfs_dqresv_check(
+ 			return QUOTA_NL_ISOFTLONGWARN;
  		}
- 		skb = skb_next;
- 	}
- 	spin_unlock_irqrestore(&list->lock, flags);
-+
-+	while ((skb = __skb_dequeue(&tmp))) {
-+		dev_put(skb->dev);
-+		kfree_skb(skb);
-+	}
- }
  
- static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev,
+-		res->warnings++;
+ 		return QUOTA_NL_ISOFTWARN;
+ 	}
+ 
 
 
