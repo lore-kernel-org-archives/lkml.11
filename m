@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81AABECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:49:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB916ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:49:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236996AbiIBOtX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:49:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33448 "EHLO
+        id S236114AbiIBOt1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:49:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237266AbiIBOst (ORCPT
+        with ESMTP id S237264AbiIBOst (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 10:48:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C680BC8A;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D793B4A4;
         Fri,  2 Sep 2022 07:10:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4CD59B82A92;
-        Fri,  2 Sep 2022 12:23:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A298EC433D7;
-        Fri,  2 Sep 2022 12:23:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 35743B82AA5;
+        Fri,  2 Sep 2022 12:34:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A252BC433B5;
+        Fri,  2 Sep 2022 12:34:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121412;
-        bh=Rk1WS9y8pDkFDaZEbT9tCSSI1OHbxBTz6GYp05s8Cmk=;
+        s=korg; t=1662122069;
+        bh=ngG15JejDqqcJ9SlXbwYiQ/bNv4YoNx9fC8TWrz6c3Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qUZE1iyPh0x1hi+d3AgTW1NbKZu7WgLkQQwjULaN0P57ozIucvIHMU05khKUyR42o
-         Eu46crq2aa52HtBYir0h1CPpXqWXl6y7ay4NQoWmoOH0oaPym/1YKtf73zKGtPgtS0
-         f/GGucZ8N5JuFlJb6imFD8Pv8ZOCt0/ig7pxolXg=
+        b=vmKG1FhpJKcIEeHXo1UP2m8abQwI2tqs0qKXLVuNL5MNY806AZU0ecoZWpIPaW74j
+         QJACl700Hmc2vSOhooyu30tUKnon+gnxJp/W79rpeV7CbpXtgnoh4Zg4lliI8GSYuF
+         0Kggt4tomIO9VLJIMy1QdQ02qlMie9W1ETrjLz40=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
+        Florian Westphal <fw@strlen.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 11/42] netfilter: nft_payload: do not truncate csum_offset and csum_type
-Date:   Fri,  2 Sep 2022 14:18:35 +0200
-Message-Id: <20220902121359.205058135@linuxfoundation.org>
+Subject: [PATCH 5.15 64/73] netfilter: conntrack: NF_CONNTRACK_PROCFS should no longer default to y
+Date:   Fri,  2 Sep 2022 14:19:28 +0200
+Message-Id: <20220902121406.522493900@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121358.773776406@linuxfoundation.org>
-References: <20220902121358.773776406@linuxfoundation.org>
+In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
+References: <20220902121404.435662285@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,70 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
 
-[ Upstream commit 7044ab281febae9e2fa9b0b247693d6026166293 ]
+[ Upstream commit aa5762c34213aba7a72dc58e70601370805fa794 ]
 
-Instead report ERANGE if csum_offset is too long, and EOPNOTSUPP if type
-is not support.
+NF_CONNTRACK_PROCFS was marked obsolete in commit 54b07dca68557b09
+("netfilter: provide config option to disable ancient procfs parts") in
+v3.3.
 
-Fixes: 7ec3f7b47b8d ("netfilter: nft_payload: add packet mangling support")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nft_payload.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
+ net/netfilter/Kconfig | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/net/netfilter/nft_payload.c b/net/netfilter/nft_payload.c
-index 04b9df9e39554..5732b32ab9320 100644
---- a/net/netfilter/nft_payload.c
-+++ b/net/netfilter/nft_payload.c
-@@ -332,6 +332,8 @@ static int nft_payload_set_init(const struct nft_ctx *ctx,
- 				const struct nlattr * const tb[])
- {
- 	struct nft_payload_set *priv = nft_expr_priv(expr);
-+	u32 csum_offset, csum_type = NFT_PAYLOAD_CSUM_NONE;
-+	int err;
+diff --git a/net/netfilter/Kconfig b/net/netfilter/Kconfig
+index 92a747896f808..4f645d51c2573 100644
+--- a/net/netfilter/Kconfig
++++ b/net/netfilter/Kconfig
+@@ -133,7 +133,6 @@ config NF_CONNTRACK_ZONES
  
- 	priv->base        = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_BASE]));
- 	priv->offset      = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_OFFSET]));
-@@ -339,11 +341,15 @@ static int nft_payload_set_init(const struct nft_ctx *ctx,
- 	priv->sreg        = nft_parse_register(tb[NFTA_PAYLOAD_SREG]);
- 
- 	if (tb[NFTA_PAYLOAD_CSUM_TYPE])
--		priv->csum_type =
--			ntohl(nla_get_be32(tb[NFTA_PAYLOAD_CSUM_TYPE]));
--	if (tb[NFTA_PAYLOAD_CSUM_OFFSET])
--		priv->csum_offset =
--			ntohl(nla_get_be32(tb[NFTA_PAYLOAD_CSUM_OFFSET]));
-+		csum_type = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_CSUM_TYPE]));
-+	if (tb[NFTA_PAYLOAD_CSUM_OFFSET]) {
-+		err = nft_parse_u32_check(tb[NFTA_PAYLOAD_CSUM_OFFSET], U8_MAX,
-+					  &csum_offset);
-+		if (err < 0)
-+			return err;
-+
-+		priv->csum_offset = csum_offset;
-+	}
- 	if (tb[NFTA_PAYLOAD_CSUM_FLAGS]) {
- 		u32 flags;
- 
-@@ -354,13 +360,14 @@ static int nft_payload_set_init(const struct nft_ctx *ctx,
- 		priv->csum_flags = flags;
- 	}
- 
--	switch (priv->csum_type) {
-+	switch (csum_type) {
- 	case NFT_PAYLOAD_CSUM_NONE:
- 	case NFT_PAYLOAD_CSUM_INET:
- 		break;
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-+	priv->csum_type = csum_type;
- 
- 	return nft_validate_register_load(priv->sreg, priv->len);
- }
+ config NF_CONNTRACK_PROCFS
+ 	bool "Supply CT list in procfs (OBSOLETE)"
+-	default y
+ 	depends on PROC_FS
+ 	help
+ 	This option enables for the list of known conntrack entries
 -- 
 2.35.1
 
