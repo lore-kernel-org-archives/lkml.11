@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 620CBC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:45:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83807C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:45:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237558AbiIBMpQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:45:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55332 "EHLO
+        id S237566AbiIBMpV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:45:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237397AbiIBMnV (ORCPT
+        with ESMTP id S237401AbiIBMnX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:43:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2FE5EA338;
-        Fri,  2 Sep 2022 05:32:14 -0700 (PDT)
+        Fri, 2 Sep 2022 08:43:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CBFAEA8A9;
+        Fri,  2 Sep 2022 05:32:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 093B9B82AA1;
-        Fri,  2 Sep 2022 12:31:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A08CC433D7;
-        Fri,  2 Sep 2022 12:31:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DFEDE621A6;
+        Fri,  2 Sep 2022 12:32:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 993D6C433B5;
+        Fri,  2 Sep 2022 12:32:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121915;
-        bh=YYZqNvYH974mWYE0XTAzE/Kt7rGuXw0ZNZXMqgHHd+4=;
+        s=korg; t=1662121934;
+        bh=592iDz/BO08z3ictvlp22YVVxQH8ZjZrTk0zzma+jgo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m5uHo9Bqhbp45IsRBaY2GVjkh2CoEc+1o/YyLCCU3prLYlF5rFIs9mGMn9aLwMxIT
-         dbb00imKDr0/l7j1oZCrlhSvim7l0o418xXSbo2K3xYiLCh2j/10m1EmHH/beu8Hw4
-         mSFfzH3j5O8XUx1QurRP/gi0pxMP14lZsiKxAlpc=
+        b=BVU9uqkjcIXJIMtS7LjPwm3FpfoKD5NXt/Fx/mV8JWyC1rmDX/4Dd/b6pDLqSUf6j
+         bHwMeiEQXZX6YeZcxZfCfYOf1QpWgQU9NYlnDtQAGu9NwqK+knB1IKr541xidwuRpU
+         RoPvTNRKpDLkKXTcvp4DnmkjradgSiargDLzCN38=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 5.15 05/73] drm/vc4: hdmi: Depends on CONFIG_PM
-Date:   Fri,  2 Sep 2022 14:18:29 +0200
-Message-Id: <20220902121404.619894185@linuxfoundation.org>
+        stable@vger.kernel.org, Ben Greear <greearb@candelatech.com>,
+        Stefan Roese <sr@denx.de>, Bjorn Helgaas <bhelgaas@google.com>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Yao Hongbo <yaohongbo@linux.alibaba.com>,
+        Naveen Naidu <naveennaidu479@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 26/73] Revert "PCI/portdrv: Dont disable AER reporting in get_port_device_capability()"
+Date:   Fri,  2 Sep 2022 14:18:50 +0200
+Message-Id: <20220902121405.308996274@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
 References: <20220902121404.435662285@linuxfoundation.org>
@@ -50,47 +55,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-commit 72e2329e7c9bbe15e7a813670497ec9c6f919af3 upstream.
+This reverts commit c968af565ca6c18b2f2af60fc1493c8db15abb3c which is
+commit 8795e182b02dc87e343c79e73af6b8b7f9c5e635 upstream.
 
-We already depend on runtime PM to get the power domains and clocks for
-most of the devices supported by the vc4 driver, so let's just select it
-to make sure it's there.
+It is reported to cause problems, so drop it from the stable trees for
+now until it gets sorted out.
 
-Link: https://lore.kernel.org/r/20220629123510.1915022-38-maxime@cerno.tech
-Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
-Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-(cherry picked from commit f1bc386b319e93e56453ae27e9e83817bb1f6f95)
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Cc: "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
+Link: https://lore.kernel.org/r/47b775c5-57fa-5edf-b59e-8a9041ffbee7@candelatech.com
+Reported-by: Ben Greear <greearb@candelatech.com>
+Cc: Stefan Roese <sr@denx.de>
+Cc: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Pali Rohár <pali@kernel.org>
+Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
+Cc: Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
+Cc: Michal Simek <michal.simek@xilinx.com>
+Cc: Yao Hongbo <yaohongbo@linux.alibaba.com>
+Cc: Naveen Naidu <naveennaidu479@gmail.com>
+Cc: Sasha Levin <sashal@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/vc4/Kconfig    |    1 +
- drivers/gpu/drm/vc4/vc4_hdmi.c |    2 +-
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ drivers/pci/pcie/portdrv_core.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/vc4/Kconfig
-+++ b/drivers/gpu/drm/vc4/Kconfig
-@@ -5,6 +5,7 @@ config DRM_VC4
- 	depends on DRM
- 	depends on SND && SND_SOC
- 	depends on COMMON_CLK
-+	depends on PM
- 	select DRM_KMS_HELPER
- 	select DRM_KMS_CMA_HELPER
- 	select DRM_GEM_CMA_HELPER
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -2122,7 +2122,7 @@ static int vc5_hdmi_init_resources(struc
- 	return 0;
- }
+--- a/drivers/pci/pcie/portdrv_core.c
++++ b/drivers/pci/pcie/portdrv_core.c
+@@ -222,8 +222,15 @@ static int get_port_device_capability(st
  
--static int __maybe_unused vc4_hdmi_runtime_suspend(struct device *dev)
-+static int vc4_hdmi_runtime_suspend(struct device *dev)
- {
- 	struct vc4_hdmi *vc4_hdmi = dev_get_drvdata(dev);
+ #ifdef CONFIG_PCIEAER
+ 	if (dev->aer_cap && pci_aer_available() &&
+-	    (pcie_ports_native || host->native_aer))
++	    (pcie_ports_native || host->native_aer)) {
+ 		services |= PCIE_PORT_SERVICE_AER;
++
++		/*
++		 * Disable AER on this port in case it's been enabled by the
++		 * BIOS (the AER service driver will enable it when necessary).
++		 */
++		pci_disable_pcie_error_reporting(dev);
++	}
+ #endif
  
+ 	/* Root Ports and Root Complex Event Collectors may generate PMEs */
 
 
