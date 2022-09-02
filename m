@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2804C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:51:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4358C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:51:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237822AbiIBMvJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:51:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43464 "EHLO
+        id S237833AbiIBMvV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:51:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237722AbiIBMuS (ORCPT
+        with ESMTP id S237752AbiIBMuZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:50:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2271DF4D3;
-        Fri,  2 Sep 2022 05:36:28 -0700 (PDT)
+        Fri, 2 Sep 2022 08:50:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E51C0F61AE;
+        Fri,  2 Sep 2022 05:36:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EE861B82AA1;
-        Fri,  2 Sep 2022 12:34:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4039EC433D7;
-        Fri,  2 Sep 2022 12:34:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3E58EB82AC9;
+        Fri,  2 Sep 2022 12:34:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DE38C433D7;
+        Fri,  2 Sep 2022 12:34:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122078;
-        bh=knT3uueV/ENLY9CDN0+fzzioxGuXtKwDCsdc/eHsMrQ=;
+        s=korg; t=1662122090;
+        bh=XO/6roOm1bYyVKh5LKfKvJch7EOtmX81Ike/t1QqfLA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Kn3fDf5qBZ0pcd7GfuUo2Y6y2Me09cVZ9RSt+ETjguFcoY+k7NCiaBL65IHd7Dqm5
-         /YNTqTfxiP90weth/Esme6hVmJCVytgZ9DTM5zu29jkOG+gbeiSgeZkyDBTyfDI20B
-         BVNj+RxxhppImsGcBvFhyIWZSIFfh/a/fPVl6Hi4=
+        b=GirKjppPtpiYtR5dTYWTlgFh9t7Z5MzZPNZWXxnD81UK2U9jx5uhJRzaGBz34Hjv8
+         HE8NOa5/Q/2rPSYF267xNvrNvQO47QzrkORBRxXmCqr0aYOo/FtEb305xe2rISc2Yn
+         sVx6BSl299vHaVatScG0ckrQU/lWjfu1EW15v2Tw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 67/73] btrfs: fix lockdep splat with reloc root extent buffers
-Date:   Fri,  2 Sep 2022 14:19:31 +0200
-Message-Id: <20220902121406.607732311@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+10e27961f4da37c443b2@syzkaller.appspotmail.com,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Vivek Kasireddy <vivek.kasireddy@intel.com>
+Subject: [PATCH 5.19 10/72] udmabuf: Set the DMA mask for the udmabuf device (v2)
+Date:   Fri,  2 Sep 2022 14:18:46 +0200
+Message-Id: <20220902121405.141649523@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
-References: <20220902121404.435662285@linuxfoundation.org>
+In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
+References: <20220902121404.772492078@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,367 +50,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Vivek Kasireddy <vivek.kasireddy@intel.com>
 
-[ Upstream commit b40130b23ca4a08c5785d5a3559805916bddba3c ]
+commit 9e9fa6a9198b767b00f48160800128e83a038f9f upstream.
 
-We have been hitting the following lockdep splat with btrfs/187 recently
+If the DMA mask is not set explicitly, the following warning occurs
+when the userspace tries to access the dma-buf via the CPU as
+reported by syzbot here:
 
-  WARNING: possible circular locking dependency detected
-  5.19.0-rc8+ #775 Not tainted
-  ------------------------------------------------------
-  btrfs/752500 is trying to acquire lock:
-  ffff97e1875a97b8 (btrfs-treloc-02#2){+.+.}-{3:3}, at: __btrfs_tree_lock+0x24/0x110
+WARNING: CPU: 1 PID: 3595 at kernel/dma/mapping.c:188
+__dma_map_sg_attrs+0x181/0x1f0 kernel/dma/mapping.c:188
+Modules linked in:
+CPU: 0 PID: 3595 Comm: syz-executor249 Not tainted
+5.17.0-rc2-syzkaller-00316-g0457e5153e0e #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
+Google 01/01/2011
+RIP: 0010:__dma_map_sg_attrs+0x181/0x1f0 kernel/dma/mapping.c:188
+Code: 00 00 00 00 00 fc ff df 48 c1 e8 03 80 3c 10 00 75 71 4c 8b 3d c0
+83 b5 0d e9 db fe ff ff e8 b6 0f 13 00 0f 0b e8 af 0f 13 00 <0f> 0b 45
+   31 e4 e9 54 ff ff ff e8 a0 0f 13 00 49 8d 7f 50 48 b8 00
+RSP: 0018:ffffc90002a07d68 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: ffff88807e25e2c0 RSI: ffffffff81649e91 RDI: ffff88801b848408
+RBP: ffff88801b848000 R08: 0000000000000002 R09: ffff88801d86c74f
+R10: ffffffff81649d72 R11: 0000000000000001 R12: 0000000000000002
+R13: ffff88801d86c680 R14: 0000000000000001 R15: 0000000000000000
+FS:  0000555556e30300(0000) GS:ffff8880b9d00000(0000)
+knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000200000cc CR3: 000000001d74a000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ dma_map_sgtable+0x70/0xf0 kernel/dma/mapping.c:264
+ get_sg_table.isra.0+0xe0/0x160 drivers/dma-buf/udmabuf.c:72
+ begin_cpu_udmabuf+0x130/0x1d0 drivers/dma-buf/udmabuf.c:126
+ dma_buf_begin_cpu_access+0xfd/0x1d0 drivers/dma-buf/dma-buf.c:1164
+ dma_buf_ioctl+0x259/0x2b0 drivers/dma-buf/dma-buf.c:363
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:874 [inline]
+ __se_sys_ioctl fs/ioctl.c:860 [inline]
+ __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:860
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f62fcf530f9
+Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89
+f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01
+f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffe3edab9b8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f62fcf530f9
+RDX: 0000000020000200 RSI: 0000000040086200 RDI: 0000000000000006
+RBP: 00007f62fcf170e0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f62fcf17170
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
 
-  but task is already holding lock:
-  ffff97e1875a9278 (btrfs-tree-01/1){+.+.}-{3:3}, at: __btrfs_tree_lock+0x24/0x110
+v2: Dont't forget to deregister if DMA mask setup fails.
 
-  which lock already depends on the new lock.
-
-  the existing dependency chain (in reverse order) is:
-
-  -> #2 (btrfs-tree-01/1){+.+.}-{3:3}:
-	 down_write_nested+0x41/0x80
-	 __btrfs_tree_lock+0x24/0x110
-	 btrfs_init_new_buffer+0x7d/0x2c0
-	 btrfs_alloc_tree_block+0x120/0x3b0
-	 __btrfs_cow_block+0x136/0x600
-	 btrfs_cow_block+0x10b/0x230
-	 btrfs_search_slot+0x53b/0xb70
-	 btrfs_lookup_inode+0x2a/0xa0
-	 __btrfs_update_delayed_inode+0x5f/0x280
-	 btrfs_async_run_delayed_root+0x24c/0x290
-	 btrfs_work_helper+0xf2/0x3e0
-	 process_one_work+0x271/0x590
-	 worker_thread+0x52/0x3b0
-	 kthread+0xf0/0x120
-	 ret_from_fork+0x1f/0x30
-
-  -> #1 (btrfs-tree-01){++++}-{3:3}:
-	 down_write_nested+0x41/0x80
-	 __btrfs_tree_lock+0x24/0x110
-	 btrfs_search_slot+0x3c3/0xb70
-	 do_relocation+0x10c/0x6b0
-	 relocate_tree_blocks+0x317/0x6d0
-	 relocate_block_group+0x1f1/0x560
-	 btrfs_relocate_block_group+0x23e/0x400
-	 btrfs_relocate_chunk+0x4c/0x140
-	 btrfs_balance+0x755/0xe40
-	 btrfs_ioctl+0x1ea2/0x2c90
-	 __x64_sys_ioctl+0x88/0xc0
-	 do_syscall_64+0x38/0x90
-	 entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-  -> #0 (btrfs-treloc-02#2){+.+.}-{3:3}:
-	 __lock_acquire+0x1122/0x1e10
-	 lock_acquire+0xc2/0x2d0
-	 down_write_nested+0x41/0x80
-	 __btrfs_tree_lock+0x24/0x110
-	 btrfs_lock_root_node+0x31/0x50
-	 btrfs_search_slot+0x1cb/0xb70
-	 replace_path+0x541/0x9f0
-	 merge_reloc_root+0x1d6/0x610
-	 merge_reloc_roots+0xe2/0x260
-	 relocate_block_group+0x2c8/0x560
-	 btrfs_relocate_block_group+0x23e/0x400
-	 btrfs_relocate_chunk+0x4c/0x140
-	 btrfs_balance+0x755/0xe40
-	 btrfs_ioctl+0x1ea2/0x2c90
-	 __x64_sys_ioctl+0x88/0xc0
-	 do_syscall_64+0x38/0x90
-	 entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-  other info that might help us debug this:
-
-  Chain exists of:
-    btrfs-treloc-02#2 --> btrfs-tree-01 --> btrfs-tree-01/1
-
-   Possible unsafe locking scenario:
-
-	 CPU0                    CPU1
-	 ----                    ----
-    lock(btrfs-tree-01/1);
-				 lock(btrfs-tree-01);
-				 lock(btrfs-tree-01/1);
-    lock(btrfs-treloc-02#2);
-
-   *** DEADLOCK ***
-
-  7 locks held by btrfs/752500:
-   #0: ffff97e292fdf460 (sb_writers#12){.+.+}-{0:0}, at: btrfs_ioctl+0x208/0x2c90
-   #1: ffff97e284c02050 (&fs_info->reclaim_bgs_lock){+.+.}-{3:3}, at: btrfs_balance+0x55f/0xe40
-   #2: ffff97e284c00878 (&fs_info->cleaner_mutex){+.+.}-{3:3}, at: btrfs_relocate_block_group+0x236/0x400
-   #3: ffff97e292fdf650 (sb_internal#2){.+.+}-{0:0}, at: merge_reloc_root+0xef/0x610
-   #4: ffff97e284c02378 (btrfs_trans_num_writers){++++}-{0:0}, at: join_transaction+0x1a8/0x5a0
-   #5: ffff97e284c023a0 (btrfs_trans_num_extwriters){++++}-{0:0}, at: join_transaction+0x1a8/0x5a0
-   #6: ffff97e1875a9278 (btrfs-tree-01/1){+.+.}-{3:3}, at: __btrfs_tree_lock+0x24/0x110
-
-  stack backtrace:
-  CPU: 1 PID: 752500 Comm: btrfs Not tainted 5.19.0-rc8+ #775
-  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.13.0-2.fc32 04/01/2014
-  Call Trace:
-
-   dump_stack_lvl+0x56/0x73
-   check_noncircular+0xd6/0x100
-   ? lock_is_held_type+0xe2/0x140
-   __lock_acquire+0x1122/0x1e10
-   lock_acquire+0xc2/0x2d0
-   ? __btrfs_tree_lock+0x24/0x110
-   down_write_nested+0x41/0x80
-   ? __btrfs_tree_lock+0x24/0x110
-   __btrfs_tree_lock+0x24/0x110
-   btrfs_lock_root_node+0x31/0x50
-   btrfs_search_slot+0x1cb/0xb70
-   ? lock_release+0x137/0x2d0
-   ? _raw_spin_unlock+0x29/0x50
-   ? release_extent_buffer+0x128/0x180
-   replace_path+0x541/0x9f0
-   merge_reloc_root+0x1d6/0x610
-   merge_reloc_roots+0xe2/0x260
-   relocate_block_group+0x2c8/0x560
-   btrfs_relocate_block_group+0x23e/0x400
-   btrfs_relocate_chunk+0x4c/0x140
-   btrfs_balance+0x755/0xe40
-   btrfs_ioctl+0x1ea2/0x2c90
-   ? lock_is_held_type+0xe2/0x140
-   ? lock_is_held_type+0xe2/0x140
-   ? __x64_sys_ioctl+0x88/0xc0
-   __x64_sys_ioctl+0x88/0xc0
-   do_syscall_64+0x38/0x90
-   entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-This isn't necessarily new, it's just tricky to hit in practice.  There
-are two competing things going on here.  With relocation we create a
-snapshot of every fs tree with a reloc tree.  Any extent buffers that
-get initialized here are initialized with the reloc root lockdep key.
-However since it is a snapshot, any blocks that are currently in cache
-that originally belonged to the fs tree will have the normal tree
-lockdep key set.  This creates the lock dependency of
-
-  reloc tree -> normal tree
-
-for the extent buffer locking during the first phase of the relocation
-as we walk down the reloc root to relocate blocks.
-
-However this is problematic because the final phase of the relocation is
-merging the reloc root into the original fs root.  This involves
-searching down to any keys that exist in the original fs root and then
-swapping the relocated block and the original fs root block.  We have to
-search down to the fs root first, and then go search the reloc root for
-the block we need to replace.  This creates the dependency of
-
-  normal tree -> reloc tree
-
-which is why lockdep complains.
-
-Additionally even if we were to fix this particular mismatch with a
-different nesting for the merge case, we're still slotting in a block
-that has a owner of the reloc root objectid into a normal tree, so that
-block will have its lockdep key set to the tree reloc root, and create a
-lockdep splat later on when we wander into that block from the fs root.
-
-Unfortunately the only solution here is to make sure we do not set the
-lockdep key to the reloc tree lockdep key normally, and then reset any
-blocks we wander into from the reloc root when we're doing the merged.
-
-This solves the problem of having mixed tree reloc keys intermixed with
-normal tree keys, and then allows us to make sure in the merge case we
-maintain the lock order of
-
-  normal tree -> reloc tree
-
-We handle this by setting a bit on the reloc root when we do the search
-for the block we want to relocate, and any block we search into or COW
-at that point gets set to the reloc tree key.  This works correctly
-because we only ever COW down to the parent node, so we aren't resetting
-the key for the block we're linking into the fs root.
-
-With this patch we no longer have the lockdep splat in btrfs/187.
-
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: syzbot+10e27961f4da37c443b2@syzkaller.appspotmail.com
+Cc: Gerd Hoffmann <kraxel@redhat.com>
+Signed-off-by: Vivek Kasireddy <vivek.kasireddy@intel.com>
+Link: http://patchwork.freedesktop.org/patch/msgid/20220520205235.3687336-1-vivek.kasireddy@intel.com
+Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/ctree.c       |  3 +++
- fs/btrfs/ctree.h       |  2 ++
- fs/btrfs/extent-tree.c | 18 +++++++++++++++++-
- fs/btrfs/extent_io.c   | 11 ++++++++++-
- fs/btrfs/locking.c     | 11 +++++++++++
- fs/btrfs/locking.h     |  5 +++++
- fs/btrfs/relocation.c  |  2 ++
- 7 files changed, 50 insertions(+), 2 deletions(-)
+ drivers/dma-buf/udmabuf.c |   18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
-diff --git a/fs/btrfs/ctree.c b/fs/btrfs/ctree.c
-index 341ce90d24b15..fb7e331b69756 100644
---- a/fs/btrfs/ctree.c
-+++ b/fs/btrfs/ctree.c
-@@ -1938,6 +1938,9 @@ int btrfs_search_slot(struct btrfs_trans_handle *trans, struct btrfs_root *root,
+--- a/drivers/dma-buf/udmabuf.c
++++ b/drivers/dma-buf/udmabuf.c
+@@ -368,7 +368,23 @@ static struct miscdevice udmabuf_misc =
  
- 		if (!p->skip_locking) {
- 			level = btrfs_header_level(b);
-+
-+			btrfs_maybe_reset_lockdep_class(root, b);
-+
- 			if (level <= write_lock_level) {
- 				btrfs_tree_lock(b);
- 				p->locks[level] = BTRFS_WRITE_LOCK;
-diff --git a/fs/btrfs/ctree.h b/fs/btrfs/ctree.h
-index cd72570d11f65..319af4c4fffbe 100644
---- a/fs/btrfs/ctree.h
-+++ b/fs/btrfs/ctree.h
-@@ -1105,6 +1105,8 @@ enum {
- 	BTRFS_ROOT_QGROUP_FLUSHING,
- 	/* This root has a drop operation that was started previously. */
- 	BTRFS_ROOT_UNFINISHED_DROP,
-+	/* This reloc root needs to have its buffers lockdep class reset. */
-+	BTRFS_ROOT_RESET_LOCKDEP_CLASS,
- };
- 
- static inline void btrfs_wake_unfinished_drop(struct btrfs_fs_info *fs_info)
-diff --git a/fs/btrfs/extent-tree.c b/fs/btrfs/extent-tree.c
-index 248ea15c97346..c71f6480d4d4c 100644
---- a/fs/btrfs/extent-tree.c
-+++ b/fs/btrfs/extent-tree.c
-@@ -4781,6 +4781,7 @@ btrfs_init_new_buffer(struct btrfs_trans_handle *trans, struct btrfs_root *root,
+ static int __init udmabuf_dev_init(void)
  {
- 	struct btrfs_fs_info *fs_info = root->fs_info;
- 	struct extent_buffer *buf;
-+	u64 lockdep_owner = owner;
- 
- 	buf = btrfs_find_create_tree_block(fs_info, bytenr, owner, level);
- 	if (IS_ERR(buf))
-@@ -4799,12 +4800,27 @@ btrfs_init_new_buffer(struct btrfs_trans_handle *trans, struct btrfs_root *root,
- 		return ERR_PTR(-EUCLEAN);
- 	}
- 
-+	/*
-+	 * The reloc trees are just snapshots, so we need them to appear to be
-+	 * just like any other fs tree WRT lockdep.
-+	 *
-+	 * The exception however is in replace_path() in relocation, where we
-+	 * hold the lock on the original fs root and then search for the reloc
-+	 * root.  At that point we need to make sure any reloc root buffers are
-+	 * set to the BTRFS_TREE_RELOC_OBJECTID lockdep class in order to make
-+	 * lockdep happy.
-+	 */
-+	if (lockdep_owner == BTRFS_TREE_RELOC_OBJECTID &&
-+	    !test_bit(BTRFS_ROOT_RESET_LOCKDEP_CLASS, &root->state))
-+		lockdep_owner = BTRFS_FS_TREE_OBJECTID;
+-	return misc_register(&udmabuf_misc);
++	int ret;
 +
- 	/*
- 	 * This needs to stay, because we could allocate a freed block from an
- 	 * old tree into a new tree, so we need to make sure this new block is
- 	 * set to the appropriate level and owner.
- 	 */
--	btrfs_set_buffer_lockdep_class(owner, buf, level);
-+	btrfs_set_buffer_lockdep_class(lockdep_owner, buf, level);
++	ret = misc_register(&udmabuf_misc);
++	if (ret < 0) {
++		pr_err("Could not initialize udmabuf device\n");
++		return ret;
++	}
 +
- 	__btrfs_tree_lock(buf, nest);
- 	btrfs_clean_tree_block(buf);
- 	clear_bit(EXTENT_BUFFER_STALE, &buf->bflags);
-diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
-index a72a8d4d4a72e..7bd704779a99b 100644
---- a/fs/btrfs/extent_io.c
-+++ b/fs/btrfs/extent_io.c
-@@ -6109,6 +6109,7 @@ struct extent_buffer *alloc_extent_buffer(struct btrfs_fs_info *fs_info,
- 	struct extent_buffer *exists = NULL;
- 	struct page *p;
- 	struct address_space *mapping = fs_info->btree_inode->i_mapping;
-+	u64 lockdep_owner = owner_root;
- 	int uptodate = 1;
- 	int ret;
- 
-@@ -6143,7 +6144,15 @@ struct extent_buffer *alloc_extent_buffer(struct btrfs_fs_info *fs_info,
- 	eb = __alloc_extent_buffer(fs_info, start, len);
- 	if (!eb)
- 		return ERR_PTR(-ENOMEM);
--	btrfs_set_buffer_lockdep_class(owner_root, eb, level);
++	ret = dma_coerce_mask_and_coherent(udmabuf_misc.this_device,
++					   DMA_BIT_MASK(64));
++	if (ret < 0) {
++		pr_err("Could not setup DMA mask for udmabuf device\n");
++		misc_deregister(&udmabuf_misc);
++		return ret;
++	}
 +
-+	/*
-+	 * The reloc trees are just snapshots, so we need them to appear to be
-+	 * just like any other fs tree WRT lockdep.
-+	 */
-+	if (lockdep_owner == BTRFS_TREE_RELOC_OBJECTID)
-+		lockdep_owner = BTRFS_FS_TREE_OBJECTID;
-+
-+	btrfs_set_buffer_lockdep_class(lockdep_owner, eb, level);
- 
- 	num_pages = num_extent_pages(eb);
- 	for (i = 0; i < num_pages; i++, index++) {
-diff --git a/fs/btrfs/locking.c b/fs/btrfs/locking.c
-index 5747c63929df7..9063072b399bd 100644
---- a/fs/btrfs/locking.c
-+++ b/fs/btrfs/locking.c
-@@ -91,6 +91,13 @@ void btrfs_set_buffer_lockdep_class(u64 objectid, struct extent_buffer *eb, int
- 	lockdep_set_class_and_name(&eb->lock, &ks->keys[level], ks->names[level]);
++	return 0;
  }
  
-+void btrfs_maybe_reset_lockdep_class(struct btrfs_root *root, struct extent_buffer *eb)
-+{
-+	if (test_bit(BTRFS_ROOT_RESET_LOCKDEP_CLASS, &root->state))
-+		btrfs_set_buffer_lockdep_class(root->root_key.objectid,
-+					       eb, btrfs_header_level(eb));
-+}
-+
- #endif
- 
- /*
-@@ -244,6 +251,8 @@ struct extent_buffer *btrfs_lock_root_node(struct btrfs_root *root)
- 
- 	while (1) {
- 		eb = btrfs_root_node(root);
-+
-+		btrfs_maybe_reset_lockdep_class(root, eb);
- 		btrfs_tree_lock(eb);
- 		if (eb == root->node)
- 			break;
-@@ -265,6 +274,8 @@ struct extent_buffer *btrfs_read_lock_root_node(struct btrfs_root *root)
- 
- 	while (1) {
- 		eb = btrfs_root_node(root);
-+
-+		btrfs_maybe_reset_lockdep_class(root, eb);
- 		btrfs_tree_read_lock(eb);
- 		if (eb == root->node)
- 			break;
-diff --git a/fs/btrfs/locking.h b/fs/btrfs/locking.h
-index 97370ec0cd297..26a2f962c268e 100644
---- a/fs/btrfs/locking.h
-+++ b/fs/btrfs/locking.h
-@@ -132,11 +132,16 @@ void btrfs_drew_read_unlock(struct btrfs_drew_lock *lock);
- 
- #ifdef CONFIG_DEBUG_LOCK_ALLOC
- void btrfs_set_buffer_lockdep_class(u64 objectid, struct extent_buffer *eb, int level);
-+void btrfs_maybe_reset_lockdep_class(struct btrfs_root *root, struct extent_buffer *eb);
- #else
- static inline void btrfs_set_buffer_lockdep_class(u64 objectid,
- 					struct extent_buffer *eb, int level)
- {
- }
-+static inline void btrfs_maybe_reset_lockdep_class(struct btrfs_root *root,
-+						   struct extent_buffer *eb)
-+{
-+}
- #endif
- 
- #endif
-diff --git a/fs/btrfs/relocation.c b/fs/btrfs/relocation.c
-index 673e11fcf3fc9..becf3396d533d 100644
---- a/fs/btrfs/relocation.c
-+++ b/fs/btrfs/relocation.c
-@@ -1326,7 +1326,9 @@ int replace_path(struct btrfs_trans_handle *trans, struct reloc_control *rc,
- 		btrfs_release_path(path);
- 
- 		path->lowest_level = level;
-+		set_bit(BTRFS_ROOT_RESET_LOCKDEP_CLASS, &src->state);
- 		ret = btrfs_search_slot(trans, src, &key, path, 0, 1);
-+		clear_bit(BTRFS_ROOT_RESET_LOCKDEP_CLASS, &src->state);
- 		path->lowest_level = 0;
- 		if (ret) {
- 			if (ret > 0)
--- 
-2.35.1
-
+ static void __exit udmabuf_dev_exit(void)
 
 
