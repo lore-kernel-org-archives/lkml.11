@@ -2,96 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B25EC54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:02:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8864C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235774AbiIBMC2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:02:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43214 "EHLO
+        id S235761AbiIBMDZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:03:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235637AbiIBMCW (ORCPT
+        with ESMTP id S235822AbiIBMDN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:02:22 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74462C0B4D;
-        Fri,  2 Sep 2022 05:02:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Nz8Tz1uBfArPzrTbA5QgwTqK/y15M7AwWAm6DXoAXqU=; b=dzVLQ+ITUI1Ov9D5o9xTJSFt4p
-        mOLLn0YcKkRuViRI7VyEeyozgdZF/Ar3cklopmx5UjHmQN06fE1jcQrHLEj3c6IkgcR0zXMSe7pTT
-        MVVH6hjfs6xWx2kY+E/QnrRFhgdovhsxlKSW7Et1l3omPAhJ1aPenTCMV046kwQdRio4GiRZgrQTV
-        JKc8liKe3U90Li+tPS589EaZAnOaYeVpOZkYZml5FHMw8HFf0Z0v1qQFLJNzZXy9EdDHVwAL2+wxi
-        HRThC6s5E5XUhR2/bKLs9DtLgLqBoxRDwBF1yHVuPxoX67ocDXH+fFRogakH6JGm0TB1w0KNPbo7x
-        Yd2EBW6Q==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oU5Mz-008evC-BL; Fri, 02 Sep 2022 12:01:57 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 84B75300413;
-        Fri,  2 Sep 2022 14:01:55 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 63AD520853050; Fri,  2 Sep 2022 14:01:55 +0200 (CEST)
-Date:   Fri, 2 Sep 2022 14:01:55 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Yang Jihong <yangjihong1@huawei.com>
-Cc:     rostedt@goodmis.org, mingo@redhat.com, acme@kernel.org,
-        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
-        jolsa@kernel.org, namhyung@kernel.org,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
-Subject: Re: [PATCH RESEND v4] perf/core: Fix reentry problem in
- perf_output_read_group
-Message-ID: <YxHws5sL16hz4ZKc@hirez.programming.kicks-ass.net>
-References: <20220902082918.179248-1-yangjihong1@huawei.com>
+        Fri, 2 Sep 2022 08:03:13 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97FAEC7BB5
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 05:03:09 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id bp20so1543582wrb.9
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 05:03:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares.net; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=QD0f458hOs+Yc5mX36c226dEAIGqQyTyl2jnPRNMycE=;
+        b=Nhb1ahfA74o2s885SBr3+p7hcg6A5trn06OdOOEsjKKjFz3xUQjTC+3l3BPw4x4Qki
+         98tFbxCk29ZzNK7mwS9hdQLBXJ2U0PXMZ5YRU8SPhG0NBqBWxaUaS2FNC5qauktJkfRo
+         9rZdTHGIQ0cizhHhmN3DsASDHBBg2+6yta30EzY18XTF2GzhyvwTT5WtHS4pUXNOokWM
+         smV7YZ+D6cPPo9D1W/B0l/nDLsvOJ9pu2LT2+CSwck8KGk/8IsyKQWUrmcdEhVm+kqjm
+         6yIn4isWEbDRvmS5iiZ93glHw6Qy+ZKUoLeE6TwLCCFch0cQkdmvcpJL0LY/GNtpb4EI
+         zZtg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=QD0f458hOs+Yc5mX36c226dEAIGqQyTyl2jnPRNMycE=;
+        b=kw4ArhQKPXrVRcVipqLf1AumlzGnadWY5BklOH8k2r34/b+AwyiPo83jL3Axr4PWTo
+         ZdUb8HLuA2/cSMzxNUT4wNA70T/+Op9Yrl2l4B33V7Ns2f4WIoT+2YrdkTaJyy4hkak6
+         cnABaE+fpYO8SiQCZmUebnHd5HkASSMiA3TVuN0giVQdGeXIvobB7zsSB33+k6sPqTBz
+         APyYGEKjv3tq2x5BfVEa41Cn1Jkul4ZCxxA+uCz5qbMBo7qnl1rWOOWW4Sg6ilzqm+uR
+         lebDLCYGtmMg/2CkM5begqOOdWAy+RA3ltNyhHJ23LXbH2uqRV3TqhWpsfJ9XTlcs/GT
+         EupA==
+X-Gm-Message-State: ACgBeo1Cm1UWsnKtomR6nBXYonwV7OQu1BIbndLzvU0b2Zce5ppD6LrQ
+        pk6q04OXOpBv3U5mz82nDumOOQ==
+X-Google-Smtp-Source: AA6agR6NBs+WZRiv1NUV1OsVl1k+nVX/H7sz5z2SKboCwbDVO74A7WpVLMgN0Co/JBUiwBZUjdmenA==
+X-Received: by 2002:a05:6000:799:b0:226:e3e9:e482 with SMTP id bu25-20020a056000079900b00226e3e9e482mr10057791wrb.219.1662120188014;
+        Fri, 02 Sep 2022 05:03:08 -0700 (PDT)
+Received: from [10.44.2.26] (84-199-106-91.ifiber.telenet-ops.be. [84.199.106.91])
+        by smtp.gmail.com with ESMTPSA id s8-20020a1cf208000000b003a83fda1dc5sm1894953wmc.44.2022.09.02.05.03.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Sep 2022 05:03:06 -0700 (PDT)
+Message-ID: <695db55b-959c-0165-b35d-338ba36fa0e4@tessares.net>
+Date:   Fri, 2 Sep 2022 14:03:04 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220902082918.179248-1-yangjihong1@huawei.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH] selftests: net: sort .gitignore file
+Content-Language: en-GB
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Axel Rasmussen <axelrasmussen@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220829184748.1535580-1-axelrasmussen@google.com>
+ <fe9280ff-50b3-805a-07ef-0227cbec13e8@tessares.net>
+ <20220901130529.2f364617@kernel.org>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+In-Reply-To: <20220901130529.2f364617@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Sep 02, 2022 at 04:29:18PM +0800, Yang Jihong wrote:
-> perf_output_read_group may respond to IPI request of other cores and invoke
-> __perf_install_in_context function. As a result, hwc configuration is modified.
-> causing inconsistency and unexpected consequences.
-> 
-> Interrupts are not disabled when perf_output_read_group reads PMU counter.
-> In this case, IPI request may be received from other cores.
-> As a result, PMU configuration is modified and an error occurs when
-> reading PMU counter:
-> 
->                    CPU0                                         CPU1
->                                                     __se_sys_perf_event_open
->                                                       perf_install_in_context
-> perf_output_read_group                                  smp_call_function_single
->   for_each_sibling_event(sub, leader) {                   generic_exec_single
->     if ((sub != event) &&                                   remote_function
->         (sub->state == PERF_EVENT_STATE_ACTIVE))                    |
-> <enter IPI handler: __perf_install_in_context>   <----RAISE IPI-----+
-> __perf_install_in_context
->   ctx_resched
->     event_sched_out
->       armpmu_del
->         ...
->         hwc->idx = -1; // event->hwc.idx is set to -1
-> ...
-> <exit IPI>
->             sub->pmu->read(sub);
->               armpmu_read
->                 armv8pmu_read_counter
->                   armv8pmu_read_hw_counter
->                     int idx = event->hw.idx; // idx = -1
->                     u64 val = armv8pmu_read_evcntr(idx);
->                       u32 counter = ARMV8_IDX_TO_COUNTER(idx); // invalid counter = 30
->                       read_pmevcntrn(counter) // undefined instruction
-> 
-> Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
-> ---
+Hi Jakub,
 
-Right; thanks for reminding me. I had hoped you'd pick up and test the
-extra assertion some, but I'll just do that on top.
+On 01/09/2022 22:05, Jakub Kicinski wrote:
+> On Thu, 1 Sep 2022 12:15:02 +0200 Matthieu Baerts wrote:
+>> Hello,
+>>
+>> On 29/08/2022 20:47, Axel Rasmussen wrote:
+>>> This is the result of `sort tools/testing/selftests/net/.gitignore`, but
+>>> preserving the comment at the top.  
+>>
+>> FYI, we got a small conflict (as expected by Jakub) when merging -net in
+>> net-next in the MPTCP tree due to this patch applied in -net:
+>>
+>>   5a3a59981027 ("selftests: net: sort .gitignore file")
+>>
+>> and these ones from net-next:
+>>
+>>   c35ecb95c448 ("selftests/net: Add test for timing a bind request to a
+>> port with a populated bhash entry")
+>>   1be9ac87a75a ("selftests/net: Add sk_bind_sendto_listen and
+>> sk_connect_zero_addr")
+>>
+>> The conflict has been resolved on our side[1] and the resolution we
+>> suggest is attached to this email: new entries have been added in the
+>> list respecting the alphabetical order.
+> 
+> Yup, that was my plan as well. Apologies for the trouble, I thought
+> since the conflict will only exist for a day I'd be the only one
+> suffering.
+
+That's alright, it was not difficult to resolve :)
+
+We do the sync everyday around 6AM UTC time:
+
+
+https://github.com/multipath-tcp/mptcp_net-next/actions/workflows/update-tg-tree.yml
+
+If you prefer and if we have issues on a Thursday, we can also wait for
+the next day before looking at these conflicts and report them.
+
+> I think we should also sort the Makefile FWIW.
+> Perhaps it's better done during the merge window.
+
+Indeed, that would make sense to do them at this period but I also
+understand such clean-up are useful to reduce conflicts later.
+
+Such conflicts created by the clean-up are also easy to resolve so no
+need to worry to much I think.
+
+>> I'm sharing this thinking it can help others but if it only creates
+>> noise, please tell me! :-)
+> 
+>> [1] https://github.com/multipath-tcp/mptcp_net-next/commit/4151695b70b6
+> 
+> It is useful, thanks!
+
+I'm glad it is! (Sharing them is also useful for us to avoid diverging
+our tree from net and net-next if the conflicts are resolved differently
+:) )
+
+Cheers,
+Matt
+-- 
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
