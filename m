@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A544C6FA85
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:34:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E62DAC54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:34:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236490AbiIBMeL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:34:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53648 "EHLO
+        id S236719AbiIBMeO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:34:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236771AbiIBMch (ORCPT
+        with ESMTP id S236307AbiIBMdF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:32:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88B36D6326;
-        Fri,  2 Sep 2022 05:27:13 -0700 (PDT)
+        Fri, 2 Sep 2022 08:33:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE39EDD4E8;
+        Fri,  2 Sep 2022 05:27:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E56C7B829B6;
-        Fri,  2 Sep 2022 12:27:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5012CC433D6;
-        Fri,  2 Sep 2022 12:27:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 16628B82AB6;
+        Fri,  2 Sep 2022 12:27:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A90BC433C1;
+        Fri,  2 Sep 2022 12:27:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121631;
-        bh=IKqqejYC51+KE+xS6pnujKBsGdECRe7c/5XlbeSemxM=;
+        s=korg; t=1662121643;
+        bh=Sz3Q4UxT7dqoQblVzdJOQZ/hjUT/fosBNY6GHX19QdM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fpOmweiydQSlntTGcvudOCMhHb1aHtAJ+vbsJBHxyDpXZsAZmmWgdYqdssGdjofkd
-         HoXqTWolUy1Pun6TsosC7audahQEuGkB/JqF7GSwWNy8mAC96JAHHdWVVjiAbFnG8C
-         JhUUCesPEQxl7w2xLGsrw/jxSM6fCRTAKAIk+8QI=
+        b=HrOjPGvxUtAI0boJvAL/HPRkRrhP2G6m3g0wUBnU775c2H03dPiQ9C7wICrW0H2fm
+         CsczwrUukwGf7bpmPLgpAUqLLCh5cwOo7HSjyTZdqiWzJXxDz6mpDaSupTh3VATlIs
+         XMY/3XttTvtMLRT8H5U1JMoQ79KErXMSwDXBFBe4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bernard Pidoux <f6bvp@free.fr>,
-        Francois Romieu <romieu@fr.zoreil.com>,
-        Thomas DL9SAU Osterried <thomas@osterried.de>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Mahesh Bandewar <maheshb@google.com>,
+        Sainath Grandhi <sainath.grandhi@intel.com>,
+        =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 15/77] rose: check NULL rose_loopback_neigh->loopback
-Date:   Fri,  2 Sep 2022 14:18:24 +0200
-Message-Id: <20220902121404.142699750@linuxfoundation.org>
+Subject: [PATCH 5.4 19/77] net: ipvtap - add __init/__exit annotations to module init/exit funcs
+Date:   Fri,  2 Sep 2022 14:18:28 +0200
+Message-Id: <20220902121404.283202582@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
 References: <20220902121403.569927325@linuxfoundation.org>
@@ -51,67 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bernard Pidoux <f6bvp@free.fr>
+From: Maciej Żenczykowski <maze@google.com>
 
-[ Upstream commit 3c53cd65dece47dd1f9d3a809f32e59d1d87b2b8 ]
+[ Upstream commit 4b2e3a17e9f279325712b79fb01d1493f9e3e005 ]
 
-Commit 3b3fd068c56e3fbea30090859216a368398e39bf added NULL check for
-`rose_loopback_neigh->dev` in rose_loopback_timer() but omitted to
-check rose_loopback_neigh->loopback.
+Looks to have been left out in an oversight.
 
-It thus prevents *all* rose connect.
-
-The reason is that a special rose_neigh loopback has a NULL device.
-
-/proc/net/rose_neigh illustrates it via rose_neigh_show() function :
-[...]
-seq_printf(seq, "%05d %-9s %-4s   %3d %3d  %3s     %3s %3lu %3lu",
-	   rose_neigh->number,
-	   (rose_neigh->loopback) ? "RSLOOP-0" : ax2asc(buf, &rose_neigh->callsign),
-	   rose_neigh->dev ? rose_neigh->dev->name : "???",
-	   rose_neigh->count,
-
-/proc/net/rose_neigh displays special rose_loopback_neigh->loopback as
-callsign RSLOOP-0:
-
-addr  callsign  dev  count use mode restart  t0  tf digipeaters
-00001 RSLOOP-0  ???      1   2  DCE     yes   0   0
-
-By checking rose_loopback_neigh->loopback, rose_rx_call_request() is called
-even in case rose_loopback_neigh->dev is NULL. This repairs rose connections.
-
-Verification with rose client application FPAC:
-
-FPAC-Node v 4.1.3 (built Aug  5 2022) for LINUX (help = h)
-F6BVP-4 (Commands = ?) : u
-Users - AX.25 Level 2 sessions :
-Port   Callsign     Callsign  AX.25 state  ROSE state  NetRom status
-axudp  F6BVP-5   -> F6BVP-9   Connected    Connected   ---------
-
-Fixes: 3b3fd068c56e ("rose: Fix Null pointer dereference in rose_send_frame()")
-Signed-off-by: Bernard Pidoux <f6bvp@free.fr>
-Suggested-by: Francois Romieu <romieu@fr.zoreil.com>
-Cc: Thomas DL9SAU Osterried <thomas@osterried.de>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: Mahesh Bandewar <maheshb@google.com>
+Cc: Sainath Grandhi <sainath.grandhi@intel.com>
+Fixes: 235a9d89da97 ('ipvtap: IP-VLAN based tap driver')
+Signed-off-by: Maciej Żenczykowski <maze@google.com>
+Link: https://lore.kernel.org/r/20220821130808.12143-1-zenczykowski@gmail.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rose/rose_loopback.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ipvlan/ipvtap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/rose/rose_loopback.c b/net/rose/rose_loopback.c
-index 11c45c8c6c164..036d92c0ad794 100644
---- a/net/rose/rose_loopback.c
-+++ b/net/rose/rose_loopback.c
-@@ -96,7 +96,8 @@ static void rose_loopback_timer(struct timer_list *unused)
- 		}
+diff --git a/drivers/net/ipvlan/ipvtap.c b/drivers/net/ipvlan/ipvtap.c
+index 1cedb634f4f7b..f01078b2581ce 100644
+--- a/drivers/net/ipvlan/ipvtap.c
++++ b/drivers/net/ipvlan/ipvtap.c
+@@ -194,7 +194,7 @@ static struct notifier_block ipvtap_notifier_block __read_mostly = {
+ 	.notifier_call	= ipvtap_device_event,
+ };
  
- 		if (frametype == ROSE_CALL_REQUEST) {
--			if (!rose_loopback_neigh->dev) {
-+			if (!rose_loopback_neigh->dev &&
-+			    !rose_loopback_neigh->loopback) {
- 				kfree_skb(skb);
- 				continue;
- 			}
+-static int ipvtap_init(void)
++static int __init ipvtap_init(void)
+ {
+ 	int err;
+ 
+@@ -228,7 +228,7 @@ static int ipvtap_init(void)
+ }
+ module_init(ipvtap_init);
+ 
+-static void ipvtap_exit(void)
++static void __exit ipvtap_exit(void)
+ {
+ 	rtnl_link_unregister(&ipvtap_link_ops);
+ 	unregister_netdevice_notifier(&ipvtap_notifier_block);
 -- 
 2.35.1
 
