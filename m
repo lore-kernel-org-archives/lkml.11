@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D772CECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:42:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0FE3ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:42:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236274AbiIBMl6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:41:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41764 "EHLO
+        id S237241AbiIBMmC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:42:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237395AbiIBMjc (ORCPT
+        with ESMTP id S237464AbiIBMjn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:39:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29171DF668;
-        Fri,  2 Sep 2022 05:30:55 -0700 (PDT)
+        Fri, 2 Sep 2022 08:39:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2655C6CD9;
+        Fri,  2 Sep 2022 05:30:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CFCAC621AE;
-        Fri,  2 Sep 2022 12:30:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1FEBC433D7;
-        Fri,  2 Sep 2022 12:30:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9947B82AA5;
+        Fri,  2 Sep 2022 12:30:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34CB3C433D6;
+        Fri,  2 Sep 2022 12:30:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121854;
-        bh=MteKdNzVp6cflqnKE+4HSQpIqrWCVu9lmRjk+wi8mcA=;
+        s=korg; t=1662121838;
+        bh=rD9g72oViAjhyfdIc51l3u7E5wJQ9WDnZPSEBTo7VUY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jNxhBx7YPbYEjQcuY0k4HocXTXNFoZKU3TAWqQaRpDxy8RET8GjFN9SDfhzRoAon0
-         kp7QEKqZKupmNJIotm6/SwjTplbW3R4w1dzIH/ETY4aWxENrsDwy02Ec+R991ZJaEy
-         4yCWEoJwh5XBTiDcx7IwIG86ertg5VZ6NfhUu160=
+        b=KNBk2t/IO7KFuJtVaeehQfvV5CaXdyxOSK7EEY9hm5cLI77Kx26sntG5rYjvRVlfY
+         sZOjg8Mtm8thve66hX/0b2j/X+FSxwupPWYLz0Ne6me97FiZngQBWcUWMSWG857XMT
+         bPPu9yoDiQ+MXcXlJ1T8Z3enho6AFzYlLMC0uXgE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jann Horn <jannh@google.com>
-Subject: [PATCH 5.15 01/73] mm: Force TLB flush for PFNMAP mappings before unlink_file_vma()
-Date:   Fri,  2 Sep 2022 14:18:25 +0200
-Message-Id: <20220902121404.484452365@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Michal Hocko <mhocko@suse.com>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.4 61/77] mm/rmap: Fix anon_vma->degree ambiguity leading to double-reuse
+Date:   Fri,  2 Sep 2022 14:19:10 +0200
+Message-Id: <20220902121405.695459492@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
-References: <20220902121404.435662285@linuxfoundation.org>
+In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
+References: <20220902121403.569927325@linuxfoundation.org>
 User-Agent: quilt/0.67
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,51 +52,166 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jann Horn <jannh@google.com>
 
-commit b67fbebd4cf980aecbcc750e1462128bffe8ae15 upstream.
+commit 2555283eb40df89945557273121e9393ef9b542b upstream.
 
-Some drivers rely on having all VMAs through which a PFN might be
-accessible listed in the rmap for correctness.
-However, on X86, it was possible for a VMA with stale TLB entries
-to not be listed in the rmap.
+anon_vma->degree tracks the combined number of child anon_vmas and VMAs
+that use the anon_vma as their ->anon_vma.
 
-This was fixed in mainline with
-commit b67fbebd4cf9 ("mmu_gather: Force tlb-flush VM_PFNMAP vmas"),
-but that commit relies on preceding refactoring in
-commit 18ba064e42df3 ("mmu_gather: Let there be one tlb_{start,end}_vma()
-implementation") and commit 1e9fdf21a4339 ("mmu_gather: Remove per arch
-tlb_{start,end}_vma()").
+anon_vma_clone() then assumes that for any anon_vma attached to
+src->anon_vma_chain other than src->anon_vma, it is impossible for it to
+be a leaf node of the VMA tree, meaning that for such VMAs ->degree is
+elevated by 1 because of a child anon_vma, meaning that if ->degree
+equals 1 there are no VMAs that use the anon_vma as their ->anon_vma.
 
-This patch provides equivalent protection without needing that
-refactoring, by forcing a TLB flush between removing PTEs in
-unmap_vmas() and the call to unlink_file_vma() in free_pgtables().
+This assumption is wrong because the ->degree optimization leads to leaf
+nodes being abandoned on anon_vma_clone() - an existing anon_vma is
+reused and no new parent-child relationship is created.  So it is
+possible to reuse an anon_vma for one VMA while it is still tied to
+another VMA.
 
-[This is a stable-specific rewrite of the upstream commit!]
+This is an issue because is_mergeable_anon_vma() and its callers assume
+that if two VMAs have the same ->anon_vma, the list of anon_vmas
+attached to the VMAs is guaranteed to be the same.  When this assumption
+is violated, vma_merge() can merge pages into a VMA that is not attached
+to the corresponding anon_vma, leading to dangling page->mapping
+pointers that will be dereferenced during rmap walks.
+
+Fix it by separately tracking the number of child anon_vmas and the
+number of VMAs using the anon_vma as their ->anon_vma.
+
+Fixes: 7a3ef208e662 ("mm: prevent endless growth of anon_vma hierarchy")
+Cc: stable@kernel.org
+Acked-by: Michal Hocko <mhocko@suse.com>
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
 Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/mmap.c |   12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ include/linux/rmap.h |    7 +++++--
+ mm/rmap.c            |   31 +++++++++++++++++--------------
+ 2 files changed, 22 insertions(+), 16 deletions(-)
 
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -2643,6 +2643,18 @@ static void unmap_region(struct mm_struc
- 	tlb_gather_mmu(&tlb, mm);
- 	update_hiwater_rss(mm);
- 	unmap_vmas(&tlb, vma, start, end);
-+
-+	/*
-+	 * Ensure we have no stale TLB entries by the time this mapping is
-+	 * removed from the rmap.
-+	 * Note that we don't have to worry about nested flushes here because
-+	 * we're holding the mm semaphore for removing the mapping - so any
-+	 * concurrent flush in this region has to be coming through the rmap,
-+	 * and we synchronize against that using the rmap lock.
-+	 */
-+	if ((vma->vm_flags & (VM_PFNMAP|VM_MIXEDMAP)) != 0)
-+		tlb_flush_mmu(&tlb);
-+
- 	free_pgtables(&tlb, vma, prev ? prev->vm_end : FIRST_USER_ADDRESS,
- 				 next ? next->vm_start : USER_PGTABLES_CEILING);
- 	tlb_finish_mmu(&tlb);
+--- a/include/linux/rmap.h
++++ b/include/linux/rmap.h
+@@ -39,12 +39,15 @@ struct anon_vma {
+ 	atomic_t refcount;
+ 
+ 	/*
+-	 * Count of child anon_vmas and VMAs which points to this anon_vma.
++	 * Count of child anon_vmas. Equals to the count of all anon_vmas that
++	 * have ->parent pointing to this one, including itself.
+ 	 *
+ 	 * This counter is used for making decision about reusing anon_vma
+ 	 * instead of forking new one. See comments in function anon_vma_clone.
+ 	 */
+-	unsigned degree;
++	unsigned long num_children;
++	/* Count of VMAs whose ->anon_vma pointer points to this object. */
++	unsigned long num_active_vmas;
+ 
+ 	struct anon_vma *parent;	/* Parent of this anon_vma */
+ 
+--- a/mm/rmap.c
++++ b/mm/rmap.c
+@@ -83,7 +83,8 @@ static inline struct anon_vma *anon_vma_
+ 	anon_vma = kmem_cache_alloc(anon_vma_cachep, GFP_KERNEL);
+ 	if (anon_vma) {
+ 		atomic_set(&anon_vma->refcount, 1);
+-		anon_vma->degree = 1;	/* Reference for first vma */
++		anon_vma->num_children = 0;
++		anon_vma->num_active_vmas = 0;
+ 		anon_vma->parent = anon_vma;
+ 		/*
+ 		 * Initialise the anon_vma root to point to itself. If called
+@@ -191,6 +192,7 @@ int __anon_vma_prepare(struct vm_area_st
+ 		anon_vma = anon_vma_alloc();
+ 		if (unlikely(!anon_vma))
+ 			goto out_enomem_free_avc;
++		anon_vma->num_children++; /* self-parent link for new root */
+ 		allocated = anon_vma;
+ 	}
+ 
+@@ -200,8 +202,7 @@ int __anon_vma_prepare(struct vm_area_st
+ 	if (likely(!vma->anon_vma)) {
+ 		vma->anon_vma = anon_vma;
+ 		anon_vma_chain_link(vma, avc, anon_vma);
+-		/* vma reference or self-parent link for new root */
+-		anon_vma->degree++;
++		anon_vma->num_active_vmas++;
+ 		allocated = NULL;
+ 		avc = NULL;
+ 	}
+@@ -280,19 +281,19 @@ int anon_vma_clone(struct vm_area_struct
+ 		anon_vma_chain_link(dst, avc, anon_vma);
+ 
+ 		/*
+-		 * Reuse existing anon_vma if its degree lower than two,
+-		 * that means it has no vma and only one anon_vma child.
++		 * Reuse existing anon_vma if it has no vma and only one
++		 * anon_vma child.
+ 		 *
+-		 * Do not chose parent anon_vma, otherwise first child
+-		 * will always reuse it. Root anon_vma is never reused:
++		 * Root anon_vma is never reused:
+ 		 * it has self-parent reference and at least one child.
+ 		 */
+-		if (!dst->anon_vma && anon_vma != src->anon_vma &&
+-				anon_vma->degree < 2)
++		if (!dst->anon_vma &&
++		    anon_vma->num_children < 2 &&
++		    anon_vma->num_active_vmas == 0)
+ 			dst->anon_vma = anon_vma;
+ 	}
+ 	if (dst->anon_vma)
+-		dst->anon_vma->degree++;
++		dst->anon_vma->num_active_vmas++;
+ 	unlock_anon_vma_root(root);
+ 	return 0;
+ 
+@@ -342,6 +343,7 @@ int anon_vma_fork(struct vm_area_struct
+ 	anon_vma = anon_vma_alloc();
+ 	if (!anon_vma)
+ 		goto out_error;
++	anon_vma->num_active_vmas++;
+ 	avc = anon_vma_chain_alloc(GFP_KERNEL);
+ 	if (!avc)
+ 		goto out_error_free_anon_vma;
+@@ -362,7 +364,7 @@ int anon_vma_fork(struct vm_area_struct
+ 	vma->anon_vma = anon_vma;
+ 	anon_vma_lock_write(anon_vma);
+ 	anon_vma_chain_link(vma, avc, anon_vma);
+-	anon_vma->parent->degree++;
++	anon_vma->parent->num_children++;
+ 	anon_vma_unlock_write(anon_vma);
+ 
+ 	return 0;
+@@ -394,7 +396,7 @@ void unlink_anon_vmas(struct vm_area_str
+ 		 * to free them outside the lock.
+ 		 */
+ 		if (RB_EMPTY_ROOT(&anon_vma->rb_root.rb_root)) {
+-			anon_vma->parent->degree--;
++			anon_vma->parent->num_children--;
+ 			continue;
+ 		}
+ 
+@@ -402,7 +404,7 @@ void unlink_anon_vmas(struct vm_area_str
+ 		anon_vma_chain_free(avc);
+ 	}
+ 	if (vma->anon_vma)
+-		vma->anon_vma->degree--;
++		vma->anon_vma->num_active_vmas--;
+ 	unlock_anon_vma_root(root);
+ 
+ 	/*
+@@ -413,7 +415,8 @@ void unlink_anon_vmas(struct vm_area_str
+ 	list_for_each_entry_safe(avc, next, &vma->anon_vma_chain, same_vma) {
+ 		struct anon_vma *anon_vma = avc->anon_vma;
+ 
+-		VM_WARN_ON(anon_vma->degree);
++		VM_WARN_ON(anon_vma->num_children);
++		VM_WARN_ON(anon_vma->num_active_vmas);
+ 		put_anon_vma(anon_vma);
+ 
+ 		list_del(&avc->same_vma);
 
 
