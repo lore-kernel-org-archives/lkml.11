@@ -2,81 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62CD5ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:36:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25302C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:36:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236569AbiIBOgW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:36:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38810 "EHLO
+        id S236898AbiIBOgZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:36:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236297AbiIBOfk (ORCPT
+        with ESMTP id S236600AbiIBOfu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:35:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8444167476;
-        Fri,  2 Sep 2022 06:56:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A95596217F;
-        Fri,  2 Sep 2022 12:39:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF2AAC433C1;
-        Fri,  2 Sep 2022 12:39:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122364;
-        bh=fnN0EiVZn6o6LF1pXzUjmt8WAUMjyGbBmYQqntl8lKc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gW3V/2b09SnWKas4isj5lqtEzNbhWOxe8U+piQHLxpID5F5HGWmWClIohL8v2YIze
-         PasliXceOpDdMmDSAlcWCBi9WL4ArF80jHBUxgYlKGFArYez03Mpuk+/KFQZW989Df
-         8DwVKQEtY003flM3Q1Rv7ARB2rwGEHjKbgyT5pvk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Evan Quan <evan.quan@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 24/37] drm/amd/pm: add missing ->fini_microcode interface for Sienna Cichlid
-Date:   Fri,  2 Sep 2022 14:19:46 +0200
-Message-Id: <20220902121359.932334412@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121359.177846782@linuxfoundation.org>
-References: <20220902121359.177846782@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Fri, 2 Sep 2022 10:35:50 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65DCE16B1F0
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:56:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662127007; x=1693663007;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version:content-transfer-encoding;
+  bh=0C4Mrc8p7r2/pndSczNhemjcNNdk967OJeL9PozTUO8=;
+  b=I7qnQz2hmBlQA08T7qylaNvtzYO1wGF6Z4PI9lV6d3exfjSpGnHS1Xf3
+   qefTRUnN8jcJPaLsBYDU7KWezIVohPLabdq2dwNuBl/mG2BDIGxZ3NYOJ
+   mqkquJQKfxVvBKkfd21XkEloJMAEgSojLh2g4tDNwaepo6cOoVtakXUJT
+   t/3Jz3FDhMjL1+WSRnXktJSmjfPSF6wCrJ30MX4jwAgkH1kSUOuEShEkD
+   Qh1kO/R7bBJ8EUVD7JvM9jbkSn1sv/JQqxeEK6rX7S4Is5G7KqXZqH7Zq
+   lCYQklzItDc0X3dy9N/JYdkLAIHHgXYjQz23Uq9MPTeTdmYfgG+VvyQsY
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="294723887"
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="294723887"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 06:56:46 -0700
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="674362317"
+Received: from svandene-mobl.ger.corp.intel.com (HELO localhost) ([10.252.55.245])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 06:56:41 -0700
+From:   Jani Nikula <jani.nikula@linux.intel.com>
+To:     =?utf-8?Q?Micha=C5=82?= Winiarski <michal.winiarski@intel.com>
+Cc:     Maxime Ripard <maxime@cerno.tech>,
+        =?utf-8?Q?Ma=C3=ADra?= Canal <mairacanal@riseup.net>,
+        Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
+        tales.aparecida@gmail.com, mwen@igalia.com, andrealmeid@riseup.net,
+        siqueirajordao@riseup.net, Trevor Woerner <twoerner@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        David Gow <davidgow@google.com>, brendanhiggins@google.com,
+        Arthur Grillo <arthur.grillo@usp.br>,
+        =?utf-8?Q?Jos=C3=A9_Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        kunit-dev@googlegroups.com
+Subject: Re: [PATCH v2 2/2] drm/tests: Change "igt_" prefix to "test_drm_"
+In-Reply-To: <20220902133828.ufwp6bgzd37yu6bv@nostramo.hardline.pl>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220901124210.591994-1-mairacanal@riseup.net>
+ <20220901124210.591994-2-mairacanal@riseup.net>
+ <20220901125530.b56s4zisnkfuigvc@houat>
+ <04aeba53-793c-3196-3137-915f0640dc2a@riseup.net>
+ <87h71qfbi9.fsf@intel.com> <20220902123400.5ljgc7z6zw34d64m@houat>
+ <87mtbidj3b.fsf@intel.com>
+ <20220902133828.ufwp6bgzd37yu6bv@nostramo.hardline.pl>
+Date:   Fri, 02 Sep 2022 16:56:30 +0300
+Message-ID: <87bkrxev75.fsf@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evan Quan <evan.quan@amd.com>
+On Fri, 02 Sep 2022, Micha=C5=82 Winiarski <michal.winiarski@intel.com> wro=
+te:
+> Having said that - I do believe that igt_* prefix don't belong here
+> (which is why I'm progressively trying to get rid of in the patches
+> that refactor some of the tests).
 
-[ Upstream commit 0a2d922a5618377cdf8fa476351362733ef55342 ]
+Just clarifying that I'm not trying to defend igt_ prefix at all, and I
+agree we should get rid of it.
 
-To avoid any potential memory leak.
+BR,
+Jani.
 
-Signed-off-by: Evan Quan <evan.quan@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
-index 8556c229ff598..49d7fa1d08427 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
-@@ -2759,6 +2759,7 @@ static const struct pptable_funcs sienna_cichlid_ppt_funcs = {
- 	.dump_pptable = sienna_cichlid_dump_pptable,
- 	.init_microcode = smu_v11_0_init_microcode,
- 	.load_microcode = smu_v11_0_load_microcode,
-+	.fini_microcode = smu_v11_0_fini_microcode,
- 	.init_smc_tables = sienna_cichlid_init_smc_tables,
- 	.fini_smc_tables = smu_v11_0_fini_smc_tables,
- 	.init_power = smu_v11_0_init_power,
--- 
-2.35.1
-
-
-
+--=20
+Jani Nikula, Intel Open Source Graphics Center
