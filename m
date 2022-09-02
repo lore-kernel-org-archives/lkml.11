@@ -2,69 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2D61C6FA82
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:30:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CA56ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:31:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229761AbiIBSae (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 14:30:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45030 "EHLO
+        id S229988AbiIBSa7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 14:30:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229701AbiIBSaM (ORCPT
+        with ESMTP id S229966AbiIBSa3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 14:30:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C7145C366
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 11:30:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ADCFFB82D07
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 18:30:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 60ADAC4347C;
-        Fri,  2 Sep 2022 18:30:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662143408;
-        bh=VZL7x4fiFihyUNnHvWEbZ16JY0mId6o3BwIXs348NE4=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=FRdA0JbpdR4LsEd0sVj9NOwSo81vTUSa/g4Tx5B3TtVh9BkSP1+mO1+kKMMAJVcgT
-         5U4MkyRMMHA6PslMSGj5l0xFzgammXpxKYQDNxhffKJtCtAa7oxoMlZHDgoV1n0jKU
-         XRcZD3bC95KVQlkHPnDtAHGvmflUikAAty0jjzCGWOjnK+nq+axTS7oF477AK0hCkq
-         ZdHr7IaxU2DdkT4HajOoDo1YuUR3HKWs9GNToAaynwkhcqlWds+V8QvFchdGPAAthi
-         H9dbEgRqpt41Mo2rBnS3JsenWiwcV+oFdvEwz5u61cJmcSL+ZmwKF8whMnNWZNESuv
-         ocE9993/rt/FQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 485CDC395DB;
-        Fri,  2 Sep 2022 18:30:08 +0000 (UTC)
-Subject: Re: [GIT PULL] Char/Misc driver fixes for 6.0-rc4
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YxIgXZNrSK+us7Vi@kroah.com>
-References: <YxIgXZNrSK+us7Vi@kroah.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YxIgXZNrSK+us7Vi@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git tags/char-misc-6.0-rc4
-X-PR-Tracked-Commit-Id: 0f022aaac9ff2ceff683231b43923c650c90b47e
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: ffb384c269dce238c588e0e8e3a85c0ec098a904
-Message-Id: <166214340828.20636.14025568612912092514.pr-tracker-bot@kernel.org>
-Date:   Fri, 02 Sep 2022 18:30:08 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
+        Fri, 2 Sep 2022 14:30:29 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3CEF12AE0;
+        Fri,  2 Sep 2022 11:30:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662143428; x=1693679428;
+  h=from:to:subject:date:message-id:in-reply-to:references:
+   mime-version:content-transfer-encoding;
+  bh=Q0ymAdm6otN/gngzS3FLjUFevWcyueCxj1MBaH9yisg=;
+  b=NNadTbJBM1Xpovc+CyI3O5xJp85hMGEk898e/FTYiAqeCFe9MKMrXwOt
+   ITlHk21CSs0ASrlZPX5Ry3i84KS5zOobVDYt8Ggmo6YKJ0tuAM8TUgcbo
+   w4yZgQbsYKW3tK7sl08mkbySZopO3KEmwUNRyoyaT6bktRLYR/HXjvwsi
+   HSaLrpq/uB47wbAXHpqX8RwtImSgy/G7dmfJutjq4r1FNGgGHasr8eHNf
+   ISZt4AkPTfBSWJLHbQ7SCQyXqc/H48APVlD6sSdF4BHJ+5A/4gnjKTxej
+   a5G27T8oQUjF/DukE2clZ7pMvaVZE5KiYzUaRAYonpzU94oitGIMR3veg
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10458"; a="296056318"
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="296056318"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 11:26:49 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="858319714"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga006.fm.intel.com with ESMTP; 02 Sep 2022 11:26:47 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 5877F725; Fri,  2 Sep 2022 21:27:00 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Patrick Rudolph <patrick.rudolph@9elements.com>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 14/17] pinctrl: cy8c95x0: support ACPI device found on Galileo Gen1
+Date:   Fri,  2 Sep 2022 21:26:47 +0300
+Message-Id: <20220902182650.83098-14-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220902182650.83098-1-andriy.shevchenko@linux.intel.com>
+References: <20220902182650.83098-1-andriy.shevchenko@linux.intel.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 2 Sep 2022 17:25:17 +0200:
+Add support of the expander found on Intel Galileo Gen1 board.
+The platform information comes from ACPI.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git tags/char-misc-6.0-rc4
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/pinctrl/pinctrl-cy8c95x0.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/ffb384c269dce238c588e0e8e3a85c0ec098a904
-
-Thank you!
-
+diff --git a/drivers/pinctrl/pinctrl-cy8c95x0.c b/drivers/pinctrl/pinctrl-cy8c95x0.c
+index 699da63d9c39..5d8a7d236e62 100644
+--- a/drivers/pinctrl/pinctrl-cy8c95x0.c
++++ b/drivers/pinctrl/pinctrl-cy8c95x0.c
+@@ -1330,10 +1330,17 @@ static int cy8c95x0_remove(struct i2c_client *client)
+ 	return 0;
+ }
+ 
++static const struct acpi_device_id cy8c95x0_acpi_ids[] = {
++	{ "INT3490", 40, },
++	{ }
++};
++MODULE_DEVICE_TABLE(acpi, cy8c95x0_acpi_ids);
++
+ static struct i2c_driver cy8c95x0_driver = {
+ 	.driver = {
+ 		.name	= "cy8c95x0-pinctrl",
+ 		.of_match_table = cy8c95x0_dt_ids,
++		.acpi_match_table = cy8c95x0_acpi_ids,
+ 	},
+ 	.probe_new	= cy8c95x0_probe,
+ 	.remove		= cy8c95x0_remove,
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.35.1
+
