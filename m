@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 539BAC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:32:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3118C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:32:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235893AbiIBOcY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:32:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54452 "EHLO
+        id S236255AbiIBOc3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:32:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237890AbiIBO2q (ORCPT
+        with ESMTP id S237927AbiIBO2q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 10:28:46 -0400
 Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B42DD13F66
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB8BF220F3
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=I2N57Nlq+w/EFdJFmxq8wOkT8KRRYqRZgwOlt/Ls3NU=; b=QjRVDgaoHYpUC28SmZJRPYSCLy
-        SMBrXOg7vu9rL9QEBkuG8oq2cVrnE9hFLzi1NM3jHRuZDolKvjrMef8MzZhyL2//Kk3tSMjAUvfOH
-        WJhE39IUWDgQ3ZsdCxW/A9ioev4BQmNXwUXAfqC1cPoKl8EDH+BnvsHmVYruCpjb3cBMOcgOwPoja
-        93Fgb1jWv7M3kL6rdET+wBs1hsf+rrVCMS6td1x1RaCqT4BG4uKu3IE/wH944kBm8OBmaCXKpn/3A
-        Lr0GDKz6Km82kS+yH/SOWFNLkHVHADVITYXr4HyRq2rGk4Qj7TLLrqxm3vP4Co+WXD3MJWRSaPEub
-        b+MiHXUQ==;
+        bh=0/PtPljRLva+i3OXSAsXYK2WvcvC4WWFyxPXVnV3iEE=; b=pnyIvBO9gt2Cr7Gu3Ph5LKtXQr
+        gB0a/lpgcjFvHHcHu0180MITGJ40/OKa2Y81oTS3UxhmtSxVciqbdemjiKdJkb42VapXhxi2BkxqO
+        aNYhIF2kX1HpzWrHJdHJ1byeFfhE1KZPCZpM6FbPjNbkSjiaP0UgrewZ1LLjyLwKXcUS5zF+ZWC03
+        iiLLx978NrsWqR9RIJXEtz2r7ZsWjRHUISEufrAKaPNvdipf/wEE0ZLDXPlWzv89fjLEmgNG++Ils
+        uE5y+SG+pOYQ0V9fsOxuy4+eS1XEPjYQxm+dpfZXYZeQ+Z7I6ZNJyeSpNWCZ32DSQIF+iQ1TOB8NE
+        Lto8eggw==;
 Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
         by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oU77L-008g88-RI; Fri, 02 Sep 2022 13:53:56 +0000
+        id 1oU77O-008g8d-4m; Fri, 02 Sep 2022 13:54:02 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 1B1C6301C3D;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 3C92F302D43;
         Fri,  2 Sep 2022 15:53:54 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 7C8FA2B8EF7E9; Fri,  2 Sep 2022 15:53:52 +0200 (CEST)
-Message-ID: <20220902130948.334367209@infradead.org>
+        id 3E8D72B8EF7FF; Fri,  2 Sep 2022 15:53:53 +0200 (CEST)
+Message-ID: <20220902130950.618320501@infradead.org>
 User-Agent: quilt/0.66
-Date:   Fri, 02 Sep 2022 15:06:44 +0200
+Date:   Fri, 02 Sep 2022 15:07:06 +0200
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     Thomas Gleixner <tglx@linutronix.de>
 Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
@@ -59,7 +59,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
         Daniel Borkmann <daniel@iogearbox.net>,
         K Prateek Nayak <kprateek.nayak@amd.com>,
         Eric Dumazet <edumazet@google.com>
-Subject: [PATCH v2 19/59] crypto: x86/sm[34]: Remove redundant alignments
+Subject: [PATCH v2 41/59] x86/alternatives: Provide text_poke_copy_locked()
 References: <20220902130625.217071627@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -69,125 +69,86 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Thomas Gleixner <tglx@linutronix.de>
 
-SYM_FUNC_START*() and friends already imply alignment, remove custom
-alignment hacks to make code consistent. This prepares for future
-function call ABI changes.
+The upcoming call thunk patching must hold text_mutex and needs access to
+text_poke_copy(), which takes text_mutex.
 
-Also, with having pushed the function alignment to 16 bytes, this
-custom alignment is completely superfluous.
-
-( this code couldn't seem to make up it's mind about what alignment it
-  actually wanted, randomly mixing 8 and 16 bytes )
+Provide a _locked postfixed variant to expose the inner workings.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/x86/crypto/sm3-avx-asm_64.S        |    1 -
- arch/x86/crypto/sm4-aesni-avx-asm_64.S  |    7 -------
- arch/x86/crypto/sm4-aesni-avx2-asm_64.S |    6 ------
- 3 files changed, 14 deletions(-)
+ arch/x86/include/asm/text-patching.h |    1 
+ arch/x86/kernel/alternative.c        |   37 ++++++++++++++++++++---------------
+ 2 files changed, 23 insertions(+), 15 deletions(-)
 
---- a/arch/x86/crypto/sm3-avx-asm_64.S
-+++ b/arch/x86/crypto/sm3-avx-asm_64.S
-@@ -327,7 +327,6 @@
-  * void sm3_transform_avx(struct sm3_state *state,
-  *                        const u8 *data, int nblocks);
-  */
--.align 16
- SYM_FUNC_START(sm3_transform_avx)
- 	/* input:
- 	 *	%rdi: ctx, CTX
---- a/arch/x86/crypto/sm4-aesni-avx-asm_64.S
-+++ b/arch/x86/crypto/sm4-aesni-avx-asm_64.S
-@@ -139,13 +139,11 @@
+--- a/arch/x86/include/asm/text-patching.h
++++ b/arch/x86/include/asm/text-patching.h
+@@ -45,6 +45,7 @@ extern void *text_poke(void *addr, const
+ extern void text_poke_sync(void);
+ extern void *text_poke_kgdb(void *addr, const void *opcode, size_t len);
+ extern void *text_poke_copy(void *addr, const void *opcode, size_t len);
++extern void *text_poke_copy_locked(void *addr, const void *opcode, size_t len, bool core_ok);
+ extern void *text_poke_set(void *addr, int c, size_t len);
+ extern int poke_int3_handler(struct pt_regs *regs);
+ extern void text_poke_bp(void *addr, const void *opcode, size_t len, const void *emulate);
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -1227,27 +1227,15 @@ void *text_poke_kgdb(void *addr, const v
+ 	return __text_poke(text_poke_memcpy, addr, opcode, len);
+ }
  
+-/**
+- * text_poke_copy - Copy instructions into (an unused part of) RX memory
+- * @addr: address to modify
+- * @opcode: source of the copy
+- * @len: length to copy, could be more than 2x PAGE_SIZE
+- *
+- * Not safe against concurrent execution; useful for JITs to dump
+- * new code blocks into unused regions of RX memory. Can be used in
+- * conjunction with synchronize_rcu_tasks() to wait for existing
+- * execution to quiesce after having made sure no existing functions
+- * pointers are live.
+- */
+-void *text_poke_copy(void *addr, const void *opcode, size_t len)
++void *text_poke_copy_locked(void *addr, const void *opcode, size_t len,
++			    bool core_ok)
+ {
+ 	unsigned long start = (unsigned long)addr;
+ 	size_t patched = 0;
  
- .text
--.align 16
+-	if (WARN_ON_ONCE(core_kernel_text(start)))
++	if (WARN_ON_ONCE(!core_ok && core_kernel_text(start)))
+ 		return NULL;
  
- /*
-  * void sm4_aesni_avx_crypt4(const u32 *rk, u8 *dst,
-  *                           const u8 *src, int nblocks)
-  */
--.align 8
- SYM_FUNC_START(sm4_aesni_avx_crypt4)
- 	/* input:
- 	 *	%rdi: round key array, CTX
-@@ -249,7 +247,6 @@ SYM_FUNC_START(sm4_aesni_avx_crypt4)
- 	RET;
- SYM_FUNC_END(sm4_aesni_avx_crypt4)
- 
--.align 8
- SYM_FUNC_START_LOCAL(__sm4_crypt_blk8)
- 	/* input:
- 	 *	%rdi: round key array, CTX
-@@ -363,7 +360,6 @@ SYM_FUNC_END(__sm4_crypt_blk8)
-  * void sm4_aesni_avx_crypt8(const u32 *rk, u8 *dst,
-  *                           const u8 *src, int nblocks)
-  */
--.align 8
- SYM_FUNC_START(sm4_aesni_avx_crypt8)
- 	/* input:
- 	 *	%rdi: round key array, CTX
-@@ -419,7 +415,6 @@ SYM_FUNC_END(sm4_aesni_avx_crypt8)
-  * void sm4_aesni_avx_ctr_enc_blk8(const u32 *rk, u8 *dst,
-  *                                 const u8 *src, u8 *iv)
-  */
--.align 8
- SYM_FUNC_START(sm4_aesni_avx_ctr_enc_blk8)
- 	/* input:
- 	 *	%rdi: round key array, CTX
-@@ -494,7 +489,6 @@ SYM_FUNC_END(sm4_aesni_avx_ctr_enc_blk8)
-  * void sm4_aesni_avx_cbc_dec_blk8(const u32 *rk, u8 *dst,
-  *                                 const u8 *src, u8 *iv)
-  */
--.align 8
- SYM_FUNC_START(sm4_aesni_avx_cbc_dec_blk8)
- 	/* input:
- 	 *	%rdi: round key array, CTX
-@@ -544,7 +538,6 @@ SYM_FUNC_END(sm4_aesni_avx_cbc_dec_blk8)
-  * void sm4_aesni_avx_cfb_dec_blk8(const u32 *rk, u8 *dst,
-  *                                 const u8 *src, u8 *iv)
-  */
--.align 8
- SYM_FUNC_START(sm4_aesni_avx_cfb_dec_blk8)
- 	/* input:
- 	 *	%rdi: round key array, CTX
---- a/arch/x86/crypto/sm4-aesni-avx2-asm_64.S
-+++ b/arch/x86/crypto/sm4-aesni-avx2-asm_64.S
-@@ -153,9 +153,6 @@
- 	.long 0xdeadbeef, 0xdeadbeef, 0xdeadbeef
- 
- .text
--.align 16
--
--.align 8
- SYM_FUNC_START_LOCAL(__sm4_crypt_blk16)
- 	/* input:
- 	 *	%rdi: round key array, CTX
-@@ -281,7 +278,6 @@ SYM_FUNC_END(__sm4_crypt_blk16)
-  * void sm4_aesni_avx2_ctr_enc_blk16(const u32 *rk, u8 *dst,
-  *                                   const u8 *src, u8 *iv)
-  */
--.align 8
- SYM_FUNC_START(sm4_aesni_avx2_ctr_enc_blk16)
- 	/* input:
- 	 *	%rdi: round key array, CTX
-@@ -394,7 +390,6 @@ SYM_FUNC_END(sm4_aesni_avx2_ctr_enc_blk1
-  * void sm4_aesni_avx2_cbc_dec_blk16(const u32 *rk, u8 *dst,
-  *                                   const u8 *src, u8 *iv)
-  */
--.align 8
- SYM_FUNC_START(sm4_aesni_avx2_cbc_dec_blk16)
- 	/* input:
- 	 *	%rdi: round key array, CTX
-@@ -448,7 +443,6 @@ SYM_FUNC_END(sm4_aesni_avx2_cbc_dec_blk1
-  * void sm4_aesni_avx2_cfb_dec_blk16(const u32 *rk, u8 *dst,
-  *                                   const u8 *src, u8 *iv)
-  */
--.align 8
- SYM_FUNC_START(sm4_aesni_avx2_cfb_dec_blk16)
- 	/* input:
- 	 *	%rdi: round key array, CTX
+-	mutex_lock(&text_mutex);
+ 	while (patched < len) {
+ 		unsigned long ptr = start + patched;
+ 		size_t s;
+@@ -1257,6 +1245,25 @@ void *text_poke_copy(void *addr, const v
+ 		__text_poke(text_poke_memcpy, (void *)ptr, opcode + patched, s);
+ 		patched += s;
+ 	}
++	return addr;
++}
++
++/**
++ * text_poke_copy - Copy instructions into (an unused part of) RX memory
++ * @addr: address to modify
++ * @opcode: source of the copy
++ * @len: length to copy, could be more than 2x PAGE_SIZE
++ *
++ * Not safe against concurrent execution; useful for JITs to dump
++ * new code blocks into unused regions of RX memory. Can be used in
++ * conjunction with synchronize_rcu_tasks() to wait for existing
++ * execution to quiesce after having made sure no existing functions
++ * pointers are live.
++ */
++void *text_poke_copy(void *addr, const void *opcode, size_t len)
++{
++	mutex_lock(&text_mutex);
++	addr = text_poke_copy_locked(addr, opcode, len, false);
+ 	mutex_unlock(&text_mutex);
+ 	return addr;
+ }
 
 
