@@ -2,167 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75564C54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 07:54:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6A9FECAAA1
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 07:55:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235530AbiIBHyc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 03:54:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43228 "EHLO
+        id S235525AbiIBHzJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 03:55:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235508AbiIBHyS (ORCPT
+        with ESMTP id S235518AbiIBHzE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 03:54:18 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42013BB693
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 00:54:15 -0700 (PDT)
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MJqsr24rJz67wrR;
-        Fri,  2 Sep 2022 15:53:36 +0800 (CST)
-Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.31; Fri, 2 Sep 2022 09:54:12 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 2 Sep 2022 08:54:10 +0100
-From:   John Garry <john.garry@huawei.com>
-To:     <xuwei5@hisilicon.com>
-CC:     <andriy.shevchenko@linux.intel.com>, <linuxarm@huawei.com>,
-        <rafael.j.wysocki@intel.com>, <linux-kernel@vger.kernel.org>,
-        <soc@kernel.org>, <yangyingliang@huawei.com>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH v2 5/5] bus: hisi_lpc: Use platform_device_register_full()
-Date:   Fri, 2 Sep 2022 15:47:21 +0800
-Message-ID: <1662104841-55360-6-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1662104841-55360-1-git-send-email-john.garry@huawei.com>
-References: <1662104841-55360-1-git-send-email-john.garry@huawei.com>
+        Fri, 2 Sep 2022 03:55:04 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4D62BC1E
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 00:55:00 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id j5so1127432plj.5
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 00:55:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=olRYQnYmrRIOGNSywKQ9G4nuley//Yo3uY1jFefZG7o=;
+        b=bhXeAh6NCcFpvJlv7XLzcG3X3zIgANLNUE4MmeQDW8WfdAahPXa8g0WRdHkW4TOqmC
+         yBd9xg/SSs0xMYBtSy4N4iQXPq17adhaIpZHsj0MmiDd0oOfQgPVdqtuIB9fx4NimvDe
+         ZInR8r6HJQuDDhInEdF23uSoUn5/vgxjMfJbq7dvhYAboZtF1Jo8al3BA+ZTnIEHotcQ
+         uUIrEfYfV6xDv6A4JqX837duDfoYhtPgj96kVrljzZlHKsddFfJ3nUhRs7h801RNIwHj
+         peX819TppTZqOAjYqpzhWZf46daEiiMfsy7swZZcJjOtYsWc2cXQCiG1cWNfUcA6n3gW
+         sc2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=olRYQnYmrRIOGNSywKQ9G4nuley//Yo3uY1jFefZG7o=;
+        b=2vee5kbQdcLIKtudN6A7vpGitXLHd1kb7cYcnapzWv6Uodu7d4XrKCnOPkS6SjuhDG
+         SXkHukHjVfO/M+z91JMlXU4IBP4SJ4TXGV/+/izF2fwV059CPpZvJay3BhirvpO6qBBZ
+         gteZ3tOoliiSsrdlnlxNAuvLWY7yhiOwh2/uB7sF23VKupmlIZ42xP6/4g+PXJCJv5v5
+         lLF2a97BZvKaFL+o25P5WyjW7G9rpYs5yyL6O+r3orBwrZrMk6Qw0112ZDG4+zU7ZjWw
+         hVMqgGCm/BCFe/dYcwUi3ITOdcxE3/JTWZgPZDzuzf9A4Txa1PSmzD3srEZk9ZnbVQzl
+         6aiQ==
+X-Gm-Message-State: ACgBeo246OjW+kflw0LievARP6w0p1mXdSdAnjCp0LKVnLBV5zE3y/HP
+        fvtniy/u8Qqa0cf2d8dcI1o=
+X-Google-Smtp-Source: AA6agR4XOQ2iEpSSKN5Yz5XMLIr6LdDI5VoI9vYEvx9vlTdzzxag0lMZfhF1mY/cUxVhW5mba0hqjQ==
+X-Received: by 2002:a17:90b:1d89:b0:1f5:a59:46b1 with SMTP id pf9-20020a17090b1d8900b001f50a5946b1mr3426825pjb.173.1662105300133;
+        Fri, 02 Sep 2022 00:55:00 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id u7-20020a170903124700b00170d34cf7f3sm922697plh.257.2022.09.02.00.54.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 00:54:59 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: zhang.songyi@zte.com.cn
+To:     harry.wentland@amd.com
+Cc:     sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
+        alexander.deucher@amd.com, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        wenjing.liu@amd.com, Jun.Lei@amd.com, Jimmy.Kizito@amd.com,
+        Jerry.Zuo@amd.com, meenakshikumar.somasundaram@amd.com,
+        hanghong.ma@amd.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        zhang songyi <zhang.songyi@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next] drm/amd/display: Remove the unneeded result variable
+Date:   Fri,  2 Sep 2022 07:54:50 +0000
+Message-Id: <20220902075450.319982-1-zhang.songyi@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- lhrpeml500003.china.huawei.com (7.191.162.67)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The code to create the child platform device is essentially the same as
-what platform_device_register_full() does, so change over to use
-that same function to reduce duplication.
+From: zhang songyi <zhang.songyi@zte.com.cn>
 
-Signed-off-by: John Garry <john.garry@huawei.com>
-Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Return the enable_link_dp() directly instead of storing it in another
+redundant variable.
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: zhang songyi <zhang.songyi@zte.com.cn>
 ---
- drivers/bus/hisi_lpc.c | 64 ++++++++++++++++++++----------------------
- 1 file changed, 30 insertions(+), 34 deletions(-)
+ drivers/gpu/drm/amd/display/dc/core/dc_link.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/bus/hisi_lpc.c b/drivers/bus/hisi_lpc.c
-index 74f4448bff9d..3555a6857214 100644
---- a/drivers/bus/hisi_lpc.c
-+++ b/drivers/bus/hisi_lpc.c
-@@ -472,9 +472,7 @@ static int hisi_lpc_acpi_clear_enumerated(struct acpi_device *adev, void *not_us
- 
- struct hisi_lpc_acpi_cell {
- 	const char *hid;
--	const char *name;
--	void *pdata;
--	size_t pdata_size;
-+	const struct platform_device_info *pdevinfo;
- };
- 
- static void hisi_lpc_acpi_remove(struct device *hostdev)
-@@ -505,28 +503,45 @@ static int hisi_lpc_acpi_add_child(struct acpi_device *child, void *data)
- 		/* ipmi */
- 		{
- 			.hid = "IPI0001",
--			.name = "hisi-lpc-ipmi",
-+			.pdevinfo = (struct platform_device_info []) {
-+				{
-+					.parent = hostdev,
-+					.fwnode = acpi_fwnode_handle(child),
-+					.name = "hisi-lpc-ipmi",
-+					.id = PLATFORM_DEVID_AUTO,
-+					.res = res,
-+					.num_res = num_res,
-+				},
-+			},
- 		},
- 		/* 8250-compatible uart */
- 		{
- 			.hid = "HISI1031",
--			.name = "serial8250",
--			.pdata = (struct plat_serial8250_port []) {
-+			.pdevinfo = (struct platform_device_info []) {
- 				{
--					.iobase = res->start,
--					.uartclk = 1843200,
--					.iotype = UPIO_PORT,
--					.flags = UPF_BOOT_AUTOCONF,
-+					.parent = hostdev,
-+					.fwnode = acpi_fwnode_handle(child),
-+					.name = "serial8250",
-+					.id = PLATFORM_DEVID_AUTO,
-+					.res = res,
-+					.num_res = num_res,
-+					.data = (struct plat_serial8250_port []) {
-+						{
-+							.iobase = res->start,
-+							.uartclk = 1843200,
-+							.iotype = UPIO_PORT,
-+							.flags = UPF_BOOT_AUTOCONF,
-+						},
-+						{}
-+					},
-+					.size_data =  2 * sizeof(struct plat_serial8250_port),
- 				},
--				{}
- 			},
--			.pdata_size = 2 *
--				sizeof(struct plat_serial8250_port),
- 		},
- 		{}
- 	};
- 
--	for (; cell && cell->name; cell++) {
-+	for (; cell && cell->hid; cell++) {
- 		if (!strcmp(cell->hid, hid)) {
- 			found = true;
- 			break;
-@@ -540,31 +555,12 @@ static int hisi_lpc_acpi_add_child(struct acpi_device *child, void *data)
- 		return 0;
- 	}
- 
--	pdev = platform_device_alloc(cell->name, PLATFORM_DEVID_AUTO);
-+	pdev = platform_device_register_full(cell->pdevinfo);
- 	if (!pdev)
- 		return -ENOMEM;
- 
--	pdev->dev.parent = hostdev;
--	ACPI_COMPANION_SET(&pdev->dev, child);
+diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_link.c b/drivers/gpu/drm/amd/display/dc/core/dc_link.c
+index f9b798b7933c..4ab27e231337 100644
+--- a/drivers/gpu/drm/amd/display/dc/core/dc_link.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc_link.c
+@@ -2077,11 +2077,7 @@ static enum dc_status enable_link_edp(
+ 		struct dc_state *state,
+ 		struct pipe_ctx *pipe_ctx)
+ {
+-	enum dc_status status;
 -
--	ret = platform_device_add_resources(pdev, res, num_res);
--	if (ret)
--		goto fail;
+-	status = enable_link_dp(state, pipe_ctx);
 -
--	ret = platform_device_add_data(pdev, cell->pdata, cell->pdata_size);
--	if (ret)
--		goto fail;
--
--	ret = platform_device_add(pdev);
--	if (ret)
--		goto fail;
--
- 	acpi_device_set_enumerated(child);
- 	return 0;
--
--fail:
--	platform_device_put(pdev);
--	return ret;
+-	return status;
++	return enable_link_dp(state, pipe_ctx);
  }
  
- /*
+ static enum dc_status enable_link_dp_mst(
 -- 
-2.35.3
+2.25.1
+
 
