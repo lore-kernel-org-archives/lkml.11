@@ -2,83 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C699ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:34:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7CE1ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:34:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236072AbiIBNeH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:34:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35948 "EHLO
+        id S237303AbiIBNeN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:34:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237208AbiIBNdj (ORCPT
+        with ESMTP id S236314AbiIBNdt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:33:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC75EF2402;
-        Fri,  2 Sep 2022 06:13:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DC28620ED;
-        Fri,  2 Sep 2022 12:22:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 540B1C433C1;
-        Fri,  2 Sep 2022 12:22:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121333;
-        bh=ij5KCR1VkNyiKKuIIzSu5WLIKEMZQOqM/A7SoOPm7Yo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=weNSnnY9oIfnksPt58aMeiIgoHpsqK/QBeOvP39l5RlvG6QGhvwgxkLLwHQL/IKVt
-         3kxYjGpc6/RIm6sQ4hTpBHl6E51IjVi1cHO5mYQTpMGtnpXeEfXM/edMG5HIKQX+qe
-         vXUCUbhGPQPTiqh8OukcbyerJ7LDcPEaLGGUNO0U=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 16/42] net: Fix a data-race around sysctl_net_busy_read.
-Date:   Fri,  2 Sep 2022 14:18:40 +0200
-Message-Id: <20220902121359.371677951@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121358.773776406@linuxfoundation.org>
-References: <20220902121358.773776406@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Fri, 2 Sep 2022 09:33:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 348FE3FA38
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:13:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662124312;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=10S2baNmGpvfbB3rWC8TV3GU8jc51um5+NmqwLplTxA=;
+        b=OaqsduRmC/k7/up3Y+Yxz1BiXMJqaV0IAPC22l2AwBITcWSC+CZXfo7LhGCbDGmcEgvBXk
+        +13oFwN5C3XFgOuP3AHB4BibB6DAMIRuH77cZQkVYGUTn9qB8Pb1jNKAc1r8dCCEV/mUsC
+        CYb97maX0COEjHQJIGernbkIE8nwR5w=
+Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com
+ [209.85.216.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-498-VNNnkzr-Npy__uScprD9lA-1; Fri, 02 Sep 2022 09:11:50 -0400
+X-MC-Unique: VNNnkzr-Npy__uScprD9lA-1
+Received: by mail-pj1-f70.google.com with SMTP id z8-20020a17090a014800b001fac4204c7eso1120685pje.8
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 06:11:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=10S2baNmGpvfbB3rWC8TV3GU8jc51um5+NmqwLplTxA=;
+        b=iyB57GtLm77O5Lgg0ouUC/Hl6Pg93OK8DOAW1PvZF+1hxOQRdJqoAxKUXy773FP/Wq
+         2X91eh4mtJZ53Gtzq3FNrQHuGHlWoYSZpBt3GK/yd6OMt4KqyBy1PnSTm4Qg6iZGmsMF
+         FUOkzobW3a5iJqAOEV3jEK5aQgnwVbXgNDHLzXoLSzGRZp1jozAN8sRwUHCXEB6BAQYJ
+         ovLs8JhRgRWRbYYy4ySEmjgQQ/KyZ8rJMxIUSNfi0r4nW6K8sx99xV7ufGqO2TITtE0e
+         hw9CtxLOLYfcs+44RWe3gpHtL92OX0s1HQokyLQLA04sAGWdiRL6MnzSGhBk7lDK+NCr
+         nEjA==
+X-Gm-Message-State: ACgBeo1AiuFptLGJnZNCY+Gt3jHqZIGa1ywpCCwln2PO6nc2zNXu3V79
+        2+4UwaOeqXiBuM0X/p7mT1QNWfeFIAXSRcRjXvvs1LlBCtKFvsPjdSxRK9DNdQdboTVz9hBHg27
+        yPU2Hb0QBnXvq8JhYFzCNPBtuhVuS7SbV312zceNA
+X-Received: by 2002:a17:902:b58a:b0:16e:f91a:486b with SMTP id a10-20020a170902b58a00b0016ef91a486bmr36558498pls.119.1662124309712;
+        Fri, 02 Sep 2022 06:11:49 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR72EpfhkEK4ko7qYW4nPa0blgG/78lQfqmeZeVLgOOiuWSw4Fu8+YGj6zLNMt/u79Hm3xPofVjqghC/L9D7cM4=
+X-Received: by 2002:a17:902:b58a:b0:16e:f91a:486b with SMTP id
+ a10-20020a170902b58a00b0016ef91a486bmr36558475pls.119.1662124309461; Fri, 02
+ Sep 2022 06:11:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220824134055.1328882-1-benjamin.tissoires@redhat.com>
+ <20220824134055.1328882-2-benjamin.tissoires@redhat.com> <CAADnVQKgkFpLh_URJn6qCiAONteA1dwZHd6=4cZn15g1JCAPag@mail.gmail.com>
+ <CAP01T75ec_T0M6DU=JE2tfNsWRZuPSMu_7JHA7ZoOBw5eDh1Bg@mail.gmail.com>
+ <CAO-hwJLd9wXx+ppccBYPKZDymO0sk++Nt2E3-R97PY7LbfJfTg@mail.gmail.com>
+ <CAADnVQK8dS+2KbWsqktvxoNKhHtdD5UPiaWVfNu=ESdn_OHpgQ@mail.gmail.com>
+ <CAO-hwJK9uHTWCg3_6jrPF6UKiamkNfj=cuH5mHauoLX+0udV9w@mail.gmail.com>
+ <CAADnVQLuL045Sxdvh8kfcNkmD55+Wz8fHU3RtH+oQyOgePU5Pw@mail.gmail.com>
+ <CAO-hwJJJJRtoq2uTXRKCck6QSH8SFDSTpHmvTyOieczY7bdm8g@mail.gmail.com> <CAP01T77SJyiDxv0A++_mNw7JZ-Mzh4B1FAM6zLiP6n75MNY0uQ@mail.gmail.com>
+In-Reply-To: <CAP01T77SJyiDxv0A++_mNw7JZ-Mzh4B1FAM6zLiP6n75MNY0uQ@mail.gmail.com>
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Date:   Fri, 2 Sep 2022 15:11:38 +0200
+Message-ID: <CAO-hwJLbbB0Abw3d4pJPnYTAzQNdtgBTpuNz4zVUTFXCbZEEbQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v9 01/23] bpf/verifier: allow all functions to
+ read user provided context
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+On Fri, Sep 2, 2022 at 5:50 AM Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
+>
+> On Thu, 1 Sept 2022 at 18:48, Benjamin Tissoires
+> <benjamin.tissoires@redhat.com> wrote:
+> >
+> > [...]
+> > If the above is correct, then yes, it would make sense to me to have 2
+> > distinct functions: one to check for the args types only (does the
+> > function definition in the problem matches BTF), and one to check for
+> > its use.
+> > Behind the scenes, btf_check_subprog_arg_match() calls
+> > btf_check_func_arg_match() which is the one function with entangled
+> > arguments type checking and actually assessing that the values
+> > provided are correct.
+> >
+> > I can try to split that  btf_check_func_arg_match() into 2 distinct
+> > functions, though I am not sure I'll get it right.
+>
+> FYI, I've already split them into separate functions in my tree
+> because it had become super ugly at this point with all the new
+> support and I refactored it to add the linked list helpers support
+> using kfuncs (which requires some special handling for the args), so I
+> think you can just leave it with a "processing_call" check in for your
+> series for now.
+>
 
-[ Upstream commit e59ef36f0795696ab229569c153936bfd068d21c ]
+great, thanks a lot.
+Actually, writing the patch today with the "processing_call" was
+really easy now that I have turned the problem in my head a lot
+yesterday.
 
-While reading sysctl_net_busy_read, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+I am about to send v10 with the reviews addressed.
 
-Fixes: 2d48d67fa8cd ("net: poll/select low latency socket support")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/core/sock.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/core/sock.c b/net/core/sock.c
-index bbf9517218ff3..002c91dd7191f 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -2783,7 +2783,7 @@ void sock_init_data(struct socket *sock, struct sock *sk)
- 
- #ifdef CONFIG_NET_RX_BUSY_POLL
- 	sk->sk_napi_id		=	0;
--	sk->sk_ll_usec		=	sysctl_net_busy_read;
-+	sk->sk_ll_usec		=	READ_ONCE(sysctl_net_busy_read);
- #endif
- 
- 	sk->sk_max_pacing_rate = ~0U;
--- 
-2.35.1
-
-
+Cheers,
+Benjamin
 
