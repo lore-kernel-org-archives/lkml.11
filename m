@@ -2,58 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55B4DECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:52:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10F5AC6FA82
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:52:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230114AbiIBSwa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 14:52:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40778 "EHLO
+        id S230132AbiIBSwy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 14:52:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230018AbiIBSw1 (ORCPT
+        with ESMTP id S230117AbiIBSwv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 14:52:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39756E193A
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 11:52:22 -0700 (PDT)
+        Fri, 2 Sep 2022 14:52:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76D03DD75A
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 11:52:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662144741;
+        s=mimecast20190719; t=1662144769;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=FKifGkwx3P3TuJMAxmYdMT5EsvE4i26RC7LZW8MiN3w=;
-        b=RqCMxc7A6M+WQliWySVrQMBkWOpMMXEtut8hQ2xbmSNOseu39QWalPt1LjrZ88EPzsYvX9
-        gUpMJMHF778qXRVdOwq4chtMiRhUTTi7xFIZK9FX8cYKdPfNjfQBojxTHb4bwZlTXi8E0t
-        hvjKOCOzNtZhKLExhrfZw+lPJfYK8sQ=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uWCWlSmZFYEaKyKiurVFOsZ2PihsSoTnqTvGm6hbF8A=;
+        b=W1JqL72ExMrz/Q86CWcpzTrSb4CsCZ31pqVZoEAHbdhhSp+8b5yiBAGW5wW9XalH7dnJCJ
+        UuPTlkbqbq3y7ZZKxnLGbyxAadVA95qTnbyvYpRk2IpTgviW65h1wdKwF7zkx2zoy1r7hR
+        uw65nJvC5i3tmq7u78dYWTiKtfh399w=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-457-97ftozHLOqGz0_TmfMOtGQ-1; Fri, 02 Sep 2022 14:52:20 -0400
-X-MC-Unique: 97ftozHLOqGz0_TmfMOtGQ-1
-Received: by mail-qv1-f72.google.com with SMTP id o6-20020ad443c6000000b00495d04028a6so1809822qvs.18
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 11:52:20 -0700 (PDT)
+ us-mta-98-tKlGMwyvPmiKmHpr7R9YiQ-1; Fri, 02 Sep 2022 14:52:40 -0400
+X-MC-Unique: tKlGMwyvPmiKmHpr7R9YiQ-1
+Received: by mail-qv1-f69.google.com with SMTP id cz3-20020a056214088300b00498f11a6d8aso1815083qvb.11
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 11:52:38 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=FKifGkwx3P3TuJMAxmYdMT5EsvE4i26RC7LZW8MiN3w=;
-        b=V0tsPzMqnvjOQRp9tD2KLkOHgk3HxwubljM38xiC8MDBncMygLwTA5jGqb4bxOOHc/
-         qj9WW8pEFNeWktvyljsWJnYC6Z25Efw9/K9rN1ZY2x2YGLAGNqmhdaXg/jwRboQ5p/NE
-         CosuGfyenNWlYg3l98ssgxLbHyGZJ25dP4+nUvb9m4mjs1/raPBHShhvF7C79HZM4jc0
-         EibvqE62S+JtVQsPl6R1wk9xxpAob3pKFGInqgxDJGyv1Y7PkmrJ20AnOwOmYxLYza+Q
-         VaXj+qbNrdEpzN1yxQGhPcuEaFJadpC4AwQbAt5N7pkhSFeW0j8hxvgdAYrzRVRgktkO
-         wN9g==
-X-Gm-Message-State: ACgBeo2AU+D/BBpVLf9Jc0lErKrwf+Bo5tZitpTAQ3Lthlmbw9NfT19f
-        ysioV8VFESm1tash9FbpyUUnyfO2rLmUET4pAQIn1JSGchuKOGQ1vQKcXYhZhfGXT8zPnVYU3qA
-        Fa2lWiUFIeBBE5evzBovH5Mdi
-X-Received: by 2002:a05:622a:347:b0:343:602e:d1eb with SMTP id r7-20020a05622a034700b00343602ed1ebmr30532910qtw.78.1662144739952;
-        Fri, 02 Sep 2022 11:52:19 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7tr9tS9qizyb79IxvlKkdB/Ye4dB5nps3mXFW4VQaBEhppeQgaHWU/cJf5tnPkK9ymaGO74g==
-X-Received: by 2002:a05:622a:347:b0:343:602e:d1eb with SMTP id r7-20020a05622a034700b00343602ed1ebmr30532895qtw.78.1662144739744;
-        Fri, 02 Sep 2022 11:52:19 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=uWCWlSmZFYEaKyKiurVFOsZ2PihsSoTnqTvGm6hbF8A=;
+        b=a3tmW5XjJW8STeP5ginhDY3CPlTgbTKtHApx+TLdLpmkiyOdM6U7mcrthF6xSixAIl
+         HcGi6CPjkqmxHLd+wGdr7V3syFVyXmJm8RVFS90Yh4KHBNhvyKju5v3Kr9ZZPCIyExuI
+         R1+VVNJvL6eQu2hynLGd/ufkygJ1nC8G0gEhV0BRWkJkhqB+FQyMuEqcUIFw4n8ueZts
+         dkmIdBii1kSiAMjSy+rpeuygB56HoGgFGIITX6mUDxwS5jY57jDV3M6e5WxbAoLQfUV5
+         cb80NwKWW5JO1cetYG9g3fmjItRAEXjDKyFnIhxlj4JKp/hm0QZ7sEx139J+8HjLa34K
+         W8FA==
+X-Gm-Message-State: ACgBeo2qPX/nmktyooejiTTAjPFAEvYZOSLC5Cu5AWS0lnuK0zAv8Vlt
+        qDx39YYq7llhK2QbIG4x1N4OgnL7LEAuqGJN9sthk37Os38GuIqNrmRnWeCZFd7mUrT+VCukoCu
+        HfW9+wIldYGHpdSaHXYKto9ep
+X-Received: by 2002:a05:6214:5299:b0:47e:89e9:e27b with SMTP id kj25-20020a056214529900b0047e89e9e27bmr30305779qvb.52.1662144756904;
+        Fri, 02 Sep 2022 11:52:36 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6sQ1Y+//dmjxKBj3ZEaXYuHYln+NL61ZdmgRorPSxsIvkkcjpHQ8qd63mv5wb+6ajlx/wzPA==
+X-Received: by 2002:a05:6214:5299:b0:47e:89e9:e27b with SMTP id kj25-20020a056214529900b0047e89e9e27bmr30305759qvb.52.1662144756618;
+        Fri, 02 Sep 2022 11:52:36 -0700 (PDT)
 Received: from halaneylaptop.redhat.com ([2600:1700:1ff0:d0e0::48])
-        by smtp.gmail.com with ESMTPSA id j4-20020ac874c4000000b0031ef0081d77sm1403168qtr.79.2022.09.02.11.52.18
+        by smtp.gmail.com with ESMTPSA id j4-20020ac874c4000000b0031ef0081d77sm1403168qtr.79.2022.09.02.11.52.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 11:52:19 -0700 (PDT)
+        Fri, 02 Sep 2022 11:52:36 -0700 (PDT)
 From:   Andrew Halaney <ahalaney@redhat.com>
 To:     agross@kernel.org, andersson@kernel.org,
         konrad.dybcio@somainline.org, lgirdwood@gmail.com,
@@ -62,10 +64,12 @@ To:     agross@kernel.org, andersson@kernel.org,
 Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
         devicetree@vger.kernel.org, dianders@chromium.org,
         johan@kernel.org, Andrew Halaney <ahalaney@redhat.com>
-Subject: [PATCH 0/3] regulator: dt-bindings: qcom,rpmh: dt-binding fixups
-Date:   Fri,  2 Sep 2022 13:51:45 -0500
-Message-Id: <20220902185148.635292-1-ahalaney@redhat.com>
+Subject: [PATCH 3/3] regulator: dt-bindings: qcom,rpmh: Indicate regulator-allow-set-load dependencies
+Date:   Fri,  2 Sep 2022 13:51:48 -0500
+Message-Id: <20220902185148.635292-4-ahalaney@redhat.com>
 X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220902185148.635292-1-ahalaney@redhat.com>
+References: <20220902185148.635292-1-ahalaney@redhat.com>
 MIME-Version: 1.0
 Content-type: text/plain
 Content-Transfer-Encoding: 8bit
@@ -73,32 +77,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+For RPMH regulators it doesn't make sense to indicate
+regulator-allow-set-load without saying what modes you can switch to,
+so be sure to indicate a dependency on regulator-allowed-modes.
 
-This is my poor attempt at getting devicetree validation into a better
-state for qcom,rpmh-regulator.yaml. This is a follow-up to Johan's
-request for this over here:
+With this in place devicetree validation can catch issues like this:
 
-    https://lore.kernel.org/linux-arm-msm/Yw8EE%2FESDUnIRf8P@hovoldconsulting.com/
+    /mnt/extrassd/git/linux-next/arch/arm64/boot/dts/qcom/sm8350-hdk.dtb: pm8350-rpmh-regulators: ldo5: 'regulator-allowed-modes' is a dependency of 'regulator-allow-set-load'
+            From schema: /mnt/extrassd/git/linux-next/Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.yaml
 
-In particular, I'm not certain patch 1 is the correct way to handle
-things, and patch 2 makes validation too wide for the *-supply nodes.
+Suggested-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Andrew Halaney <ahalaney@redhat.com>
+---
+ .../devicetree/bindings/regulator/qcom,rpmh-regulator.yaml    | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-I'd love any feedback here as I'm really not experienced in any of the
-spaces (regulator, rpmh, or dt schema) so nit picking is welcomed.
-
-Thanks in advance,
-Andrew
-
-Andrew Halaney (3):
-  regulator: dt-bindings: qcom,rpmh: Use additionalProperties
-  regulator: dt-bindings: qcom,rpmh: Specify supply property
-  regulator: dt-bindings: qcom,rpmh: Indicate regulator-allow-set-load
-    dependencies
-
- .../bindings/regulator/qcom,rpmh-regulator.yaml       | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.yaml b/Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.yaml
+index 86265b513de3..1cfd9cfd9ba6 100644
+--- a/Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.yaml
++++ b/Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.yaml
+@@ -99,12 +99,16 @@ properties:
+     type: object
+     $ref: "regulator.yaml#"
+     description: BOB regulator node.
++    dependencies:
++      regulator-allow-set-load: ["regulator-allowed-modes"]
+ 
+ patternProperties:
+   "^(smps|ldo|lvs)[0-9]+$":
+     type: object
+     $ref: "regulator.yaml#"
+     description: smps/ldo regulator nodes(s).
++    dependencies:
++      regulator-allow-set-load: ["regulator-allowed-modes"]
+ 
+   ".*-supply$":
+     description: Input supply phandle(s) for this node
 -- 
 2.37.2
 
