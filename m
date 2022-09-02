@@ -2,71 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF708ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:47:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DFF3C54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:47:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236062AbiIBIrP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 04:47:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35028 "EHLO
+        id S236075AbiIBIrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 04:47:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235982AbiIBIqe (ORCPT
+        with ESMTP id S235909AbiIBIqq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 04:46:34 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95995EB3
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 01:46:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=QMuzxgLSDAbY7uCZIWNERWN6PvdXJ1azGf+yFLHGh6I=; b=LYttA+hMsMgenMBW+9+RTpPkJa
-        CEZfoBRZl8lfJjgPjCLAvU50HS+4zlxL9Q+x7JHo1EqrUCpgsYtmsxQoEdERYyZ2pfYNwZcUMiR7Y
-        3GOzumQj25RbE00b98zZmDrur0pa5EXWqiEQAVBLf3wGcBVdGRE/2XVQ+UvTbfDES1UMch4fGIcS2
-        19Rzku/Ywxd0BYG7WJDI+VHFi8OLPcRpgEWvVCjg9HIWfxf8qQ/nKQ6oADhPdNJDE26QN0/d5mXb7
-        vudxGMCVTK6vD6R9tRc1Q2hpqdtJwW1f5grTAF2UAeqnxlGlbCgW5FKuej3HGdvd23jNDzJgiGec/
-        qWb+V2jg==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oU2JJ-008crS-QJ; Fri, 02 Sep 2022 08:45:58 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 6E900300244;
-        Fri,  2 Sep 2022 10:45:57 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 5DA4A2B8A3BF1; Fri,  2 Sep 2022 10:45:57 +0200 (CEST)
-Date:   Fri, 2 Sep 2022 10:45:57 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc:     Vincent Guittot <vincent.guittot@linaro.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Morten Rasmussen <morten.rasmussen@arm.com>,
-        Vincent Donnefort <vdonnefort@google.com>,
-        Quentin Perret <qperret@google.com>,
-        Patrick Bellasi <patrick.bellasi@matbug.net>,
-        Abhijeet Dharmapurikar <adharmap@quicinc.com>,
-        Jian-Min <Jian-Min.Liu@mediatek.com>,
-        Qais Yousef <qais.yousef@arm.com>, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 1/1] sched/pelt: Introduce PELT multiplier
-Message-ID: <YxHCxfm0m6dGTIaK@hirez.programming.kicks-ass.net>
-References: <20220829055450.1703092-1-dietmar.eggemann@arm.com>
- <20220829055450.1703092-2-dietmar.eggemann@arm.com>
- <Ywxz7cuR+/+1CFMR@hirez.programming.kicks-ass.net>
- <YwyOzgbbUbB+JmSH@hirez.programming.kicks-ass.net>
- <CAKfTPtAnC4escfufhjJkqsYyhDPzpmQH4xYT4nj=EjCP7gzifg@mail.gmail.com>
- <12b3443a-6456-4a57-95b3-dd6be5b10873@arm.com>
+        Fri, 2 Sep 2022 04:46:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C63E2FFFB;
+        Fri,  2 Sep 2022 01:46:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC49762156;
+        Fri,  2 Sep 2022 08:46:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C730DC433D7;
+        Fri,  2 Sep 2022 08:46:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662108401;
+        bh=0A7WWESMqIZD9mylc1dnG6NGyuh1874ApHc3sUTvw20=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=ILbO/IiLte49oEs+fL3Ng7qg48I0jm4Kk8bzfAsMPGNm9REGWFF9gtxO4G0ipVElC
+         7nNlug6wHz9Ks8PRbzIrcx/aRT6ziNMa5/6miPmR83EpQLlw2ioU5mfMWOU9SW3/V/
+         HPzY4pmdg8tplJQDYPOvBguAmfX1EKu43CyqG8JEeJ5AgMZPI53E1VOt0W2VmHQ1ap
+         eu6zYlnNlGc2fbo2Sh5zISyJHFv/UWJH5biWJO/hOFskuX9sdEDZsuSTflShbqpHPP
+         6+eG3DwaqWaBOEJq9c6J9cicjOXYmxX5Wg+mZ/mg8SOKVG4f7QT5uFFqftH81LwvkQ
+         +VGCqf/D3MdPQ==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <12b3443a-6456-4a57-95b3-dd6be5b10873@arm.com>
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v2 linux-next] wifi: wilc1000: remove redundant ret
+ variable
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20220830105505.287564-1-cui.jinpeng2@zte.com.cn>
+References: <20220830105505.287564-1-cui.jinpeng2@zte.com.cn>
+To:     cgel.zte@gmail.com
+Cc:     ajay.kathat@microchip.com, claudiu.beznea@microchip.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jinpeng Cui <cui.jinpeng2@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <166210839707.24345.16121764644715977509.kvalo@kernel.org>
+Date:   Fri,  2 Sep 2022 08:46:38 +0000 (UTC)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Sep 02, 2022 at 09:53:50AM +0200, Dietmar Eggemann wrote:
+cgel.zte@gmail.com wrote:
 
-> But AFAIK at least some of the Android folks want to change this during
-> runtime and they don't have debugfs mounted.
+> From: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
+> 
+> Return value from cfg80211_rx_mgmt() directly instead of
+> taking this in another redundant variable.
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
 
-They want; I want an explanation of what exact problem is fixed how ;-)
+Patch applied to wireless-next.git, thanks.
+
+1dc13236ef91 wifi: wilc1000: remove redundant ret variable
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20220830105505.287564-1-cui.jinpeng2@zte.com.cn/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
