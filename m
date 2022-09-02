@@ -2,147 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0777EC54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 10:54:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB3B0C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 10:54:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235859AbiIBKyL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 06:54:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56352 "EHLO
+        id S235962AbiIBKyS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 06:54:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235482AbiIBKyI (ORCPT
+        with ESMTP id S235880AbiIBKyL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 06:54:08 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 821FDC88A1
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 03:54:07 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id h13-20020a17090a648d00b001fdb9003787so1753752pjj.4
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 03:54:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=vT4GD3+/0MzbbBEdOSGt98w+JvqU9hw4JCyFBULPEdA=;
-        b=5RX14LCU/zE20jlyYS+jNVKQQY9uCRNuM5U94KDBQRnMPdv/BHlAUQKGHnpHxtYgPt
-         YUC3gSidU4Ur8dKx1aE1Q39Pl1kU0Sc9F350a4+d8tRlMnGjCwrjlp1fF9xb38kQpzK4
-         8rVNcFKvZdeU+5qqa1gtZoz4qq91WYBrw0clTb3l1kCU1RENsFuy+cZRf6m82kjXwxH+
-         fUXq4nkVHXTHH8R/i1iasX0iwxtcQi1zp+kB8DAVoxpEI3K2+pNNvY8eGKO/Twl+mR0j
-         VUk9OQDPCA2VSsoVmrc3o1F7PJLe/9cWfIiIml7/qFkWRTI3tDGFFDFhGZiPcXR8J/1F
-         N9pQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=vT4GD3+/0MzbbBEdOSGt98w+JvqU9hw4JCyFBULPEdA=;
-        b=FDcrSfZxaGPoM05mDIQqA1jinv4Uuqp3B/es3IAHlcuns4wgicWz8T9HiLxmtSvOaC
-         7BE2luhvrVWWFNdUq6mkCFJFdkde9HTNRFmjyzROJETRO/3oPUZHPnZN7d+HiSEhwjq7
-         ZmXTFMgjYtxeqN8hM8aWYF7wn87NTGpK6+Bu+x3b4q3xArko7FJnULNUSunmj8MS7aTY
-         GrgSW1RM5jfiTRIoXnkFjEvWYkLZto5/Lw3iBo2tP0Vv5A13oJ3i3YfEcXH2p4UZEFLm
-         yk8qCilSJqAaU9lRX/hHw/pI11GB22DcSK49B5SojPEi2S4taGscVC8B20Q08QuijuUq
-         DcJg==
-X-Gm-Message-State: ACgBeo1I67YzFbsiqZxc4QCLQe86lyZPdj6Zpj6YPj44t+av1z/PwHpK
-        sH0259+khsxjBRXxDkUEmEzTCSqNwUM1Qw==
-X-Google-Smtp-Source: AA6agR6kEeWww8j05ZFcDdob4i78cy50JnfDQIPezSnmR418EyvU4bI8yHEHQdn5r9dIeRz74989RQ==
-X-Received: by 2002:a17:90b:4d12:b0:1f5:59e1:994f with SMTP id mw18-20020a17090b4d1200b001f559e1994fmr4142105pjb.217.1662116047024;
-        Fri, 02 Sep 2022 03:54:07 -0700 (PDT)
-Received: from C02G705SMD6V.bytedance.net ([61.120.150.76])
-        by smtp.gmail.com with ESMTPSA id e4-20020a63d944000000b0041b29fd0626sm1128681pgj.88.2022.09.02.03.54.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 03:54:06 -0700 (PDT)
-From:   Jia Zhu <zhujia.zj@bytedance.com>
-To:     linux-erofs@lists.ozlabs.org, xiang@kernel.org, chao@kernel.org
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yinxin.x@bytedance.com, jefflexu@linux.alibaba.com,
-        huyue2@coolpad.com, Jia Zhu <zhujia.zj@bytedance.com>
-Subject: [PATCH V2 0/5] Introduce erofs shared domain
-Date:   Fri,  2 Sep 2022 18:53:00 +0800
-Message-Id: <20220902105305.79687-1-zhujia.zj@bytedance.com>
-X-Mailer: git-send-email 2.32.1 (Apple Git-133)
+        Fri, 2 Sep 2022 06:54:11 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEBA2C9253;
+        Fri,  2 Sep 2022 03:54:10 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1oU4JL-00041d-4F; Fri, 02 Sep 2022 12:54:07 +0200
+Message-ID: <57c596f7-014f-1833-3173-af3bad2ca45d@leemhuis.info>
+Date:   Fri, 2 Sep 2022 12:54:05 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [LKP] Re: [KVM] c3e0c8c2e8:
+ leaking-addresses.proc..data..ro_after_init.
+Content-Language: en-US, de-DE
+To:     Philip Li <philip.li@intel.com>
+Cc:     kernel test robot <oliver.sang@intel.com>,
+        Kai Huang <kai.huang@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>, kvm@vger.kernel.org,
+        lkp@lists.01.org, lkp@intel.com, regressions@lists.linux.dev
+References: <YvpZYGa1Z1M38YcR@xsang-OptiPlex-9020>
+ <04ce8956-3285-345a-4ce5-b78500729e42@leemhuis.info>
+ <YxCyhTES9Nk+S94y@rli9-MOBL1.ccr.corp.intel.com>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <YxCyhTES9Nk+S94y@rli9-MOBL1.ccr.corp.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1662116050;0eb7858f;
+X-HE-SMSGID: 1oU4JL-00041d-4F
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changes since V1:
-0. Only initialize one pseudo fs to manage anonymous inodes(cookies).
-1. Remove ctx's 'ref' field and replace it with inode's i_count.
-2. Add lock in erofs_fscache_unregister_cookie() to avoid race condition
-   between cookie's get/put/search.
-3. Remove useless blank lines.
+On 01.09.22 15:24, Philip Li wrote:
+> On Thu, Sep 01, 2022 at 02:12:39PM +0200, Thorsten Leemhuis wrote:
+>> Hi, this is your Linux kernel regression tracker.
+>>
+>> On 15.08.22 16:34, kernel test robot wrote:
+>>> Greeting,
+>>>
+>>> FYI, we noticed the following commit (built with gcc-11):
+>>>
+>>> commit: c3e0c8c2e8b17bae30d5978bc2decdd4098f0f99 ("KVM: x86/mmu: Fully re-evaluate MMIO caching when SPTE masks change")
+>>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>>>
+>>> in testcase: leaking-addresses
+>>> version: leaking-addresses-x86_64-4f19048-1_20220518
+>>> with following parameters:
+>>>
+>>> 	ucode: 0x28
+>>>
+>>> on test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz with 16G memory
+>>>
+>>> caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
+>>>
+>>> If you fix the issue, kindly add following tag
+>>> Reported-by: kernel test robot <oliver.sang@intel.com>
+>>>
+>>> [...]
+>>>
+>>> #regzbot introduced: c3e0c8c2e8
+>>
+>> Removing this from the list of tracked regressions:
+>>
+>> #regzbot invalid: report from the kernel test report that was ignored by
+>> developers, so I assume it's not something bad
+>>
+>> To explain: Yeah, maybe tracking regressions found by CI systems in
+>> regzbot might be a good idea now or in the long run. If you are from
+>> Intel and would like to discuss how to do this, please get in touch (I
+>> tried recently, but got no answer[1]).
+> 
+> Sorry, this was a mistake that we missed [1] to provide our reply. I will
+> reply to the questions in that one soon.
 
-[Kernel Patchset]
-===============
-Git tree:
-	https://github.com/userzj/linux.git zhujia/shared-domain-v2
-Git web:
-	https://github.com/userzj/linux/tree/zhujia/shared-domain-v2
+Thx!
 
-[Background]
-============
-In ondemand read mode, we use individual volume to present an erofs
-mountpoint, cookies to present bootstrap and data blobs.
+>> But I'm not sure if it's a good idea right now to get regzbot involved
+>> by default (especially as long as the reports are not telling developers
+>> to add proper "Link:" tags that would allow regzbot to notice when fixes
+>
+> Apologize again that we started to track mainline regression we found before
+> we fully understand [2], which probably not the effective usage. Especially
+> we missed the initial touch and led to more improper usage.
 
-In which case, since cookies can't be shared between fscache volumes,
-even if the data blobs between different mountpoints are exactly same,
-they can't be shared.
+No worries, as maybe it's a good thing to have the 0day reports in
+there, even if some of its reports don't get any traction. But having
+them in the list of tracked regressions gives them some more visibility
+for a while -- and at least one more set of eyes (mine) that take a look
+at it. And it's not that much work for me or anybody else to close the
+issue in regzbot (say after a week or two) if no developer acts on it
+because it's irrelevant from their point of view. But would still be
+better if they'd state that publicly themselves; in that case they even
+could tell regzbot to ignore the issue; your report's could tell people
+how to do that (e.g. "#regzbot invalid some_reason").
 
-[Introduction]
-==============
-Here we introduce erofs shared domain to resolve above mentioned case.
-Several erofs filesystems can belong to one domain, and data blobs can
-be shared among these erofs filesystems of same domain.
+>> for the problem are posted or merged; see [1] and [2]), as it looks like
+>> developers ignore quite a few (many?) reports like the one partly quoted
+>> above.
+>>
+>> I guess there are various reasons why developers do so (too many false
+>> positives? issues unlikely to happen in practice? already fixed?).
+> 
+> agree, not all reports we send out got response even it was reported on
+> mainline (0day does wide range testing include the repos from developer,
+> so the reports are against these repos and mainline/next).
+> 
+> Usuaally, we also ping/discuss with developer when an issue enters
+> mainline if there's no response. This is one reason we tries to connect
+> with regzbot to track the issue on mainline, but we missed the point that
+> you mention below (it need look important).
 
-[Usage]
-Users could specify 'domain_id' mount option to create or join into a
-domain which reuses the same cookies(blobs).
+I just want to prevent the list of tracked regressions becoming too long
+(and thus obscure) due to many issues that are not worth tracking, as I
+fear people will then start to ignore regzbot and its reports. :-/
 
-[Design]
-========
-1. Use pseudo mnt to manage domain's lifecycle.
-2. Use a linked list to maintain & traverse domains.
-3. Use pseudo sb to create anonymous inode for recording cookie's info
-   and manage cookies lifecycle.
+>> Normally I'd say "this is a regression and I should try to find out and
+>> prod developers to get it fixed". And I'll do that if the issue
+>> obviously looks important to a Linux kernel generalist like me.
+> 
+> got it, thanks for the info, i found earlier you tracked a bug from kernel
+> test robot, which should be the case that you thought it was important.
 
-[Flow Path]
-===========
-1. User specify a new 'domain_id' in mount option.
-   1.1 Traverse domain list, compare domain_id with existing domain.[Miss]
-   1.2 Create a new domain(volume), add it to domain list.
-   1.3 Traverse pseudo sb's inode list, compare cookie name with
-       existing cookies.[Miss]
-   1.4 Alloc new anonymous inodes and cookies.
+Yeah, some of the reports are valuable, that's why I guess it makes
+sense to track at least some of them. The question is, how to filter the
+bad ones out or how to pick just the valuable ones...
 
-2. User specify an existing 'domain_id' in mount option and the data
-   blob is existed in domain.
-   2.1 Traverse domain list, compare domain_id with existing domain.[Hit]
-   2.2 Reuse the domain and increase its refcnt.
-   2.3 Traverse pseudo sb's inode list, compare cookie name with
-   	   existing cookies.[Hit]
-   2.4 Reuse the cookie and increase its refcnt.
-[Test]
-======
-Git web:
-	https://github.com/userzj/demand-read-cachefilesd/tree/shared-domain
-More test cases will be added to:
-	https://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git/log/?h=experimental-tests-fscache 
+Are you or someone from the 0day team an LPC? Then we could discuss this
+in person there.
 
-RFC: https://lore.kernel.org/all/YxAlO%2FDHDrIAafR2@B-P7TQMD6M-0146.local/
-V1: https://lore.kernel.org/all/20220902034748.60868-1-zhujia.zj@bytedance.com/
+>> But that doesn't appear to be the case here (please correct me if I
+>> misjudged!). I hence chose to ignore this report, as there are quite a
+>> few other reports that are waiting for my attention, too. :-/
+> 
+> Thanks, we will revisit our process and consult you before we do any actual
+> action, and sorry for causing you extra effort to do cleanup.
 
+No need to be sorry, everything is fine, up to some point I liked what
+you did. :-D
 
-Jia Zhu (5):
-  erofs: add 'domain_id' mount option for on-demand read sementics
-  erofs: introduce fscache-based domain
-  erofs: add 'domain_id' prefix when register sysfs
-  erofs: remove duplicated unregister_cookie
-  erofs: support fscache based shared domain
-
- fs/erofs/fscache.c  | 168 +++++++++++++++++++++++++++++++++++++++++++-
- fs/erofs/internal.h |  31 +++++++-
- fs/erofs/super.c    |  94 +++++++++++++++++++------
- fs/erofs/sysfs.c    |  11 ++-
- 4 files changed, 278 insertions(+), 26 deletions(-)
-
--- 
-2.20.1
-
+Ciao, Thorsten
