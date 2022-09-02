@@ -2,110 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B894FC6FA81
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 08:58:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBA9FECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 09:00:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235837AbiIBI6M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 04:58:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33906 "EHLO
+        id S235333AbiIBJA4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 05:00:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236054AbiIBI6J (ORCPT
+        with ESMTP id S232755AbiIBJAw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 04:58:09 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5443BA0603;
-        Fri,  2 Sep 2022 01:58:06 -0700 (PDT)
-X-UUID: 55bd09ba86ae45aeb6c12ff406430924-20220902
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=LjdTy1xd5BYoKHJkgGQjVcamnY1XU8R1SpCmvWnZVUs=;
-        b=AQYfPnEB1lf1xCywnf/7nQX5ptfQ8yrDYBoQKx81Q3s5mCiHpvqOApsZXr2E1ZU8YRUU4kxXXe2PmUWi0DV4bgtVB/v/2Knnh20nyTn7SmBSjdhOGNzgoeDwVU1s5dkB8jygWgdU+eUKSHr/5qq8kWdnnRy5O3R/jpvX52jv9f8=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.10,REQID:e58f0edb-4376-49fc-bd67-41fb7b4bb93a,OB:0,L
-        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_
-        Ham,ACTION:release,TS:0
-X-CID-META: VersionHash:84eae18,CLOUDID:3f566756-e800-47dc-8adf-0c936acf4f1b,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 55bd09ba86ae45aeb6c12ff406430924-20220902
-Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw02.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1814608957; Fri, 02 Sep 2022 16:58:00 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 2 Sep 2022 16:57:58 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 2 Sep 2022 16:57:58 +0800
-Message-ID: <e5e925911c428cab87bbe12cda1dd657e1bb5075.camel@mediatek.com>
-Subject: Re: [PATCH v17 10/10] drm/mediatek: dp: Audio support for MT8195
-From:   CK Hu <ck.hu@mediatek.com>
-To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
-        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <mripard@kernel.org>,
-        <tzimmermann@suse.de>, <matthias.bgg@gmail.com>, <deller@gmx.de>,
-        <airlied@linux.ie>
-CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
-        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
-        <angelogioacchino.delregno@collabora.com>,
-        <liangxu.xu@mediatek.com>, <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-fbdev@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Fri, 2 Sep 2022 16:57:58 +0800
-In-Reply-To: <20220901044149.16782-11-rex-bc.chen@mediatek.com>
-References: <20220901044149.16782-1-rex-bc.chen@mediatek.com>
-         <20220901044149.16782-11-rex-bc.chen@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Fri, 2 Sep 2022 05:00:52 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2A193AB15;
+        Fri,  2 Sep 2022 02:00:50 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id BB0196601F04;
+        Fri,  2 Sep 2022 10:00:48 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1662109249;
+        bh=7sU033mGQqMgLZYu1qj1vLeGlrTQhMdIgyO5Z9XmQvc=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=btPA8d5oKPh+N3MfwdysLrom3fdzX4u65X9qfnk3UySmC4Rr6X36Ear26Wj7FapZi
+         6u4cDtF0aNsgZWz6UU74e71kArJilGw1D4Tw4M8yPX6bDbQgU12EUjYA8Cl3oHgLCJ
+         xF9xlD6AJ4y7aEX8OjRESLxjvhlAaVO4kC0XgW4cCVXb10lTkwJrgPTH2KosJMrzJA
+         LwDKRV7AkWBwbvG/BD4JdtegLUe8Vy9K3eZ91qGsCBWOkPqbzsSPCFQsXHl2o0twv8
+         3cjsb/g6tSFI2QYWhY6WRSByJm7lunT4Ix7ENhfLbGuWg5DIBTo8dli9LdQR7VOz3s
+         W59oVfW64KNvg==
+Message-ID: <8e398e71-1283-b5d7-2b17-958a25563c25@collabora.com>
+Date:   Fri, 2 Sep 2022 11:00:46 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH v2 2/3] iommu/mediatek: Add enable IOMMU SMC command for
+ INFRA master
+To:     "Chengci.Xu" <chengci.xu@mediatek.com>,
+        Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220831125502.7818-1-chengci.xu@mediatek.com>
+ <20220831125502.7818-3-chengci.xu@mediatek.com>
+Content-Language: en-US
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220831125502.7818-3-chengci.xu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Bo-Chen:
-
-On Thu, 2022-09-01 at 12:41 +0800, Bo-Chen Chen wrote:
-> From: Guillaume Ranquet <granquet@baylibre.com>
+Il 31/08/22 14:55, Chengci.Xu ha scritto:
+> The register which can enable IOMMU for INFRA master should be setted
+> in secure world for security concerns. Therefore, we add a SMC command
+> for INFRA master to enable/disable INFRA IOMMU in ATF. This function is
+> prepared for MT8188.
 > 
-> This patch adds audio support to the DP driver for MT8195 with up to
-> 8
-> channels.
-> 
-> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> Signed-off-by: Chengci.Xu <chengci.xu@mediatek.com>
 > ---
->  drivers/gpu/drm/mediatek/mtk_dp.c     | 482
-> +++++++++++++++++++++++++-
->  drivers/gpu/drm/mediatek/mtk_dp_reg.h |  51 +++
->  2 files changed, 532 insertions(+), 1 deletion(-)
+>   drivers/iommu/mtk_iommu.c  | 34 ++++++++++++++++++++++++++--------
+>   include/soc/mediatek/smi.h |  1 +
+>   2 files changed, 27 insertions(+), 8 deletions(-)
 > 
-> 
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 7e363b1f24df..6fe780783ec8 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -3,6 +3,7 @@
+>    * Copyright (c) 2015-2016 MediaTek Inc.
+>    * Author: Yong Wu <yong.wu@mediatek.com>
+>    */
+> +#include <linux/arm-smccc.h>
+>   #include <linux/bitfield.h>
+>   #include <linux/bug.h>
+>   #include <linux/clk.h>
+> @@ -28,6 +29,7 @@
+>   #include <linux/slab.h>
+>   #include <linux/spinlock.h>
+>   #include <linux/soc/mediatek/infracfg.h>
+> +#include <linux/soc/mediatek/mtk_sip_svc.h>
+>   #include <asm/barrier.h>
+>   #include <soc/mediatek/smi.h>
+>   
+> @@ -138,6 +140,7 @@
+>   #define PM_CLK_AO			BIT(15)
+>   #define IFA_IOMMU_PCIE_SUPPORT		BIT(16)
+>   #define PGTABLE_PA_35_EN		BIT(17)
+> +#define CFG_IFA_MASTER_IN_ATF		BIT(18)
+>   
+>   #define MTK_IOMMU_HAS_FLAG_MASK(pdata, _x, mask)	\
+>   				((((pdata)->flags) & (mask)) == (_x))
+> @@ -554,14 +557,29 @@ static int mtk_iommu_config(struct mtk_iommu_data *data, struct device *dev,
+>   			else
+>   				larb_mmu->mmu &= ~MTK_SMI_MMU_EN(portid);
+>   		} else if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_INFRA)) {
+> -			peri_mmuen_msk = BIT(portid);
+> -			/* PCI dev has only one output id, enable the next writing bit for PCIe */
+> -			if (dev_is_pci(dev))
+> -				peri_mmuen_msk |= BIT(portid + 1);
+> -
+> -			peri_mmuen = enable ? peri_mmuen_msk : 0;
+> -			ret = regmap_update_bits(data->pericfg, PERICFG_IOMMU_1,
+> -						 peri_mmuen_msk, peri_mmuen);
+> +			if (MTK_IOMMU_HAS_FLAG(data->plat_data, CFG_IFA_MASTER_IN_ATF)) {
+> +				struct arm_smccc_res res;
+> +
+> +				portid = MTK_M4U_TO_PORT(fwspec->ids[i]);
 
-[snip]
+This assignment is redundant, as portid is initialized to the same value
+just a few lines before. Please drop it.
 
-> +#define MTK_DP_ENC0_P0_308C			0x308c
-> +#define CH_STATUS_0_DP_ENC0_P0_MASK			GENMASK(15, 0)
-> +#define MTK_DP_ENC0_P0_3090			0x3090
-> +#define CH_STATUS_1_DP_ENC0_P0_MASK			GENMASK(15, 0)
-> +#define MTK_DP_ENC0_P0_3094			0x3094
-> +#define CH_STATUS_2_DP_ENC0_P0_MASK			GENMASK(7, 0)
-> +#define MTK_DP_ENC0_P0_30A0			0x30a0
-
-Useless, so drop it.
+Everything else looks good.
 
 Regards,
-CK
+Angelo
 
-> +#define DP_ENC0_30A0_MASK				(BIT(7) |
-> BIT(8) | BIT(12))
-> +#define MTK_DP_ENC0_P0_30A4			0x30a4
-> +#define AU_TS_CFG_DP_ENC0_P0_MASK			GENMASK(7, 0)
-> +#define MTK_DP_ENC0_P0_30A8			0x30a8
-> 
+> +				arm_smccc_smc(MTK_SIP_KERNEL_IOMMU_CONTROL,
+> +					      IOMMU_ATF_CMD_CONFIG_INFRA_IOMMU,
+> +					      portid, enable, 0, 0, 0, 0, &res);
+> +				ret = (int)res.a0;
 
