@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F05DC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:31:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89F66ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:31:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236734AbiIBMbF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:31:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45456 "EHLO
+        id S236652AbiIBMbR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:31:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236345AbiIBMab (ORCPT
+        with ESMTP id S236512AbiIBMal (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:30:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCC07DF64F;
-        Fri,  2 Sep 2022 05:26:02 -0700 (PDT)
+        Fri, 2 Sep 2022 08:30:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39FCDDC08B;
+        Fri,  2 Sep 2022 05:26:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CFF55620E6;
-        Fri,  2 Sep 2022 12:24:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E376EC433C1;
-        Fri,  2 Sep 2022 12:24:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EA180B82AB6;
+        Fri,  2 Sep 2022 12:25:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BBD7C433B5;
+        Fri,  2 Sep 2022 12:25:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121460;
-        bh=nWRoO5ttH0qgnkkzYxYakfYShlDNVFZKpmajFJ1cLSU=;
+        s=korg; t=1662121548;
+        bh=JQFNrQh+IOFH4m7hcCdP9BS4HmO5CZMsPhFqdg8qEUM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Eu6OvrTRjz+U1olPQLAyypXq1o+/Ws1+KgcNqwbUxC1yGmROjqVcpaNxm5Z5Wb2Qe
-         vML210XnX+AldWbIa1V0sOKT43CeMo7DdTImZ3mHMD2JmWobSppuc1QfzCa7CPnsNd
-         WGuXnsTo836m2x06sC471sJh9ro/qHxAxNxJ5JFA=
+        b=jfuE7Kg6cyULNJSVgZgekoCPrlrpc9ILSEweM5KbupwRlvYZyKXdwUJIZVuQfjiK0
+         q73nt76LNQ+wajJNj4WtjYthLS8CIden9w6wRdu/b8eWWiVb/wk9ipLic8gw0n5XKn
+         52UY2jCX/t8ZgYGeIg6aRrh8MOFKzaoemt0a3gKE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 15/56] netfilter: nft_payload: report ERANGE for too long offset and length
-Date:   Fri,  2 Sep 2022 14:18:35 +0200
-Message-Id: <20220902121400.699491043@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 4.19 44/56] Bluetooth: L2CAP: Fix build errors in some archs
+Date:   Fri,  2 Sep 2022 14:19:04 +0200
+Message-Id: <20220902121401.917450045@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
 References: <20220902121400.219861128@linuxfoundation.org>
@@ -48,49 +49,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-[ Upstream commit 94254f990c07e9ddf1634e0b727fab821c3b5bf9 ]
+commit b840304fb46cdf7012722f456bce06f151b3e81b upstream.
 
-Instead of offset and length are truncation to u8, report ERANGE.
+This attempts to fix the follow errors:
 
-Fixes: 96518518cc41 ("netfilter: add nftables")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+In function 'memcmp',
+    inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:347:9,
+    inlined from 'l2cap_global_chan_by_psm' at
+    net/bluetooth/l2cap_core.c:2003:15:
+./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp'
+specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
+   44 | #define __underlying_memcmp     __builtin_memcmp
+      |                                 ^
+./include/linux/fortify-string.h:420:16: note: in expansion of macro
+'__underlying_memcmp'
+  420 |         return __underlying_memcmp(p, q, size);
+      |                ^~~~~~~~~~~~~~~~~~~
+In function 'memcmp',
+    inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:347:9,
+    inlined from 'l2cap_global_chan_by_psm' at
+    net/bluetooth/l2cap_core.c:2004:15:
+./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp'
+specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
+   44 | #define __underlying_memcmp     __builtin_memcmp
+      |                                 ^
+./include/linux/fortify-string.h:420:16: note: in expansion of macro
+'__underlying_memcmp'
+  420 |         return __underlying_memcmp(p, q, size);
+      |                ^~~~~~~~~~~~~~~~~~~
+
+Fixes: 332f1795ca20 ("Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm regression")
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nft_payload.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ net/bluetooth/l2cap_core.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/net/netfilter/nft_payload.c b/net/netfilter/nft_payload.c
-index fd87216bc0a99..04b9df9e39554 100644
---- a/net/netfilter/nft_payload.c
-+++ b/net/netfilter/nft_payload.c
-@@ -398,6 +398,7 @@ nft_payload_select_ops(const struct nft_ctx *ctx,
- {
- 	enum nft_payload_bases base;
- 	unsigned int offset, len;
-+	int err;
- 
- 	if (tb[NFTA_PAYLOAD_BASE] == NULL ||
- 	    tb[NFTA_PAYLOAD_OFFSET] == NULL ||
-@@ -423,8 +424,13 @@ nft_payload_select_ops(const struct nft_ctx *ctx,
- 	if (tb[NFTA_PAYLOAD_DREG] == NULL)
- 		return ERR_PTR(-EINVAL);
- 
--	offset = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_OFFSET]));
--	len    = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_LEN]));
-+	err = nft_parse_u32_check(tb[NFTA_PAYLOAD_OFFSET], U8_MAX, &offset);
-+	if (err < 0)
-+		return ERR_PTR(err);
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -1826,11 +1826,11 @@ static struct l2cap_chan *l2cap_global_c
+ 			src_match = !bacmp(&c->src, src);
+ 			dst_match = !bacmp(&c->dst, dst);
+ 			if (src_match && dst_match) {
+-				c = l2cap_chan_hold_unless_zero(c);
+-				if (c) {
+-					read_unlock(&chan_list_lock);
+-					return c;
+-				}
++				if (!l2cap_chan_hold_unless_zero(c))
++					continue;
 +
-+	err = nft_parse_u32_check(tb[NFTA_PAYLOAD_LEN], U8_MAX, &len);
-+	if (err < 0)
-+		return ERR_PTR(err);
++				read_unlock(&chan_list_lock);
++				return c;
+ 			}
  
- 	if (len <= 4 && is_power_of_2(len) && IS_ALIGNED(offset, len) &&
- 	    base != NFT_PAYLOAD_LL_HEADER)
--- 
-2.35.1
-
+ 			/* Closest match */
 
 
