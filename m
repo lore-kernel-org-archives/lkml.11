@@ -2,335 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E32BAC6FA81
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 06:42:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C549C54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 06:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235507AbiIBGmC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 02:42:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41730 "EHLO
+        id S235351AbiIBGmg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 02:42:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235497AbiIBGl4 (ORCPT
+        with ESMTP id S230151AbiIBGme (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 02:41:56 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75B3A71BCE;
-        Thu,  1 Sep 2022 23:41:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1662100916; x=1693636916;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=NX1eyNaQr4+ALgShy2RcwVdH16jqwIgGKyV7rd+hiNk=;
-  b=j9dvIli9uvjDIeAo9rtRhnA3wPIiaNsMSeXS3Z76PIN+bDrLM/JNRXoD
-   9g9iIvEAGFhIz5ZOFharoNxbEeMYzsIQbpInoLQMvJYxkZ2b6FlXiNA2V
-   3wUv8r6DclL1W8Js81szO//By5vX4bDbTJjrBHRRh/0dYHanX6ZxsaLV/
-   bARa7EDzU0qeqKxyZp8bCTocVt+8cltKRs6yt04cSO9KC0BW22VG9MEbD
-   /tO3oOZzCCxa2SDilGRYvKGo72risxbgx9U/JYr0CwWO9VxVQQUgBrTI6
-   agnKcesG/sSIrud7IdTPp9mzn+GeQoxXyCfoKuifRsZlsNFOGQrxA4alf
-   g==;
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="178752440"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Sep 2022 23:41:55 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Thu, 1 Sep 2022 23:41:53 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Thu, 1 Sep 2022 23:41:52 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <srinivas.kandagatla@linaro.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>,
-        <UNGLinuxDriver@microchip.com>,
-        "Horatiu Vultur" <horatiu.vultur@microchip.com>
-Subject: [PATCH v5 2/2] nvmem: lan9662-otp: add support
-Date:   Fri, 2 Sep 2022 08:45:40 +0200
-Message-ID: <20220902064540.484967-3-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220902064540.484967-1-horatiu.vultur@microchip.com>
-References: <20220902064540.484967-1-horatiu.vultur@microchip.com>
+        Fri, 2 Sep 2022 02:42:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E7BCB14EB
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 23:42:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662100952;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zd920y5kuntN3Fe3mBbgf2SnydeE5HI0Dhy/WeAHKqc=;
+        b=HRTkpIjYchWn9p2jMyW6p5aUwz0QDdUtnVopmASqQQ8e4q0bCdAoKEe1lJV7mwByQ5XRmc
+        ZxM4wBPJJE5wlicpwqtiLMUKl8DKVkEHU1qhGWUL/TCQinVDfqEI6k70q+szIVYRS0z/DB
+        Lr/K922esSxvNfRu5rdi/grGsCMmv0o=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-399-Kr0q0gJYNVOTGHmxirlHNw-1; Fri, 02 Sep 2022 02:42:30 -0400
+X-MC-Unique: Kr0q0gJYNVOTGHmxirlHNw-1
+Received: by mail-wm1-f70.google.com with SMTP id c5-20020a7bc005000000b003a63a3570f2so272896wmb.8
+        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 23:42:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date;
+        bh=zd920y5kuntN3Fe3mBbgf2SnydeE5HI0Dhy/WeAHKqc=;
+        b=XxDcpPKtYBKYnYV9/YRFRUKTgi/IYbCq2yGCoBujSBZwMSn6OAqv7hs3WFjUfZOlRu
+         KVBC5UXczAGUf+eGBOIt6TK3T1GViHU4OkL7A5NTiFWh0Co9vh01QzO+PWI1V9kjqRYB
+         kbeuYG2v0ymVnlLmvoxVWixi9rp0MCS/iRZSmWkmJd0GobAehgVe7DPioTCe0+X7aBhb
+         IgekRycqLb4DddM8sIJVuK/72yEdi3a25C3uYcqbbLF2ZFt5AvGEwJXTQikL7hiGpmVE
+         o6X7pqfJ21UgYIua8IHsRoR4lLscLOWb3wp83D7TYO5WznZrUEzc04dMxOxFfpMOmATv
+         TO9A==
+X-Gm-Message-State: ACgBeo03wPywPAwrcL/O5JFtdJtReYgnWL8cZuPVsSwTjeFkif66nGb+
+        ak0xZt6STNwI+r0O5iN4PZjpvd3PeUA3Y0zCHuYrWra6eZ1Kn4976T9/pltNQMHMrMgA+vgNC1Z
+        LmNNuCVUb6jLykqft41Dogkxj
+X-Received: by 2002:a05:600c:4ec9:b0:3a5:a567:137f with SMTP id g9-20020a05600c4ec900b003a5a567137fmr1673996wmq.46.1662100949462;
+        Thu, 01 Sep 2022 23:42:29 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7NOLu61wFcCZ0OBX41IN7InJbnGYlfsBwf1Tz6mQhGc6CVw6ILI/UTYKBvLA+1ocvRUh+E6w==
+X-Received: by 2002:a05:600c:4ec9:b0:3a5:a567:137f with SMTP id g9-20020a05600c4ec900b003a5a567137fmr1673979wmq.46.1662100949183;
+        Thu, 01 Sep 2022 23:42:29 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c714:4800:2077:1bf6:40e7:2833? (p200300cbc714480020771bf640e72833.dip0.t-ipconnect.de. [2003:cb:c714:4800:2077:1bf6:40e7:2833])
+        by smtp.gmail.com with ESMTPSA id v3-20020a5d6103000000b002252cb35184sm747022wrt.25.2022.09.01.23.42.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Sep 2022 23:42:28 -0700 (PDT)
+Message-ID: <e0b2593f-d259-3db8-d742-705c0a9a8f84@redhat.com>
+Date:   Fri, 2 Sep 2022 08:42:28 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] mm: gup: fix the fast GUP race against THP collapse
+Content-Language: en-US
+To:     Yang Shi <shy828301@gmail.com>, peterx@redhat.com,
+        kirill.shutemov@linux.intel.com, jhubbard@nvidia.com,
+        jgg@nvidia.com, hughd@google.com, akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <20220901222707.477402-1-shy828301@gmail.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220901222707.477402-1-shy828301@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for OTP controller available on LAN9662. The OTPC controls
-the access to a non-volatile memory. The size of the memory is 8KB.
-The OTPC can access the memory based on an offset.
-Implement both the read and the write functionality.
+On 02.09.22 00:27, Yang Shi wrote:
+> Since general RCU GUP fast was introduced in commit 2667f50e8b81 ("mm:
+> introduce a general RCU get_user_pages_fast()"), a TLB flush is no longer
+> sufficient to handle concurrent GUP-fast in all cases, it only handles
+> traditional IPI-based GUP-fast correctly.  On architectures that send
+> an IPI broadcast on TLB flush, it works as expected.  But on the
+> architectures that do not use IPI to broadcast TLB flush, it may have
+> the below race:
+> 
+>    CPU A                                          CPU B
+> THP collapse                                     fast GUP
+>                                               gup_pmd_range() <-- see valid pmd
+>                                                   gup_pte_range() <-- work on pte
+> pmdp_collapse_flush() <-- clear pmd and flush
+> __collapse_huge_page_isolate()
+>     check page pinned <-- before GUP bump refcount
+>                                                       pin the page
+>                                                       check PTE <-- no change
+> __collapse_huge_page_copy()
+>     copy data to huge page
+>     ptep_clear()
+> install huge pmd for the huge page
+>                                                       return the stale page
+> discard the stale page
+> 
+> The race could be fixed by checking whether PMD is changed or not after
+> taking the page pin in fast GUP, just like what it does for PTE.  If the
+> PMD is changed it means there may be parallel THP collapse, so GUP
+> should back off.
+> 
+> Also update the stale comment about serializing against fast GUP in
+> khugepaged.
+> 
+> Fixes: 2667f50e8b81 ("mm: introduce a general RCU get_user_pages_fast()")
+> Signed-off-by: Yang Shi <shy828301@gmail.com>
+> ---
+>  mm/gup.c        | 30 ++++++++++++++++++++++++------
+>  mm/khugepaged.c | 10 ++++++----
+>  2 files changed, 30 insertions(+), 10 deletions(-)
+> 
+> diff --git a/mm/gup.c b/mm/gup.c
+> index f3fc1f08d90c..4365b2811269 100644
+> --- a/mm/gup.c
+> +++ b/mm/gup.c
+> @@ -2380,8 +2380,9 @@ static void __maybe_unused undo_dev_pagemap(int *nr, int nr_start,
+>  }
+>  
+>  #ifdef CONFIG_ARCH_HAS_PTE_SPECIAL
+> -static int gup_pte_range(pmd_t pmd, unsigned long addr, unsigned long end,
+> -			 unsigned int flags, struct page **pages, int *nr)
+> +static int gup_pte_range(pmd_t pmd, pmd_t *pmdp, unsigned long addr,
+> +			 unsigned long end, unsigned int flags,
+> +			 struct page **pages, int *nr)
+>  {
+>  	struct dev_pagemap *pgmap = NULL;
+>  	int nr_start = *nr, ret = 0;
+> @@ -2423,7 +2424,23 @@ static int gup_pte_range(pmd_t pmd, unsigned long addr, unsigned long end,
+>  			goto pte_unmap;
+>  		}
+>  
+> -		if (unlikely(pte_val(pte) != pte_val(*ptep))) {
+> +		/*
+> +		 * THP collapse conceptually does:
+> +		 *   1. Clear and flush PMD
+> +		 *   2. Check the base page refcount
+> +		 *   3. Copy data to huge page
+> +		 *   4. Clear PTE
+> +		 *   5. Discard the base page
+> +		 *
+> +		 * So fast GUP may race with THP collapse then pin and
+> +		 * return an old page since TLB flush is no longer sufficient
+> +		 * to serialize against fast GUP.
+> +		 *
+> +		 * Check PMD, if it is changed just back off since it
+> +		 * means there may be parallel THP collapse.
+> +		 */
+> +		if (unlikely(pmd_val(pmd) != pmd_val(*pmdp)) ||
+> +		    unlikely(pte_val(pte) != pte_val(*ptep))) {
+>  			gup_put_folio(folio, 1, flags);
+>  			goto pte_unmap;
+>  		}
+> @@ -2470,8 +2487,9 @@ static int gup_pte_range(pmd_t pmd, unsigned long addr, unsigned long end,
+>   * get_user_pages_fast_only implementation that can pin pages. Thus it's still
+>   * useful to have gup_huge_pmd even if we can't operate on ptes.
+>   */
+> -static int gup_pte_range(pmd_t pmd, unsigned long addr, unsigned long end,
+> -			 unsigned int flags, struct page **pages, int *nr)
+> +static int gup_pte_range(pmd_t pmd, pmd_t *pmdp, unsigned long addr,
+> +			 unsigned long end, unsigned int flags,
+> +			 struct page **pages, int *nr)
+>  {
+>  	return 0;
+>  }
+> @@ -2791,7 +2809,7 @@ static int gup_pmd_range(pud_t *pudp, pud_t pud, unsigned long addr, unsigned lo
+>  			if (!gup_huge_pd(__hugepd(pmd_val(pmd)), addr,
+>  					 PMD_SHIFT, next, flags, pages, nr))
+>  				return 0;
+> -		} else if (!gup_pte_range(pmd, addr, next, flags, pages, nr))
+> +		} else if (!gup_pte_range(pmd, pmdp, addr, next, flags, pages, nr))
+>  			return 0;
+>  	} while (pmdp++, addr = next, addr != end);
+>  
+> diff --git a/mm/khugepaged.c b/mm/khugepaged.c
+> index 2d74cf01f694..518b49095db3 100644
+> --- a/mm/khugepaged.c
+> +++ b/mm/khugepaged.c
+> @@ -1049,10 +1049,12 @@ static int collapse_huge_page(struct mm_struct *mm, unsigned long address,
+>  
+>  	pmd_ptl = pmd_lock(mm, pmd); /* probably unnecessary */
+>  	/*
+> -	 * After this gup_fast can't run anymore. This also removes
+> -	 * any huge TLB entry from the CPU so we won't allow
+> -	 * huge and small TLB entries for the same virtual address
+> -	 * to avoid the risk of CPU bugs in that area.
+> +	 * This removes any huge TLB entry from the CPU so we won't allow
+> +	 * huge and small TLB entries for the same virtual address to
+> +	 * avoid the risk of CPU bugs in that area.
+> +	 *
+> +	 * Parallel fast GUP is fine since fast GUP will back off when
+> +	 * it detects PMD is changed.
+>  	 */
+>  	_pmd = pmdp_collapse_flush(vma, address, pmd);
+>  	spin_unlock(pmd_ptl);
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- drivers/nvmem/Kconfig        |   8 ++
- drivers/nvmem/Makefile       |   2 +
- drivers/nvmem/lan9662-otpc.c | 222 +++++++++++++++++++++++++++++++++++
- 3 files changed, 232 insertions(+)
- create mode 100644 drivers/nvmem/lan9662-otpc.c
 
-diff --git a/drivers/nvmem/Kconfig b/drivers/nvmem/Kconfig
-index 967d0084800e..9399445a2f4c 100644
---- a/drivers/nvmem/Kconfig
-+++ b/drivers/nvmem/Kconfig
-@@ -84,6 +84,14 @@ config NVMEM_LPC18XX_OTP
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called nvmem_lpc18xx_otp.
- 
-+config NVMEM_LAN9662_OTPC
-+	tristate "Microchip LAN9662 OTP controller support"
-+	depends on SOC_LAN966 || COMPILE_TEST
-+	depends on HAS_IOMEM
-+	help
-+	  This driver enables the OTP controller available on Microchip LAN9662
-+	  SoCs. It controls the access to the OTP memory connected to it.
-+
- config NVMEM_MXS_OCOTP
- 	tristate "Freescale MXS On-Chip OTP Memory Support"
- 	depends on ARCH_MXS || COMPILE_TEST
-diff --git a/drivers/nvmem/Makefile b/drivers/nvmem/Makefile
-index 00e136a0a123..e1baface2c53 100644
---- a/drivers/nvmem/Makefile
-+++ b/drivers/nvmem/Makefile
-@@ -21,6 +21,8 @@ obj-$(CONFIG_NVMEM_LPC18XX_EEPROM)	+= nvmem_lpc18xx_eeprom.o
- nvmem_lpc18xx_eeprom-y	:= lpc18xx_eeprom.o
- obj-$(CONFIG_NVMEM_LPC18XX_OTP)	+= nvmem_lpc18xx_otp.o
- nvmem_lpc18xx_otp-y		:= lpc18xx_otp.o
-+obj-$(CONFIG_NVMEM_LAN9662_OTPC)	+= nvmem-lan9662-otpc.o
-+nvmem-lan9662-otpc-y		:= lan9662-otpc.o
- obj-$(CONFIG_NVMEM_MXS_OCOTP)	+= nvmem-mxs-ocotp.o
- nvmem-mxs-ocotp-y		:= mxs-ocotp.o
- obj-$(CONFIG_NVMEM_NINTENDO_OTP)	+= nvmem-nintendo-otp.o
-diff --git a/drivers/nvmem/lan9662-otpc.c b/drivers/nvmem/lan9662-otpc.c
-new file mode 100644
-index 000000000000..f6732fd216d8
---- /dev/null
-+++ b/drivers/nvmem/lan9662-otpc.c
-@@ -0,0 +1,222 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <linux/iopoll.h>
-+#include <linux/module.h>
-+#include <linux/nvmem-provider.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+
-+#define OTP_OTP_PWR_DN(t)			(t + 0x00)
-+#define OTP_OTP_PWR_DN_OTP_PWRDN_N		BIT(0)
-+#define OTP_OTP_ADDR_HI(t)			(t + 0x04)
-+#define OTP_OTP_ADDR_LO(t)			(t + 0x08)
-+#define OTP_OTP_PRGM_DATA(t)			(t + 0x10)
-+#define OTP_OTP_PRGM_MODE(t)			(t + 0x14)
-+#define OTP_OTP_PRGM_MODE_OTP_PGM_MODE_BYTE	BIT(0)
-+#define OTP_OTP_RD_DATA(t)			(t + 0x18)
-+#define OTP_OTP_FUNC_CMD(t)			(t + 0x20)
-+#define OTP_OTP_FUNC_CMD_OTP_PROGRAM		BIT(1)
-+#define OTP_OTP_FUNC_CMD_OTP_READ		BIT(0)
-+#define OTP_OTP_CMD_GO(t)			(t + 0x28)
-+#define OTP_OTP_CMD_GO_OTP_GO			BIT(0)
-+#define OTP_OTP_PASS_FAIL(t)			(t + 0x2c)
-+#define OTP_OTP_PASS_FAIL_OTP_READ_PROHIBITED	BIT(3)
-+#define OTP_OTP_PASS_FAIL_OTP_WRITE_PROHIBITED	BIT(2)
-+#define OTP_OTP_PASS_FAIL_OTP_FAIL		BIT(0)
-+#define OTP_OTP_STATUS(t)			(t + 0x30)
-+#define OTP_OTP_STATUS_OTP_CPUMPEN		BIT(1)
-+#define OTP_OTP_STATUS_OTP_BUSY			BIT(0)
-+
-+#define OTP_MEM_SIZE 8192
-+#define OTP_SLEEP_US 10
-+#define OTP_TIMEOUT_US 500000
-+
-+struct lan9662_otp {
-+	struct device *dev;
-+	void __iomem *base;
-+};
-+
-+static bool lan9662_otp_wait_flag_clear(void __iomem *reg, u32 flag)
-+{
-+	u32 val;
-+
-+	return readl_poll_timeout(reg, val, !(val & flag),
-+				  OTP_SLEEP_US, OTP_TIMEOUT_US);
-+}
-+
-+static int lan9662_otp_power(struct lan9662_otp *otp, bool up)
-+{
-+	void __iomem *pwrdn = OTP_OTP_PWR_DN(otp->base);
-+
-+	if (up) {
-+		writel(readl(pwrdn) & ~OTP_OTP_PWR_DN_OTP_PWRDN_N, pwrdn);
-+		if (lan9662_otp_wait_flag_clear(OTP_OTP_STATUS(otp->base),
-+						OTP_OTP_STATUS_OTP_CPUMPEN))
-+			return -ETIMEDOUT;
-+	} else {
-+		writel(readl(pwrdn) | OTP_OTP_PWR_DN_OTP_PWRDN_N, pwrdn);
-+	}
-+
-+	return 0;
-+}
-+
-+static int lan9662_otp_execute(struct lan9662_otp *otp)
-+{
-+	if (lan9662_otp_wait_flag_clear(OTP_OTP_CMD_GO(otp->base),
-+					OTP_OTP_CMD_GO_OTP_GO))
-+		return -ETIMEDOUT;
-+
-+	if (lan9662_otp_wait_flag_clear(OTP_OTP_STATUS(otp->base),
-+					OTP_OTP_STATUS_OTP_BUSY))
-+		return -ETIMEDOUT;
-+
-+	return 0;
-+}
-+
-+static void lan9662_otp_set_address(struct lan9662_otp *otp, u32 offset)
-+{
-+	writel(0xff & (offset >> 8), OTP_OTP_ADDR_HI(otp->base));
-+	writel(0xff & offset, OTP_OTP_ADDR_LO(otp->base));
-+}
-+
-+static int lan9662_otp_read_byte(struct lan9662_otp *otp, u32 offset, u8 *dst)
-+{
-+	u32 pass;
-+	int rc;
-+
-+	lan9662_otp_set_address(otp, offset);
-+	writel(OTP_OTP_FUNC_CMD_OTP_READ, OTP_OTP_FUNC_CMD(otp->base));
-+	writel(OTP_OTP_CMD_GO_OTP_GO, OTP_OTP_CMD_GO(otp->base));
-+	rc = lan9662_otp_execute(otp);
-+	if (!rc) {
-+		pass = readl(OTP_OTP_PASS_FAIL(otp->base));
-+		if (pass & OTP_OTP_PASS_FAIL_OTP_READ_PROHIBITED)
-+			return -EACCES;
-+		*dst = (u8) readl(OTP_OTP_RD_DATA(otp->base));
-+	}
-+	return rc;
-+}
-+
-+static int lan9662_otp_write_byte(struct lan9662_otp *otp, u32 offset, u8 data)
-+{
-+	u32 pass;
-+	int rc;
-+
-+	lan9662_otp_set_address(otp, offset);
-+	writel(OTP_OTP_PRGM_MODE_OTP_PGM_MODE_BYTE, OTP_OTP_PRGM_MODE(otp->base));
-+	writel(data, OTP_OTP_PRGM_DATA(otp->base));
-+	writel(OTP_OTP_FUNC_CMD_OTP_PROGRAM, OTP_OTP_FUNC_CMD(otp->base));
-+	writel(OTP_OTP_CMD_GO_OTP_GO, OTP_OTP_CMD_GO(otp->base));
-+
-+	rc = lan9662_otp_execute(otp);
-+	if (!rc) {
-+		pass = readl(OTP_OTP_PASS_FAIL(otp->base));
-+		if (pass & OTP_OTP_PASS_FAIL_OTP_WRITE_PROHIBITED)
-+			return -EACCES;
-+		if (pass & OTP_OTP_PASS_FAIL_OTP_FAIL)
-+			return -EIO;
-+	}
-+	return rc;
-+}
-+
-+static int lan9662_otp_read(void *context, unsigned int offset,
-+			    void *_val, size_t bytes)
-+{
-+	struct lan9662_otp *otp = context;
-+	u8 *val = _val;
-+	uint8_t data;
-+	int i, rc = 0;
-+
-+	lan9662_otp_power(otp, true);
-+	for (i = 0; i < bytes; i++) {
-+		rc = lan9662_otp_read_byte(otp, offset + i, &data);
-+		if (rc < 0)
-+			break;
-+		*val++ = data;
-+	}
-+	lan9662_otp_power(otp, false);
-+
-+	return rc;
-+}
-+
-+static int lan9662_otp_write(void *context, unsigned int offset,
-+			     void *_val, size_t bytes)
-+{
-+	struct lan9662_otp *otp = context;
-+	u8 *val = _val;
-+	u8 data, newdata;
-+	int i, rc = 0;
-+
-+	lan9662_otp_power(otp, true);
-+	for (i = 0; i < bytes; i++) {
-+		/* Skip zero bytes */
-+		if (val[i]) {
-+			rc = lan9662_otp_read_byte(otp, offset + i, &data);
-+			if (rc < 0)
-+				break;
-+
-+			newdata = data | val[i];
-+			if (newdata == data)
-+				continue;
-+
-+			rc = lan9662_otp_write_byte(otp, offset + i,
-+						      newdata);
-+			if (rc < 0)
-+				break;
-+		}
-+	}
-+	lan9662_otp_power(otp, false);
-+
-+	return rc;
-+}
-+
-+static struct nvmem_config otp_config = {
-+	.name = "lan9662-otp",
-+	.stride = 1,
-+	.word_size = 1,
-+	.reg_read = lan9662_otp_read,
-+	.reg_write = lan9662_otp_write,
-+	.size = OTP_MEM_SIZE,
-+};
-+
-+static int lan9662_otp_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct nvmem_device *nvmem;
-+	struct lan9662_otp *otp;
-+
-+	otp = devm_kzalloc(&pdev->dev, sizeof(*otp), GFP_KERNEL);
-+	if (!otp)
-+		return -ENOMEM;
-+
-+	otp->dev = dev;
-+	otp->base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(otp->base))
-+		return PTR_ERR(otp->base);
-+
-+	otp_config.priv = otp;
-+	otp_config.dev = dev;
-+
-+	nvmem = devm_nvmem_register(dev, &otp_config);
-+
-+	return PTR_ERR_OR_ZERO(nvmem);
-+}
-+
-+static const struct of_device_id lan9662_otp_match[] = {
-+	{ .compatible = "microchip,lan9662-otp", },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, lan9662_otp_match);
-+
-+static struct platform_driver lan9662_otp_driver = {
-+	.probe = lan9662_otp_probe,
-+	.driver = {
-+		.name = "lan9662-otp",
-+		.of_match_table = lan9662_otp_match,
-+	},
-+};
-+module_platform_driver(lan9662_otp_driver);
-+
-+MODULE_AUTHOR("Horatiu Vultur <horatiu.vultur@microchip.com>");
-+MODULE_DESCRIPTION("lan9662 OTP driver");
-+MODULE_LICENSE("GPL");
+As long as pmdp_collapse_flush() implies a full memory barrier (which I
+think it does), this should work as expected.
+
+Hopefully someone with experience on RCU GUP-fast (Jason, John?  :) )
+can double-check.
+
+To me this sound sane.
+
+Acked-by: David Hildenbrand <david@redhat.com>
+
 -- 
-2.33.0
+Thanks,
+
+David / dhildenb
 
