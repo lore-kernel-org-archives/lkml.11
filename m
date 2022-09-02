@@ -2,127 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E51E9C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 10:24:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91F73ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 10:24:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235136AbiIBKYH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 06:24:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32798 "EHLO
+        id S235811AbiIBKYT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 06:24:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235774AbiIBKYA (ORCPT
+        with ESMTP id S235861AbiIBKYQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 06:24:00 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 906EEA59BB;
-        Fri,  2 Sep 2022 03:23:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662114239; x=1693650239;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=Hmx1025FThlE9cx1UE6O8SOkWc9A3kuNYU7VIFp8RZU=;
-  b=XR6Jo7eI3TzsF+IKEmbfQSCLKck4Va6LEtBgyhUMbLFoNshpbJiSwMP9
-   VFkNlhMpCdVqqXxekXgm8ThCF0Aq09DU/ZkxlNOEEG5TWyptfRBUM1j8N
-   E/6zGz+F4umYT+B2GSKud+KLz03kNp6WNpXKkDdP9SFATzzms3Py4IZ3o
-   UiCrMvyUnkIFRfRHSBR5n8AvJQTZp2wurRSD83Gg04mId+CCSORv87rAB
-   zXBf+jLuVvGyMVf64L2MwIyqVVhFmXnCAxxbdDKkqiizgX91MmqAV4BmW
-   wh4fEtGVdAbGvk2M0/LfQbwSz/DnUVEurh7Csmm6g8GV0cKx/EuPq0xka
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="322109916"
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="322109916"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 03:23:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="608943940"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
-  by orsmga007.jf.intel.com with ESMTP; 02 Sep 2022 03:23:46 -0700
-Date:   Fri, 2 Sep 2022 18:19:05 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     Fuad Tabba <tabba@google.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
-        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
-        ddutile@redhat.com, dhildenb@redhat.com,
-        Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>,
-        Marc Zyngier <maz@kernel.org>, Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v7 00/14] KVM: mm: fd-based approach for supporting KVM
- guest private memory
-Message-ID: <20220902101905.GA1712673@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
- <CA+EHjTy6NF=BkCqK0vhXLdtKZMahp55JUMSfxN96-NT3YiMXYQ@mail.gmail.com>
- <20220829151756.GB1586678@chaop.bj.intel.com>
- <CA+EHjTxgKJ=9UP=DWtNsSgD2FtvBMYrUbcS=9h5j8Tmk57WqxQ@mail.gmail.com>
+        Fri, 2 Sep 2022 06:24:16 -0400
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 977C1BCC29;
+        Fri,  2 Sep 2022 03:24:14 -0700 (PDT)
+Received: by mail-ej1-f52.google.com with SMTP id kk26so2889316ejc.11;
+        Fri, 02 Sep 2022 03:24:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=ubw4OAqYosXzoND9JMZTiJy0l/yQs/77EKbKqKbW0YY=;
+        b=BP2DZRPFf2sbOz8D9ICcUh7PSy1faNf/HDwU2zjY0QpLEYUzZcLSpSwA8byECDqifB
+         GTLeB6zIdfhi9QSKZxBhu3lTYh1wxN4Hs0v1519Zo3Wollw7gcYYDrby1Zi0c4cYatoF
+         gcqKk7seReSKQGmTKB+lB7ewZwFYPk2MxzFvt8VptUAmgJj3/7enhgut/t0MgcaoDus2
+         361w9kJ6cXKJ4H7DmvEbbtKcxRtS7XxHBB1Ak4s07ks0qYcH7AYe11MueMN5hLyV+ga6
+         xnWIVWGABa7t+5H60W+XIx57RQcXngb3+QhirOI4DJyyWzwaH1oudFIGADTvE97lJpdU
+         LfMA==
+X-Gm-Message-State: ACgBeo0OWS9j0TUblJOlsbOIUHyKmybeYl0Mfo16R1/w3BHGaUsfRaI8
+        ZgNDikuYDbGNslX/qbJpN8U=
+X-Google-Smtp-Source: AA6agR4ms7cVIiIp5M+0RzQlzueDIm22Ha8OGxxaGw+kpc4gvcmdlMOJOBV04pyZflw71zqaYkOJaQ==
+X-Received: by 2002:a17:906:dc89:b0:731:67eb:b60b with SMTP id cs9-20020a170906dc8900b0073167ebb60bmr25914231ejc.614.1662114252520;
+        Fri, 02 Sep 2022 03:24:12 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id f21-20020a056402195500b0043ba437fe04sm1163463edz.78.2022.09.02.03.24.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Sep 2022 03:24:11 -0700 (PDT)
+Message-ID: <ebbcb006-b0ec-0e17-577b-7149b47b07cd@kernel.org>
+Date:   Fri, 2 Sep 2022 12:24:10 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=gb2312
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH v2 1/3] tty: serial: introduce transmit helper generators
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220901110657.3305-1-jslaby@suse.cz>
+ <20220901110657.3305-2-jslaby@suse.cz>
+ <61411321-285d-ec3e-2d92-e93b0e95631@linux.intel.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <61411321-285d-ec3e-2d92-e93b0e95631@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CA+EHjTxgKJ=9UP=DWtNsSgD2FtvBMYrUbcS=9h5j8Tmk57WqxQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 10:12:12AM +0100, Fuad Tabba wrote:
-> > > Moreover, something which was discussed here before [3], is the
-> > > ability to share in-place. For pKVM/arm64, the conversion between
-> > > shared and private involves only changes to the stage-2 page tables,
-> > > which are controlled by the hypervisor. Android supports this in-place
-> > > conversion already, and I think that the cost of copying for many
-> > > use-cases that would involve large amounts of data would be big. We
-> > > will measure the relative costs in due course, but in the meantime
-> > > we¡¯re nervous about adopting a new user ABI which doesn¡¯t appear to
-> > > cater for in-place conversion; having just the fd would simplify that
-> > > somewhat
-> >
-> > I understand there is difficulty to achieve that with the current
-> > private_fd + userspace_addr (they basically in two separate fds), but is
-> > it possible for pKVM to extend this? Brainstorming for example, pKVM can
-> > ignore userspace_addr and only use private_fd to cover both shared and
-> > private memory, or pKVM introduce new KVM memslot flag?
+On 02. 09. 22, 12:22, Ilpo JÃ¤rvinen wrote:
+> On Thu, 1 Sep 2022, Jiri Slaby wrote:
 > 
-> It's not that there's anything blocking pKVM from doing that. It's
-> that the disconnect of using a memory address for the shared memory,
-> and a file descriptor for the private memory doesn't really make sense
-> for pKVM. I see how it makes sense for TDX and the Intel-specific
-> implementation. It just seems that this is baking in an
-> implementation-specific aspect as a part of the KVM general api, and
-> the worry is that this might have some unintended consequences in the
-> future.
+>> Many serial drivers do the same thing:
+>> * send x_char if set
+>> * keep sending from the xmit circular buffer until either
+>>    - the loop reaches the end of the xmit buffer
+>>    - TX is stopped
+>>    - HW fifo is full
+>> * check for pending characters and:
+>>    - wake up tty writers to fill for more data into xmit buffer
+>>    - stop TX if there is nothing in the xmit buffer
+>>
+>> The only differences are:
+>> * how to write the character to the HW fifo
+>> * the check of the end condition:
+>>    - is the HW fifo full?
+>>    - is limit of the written characters reached?
+>>
+>> So unify the above into two helper generators:
+>> * DEFINE_UART_PORT_TX_HELPER_LIMITED() -- it performs the above taking
+>>    the written characters limit into account, and
+>> * DEFINE_UART_PORT_TX_HELPER() -- the same as above, except it only
+>>    checks the HW readiness, not the characters limit.
+>>
+>> The HW specific operations (as stated as "differences" above) are passed
+>> as arguments to the macros. They are:
+>> * tx_ready() -- returns true if HW can accept more data.
+>> * put_char() -- write a character to the device.
+>> * tx_done() -- when the write loop is done, perform arbitrary action
+>>    before potential invocation of ops->stop_tx() happens.
+>>
+>> Note that the above macros are generators. This means the code is
+>> generated in place and the above 3 arguments are "inlined". I.e. no
+>> added penalty by generating call instructions for every single
+>> character. Nor any indirect calls. (As in previous versions of this
+>> patchset.)
+>>
+>> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+>> ---
+>>
+>> Notes:
+>>      [v2] instead of a function (uart_port_tx_limit()) in serial_core,
+>>           generate these in-place using macros. Thus eliminating "call"
+>>           penalty.
+>>
+>>   Documentation/driver-api/serial/driver.rst |  3 +
+>>   include/linux/serial_core.h                | 86 ++++++++++++++++++++++
+>>   2 files changed, 89 insertions(+)
+>>
+>> diff --git a/Documentation/driver-api/serial/driver.rst b/Documentation/driver-api/serial/driver.rst
+>> index 23c6b956cd90..25775bf1fcc6 100644
+>> --- a/Documentation/driver-api/serial/driver.rst
+>> +++ b/Documentation/driver-api/serial/driver.rst
+>> @@ -78,6 +78,9 @@ Other functions
+>>              uart_get_lsr_info uart_handle_dcd_change uart_handle_cts_change
+>>              uart_try_toggle_sysrq uart_get_console
+>>   
+>> +.. kernel-doc:: include/linux/serial_core.h
+>> +   :identifiers: DEFINE_UART_PORT_TX_HELPER_LIMITED DEFINE_UART_PORT_TX_HELPER
+>> +
+>>   Other notes
+>>   -----------
+>>   
+>> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+>> index 6e4f4765d209..715778160ae1 100644
+>> --- a/include/linux/serial_core.h
+>> +++ b/include/linux/serial_core.h
+>> @@ -646,6 +646,92 @@ struct uart_driver {
+>>   
+>>   void uart_write_wakeup(struct uart_port *port);
+>>   
+>> +#define __DEFINE_UART_PORT_TX_HELPER(name, port, ch, tx_ready, put_char,  \
+>> +		tx_done, for_test, for_post, ...)			  \
+>> +unsigned int name(struct uart_port *port __VA_OPT__(,) __VA_ARGS__)	  \
+>> +{									  \
+>> +	struct circ_buf *xmit = &port->state->xmit;			  \
+>> +	unsigned int pending;						  \
+>> +	u8 ch;								  \
+>> +									  \
+>> +	for (; (for_test) && (tx_ready); (for_post), port->icount.tx++) { \
+> 
+>> + * The functions in parameters shall be designed as follows:
+>> + *  * **tx_ready(port):** the function shall return true if the HW can accept
+>> + *    more data to be sent. This function can be %NULL, which means the HW is
+>> + *    always ready.
+> 
+> So if tx_ready can be NULL, how does that for() loop above work??
 
-It's true this API originates from supporting TDX and probably other
-similar confidential computing(CC) technologies. But if we ever get
-chance to make it more common to cover more usages like pKVM, I would
-also like to. The challenge on this point is pKVM diverges a lot from CC
-usages, putting both shared and private memory in the same fd
-complicates CC usages. If two things are different enough, I'm also
-thinking implementation-specific may not be that bad.
+Sorry, the docs is wrong (corresponded to v1). I fixed it locally already:
 
-Chao
+https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git/commit/?h=devel&id=989c488c69faf2987648e09358c79d75b4a3b5c7
+
+thanks,
+-- 
+js
+suse labs
+
