@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA46AC6FA85
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:21:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 878D0ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:21:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235492AbiIBMVg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:21:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47848 "EHLO
+        id S235673AbiIBMVl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:21:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235881AbiIBMVO (ORCPT
+        with ESMTP id S235631AbiIBMVO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 08:21:14 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6055B3C15D;
-        Fri,  2 Sep 2022 05:20:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73053422F9;
+        Fri,  2 Sep 2022 05:20:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 02BFDB82A8B;
-        Fri,  2 Sep 2022 12:20:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B967C433C1;
-        Fri,  2 Sep 2022 12:20:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2F351B82A8F;
+        Fri,  2 Sep 2022 12:20:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 744F8C433D6;
+        Fri,  2 Sep 2022 12:20:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121224;
-        bh=bBMwxlnCupzasEmfZOY3YHzEtdMkEomBiehJIwl0mWw=;
+        s=korg; t=1662121227;
+        bh=AIEknmOfKkXVC+4GIuxKJQWEsOndGqgmkeZKzfxZG0Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KrvYIkiWEltR6y4m51YwDI8+P6NHMBHgC3uPOwqI0ctycLIpeB6f9N0kthMb0PrqA
-         +jzdAQl9ye4EA4lVQB7GBFtocKYGRH4a5232ioOW+DixkLgDDhBtKK4LWvs/JuMGY6
-         Syqy59ObMtCsTJ3T52IMcH1wiUQxEi4TYhwGamMs=
+        b=sbrmJn45UlO3L5NUL7wHw6dctQCQoUHdozH/GaZE+6yE7EeNLkKH+wWaTf9Va8+zX
+         4lWkomIWsn5Hpknz+u1wEFccvrR+Mdw304UAjaPlBkEG89+giatWl8//XBUARPW4Xw
+         dd4esO1I+NEtB6JCNtfW0Ff4hocsyCRQW9h9Y0Xs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Steve Payne <spayne@aurora.tech>,
-        Ilya Evenbach <ievenbach@aurora.tech>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 4.9 12/31] ixgbe: stop resetting SYSTIME in ixgbe_ptp_start_cyclecounter
-Date:   Fri,  2 Sep 2022 14:18:38 +0200
-Message-Id: <20220902121357.205916742@linuxfoundation.org>
+        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
+        Filipe Manana <fdmanana@suse.com>,
+        Goldwyn Rodrigues <rgoldwyn@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 4.9 13/31] btrfs: check if root is readonly while setting security xattr
+Date:   Fri,  2 Sep 2022 14:18:39 +0200
+Message-Id: <20220902121357.243832041@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121356.732130937@linuxfoundation.org>
 References: <20220902121356.732130937@linuxfoundation.org>
@@ -52,137 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jacob Keller <jacob.e.keller@intel.com>
+From: Goldwyn Rodrigues <rgoldwyn@suse.de>
 
-[ Upstream commit 25d7a5f5a6bb15a2dae0a3f39ea5dda215024726 ]
+commit b51111271b0352aa596c5ae8faf06939e91b3b68 upstream.
 
-The ixgbe_ptp_start_cyclecounter is intended to be called whenever the
-cyclecounter parameters need to be changed.
+For a filesystem which has btrfs read-only property set to true, all
+write operations including xattr should be denied. However, security
+xattr can still be changed even if btrfs ro property is true.
 
-Since commit a9763f3cb54c ("ixgbe: Update PTP to support X550EM_x
-devices"), this function has cleared the SYSTIME registers and reset the
-TSAUXC DISABLE_SYSTIME bit.
+This happens because xattr_permission() does not have any restrictions
+on security.*, system.*  and in some cases trusted.* from VFS and
+the decision is left to the underlying filesystem. See comments in
+xattr_permission() for more details.
 
-While these need to be cleared during ixgbe_ptp_reset, it is wrong to clear
-them during ixgbe_ptp_start_cyclecounter. This function may be called
-during both reset and link status change. When link changes, the SYSTIME
-counter is still operating normally, but the cyclecounter should be updated
-to account for the possibly changed parameters.
+This patch checks if the root is read-only before performing the set
+xattr operation.
 
-Clearing SYSTIME when link changes causes the timecounter to jump because
-the cycle counter now reads zero.
+Testcase:
 
-Extract the SYSTIME initialization out to a new function and call this
-during ixgbe_ptp_reset. This prevents the timecounter adjustment and avoids
-an unnecessary reset of the current time.
+  DEV=/dev/vdb
+  MNT=/mnt
 
-This also restores the original SYSTIME clearing that occurred during
-ixgbe_ptp_reset before the commit above.
+  mkfs.btrfs -f $DEV
+  mount $DEV $MNT
+  echo "file one" > $MNT/f1
 
-Reported-by: Steve Payne <spayne@aurora.tech>
-Reported-by: Ilya Evenbach <ievenbach@aurora.tech>
-Fixes: a9763f3cb54c ("ixgbe: Update PTP to support X550EM_x devices")
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+  setfattr -n "security.one" -v 2 $MNT/f1
+  btrfs property set /mnt ro true
+
+  setfattr -n "security.one" -v 1 $MNT/f1
+
+  umount $MNT
+
+CC: stable@vger.kernel.org # 4.9+
+Reviewed-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: Goldwyn Rodrigues <rgoldwyn@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c | 59 +++++++++++++++-----
- 1 file changed, 46 insertions(+), 13 deletions(-)
+ fs/btrfs/xattr.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
-index a93a1b3bb8e4d..2ae59af3e16f0 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
-@@ -1080,7 +1080,6 @@ void ixgbe_ptp_start_cyclecounter(struct ixgbe_adapter *adapter)
- 	struct cyclecounter cc;
- 	unsigned long flags;
- 	u32 incval = 0;
--	u32 tsauxc = 0;
- 	u32 fuse0 = 0;
- 
- 	/* For some of the boards below this mask is technically incorrect.
-@@ -1115,18 +1114,6 @@ void ixgbe_ptp_start_cyclecounter(struct ixgbe_adapter *adapter)
- 	case ixgbe_mac_x550em_a:
- 	case ixgbe_mac_X550:
- 		cc.read = ixgbe_ptp_read_X550;
--
--		/* enable SYSTIME counter */
--		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMR, 0);
--		IXGBE_WRITE_REG(hw, IXGBE_SYSTIML, 0);
--		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMH, 0);
--		tsauxc = IXGBE_READ_REG(hw, IXGBE_TSAUXC);
--		IXGBE_WRITE_REG(hw, IXGBE_TSAUXC,
--				tsauxc & ~IXGBE_TSAUXC_DISABLE_SYSTIME);
--		IXGBE_WRITE_REG(hw, IXGBE_TSIM, IXGBE_TSIM_TXTS);
--		IXGBE_WRITE_REG(hw, IXGBE_EIMS, IXGBE_EIMS_TIMESYNC);
--
--		IXGBE_WRITE_FLUSH(hw);
- 		break;
- 	case ixgbe_mac_X540:
- 		cc.read = ixgbe_ptp_read_82599;
-@@ -1158,6 +1145,50 @@ void ixgbe_ptp_start_cyclecounter(struct ixgbe_adapter *adapter)
- 	spin_unlock_irqrestore(&adapter->tmreg_lock, flags);
+--- a/fs/btrfs/xattr.c
++++ b/fs/btrfs/xattr.c
+@@ -375,6 +375,9 @@ static int btrfs_xattr_handler_get(const
+ 				   struct dentry *unused, struct inode *inode,
+ 				   const char *name, void *buffer, size_t size)
+ {
++	if (btrfs_root_readonly(BTRFS_I(inode)->root))
++		return -EROFS;
++
+ 	name = xattr_full_name(handler, name);
+ 	return __btrfs_getxattr(inode, name, buffer, size);
  }
- 
-+/**
-+ * ixgbe_ptp_init_systime - Initialize SYSTIME registers
-+ * @adapter: the ixgbe private board structure
-+ *
-+ * Initialize and start the SYSTIME registers.
-+ */
-+static void ixgbe_ptp_init_systime(struct ixgbe_adapter *adapter)
-+{
-+	struct ixgbe_hw *hw = &adapter->hw;
-+	u32 tsauxc;
-+
-+	switch (hw->mac.type) {
-+	case ixgbe_mac_X550EM_x:
-+	case ixgbe_mac_x550em_a:
-+	case ixgbe_mac_X550:
-+		tsauxc = IXGBE_READ_REG(hw, IXGBE_TSAUXC);
-+
-+		/* Reset SYSTIME registers to 0 */
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMR, 0);
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIML, 0);
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMH, 0);
-+
-+		/* Reset interrupt settings */
-+		IXGBE_WRITE_REG(hw, IXGBE_TSIM, IXGBE_TSIM_TXTS);
-+		IXGBE_WRITE_REG(hw, IXGBE_EIMS, IXGBE_EIMS_TIMESYNC);
-+
-+		/* Activate the SYSTIME counter */
-+		IXGBE_WRITE_REG(hw, IXGBE_TSAUXC,
-+				tsauxc & ~IXGBE_TSAUXC_DISABLE_SYSTIME);
-+		break;
-+	case ixgbe_mac_X540:
-+	case ixgbe_mac_82599EB:
-+		/* Reset SYSTIME registers to 0 */
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIML, 0);
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMH, 0);
-+		break;
-+	default:
-+		/* Other devices aren't supported */
-+		return;
-+	};
-+
-+	IXGBE_WRITE_FLUSH(hw);
-+}
-+
- /**
-  * ixgbe_ptp_reset
-  * @adapter: the ixgbe private board structure
-@@ -1184,6 +1215,8 @@ void ixgbe_ptp_reset(struct ixgbe_adapter *adapter)
- 
- 	ixgbe_ptp_start_cyclecounter(adapter);
- 
-+	ixgbe_ptp_init_systime(adapter);
-+
- 	spin_lock_irqsave(&adapter->tmreg_lock, flags);
- 	timecounter_init(&adapter->hw_tc, &adapter->hw_cc,
- 			 ktime_to_ns(ktime_get_real()));
--- 
-2.35.1
-
 
 
