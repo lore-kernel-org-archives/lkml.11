@@ -2,121 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C1FBECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:33:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6B19C6FA82
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:34:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229681AbiIBSdj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 14:33:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53908 "EHLO
+        id S229719AbiIBSeE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 14:34:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbiIBSdh (ORCPT
+        with ESMTP id S229729AbiIBSeC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 14:33:37 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 366FDA9C10;
-        Fri,  2 Sep 2022 11:33:36 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id x5so2127658qtv.9;
-        Fri, 02 Sep 2022 11:33:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=TEI0nxrVBWBFOQaEAjvZIRHd2jI+9SmL2JIPt5lbWq4=;
-        b=X80nm1eviVwXyMpIzzgJbUrD6+9oNZTLdqZTFHEX8L0SVtdxs+VZTG1SGfUavPFOhp
-         dn5zBCMfFbzBjykSnGcYOUVwbJJWzIhz6DI4BYzLd1bLxNsIzde2tlvvgZmuVdIiBKsA
-         uIoFucEi3xoEMvaOIgUg30SwqAdVsWfGgbSe+6kqEfCUdcncsj31DXzEXtk6H9pRj31L
-         XjdMG+nC40E7rrA1R9Hm8BpjvvuXSx24wBfYR+5gvcrJtNyBVgXie/QrnywSkE2rZY8w
-         JA+bRD6PaFOgzSkI1guxdCkhz8JpA79c+zEdhWuYF16W2T0WxCvxSyAhqSPB8e+L74j0
-         kkCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=TEI0nxrVBWBFOQaEAjvZIRHd2jI+9SmL2JIPt5lbWq4=;
-        b=iNVGLM5tMzyhKMQ4EC+hyPR/CtAhUx1Ul6nnxTcPrD06a9O7SNizEim5TKU2oIX/4J
-         fc2MPsmxD5MFeTFslvGpQKFMQKpkkvCtaFM0MNSNncaNQc/3QG7zt/f/CsRrodCM7KZx
-         9rhC7akLCTCY8JIEkVJFmvWu5H2K9ntWXdn506Re3mGP0LdJnzga8rMrUgrPzhLxdpSh
-         GwN5YJZTAdjDIwIQt72Lp37dFvjjoWw3Eu9FEDpPQwxmUw/++pFo/r/njnEofSLWEBjx
-         ot+UErgeJKx6dznjLC7PBR26jXGLIXc9TapD0rCIs7VhhCbbrd1mrPUfhZii9F0HVL+W
-         P1mQ==
-X-Gm-Message-State: ACgBeo2ByvR4d7TjIPpBLHTGk7UyW7TuJKmA6E/pNgIl4D+QG0hVf/yn
-        I0Op5XJDN2io2WFxtlLuQo0=
-X-Google-Smtp-Source: AA6agR4vo1eWI5AoziEfKxzviQtr+1kGx4ZcHntJNdZdBYl7RW+9VSjHsfVD9Vr73ILfAsuZHKYZpA==
-X-Received: by 2002:a05:622a:1ba9:b0:343:786c:3bb1 with SMTP id bp41-20020a05622a1ba900b00343786c3bb1mr28906084qtb.125.1662143615303;
-        Fri, 02 Sep 2022 11:33:35 -0700 (PDT)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id q29-20020a37f71d000000b006b615cd8c13sm1760638qkj.106.2022.09.02.11.33.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Sep 2022 11:33:34 -0700 (PDT)
-Message-ID: <3da14763-b495-77eb-e059-b62e496ba7e7@gmail.com>
-Date:   Fri, 2 Sep 2022 11:33:31 -0700
+        Fri, 2 Sep 2022 14:34:02 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B038A105B74;
+        Fri,  2 Sep 2022 11:34:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662143640; x=1693679640;
+  h=from:to:subject:date:message-id:in-reply-to:references:
+   mime-version:content-transfer-encoding;
+  bh=xkJ6xoIywugi4fMwTGaUIozhuU7T/pgcEKpJ47n1K48=;
+  b=E2uImZQi6CBtCSs6E7pxiTd+ZpF5TEmybzsM5RBvD41ccuwNw+3lZavZ
+   Jz6cqsb0ubfCU3qnsSXm9hRlaU5F94FKulhOfkwBPCGp+gs6OlMSB3j8P
+   pRokXr26ll+2MT6pDanhP9qiT02tBjlOL5HXsh2TRq9xjPr7DNTloB6q5
+   BkUUghisndwp9P2ApfiCX+5GAbLjCawqvoF6XyBKepSJ/w268V9WteaT3
+   k0OdbYxSbbP1C5VtiZii/96YghlV2ej/kJksZIaowaseHHHPbPvGpljLC
+   GLOcf5eurMjDo91MAr/9ZT0ReQ3dTsA/gbR7W7ri2o62W+iGIgtCUhAyZ
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10458"; a="293635826"
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="293635826"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 11:26:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="646203180"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga001.jf.intel.com with ESMTP; 02 Sep 2022 11:26:47 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 330DC63F; Fri,  2 Sep 2022 21:27:00 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Patrick Rudolph <patrick.rudolph@9elements.com>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 10/17] pinctrl: cy8c95x0: Remove custom ->set_config()
+Date:   Fri,  2 Sep 2022 21:26:43 +0300
+Message-Id: <20220902182650.83098-10-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220902182650.83098-1-andriy.shevchenko@linux.intel.com>
+References: <20220902182650.83098-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [PATCH net-next 0/9] DSA changes for multiple CPU ports (part 4)
-Content-Language: en-US
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>
-References: <20220830195932.683432-1-vladimir.oltean@nxp.com>
- <20220902103145.faccoawnaqh6cn3r@skbuf>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220902103145.faccoawnaqh6cn3r@skbuf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Since we have pin configuration getter and setter provided,
+there is no need to duplicate that in the custom ->set_config().
+Instead, switch to gpiochip_generic_config().
 
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/pinctrl/pinctrl-cy8c95x0.c | 26 +-------------------------
+ 1 file changed, 1 insertion(+), 25 deletions(-)
 
-On 9/2/2022 3:31 AM, Vladimir Oltean wrote:
-> On Tue, Aug 30, 2022 at 10:59:23PM +0300, Vladimir Oltean wrote:
->> This series represents the final part of that effort. We have:
->>
->> - the introduction of new UAPI in the form of IFLA_DSA_MASTER
-> 
-> Call for opinions: when I resend this, should I keep rtnl_link_ops,
-> or should I do what Marek attempted to do, and make the existing iflink
-> between a user port and its master writable from user space?
-> https://lore.kernel.org/netdev/20190824024251.4542-4-marek.behun@nic.cz/
-> 
-> I'm not sure if we have that many more use cases for rtnl_link_ops..
-
-It's a bit hard to see one right now, I agree.
-
-> at some point I was thinking we could change the way in which dsa_loop
-> probes, and allow dynamic creation of such interfaces using RTM_NEWLINK;
-> but looking closer at that, it's a bit more complicated, since we'd need
-> to attach dsa_loop user ports to a virtual switch, and probe all ports
-> at the same time rather than one by one.
-
-Yes, not sure the custom netlink operations would be the preferred way 
-of doing that configuration, maybe module parameters and/or debugfs 
-might just do?
+diff --git a/drivers/pinctrl/pinctrl-cy8c95x0.c b/drivers/pinctrl/pinctrl-cy8c95x0.c
+index 97da22016cce..55bd48c9d020 100644
+--- a/drivers/pinctrl/pinctrl-cy8c95x0.c
++++ b/drivers/pinctrl/pinctrl-cy8c95x0.c
+@@ -761,30 +761,6 @@ static int cy8c95x0_gpio_set_pincfg(struct cy8c95x0_pinctrl *chip,
+ 	return ret;
+ }
+ 
+-static int cy8c95x0_gpio_set_config(struct gpio_chip *gc, unsigned int offset,
+-				    unsigned long config)
+-{
+-	struct cy8c95x0_pinctrl *chip = gpiochip_get_data(gc);
+-	unsigned long arg = pinconf_to_config_argument(config);
+-
+-	switch (pinconf_to_config_param(config)) {
+-	case PIN_CONFIG_INPUT_ENABLE:
+-		return cy8c95x0_gpio_direction_input(gc, offset);
+-	case PIN_CONFIG_OUTPUT:
+-		return cy8c95x0_gpio_direction_output(gc, offset, arg);
+-	case PIN_CONFIG_MODE_PWM:
+-	case PIN_CONFIG_BIAS_PULL_UP:
+-	case PIN_CONFIG_BIAS_PULL_DOWN:
+-	case PIN_CONFIG_BIAS_DISABLE:
+-	case PIN_CONFIG_DRIVE_OPEN_DRAIN:
+-	case PIN_CONFIG_DRIVE_OPEN_SOURCE:
+-	case PIN_CONFIG_DRIVE_PUSH_PULL:
+-		return cy8c95x0_gpio_set_pincfg(chip, offset, config);
+-	default:
+-		return -ENOTSUPP;
+-	}
+-}
+-
+ static int cy8c95x0_gpio_get_multiple(struct gpio_chip *gc,
+ 				      unsigned long *mask, unsigned long *bits)
+ {
+@@ -825,7 +801,7 @@ static int cy8c95x0_setup_gpiochip(struct cy8c95x0_pinctrl *chip)
+ 	gc->get_direction = cy8c95x0_gpio_get_direction;
+ 	gc->get_multiple = cy8c95x0_gpio_get_multiple;
+ 	gc->set_multiple = cy8c95x0_gpio_set_multiple;
+-	gc->set_config = cy8c95x0_gpio_set_config;
++	gc->set_config = gpiochip_generic_config,
+ 	gc->can_sleep = true;
+ 	gc->add_pin_ranges = cy8c95x0_add_pin_ranges;
+ 
 -- 
-Florian
+2.35.1
+
