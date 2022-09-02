@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60F36ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:55:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8FD6C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:55:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238260AbiIBMzh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:55:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33884 "EHLO
+        id S238171AbiIBMzl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:55:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238075AbiIBMxo (ORCPT
+        with ESMTP id S238096AbiIBMxr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:53:44 -0400
+        Fri, 2 Sep 2022 08:53:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3E7DF9946;
-        Fri,  2 Sep 2022 05:38:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5D23186C8;
+        Fri,  2 Sep 2022 05:38:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0526C621EB;
-        Fri,  2 Sep 2022 12:37:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16E34C433D7;
-        Fri,  2 Sep 2022 12:37:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB85662119;
+        Fri,  2 Sep 2022 12:35:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06163C433D6;
+        Fri,  2 Sep 2022 12:35:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122261;
-        bh=ZV94hn/HVyoUQ0zhGwpH70BlJc3nb7+q5zD+cmnlghg=;
+        s=korg; t=1662122142;
+        bh=cYJwQ0rMnudUe3akeqw33dycPQO7EW+u8IdVBhMnKpA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1St9C0ZmgcaTOGzm2hXsxH46bLfsSkU1QKB1p1iOA5ZFrPEPMVICeUnaVC1KMYSPN
-         BcdFt0RtZkqUZsSAH/L8VkRGfkZO3nNzCml02K8csoUO3s0pnpB4LohlhF/yOUOwBJ
-         YgBmuBtSPl9fhN0sMeqGlEN0eRhovTfPj7y9Zypk=
+        b=ivK0/j47KAj/T0VZIQ+ObgNoFa9i9mXtidbid7KxGZy6eFE11Wr6yPIOY37Eweqj5
+         PcoXNyIN+xOpNh+csEvyzTzFwHWe/7HSrS/8xnM9QRrLuMmBkHsxXFvQ0WqoqqRLdp
+         NYayqFZ/HXx5g0wXYJWmeKWk//3ErPG5YuONodMA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dusica Milinkovic <Dusica.Milinkovic@amd.com>,
-        Shaoyun Liu <shaoyun.liu@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 56/72] drm/amdgpu: Increase tlb flush timeout for sriov
-Date:   Fri,  2 Sep 2022 14:19:32 +0200
-Message-Id: <20220902121406.606240838@linuxfoundation.org>
+        stable@vger.kernel.org, James Morse <james.morse@arm.com>,
+        Will Deacon <will@kernel.org>, Lucas Wei <lucaswei@google.com>
+Subject: [PATCH 5.19 06/72] arm64: errata: Add Cortex-A510 to the repeat tlbi list
+Date:   Fri,  2 Sep 2022 14:18:42 +0200
+Message-Id: <20220902121404.999570603@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
 References: <20220902121404.772492078@linuxfoundation.org>
@@ -51,87 +48,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dusica Milinkovic <Dusica.Milinkovic@amd.com>
+From: James Morse <james.morse@arm.com>
 
-[ Upstream commit 373008bfc9cdb0f050258947fa5a095f0657e1bc ]
+commit 39fdb65f52e9a53d32a6ba719f96669fd300ae78 upstream.
 
-[Why]
-During multi-vf executing benchmark (Luxmark) observed kiq error timeout.
-It happenes because all of VFs do the tlb invalidation at the same time.
-Although each VF has the invalidate register set, from hardware side
-the invalidate requests are queue to execute.
+Cortex-A510 is affected by an erratum where in rare circumstances the
+CPUs may not handle a race between a break-before-make sequence on one
+CPU, and another CPU accessing the same page. This could allow a store
+to a page that has been unmapped.
 
-[How]
-In case of 12 VF increase timeout on 12*100ms
+Work around this by adding the affected CPUs to the list that needs
+TLB sequences to be done twice.
 
-Signed-off-by: Dusica Milinkovic <Dusica.Milinkovic@amd.com>
-Acked-by: Shaoyun Liu <shaoyun.liu@amd.com>
-Acked-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: James Morse <james.morse@arm.com>
+Link: https://lore.kernel.org/r/20220704155732.21216-1-james.morse@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
+Cc: Lucas Wei <lucaswei@google.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu.h    | 2 +-
- drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c | 3 ++-
- drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c  | 3 ++-
- 3 files changed, 5 insertions(+), 3 deletions(-)
+ Documentation/arm64/silicon-errata.rst |    2 ++
+ arch/arm64/Kconfig                     |   17 +++++++++++++++++
+ arch/arm64/kernel/cpu_errata.c         |    8 +++++++-
+ 3 files changed, 26 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu.h b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
-index 30ce6bb6fa77a..310754b1f6702 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu.h
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
-@@ -313,7 +313,7 @@ enum amdgpu_kiq_irq {
- 	AMDGPU_CP_KIQ_IRQ_DRIVER0 = 0,
- 	AMDGPU_CP_KIQ_IRQ_LAST
+--- a/Documentation/arm64/silicon-errata.rst
++++ b/Documentation/arm64/silicon-errata.rst
+@@ -106,6 +106,8 @@ stable kernels.
+ +----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | Cortex-A510     | #2077057        | ARM64_ERRATUM_2077057       |
+ +----------------+-----------------+-----------------+-----------------------------+
++| ARM            | Cortex-A510     | #2441009        | ARM64_ERRATUM_2441009       |
+++----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | Cortex-A710     | #2119858        | ARM64_ERRATUM_2119858       |
+ +----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | Cortex-A710     | #2054223        | ARM64_ERRATUM_2054223       |
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -838,6 +838,23 @@ config ARM64_ERRATUM_2224489
+ 
+ 	  If unsure, say Y.
+ 
++config ARM64_ERRATUM_2441009
++	bool "Cortex-A510: Completion of affected memory accesses might not be guaranteed by completion of a TLBI"
++	default y
++	select ARM64_WORKAROUND_REPEAT_TLBI
++	help
++	  This option adds a workaround for ARM Cortex-A510 erratum #2441009.
++
++	  Under very rare circumstances, affected Cortex-A510 CPUs
++	  may not handle a race between a break-before-make sequence on one
++	  CPU, and another CPU accessing the same page. This could allow a
++	  store to a page that has been unmapped.
++
++	  Work around this by adding the affected CPUs to the list that needs
++	  TLB sequences to be done twice.
++
++	  If unsure, say Y.
++
+ config ARM64_ERRATUM_2064142
+ 	bool "Cortex-A510: 2064142: workaround TRBE register writes while disabled"
+ 	depends on CORESIGHT_TRBE
+--- a/arch/arm64/kernel/cpu_errata.c
++++ b/arch/arm64/kernel/cpu_errata.c
+@@ -214,6 +214,12 @@ static const struct arm64_cpu_capabiliti
+ 		ERRATA_MIDR_RANGE(MIDR_QCOM_KRYO_4XX_GOLD, 0xc, 0xe, 0xf, 0xe),
+ 	},
+ #endif
++#ifdef CONFIG_ARM64_ERRATUM_2441009
++	{
++		/* Cortex-A510 r0p0 -> r1p1. Fixed in r1p2 */
++		ERRATA_MIDR_RANGE(MIDR_CORTEX_A510, 0, 0, 1, 1),
++	},
++#endif
+ 	{},
  };
--
-+#define SRIOV_USEC_TIMEOUT  1200000 /* wait 12 * 100ms for SRIOV */
- #define MAX_KIQ_REG_WAIT       5000 /* in usecs, 5ms */
- #define MAX_KIQ_REG_BAILOUT_INTERVAL   5 /* in msecs, 5ms */
- #define MAX_KIQ_REG_TRY 1000
-diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
-index 9077dfccaf3cf..809408c8c79a1 100644
---- a/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
-@@ -416,6 +416,7 @@ static int gmc_v10_0_flush_gpu_tlb_pasid(struct amdgpu_device *adev,
- 	uint32_t seq;
- 	uint16_t queried_pasid;
- 	bool ret;
-+	u32 usec_timeout = amdgpu_sriov_vf(adev) ? SRIOV_USEC_TIMEOUT : adev->usec_timeout;
- 	struct amdgpu_ring *ring = &adev->gfx.kiq.ring;
- 	struct amdgpu_kiq *kiq = &adev->gfx.kiq;
- 
-@@ -434,7 +435,7 @@ static int gmc_v10_0_flush_gpu_tlb_pasid(struct amdgpu_device *adev,
- 
- 		amdgpu_ring_commit(ring);
- 		spin_unlock(&adev->gfx.kiq.ring_lock);
--		r = amdgpu_fence_wait_polling(ring, seq, adev->usec_timeout);
-+		r = amdgpu_fence_wait_polling(ring, seq, usec_timeout);
- 		if (r < 1) {
- 			dev_err(adev->dev, "wait for kiq fence error: %ld.\n", r);
- 			return -ETIME;
-diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-index 22761a3bb8181..566c1243c051b 100644
---- a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-@@ -896,6 +896,7 @@ static int gmc_v9_0_flush_gpu_tlb_pasid(struct amdgpu_device *adev,
- 	uint32_t seq;
- 	uint16_t queried_pasid;
- 	bool ret;
-+	u32 usec_timeout = amdgpu_sriov_vf(adev) ? SRIOV_USEC_TIMEOUT : adev->usec_timeout;
- 	struct amdgpu_ring *ring = &adev->gfx.kiq.ring;
- 	struct amdgpu_kiq *kiq = &adev->gfx.kiq;
- 
-@@ -935,7 +936,7 @@ static int gmc_v9_0_flush_gpu_tlb_pasid(struct amdgpu_device *adev,
- 
- 		amdgpu_ring_commit(ring);
- 		spin_unlock(&adev->gfx.kiq.ring_lock);
--		r = amdgpu_fence_wait_polling(ring, seq, adev->usec_timeout);
-+		r = amdgpu_fence_wait_polling(ring, seq, usec_timeout);
- 		if (r < 1) {
- 			dev_err(adev->dev, "wait for kiq fence error: %ld.\n", r);
- 			up_read(&adev->reset_domain->sem);
--- 
-2.35.1
-
+ #endif
+@@ -490,7 +496,7 @@ const struct arm64_cpu_capabilities arm6
+ #endif
+ #ifdef CONFIG_ARM64_WORKAROUND_REPEAT_TLBI
+ 	{
+-		.desc = "Qualcomm erratum 1009, or ARM erratum 1286807",
++		.desc = "Qualcomm erratum 1009, or ARM erratum 1286807, 2441009",
+ 		.capability = ARM64_WORKAROUND_REPEAT_TLBI,
+ 		.type = ARM64_CPUCAP_LOCAL_CPU_ERRATUM,
+ 		.matches = cpucap_multi_entry_cap_matches,
 
 
