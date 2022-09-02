@@ -2,92 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73AC9C6FA83
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 20:06:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2045C6FA82
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 20:09:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230390AbiIBUGK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 16:06:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51436 "EHLO
+        id S229740AbiIBUJx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 16:09:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229482AbiIBUGH (ORCPT
+        with ESMTP id S229482AbiIBUJu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 16:06:07 -0400
-Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB28AEA31A;
-        Fri,  2 Sep 2022 13:06:04 -0700 (PDT)
-Date:   Fri, 2 Sep 2022 16:05:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1662149163;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=SemCjjx9bqrqhFAABAkUIroCfCc94PYvIF1DVQSZFl4=;
-        b=DkqxrENv1HGZgJN2jzLkuenZfiCKRaXUD9WzQJ4Gyv/ayHL/Rtg7Xzr8AwspMWXlwZIUIL
-        u2b26PHc1vj3E0HNj7dQceY3+rADhcYIqCEweC9ErZkbq6yycckimIVL96EkhBo8Hg7QMq
-        Oask9xF1FPTxe7xFqrU4hLkV5BMu+ow=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Kent Overstreet <kent.overstreet@linux.dev>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     Roman Gushchin <roman.gushchin@linux.dev>,
-        Yosry Ahmed <yosryahmed@google.com>,
-        Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@suse.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Johannes Weiner <hannes@cmpxchg.org>, dave@stgolabs.net,
-        Matthew Wilcox <willy@infradead.org>, liam.howlett@oracle.com,
-        void@manifault.com, juri.lelli@redhat.com, ldufour@linux.ibm.com,
-        Peter Xu <peterx@redhat.com>,
-        David Hildenbrand <david@redhat.com>, mcgrof@kernel.org,
-        masahiroy@kernel.org, nathan@kernel.org, changbin.du@intel.com,
-        ytcoode@gmail.com, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, Steven Rostedt <rostedt@goodmis.org>,
-        bsegall@google.com, bristot@redhat.com, vschneid@redhat.com,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>, 42.hyeyoo@gmail.com,
-        glider@google.com, elver@google.com, dvyukov@google.com,
-        Shakeel Butt <shakeelb@google.com>,
-        Muchun Song <songmuchun@bytedance.com>, arnd@arndb.de,
-        jbaron@akamai.com, David Rientjes <rientjes@google.com>,
-        minchan@google.com, kaleshsingh@google.com,
-        kernel-team@android.com, Linux-MM <linux-mm@kvack.org>,
-        iommu@lists.linux.dev, kasan-dev@googlegroups.com,
-        io-uring@vger.kernel.org, linux-arch@vger.kernel.org,
-        xen-devel@lists.xenproject.org, linux-bcache@vger.kernel.org,
-        linux-modules@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
-Message-ID: <20220902200555.h5fyamst6lyamjnw@moria.home.lan>
-References: <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
- <CAJD7tkaev9B=UDYj2RL6pz-1454J8tv4gEr9y-2dnCksoLK0bw@mail.gmail.com>
- <YxExz+c1k3nbQMh4@P9FQF9L96D.corp.robot.car>
- <20220901223720.e4gudprscjtwltif@moria.home.lan>
- <YxE4BXw5i+BkxxD8@P9FQF9L96D.corp.robot.car>
- <20220902001747.qqsv2lzkuycffuqe@moria.home.lan>
- <YxFWrka+Wx0FfLXU@P9FQF9L96D.lan>
- <3a41b9fc-05f1-3f56-ecd0-70b9a2912a31@kernel.dk>
- <20220902194839.xqzgsoowous72jkz@moria.home.lan>
- <d5526090-0380-a586-40e1-7b3bb6fe6fb8@kernel.dk>
+        Fri, 2 Sep 2022 16:09:50 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F04CA32A8B;
+        Fri,  2 Sep 2022 13:09:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662149388; x=1693685388;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=dfYcUn+noeT5T7sIeUiJNjSqZU06JxPpPMa1yx2CwNs=;
+  b=Xy8Y9qqZGC/baP+jeME/oFDbDgmHUmWi1ZUnQv47muSxlHpzswmPrO5R
+   v5j48Zmjw7/Jd1bWtVpbAME/5PvYBVtiNaIXsHzg/iDRhMpZhufn2HjzK
+   PA3wpiKlLjaB9By2ungKB4gUxq1UDkNtcMv33Tnhhxp2RUqi41Yu74EGQ
+   BqczzdPFWPwOIR7fbsg2TkKUzJ4qznQqnaXyrkobiBfsa59De5gt7kkwp
+   DU60wfV3+9osazpwG9ANUng4J3H/Vkr0T5rjLjH+h4m3IB8sWhH3a11PA
+   E3fWASxJ2z88bYfkbCrSfyxGZFqHiDeKkTb670PzM6uRKLkc7/q7VJ0UD
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10458"; a="382373013"
+X-IronPort-AV: E=Sophos;i="5.93,285,1654585200"; 
+   d="scan'208";a="382373013"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 12:36:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,285,1654585200"; 
+   d="scan'208";a="609084187"
+Received: from lkp-server02.sh.intel.com (HELO 95dfd251caa2) ([10.239.97.151])
+  by orsmga007.jf.intel.com with ESMTP; 02 Sep 2022 12:36:18 -0700
+Received: from kbuild by 95dfd251caa2 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oUCSf-0000WB-2p;
+        Fri, 02 Sep 2022 19:36:17 +0000
+Date:   Sat, 3 Sep 2022 03:35:57 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Yunhui Cui <cuiyunhui@bytedance.com>, corbet@lwn.net,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org, akpm@linux-foundation.org,
+        hannes@cmpxchg.org, david@redhat.com,
+        mail@christoph.anton.mitterer.name, ccross@google.com,
+        vincent.whitchurch@axis.com, paul.gortmaker@windriver.com,
+        peterz@infradead.org, edumazet@google.com, joshdon@google.com
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-doc@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH] bpf: added the account of BPF running time
+Message-ID: <202209030333.Goj9I0Pe-lkp@intel.com>
+References: <20220902101217.1419-1-cuiyunhui@bytedance.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d5526090-0380-a586-40e1-7b3bb6fe6fb8@kernel.dk>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+In-Reply-To: <20220902101217.1419-1-cuiyunhui@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Sep 02, 2022 at 01:53:53PM -0600, Jens Axboe wrote:
-> I've complained about memcg accounting before, the slowness of it is why
-> io_uring works around it by caching. Anything we account we try NOT do
-> in the fast path because of it, the slowdown is considerable.
+Hi Yunhui,
 
-I'm with you on that, it definitely raises an eyebrow.
+Thank you for the patch! Yet something to improve:
 
-> You care about efficiency now? I thought that was relegated to
-> irrelevant 10M IOPS cases.
+[auto build test ERROR on bpf-next/master]
+[also build test ERROR on bpf/master linus/master v6.0-rc3 next-20220901]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-I always did, it's just not the only thing I care about.
+url:    https://github.com/intel-lab-lkp/linux/commits/Yunhui-Cui/bpf-added-the-account-of-BPF-running-time/20220902-181437
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+config: um-x86_64_defconfig (https://download.01.org/0day-ci/archive/20220903/202209030333.Goj9I0Pe-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/e31420772f2a63d6bc561211b8ef0331d41b2123
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Yunhui-Cui/bpf-added-the-account-of-BPF-running-time/20220902-181437
+        git checkout e31420772f2a63d6bc561211b8ef0331d41b2123
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=um SUBARCH=x86_64 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   /usr/bin/ld: warning: arch/x86/um/vdso/vdso.o: missing .note.GNU-stack section implies executable stack
+   /usr/bin/ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
+   /usr/bin/ld: warning: .tmp_vmlinux.kallsyms1 has a LOAD segment with RWX permissions
+   /usr/bin/ld: kernel/seccomp.o: in function `seccomp_run_filters':
+   seccomp.c:(.text+0xaa7): undefined reference to `bpftime'
+   /usr/bin/ld: fs/proc/stat.o: in function `show_stat':
+   stat.c:(.text+0x124): undefined reference to `bpftime'
+   /usr/bin/ld: stat.c:(.text+0x332): undefined reference to `bpftime'
+   /usr/bin/ld: net/core/flow_dissector.o: in function `bpf_flow_dissect':
+>> flow_dissector.c:(.text+0x9f5): undefined reference to `bpftime'
+   /usr/bin/ld: net/core/dev.o: in function `bpf_prog_run_generic_xdp':
+>> dev.c:(.text+0x8c43): undefined reference to `bpftime'
+   /usr/bin/ld: net/core/ptp_classifier.o:ptp_classifier.c:(.text+0xf8): more undefined references to `bpftime' follow
+   collect2: error: ld returned 1 exit status
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
