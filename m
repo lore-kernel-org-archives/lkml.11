@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2567ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:55:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1C85ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:55:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238089AbiIBMzw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:55:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45690 "EHLO
+        id S238030AbiIBMz5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:55:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238116AbiIBMxv (ORCPT
+        with ESMTP id S238124AbiIBMxy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:53:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB4C5FAC75;
-        Fri,  2 Sep 2022 05:38:23 -0700 (PDT)
+        Fri, 2 Sep 2022 08:53:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BB87FAC7B;
+        Fri,  2 Sep 2022 05:38:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 865B9B82AD7;
-        Fri,  2 Sep 2022 12:37:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2DF8C433D6;
-        Fri,  2 Sep 2022 12:37:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A5D76216B;
+        Fri,  2 Sep 2022 12:37:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2ED98C433C1;
+        Fri,  2 Sep 2022 12:37:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122255;
-        bh=offp41GCZkSMjK/menYUEckaRbWIdkOoLjZE3dJk2QQ=;
+        s=korg; t=1662122267;
+        bh=UmXgAtYxvtJdJ8CvrVbOxcYJQZh2qyqKSwBQJ49/NUE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D969sbdjz2kYDxvB78BoiiwBGhe4q4ksIE9136v9PIqb6XAA6kXSVT8CHXA7KcrXq
-         parCqHpHi9ft8VqA4ScCHAnMOx+CHM1Oih6PsrLwZvMjd7KAB6OXxCH3qWlO7PqSu8
-         MX6rgB9EC3hoD1Ws9hBsWaSCWujpyUbtA9RT/MUQ=
+        b=ZZOkddhUvavKsVTihvQkXhIi7MsfzCsXVpSbBf2GHSbSXJ5ebLzJ2m6vNJQHimJoK
+         2A7M3igf/vscRRax4labx2w2kD3sxqzCbMrWfLcZxxKIdB2Z2wfV5uA5U9/18Lk+qz
+         6YNWuq7/d3NCJQjcaQlcZnd6cV+T+HcWI7wv+eL8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Woods <davwoods@nvidia.com>,
-        Liming Sun <limings@nvidia.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        stable@vger.kernel.org,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 31/72] mmc: sdhci-of-dwcmshc: Re-enable support for the BlueField-3 SoC
-Date:   Fri,  2 Sep 2022 14:19:07 +0200
-Message-Id: <20220902121405.816702291@linuxfoundation.org>
+Subject: [PATCH 5.19 66/72] btrfs: move lockdep class helpers to locking.c
+Date:   Fri,  2 Sep 2022 14:19:42 +0200
+Message-Id: <20220902121406.948116422@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
 References: <20220902121404.772492078@linuxfoundation.org>
@@ -51,71 +51,246 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liming Sun <limings@nvidia.com>
+From: Josef Bacik <josef@toxicpanda.com>
 
-[ Upstream commit a0753ef66c34c1739580219dca664eda648164b7 ]
+[ Upstream commit 0a27a0474d146eb79e09ec88bf0d4229f4cfc1b8 ]
 
-The commit 08f3dff799d4 (mmc: sdhci-of-dwcmshc: add rockchip platform
-support") introduces the use of_device_get_match_data() to check for some
-chips. Unfortunately, it also breaks the BlueField-3 FW, which uses ACPI.
+These definitions exist in disk-io.c, which is not related to the
+locking.  Move this over to locking.h/c where it makes more sense.
 
-To fix the problem, let's add the ACPI match data and the corresponding
-quirks to re-enable the support for the BlueField-3 SoC.
-
-Reviewed-by: David Woods <davwoods@nvidia.com>
-Signed-off-by: Liming Sun <limings@nvidia.com>
-Acked-by: Adrian Hunter <adrian.hunter@intel.com>
-Fixes: 08f3dff799d4 ("mmc: sdhci-of-dwcmshc: add rockchip platform support")
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220809173742.178440-1-limings@nvidia.com
-[Ulf: Clarified the commit message a bit]
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/sdhci-of-dwcmshc.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ fs/btrfs/disk-io.c | 82 ----------------------------------------------
+ fs/btrfs/disk-io.h | 10 ------
+ fs/btrfs/locking.c | 80 ++++++++++++++++++++++++++++++++++++++++++++
+ fs/btrfs/locking.h |  9 +++++
+ 4 files changed, 89 insertions(+), 92 deletions(-)
 
-diff --git a/drivers/mmc/host/sdhci-of-dwcmshc.c b/drivers/mmc/host/sdhci-of-dwcmshc.c
-index f5fd88c7adef1..335c88fd849c4 100644
---- a/drivers/mmc/host/sdhci-of-dwcmshc.c
-+++ b/drivers/mmc/host/sdhci-of-dwcmshc.c
-@@ -296,6 +296,15 @@ static const struct sdhci_pltfm_data sdhci_dwcmshc_pdata = {
- 	.quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN,
+diff --git a/fs/btrfs/disk-io.c b/fs/btrfs/disk-io.c
+index bc30306615837..a2505cfc6bc10 100644
+--- a/fs/btrfs/disk-io.c
++++ b/fs/btrfs/disk-io.c
+@@ -121,88 +121,6 @@ struct async_submit_bio {
+ 	blk_status_t status;
  };
  
-+#ifdef CONFIG_ACPI
-+static const struct sdhci_pltfm_data sdhci_dwcmshc_bf3_pdata = {
-+	.ops = &sdhci_dwcmshc_ops,
-+	.quirks = SDHCI_QUIRK_CAP_CLOCK_BASE_BROKEN,
-+	.quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN |
-+		   SDHCI_QUIRK2_ACMD23_BROKEN,
-+};
+-/*
+- * Lockdep class keys for extent_buffer->lock's in this root.  For a given
+- * eb, the lockdep key is determined by the btrfs_root it belongs to and
+- * the level the eb occupies in the tree.
+- *
+- * Different roots are used for different purposes and may nest inside each
+- * other and they require separate keysets.  As lockdep keys should be
+- * static, assign keysets according to the purpose of the root as indicated
+- * by btrfs_root->root_key.objectid.  This ensures that all special purpose
+- * roots have separate keysets.
+- *
+- * Lock-nesting across peer nodes is always done with the immediate parent
+- * node locked thus preventing deadlock.  As lockdep doesn't know this, use
+- * subclass to avoid triggering lockdep warning in such cases.
+- *
+- * The key is set by the readpage_end_io_hook after the buffer has passed
+- * csum validation but before the pages are unlocked.  It is also set by
+- * btrfs_init_new_buffer on freshly allocated blocks.
+- *
+- * We also add a check to make sure the highest level of the tree is the
+- * same as our lockdep setup here.  If BTRFS_MAX_LEVEL changes, this code
+- * needs update as well.
+- */
+-#ifdef CONFIG_DEBUG_LOCK_ALLOC
+-# if BTRFS_MAX_LEVEL != 8
+-#  error
+-# endif
+-
+-#define DEFINE_LEVEL(stem, level)					\
+-	.names[level] = "btrfs-" stem "-0" #level,
+-
+-#define DEFINE_NAME(stem)						\
+-	DEFINE_LEVEL(stem, 0)						\
+-	DEFINE_LEVEL(stem, 1)						\
+-	DEFINE_LEVEL(stem, 2)						\
+-	DEFINE_LEVEL(stem, 3)						\
+-	DEFINE_LEVEL(stem, 4)						\
+-	DEFINE_LEVEL(stem, 5)						\
+-	DEFINE_LEVEL(stem, 6)						\
+-	DEFINE_LEVEL(stem, 7)
+-
+-static struct btrfs_lockdep_keyset {
+-	u64			id;		/* root objectid */
+-	/* Longest entry: btrfs-free-space-00 */
+-	char			names[BTRFS_MAX_LEVEL][20];
+-	struct lock_class_key	keys[BTRFS_MAX_LEVEL];
+-} btrfs_lockdep_keysets[] = {
+-	{ .id = BTRFS_ROOT_TREE_OBJECTID,	DEFINE_NAME("root")	},
+-	{ .id = BTRFS_EXTENT_TREE_OBJECTID,	DEFINE_NAME("extent")	},
+-	{ .id = BTRFS_CHUNK_TREE_OBJECTID,	DEFINE_NAME("chunk")	},
+-	{ .id = BTRFS_DEV_TREE_OBJECTID,	DEFINE_NAME("dev")	},
+-	{ .id = BTRFS_CSUM_TREE_OBJECTID,	DEFINE_NAME("csum")	},
+-	{ .id = BTRFS_QUOTA_TREE_OBJECTID,	DEFINE_NAME("quota")	},
+-	{ .id = BTRFS_TREE_LOG_OBJECTID,	DEFINE_NAME("log")	},
+-	{ .id = BTRFS_TREE_RELOC_OBJECTID,	DEFINE_NAME("treloc")	},
+-	{ .id = BTRFS_DATA_RELOC_TREE_OBJECTID,	DEFINE_NAME("dreloc")	},
+-	{ .id = BTRFS_UUID_TREE_OBJECTID,	DEFINE_NAME("uuid")	},
+-	{ .id = BTRFS_FREE_SPACE_TREE_OBJECTID,	DEFINE_NAME("free-space") },
+-	{ .id = 0,				DEFINE_NAME("tree")	},
+-};
+-
+-#undef DEFINE_LEVEL
+-#undef DEFINE_NAME
+-
+-void btrfs_set_buffer_lockdep_class(u64 objectid, struct extent_buffer *eb,
+-				    int level)
+-{
+-	struct btrfs_lockdep_keyset *ks;
+-
+-	BUG_ON(level >= ARRAY_SIZE(ks->keys));
+-
+-	/* find the matching keyset, id 0 is the default entry */
+-	for (ks = btrfs_lockdep_keysets; ks->id; ks++)
+-		if (ks->id == objectid)
+-			break;
+-
+-	lockdep_set_class_and_name(&eb->lock,
+-				   &ks->keys[level], ks->names[level]);
+-}
+-
+-#endif
+-
+ /*
+  * Compute the csum of a btree block and store the result to provided buffer.
+  */
+diff --git a/fs/btrfs/disk-io.h b/fs/btrfs/disk-io.h
+index 4ee8c42c9f783..b4962b7d7117d 100644
+--- a/fs/btrfs/disk-io.h
++++ b/fs/btrfs/disk-io.h
+@@ -148,14 +148,4 @@ int btrfs_init_root_free_objectid(struct btrfs_root *root);
+ int __init btrfs_end_io_wq_init(void);
+ void __cold btrfs_end_io_wq_exit(void);
+ 
+-#ifdef CONFIG_DEBUG_LOCK_ALLOC
+-void btrfs_set_buffer_lockdep_class(u64 objectid,
+-			            struct extent_buffer *eb, int level);
+-#else
+-static inline void btrfs_set_buffer_lockdep_class(u64 objectid,
+-					struct extent_buffer *eb, int level)
+-{
+-}
+-#endif
+-
+ #endif
+diff --git a/fs/btrfs/locking.c b/fs/btrfs/locking.c
+index 33461b4f9c8b5..5747c63929df7 100644
+--- a/fs/btrfs/locking.c
++++ b/fs/btrfs/locking.c
+@@ -13,6 +13,86 @@
+ #include "extent_io.h"
+ #include "locking.h"
+ 
++/*
++ * Lockdep class keys for extent_buffer->lock's in this root.  For a given
++ * eb, the lockdep key is determined by the btrfs_root it belongs to and
++ * the level the eb occupies in the tree.
++ *
++ * Different roots are used for different purposes and may nest inside each
++ * other and they require separate keysets.  As lockdep keys should be
++ * static, assign keysets according to the purpose of the root as indicated
++ * by btrfs_root->root_key.objectid.  This ensures that all special purpose
++ * roots have separate keysets.
++ *
++ * Lock-nesting across peer nodes is always done with the immediate parent
++ * node locked thus preventing deadlock.  As lockdep doesn't know this, use
++ * subclass to avoid triggering lockdep warning in such cases.
++ *
++ * The key is set by the readpage_end_io_hook after the buffer has passed
++ * csum validation but before the pages are unlocked.  It is also set by
++ * btrfs_init_new_buffer on freshly allocated blocks.
++ *
++ * We also add a check to make sure the highest level of the tree is the
++ * same as our lockdep setup here.  If BTRFS_MAX_LEVEL changes, this code
++ * needs update as well.
++ */
++#ifdef CONFIG_DEBUG_LOCK_ALLOC
++#if BTRFS_MAX_LEVEL != 8
++#error
 +#endif
 +
- static const struct sdhci_pltfm_data sdhci_dwcmshc_rk35xx_pdata = {
- 	.ops = &sdhci_dwcmshc_rk35xx_ops,
- 	.quirks = SDHCI_QUIRK_CAP_CLOCK_BASE_BROKEN |
-@@ -360,7 +369,10 @@ MODULE_DEVICE_TABLE(of, sdhci_dwcmshc_dt_ids);
++#define DEFINE_LEVEL(stem, level)					\
++	.names[level] = "btrfs-" stem "-0" #level,
++
++#define DEFINE_NAME(stem)						\
++	DEFINE_LEVEL(stem, 0)						\
++	DEFINE_LEVEL(stem, 1)						\
++	DEFINE_LEVEL(stem, 2)						\
++	DEFINE_LEVEL(stem, 3)						\
++	DEFINE_LEVEL(stem, 4)						\
++	DEFINE_LEVEL(stem, 5)						\
++	DEFINE_LEVEL(stem, 6)						\
++	DEFINE_LEVEL(stem, 7)
++
++static struct btrfs_lockdep_keyset {
++	u64			id;		/* root objectid */
++	/* Longest entry: btrfs-free-space-00 */
++	char			names[BTRFS_MAX_LEVEL][20];
++	struct lock_class_key	keys[BTRFS_MAX_LEVEL];
++} btrfs_lockdep_keysets[] = {
++	{ .id = BTRFS_ROOT_TREE_OBJECTID,	DEFINE_NAME("root")	},
++	{ .id = BTRFS_EXTENT_TREE_OBJECTID,	DEFINE_NAME("extent")	},
++	{ .id = BTRFS_CHUNK_TREE_OBJECTID,	DEFINE_NAME("chunk")	},
++	{ .id = BTRFS_DEV_TREE_OBJECTID,	DEFINE_NAME("dev")	},
++	{ .id = BTRFS_CSUM_TREE_OBJECTID,	DEFINE_NAME("csum")	},
++	{ .id = BTRFS_QUOTA_TREE_OBJECTID,	DEFINE_NAME("quota")	},
++	{ .id = BTRFS_TREE_LOG_OBJECTID,	DEFINE_NAME("log")	},
++	{ .id = BTRFS_TREE_RELOC_OBJECTID,	DEFINE_NAME("treloc")	},
++	{ .id = BTRFS_DATA_RELOC_TREE_OBJECTID,	DEFINE_NAME("dreloc")	},
++	{ .id = BTRFS_UUID_TREE_OBJECTID,	DEFINE_NAME("uuid")	},
++	{ .id = BTRFS_FREE_SPACE_TREE_OBJECTID,	DEFINE_NAME("free-space") },
++	{ .id = 0,				DEFINE_NAME("tree")	},
++};
++
++#undef DEFINE_LEVEL
++#undef DEFINE_NAME
++
++void btrfs_set_buffer_lockdep_class(u64 objectid, struct extent_buffer *eb, int level)
++{
++	struct btrfs_lockdep_keyset *ks;
++
++	BUG_ON(level >= ARRAY_SIZE(ks->keys));
++
++	/* Find the matching keyset, id 0 is the default entry */
++	for (ks = btrfs_lockdep_keysets; ks->id; ks++)
++		if (ks->id == objectid)
++			break;
++
++	lockdep_set_class_and_name(&eb->lock, &ks->keys[level], ks->names[level]);
++}
++
++#endif
++
+ /*
+  * Extent buffer locking
+  * =====================
+diff --git a/fs/btrfs/locking.h b/fs/btrfs/locking.h
+index bbc45534ae9a6..b21372cab8409 100644
+--- a/fs/btrfs/locking.h
++++ b/fs/btrfs/locking.h
+@@ -131,4 +131,13 @@ void btrfs_drew_write_unlock(struct btrfs_drew_lock *lock);
+ void btrfs_drew_read_lock(struct btrfs_drew_lock *lock);
+ void btrfs_drew_read_unlock(struct btrfs_drew_lock *lock);
  
- #ifdef CONFIG_ACPI
- static const struct acpi_device_id sdhci_dwcmshc_acpi_ids[] = {
--	{ .id = "MLNXBF30" },
-+	{
-+		.id = "MLNXBF30",
-+		.driver_data = (kernel_ulong_t)&sdhci_dwcmshc_bf3_pdata,
-+	},
- 	{}
- };
++#ifdef CONFIG_DEBUG_LOCK_ALLOC
++void btrfs_set_buffer_lockdep_class(u64 objectid, struct extent_buffer *eb, int level);
++#else
++static inline void btrfs_set_buffer_lockdep_class(u64 objectid,
++					struct extent_buffer *eb, int level)
++{
++}
++#endif
++
  #endif
-@@ -376,7 +388,7 @@ static int dwcmshc_probe(struct platform_device *pdev)
- 	int err;
- 	u32 extra;
- 
--	pltfm_data = of_device_get_match_data(&pdev->dev);
-+	pltfm_data = device_get_match_data(&pdev->dev);
- 	if (!pltfm_data) {
- 		dev_err(&pdev->dev, "Error: No device match data found\n");
- 		return -ENODEV;
 -- 
 2.35.1
 
