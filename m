@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ECACC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:40:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A25FECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:40:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236927AbiIBNkY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:40:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49118 "EHLO
+        id S236723AbiIBNkx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:40:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236846AbiIBNjs (ORCPT
+        with ESMTP id S236490AbiIBNkO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:39:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40324F8FE7;
-        Fri,  2 Sep 2022 06:17:30 -0700 (PDT)
+        Fri, 2 Sep 2022 09:40:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E460CF8F6B;
+        Fri,  2 Sep 2022 06:17:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 512616220E;
-        Fri,  2 Sep 2022 12:40:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42F54C433C1;
-        Fri,  2 Sep 2022 12:40:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EFED6218F;
+        Fri,  2 Sep 2022 12:29:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D58EC433D6;
+        Fri,  2 Sep 2022 12:29:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122407;
-        bh=l55iIEOTa99MJyVj0bZkhMqp2quVOE9KQuUvpsRy65E=;
+        s=korg; t=1662121751;
+        bh=eD8hPXiqhltoVaonaNs7OuOm9CRuggKzV8BzNUVDAgs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y1Q925U9h01tRQO8xaxutTCu9bHx00BIk/aU7j9IXuEdHwtu5hmQTZ/oKq4Uzdenx
-         AwOp7HtpOVzTgzfNIRY/CpR051ZWZ/ekoqnQQxs95TECkffacvCfEQ02j4A1yUJmd5
-         UPo9gAVG8wchLX622nor8kts5qSqxMKae5cpIXGM=
+        b=JY6oaeTaHlikcg3UQFCsRHSJ9dDQgzUjPVKXFdF4QdD9CYKrFc9sz8+GktbQ2sW6x
+         Rbalq9gcWiHC0yfBZ9TQtihk6yjS2PYGzo3OZqzTC9BEVXjXwJnM+rSIM8lRfw4eES
+         G1fN9wYnZEetjFYsNMb/LEGMe70lHF3Nob6lbVks=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+5ea725c25d06fb9114c4@syzkaller.appspotmail.com,
-        Zhengchao Shao <shaozhengchao@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 36/37] net/af_packet: check len when min_header_len equals to 0
-Date:   Fri,  2 Sep 2022 14:19:58 +0200
-Message-Id: <20220902121400.298585305@linuxfoundation.org>
+        stable@vger.kernel.org, Jing Leng <jleng@ambarella.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nicolas Schier <n.schier@avm.de>
+Subject: [PATCH 5.4 52/77] kbuild: Fix include path in scripts/Makefile.modpost
+Date:   Fri,  2 Sep 2022 14:19:01 +0200
+Message-Id: <20220902121405.386283923@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121359.177846782@linuxfoundation.org>
-References: <20220902121359.177846782@linuxfoundation.org>
+In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
+References: <20220902121403.569927325@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,35 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhengchao Shao <shaozhengchao@huawei.com>
+From: Jing Leng <jleng@ambarella.com>
 
-commit dc633700f00f726e027846a318c5ffeb8deaaeda upstream.
+commit 23a0cb8e3225122496bfa79172005c587c2d64bf upstream.
 
-User can use AF_PACKET socket to send packets with the length of 0.
-When min_header_len equals to 0, packet_snd will call __dev_queue_xmit
-to send packets, and sock->type can be any type.
+When building an external module, if users don't need to separate the
+compilation output and source code, they run the following command:
+"make -C $(LINUX_SRC_DIR) M=$(PWD)". At this point, "$(KBUILD_EXTMOD)"
+and "$(src)" are the same.
 
-Reported-by: syzbot+5ea725c25d06fb9114c4@syzkaller.appspotmail.com
-Fixes: fd1894224407 ("bpf: Don't redirect packets with invalid pkt_len")
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+If they need to separate them, they run "make -C $(KERNEL_SRC_DIR)
+O=$(KERNEL_OUT_DIR) M=$(OUT_DIR) src=$(PWD)". Before running the
+command, they need to copy "Kbuild" or "Makefile" to "$(OUT_DIR)" to
+prevent compilation failure.
+
+So the kernel should change the included path to avoid the copy operation.
+
+Signed-off-by: Jing Leng <jleng@ambarella.com>
+[masahiro: I do not think "M=$(OUT_DIR) src=$(PWD)" is the official way,
+but this patch is a nice clean up anyway.]
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+[nsc: updated context for v4.19]
+Signed-off-by: Nicolas Schier <n.schier@avm.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/packet/af_packet.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ scripts/Makefile.modpost |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -2986,8 +2986,8 @@ static int packet_snd(struct socket *soc
- 	if (err)
- 		goto out_free;
+--- a/scripts/Makefile.modpost
++++ b/scripts/Makefile.modpost
+@@ -75,8 +75,7 @@ obj := $(KBUILD_EXTMOD)
+ src := $(obj)
  
--	if (sock->type == SOCK_RAW &&
--	    !dev_validate_header(dev, skb->data, len)) {
-+	if ((sock->type == SOCK_RAW &&
-+	     !dev_validate_header(dev, skb->data, len)) || !skb->len) {
- 		err = -EINVAL;
- 		goto out_free;
- 	}
+ # Include the module's Makefile to find KBUILD_EXTRA_SYMBOLS
+-include $(if $(wildcard $(KBUILD_EXTMOD)/Kbuild), \
+-             $(KBUILD_EXTMOD)/Kbuild, $(KBUILD_EXTMOD)/Makefile)
++include $(if $(wildcard $(src)/Kbuild), $(src)/Kbuild, $(src)/Makefile)
+ endif
+ 
+ MODPOST += $(subst -i,-n,$(filter -i,$(MAKEFLAGS))) -s -T - $(wildcard vmlinux)
 
 
