@@ -2,78 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8A6FECAAA1
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 21:30:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73AFFC6FA83
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 21:30:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230471AbiIBVaG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 17:30:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53382 "EHLO
+        id S229877AbiIBVac (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 17:30:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229917AbiIBVaC (ORCPT
+        with ESMTP id S229640AbiIBVa3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 17:30:02 -0400
-Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08F825A15C;
-        Fri,  2 Sep 2022 14:30:02 -0700 (PDT)
-Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-11eb44f520dso7852175fac.10;
-        Fri, 02 Sep 2022 14:30:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=gOAzsL9bsAt7jlkpt+vaf6xyvNBMEcyrbnj+YjtEFYc=;
-        b=5fDAY4x2dMqzPEgQUedR8J7stknjQuZ70tT/QFejKOgrcfOCeiWTTaGNVc19filzOq
-         ctpYMN8D5bXF8/zBD6aEsr9d5PGJ+vyQzGNsOKxpDLN6++FvlMX1NJdvrpTX4QVMCt8T
-         Sw+J3GRV85TU9H6ornGH/WqREHzhUsKJ4LX6yw6hTVzwM1rHa//YhQ1ockzkxX0LO/nA
-         sS7GMLAKs+aweWxHm+Uwbes4snTgN74xzvQAWzZgZ1dtMj3o32uEzZJrGSSeGwxz8rOf
-         g3zgwpDzikUfx+l5KEELPH4kY/cBRK22XyzfnunyGfsxmD4CM3vNSACPtatsXzAxKkWT
-         VZkQ==
-X-Gm-Message-State: ACgBeo2ti5+ghXwAoYZhEkSekCRsrP9FnFQ8DRP5vewHwBIAPPZ7HG80
-        JU7kTePiA1oNzH6OwhFq/A==
-X-Google-Smtp-Source: AA6agR5FyIT3medZqlb0ztfVLiAWmg0Ir31ztuO4VBzvFV7cYnSkWqB9g9H+Fvmqw+fsq/JV6Chk/Q==
-X-Received: by 2002:a05:6870:b3aa:b0:11f:5995:8e2e with SMTP id w42-20020a056870b3aa00b0011f59958e2emr3398439oap.204.1662154201303;
-        Fri, 02 Sep 2022 14:30:01 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id r33-20020a05687108a100b0011e37fb5493sm1684953oaq.30.2022.09.02.14.30.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 14:30:00 -0700 (PDT)
-Received: (nullmailer pid 447636 invoked by uid 1000);
-        Fri, 02 Sep 2022 21:29:59 -0000
-Date:   Fri, 2 Sep 2022 16:29:59 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     devicetree@vger.kernel.org, Loic Poulain <loic.poulain@linaro.org>,
-        Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-arm-msm@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>, linux-i2c@vger.kernel.org,
-        Robert Foss <robert.foss@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>
-Subject: Re: [PATCH] dt-bindings: i2c: qcom,i2c-cci: specify SM8450 CCI clocks
-Message-ID: <20220902212959.GA447603-robh@kernel.org>
-References: <20220901074218.21108-1-krzysztof.kozlowski@linaro.org>
+        Fri, 2 Sep 2022 17:30:29 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E46AFEA315;
+        Fri,  2 Sep 2022 14:30:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1662154227; x=1693690227;
+  h=from:to:subject:date:message-id:in-reply-to:references:
+   mime-version;
+  bh=0tijxlJT+sH8I3kLfF1FY/I3t/XXkOUKz1feGpP7oK0=;
+  b=KZAnLylfyMFBn4KfN81S5Hhr5hWY6BRPBBY8cU4dUu+9xN+8dBlv3zpl
+   HKsyh0njqbenqcxmgsZkVIXXmhTvhOZ60IkX8i0lyp1or5kfzwl0RVXK8
+   kUdaULxWflei2NKM9apt67ZaFd7YZC98CLqDj6nfJdy5TK2lx9zAdtTyE
+   4Oo5BQSJfXptFi9zyP77lEluJ4gCufm1pej/cZib12Zw0ovsO9wOSw8MQ
+   vUfjzg0lB7KdQvGoFYwKApbWBn9T6pScqNtWb3siKZPtGlJF5RHte+iDs
+   88vMjUiextQlIn/00PCE0Bfdxrdcptl3m7jisA4d6M5pww380D4RDVNED
+   g==;
+X-IronPort-AV: E=Sophos;i="5.93,285,1654585200"; 
+   d="scan'208";a="111997226"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 Sep 2022 14:30:26 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Fri, 2 Sep 2022 14:30:25 -0700
+Received: from AUS-LT-C33025.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Fri, 2 Sep 2022 14:30:23 -0700
+From:   Jerry Ray <jerry.ray@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Jerry Ray <jerry.ray@microchip.com>
+Subject: [PATCH v2 2/2] net: dsa: LAN9303: Add basic support for LAN9354
+Date:   Fri, 2 Sep 2022 16:30:21 -0500
+Message-ID: <20220902213021.23151-2-jerry.ray@microchip.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220902213021.23151-1-jerry.ray@microchip.com>
+References: <20220902213021.23151-1-jerry.ray@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220901074218.21108-1-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 01 Sep 2022 10:42:18 +0300, Krzysztof Kozlowski wrote:
-> Document clocks for SM8450 Camera Control Interface I2C controller.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> ---
-> 
-> Based on:
-> 1. https://lore.kernel.org/all/20220901073504.3077363-1-vladimir.zapolskiy@linaro.org/
-> ---
->  Documentation/devicetree/bindings/i2c/qcom,i2c-cci.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
+Adding support for the LAN9354 device by allowing it to use
+the LAN9303 DSA driver.  These devices have the same underlying
+access and control methods and from a feature set point of view
+the LAN9354 is a superset of the LAN9303.
 
-Acked-by: Rob Herring <robh@kernel.org>
+The MDIO access method has been tested on a SAMA5D3-EDS board
+with a LAN9354 RMII daughter card.
+
+While the SPI access method should also be the same, it has not
+been tested and as such is not included at this time.
+
+Signed-off-by: Jerry Ray <jerry.ray@microchip.com>
+---
+ drivers/net/dsa/Kconfig        |  6 +++---
+ drivers/net/dsa/lan9303-core.c | 11 ++++++++---
+ drivers/net/dsa/lan9303_mdio.c |  1 +
+ 3 files changed, 12 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
+index d8ae0e8af2a0..07507b4820d7 100644
+--- a/drivers/net/dsa/Kconfig
++++ b/drivers/net/dsa/Kconfig
+@@ -76,7 +76,7 @@ config NET_DSA_SMSC_LAN9303
+ 	select NET_DSA_TAG_LAN9303
+ 	select REGMAP
+ 	help
+-	  This enables support for the SMSC/Microchip LAN9303 3 port ethernet
++	  This enables support for the Microchip LAN9303/LAN9354 3 port ethernet
+ 	  switch chips.
+ 
+ config NET_DSA_SMSC_LAN9303_I2C
+@@ -90,11 +90,11 @@ config NET_DSA_SMSC_LAN9303_I2C
+ 	  for I2C managed mode.
+ 
+ config NET_DSA_SMSC_LAN9303_MDIO
+-	tristate "SMSC/Microchip LAN9303 3-ports 10/100 ethernet switch in MDIO managed mode"
++	tristate "Microchip LAN9303/LAN9354 3-ports 10/100 ethernet switch in MDIO managed mode"
+ 	select NET_DSA_SMSC_LAN9303
+ 	depends on VLAN_8021Q || VLAN_8021Q=n
+ 	help
+-	  Enable access functions if the SMSC/Microchip LAN9303 is configured
++	  Enable access functions if the Microchip LAN9303/LAN9354 is configured
+ 	  for MDIO managed mode.
+ 
+ config NET_DSA_VITESSE_VSC73XX
+diff --git a/drivers/net/dsa/lan9303-core.c b/drivers/net/dsa/lan9303-core.c
+index 9d5302001abf..9e04541c3144 100644
+--- a/drivers/net/dsa/lan9303-core.c
++++ b/drivers/net/dsa/lan9303-core.c
+@@ -22,6 +22,10 @@
+  */
+ #define LAN9303_CHIP_REV 0x14
+ # define LAN9303_CHIP_ID 0x9303
++# define LAN9352_CHIP_ID 0x9352
++# define LAN9353_CHIP_ID 0x9353
++# define LAN9354_CHIP_ID 0x9354
++# define LAN9355_CHIP_ID 0x9355
+ #define LAN9303_IRQ_CFG 0x15
+ # define LAN9303_IRQ_CFG_IRQ_ENABLE BIT(8)
+ # define LAN9303_IRQ_CFG_IRQ_POL BIT(4)
+@@ -855,8 +859,9 @@ static int lan9303_check_device(struct lan9303 *chip)
+ 		return ret;
+ 	}
+ 
+-	if ((reg >> 16) != LAN9303_CHIP_ID) {
+-		dev_err(chip->dev, "expecting LAN9303 chip, but found: %X\n",
++	if (((reg >> 16) != LAN9303_CHIP_ID) &&
++	    ((reg >> 16) != LAN9354_CHIP_ID)) {
++		dev_err(chip->dev, "unexpected device found: LAN%4.4X\n",
+ 			reg >> 16);
+ 		return -ENODEV;
+ 	}
+@@ -872,7 +877,7 @@ static int lan9303_check_device(struct lan9303 *chip)
+ 	if (ret)
+ 		dev_warn(chip->dev, "failed to disable switching %d\n", ret);
+ 
+-	dev_info(chip->dev, "Found LAN9303 rev. %u\n", reg & 0xffff);
++	dev_info(chip->dev, "Found LAN%4.4X rev. %u\n", (reg >> 16), reg & 0xffff);
+ 
+ 	ret = lan9303_detect_phy_setup(chip);
+ 	if (ret) {
+diff --git a/drivers/net/dsa/lan9303_mdio.c b/drivers/net/dsa/lan9303_mdio.c
+index bbb7032409ba..d12c55fdc811 100644
+--- a/drivers/net/dsa/lan9303_mdio.c
++++ b/drivers/net/dsa/lan9303_mdio.c
+@@ -158,6 +158,7 @@ static void lan9303_mdio_shutdown(struct mdio_device *mdiodev)
+ 
+ static const struct of_device_id lan9303_mdio_of_match[] = {
+ 	{ .compatible = "smsc,lan9303-mdio" },
++	{ .compatible = "microchip,lan9354-mdio" },
+ 	{ /* sentinel */ },
+ };
+ MODULE_DEVICE_TABLE(of, lan9303_mdio_of_match);
+-- 
+2.17.1
+
