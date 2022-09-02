@@ -2,173 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81C2EECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:29:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE203ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:29:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236994AbiIBN3b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:29:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49212 "EHLO
+        id S236377AbiIBN3h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:29:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236121AbiIBN3N (ORCPT
+        with ESMTP id S236322AbiIBN3Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:29:13 -0400
-Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 537AEEEC59
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:08:20 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.west.internal (Postfix) with ESMTP id E4371320090C;
-        Fri,  2 Sep 2022 08:34:06 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Fri, 02 Sep 2022 08:34:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; t=1662122046; x=1662208446; bh=69wBoD2FcW
-        S+VJub/o1SXKNMgpIXHt/jaTIMdQTQNes=; b=XHrR1ZCQoQmpvRT/cPY/9LcNB5
-        HbYvLIIwbwJ3I8tAiCkQeqeD6ac4sQxkWFElK4/2M96NO42Hn11H07JT/QFVXr8z
-        kjDkscAYB/o/TxBPAsTcp+fBpWSD/X1HfCWtH3LgmeNzI7tSVefpoYfjRXCfJCN8
-        yDK2T/6mdgHaynbM6eZ0TXnzYtHqgCrJqnqkHxz6vRRzIfyplybtYLDBG8aDYvI8
-        pUTzvXG+HUMzuuTVOYAws1tvn7az6LV1uZdaFlVENwuar4NRxgqpiKmI7/ofJtsr
-        Hdv3DLT5DJHI3FWooBjmEE43LrvAwr5PqO+XYyjq6nrmo8PliVuHhkTGbZeA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1662122046; x=1662208446; bh=69wBoD2FcWS+VJub/o1SXKNMgpIX
-        Ht/jaTIMdQTQNes=; b=CWTAamlIdomT+2ReqO+SVhE0ewgiqv4yZ5OnRNWDwcWE
-        X+8+FemvxwpBtL7ywc/vsmj75bkH8tMuLI15yvL0uqDa8/So7C9tjphjJ/4HlESX
-        RkAKKO07mO5oNGEPr+G1FKsJtliCuhZBW17aBw6gamPUMJa4F5P8KkwPf2pftijZ
-        tM8Ih6E6wiVykyxgp/vBxmhEmr46bOVdJLJz9AILj7bmhvZ6mZNL/15uUiLHO1R5
-        DPcjpytHi9i6NFcJNfHaInErfSGLL/eKd+sTtPv0iRCd2PPKhcBWEvzZZwiLL0tE
-        hNsr1L3frvU1jNbOHl3IQ4yXzpfKT0mAiv3hF74pBA==
-X-ME-Sender: <xms:PfgRYzY0V9T6oHAQHYFq_qp488C0-vJwmhaKBtvMkoo--Pptnv3k_Q>
-    <xme:PfgRYybbx_9WsuS45POrQj46N9ZoIAtv9JfUFyFTQm_BgBUoYbTjEDmtfPAPI5y6s
-    JmtzIX7xj6wM1L5yjY>
-X-ME-Received: <xmr:PfgRY1_LZGkpshpvDD9gA_AiArZJHnu4dD16PaWXHxuc2vSX2-Ev4UR0Zw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdeltddgheeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesghdtreertddtudenucfhrhhomhepofgrgihi
-    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
-    htthgvrhhnpeeljeeugfegveetleevkeetffegudevieetieeugeeugeeivddtjeejvdef
-    feetgfenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivg
-    eptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhhordhtvggt
-    hh
-X-ME-Proxy: <xmx:PfgRY5pdGZEc6150lT0Pj62iRT2PDLE_CEy5Zbw-1_46mEj43zL5Cw>
-    <xmx:PfgRY-r6IKQCQHWo131B_1vTIKy_IvK3_85AfmrLwbBg9l0FlI2bqQ>
-    <xmx:PfgRY_StF0AYljou5s-fvHd8GAt3KYRXn70kCZ7iTDDTXUGXH1UBaQ>
-    <xmx:PvgRYzjM24CXnQqyMUH2ejZ8atEu4eK32NXN-shDmoLTZ3mzmTN61g>
-Feedback-ID: i8771445c:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 2 Sep 2022 08:34:04 -0400 (EDT)
-Date:   Fri, 2 Sep 2022 14:34:00 +0200
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Jani Nikula <jani.nikula@linux.intel.com>
-Cc:     =?utf-8?B?TWHDrXJh?= Canal <mairacanal@riseup.net>,
-        Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
-        tales.aparecida@gmail.com, mwen@igalia.com, andrealmeid@riseup.net,
-        siqueirajordao@riseup.net, Trevor Woerner <twoerner@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        David Gow <davidgow@google.com>, brendanhiggins@google.com,
-        Arthur Grillo <arthur.grillo@usp.br>,
-        michal.winiarski@intel.com,
-        =?utf-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        kunit-dev@googlegroups.com
-Subject: Re: [PATCH v2 2/2] drm/tests: Change "igt_" prefix to "test_drm_"
-Message-ID: <20220902123400.5ljgc7z6zw34d64m@houat>
-References: <20220901124210.591994-1-mairacanal@riseup.net>
- <20220901124210.591994-2-mairacanal@riseup.net>
- <20220901125530.b56s4zisnkfuigvc@houat>
- <04aeba53-793c-3196-3137-915f0640dc2a@riseup.net>
- <87h71qfbi9.fsf@intel.com>
+        Fri, 2 Sep 2022 09:29:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44FEB116E2C
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:08:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A660FB82AC7
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 13:01:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2882C433C1;
+        Fri,  2 Sep 2022 13:01:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662123683;
+        bh=2Bz/efN2/mg1731d5K4pjKr79RYPaHO217/mHswxl4Y=;
+        h=From:To:Cc:Subject:Date:From;
+        b=K/WL4KZPAlSuht5rqlHSv5eY4DFfjY9gDUj2mqBn+KnYx0byowdhu2Z25fx2k1FIA
+         a6njcrtpRvGUnLQvKBi1UYfAdwHkiegRVUWv3hvrplGcuMR0Zwd+CWhyD86w94wKIn
+         N22QsLhhAWrCcwkNn6uKjfUf859qv1iWPTxzvoCg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng^Ci@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Alex Deuc her <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Xinhui.Pan@amd.com
+Cc:     linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Leo Li <sunpeng.li@amd.com>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, Wayne Lin <Wayne.Lin@amd.com>,
+        hersen wu <hersenxs.wu@amd.com>,
+        Wenjing Liu <wenjing.liu@amd.com>,
+        Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
+        Thelford Williams <tdwilliamsiv@gmail.com>,
+        Fangzhi Zuo <Jerry.Zuo@amd.com>,
+        Yongzhi Liu <lyz_cs@pku.edu.cn>,
+        Mikita Lipski <mikita.lipski@amd.com>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Bhanuprakash Modem <bhanuprakash.modem@intel.com>,
+        Sean Paul <seanpaul@chromium.org>,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH] drm/amd/display: fix memory leak when using debugfs_lookup()
+Date:   Fri,  2 Sep 2022 15:01:05 +0200
+Message-Id: <20220902130105.139138-1-gregkh@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="je6h4ueg2vhmqv2d"
-Content-Disposition: inline
-In-Reply-To: <87h71qfbi9.fsf@intel.com>
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1866; i=gregkh@linuxfoundation.org; h=from:subject; bh=2Bz/efN2/mg1731d5K4pjKr79RYPaHO217/mHswxl4Y=; b=owGbwMvMwCRo6H6F97bub03G02pJDMmC/yZsOu+8L1Mx8IXV1LtsrzJY/ZoOyKvVmH27M98zdcG9 uSo/OmJZGASZGGTFFFm+bOM5ur/ikKKXoe1pmDmsTCBDGLg4BWAi0fIMC9Zfmp9y7XLhBFaZa0Kzdc U3nHD0UmSY7/s/eFtrCMv55BPFc1lj7uS9ETn4EQA=
+X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+When calling debugfs_lookup() the result must have dput() called on it,
+otherwise the memory will leak over time.  Fix this up by properly
+calling dput().
 
---je6h4ueg2vhmqv2d
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Cc: Harry Wentland <harry.wentland@amd.com>
+Cc: Leo Li <sunpeng.li@amd.com>
+Cc: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
+Cc: Alex Deucher <alexander.deucher@amd.com>
+Cc: "Christian König" <christian.koenig@amd.com>
+Cc: "Pan, Xinhui" <Xinhui.Pan@amd.com>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Wayne Lin <Wayne.Lin@amd.com>
+Cc: hersen wu <hersenxs.wu@amd.com>
+Cc: Wenjing Liu <wenjing.liu@amd.com>
+Cc: Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
+Cc: Thelford Williams <tdwilliamsiv@gmail.com>
+Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
+Cc: Yongzhi Liu <lyz_cs@pku.edu.cn>
+Cc: Mikita Lipski <mikita.lipski@amd.com>
+Cc: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc: Bhanuprakash Modem <bhanuprakash.modem@intel.com>
+Cc: Sean Paul <seanpaul@chromium.org>
+Cc: amd-gfx@lists.freedesktop.org
+Cc: dri-devel@lists.freedesktop.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-On Fri, Sep 02, 2022 at 11:04:14AM +0300, Jani Nikula wrote:
-> On Thu, 01 Sep 2022, Ma=EDra Canal <mairacanal@riseup.net> wrote:
-> > Hi Maxime,
-> >
-> > On 9/1/22 09:55, Maxime Ripard wrote:
-> >> Hi,
-> >>=20
-> >> On Thu, Sep 01, 2022 at 09:42:10AM -0300, Ma=EDra Canal wrote:
-> >>> With the introduction of KUnit, IGT is no longer the only option to r=
-un
-> >>> the DRM unit tests, as the tests can be run through kunit-tool or on
-> >>> real hardware with CONFIG_KUNIT.
-> >>>
-> >>> Therefore, remove the "igt_" prefix from the tests and replace it with
-> >>> the "test_drm_" prefix, making the tests' names independent from the =
-tool
-> >>> used.
-> >>>
-> >>> Signed-off-by: Ma=EDra Canal <mairacanal@riseup.net>
-> >>>
-> >>> ---
-> >>> v1 -> v2: https://lore.kernel.org/dri-devel/20220830211603.191734-1-m=
-airacanal@riseup.net/
-> >>> - Change "drm_" prefix to "test_drm_", as "drm_" can be a bit confusi=
-ng (Jani Nikula).
-> >>=20
-> >> I appreciate it's a bit of a bikeshed but I disagree with this. The
-> >> majority of the kunit tests already out there start with the framework
-> >> name, including *all* the examples in the kunit doc. Plus, it's fairly
-> >> obvious that it's a test, kunit is only about running tests in the fir=
-st
-> >> place.
-> >
-> > Would it be better to keep it as "drm_"?
->=20
-> That's not "keeping". That's renaming igt to drm.
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
+index 0e48824f55e3..ee242d9d8b06 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
+@@ -3288,6 +3288,7 @@ void crtc_debugfs_init(struct drm_crtc *crtc)
+ 				   &crc_win_y_end_fops);
+ 	debugfs_create_file_unsafe("crc_win_update", 0644, dir, crtc,
+ 				   &crc_win_update_fops);
++	dput(dir);
+ #endif
+ 	debugfs_create_file("amdgpu_current_bpc", 0644, crtc->debugfs_entry,
+ 			    crtc, &amdgpu_current_bpc_fops);
+-- 
+2.37.3
 
-Well, there's like half the tests that are prefixed with drm, the other
-with igt, so it's both really
-
-> > Currently, I don't think it is appropriate to hold the "igt_" prefix, as
-> > the tests are not IGT exclusive, but I don't have a strong opinion on
-> > using the "drm_" or the "test_drm" prefixes.
->=20
-> I repeat my stance that "drm_" alone is confusing.
-
-What are you confusing it with?
-
-> For the reason alone that it pollutes the code tagging tools, mixing
-> actual drm_ types and functions with unit test functions.
-
-I don't get it, I'm sorry. All these functions are static and not part
-of any API, so I can't see how it would pollute a code tagging tool. Or
-at least, not more than any driver does.
-
-And we're part of a larger project here, it's about consistency with the
-rest of the ecosystem.
-
-Maxime
-
---je6h4ueg2vhmqv2d
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYxH4OAAKCRDj7w1vZxhR
-xcnGAQDfG15wrc3ceeKSo7qsOykhYDbwylJuO4xitBZoirs0ZgD/ecLkzhEgtAOv
-b++wHEVZEq7FPSdzWgIwHQIiRnLixgA=
-=zFJ3
------END PGP SIGNATURE-----
-
---je6h4ueg2vhmqv2d--
