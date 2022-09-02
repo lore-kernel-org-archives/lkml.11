@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 121FDC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:28:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E8D5C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236955AbiIBO2Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:28:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58316 "EHLO
+        id S236162AbiIBO2V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:28:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236132AbiIBO1J (ORCPT
+        with ESMTP id S235976AbiIBO1K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:27:09 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18B56141A12
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:26 -0700 (PDT)
+        Fri, 2 Sep 2022 10:27:10 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0842F168A25
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
+        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=kiUBY9L9H1enuPzKP5b8g1QT9pTcpJ/p9g5AdHuOGVs=; b=CGSvGIdS7BzFlGPC66zM67Zsuy
-        kJNdSIHdK9ZLcOaYZTpT6E3z703HT21C8Dat37616OGCJG3cZtmwPUDloeuiEmIB569JS1SHyEIHi
-        MYz8jua+e4cZMkrg4hapyzRfhvuOxD9J22EOsXlvO4yWnsNp3SvAqklmFN3x0BoVSl6NYTE+/X94c
-        xTPSwpQsrnjlIvkv3wh2JRO1BMkJN+HjuHu0g718UhTmlKIngZWrPkvVgd2JH5iiaXoLoYLYA8tgv
-        JxTNyEh6RSQ5OEFBnfnBTuPTQY5ZWLuDJNNQdO3R9SsMhCa/qSguFEroBEU+l1Z8DINn+je5bPSPz
-        bS/9PKfQ==;
+        bh=yIoG35cVddrSUYas1ovPM/6azqMQrScMR1ghVWokYpY=; b=KV6fDSwW14+spIe+PGUs5xODJs
+        0xBc83Rr/tlrxyR6iTx8pQ62NfCAv36/KS1GB8tl8bTbmY/g8EA8dMDgLFd17m+xqPnpazbEboag6
+        6w5fCRUuSb4NdX5fdHbR2cHzOZojBPCsslx9mtJ25ad8d885zKxz28tpJoLp1ysRrbBy7vG5Uz01K
+        XrjtygRHhLldm7mLBU8OIpDCOW4t6ra0VBZR1nSXcOwS3tGlKe1Vck2uZ9YNmpGnvvb512WQ5mNPX
+        JOBiEh3epN5q14LbE8jWArCmDACWlR1vR5He9fGYIzBa+d0m8vRe+zW1yyKQqF2n3aVU+0YHtAyF8
+        T/eQ1dEA==;
 Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oU77L-008g83-Mx; Fri, 02 Sep 2022 13:53:55 +0000
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oU77M-0074T2-6c; Fri, 02 Sep 2022 13:53:56 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 1446E301BF2;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 00E7430067B;
         Fri,  2 Sep 2022 15:53:54 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 65F492B1A6BC7; Fri,  2 Sep 2022 15:53:52 +0200 (CEST)
-Message-ID: <20220902130948.022127024@infradead.org>
+        id 3AE2529C4662E; Fri,  2 Sep 2022 15:53:52 +0200 (CEST)
+Message-ID: <20220902130947.086463061@infradead.org>
 User-Agent: quilt/0.66
-Date:   Fri, 02 Sep 2022 15:06:41 +0200
+Date:   Fri, 02 Sep 2022 15:06:32 +0200
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     Thomas Gleixner <tglx@linutronix.de>
 Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
@@ -59,7 +59,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
         Daniel Borkmann <daniel@iogearbox.net>,
         K Prateek Nayak <kprateek.nayak@amd.com>,
         Eric Dumazet <edumazet@google.com>
-Subject: [PATCH v2 16/59] crypto: x86/serpent: Remove redundant alignments
+Subject: [PATCH v2 07/59] x86: Sanitize linker script
 References: <20220902130625.217071627@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -69,55 +69,62 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Thomas Gleixner <tglx@linutronix.de>
 
-SYM_FUNC_START*() and friends already imply alignment, remove custom
-alignment hacks to make code consistent. This prepares for future
-function call ABI changes.
+The section ordering in the text section is more than suboptimal:
 
-Also, with having pushed the function alignment to 16 bytes, this
-custom alignment is completely superfluous.
+    ALIGN_ENTRY_TEXT_BEGIN
+    ENTRY_TEXT
+    ALIGN_ENTRY_TEXT_END
+    SOFTIRQENTRY_TEXT
+    STATIC_CALL_TEXT
+    INDIRECT_THUNK_TEXT
+
+ENTRY_TEXT is in a seperate PMD so it can be mapped into the cpu entry area
+when KPTI is enabled. That means the sections after it are also in a
+seperate PMD. That's wasteful especially as the indirect thunk text is a
+hotpath on retpoline enabled systems and the static call text is fairly hot
+on 32bit.
+
+Move the entry text section last so that the other sections share a PMD
+with the text before it. This is obviously just best effort and not
+guaranteed when the previous text is just at a PMD boundary.
+
+The text section placement needs an overhaul in general. There is e.g. no
+point to have debugfs, sysfs, cpuhotplug and other rarely used functions
+next to hot path text.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/x86/crypto/serpent-avx-x86_64-asm_64.S |    2 --
- arch/x86/crypto/serpent-avx2-asm_64.S       |    2 --
- 2 files changed, 4 deletions(-)
+ arch/x86/kernel/vmlinux.lds.S |   13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
---- a/arch/x86/crypto/serpent-avx-x86_64-asm_64.S
-+++ b/arch/x86/crypto/serpent-avx-x86_64-asm_64.S
-@@ -550,7 +550,6 @@
- #define write_blocks(x0, x1, x2, x3, t0, t1, t2) \
- 	transpose_4x4(x0, x1, x2, x3, t0, t1, t2)
+--- a/arch/x86/kernel/vmlinux.lds.S
++++ b/arch/x86/kernel/vmlinux.lds.S
+@@ -132,18 +132,19 @@ SECTIONS
+ 		CPUIDLE_TEXT
+ 		LOCK_TEXT
+ 		KPROBES_TEXT
+-		ALIGN_ENTRY_TEXT_BEGIN
+-		ENTRY_TEXT
+-		ALIGN_ENTRY_TEXT_END
+ 		SOFTIRQENTRY_TEXT
+-		STATIC_CALL_TEXT
+-		*(.gnu.warning)
+-
+ #ifdef CONFIG_RETPOLINE
+ 		__indirect_thunk_start = .;
+ 		*(.text.__x86.*)
+ 		__indirect_thunk_end = .;
+ #endif
++		STATIC_CALL_TEXT
++
++		ALIGN_ENTRY_TEXT_BEGIN
++		ENTRY_TEXT
++		ALIGN_ENTRY_TEXT_END
++		*(.gnu.warning)
++
+ 	} :text =0xcccc
  
--.align 8
- SYM_FUNC_START_LOCAL(__serpent_enc_blk8_avx)
- 	/* input:
- 	 *	%rdi: ctx, CTX
-@@ -604,7 +603,6 @@ SYM_FUNC_START_LOCAL(__serpent_enc_blk8_
- 	RET;
- SYM_FUNC_END(__serpent_enc_blk8_avx)
- 
--.align 8
- SYM_FUNC_START_LOCAL(__serpent_dec_blk8_avx)
- 	/* input:
- 	 *	%rdi: ctx, CTX
---- a/arch/x86/crypto/serpent-avx2-asm_64.S
-+++ b/arch/x86/crypto/serpent-avx2-asm_64.S
-@@ -550,7 +550,6 @@
- #define write_blocks(x0, x1, x2, x3, t0, t1, t2) \
- 	transpose_4x4(x0, x1, x2, x3, t0, t1, t2)
- 
--.align 8
- SYM_FUNC_START_LOCAL(__serpent_enc_blk16)
- 	/* input:
- 	 *	%rdi: ctx, CTX
-@@ -604,7 +603,6 @@ SYM_FUNC_START_LOCAL(__serpent_enc_blk16
- 	RET;
- SYM_FUNC_END(__serpent_enc_blk16)
- 
--.align 8
- SYM_FUNC_START_LOCAL(__serpent_dec_blk16)
- 	/* input:
- 	 *	%rdi: ctx, CTX
+ 	/* End of text section, which should occupy whole number of pages */
 
 
