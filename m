@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25819C6FA82
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:44:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3822AC6FA85
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:44:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237278AbiIBMoc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:44:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42398 "EHLO
+        id S237380AbiIBMoh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:44:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237158AbiIBMmr (ORCPT
+        with ESMTP id S237331AbiIBMms (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:42:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8643FE9252;
-        Fri,  2 Sep 2022 05:32:00 -0700 (PDT)
+        Fri, 2 Sep 2022 08:42:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BFBFE01C1;
+        Fri,  2 Sep 2022 05:31:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1D1AB82A91;
-        Fri,  2 Sep 2022 12:25:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BA52C433B5;
-        Fri,  2 Sep 2022 12:25:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6BC60B82AC8;
+        Fri,  2 Sep 2022 12:30:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1AE8C43470;
+        Fri,  2 Sep 2022 12:30:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121530;
-        bh=IhVbyVuHrpBEk4YZR0s2ZpQoae/Jxu0YqRmfpMppHkg=;
+        s=korg; t=1662121817;
+        bh=r1vX3nIzj0NgU00yTqlhOhNlBWhKxamxJjekSzxyAww=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nDoKmnzndy05oxlT11L8XMrLTply5fHlVKmo8Nw6byxP9/J9AHuNbg24mgDTybgnN
-         aVTSSX7oMuDO0dToefMqF4OP+nb21c2oG2Crsb1R6OAeZ5KtgOUMvw/EIhZJjBHnYu
-         wmRrgw1dhf/Ft+WcP5z6gI7rGdCYz2DU5hZKZIwY=
+        b=U2Y/uN35G77ppek0E1licM/9RwC21S9XoRPFujdd5mIeobjHyrIliLgNXgQq0ULgK
+         8tl6kgD04vnTdz58+aK7XiB6iUqzAZSWmTIgQIJ+GY1Q19E4b4I3aj8jq/PrX9mEJG
+         2YSBXBU9+7dXUo7mjb85ih/5OEIykpFcl36yHni0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hsin-Yi Wang <hsinyi@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Will Deacon <will@kernel.org>,
-        Michael Bestas <mkbestas@gmail.com>
-Subject: [PATCH 4.19 38/56] arm64: map FDT as RW for early_init_dt_scan()
-Date:   Fri,  2 Sep 2022 14:18:58 +0200
-Message-Id: <20220902121401.651699297@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+f59100a0428e6ded9443@syzkaller.appspotmail.com,
+        Karthik Alapati <mail@karthek.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.4 57/77] HID: hidraw: fix memory leak in hidraw_release()
+Date:   Fri,  2 Sep 2022 14:19:06 +0200
+Message-Id: <20220902121405.572288469@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
-References: <20220902121400.219861128@linuxfoundation.org>
+In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
+References: <20220902121403.569927325@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,118 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hsin-Yi Wang <hsinyi@chromium.org>
+From: Karthik Alapati <mail@karthek.com>
 
-commit e112b032a72c78f15d0c803c5dc6be444c2e6c66 upstream.
+commit a5623a203cffe2d2b84d2f6c989d9017db1856af upstream.
 
-Currently in arm64, FDT is mapped to RO before it's passed to
-early_init_dt_scan(). However, there might be some codes
-(eg. commit "fdt: add support for rng-seed") that need to modify FDT
-during init. Map FDT to RO after early fixups are done.
+Free the buffered reports before deleting the list entry.
 
-Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Reviewed-by: Mike Rapoport <rppt@linux.ibm.com>
-Signed-off-by: Will Deacon <will@kernel.org>
-[mkbestas: fixed trivial conflicts for 4.19 backport]
-Signed-off-by: Michael Bestas <mkbestas@gmail.com>
+BUG: memory leak
+unreferenced object 0xffff88810e72f180 (size 32):
+  comm "softirq", pid 0, jiffies 4294945143 (age 16.080s)
+  hex dump (first 32 bytes):
+    64 f3 c6 6a d1 88 07 04 00 00 00 00 00 00 00 00  d..j............
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff814ac6c3>] kmemdup+0x23/0x50 mm/util.c:128
+    [<ffffffff8357c1d2>] kmemdup include/linux/fortify-string.h:440 [inline]
+    [<ffffffff8357c1d2>] hidraw_report_event+0xa2/0x150 drivers/hid/hidraw.c:521
+    [<ffffffff8356ddad>] hid_report_raw_event+0x27d/0x740 drivers/hid/hid-core.c:1992
+    [<ffffffff8356e41e>] hid_input_report+0x1ae/0x270 drivers/hid/hid-core.c:2065
+    [<ffffffff835f0d3f>] hid_irq_in+0x1ff/0x250 drivers/hid/usbhid/hid-core.c:284
+    [<ffffffff82d3c7f9>] __usb_hcd_giveback_urb+0xf9/0x230 drivers/usb/core/hcd.c:1670
+    [<ffffffff82d3cc26>] usb_hcd_giveback_urb+0x1b6/0x1d0 drivers/usb/core/hcd.c:1747
+    [<ffffffff82ef1e14>] dummy_timer+0x8e4/0x14c0 drivers/usb/gadget/udc/dummy_hcd.c:1988
+    [<ffffffff812f50a8>] call_timer_fn+0x38/0x200 kernel/time/timer.c:1474
+    [<ffffffff812f5586>] expire_timers kernel/time/timer.c:1519 [inline]
+    [<ffffffff812f5586>] __run_timers.part.0+0x316/0x430 kernel/time/timer.c:1790
+    [<ffffffff812f56e4>] __run_timers kernel/time/timer.c:1768 [inline]
+    [<ffffffff812f56e4>] run_timer_softirq+0x44/0x90 kernel/time/timer.c:1803
+    [<ffffffff848000e6>] __do_softirq+0xe6/0x2ea kernel/softirq.c:571
+    [<ffffffff81246db0>] invoke_softirq kernel/softirq.c:445 [inline]
+    [<ffffffff81246db0>] __irq_exit_rcu kernel/softirq.c:650 [inline]
+    [<ffffffff81246db0>] irq_exit_rcu+0xc0/0x110 kernel/softirq.c:662
+    [<ffffffff84574f02>] sysvec_apic_timer_interrupt+0xa2/0xd0 arch/x86/kernel/apic/apic.c:1106
+    [<ffffffff84600c8b>] asm_sysvec_apic_timer_interrupt+0x1b/0x20 arch/x86/include/asm/idtentry.h:649
+    [<ffffffff8458a070>] native_safe_halt arch/x86/include/asm/irqflags.h:51 [inline]
+    [<ffffffff8458a070>] arch_safe_halt arch/x86/include/asm/irqflags.h:89 [inline]
+    [<ffffffff8458a070>] acpi_safe_halt drivers/acpi/processor_idle.c:111 [inline]
+    [<ffffffff8458a070>] acpi_idle_do_entry+0xc0/0xd0 drivers/acpi/processor_idle.c:554
+
+Link: https://syzkaller.appspot.com/bug?id=19a04b43c75ed1092021010419b5e560a8172c4f
+Reported-by: syzbot+f59100a0428e6ded9443@syzkaller.appspotmail.com
+Signed-off-by: Karthik Alapati <mail@karthek.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/include/asm/mmu.h |    2 +-
- arch/arm64/kernel/kaslr.c    |    5 +----
- arch/arm64/kernel/setup.c    |    9 ++++++++-
- arch/arm64/mm/mmu.c          |   15 +--------------
- 4 files changed, 11 insertions(+), 20 deletions(-)
+ drivers/hid/hidraw.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/arch/arm64/include/asm/mmu.h
-+++ b/arch/arm64/include/asm/mmu.h
-@@ -98,7 +98,7 @@ extern void init_mem_pgprot(void);
- extern void create_pgd_mapping(struct mm_struct *mm, phys_addr_t phys,
- 			       unsigned long virt, phys_addr_t size,
- 			       pgprot_t prot, bool page_mappings_only);
--extern void *fixmap_remap_fdt(phys_addr_t dt_phys);
-+extern void *fixmap_remap_fdt(phys_addr_t dt_phys, int *size, pgprot_t prot);
- extern void mark_linear_text_alias_ro(void);
+--- a/drivers/hid/hidraw.c
++++ b/drivers/hid/hidraw.c
+@@ -346,10 +346,13 @@ static int hidraw_release(struct inode *
+ 	unsigned int minor = iminor(inode);
+ 	struct hidraw_list *list = file->private_data;
+ 	unsigned long flags;
++	int i;
  
- #endif	/* !__ASSEMBLY__ */
---- a/arch/arm64/kernel/kaslr.c
-+++ b/arch/arm64/kernel/kaslr.c
-@@ -65,9 +65,6 @@ out:
- 	return default_cmdline;
- }
+ 	mutex_lock(&minors_lock);
  
--extern void *__init __fixmap_remap_fdt(phys_addr_t dt_phys, int *size,
--				       pgprot_t prot);
--
- /*
-  * This routine will be executed with the kernel mapped at its default virtual
-  * address, and if it returns successfully, the kernel will be remapped, and
-@@ -96,7 +93,7 @@ u64 __init kaslr_early_init(u64 dt_phys)
- 	 * attempt at mapping the FDT in setup_machine()
- 	 */
- 	early_fixmap_init();
--	fdt = __fixmap_remap_fdt(dt_phys, &size, PAGE_KERNEL);
-+	fdt = fixmap_remap_fdt(dt_phys, &size, PAGE_KERNEL);
- 	if (!fdt)
- 		return 0;
- 
---- a/arch/arm64/kernel/setup.c
-+++ b/arch/arm64/kernel/setup.c
-@@ -183,9 +183,13 @@ static void __init smp_build_mpidr_hash(
- 
- static void __init setup_machine_fdt(phys_addr_t dt_phys)
- {
--	void *dt_virt = fixmap_remap_fdt(dt_phys);
-+	int size;
-+	void *dt_virt = fixmap_remap_fdt(dt_phys, &size, PAGE_KERNEL);
- 	const char *name;
- 
-+	if (dt_virt)
-+		memblock_reserve(dt_phys, size);
-+
- 	if (!dt_virt || !early_init_dt_scan(dt_virt)) {
- 		pr_crit("\n"
- 			"Error: invalid device tree blob at physical address %pa (virtual address 0x%p)\n"
-@@ -197,6 +201,9 @@ static void __init setup_machine_fdt(phy
- 			cpu_relax();
- 	}
- 
-+	/* Early fixups are done, map the FDT as read-only now */
-+	fixmap_remap_fdt(dt_phys, &size, PAGE_KERNEL_RO);
-+
- 	name = of_flat_dt_get_machine_name();
- 	if (!name)
- 		return;
---- a/arch/arm64/mm/mmu.c
-+++ b/arch/arm64/mm/mmu.c
-@@ -859,7 +859,7 @@ void __set_fixmap(enum fixed_addresses i
- 	}
- }
- 
--void *__init __fixmap_remap_fdt(phys_addr_t dt_phys, int *size, pgprot_t prot)
-+void *__init fixmap_remap_fdt(phys_addr_t dt_phys, int *size, pgprot_t prot)
- {
- 	const u64 dt_virt_base = __fix_to_virt(FIX_FDT);
- 	int offset;
-@@ -912,19 +912,6 @@ void *__init __fixmap_remap_fdt(phys_add
- 	return dt_virt;
- }
- 
--void *__init fixmap_remap_fdt(phys_addr_t dt_phys)
--{
--	void *dt_virt;
--	int size;
--
--	dt_virt = __fixmap_remap_fdt(dt_phys, &size, PAGE_KERNEL_RO);
--	if (!dt_virt)
--		return NULL;
--
--	memblock_reserve(dt_phys, size);
--	return dt_virt;
--}
--
- int __init arch_ioremap_pud_supported(void)
- {
- 	/*
+ 	spin_lock_irqsave(&hidraw_table[minor]->list_lock, flags);
++	for (i = list->tail; i < list->head; i++)
++		kfree(list->buffer[i].value);
+ 	list_del(&list->node);
+ 	spin_unlock_irqrestore(&hidraw_table[minor]->list_lock, flags);
+ 	kfree(list);
 
 
