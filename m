@@ -2,50 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37DA6C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:47:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77E82ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:47:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237679AbiIBMrv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:47:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56704 "EHLO
+        id S237684AbiIBMrz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:47:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237460AbiIBMrS (ORCPT
+        with ESMTP id S237614AbiIBMrU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:47:18 -0400
+        Fri, 2 Sep 2022 08:47:20 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB957F14FD;
-        Fri,  2 Sep 2022 05:34:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33C7FF1B68;
+        Fri,  2 Sep 2022 05:34:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F0CF62119;
-        Fri,  2 Sep 2022 12:34:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C5D8C433D6;
-        Fri,  2 Sep 2022 12:34:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D9640621C5;
+        Fri,  2 Sep 2022 12:32:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4B9CC433D6;
+        Fri,  2 Sep 2022 12:32:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122049;
-        bh=MSnkjPP/MYSfeJHpJPpx1Hxgi4ylFwUpQBUk8PBVVwQ=;
+        s=korg; t=1662121968;
+        bh=Bs2CQBsnUjpIZ+XxHHFSiRhfkB928kkGSKMck2e8gws=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UkbhBaxt5sQlI765m99eY3C7bUQ7zQo09E4OryzStx5pZEknWr8jGNSSKn9uCxJUF
-         9kront30yvHezxHbKEMSPY14zwk3usOUefHvkHrO+7EJaG0dtuwn6+SDGhMK/35JN+
-         Ws6S55kYYR7oNYz+xdOwrX425s1q1KLOrOk+pgh8=
+        b=2S7f3DLAcGIv/TbAkH8hmjUJtkK4Db4EdFarO78GYsnrHDzOoQ+0t54Lfv1TAnY5h
+         m7DoUKjgHtFy36be93UiiEMqmd2ljIG5e7fB6hNPqLvIgEPWnkZnPi5mc4Dbm9nmRz
+         TnfkRiEBxoeEY5OadduRKnL1YcUz8oZYffTYCDPs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Liam R. Howlett" <Liam.Howlett@oracle.com>,
-        syzbot+da54fa8d793ca89c741f@syzkaller.appspotmail.com,
-        Todd Kjos <tkjos@google.com>,
-        =?UTF-8?q?Arve=20Hj=C3=B8nnev=C3=A5g?= <arve@android.com>,
-        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Martijn Coenen <maco@android.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.15 71/73] android: binder: fix lockdep check on clearing vma
-Date:   Fri,  2 Sep 2022 14:19:35 +0200
-Message-Id: <20220902121406.747072796@linuxfoundation.org>
+        stable@vger.kernel.org, Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        linux-input@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.15 27/73] HID: steam: Prevent NULL pointer dereference in steam_{recv,send}_report
+Date:   Fri,  2 Sep 2022 14:18:51 +0200
+Message-Id: <20220902121405.336885912@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
 References: <20220902121404.435662285@linuxfoundation.org>
@@ -57,57 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liam Howlett <liam.howlett@oracle.com>
+From: Lee Jones <lee.jones@linaro.org>
 
-commit b0cab80ecd54ae3b2356bb081af0bffd538c8265 upstream.
+commit cd11d1a6114bd4bc6450ae59f6e110ec47362126 upstream.
 
-When munmapping a vma, the mmap_lock can be degraded to a write before
-calling close() on the file handle.  The binder close() function calls
-binder_alloc_set_vma() to clear the vma address, which now has a lock dep
-check for writing on the mmap_lock.  Change the lockdep check to ensure
-the reading lock is held while clearing and keep the write check while
-writing.
+It is possible for a malicious device to forgo submitting a Feature
+Report.  The HID Steam driver presently makes no prevision for this
+and de-references the 'struct hid_report' pointer obtained from the
+HID devices without first checking its validity.  Let's change that.
 
-Link: https://lkml.kernel.org/r/20220627151857.2316964-1-Liam.Howlett@oracle.com
-Fixes: 472a68df605b ("android: binder: stop saving a pointer to the VMA")
-Signed-off-by: Liam R. Howlett <Liam.Howlett@oracle.com>
-Reported-by: syzbot+da54fa8d793ca89c741f@syzkaller.appspotmail.com
-Acked-by: Todd Kjos <tkjos@google.com>
-Cc: "Arve Hjønnevåg" <arve@android.com>
-Cc: Christian Brauner (Microsoft) <brauner@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Hridya Valsaraju <hridya@google.com>
-Cc: Joel Fernandes <joel@joelfernandes.org>
-Cc: Martijn Coenen <maco@android.com>
-Cc: Suren Baghdasaryan <surenb@google.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Cc: Jiri Kosina <jikos@kernel.org>
+Cc: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc: linux-input@vger.kernel.org
+Fixes: c164d6abf3841 ("HID: add driver for Valve Steam Controller")
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/android/binder_alloc.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/hid/hid-steam.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/drivers/android/binder_alloc.c
-+++ b/drivers/android/binder_alloc.c
-@@ -315,12 +315,19 @@ static inline void binder_alloc_set_vma(
- {
- 	unsigned long vm_start = 0;
+--- a/drivers/hid/hid-steam.c
++++ b/drivers/hid/hid-steam.c
+@@ -134,6 +134,11 @@ static int steam_recv_report(struct stea
+ 	int ret;
  
-+	/*
-+	 * Allow clearing the vma with holding just the read lock to allow
-+	 * munmapping downgrade of the write lock before freeing and closing the
-+	 * file using binder_alloc_vma_close().
-+	 */
- 	if (vma) {
- 		vm_start = vma->vm_start;
- 		alloc->vma_vm_mm = vma->vm_mm;
-+		mmap_assert_write_locked(alloc->vma_vm_mm);
-+	} else {
-+		mmap_assert_locked(alloc->vma_vm_mm);
- 	}
+ 	r = steam->hdev->report_enum[HID_FEATURE_REPORT].report_id_hash[0];
++	if (!r) {
++		hid_err(steam->hdev, "No HID_FEATURE_REPORT submitted -  nothing to read\n");
++		return -EINVAL;
++	}
++
+ 	if (hid_report_len(r) < 64)
+ 		return -EINVAL;
  
--	mmap_assert_write_locked(alloc->vma_vm_mm);
- 	alloc->vma_addr = vm_start;
- }
+@@ -165,6 +170,11 @@ static int steam_send_report(struct stea
+ 	int ret;
+ 
+ 	r = steam->hdev->report_enum[HID_FEATURE_REPORT].report_id_hash[0];
++	if (!r) {
++		hid_err(steam->hdev, "No HID_FEATURE_REPORT submitted -  nothing to read\n");
++		return -EINVAL;
++	}
++
+ 	if (hid_report_len(r) < 64)
+ 		return -EINVAL;
  
 
 
