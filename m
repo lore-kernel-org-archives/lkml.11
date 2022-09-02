@@ -2,119 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20BE9ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 00:34:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25DE6ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 00:36:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234425AbiIBAeM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 20:34:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42596 "EHLO
+        id S232390AbiIBAgP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 20:36:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233931AbiIBAeI (ORCPT
+        with ESMTP id S229839AbiIBAgM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 20:34:08 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 846179F1BE
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 17:34:07 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id s11so714928edd.13
-        for <linux-kernel@vger.kernel.org>; Thu, 01 Sep 2022 17:34:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=g0W4XosBFsOU9OJyk6RCXP1Ph74BaHmTWPXYbDZyi0E=;
-        b=g7NAxXDM5jwt2ZQIuC23zS+Gj6bX7gmaIfqxEAECYQiGWpEAFQa1f2CsL5nh5ft/Y9
-         AIr2al38oLiJRpzGtrGgnk4w9IfIMWUonkE+9DZ6k2P21Kl0EvuSxr29PbDA1+1em1cd
-         dYTEjCtfgKnZWDVIJDxxMjQp1lOCGSGhpovijuO0b3qiav5w11KiSdLi8IeR1Geo5r/F
-         b3Rjza8J92KowwOKuk21IB4N0MxylAQhqeD2/xpXuUb7S+NMLxhQTDWf08GnJke1P5zt
-         6uPpCh2NkLp/0pddJFPMNAMbbgzJsAElawX2udhNU0JRHIMRapcX8PefW1fFTfaGdcet
-         aB2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=g0W4XosBFsOU9OJyk6RCXP1Ph74BaHmTWPXYbDZyi0E=;
-        b=EpKG4UsgGfBSsV0mzcnLcwmP9zn6zUQCHW4nKGxwri23GO1TxcjamUTCaWf512vdEO
-         coM01sWUF2c22igrYKsInRjKkywrVy0FaUWpp/q4RdWJYGJ1Uj9WowV5a3htDe68eh5u
-         JD58iDeoQPykiXyQFgZqo33X5OeaZiGQQScOXXlkIPeQn9vYD0JpITmOmHO0jypJVB1e
-         Rn02TBrrDRSSEEYXsOAJtyu7gpEXzr3R84C3e2GDlvdgjgBnkop3HL/Vlo4Uc9kGH8yc
-         0sMTBY5dejVZTeLd+JlfWchjerWHvrXIY/Oj9PntEBr/WrQJiRWffRIpwKtSQy4ibHJk
-         S2/w==
-X-Gm-Message-State: ACgBeo3h79vQCRzLDvAVxN+91HzLLJ/miWn5327qy99X46hVt+6Xr2VD
-        bEW7EIo2+AexKnpUWkvpFfsivR+3CO56CSe+Sz5Q2Q==
-X-Google-Smtp-Source: AA6agR7L1g+GrifIuIL2RvuO0MF4C2Vtm6LL1S4dqJ/PngqADbOmXg04ta+aDasVtIdRN9a8Nlvw5KjebtJPyg0x6M0=
-X-Received: by 2002:a05:6402:3227:b0:448:706c:185d with SMTP id
- g39-20020a056402322700b00448706c185dmr18264220eda.357.1662078845879; Thu, 01
- Sep 2022 17:34:05 -0700 (PDT)
+        Thu, 1 Sep 2022 20:36:12 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23D7B564D9
+        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 17:36:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662078971; x=1693614971;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=tectJUvngPqB0r7zPtOAwr1pT8QaXGhQmBBhQQmd3HQ=;
+  b=JYndgoyeels+bW3wUXhN1+Sl4uh0T7wN6EfXy+6hy/EgcLISKBFyJjMX
+   5wrJlbezoLIC99YQtO7bXP5TjwU6u1fpgz14/upAMfa88v0rmwxgWzyic
+   T9+sXjynT5t45WJtSpdRCVH1JSaGPT0MFCpJWwmlVzlLyWigWxeKKKPeY
+   SEATU8e7LaJZpXMRfkURJZaGX4p3NGNKKuHNqWUXnq/arH97bva9tnen3
+   3Ui1NSxnG0eaeizQcujL9eE/nW8BV2CEv6rf+QqW4r2wdDntbu5BHzoWi
+   jR7S2pZe1I8mPpJOVnuP/eIY29cAt1vJEiIFjDFZqBKN+VcXeo5W3O4Cd
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="296644517"
+X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
+   d="scan'208";a="296644517"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 17:36:09 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,281,1654585200"; 
+   d="scan'208";a="563722151"
+Received: from lkp-server02.sh.intel.com (HELO b138c9e8658c) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 01 Sep 2022 17:36:08 -0700
+Received: from kbuild by b138c9e8658c with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oTufH-0000wR-1H;
+        Fri, 02 Sep 2022 00:36:07 +0000
+Date:   Fri, 2 Sep 2022 08:35:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Johannes Berg <johannes.berg@intel.com>
+Cc:     kbuild-all@lists.01.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:wireless/wireless-next/mld-wip 15/20]
+ net/mac80211/link.c:398:51: error: 'BSS_CHANGED_EHT_PUNCTURING' undeclared
+Message-ID: <202209020842.MRD1g4vr-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220830233129.30610-1-samitolvanen@google.com> <YxEh+pLyOyPalW1u@dev-arch.thelio-3990X>
-In-Reply-To: <YxEh+pLyOyPalW1u@dev-arch.thelio-3990X>
-From:   Sami Tolvanen <samitolvanen@google.com>
-Date:   Thu, 1 Sep 2022 17:33:29 -0700
-Message-ID: <CABCJKucP5nXGiCTTCEPUGYo5Z9A9qaQkJ6_kXTOfw-o-=TYH0g@mail.gmail.com>
-Subject: Re: [PATCH v4 00/21] KCFI support
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>, X86 ML <x86@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-hardening@vger.kernel.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Nathan,
+tree:   https://github.com/ammarfaizi2/linux-block wireless/wireless-next/mld-wip
+head:   10cf17b0508f56ee45e15ad2a612b64999264d4f
+commit: 43af0cd81d9314a71d9824514efd1f4c6fa3b437 [15/20] wifi: mac80211: implement link switching
+config: i386-randconfig-a005 (https://download.01.org/0day-ci/archive/20220902/202209020842.MRD1g4vr-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/ammarfaizi2/linux-block/commit/43af0cd81d9314a71d9824514efd1f4c6fa3b437
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block wireless/wireless-next/mld-wip
+        git checkout 43af0cd81d9314a71d9824514efd1f4c6fa3b437
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/wireless/ath/ath9k/ net/mac80211/
 
-On Thu, Sep 1, 2022 at 2:19 PM Nathan Chancellor <nathan@kernel.org> wrote:
-> I took this series for a spin on arm64 and x86_64.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Thanks for testing!
+All errors (new ones prefixed by >>):
 
-> I did not see any runtime issues on my arm64 or AMD test machines but I
-> do see a set of failures on my two Intel test machines when accessing
-> the files in /sys/devices/pci0000:00/0000:00:02.0/drm/card0/gt/gt0:
+   net/mac80211/link.c: In function '_ieee80211_set_active_links':
+>> net/mac80211/link.c:398:51: error: 'BSS_CHANGED_EHT_PUNCTURING' undeclared (first use in this function)
+     398 |                                                   BSS_CHANGED_EHT_PUNCTURING);
+         |                                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~
+   net/mac80211/link.c:398:51: note: each undeclared identifier is reported only once for each function it appears in
 
-Yes, I suspect there are a few sysfs type mismatches left to fix
-still. I believe Kees was looking into these earlier.
 
-> The source of those is drivers/gpu/drm/i915/gt/intel_gt_sysfs_pm.c. I
-> have not looked too closely yet but the fix should be something along
-> the lines of commit 58606220a2f1 ("drm/i915: Fix CFI violation with
-> show_dynamic_id()").
+vim +/BSS_CHANGED_EHT_PUNCTURING +398 net/mac80211/link.c
 
-I don't have hardware for testing this driver, but that looks like a
-typical kobj_attribute / device_attribute mismatch, which happens to
-work because struct device starts with a kobject and the attribute
-structure is identical. I can take a look at this next week.
+   304	
+   305	static int _ieee80211_set_active_links(struct ieee80211_sub_if_data *sdata,
+   306					       u16 active_links)
+   307	{
+   308		struct ieee80211_bss_conf *link_confs[IEEE80211_MLD_MAX_NUM_LINKS];
+   309		struct ieee80211_local *local = sdata->local;
+   310		u16 old_active = sdata->vif.active_links;
+   311		unsigned long rem = old_active & ~active_links;
+   312		unsigned long add = active_links & ~old_active;
+   313		struct sta_info *sta;
+   314		unsigned int link_id;
+   315		int ret, i;
+   316	
+   317		if (sdata->vif.type != NL80211_IFTYPE_STATION)
+   318			return -EINVAL;
+   319	
+   320		/* cannot activate links that don't exist */
+   321		if (active_links & ~sdata->vif.valid_links)
+   322			return -EINVAL;
+   323	
+   324		/* nothing to do */
+   325		if (old_active == active_links)
+   326			return 0;
+   327	
+   328		for (i = 0; i < IEEE80211_MLD_MAX_NUM_LINKS; i++)
+   329			link_confs[i] = sdata_dereference(sdata->vif.link_conf[i],
+   330							  sdata);
+   331	
+   332		if (add) {
+   333			sdata->vif.active_links |= active_links;
+   334			ret = drv_change_vif_links(local, sdata,
+   335						   old_active,
+   336						   sdata->vif.active_links,
+   337						   link_confs);
+   338			if (ret) {
+   339				sdata->vif.active_links = old_active;
+   340				return ret;
+   341			}
+   342		}
+   343	
+   344		for_each_set_bit(link_id, &rem, IEEE80211_MLD_MAX_NUM_LINKS) {
+   345			struct ieee80211_link_data *link;
+   346	
+   347			link = sdata_dereference(sdata->link[link_id], sdata);
+   348	
+   349			/* FIXME: kill TDLS connections on the link */
+   350	
+   351			ieee80211_link_release_channel(link);
+   352		}
+   353	
+   354		list_for_each_entry(sta, &local->sta_list, list) {
+   355			if (sdata != sta->sdata)
+   356				continue;
+   357			ret = drv_change_sta_links(local, sdata, &sta->sta,
+   358						   old_active,
+   359						   old_active | active_links);
+   360			WARN_ON(ret); // FIXME //
+   361		}
+   362	
+   363		ret = ieee80211_key_switch_links(sdata, rem, add);
+   364		WARN_ON(ret); // FIXME //
+   365	
+   366		list_for_each_entry(sta, &local->sta_list, list) {
+   367			if (sdata != sta->sdata)
+   368				continue;
+   369			ret = drv_change_sta_links(local, sdata, &sta->sta,
+   370						   old_active | active_links,
+   371						   active_links);
+   372			WARN_ON(ret); // FIXME //
+   373		}
+   374	
+   375		for_each_set_bit(link_id, &add, IEEE80211_MLD_MAX_NUM_LINKS) {
+   376			struct ieee80211_link_data *link;
+   377	
+   378			link = sdata_dereference(sdata->link[link_id], sdata);
+   379	
+   380			ret = ieee80211_link_use_channel(link, &link->conf->chandef,
+   381							 IEEE80211_CHANCTX_SHARED);
+   382			WARN_ON(ret); // FIXME //
+   383	
+   384			ieee80211_link_info_change_notify(sdata, link,
+   385							  BSS_CHANGED_ERP_CTS_PROT |
+   386							  BSS_CHANGED_ERP_PREAMBLE |
+   387							  BSS_CHANGED_ERP_SLOT |
+   388							  BSS_CHANGED_HT |
+   389							  BSS_CHANGED_BASIC_RATES |
+   390							  BSS_CHANGED_BSSID |
+   391							  BSS_CHANGED_CQM |
+   392							  BSS_CHANGED_QOS |
+   393							  BSS_CHANGED_TXPOWER |
+   394							  BSS_CHANGED_BANDWIDTH |
+   395							  BSS_CHANGED_TWT |
+   396							  BSS_CHANGED_HE_OBSS_PD |
+   397							  BSS_CHANGED_HE_BSS_COLOR |
+ > 398							  BSS_CHANGED_EHT_PUNCTURING);
+   399			ieee80211_mgd_set_link_qos_params(link);
+   400		}
+   401	
+   402		old_active = sdata->vif.active_links;
+   403		sdata->vif.active_links = active_links;
+   404	
+   405		if (rem) {
+   406			ret = drv_change_vif_links(local, sdata, old_active,
+   407						   active_links, link_confs);
+   408			WARN_ON(ret); // FIXME //
+   409		}
+   410	
+   411		return 0;
+   412	}
+   413	
 
-> Interestingly, I do not see the KVM failure [1] that I reported anymore.
-> I do not see an obvious fix for it in this series or -next though, could
-> it have been an issue with an earlier revision of kCFI on the compiler
-> side?
-
-Most likely the compiler either converted it into a direct call, or
-inlined it. There are a few type mismatches in the kernel still that
-don't trip KCFI because they're optimized into direct calls.
-
-> I do see a few new objtool warnings as well:
->
-> vmlinux.o: warning: objtool: apply_relocate_add+0x34: relocation to !ENDBR: memcpy+0x0
-> vmlinux.o: warning: objtool: ___ksymtab+__memcpy+0x0: data relocation to !ENDBR: memcpy+0x0
-> vmlinux.o: warning: objtool: ___ksymtab+memcpy+0x0: data relocation to !ENDBR: memcpy+0x0
-
-That's interesting. I can only reproduce this warning with
-allmodconfig+LTO, even though the relocation exists in all builds (the
-code makes an indirect call to memcpy) and memcpy (aliased to
-__memcpy) doesn't start with endbr. I'll have to take a closer look at
-why this warning only appears with LTO.
-
-Sami
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
