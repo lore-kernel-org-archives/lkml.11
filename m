@@ -2,263 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B920ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 16:17:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92E3FC54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 16:17:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236585AbiIBQRc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 12:17:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44982 "EHLO
+        id S235920AbiIBQRt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 12:17:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236310AbiIBQRE (ORCPT
+        with ESMTP id S237055AbiIBQRQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 12:17:04 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDE292ED60
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 09:14:18 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id x23so2315785pll.7
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 09:14:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=/0xsXE0EPSbpRJFOjxUijygEX9+RjUSgoLGhdmwtU+4=;
-        b=o+fYtvokvsIUyCNZ1p2KsaYz5WsCP3l5mewDISga8KvXjaseUFSke/OGxVmW1JCII4
-         NSbF0RaygGHFHe4CdZTAgXWl/gEXcmSO2hJDVsymNvW+78VIiYFUwJuXARUCOMzwAQ52
-         AAwo6Z2RrLYnQGwDrfsYVx5S8Um09sGNvNyLoJzAqiWBx5pP3bVy4aFKFVKP88w2Hy70
-         lSp87N2kMlKAr9UuyCU9L4NMNG90XvYpkEMO4ozCDYw/dZ1XfEt/eGF9e24FfnZAJ9dE
-         cONkT1Sxsb3fhRz1JEeeaeT6lVGv/DT1IG55kdR9X/Y9f0OVU1UXrnGeOTYzfiR20EoB
-         HdSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=/0xsXE0EPSbpRJFOjxUijygEX9+RjUSgoLGhdmwtU+4=;
-        b=Po5gNz+27Et1i+VEFamBotNBjd398/Nqc3pUYy/8GGigg3JVAQA9yixpk5T9PZAuez
-         RO0ZsFLjUv8493ZcdJXhcB6CU+l5OHH3jGJf0RMYfz+d2TU/egzA2jyWPGnkAIqWzW8V
-         PDN8oZ0rce+P6jC7bgJ0FbndgYIten0jS4VuKrtOTh0ND4vkU7kUu8xnQOTFGg5vodBH
-         WMpbJzL1O9rOewZsrT1tzdAXgD5pCU+PTLJ6hw/DSj2oFSdNQuMnfPbOO1B+fA0Ylcb0
-         1YoQ/WB0DJ26DbQRjw24vr3/GokVVHZ5oc2TJCzqTftqQwxRGbqvjT7fKdjHfnDERQwK
-         MEqQ==
-X-Gm-Message-State: ACgBeo05PqIOp6P/5/Cl9PZlAP+/NCjvx/iTngjlZMmlkVs4TgTVk3Ev
-        CqBI+CviQK4NBlVQ0GWIdAE=
-X-Google-Smtp-Source: AA6agR7SVYSKjW75WNmK2Ps4QYq2NyFZO/PpGvoO49yKoZ/B80DZxmMoz5ol9kqgO2RNzhJFAKQV1g==
-X-Received: by 2002:a17:90b:3b8d:b0:1fe:1fbe:b043 with SMTP id pc13-20020a17090b3b8d00b001fe1fbeb043mr5778608pjb.63.1662135257954;
-        Fri, 02 Sep 2022 09:14:17 -0700 (PDT)
-Received: from gmail.com ([2601:600:8500:5f14:d627:c51e:516e:a105])
-        by smtp.gmail.com with ESMTPSA id fv4-20020a17090b0e8400b001fb350026f1sm1644343pjb.4.2022.09.02.09.14.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 09:14:17 -0700 (PDT)
-Date:   Fri, 2 Sep 2022 09:14:15 -0700
-From:   Andrei Vagin <avagin@gmail.com>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Florian Weimer <fweimer@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Kees Cook <keescook@chromium.org>,
-        Alexey Izbyshev <izbyshev@ispras.ru>
-Subject: Re: Potentially undesirable interactions between vfork() and time
- namespaces
-Message-ID: <YxIr15QTmYb4Uojq@gmail.com>
-References: <YxAq2jYvGG8QOypu@gmail.com>
- <87czcfhsme.fsf@email.froward.int.ebiederm.org>
+        Fri, 2 Sep 2022 12:17:16 -0400
+Received: from m12-11.163.com (m12-11.163.com [220.181.12.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1BAD32CC9B
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 09:15:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=TEjnZ
+        6xt2wlLT8EUIt9/RhmVBAzoRToS1Rn3ukjQe90=; b=XmYAQSNxPRIwo3y9TMEkh
+        7YS3HEqS7+NAUd5590uGeDowzqSWwRtCbgR5mFyUfUF+zIpVBopglFQ0fcwswmhm
+        LtSW5avMuxtUTXmUb2OgaXkzp7PBpoKHQFfQJaRtyI998rSanVyOXN37BX8UkBO5
+        2vthxVp47ByIo1ZBD8XfQg=
+Received: from ubuntu.localdomain (unknown [183.159.78.175])
+        by smtp7 (Coremail) with SMTP id C8CowAA3sgwdKBJj3tXsCw--.41444S4;
+        Fri, 02 Sep 2022 23:58:22 +0800 (CST)
+From:   Li Qiang <liq3ea@163.com>
+To:     naveen.n.rao@linux.ibm.com, anil.s.keshavamurthy@intel.com,
+        davem@davemloft.net, mhiramat@kernel.org
+Cc:     linux-kernel@vger.kernel.org, liq3ea@gmail.com,
+        Li Qiang <liq3ea@163.com>
+Subject: [PATCH] kprobe: reverse kp->flags when arm_kprobe failed
+Date:   Fri,  2 Sep 2022 08:58:20 -0700
+Message-Id: <20220902155820.34755-1-liq3ea@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=koi8-r
-Content-Disposition: inline
-In-Reply-To: <87czcfhsme.fsf@email.froward.int.ebiederm.org>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: C8CowAA3sgwdKBJj3tXsCw--.41444S4
+X-Coremail-Antispam: 1Uf129KBjvdXoWrtF17KF4UWrWkWF4UtFyUtrb_yoW3ZFX_Aa
+        4vqrZ09r4YyFsxZr4YyrW5urs2grsa9FWfCFy0qFW5Ka17GrnIgan5uFy5Aa4Fga4DXF9x
+        Arn8Zrs0vFyYqjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRA0eQ3UUUUU==
+X-Originating-IP: [183.159.78.175]
+X-CM-SenderInfo: 5oltjvrd6rljoofrz/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Sep 01, 2022 at 01:11:37PM -0500, Eric W. Biederman wrote:
-> Andrei Vagin <avagin@gmail.com> writes:
-> 
-> > On Tue, Aug 30, 2022 at 6:18 PM Andrei Vagin <avagin@gmail.com> wrote:
-> >>On Tue, Aug 30, 2022 at 10:49:43PM +0300, Alexey Izbyshev wrote:
-> > <snip>
-> >>> @@ -1030,6 +1033,10 @@ static int exec_mmap(struct mm_struct *mm)
-> >>>         tsk->mm->vmacache_seqnum = 0;
-> >>>         vmacache_flush(tsk);
-> >>>         task_unlock(tsk);
-> >>> +
-> >>> +       if (vfork)
-> >>> +               timens_on_fork(tsk->nsproxy, tsk);
-> >>> +
-> >>> 
-> >>> Similarly, even after a normal vfork(), time namespace switch could be
-> >>> silently skipped if the parent dies before "tsk->vfork_done" is read. Again,
-> >>> I don't know whether anybody cares, but this behavior seems non-obvious and
-> >>> probably unintended to me.
-> >> This is the more interesting case. I will try to find out how we can
-> >> handle it properly.
-> >
-> > It might not be a good idea to use vfork_done in this case. Let's
-> > think about what we have and what we want to change. We don't want to
-> > allow switching timens if a process mm is used by someone else. But we
-> > forgot to handle execve that creates a new mm, and we can't change this
-> > behavior right now because it can affect current users. Right?
-> 
-> What we can't changes are things that will break existing programs.  If
-> existing programs don't care we can change the behavior of the kernel.
+In aggregate kprobe case, when arm_kprobe failed,
+we need set the kp->flags with KPROBE_FLAG_DISABLED again.
+If not, the 'kp' kprobe will been considered as enabled
+but it actually not enabled.
 
-I agree that it is very unlikely that anyone will notice
-these changes. And it is hard to imagine that anyone uses the old
-behavior intentionally.
+Signed-off-by: Li Qiang <liq3ea@163.com>
+---
+ kernel/kprobes.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-> 
-> > So maybe the best choice, in this case, is to change behavior by adding
-> > a new control that enables it. The first interface that comes to my mind
-> > is to introduce a new ioctl for a namespace file descriptor. Here is a
-> > draft patch below that should help to understand what I mean.
-> 
-> I don't think adding a new control works, because programs that are
-> calling vfork or posix_spawn today will stop working.
-> 
-> We should recognize that basing things off of CLONE_VFORK was a bad idea
-> as CLONE_VFORK is all about waiting for the created task to exec or
-> exit, and really has nothing to do with creating a new mm.
-> 
-> Instead I think the rule should be that a new time namespaces is
-> installed as soon as we have a new mm.
-> 
-> That will be a behavioral change if the time ns is unshared and then the
-> program exec's instead of forking children, but I suspect it is the
-> proper behavior all the same, and that existing userspace won't care.
-> Especially since all of the vfork_done work is new behavior as
-> of v6.0-rc1.
-> 
-> Ugh.  I just spotted another bug.  The function timens_on_fork as
-> written is not safe to call without first creating a fresh copy
-> of the nsproxy, and we don't do that during exec.  Because nsproxy
-> is shared between tasks and processes updating the values needs to
-> create a new nsproxy or other tasks/processes can be affected.
-> Not hard to handle just something that needs to be addressed.
+diff --git a/kernel/kprobes.c b/kernel/kprobes.c
+index 08350e35a..333454df5 100644
+--- a/kernel/kprobes.c
++++ b/kernel/kprobes.c
+@@ -2424,8 +2424,11 @@ int enable_kprobe(struct kprobe *kp)
+ 	if (!kprobes_all_disarmed && kprobe_disabled(p)) {
+ 		p->flags &= ~KPROBE_FLAG_DISABLED;
+ 		ret = arm_kprobe(p);
+-		if (ret)
++		if (ret) {
+ 			p->flags |= KPROBE_FLAG_DISABLED;
++			if (p != kp)
++				kp->flags |= KPROBE_FLAG_DISABLED;
++		}
+ 	}
+ out:
+ 	mutex_unlock(&kprobe_mutex);
+-- 
+2.25.1
 
-You are right. Thanks.
-
-> 
-> Say something like this:
-> 
-> diff --git a/fs/exec.c b/fs/exec.c
-> index 9a5ca7b82bfc..8a6947e631dd 100644
-> --- a/fs/exec.c
-> +++ b/fs/exec.c
-> @@ -979,12 +979,10 @@ static int exec_mmap(struct mm_struct *mm)
->  {
->  	struct task_struct *tsk;
->  	struct mm_struct *old_mm, *active_mm;
-> -	bool vfork;
->  	int ret;
->  
->  	/* Notify parent that we're no longer interested in the old VM */
->  	tsk = current;
-> -	vfork = !!tsk->vfork_done;
->  	old_mm = current->mm;
->  	exec_mm_release(tsk, old_mm);
->  	if (old_mm)
-> @@ -1030,9 +1028,6 @@ static int exec_mmap(struct mm_struct *mm)
->  	vmacache_flush(tsk);
->  	task_unlock(tsk);
->  
-> -	if (vfork)
-> -		timens_on_fork(tsk->nsproxy, tsk);
-> -
->  	if (old_mm) {
->  		mmap_read_unlock(old_mm);
->  		BUG_ON(active_mm != old_mm);
-> @@ -1303,6 +1298,10 @@ int begin_new_exec(struct linux_binprm * bprm)
->  
->  	bprm->mm = NULL;
->  
-> +	retval = exec_task_namespaces();
-> +	if (retval)
-> +		goto out_unlock;
-> +
->  #ifdef CONFIG_POSIX_TIMERS
->  	spin_lock_irq(&me->sighand->siglock);
->  	posix_cpu_timers_exit(me);
-> diff --git a/include/linux/nsproxy.h b/include/linux/nsproxy.h
-> index cdb171efc7cb..fee881cded01 100644
-> --- a/include/linux/nsproxy.h
-> +++ b/include/linux/nsproxy.h
-> @@ -94,6 +94,7 @@ static inline struct cred *nsset_cred(struct nsset *set)
->  int copy_namespaces(unsigned long flags, struct task_struct *tsk);
->  void exit_task_namespaces(struct task_struct *tsk);
->  void switch_task_namespaces(struct task_struct *tsk, struct nsproxy *new);
-> +int exec_task_namespaces(void);
->  void free_nsproxy(struct nsproxy *ns);
->  int unshare_nsproxy_namespaces(unsigned long, struct nsproxy **,
->  	struct cred *, struct fs_struct *);
-> diff --git a/kernel/fork.c b/kernel/fork.c
-> index 90c85b17bf69..b4a799d9c50f 100644
-> --- a/kernel/fork.c
-> +++ b/kernel/fork.c
-> @@ -2043,18 +2043,6 @@ static __latent_entropy struct task_struct *copy_process(
->  			return ERR_PTR(-EINVAL);
->  	}
->  
-> -	/*
-> -	 * If the new process will be in a different time namespace
-> -	 * do not allow it to share VM or a thread group with the forking task.
-> -	 *
-> -	 * On vfork, the child process enters the target time namespace only
-> -	 * after exec.
-> -	 */
-> -	if ((clone_flags & (CLONE_VM | CLONE_VFORK)) == CLONE_VM) {
-> -		if (nsp->time_ns != nsp->time_ns_for_children)
-> -			return ERR_PTR(-EINVAL);
-> -	}
-
-pls don't remove this part. It was one of the concerns that vfork
-doesn't work after unshare(CLONE_NEWTIME), but it is one of the standard
-ways of creating a new process. For example, posix_spawn uses it.
-
-> -
->  	if (clone_flags & CLONE_PIDFD) {
->  		/*
->  		 * - CLONE_DETACHED is blocked so that we can potentially
-> diff --git a/kernel/nsproxy.c b/kernel/nsproxy.c
-> index b4cbb406bc28..b6647846fe42 100644
-> --- a/kernel/nsproxy.c
-> +++ b/kernel/nsproxy.c
-> @@ -255,6 +255,24 @@ void exit_task_namespaces(struct task_struct *p)
->  	switch_task_namespaces(p, NULL);
->  }
->  
-> +int exec_task_namespaces(void)
-> +{
-> +	struct task_struct *tsk = current;
-> +	struct nsproxy *new;
-> +
-> +	if (tsk->nsproxy->time_ns_for_children == tsk->nsproxy->time_ns)
-> +		return 0;
-> +
-> +	new = create_new_namespaces(0, tsk, current_user_ns(), tsk->fs);
-> +	if (IS_ERR(new))
-> +		return PTR_ERR(new);
-> +
-> +	timens_on_fork(new, tsk);
-> +	switch_task_namespaces(tsk, new);
-> +	return 0;
-> +}
-> +
-> +
->  static int check_setns_flags(unsigned long flags)
->  {
->  	if (!flags || (flags & ~(CLONE_NEWNS | CLONE_NEWUTS | CLONE_NEWIPC |
-> 
-> 
-> 
-> To keep things from being too confusing it probably makes sense to
-> rename the nsproxy variable from time_ns_for_children to
-> time_ns_for_new_mm.  Likewise timens_on_fork can be renamed
-> timens_on_new_mm.
-> 
-> But that would be follow up work.
-> 
-> How does the above change sound to folks?
-
-It looks good to me.
-
-Thanks,
-Andrei
