@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBEA7C54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:46:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AA98ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:46:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237385AbiIBMqO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:46:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53788 "EHLO
+        id S237465AbiIBMqT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:46:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237507AbiIBMnt (ORCPT
+        with ESMTP id S237498AbiIBMnr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:43:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63861EE4BD;
-        Fri,  2 Sep 2022 05:32:38 -0700 (PDT)
+        Fri, 2 Sep 2022 08:43:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94461E86BA;
+        Fri,  2 Sep 2022 05:32:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 43E94B82AD5;
-        Fri,  2 Sep 2022 12:32:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF223C433D6;
-        Fri,  2 Sep 2022 12:32:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CE56620E1;
+        Fri,  2 Sep 2022 12:30:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53B60C433C1;
+        Fri,  2 Sep 2022 12:30:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121953;
-        bh=lV7mb2d2P7zCPfmJmyz0dYwCOsfkfJLOefpZXPPvb/4=;
+        s=korg; t=1662121801;
+        bh=h9Omd5d/MFc2Q3U8UrgU16es4Zq80YP3MfGWfzDOvkk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dYSK+/quhCTFcXJ8NoCZvUehwp6avjtH6kjeS2Z3HSxeAmsJtWFUKEj6fgKtdOMOO
-         JwGLaxgKl7r0H4RdwtzYFeJOwQKrJka2303CWBxHSxqH3tBGqcCBCT+qno9K25ckuk
-         lVIKM5zY9tXhyFGAWAvUt3E3YoqqukhdJIZ/a+aU=
+        b=dRaEsTj+msdUe/LW381pD0uNMUdvTpFAfMqpmu7LNKzVLAhU4Q+Ada95zveWF6hHA
+         rDFDDyQfdiwyFYPuoZ4BCNnddtYTjppyVo04TC1HsNVta1Hz3+JKZwqN31+QgOqbae
+         Duj378V70XSog+/EW+ajESF61x0Spsff9HzUZmHc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Michael=20H=C3=BCbner?= <michaelh.95@t-online.de>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.15 40/73] HID: thrustmaster: Add sparco wheel and fix array length
-Date:   Fri,  2 Sep 2022 14:19:04 +0200
-Message-Id: <20220902121405.761983346@linuxfoundation.org>
+        stable@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
+        Florian Westphal <fw@strlen.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 70/77] netfilter: conntrack: NF_CONNTRACK_PROCFS should no longer default to y
+Date:   Fri,  2 Sep 2022 14:19:19 +0200
+Message-Id: <20220902121406.003382579@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
-References: <20220902121404.435662285@linuxfoundation.org>
+In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
+References: <20220902121403.569927325@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,37 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Hübner <michaelh.95@t-online.de>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
 
-commit d9a17651f3749e69890db57ca66e677dfee70829 upstream.
+[ Upstream commit aa5762c34213aba7a72dc58e70601370805fa794 ]
 
-Add device id for the Sparco R383 Mod wheel.
+NF_CONNTRACK_PROCFS was marked obsolete in commit 54b07dca68557b09
+("netfilter: provide config option to disable ancient procfs parts") in
+v3.3.
 
-Fix wheel info array length to match actual wheel count present in the array.
-
-Signed-off-by: Michael Hübner <michaelh.95@t-online.de>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-thrustmaster.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/netfilter/Kconfig | 1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/hid/hid-thrustmaster.c
-+++ b/drivers/hid/hid-thrustmaster.c
-@@ -67,12 +67,13 @@ static const struct tm_wheel_info tm_whe
- 	{0x0200, 0x0005, "Thrustmaster T300RS (Missing Attachment)"},
- 	{0x0206, 0x0005, "Thrustmaster T300RS"},
- 	{0x0209, 0x0005, "Thrustmaster T300RS (Open Wheel Attachment)"},
-+	{0x020a, 0x0005, "Thrustmaster T300RS (Sparco R383 Mod)"},
- 	{0x0204, 0x0005, "Thrustmaster T300 Ferrari Alcantara Edition"},
- 	{0x0002, 0x0002, "Thrustmaster T500RS"}
- 	//{0x0407, 0x0001, "Thrustmaster TMX"}
- };
+diff --git a/net/netfilter/Kconfig b/net/netfilter/Kconfig
+index ef72819d9d315..d569915da003c 100644
+--- a/net/netfilter/Kconfig
++++ b/net/netfilter/Kconfig
+@@ -118,7 +118,6 @@ config NF_CONNTRACK_ZONES
  
--static const uint8_t tm_wheels_infos_length = 4;
-+static const uint8_t tm_wheels_infos_length = 7;
- 
- /*
-  * This structs contains (in little endian) the response data
+ config NF_CONNTRACK_PROCFS
+ 	bool "Supply CT list in procfs (OBSOLETE)"
+-	default y
+ 	depends on PROC_FS
+ 	---help---
+ 	This option enables for the list of known conntrack entries
+-- 
+2.35.1
+
 
 
