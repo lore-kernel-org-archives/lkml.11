@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25FE5C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:34:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E927CC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:34:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236874AbiIBMei (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:34:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54766 "EHLO
+        id S236845AbiIBMep (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:34:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236879AbiIBMdg (ORCPT
+        with ESMTP id S236906AbiIBMdk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:33:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73CE0E193D;
-        Fri,  2 Sep 2022 05:27:53 -0700 (PDT)
+        Fri, 2 Sep 2022 08:33:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D971E2C7F;
+        Fri,  2 Sep 2022 05:27:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC9CD6211D;
-        Fri,  2 Sep 2022 12:25:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D30FEC433C1;
-        Fri,  2 Sep 2022 12:25:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 59BCEB82AA0;
+        Fri,  2 Sep 2022 12:25:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9E98C43147;
+        Fri,  2 Sep 2022 12:25:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121520;
-        bh=E63Stpnr3yidX6/oPg6+aQlRal9zM08EPfNrXFXspmo=;
+        s=korg; t=1662121514;
+        bh=cEOSxIkhPxHPhgS3+t2zXHHNCY+G6nsSHojFvwoKxpg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x2TsJ2AhxK/Is7YP6qoH+zY8hUA4z1hgSDoOn94/SniSY5NqybyAvWDfmKsVJ6Pm/
-         BjZ9H0QVmgW96hqmNMASEr8IlVenA0r8iFORanxaLniZvPnaQwiymskS44u1Rs+XDp
-         HXIzQKj1RNELgDDS5Cxf8UUdbaLTExBUbQbgJxk0=
+        b=IGQVsJkyC0mc4nBaD2xHn6yo6qwbTE1oUue9t7AzyRyRaaVEw+71uXlWL8HIL0FCI
+         1fLOnK1hZX9SrrL4xpI0W4iN960Go+xUqaEt4lTBe/DpT65ETJwK1YJ11x6F/2BQV6
+         dyAXzpH4HPri72d5hooy/Geppaowb++XDERbQEY0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Xin Xiong <xiongx18@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 27/56] net: Fix a data-race around sysctl_somaxconn.
-Date:   Fri,  2 Sep 2022 14:18:47 +0200
-Message-Id: <20220902121401.166047129@linuxfoundation.org>
+Subject: [PATCH 4.19 09/56] xfrm: fix refcount leak in __xfrm_policy_check()
+Date:   Fri,  2 Sep 2022 14:18:29 +0200
+Message-Id: <20220902121400.507395085@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
 References: <20220902121400.219861128@linuxfoundation.org>
@@ -49,34 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Xin Xiong <xiongx18@fudan.edu.cn>
 
-[ Upstream commit 3c9ba81d72047f2e81bb535d42856517b613aba7 ]
+[ Upstream commit 9c9cb23e00ddf45679b21b4dacc11d1ae7961ebe ]
 
-While reading sysctl_somaxconn, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+The issue happens on an error path in __xfrm_policy_check(). When the
+fetching process of the object `pols[1]` fails, the function simply
+returns 0, forgetting to decrement the reference count of `pols[0]`,
+which is incremented earlier by either xfrm_sk_policy_lookup() or
+xfrm_policy_lookup(). This may result in memory leaks.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fix it by decreasing the reference count of `pols[0]` in that path.
+
+Fixes: 134b0fc544ba ("IPsec: propagate security module errors up from flow_cache_lookup")
+Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/socket.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/xfrm/xfrm_policy.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/socket.c b/net/socket.c
-index e5cc9f2b981ed..a5167f03c31db 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -1619,7 +1619,7 @@ int __sys_listen(int fd, int backlog)
- 
- 	sock = sockfd_lookup_light(fd, &err, &fput_needed);
- 	if (sock) {
--		somaxconn = sock_net(sock->sk)->core.sysctl_somaxconn;
-+		somaxconn = READ_ONCE(sock_net(sock->sk)->core.sysctl_somaxconn);
- 		if ((unsigned int)backlog > somaxconn)
- 			backlog = somaxconn;
- 
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 3582f77bab6a8..1cd21a8c4deac 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -2403,6 +2403,7 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
+ 		if (pols[1]) {
+ 			if (IS_ERR(pols[1])) {
+ 				XFRM_INC_STATS(net, LINUX_MIB_XFRMINPOLERROR);
++				xfrm_pol_put(pols[0]);
+ 				return 0;
+ 			}
+ 			pols[1]->curlft.use_time = ktime_get_real_seconds();
 -- 
 2.35.1
 
