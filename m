@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56CA7C54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:07:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B6ABC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:07:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238821AbiIBOH3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:07:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54570 "EHLO
+        id S238934AbiIBOHe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:07:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238388AbiIBOHK (ORCPT
+        with ESMTP id S238915AbiIBOHJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:07:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E6E6201B8;
+        Fri, 2 Sep 2022 10:07:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A9032A963;
         Fri,  2 Sep 2022 06:35:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 532CEB82AA1;
-        Fri,  2 Sep 2022 12:38:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91D9CC433C1;
-        Fri,  2 Sep 2022 12:38:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB689B829E6;
+        Fri,  2 Sep 2022 12:36:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45928C433D6;
+        Fri,  2 Sep 2022 12:36:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122315;
-        bh=C0kRf5bfCnAeS9Hjj1AXvIeKcZDY5VMANtibcHCCYZQ=;
+        s=korg; t=1662122173;
+        bh=r1Y3OJV+YGLJqZpyhIjb0C5nbwFq/NU3LvJWzdODIdM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JCOw1pAMEnG/Nb0wKOg+H7CkFVyh130rp/HWJ5hw2dv7hEsxewZ2xBkDqc82jojQz
-         MyKtgK+/M4BoutZCuWaT8C9cBNcZjxfl4jCeshiiM3K3sbMq5asA9Uc2VqAi0q0MVq
-         /oqjh6n9anvhuQO8ZbEZ7h+aljfwiGpFGqrocb0k=
+        b=ssiC387961+zXn6RLnMOsWUzf5EHiEvN33j7nkRLj6BOaJEPkFqRnBfpLKMai9HVK
+         dIe9cX07FPMlGp6i7audsh88VRPjGW+HibRGdIL8Gny10d3cNJOtbhmC801JacbGoE
+         Zi2ztfnxRA5Ow1btMmaLGxzKm0ZT4NrfZzEtJxfU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aric Cyr <Aric.Cyr@amd.com>,
-        Brian Chang <Brian.Chang@amd.com>,
-        Ilya Bakoulin <Ilya.Bakoulin@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
+        stable@vger.kernel.org,
+        Aurabindo Pillai <aurabindo.pillai@amd.com>,
         Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 55/72] drm/amd/display: Fix pixel clock programming
-Date:   Fri,  2 Sep 2022 14:19:31 +0200
-Message-Id: <20220902121406.569076375@linuxfoundation.org>
+Subject: [PATCH 5.19 36/72] drm/amd/display: Add a missing register field for HPO DP stream encoder
+Date:   Fri,  2 Sep 2022 14:19:12 +0200
+Message-Id: <20220902121405.973616576@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
 References: <20220902121404.772492078@linuxfoundation.org>
@@ -52,48 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilya Bakoulin <Ilya.Bakoulin@amd.com>
+From: Aurabindo Pillai <aurabindo.pillai@amd.com>
 
-[ Upstream commit 04fb918bf421b299feaee1006e82921d7d381f18 ]
+[ Upstream commit 37bc31f0e7da4fbad4664e64d906ae7b9009e550 ]
 
-[Why]
-Some pixel clock values could cause HDMI TMDS SSCPs to be misaligned
-between different HDMI lanes when using YCbCr420 10-bit pixel format.
+[Why&How]
+Add the missing definition to set the register field
+HBLANK_MINIMUM_SYMBOL_WIDTH
 
-BIOS functions for transmitter/encoder control take pixel clock in kHz
-increments, whereas the function for setting the pixel clock is in 100Hz
-increments. Setting pixel clock to a value that is not on a kHz boundary
-will cause the issue.
-
-[How]
-Round pixel clock down to nearest kHz in 10/12-bpc cases.
-
-Reviewed-by: Aric Cyr <Aric.Cyr@amd.com>
-Acked-by: Brian Chang <Brian.Chang@amd.com>
-Signed-off-by: Ilya Bakoulin <Ilya.Bakoulin@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Aurabindo Pillai <aurabindo.pillai@amd.com>
+Acked-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c | 2 ++
- 1 file changed, 2 insertions(+)
+ .../gpu/drm/amd/display/dc/dcn31/dcn31_hpo_dp_stream_encoder.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c b/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c
-index 845aa8a1027d8..c4040adb88b03 100644
---- a/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c
-+++ b/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c
-@@ -545,9 +545,11 @@ static void dce112_get_pix_clk_dividers_helper (
- 		switch (pix_clk_params->color_depth) {
- 		case COLOR_DEPTH_101010:
- 			actual_pixel_clock_100hz = (actual_pixel_clock_100hz * 5) >> 2;
-+			actual_pixel_clock_100hz -= actual_pixel_clock_100hz % 10;
- 			break;
- 		case COLOR_DEPTH_121212:
- 			actual_pixel_clock_100hz = (actual_pixel_clock_100hz * 6) >> 2;
-+			actual_pixel_clock_100hz -= actual_pixel_clock_100hz % 10;
- 			break;
- 		case COLOR_DEPTH_161616:
- 			actual_pixel_clock_100hz = actual_pixel_clock_100hz * 2;
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hpo_dp_stream_encoder.h b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hpo_dp_stream_encoder.h
+index 7c77c71591a08..82c3b3ac1f0d0 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hpo_dp_stream_encoder.h
++++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hpo_dp_stream_encoder.h
+@@ -162,7 +162,8 @@
+ 	SE_SF(DP_SYM32_ENC0_DP_SYM32_ENC_SDP_AUDIO_CONTROL0, AIP_ENABLE, mask_sh),\
+ 	SE_SF(DP_SYM32_ENC0_DP_SYM32_ENC_SDP_AUDIO_CONTROL0, ACM_ENABLE, mask_sh),\
+ 	SE_SF(DP_SYM32_ENC0_DP_SYM32_ENC_VID_CRC_CONTROL, CRC_ENABLE, mask_sh),\
+-	SE_SF(DP_SYM32_ENC0_DP_SYM32_ENC_VID_CRC_CONTROL, CRC_CONT_MODE_ENABLE, mask_sh)
++	SE_SF(DP_SYM32_ENC0_DP_SYM32_ENC_VID_CRC_CONTROL, CRC_CONT_MODE_ENABLE, mask_sh),\
++	SE_SF(DP_SYM32_ENC0_DP_SYM32_ENC_HBLANK_CONTROL, HBLANK_MINIMUM_SYMBOL_WIDTH, mask_sh)
+ 
+ 
+ #define DCN3_1_HPO_DP_STREAM_ENC_REG_FIELD_LIST(type) \
 -- 
 2.35.1
 
