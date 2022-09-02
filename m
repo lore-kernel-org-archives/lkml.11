@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98421ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:31:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B0CDECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:31:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232701AbiIBObc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:31:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57986 "EHLO
+        id S236313AbiIBObg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:31:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237034AbiIBO1e (ORCPT
+        with ESMTP id S236085AbiIBO1g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:27:34 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE6F158196
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:36 -0700 (PDT)
+        Fri, 2 Sep 2022 10:27:36 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ECCE158199
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
+        d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=NPIEgVCIlOh8dD4yk3OVetSQQerJmiLfbsdkTOcH3dg=; b=ICzV2MsxV/qfCUsTkmrBYEPHtv
-        a6tR+U9KZPQOQHkHOq30t8Whom4buPfGLdCKoZwilmqZSiwx+98RLBosTT25xs2w3FqCAA25eAOPo
-        C0dA0KB1pd5nsH2uuYDQ/IGpW5Hcw6jo/+u3tI5exboz2i0y6FO9HaIeaWnyzSGKkU8psrol+qp05
-        biNxIsY29rjmXRBvFo0S0kHWovToVwNxtxvjFe+m7eB++9Q/6/5vKFH0xqBUpULrLtHtG4GxggIJF
-        PK5qAJZLx8LEbdQwiEWdOXw+xGysnHnkUBrHWh6zNyZ/aWiktOVbjXA+ukpQyL8oU6KdYWvHn2Oyv
-        QJr03x3A==;
+        bh=/Fb9zUxhEEbcmp5Brb1qrwIPV90iUAqtYDCEw6WSBXI=; b=hKiXy0u9hoSBZF8nc2DmAek7xT
+        TEFVtr6iI17ckJ00gdUCFKOkzxud2RS2pcRnzx+7yRivbNAjWM9jEaIjPkzI2sYFPxL4RyBYyBgVU
+        dHM8aIxF/6VZ6DDtvX1rsU4hdUf6X+XN9TLDCay5I+u9LOIDZcoMakow3Q4CzDCy6EftPPysqztP4
+        aP6P5RmQ7VfzKVLHpab6CV6lJOkt5i8BV718IltoWTNNLqKNHPYkZ97oDVVzPJ/m0D5157rfAE+Nn
+        S5Zok8o+Y5aNEW0O3IWboq7C53rBPnQek/Of8ePpXDZqaGz/S91hQ89ukinIHcdOlRQaFFFi3P+Kn
+        P5aYbL3w==;
 Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oU77N-0074TF-ED; Fri, 02 Sep 2022 13:53:57 +0000
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oU77N-008g8V-6c; Fri, 02 Sep 2022 13:53:58 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 24D2C301CE0;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 35D4F302A1D;
         Fri,  2 Sep 2022 15:53:54 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id AA1CB2B8EF7EE; Fri,  2 Sep 2022 15:53:52 +0200 (CEST)
-Message-ID: <20220902130948.851118488@infradead.org>
+        id 280222B8EF7FC; Fri,  2 Sep 2022 15:53:53 +0200 (CEST)
+Message-ID: <20220902130950.308238294@infradead.org>
 User-Agent: quilt/0.66
-Date:   Fri, 02 Sep 2022 15:06:49 +0200
+Date:   Fri, 02 Sep 2022 15:07:03 +0200
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     Thomas Gleixner <tglx@linutronix.de>
 Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
@@ -59,7 +59,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
         Daniel Borkmann <daniel@iogearbox.net>,
         K Prateek Nayak <kprateek.nayak@amd.com>,
         Eric Dumazet <edumazet@google.com>
-Subject: [PATCH v2 24/59] x86/percpu: Move cpu_number next to current_task
+Subject: [PATCH v2 38/59] x86/Kconfig: Add CONFIG_CALL_THUNKS
 References: <20220902130625.217071627@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -69,85 +69,31 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Thomas Gleixner <tglx@linutronix.de>
 
-Also add cpu_number to the pcpu_hot structure, it is often referenced
-and this cacheline is there.
+In preparation for mitigating the Intel SKL RSB underflow issue in
+software, add a new configuration symbol which allows to build the
+required call thunk infrastructure conditionally.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/x86/include/asm/current.h |    1 +
- arch/x86/include/asm/smp.h     |   12 +++++-------
- arch/x86/kernel/setup_percpu.c |    5 +----
- 3 files changed, 7 insertions(+), 11 deletions(-)
+ arch/x86/Kconfig |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
---- a/arch/x86/include/asm/current.h
-+++ b/arch/x86/include/asm/current.h
-@@ -16,6 +16,7 @@ struct pcpu_hot {
- 		struct {
- 			struct task_struct	*current_task;
- 			int			preempt_count;
-+			int			cpu_number;
- 		};
- 		u8	pad[64];
- 	};
---- a/arch/x86/include/asm/smp.h
-+++ b/arch/x86/include/asm/smp.h
-@@ -3,10 +3,10 @@
- #define _ASM_X86_SMP_H
- #ifndef __ASSEMBLY__
- #include <linux/cpumask.h>
--#include <asm/percpu.h>
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -2432,6 +2432,13 @@ config CC_HAS_SLS
+ config CC_HAS_RETURN_THUNK
+ 	def_bool $(cc-option,-mfunction-return=thunk-extern)
  
--#include <asm/thread_info.h>
- #include <asm/cpumask.h>
-+#include <asm/current.h>
-+#include <asm/thread_info.h>
- 
- extern int smp_num_siblings;
- extern unsigned int num_processors;
-@@ -19,7 +19,6 @@ DECLARE_PER_CPU_READ_MOSTLY(cpumask_var_
- DECLARE_PER_CPU_READ_MOSTLY(cpumask_var_t, cpu_l2c_shared_map);
- DECLARE_PER_CPU_READ_MOSTLY(u16, cpu_llc_id);
- DECLARE_PER_CPU_READ_MOSTLY(u16, cpu_l2c_id);
--DECLARE_PER_CPU_READ_MOSTLY(int, cpu_number);
- 
- static inline struct cpumask *cpu_llc_shared_mask(int cpu)
- {
-@@ -160,11 +159,10 @@ asmlinkage __visible void smp_reboot_int
- 
- /*
-  * This function is needed by all SMP systems. It must _always_ be valid
-- * from the initial startup. We map APIC_BASE very early in page_setup(),
-- * so this is correct in the x86 case.
-+ * from the initial startup.
-  */
--#define raw_smp_processor_id()  this_cpu_read(cpu_number)
--#define __smp_processor_id() __this_cpu_read(cpu_number)
-+#define raw_smp_processor_id()  this_cpu_read(pcpu_hot.cpu_number)
-+#define __smp_processor_id() __this_cpu_read(pcpu_hot.cpu_number)
- 
- #ifdef CONFIG_X86_32
- extern int safe_smp_processor_id(void);
---- a/arch/x86/kernel/setup_percpu.c
-+++ b/arch/x86/kernel/setup_percpu.c
-@@ -23,9 +23,6 @@
- #include <asm/cpu.h>
- #include <asm/stackprotector.h>
- 
--DEFINE_PER_CPU_READ_MOSTLY(int, cpu_number);
--EXPORT_PER_CPU_SYMBOL(cpu_number);
--
- #ifdef CONFIG_X86_64
- #define BOOT_PERCPU_OFFSET ((unsigned long)__per_cpu_load)
- #else
-@@ -172,7 +169,7 @@ void __init setup_per_cpu_areas(void)
- 	for_each_possible_cpu(cpu) {
- 		per_cpu_offset(cpu) = delta + pcpu_unit_offsets[cpu];
- 		per_cpu(this_cpu_off, cpu) = per_cpu_offset(cpu);
--		per_cpu(cpu_number, cpu) = cpu;
-+		per_cpu(pcpu_hot.cpu_number, cpu) = cpu;
- 		setup_percpu_segment(cpu);
- 		/*
- 		 * Copy data used in early init routines from the
++config HAVE_CALL_THUNKS
++	def_bool y
++	depends on RETHUNK && OBJTOOL
++
++config CALL_THUNKS
++	def_bool n
++
+ menuconfig SPECULATION_MITIGATIONS
+ 	bool "Mitigations for speculative execution vulnerabilities"
+ 	default y
 
 
