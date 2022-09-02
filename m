@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A6B3C6FA82
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:25:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4972EECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:25:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236337AbiIBMZo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:25:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49542 "EHLO
+        id S236397AbiIBMZr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:25:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236293AbiIBMZH (ORCPT
+        with ESMTP id S236328AbiIBMZH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 2 Sep 2022 08:25:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF9A1D7404;
-        Fri,  2 Sep 2022 05:23:05 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BF27DB7EC;
+        Fri,  2 Sep 2022 05:22:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 69440620FD;
-        Fri,  2 Sep 2022 12:22:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C3E1C433C1;
-        Fri,  2 Sep 2022 12:22:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E8E3B82A91;
+        Fri,  2 Sep 2022 12:22:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFE34C433D6;
+        Fri,  2 Sep 2022 12:22:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121363;
-        bh=WynDvxHoxmJta2Gj6rL0/fOVSZIoA7wkQqCFBQ7arEg=;
+        s=korg; t=1662121324;
+        bh=h8h69wKZ1ymPOVqosN6D6rVzX1DmPMMsraFHlCljftQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uAdHX4ZboBBlGd/X1pS1qgObQJRuNOGby6uX/QhCqJ5G3N8BX9vOacfUs+0tHI0xt
-         XmlpxorTaOcDXq3TDelgfjsp8MkFvJFTBGm/r4jctyQqu5gawFOdO3x4adLks6kXVV
-         iPjy0AMXKiLFJOO6aP/CmpodeqBoOoAE3kLihZxY=
+        b=w1cWUFZf1SwWdbsNlS6QKpFl8FYD3g+vQijhfUoos1pkzVu7RZGt/Wnh8/wBzkgmD
+         zxnQrkmhEnlQacexbmRK4t2D7RUo1NmQROU8V0l4aW+lgcCC/w8wFdDVeJLJZeYbaK
+         tGD4RaS+FeMySbAQse5QguUUy4nDLfOv2zr834GU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Song Liu <song@kernel.org>
-Subject: [PATCH 4.14 25/42] md: call __md_stop_writes in md_stop
-Date:   Fri,  2 Sep 2022 14:18:49 +0200
-Message-Id: <20220902121359.669121787@linuxfoundation.org>
+        stable@vger.kernel.org, Abhishek Shah <abhishek.shah@columbia.edu>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 05/42] af_key: Do not call xfrm_probe_algs in parallel
+Date:   Fri,  2 Sep 2022 14:18:29 +0200
+Message-Id: <20220902121358.969167467@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121358.773776406@linuxfoundation.org>
 References: <20220902121358.773776406@linuxfoundation.org>
@@ -49,36 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guoqing Jiang <guoqing.jiang@linux.dev>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 
-commit 0dd84b319352bb8ba64752d4e45396d8b13e6018 upstream.
+[ Upstream commit ba953a9d89a00c078b85f4b190bc1dde66fe16b5 ]
 
->From the link [1], we can see raid1d was running even after the path
-raid_dtr -> md_stop -> __md_stop.
+When namespace support was added to xfrm/afkey, it caused the
+previously single-threaded call to xfrm_probe_algs to become
+multi-threaded.  This is buggy and needs to be fixed with a mutex.
 
-Let's stop write first in destructor to align with normal md-raid to
-fix the KASAN issue.
-
-[1]. https://lore.kernel.org/linux-raid/CAPhsuW5gc4AakdGNdF8ubpezAuDLFOYUO_sfMZcec6hQFm8nhg@mail.gmail.com/T/#m7f12bf90481c02c6d2da68c64aeed4779b7df74a
-
-Fixes: 48df498daf62 ("md: move bitmap_destroy to the beginning of __md_stop")
-Reported-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Guoqing Jiang <guoqing.jiang@linux.dev>
-Signed-off-by: Song Liu <song@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Abhishek Shah <abhishek.shah@columbia.edu>
+Fixes: 283bc9f35bbb ("xfrm: Namespacify xfrm state/policy locks")
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/md.c |    1 +
- 1 file changed, 1 insertion(+)
+ net/key/af_key.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/md/md.c
-+++ b/drivers/md/md.c
-@@ -5908,6 +5908,7 @@ void md_stop(struct mddev *mddev)
- 	/* stop the array and free an attached data structures.
- 	 * This is called from dm-raid
- 	 */
-+	__md_stop_writes(mddev);
- 	__md_stop(mddev);
- 	if (mddev->bio_set)
- 		bioset_free(mddev->bio_set);
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index 035123bf7259b..5f0d6a567a1e3 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -1707,9 +1707,12 @@ static int pfkey_register(struct sock *sk, struct sk_buff *skb, const struct sad
+ 		pfk->registered |= (1<<hdr->sadb_msg_satype);
+ 	}
+ 
++	mutex_lock(&pfkey_mutex);
+ 	xfrm_probe_algs();
+ 
+ 	supp_skb = compose_sadb_supported(hdr, GFP_KERNEL | __GFP_ZERO);
++	mutex_unlock(&pfkey_mutex);
++
+ 	if (!supp_skb) {
+ 		if (hdr->sadb_msg_satype != SADB_SATYPE_UNSPEC)
+ 			pfk->registered &= ~(1<<hdr->sadb_msg_satype);
+-- 
+2.35.1
+
 
 
