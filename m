@@ -2,162 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1710ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 17:33:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 677DFECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 17:35:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237179AbiIBRdu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 13:33:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60832 "EHLO
+        id S235473AbiIBRfl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 13:35:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235473AbiIBRdf (ORCPT
+        with ESMTP id S232815AbiIBRfi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 13:33:35 -0400
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D867DEA47
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 10:33:33 -0700 (PDT)
-Received: by mail-ot1-x32a.google.com with SMTP id z22-20020a056830129600b0063711f456ceso1895965otp.7
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 10:33:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=otDaO66jYRzgslnU3IM4rTRTJBIZ54VDMBSQV0MUipc=;
-        b=hl1hQP+vw9MabIF7SGCUmy6Pyu3Qusx5jgHpKJVCErACc7slm9aUWobpIfl1eAbB88
-         1g6/QG3UmjS94K5QLyj50THwC7nENzf3hKkDqlSFi/HzbKmEUn9vx8ZM3YdKDVuOQzBy
-         fp4qVfpkvoewNqs7yYSMAXkzk2jrjeERVlFeOFYClTQOnxZRruwy8zcMDaberDDChNdA
-         JuNto4q5CxsBgDKrmahqpHC+BZUvYZ7NjZsjwyGkPTwN871broK0v0Z9LkZjEQ0JxccW
-         mwSefBwhZZJcxctw2iv/kmwiImZZfGB6RjUiRTzWkxyJZwUFmcxiOSRZUMCjc2doqW52
-         wSVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=otDaO66jYRzgslnU3IM4rTRTJBIZ54VDMBSQV0MUipc=;
-        b=Rs+l1tENfNX7wABcYJYvPkCFOuyD5bTPoConUMZ4eQ/DPliV7WhCd9rhhiQs2JyqB6
-         GQc0PXpDVp4189T38JuMPskdDg9jbiruZID5tF4fJGv0eLX9KK/+mHIgQie0CS5KxGZa
-         QSx7UMOqX/8kVuBSRst/mQwwGhvP+lQjHCMjdB9r6pvH72mVlFFZmRHbgPdEcn9NJ4u8
-         1oMUuH2gHkcuZJKJPXwl2ZCgEZJVKN/vKFyHRJ9AaPaQBLast6ooJG2cUqKMHvl+ecgh
-         pmRWdcOXVBOH7JAUG9txThnmpaOCPNCLLmJCKI50Cu4k6G1mKBQIhmoVCswPnxcFTHfY
-         TuHQ==
-X-Gm-Message-State: ACgBeo3kWM2BfGh9f4sLrOatAM9yUEDUOPH0D43YHmq+9j/dLJm/iJyJ
-        3WhJ6axCNdZiT2ogP4LDJVA=
-X-Google-Smtp-Source: AA6agR4GeUrjDrurO2YFFaUlnFrTro1/D+WR6ZubAkGeCgQGSHu3b0T39RxrVJqzQt1HeVaB8R5fBg==
-X-Received: by 2002:a9d:3609:0:b0:637:3891:48c3 with SMTP id w9-20020a9d3609000000b00637389148c3mr14367675otb.263.1662140012832;
-        Fri, 02 Sep 2022 10:33:32 -0700 (PDT)
-Received: from localhost ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id o186-20020aca5ac3000000b0034564365bf2sm1217647oib.17.2022.09.02.10.33.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 10:33:32 -0700 (PDT)
-Date:   Fri, 2 Sep 2022 10:31:20 -0700
-From:   Yury Norov <yury.norov@gmail.com>
-To:     kernel test robot <lkp@intel.com>, linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Vivek Goyal <vgoyal@redhat.com>,
-        Yinghai Lu <yinghai@kernel.org>,
-        "H. Peter Anvin" <hpa@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Sander Vanheule <sander@svanheule.net>,
-        Alexey Klimov <klimov.linux@gmail.com>,
-        Eric Biggers <ebiggers@google.com>
-Subject: Re: [PATCH 4/4] lib/cpumask: add FORCE_NR_CPUS config option
-Message-ID: <YxI96NfjexPr2XqN@yury-laptop>
-References: <20220829165748.1008477-5-yury.norov@gmail.com>
- <202208310215.C2IzssKr-lkp@intel.com>
- <Yw57ABzUuW7Fic9w@yury-laptop>
+        Fri, 2 Sep 2022 13:35:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0308A37F8B
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 10:35:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9305FB82CE4
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 17:35:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE56BC433C1;
+        Fri,  2 Sep 2022 17:35:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662140134;
+        bh=Yg/1HfkU9lTB+P/qKj15r6DxFkOzWEP0cv8ZznfLd0o=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qZxiakJ5v/5PYKfFDMFamky9atKexvD/yePMGz3Ag/XpcZ8kKGCr5qC75qRBLtQd1
+         OiJ9qTQ/YJ5nKVQLIFb/266WnWI0bk2/hXdT/8kLh0rhd0EJhQCXsH/fREQpKqMJij
+         l8pVFKgT2A2652IoIgDqX36xZLwenuXvAAAW1Mg6MdG9hY9hisKe114VsW08JnqgPa
+         VgefgZvKqlS5n8AacSxxP/M2cCexCLX3OCPG3ZaDz8X1Y1O0KPfwYeYkBqdw9z4Rkn
+         jPoNkYCZNilYT1hlW8HTK1MJMLwnedCHbrY8i5A7IhGvfeRr0YqiWelyFAhRNpCjNU
+         Oze8aDlwQnVAA==
+Date:   Fri, 2 Sep 2022 23:05:30 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Peter Geis <pgwipeout@gmail.com>
+Cc:     Heiko Stuebner <heiko@sntech.de>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Markus Reichl <m.reichl@fivetechno.de>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        linux-phy@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] phy: rockchip-inno-usb2: Return zero after otg sync
+Message-ID: <YxI+4t3fecbIYC07@matsya>
+References: <20220824122543.174730-1-pgwipeout@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yw57ABzUuW7Fic9w@yury-laptop>
+In-Reply-To: <20220824122543.174730-1-pgwipeout@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 02:05:09PM -0700, Yury Norov wrote:
-> + Vivek Goyal <vgoyal@redhat.com>
-> + Yinghai Lu <yinghai@kernel.org>
-> + H. Peter Anvin <hpa@linux.intel.com>
+On 24-08-22, 08:25, Peter Geis wrote:
+> The otg sync state patch reuses the ret variable, but fails to set it to
+> zero after use. This leads to a situation when the otg port is in
+> peripheral mode where the otg phy aborts halfway through setup.  It also
+> fails to account for a failure to register the extcon notifier. Fix this
+> by using our own variable and skipping otg sync in case of failure.
 > 
-> On Wed, Aug 31, 2022 at 02:33:41AM +0800, kernel test robot wrote:
-> > Hi Yury,
-> > 
-> > I love your patch! Perhaps something to improve:
-> > 
-> > [auto build test WARNING on tip/x86/core]
-> > [also build test WARNING on linus/master v6.0-rc3 next-20220830]
-> > [If your patch is applied to the wrong git tree, kindly drop us a note.
-> > And when submitting patch, we suggest to use '--base' as documented in
-> > https://git-scm.com/docs/git-format-patch#_base_tree_information]
-> > 
-> > url:    https://github.com/intel-lab-lkp/linux/commits/Yury-Norov/cpumask-cleanup-nr_cpu_ids-vs-nr_cpumask_bits-mess/20220830-010755
-> > base:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git bc12b70f7d216b36bd87701349374a13e486f8eb
-> > config: x86_64-randconfig-m001 (https://download.01.org/0day-ci/archive/20220831/202208310215.C2IzssKr-lkp@intel.com/config)
-> > compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
-> > 
-> > If you fix the issue, kindly add following tag where applicable
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > 
-> > smatch warnings:
-> > arch/x86/kernel/apic/apic.c:2437 generic_processor_info() warn: always true condition '(num_processors >= (1) - 1) => (0-u32max >= 0)'
+> Fixes: 8dc60f8da22f ("phy: rockchip-inno-usb2: Sync initial otg state")
 > 
-> This is the code that woke up the smatch:
->   /*
->    * If boot cpu has not been detected yet, then only allow upto
->    * nr_cpu_ids - 1 processors and keep one slot free for boot cpu
->    */
->   if (!boot_cpu_detected && num_processors >= nr_cpu_ids - 1 &&
->       apicid != boot_cpu_physical_apicid) {
->           int thiscpu = max + disabled_cpus - 1;
-> 
->           pr_warn("APIC: NR_CPUS/possible_cpus limit of %i almost"
->                   " reached. Keeping one slot for boot cpu."
->                   "  Processor %d/0x%x ignored.\n", max, thiscpu, apicid);
-> 
->           disabled_cpus++;
->           return -ENODEV;
->   }
-> 
-> It has been added in a patch 14cb6dcf0a023f597 ("x86, boot: Wait for
-> boot cpu to show up if nr_cpus limit is about to hit")
-> 
-> My patch adds an option FORCE_NR_CPUS that makes nr_cpu_ids a compile-time
-> defined.
-> 
-> Hence, the num_processors >= nr_cpus - 1,
-> may become: num_processors >= 0, if NR_CPUS == 1.
-> 
-> So the plain straightforward fix would be:
-> 
->     if (!boot_cpu_detected &&
->  #if (NR_CPUS > 1)
->         num_processors >= nr_cpu_ids - 1 &&
->  #endif
->         apicid != boot_cpu_physical_apicid) { ... }
-> 
-> However, I have a feeling that all the logic above is not needed at
-> all on UP machines. If that's true, the '#if NR_CPUS > 1' should
-> protect the whole condition, or even bigger piece of the
-> generic_processor_info().
 
-As Dave Hansen said:
+No blank here please
 
-  I think it's a reasonable warning, but it's also not something we need
-  to hack around.  We can surely only land in here with
-  boot_cpu_detected==true if NR_CPUS==1, so the rest of the expression is
-  moot.
-  
-  I don't think it's worth adding the #ifdef.
+> Reported-by: Markus Reichl <m.reichl@fivetechno.de>
+> Reported-by: Michael Riesch <michael.riesch@wolfvision.net>
+> Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+> Tested-by: Michael Riesch <michael.riesch@wolfvision.net>
+> Tested-by: Markus Reichl <m.reichl@fivetechno.de>
+> ---
+> Changelog:
+> v3
+> - add missing brackets around new goto
+> v2
+> - switch to using our own variable
+> - add missing goto to skip sync in case of registration failure
+> ---
+>  drivers/phy/rockchip/phy-rockchip-inno-usb2.c | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+> index 0b1e9337ee8e..27da5ba379c4 100644
+> --- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+> +++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+> @@ -1124,7 +1124,7 @@ static int rockchip_usb2phy_otg_port_init(struct rockchip_usb2phy *rphy,
+>  					  struct rockchip_usb2phy_port *rport,
+>  					  struct device_node *child_np)
+>  {
+> -	int ret;
+> +	int ret, id;
+>  
+>  	rport->port_id = USB2PHY_PORT_OTG;
+>  	rport->port_cfg = &rphy->phy_cfg->port_cfgs[USB2PHY_PORT_OTG];
+> @@ -1163,12 +1163,15 @@ static int rockchip_usb2phy_otg_port_init(struct rockchip_usb2phy *rphy,
+>  		ret = devm_extcon_register_notifier(rphy->dev, rphy->edev,
+>  					EXTCON_USB_HOST, &rport->event_nb);
+>  		if (ret)
+> +		{
 
-So, leaving things as they are.
+:-(
 
-If no other comments, moving the series into bitmap-for-next.
+this is _not_ linux kernel code style!
 
-Thanks,
-Yury
+Reminder: it always helps to run checkpatch 
+
+>  			dev_err(rphy->dev, "register USB HOST notifier failed\n");
+> +			goto out;
+> +		}
+>  
+>  		if (!of_property_read_bool(rphy->dev->of_node, "extcon")) {
+>  			/* do initial sync of usb state */
+> -			ret = property_enabled(rphy->grf, &rport->port_cfg->utmi_id);
+> -			extcon_set_state_sync(rphy->edev, EXTCON_USB_HOST, !ret);
+> +			id = property_enabled(rphy->grf, &rport->port_cfg->utmi_id);
+> +			extcon_set_state_sync(rphy->edev, EXTCON_USB_HOST, !id);
+>  		}
+>  	}
+>  
+> -- 
+> 2.25.1
+
+-- 
+~Vinod
