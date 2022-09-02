@@ -2,101 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22E90ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 11:13:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BCA7C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 11:19:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235427AbiIBLNW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 07:13:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35720 "EHLO
+        id S234776AbiIBLTd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 07:19:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235915AbiIBLMy (ORCPT
+        with ESMTP id S232699AbiIBLTb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 07:12:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A06CBCEB0B
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 04:12:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59604B82A53
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 11:12:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D1E9C433C1;
-        Fri,  2 Sep 2022 11:12:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662117130;
-        bh=/QVsmuyia5+3J+DfDubjMTWJVlKxzCNx6ax9d23OoFg=;
-        h=Date:From:To:Cc:Subject:From;
-        b=ZYfpC2CGyWQI6Ze09dVx2SYgZAcRtIIT4T3T4nTLST09EWuFf4GtZCRhIDSABoK/I
-         5bIus93l7FMrjC/9zYtm+LnelsY/8FaNty080+hwkEv1Gh3jUy04tN5RHbDhqNZWrY
-         HZUeYC60tX2rvfCdALS+RF6HyIDcNaagRgOllGGL8tPaigxY5+pADghf1GJPZ32q6c
-         Df96EeysqHPf7f+JzonQB+tv8R81RZsSM5jLuRD2uc2MZk+Oqx0zY3aJ6rbQ/e1DzG
-         Xijd4C/AvE0f5WvIkPNtrF5fmKMTInbrHoxsStiClXiBXR1Bcrln6Hk9nksqqEETMh
-         iBOlttVzNuGog==
-Date:   Fri, 2 Sep 2022 12:12:05 +0100
-From:   Will Deacon <will@kernel.org>
-To:     torvalds@linux-foundation.org
-Cc:     catalin.marinas@arm.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, kernel-team@android.com
-Subject: [GIT PULL] arm64 fixes for -rc4
-Message-ID: <20220902111204.GA25902@willie-the-truck>
+        Fri, 2 Sep 2022 07:19:31 -0400
+X-Greylist: delayed 8079 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 02 Sep 2022 04:19:29 PDT
+Received: from smtp-42ab.mail.infomaniak.ch (smtp-42ab.mail.infomaniak.ch [84.16.66.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E23C5790
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 04:19:29 -0700 (PDT)
+Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4MJwRM65DLzMqHNX;
+        Fri,  2 Sep 2022 13:19:27 +0200 (CEST)
+Received: from localhost (unknown [23.97.221.149])
+        by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4MJwRM3wNRz14M;
+        Fri,  2 Sep 2022 13:19:27 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1662117567;
+        bh=wrXe8tHJ2UTJkif+PtnwYC1aVb7oXwurlcuWuM9Xqto=;
+        h=From:To:Cc:Subject:Date:From;
+        b=E4at8mYVC88+pzrWe1N+zAeX+4Q3k69MWep6fFn9EjP8ZtbfJYLaC0GmeyIoD6q6e
+         naawFvOXMQUddwwcSY19BMa/Fk176n374yvbP2BD7ckLjJxD/dRt+xyQc9wN6DA+Io
+         2yiY/pYPeO9+l4AN6xw5XTrYaC1tl8gIWZobHM0o=
+From:   =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
+To:     Andy Whitcroft <apw@canonical.com>, Joe Perches <joe@perches.com>
+Cc:     =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>,
+        Dwaipayan Ray <dwaipayanray1@gmail.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH v2] checkpatch: Handle FILE pointer type
+Date:   Fri,  2 Sep 2022 13:19:23 +0200
+Message-Id: <20220902111923.1488671-1-mic@digikod.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+When using a "FILE *" type, checkpatch considers this an error:
+  ERROR: need consistent spacing around '*' (ctx:WxV)
+  #32: FILE: f.c:8:
+  +static void a(FILE *const b)
+                      ^
 
-Please pull these arm64 fixes for -rc4.
+Fix this by explicitly defining "FILE" as a common type.  This is useful for
+user space patches.
 
-It's a lot smaller than last week, with the star of the show being a
-couple of fixes to head.S addressing a boot regression introduced by the
-recent overhaul of that code in non-default configurations (i.e. KASLR
-disabled). The first of those two resolves the issue reported (and
-bisected) by Mikulus in the wait_on_bit() thread.
+With this patch, we now get:
+   <E> <E> <_>WS( )
+   <E> <E> <_>IDENT(static)
+   <E> <V> <_>WS( )
+   <E> <V> <_>DECLARE(void )
+   <E> <T> <_>FUNC(a)
+   <E> <V> <V>PAREN('(')
+   <EV> <N> <_>DECLARE(FILE *const )
+   <EV> <T> <_>IDENT(b)
+   <EV> <V> <_>PAREN(')') -> V
+   <E> <V> <_>WS(
+  )
+  32 > . static void a(FILE *const b)
+  32 > EEVVVVVVVTTTTTVNTTTTTTTTTTTTVVV
+  32 >  ______________________________
 
-Cheers,
+Cc: Andy Whitcroft <apw@canonical.com>
+Cc: Dwaipayan Ray <dwaipayanray1@gmail.com>
+Cc: Joe Perches <joe@perches.com>
+Cc: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Signed-off-by: Mickaël Salaün <mic@digikod.net>
+Link: https://lore.kernel.org/r/20220902111923.1488671-1-mic@digikod.net
+---
 
-Will
+Changes since v1:
+https://lore.kernel.org/r/20220901145948.1456353-1-mic@digikod.net
+* Remove the FIXTURE_{DATA,VARIANT}() comments.
+* Improve commit description.
+---
+ scripts/checkpatch.pl | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---->8
+diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
+index 79e759aac543..e2175102a354 100755
+--- a/scripts/checkpatch.pl
++++ b/scripts/checkpatch.pl
+@@ -576,10 +576,14 @@ our $typeKernelTypedefs = qr{(?x:
+ 	(?:__)?(?:u|s|be|le)(?:8|16|32|64)|
+ 	atomic_t
+ )};
++our $typeStdioTypedefs = qr{(?x:
++	FILE
++)};
+ our $typeTypedefs = qr{(?x:
+ 	$typeC99Typedefs\b|
+ 	$typeOtherOSTypedefs\b|
+-	$typeKernelTypedefs\b
++	$typeKernelTypedefs\b|
++	$typeStdioTypedefs\b
+ )};
+ 
+ our $zero_initializer = qr{(?:(?:0[xX])?0+$Int_type?|NULL|false)\b};
 
-The following changes since commit 714f3cbd70a4db9f9b7fe5b8a032896ed33fb824:
+base-commit: b90cb1053190353cc30f0fef0ef1f378ccc063c5
+-- 
+2.37.2
 
-  arm64/sme: Don't flush SVE register state when handling SME traps (2022-08-23 11:29:12 +0100)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git tags/arm64-fixes
-
-for you to fetch changes up to 5fbc49cef91916140a305f22f7430e9a7ea0c6b4:
-
-  arm64: mm: Reserve enough pages for the initial ID map (2022-09-01 12:02:39 +0100)
-
-----------------------------------------------------------------
-arm64 fixes for -rc4
-
-- Fix two boot issues caused by the recent head.S rework when !KASLR
-
-- Fix calculation of crashkernel memory reservation
-
-- Fix bogus error check in PMU IRQ probing code
-
-----------------------------------------------------------------
-Ard Biesheuvel (2):
-      arm64: head: Ignore bogus KASLR displacement on non-relocatable kernels
-      arm64: mm: Reserve enough pages for the initial ID map
-
-Levi Yun (1):
-      arm64/kexec: Fix missing extra range for crashkres_low.
-
-Yu Zhe (1):
-      perf/arm_pmu_platform: fix tests for platform_get_irq() failure
-
- arch/arm64/include/asm/kernel-pgtable.h | 26 +++++++++++++-------------
- arch/arm64/kernel/head.S                |  2 ++
- arch/arm64/kernel/machine_kexec_file.c  |  2 +-
- drivers/perf/arm_pmu_platform.c         |  2 +-
- 4 files changed, 17 insertions(+), 15 deletions(-)
