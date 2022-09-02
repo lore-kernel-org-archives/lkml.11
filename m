@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8643FECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:36:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9816ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:36:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236065AbiIBNgc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:36:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54518 "EHLO
+        id S236901AbiIBNgu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:36:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236576AbiIBNgF (ORCPT
+        with ESMTP id S237119AbiIBNgO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:36:05 -0400
+        Fri, 2 Sep 2022 09:36:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FB091CFC2;
-        Fri,  2 Sep 2022 06:15:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF3780F42;
+        Fri,  2 Sep 2022 06:15:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB035621ED;
-        Fri,  2 Sep 2022 12:35:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1537C433D7;
-        Fri,  2 Sep 2022 12:35:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A8A81621B0;
+        Fri,  2 Sep 2022 12:33:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1D78C433D7;
+        Fri,  2 Sep 2022 12:33:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122145;
-        bh=W639fYXNBMvTaEK/415DIIqTQm17Loa2KJIsjP3wMS0=;
+        s=korg; t=1662121993;
+        bh=qCM5NILSakk0vYH3X0CsXbxKAksQCPBoXUj6cT8zIGY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CPGCMahOPVNuaP3i3f4z8Pzy1I9c6sPE4v0wh7rEN8f1kH/FW1YMgzO/df5VHNFeW
-         8NXEI86LkxOBQsft8MTid33Meoknw1TSybDkg6vLMiCwD/Oz4pPn3TMvFK3zRG5TkA
-         JoRY/ZZVBvBGjaJ0FDpCzTB78otNV40IWDI3jGfE=
+        b=PZpLJWzb/kE3DS7UAb76jXcP87oBeXaDgz+hnBzzNnOnA0BdDLEFrBdwB4F2f/4Qh
+         gF08uUDTxGaDNUNHoy9sGjh+BGMziotH0Bs1fkxx5Izt5x8STOhTaUbyaAFZSguoAt
+         2LhOCp65wyhiimvW1dp20FabPtY3n51Wyk35QbFE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 5.19 07/72] Bluetooth: L2CAP: Fix build errors in some archs
-Date:   Fri,  2 Sep 2022 14:18:43 +0200
-Message-Id: <20220902121405.027946732@linuxfoundation.org>
+        stable@vger.kernel.org, Josip Pavic <Josip.Pavic@amd.com>,
+        Jun Lei <Jun.Lei@amd.com>, Alex Hung <alex.hung@amd.com>,
+        Aric Cyr <aric.cyr@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 52/73] drm/amd/display: Avoid MPC infinite loop
+Date:   Fri,  2 Sep 2022 14:19:16 +0200
+Message-Id: <20220902121406.165165029@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
-References: <20220902121404.772492078@linuxfoundation.org>
+In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
+References: <20220902121404.435662285@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,63 +52,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Josip Pavic <Josip.Pavic@amd.com>
 
-commit b840304fb46cdf7012722f456bce06f151b3e81b upstream.
+[ Upstream commit 8de297dc046c180651c0500f8611663ae1c3828a ]
 
-This attempts to fix the follow errors:
+[why]
+In some cases MPC tree bottom pipe ends up point to itself.  This causes
+iterating from top to bottom to hang the system in an infinite loop.
 
-In function 'memcmp',
-    inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:347:9,
-    inlined from 'l2cap_global_chan_by_psm' at
-    net/bluetooth/l2cap_core.c:2003:15:
-./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp'
-specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
-   44 | #define __underlying_memcmp     __builtin_memcmp
-      |                                 ^
-./include/linux/fortify-string.h:420:16: note: in expansion of macro
-'__underlying_memcmp'
-  420 |         return __underlying_memcmp(p, q, size);
-      |                ^~~~~~~~~~~~~~~~~~~
-In function 'memcmp',
-    inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:347:9,
-    inlined from 'l2cap_global_chan_by_psm' at
-    net/bluetooth/l2cap_core.c:2004:15:
-./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp'
-specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
-   44 | #define __underlying_memcmp     __builtin_memcmp
-      |                                 ^
-./include/linux/fortify-string.h:420:16: note: in expansion of macro
-'__underlying_memcmp'
-  420 |         return __underlying_memcmp(p, q, size);
-      |                ^~~~~~~~~~~~~~~~~~~
+[how]
+When looping to next MPC bottom pipe, check that the pointer is not same
+as current to avoid infinite loop.
 
-Fixes: 332f1795ca20 ("Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm regression")
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Josip Pavic <Josip.Pavic@amd.com>
+Reviewed-by: Jun Lei <Jun.Lei@amd.com>
+Acked-by: Alex Hung <alex.hung@amd.com>
+Signed-off-by: Aric Cyr <aric.cyr@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/l2cap_core.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c | 6 ++++++
+ drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c | 6 ++++++
+ 2 files changed, 12 insertions(+)
 
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -1991,11 +1991,11 @@ static struct l2cap_chan *l2cap_global_c
- 			src_match = !bacmp(&c->src, src);
- 			dst_match = !bacmp(&c->dst, dst);
- 			if (src_match && dst_match) {
--				c = l2cap_chan_hold_unless_zero(c);
--				if (c) {
--					read_unlock(&chan_list_lock);
--					return c;
--				}
-+				if (!l2cap_chan_hold_unless_zero(c))
-+					continue;
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c
+index 11019c2c62ccb..8192f1967e924 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c
+@@ -126,6 +126,12 @@ struct mpcc *mpc1_get_mpcc_for_dpp(struct mpc_tree *tree, int dpp_id)
+ 	while (tmp_mpcc != NULL) {
+ 		if (tmp_mpcc->dpp_id == dpp_id)
+ 			return tmp_mpcc;
 +
-+				read_unlock(&chan_list_lock);
-+				return c;
- 			}
- 
- 			/* Closest match */
++		/* avoid circular linked list */
++		ASSERT(tmp_mpcc != tmp_mpcc->mpcc_bot);
++		if (tmp_mpcc == tmp_mpcc->mpcc_bot)
++			break;
++
+ 		tmp_mpcc = tmp_mpcc->mpcc_bot;
+ 	}
+ 	return NULL;
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c
+index 947eb0df3f125..142fc0a3a536c 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c
+@@ -532,6 +532,12 @@ struct mpcc *mpc2_get_mpcc_for_dpp(struct mpc_tree *tree, int dpp_id)
+ 	while (tmp_mpcc != NULL) {
+ 		if (tmp_mpcc->dpp_id == 0xf || tmp_mpcc->dpp_id == dpp_id)
+ 			return tmp_mpcc;
++
++		/* avoid circular linked list */
++		ASSERT(tmp_mpcc != tmp_mpcc->mpcc_bot);
++		if (tmp_mpcc == tmp_mpcc->mpcc_bot)
++			break;
++
+ 		tmp_mpcc = tmp_mpcc->mpcc_bot;
+ 	}
+ 	return NULL;
+-- 
+2.35.1
+
 
 
