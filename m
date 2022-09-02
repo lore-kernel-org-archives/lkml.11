@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2850EECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:45:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 206FAECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:45:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237609AbiIBMp3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:45:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54054 "EHLO
+        id S237618AbiIBMpd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:45:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237420AbiIBMng (ORCPT
+        with ESMTP id S237428AbiIBMnh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:43:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F25B2EB855;
-        Fri,  2 Sep 2022 05:32:23 -0700 (PDT)
+        Fri, 2 Sep 2022 08:43:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24CAEEA882;
+        Fri,  2 Sep 2022 05:32:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 349D7B82AA5;
-        Fri,  2 Sep 2022 12:32:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80D9CC433D7;
-        Fri,  2 Sep 2022 12:32:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E2457B82AC9;
+        Fri,  2 Sep 2022 12:32:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A26BC4347C;
+        Fri,  2 Sep 2022 12:32:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121928;
-        bh=FyeLDq2PH9S41l9QFfUpiWJFrh1e22Akt8LbPtNul28=;
+        s=korg; t=1662121921;
+        bh=K07g13l32rClJcNoxbLcDmonK4zHo/OsvyUnY5GNgG8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gUwz6PpKP7WvVuIH2EjddkUu0kcLi3XTYNUIH4SZI5HPkR8gay5X5m1Qhw1334YXe
-         qFmGdSf8G68sREdIOE8E63l+rN/c7W41qG6vw4PSfW2mSvrg2AvMgkxb6ZgCN4iN35
-         M2osU0QqF6h9C1hBhOU2tOi4N/2udbsB70/5R1bQ=
+        b=f6pgUYJZrSFKYp2Xw3kmWaAmHyXVkWNwx2utBm3esCBN0IOlG7tHRudY6PgtGQBGY
+         1S95xZPM3ZJmNL2r1rGUtC0UYfCTeu2KKQiDN2qxuCt1NAjnM2N97eFgqKiqwWHtuL
+         drZFLwBuQvfXiHirYmv9PNXMJrGOa1+ZFYMHL67Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Peter Xu <peterx@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.15 09/73] mm/hugetlb: avoid corrupting page->mapping in hugetlb_mcopy_atomic_pte
-Date:   Fri,  2 Sep 2022 14:18:33 +0200
-Message-Id: <20220902121404.745542492@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.15 07/73] crypto: lib - remove unneeded selection of XOR_BLOCKS
+Date:   Fri,  2 Sep 2022 14:18:31 +0200
+Message-Id: <20220902121404.687586651@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
 References: <20220902121404.435662285@linuxfoundation.org>
@@ -51,39 +48,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaohe Lin <linmiaohe@huawei.com>
+From: Eric Biggers <ebiggers@google.com>
 
-commit ab74ef708dc51df7cf2b8a890b9c6990fac5c0c6 upstream.
+commit 874b301985ef2f89b8b592ad255e03fb6fbfe605 upstream.
 
-In MCOPY_ATOMIC_CONTINUE case with a non-shared VMA, pages in the page
-cache are installed in the ptes.  But hugepage_add_new_anon_rmap is called
-for them mistakenly because they're not vm_shared.  This will corrupt the
-page->mapping used by page cache code.
+CRYPTO_LIB_CHACHA_GENERIC doesn't need to select XOR_BLOCKS.  It perhaps
+was thought that it's needed for __crypto_xor, but that's not the case.
 
-Link: https://lkml.kernel.org/r/20220712130542.18836-1-linmiaohe@huawei.com
-Fixes: f619147104c8 ("userfaultfd: add UFFDIO_CONTINUE ioctl")
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: Axel Rasmussen <axelrasmussen@google.com>
-Cc: Peter Xu <peterx@redhat.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+Enabling XOR_BLOCKS is problematic because the XOR_BLOCKS code runs a
+benchmark when it is initialized.  That causes a boot time regression on
+systems that didn't have it enabled before.
+
+Therefore, remove this unnecessary and problematic selection.
+
+Fixes: e56e18985596 ("lib/crypto: add prompts back to crypto libraries")
+Cc: stable@vger.kernel.org
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/hugetlb.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ lib/crypto/Kconfig |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -5371,7 +5371,7 @@ int hugetlb_mcopy_atomic_pte(struct mm_s
- 	if (!huge_pte_none(huge_ptep_get(dst_pte)))
- 		goto out_release_unlock;
+--- a/lib/crypto/Kconfig
++++ b/lib/crypto/Kconfig
+@@ -33,7 +33,6 @@ config CRYPTO_ARCH_HAVE_LIB_CHACHA
  
--	if (vm_shared) {
-+	if (page_in_pagecache) {
- 		page_dup_rmap(page, true);
- 	} else {
- 		ClearHPageRestoreReserve(page);
+ config CRYPTO_LIB_CHACHA_GENERIC
+ 	tristate
+-	select XOR_BLOCKS
+ 	help
+ 	  This symbol can be depended upon by arch implementations of the
+ 	  ChaCha library interface that require the generic code as a
 
 
