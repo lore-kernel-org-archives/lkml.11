@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09D45C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:45:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 992ADECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:45:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237478AbiIBMpD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:45:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41880 "EHLO
+        id S237491AbiIBMpH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:45:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237381AbiIBMnD (ORCPT
+        with ESMTP id S237359AbiIBMnT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:43:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9124BEA30B;
-        Fri,  2 Sep 2022 05:32:10 -0700 (PDT)
+        Fri, 2 Sep 2022 08:43:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B41AE115C;
+        Fri,  2 Sep 2022 05:32:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2CF8DB82ACC;
-        Fri,  2 Sep 2022 12:31:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A77CC433D7;
-        Fri,  2 Sep 2022 12:31:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DCAC6217A;
+        Fri,  2 Sep 2022 12:30:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63484C433C1;
+        Fri,  2 Sep 2022 12:30:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121895;
-        bh=Efn+RC4A9xr3g6ZZemO1GHFr28YmcxvuRXOBY+Vj6dI=;
+        s=korg; t=1662121841;
+        bh=/pLes/ZYaRkDgTtjtjwyJmOWv8M+asLRXrofEb6ZSho=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mpo0tKUH0yFw1PwpICYAPcPCxQsbCs3xCsYGFF4+JiaHtYTK5jQL2ElAX7oKoxmkM
-         ANojuOBZjQaDWn0hwlflKmGlkjSWQ6dcOrYAiuJgIZ4l04ubZZIjAkZYBjSv1M6c+T
-         n13Ql8bCX0Cia3gAyWPzSPDnuowsXxD7u7dq8F8w=
+        b=A5rXAc+t1QBZ990Rm0ysxHFCYO3/xoIikMRhAtPjTLpA669fa0IexP+GP7xplRsYg
+         e9vIAmwimEtcNEvvFq1H5vlC77Ce0kt/4Ajwv6Zh6VQOvCoBzpKBQ0LruJ33k+uD5v
+         0o9389YP5LC5oUMV1oscUGZOJOYfz/cwa3Cd3oys=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.15 21/73] io_uring: fail links when poll fails
-Date:   Fri,  2 Sep 2022 14:18:45 +0200
-Message-Id: <20220902121405.153057380@linuxfoundation.org>
+        stable@vger.kernel.org, Marcos Paulo de Souza <mpdesouza@suse.com>,
+        David Sterba <dsterba@suse.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 62/77] btrfs: introduce btrfs_lookup_match_dir
+Date:   Fri,  2 Sep 2022 14:19:11 +0200
+Message-Id: <20220902121405.741653606@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
-References: <20220902121404.435662285@linuxfoundation.org>
+In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
+References: <20220902121403.569927325@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,34 +49,175 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Begunkov <asml.silence@gmail.com>
+From: Marcos Paulo de Souza <mpdesouza@suse.com>
 
-[ upstream commmit c487a5ad48831afa6784b368ec40d0ee50f2fe1b ]
+[ Upstream commit a7d1c5dc8632e9b370ad26478c468d4e4e29f263 ]
 
-Don't forget to cancel all linked requests of poll request when
-__io_arm_poll_handler() failed.
+btrfs_search_slot is called in multiple places in dir-item.c to search
+for a dir entry, and then calling btrfs_match_dir_name to return a
+btrfs_dir_item.
 
-Fixes: aa43477b04025 ("io_uring: poll rework")
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-Link: https://lore.kernel.org/r/a78aad962460f9fdfe4aa4c0b62425c88f9415bc.1655852245.git.asml.silence@gmail.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-[pavel: backport]
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+In order to reduce the number of callers of btrfs_search_slot, create a
+common function that looks for the dir key, and if found call
+btrfs_match_dir_item_name.
+
+Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c |    2 ++
- 1 file changed, 2 insertions(+)
+ fs/btrfs/dir-item.c | 76 +++++++++++++++++++++++----------------------
+ 1 file changed, 39 insertions(+), 37 deletions(-)
 
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -5844,6 +5844,8 @@ static int io_poll_add(struct io_kiocb *
- 	ipt.pt._qproc = io_poll_queue_proc;
+diff --git a/fs/btrfs/dir-item.c b/fs/btrfs/dir-item.c
+index 863367c2c6205..1c0a7cd6b9b0a 100644
+--- a/fs/btrfs/dir-item.c
++++ b/fs/btrfs/dir-item.c
+@@ -171,6 +171,25 @@ int btrfs_insert_dir_item(struct btrfs_trans_handle *trans, const char *name,
+ 	return 0;
+ }
  
- 	ret = __io_arm_poll_handler(req, &req->poll, &ipt, poll->events);
-+	if (!ret && ipt.error)
-+		req_set_fail(req);
- 	ret = ret ?: ipt.error;
- 	if (ret)
- 		__io_req_complete(req, issue_flags, ret, 0);
++static struct btrfs_dir_item *btrfs_lookup_match_dir(
++			struct btrfs_trans_handle *trans,
++			struct btrfs_root *root, struct btrfs_path *path,
++			struct btrfs_key *key, const char *name,
++			int name_len, int mod)
++{
++	const int ins_len = (mod < 0 ? -1 : 0);
++	const int cow = (mod != 0);
++	int ret;
++
++	ret = btrfs_search_slot(trans, root, key, path, ins_len, cow);
++	if (ret < 0)
++		return ERR_PTR(ret);
++	if (ret > 0)
++		return ERR_PTR(-ENOENT);
++
++	return btrfs_match_dir_item_name(root->fs_info, path, name, name_len);
++}
++
+ /*
+  * lookup a directory item based on name.  'dir' is the objectid
+  * we're searching in, and 'mod' tells us if you plan on deleting the
+@@ -182,23 +201,18 @@ struct btrfs_dir_item *btrfs_lookup_dir_item(struct btrfs_trans_handle *trans,
+ 					     const char *name, int name_len,
+ 					     int mod)
+ {
+-	int ret;
+ 	struct btrfs_key key;
+-	int ins_len = mod < 0 ? -1 : 0;
+-	int cow = mod != 0;
++	struct btrfs_dir_item *di;
+ 
+ 	key.objectid = dir;
+ 	key.type = BTRFS_DIR_ITEM_KEY;
+-
+ 	key.offset = btrfs_name_hash(name, name_len);
+ 
+-	ret = btrfs_search_slot(trans, root, &key, path, ins_len, cow);
+-	if (ret < 0)
+-		return ERR_PTR(ret);
+-	if (ret > 0)
++	di = btrfs_lookup_match_dir(trans, root, path, &key, name, name_len, mod);
++	if (IS_ERR(di) && PTR_ERR(di) == -ENOENT)
+ 		return NULL;
+ 
+-	return btrfs_match_dir_item_name(root->fs_info, path, name, name_len);
++	return di;
+ }
+ 
+ int btrfs_check_dir_item_collision(struct btrfs_root *root, u64 dir,
+@@ -212,7 +226,6 @@ int btrfs_check_dir_item_collision(struct btrfs_root *root, u64 dir,
+ 	int slot;
+ 	struct btrfs_path *path;
+ 
+-
+ 	path = btrfs_alloc_path();
+ 	if (!path)
+ 		return -ENOMEM;
+@@ -221,20 +234,20 @@ int btrfs_check_dir_item_collision(struct btrfs_root *root, u64 dir,
+ 	key.type = BTRFS_DIR_ITEM_KEY;
+ 	key.offset = btrfs_name_hash(name, name_len);
+ 
+-	ret = btrfs_search_slot(NULL, root, &key, path, 0, 0);
+-
+-	/* return back any errors */
+-	if (ret < 0)
+-		goto out;
++	di = btrfs_lookup_match_dir(NULL, root, path, &key, name, name_len, 0);
++	if (IS_ERR(di)) {
++		ret = PTR_ERR(di);
++		/* Nothing found, we're safe */
++		if (ret == -ENOENT) {
++			ret = 0;
++			goto out;
++		}
+ 
+-	/* nothing found, we're safe */
+-	if (ret > 0) {
+-		ret = 0;
+-		goto out;
++		if (ret < 0)
++			goto out;
+ 	}
+ 
+ 	/* we found an item, look for our name in the item */
+-	di = btrfs_match_dir_item_name(root->fs_info, path, name, name_len);
+ 	if (di) {
+ 		/* our exact name was found */
+ 		ret = -EEXIST;
+@@ -275,21 +288,13 @@ btrfs_lookup_dir_index_item(struct btrfs_trans_handle *trans,
+ 			    u64 objectid, const char *name, int name_len,
+ 			    int mod)
+ {
+-	int ret;
+ 	struct btrfs_key key;
+-	int ins_len = mod < 0 ? -1 : 0;
+-	int cow = mod != 0;
+ 
+ 	key.objectid = dir;
+ 	key.type = BTRFS_DIR_INDEX_KEY;
+ 	key.offset = objectid;
+ 
+-	ret = btrfs_search_slot(trans, root, &key, path, ins_len, cow);
+-	if (ret < 0)
+-		return ERR_PTR(ret);
+-	if (ret > 0)
+-		return ERR_PTR(-ENOENT);
+-	return btrfs_match_dir_item_name(root->fs_info, path, name, name_len);
++	return btrfs_lookup_match_dir(trans, root, path, &key, name, name_len, mod);
+ }
+ 
+ struct btrfs_dir_item *
+@@ -346,21 +351,18 @@ struct btrfs_dir_item *btrfs_lookup_xattr(struct btrfs_trans_handle *trans,
+ 					  const char *name, u16 name_len,
+ 					  int mod)
+ {
+-	int ret;
+ 	struct btrfs_key key;
+-	int ins_len = mod < 0 ? -1 : 0;
+-	int cow = mod != 0;
++	struct btrfs_dir_item *di;
+ 
+ 	key.objectid = dir;
+ 	key.type = BTRFS_XATTR_ITEM_KEY;
+ 	key.offset = btrfs_name_hash(name, name_len);
+-	ret = btrfs_search_slot(trans, root, &key, path, ins_len, cow);
+-	if (ret < 0)
+-		return ERR_PTR(ret);
+-	if (ret > 0)
++
++	di = btrfs_lookup_match_dir(trans, root, path, &key, name, name_len, mod);
++	if (IS_ERR(di) && PTR_ERR(di) == -ENOENT)
+ 		return NULL;
+ 
+-	return btrfs_match_dir_item_name(root->fs_info, path, name, name_len);
++	return di;
+ }
+ 
+ /*
+-- 
+2.35.1
+
 
 
