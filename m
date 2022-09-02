@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E62DAC54EE9
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49C9EECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:34:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236719AbiIBMeO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:34:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46674 "EHLO
+        id S236802AbiIBMeS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:34:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236307AbiIBMdF (ORCPT
+        with ESMTP id S236485AbiIBMdH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:33:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE39EDD4E8;
-        Fri,  2 Sep 2022 05:27:28 -0700 (PDT)
+        Fri, 2 Sep 2022 08:33:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F6BDCFC8;
+        Fri,  2 Sep 2022 05:27:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 16628B82AB6;
-        Fri,  2 Sep 2022 12:27:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A90BC433C1;
-        Fri,  2 Sep 2022 12:27:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4350EB82A9D;
+        Fri,  2 Sep 2022 12:27:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94750C433C1;
+        Fri,  2 Sep 2022 12:26:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121643;
-        bh=Sz3Q4UxT7dqoQblVzdJOQZ/hjUT/fosBNY6GHX19QdM=;
+        s=korg; t=1662121620;
+        bh=bRiPDlXCDnM6znqFqZQEveROcMOJjK1l/Tq9ZMM5NYk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HrOjPGvxUtAI0boJvAL/HPRkRrhP2G6m3g0wUBnU775c2H03dPiQ9C7wICrW0H2fm
-         CsczwrUukwGf7bpmPLgpAUqLLCh5cwOo7HSjyTZdqiWzJXxDz6mpDaSupTh3VATlIs
-         XMY/3XttTvtMLRT8H5U1JMoQ79KErXMSwDXBFBe4=
+        b=JtmJ51XYJ/Ac9oNtuIBMHgFoVjcyEAFuszRfuhBUKpi9W7QHwd0a0x4BB8Bg8dPPr
+         DVWCf4OL7DL1d5OtvX7Q55CsYfSvuFKmjIaqsEU75lr2lXvlNCHeSiAuiHUpT1KxG/
+         A3dzKxcTVKj4q/LXDOmoWHtzHi4s16TzHgWNrw98=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mahesh Bandewar <maheshb@google.com>,
-        Sainath Grandhi <sainath.grandhi@intel.com>,
-        =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 19/77] net: ipvtap - add __init/__exit annotations to module init/exit funcs
-Date:   Fri,  2 Sep 2022 14:18:28 +0200
-Message-Id: <20220902121404.283202582@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "srivatsab@vmware.com, srivatsa@csail.mit.edu, akaher@vmware.com,
+        amakhalov@vmware.com, vsirnapalli@vmware.com, sturlapati@vmware.com,
+        bordoloih@vmware.com, keerthanak@vmware.com, Ankit Jain" 
+        <ankitja@vmware.com>, Hui Su <suhui_kernel@163.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Ankit Jain <ankitja@vmware.com>
+Subject: [PATCH 5.4 11/77] kernel/sched: Remove dl_boosted flag comment
+Date:   Fri,  2 Sep 2022 14:18:20 +0200
+Message-Id: <20220902121403.999666791@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220902121403.569927325@linuxfoundation.org>
 References: <20220902121403.569927325@linuxfoundation.org>
@@ -51,47 +54,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej Żenczykowski <maze@google.com>
+From: Hui Su <suhui_kernel@163.com>
 
-[ Upstream commit 4b2e3a17e9f279325712b79fb01d1493f9e3e005 ]
+commit 0e3872499de1a1230cef5221607d71aa09264bd5 upstream.
 
-Looks to have been left out in an oversight.
+since commit 2279f540ea7d ("sched/deadline: Fix priority
+inheritance with multiple scheduling classes"), we should not
+keep it here.
 
-Cc: Mahesh Bandewar <maheshb@google.com>
-Cc: Sainath Grandhi <sainath.grandhi@intel.com>
-Fixes: 235a9d89da97 ('ipvtap: IP-VLAN based tap driver')
-Signed-off-by: Maciej Żenczykowski <maze@google.com>
-Link: https://lore.kernel.org/r/20220821130808.12143-1-zenczykowski@gmail.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Hui Su <suhui_kernel@163.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Daniel Bristot de Oliveira <bristot@redhat.com>
+Link: https://lore.kernel.org/r/20220107095254.GA49258@localhost.localdomain
+[Ankit: Regenerated the patch for v5.4.y]
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ipvlan/ipvtap.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/linux/sched.h |    4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/drivers/net/ipvlan/ipvtap.c b/drivers/net/ipvlan/ipvtap.c
-index 1cedb634f4f7b..f01078b2581ce 100644
---- a/drivers/net/ipvlan/ipvtap.c
-+++ b/drivers/net/ipvlan/ipvtap.c
-@@ -194,7 +194,7 @@ static struct notifier_block ipvtap_notifier_block __read_mostly = {
- 	.notifier_call	= ipvtap_device_event,
- };
- 
--static int ipvtap_init(void)
-+static int __init ipvtap_init(void)
- {
- 	int err;
- 
-@@ -228,7 +228,7 @@ static int ipvtap_init(void)
- }
- module_init(ipvtap_init);
- 
--static void ipvtap_exit(void)
-+static void __exit ipvtap_exit(void)
- {
- 	rtnl_link_unregister(&ipvtap_link_ops);
- 	unregister_netdevice_notifier(&ipvtap_notifier_block);
--- 
-2.35.1
-
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -526,10 +526,6 @@ struct sched_dl_entity {
+ 	 * task has to wait for a replenishment to be performed at the
+ 	 * next firing of dl_timer.
+ 	 *
+-	 * @dl_boosted tells if we are boosted due to DI. If so we are
+-	 * outside bandwidth enforcement mechanism (but only until we
+-	 * exit the critical section);
+-	 *
+ 	 * @dl_yielded tells if task gave up the CPU before consuming
+ 	 * all its available runtime during the last job.
+ 	 *
 
 
