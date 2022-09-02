@@ -2,116 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9816ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:36:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D79BEECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:36:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236901AbiIBNgu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:36:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52618 "EHLO
+        id S236722AbiIBNgx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:36:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237119AbiIBNgO (ORCPT
+        with ESMTP id S235498AbiIBNgP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:36:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF3780F42;
-        Fri,  2 Sep 2022 06:15:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A8A81621B0;
-        Fri,  2 Sep 2022 12:33:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1D78C433D7;
-        Fri,  2 Sep 2022 12:33:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121993;
-        bh=qCM5NILSakk0vYH3X0CsXbxKAksQCPBoXUj6cT8zIGY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PZpLJWzb/kE3DS7UAb76jXcP87oBeXaDgz+hnBzzNnOnA0BdDLEFrBdwB4F2f/4Qh
-         gF08uUDTxGaDNUNHoy9sGjh+BGMziotH0Bs1fkxx5Izt5x8STOhTaUbyaAFZSguoAt
-         2LhOCp65wyhiimvW1dp20FabPtY3n51Wyk35QbFE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josip Pavic <Josip.Pavic@amd.com>,
-        Jun Lei <Jun.Lei@amd.com>, Alex Hung <alex.hung@amd.com>,
-        Aric Cyr <aric.cyr@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 52/73] drm/amd/display: Avoid MPC infinite loop
-Date:   Fri,  2 Sep 2022 14:19:16 +0200
-Message-Id: <20220902121406.165165029@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
-References: <20220902121404.435662285@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Fri, 2 Sep 2022 09:36:15 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE38686059
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:15:28 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id j26so1253571wms.0
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 06:15:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=GsvQueQuCTUrKAHOrPXoQPRv2C01zYCjLMtVZuJnKZk=;
+        b=PCk9KUCqb/mq9dLj7ZTKK3yD9RQLUT3BM/3S0+OKecwlv8d8Jx2Fh7MSUCA4LvN13S
+         Lzu4UCX9NaAOnjnUrHpZqX79A+uhnVTA4cQiXQIcZrVpW2rx5yCrQdbksA2cIqfaJJMH
+         q78+lkxPOYJUgwVWeinqlJgYeWunDBPSLbiciT0wMMKYuBbRP9/ebV+TgGIffXwRMp/k
+         DZibjJHbKI81hF7STFHVjTxFwlOT0+edHalYGoTWz+Li++4qxMqXQ+50JlygJ+o5Uv4L
+         /HHVQWOBwIOuGSu2KsFvOHMWSTqNrX48Qd/Gu7ymNflipM7tVLpW+dmY4TvRNyYLkJ43
+         HAaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=GsvQueQuCTUrKAHOrPXoQPRv2C01zYCjLMtVZuJnKZk=;
+        b=LGU1dVq5n0oekq8ywx6EKxWjmPMsJ63P01HI8JzIyxrkc1BM+olOqkA7ikfpi7HJoD
+         ANvPxsA1ZEPjyCqvRd4XbRYDrZ4O+AOx11lVw+XnrbccmSh8J/0EQIjiHmbTQTgY16+q
+         YcVY1Yy/n5fNU6twcuVHeSc28D+djxKaYFAIaGjoLZLTO1L4qX6149vThK2jm1Ll3W/l
+         ZjoihEGY+J4oe2Xn7MtYT5enTM1tKb0rNeiZl2awSINzL/pW4nhRc1/xqGn+3RW/Cnae
+         dqpljjf2gKImRuUwDgazeCRZRCeU28IixrpXIoapIe4G55zfu5qH6ZuQPcOU2ynLOWYz
+         3Wbg==
+X-Gm-Message-State: ACgBeo2AClmHLiaVmG+t1SBRvTlV3BrGkstBq4xpLDC7FjzXjFUKUoT5
+        cB9luB8pLG3Vu6BFiFqB0y4e9g==
+X-Google-Smtp-Source: AA6agR7ctgyVF+7Fp5xZ/ldtg0xNTR57lgO0mN4bcjBdcgcRGSGK8/aPmh8jDH664AV8gtaFa6q4Rg==
+X-Received: by 2002:a05:600c:3ac9:b0:3a5:f114:1f8 with SMTP id d9-20020a05600c3ac900b003a5f11401f8mr2755993wms.204.1662124461131;
+        Fri, 02 Sep 2022 06:14:21 -0700 (PDT)
+Received: from hackbox.lan ([94.52.112.99])
+        by smtp.gmail.com with ESMTPSA id v14-20020a5d43ce000000b002253fd19a6asm1766253wrr.18.2022.09.02.06.14.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 06:14:20 -0700 (PDT)
+From:   Abel Vesa <abel.vesa@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorande@qti.qualcomm.com>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Amol Maheshwari <amahesh@qti.qualcomm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Ekansh Gupta <ekangupt@qti.qualcomm.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Ola Jeppsson <ola@snap.com>
+Subject: [PATCH 01/14] misc: fastrpc: Fix use-after-free and race in fastrpc_map_find
+Date:   Fri,  2 Sep 2022 16:13:31 +0300
+Message-Id: <20220902131344.3029826-2-abel.vesa@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220902131344.3029826-1-abel.vesa@linaro.org>
+References: <20220902131344.3029826-1-abel.vesa@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josip Pavic <Josip.Pavic@amd.com>
+Currently, there is a race window between the point when the mutex is
+unlocked in fastrpc_map_lookup and the reference count increasing
+(fastrpc_map_get) in fastrpc_map_find, which can also lead to
+use-after-free.
 
-[ Upstream commit 8de297dc046c180651c0500f8611663ae1c3828a ]
+So lets merge fastrpc_map_find into fastrpc_map_lookup which allows us
+to both protect the maps list by also taking the &fl->lock spinlock and
+the reference count, since the spinlock will be released only after.
+Add take_ref argument to make this suitable for all callers.
 
-[why]
-In some cases MPC tree bottom pipe ends up point to itself.  This causes
-iterating from top to bottom to hang the system in an infinite loop.
-
-[how]
-When looping to next MPC bottom pipe, check that the pointer is not same
-as current to avoid infinite loop.
-
-Reviewed-by: Josip Pavic <Josip.Pavic@amd.com>
-Reviewed-by: Jun Lei <Jun.Lei@amd.com>
-Acked-by: Alex Hung <alex.hung@amd.com>
-Signed-off-by: Aric Cyr <aric.cyr@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Co-developed-by: Ola Jeppsson <ola@snap.com>
+Signed-off-by: Ola Jeppsson <ola@snap.com>
+Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c | 6 ++++++
- drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c | 6 ++++++
- 2 files changed, 12 insertions(+)
+ drivers/misc/fastrpc.c | 41 +++++++++++++++++++++--------------------
+ 1 file changed, 21 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c
-index 11019c2c62ccb..8192f1967e924 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c
-@@ -126,6 +126,12 @@ struct mpcc *mpc1_get_mpcc_for_dpp(struct mpc_tree *tree, int dpp_id)
- 	while (tmp_mpcc != NULL) {
- 		if (tmp_mpcc->dpp_id == dpp_id)
- 			return tmp_mpcc;
-+
-+		/* avoid circular linked list */
-+		ASSERT(tmp_mpcc != tmp_mpcc->mpcc_bot);
-+		if (tmp_mpcc == tmp_mpcc->mpcc_bot)
-+			break;
-+
- 		tmp_mpcc = tmp_mpcc->mpcc_bot;
+diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
+index 93ebd174d848..0c816a11eeec 100644
+--- a/drivers/misc/fastrpc.c
++++ b/drivers/misc/fastrpc.c
+@@ -333,30 +333,31 @@ static void fastrpc_map_get(struct fastrpc_map *map)
+ 
+ 
+ static int fastrpc_map_lookup(struct fastrpc_user *fl, int fd,
+-			    struct fastrpc_map **ppmap)
++			    struct fastrpc_map **ppmap, bool take_ref)
+ {
++	struct fastrpc_session_ctx *sess = fl->sctx;
+ 	struct fastrpc_map *map = NULL;
++	int ret = -ENOENT;
+ 
+-	mutex_lock(&fl->mutex);
++	spin_lock(&fl->lock);
+ 	list_for_each_entry(map, &fl->maps, node) {
+-		if (map->fd == fd) {
+-			*ppmap = map;
+-			mutex_unlock(&fl->mutex);
+-			return 0;
+-		}
+-	}
+-	mutex_unlock(&fl->mutex);
+-
+-	return -ENOENT;
+-}
++		if (map->fd != fd)
++			continue;
+ 
+-static int fastrpc_map_find(struct fastrpc_user *fl, int fd,
+-			    struct fastrpc_map **ppmap)
+-{
+-	int ret = fastrpc_map_lookup(fl, fd, ppmap);
++		if (take_ref) {
++			ret = fastrpc_map_get(map);
++			if (ret) {
++				dev_dbg(sess->dev, "%s: Failed to get map fd=%d ret=%d\n",
++					__func__, fd, ret);
++				break;
++			}
++		}
+ 
+-	if (!ret)
+-		fastrpc_map_get(*ppmap);
++		*ppmap = map;
++		ret = 0;
++		break;
++	}
++	spin_unlock(&fl->lock);
+ 
+ 	return ret;
+ }
+@@ -703,7 +704,7 @@ static int fastrpc_map_create(struct fastrpc_user *fl, int fd,
+ 	struct fastrpc_map *map = NULL;
+ 	int err = 0;
+ 
+-	if (!fastrpc_map_find(fl, fd, ppmap))
++	if (!fastrpc_map_lookup(fl, fd, ppmap, true))
+ 		return 0;
+ 
+ 	map = kzalloc(sizeof(*map), GFP_KERNEL);
+@@ -1026,7 +1027,7 @@ static int fastrpc_put_args(struct fastrpc_invoke_ctx *ctx,
+ 	for (i = 0; i < FASTRPC_MAX_FDLIST; i++) {
+ 		if (!fdlist[i])
+ 			break;
+-		if (!fastrpc_map_lookup(fl, (int)fdlist[i], &mmap))
++		if (!fastrpc_map_lookup(fl, (int)fdlist[i], &mmap, false))
+ 			fastrpc_map_put(mmap);
  	}
- 	return NULL;
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c
-index 947eb0df3f125..142fc0a3a536c 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c
-@@ -532,6 +532,12 @@ struct mpcc *mpc2_get_mpcc_for_dpp(struct mpc_tree *tree, int dpp_id)
- 	while (tmp_mpcc != NULL) {
- 		if (tmp_mpcc->dpp_id == 0xf || tmp_mpcc->dpp_id == dpp_id)
- 			return tmp_mpcc;
-+
-+		/* avoid circular linked list */
-+		ASSERT(tmp_mpcc != tmp_mpcc->mpcc_bot);
-+		if (tmp_mpcc == tmp_mpcc->mpcc_bot)
-+			break;
-+
- 		tmp_mpcc = tmp_mpcc->mpcc_bot;
- 	}
- 	return NULL;
+ 
 -- 
-2.35.1
-
-
+2.34.1
 
