@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D975CC38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:33:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EF27C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 14:34:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236717AbiIBOd0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 10:33:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37148 "EHLO
+        id S236728AbiIBOdc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 10:33:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236217AbiIBOaX (ORCPT
+        with ESMTP id S236977AbiIBOas (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 10:30:23 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AABDD20F4B
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:48 -0700 (PDT)
+        Fri, 2 Sep 2022 10:30:48 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3288714D3F
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:54:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
+        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=Mk4gyPud12Euk/9XIHAPXis5fefrr9FnQg5Sg88vnL0=; b=X7Th3/a7wdt17ojxWrABzi5Ae8
-        oaJGENC29iMmbnDD3sh8vciSWHTDv2S3CaixkPjaGmC8OFjWx8NmpOqDVD0tbLjtH12mbRFODkxng
-        PQo1KpOw1+NUHQnIopLOq87lu91khcWU0khwjLFicn4aOgFEtgBlxPbOp4uBsrXdnYLS39sfc+8dS
-        OtT7nzeilsw5T/nJ2Ip42YCzEUjMrYtHimjs0zmUx0pgSsVeMP/JHZQpxjuwxSa9uMNQ1ZyGwiYVK
-        lsebNDTOjDbP7PMGbrg1grISQc38zNKmCNsaCIvRRlR0HUz85NIXbBtvAaGEMXJEmS8wyE3fE6Qe5
-        nwaLhoXQ==;
+        bh=VtHSfWHBCM/dkewK26y+PcMV0oq6+DiYrWTtkB689iQ=; b=Ycygkh2jN7m1q17HxTbE+bSJD5
+        d0nMCb3gQG4Kb408oFfp3kF6NGqMcXaxIcF7E4S7cCmHsKzost2zxuq0AH/KyNfDAiCneJi+lo2Ul
+        9L9U6/qs0SPPQMsv0/HoACJF3CXUPEh/c1MeWPzCI3ztxPNUuorOk4YuHI1KP4/SauR14o4aRxKX/
+        Ge8NTyhbMvjCI0Vp1Ovvx8VmkgKWCwyrOp1hzmh6D1vyUBxpibD41WaM2XtesOqveimS+LNpAfBOU
+        nQuq2w6W6Rv57Bs4wMedkujSY9+3PVVeSSPeTCFCEVBlOvEJIauA54/dMgEbnW1b2aPmP5RNzHUHy
+        IFnW7D8A==;
 Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oU77P-008g8l-Jq; Fri, 02 Sep 2022 13:54:03 +0000
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oU77N-0074TJ-JZ; Fri, 02 Sep 2022 13:53:57 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 451CC302DA9;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 26CD9301D17;
         Fri,  2 Sep 2022 15:53:54 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id A654D2B8EFB60; Fri,  2 Sep 2022 15:53:53 +0200 (CEST)
-Message-ID: <20220902130951.853460809@infradead.org>
+        id CD4CB2B8EF7F2; Fri,  2 Sep 2022 15:53:52 +0200 (CEST)
+Message-ID: <20220902130949.268856815@infradead.org>
 User-Agent: quilt/0.66
-Date:   Fri, 02 Sep 2022 15:07:18 +0200
+Date:   Fri, 02 Sep 2022 15:06:53 +0200
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     Thomas Gleixner <tglx@linutronix.de>
 Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
@@ -59,7 +59,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, x86@kernel.org,
         Daniel Borkmann <daniel@iogearbox.net>,
         K Prateek Nayak <kprateek.nayak@amd.com>,
         Eric Dumazet <edumazet@google.com>
-Subject: [PATCH v2 53/59] kallsyms: Take callthunks into account
+Subject: [PATCH v2 28/59] objtool: Allow !PC relative relocations
 References: <20220902130625.217071627@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -69,123 +69,77 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-Since the pre-symbol function padding is an integral part of the
-symbol make kallsyms report it as part of the symbol by reporting it
-as sym-x instead of prev_sym+y.
+Objtool doesn't currently much like per-cpu usage in alternatives:
+
+arch/x86/entry/entry_64.o: warning: objtool: .altinstr_replacement+0xf: unsupported relocation in alternatives section
+  f:   65 c7 04 25 00 00 00 00 00 00 00 80     movl   $0x80000000,%gs:0x0      13: R_X86_64_32S        __x86_call_depth
+
+Since the R_X86_64_32S relocation is location invariant (it's
+computation doesn't include P - the address of the location itself),
+it can be trivially allowed.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- kernel/kallsyms.c |   45 ++++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 40 insertions(+), 5 deletions(-)
+ tools/objtool/arch/x86/decode.c       |   42 +++++++++++++++++++++++++++++-----
+ tools/objtool/check.c                 |    6 +---
+ tools/objtool/include/objtool/arch.h  |    6 ++--
+ tools/objtool/include/objtool/check.h |   17 +++++++------
+ 4 files changed, 51 insertions(+), 20 deletions(-)
 
---- a/kernel/kallsyms.c
-+++ b/kernel/kallsyms.c
-@@ -292,6 +292,12 @@ static unsigned long get_symbol_pos(unsi
- 	return low;
+--- a/tools/objtool/arch/x86/decode.c
++++ b/tools/objtool/arch/x86/decode.c
+@@ -73,6 +73,30 @@ unsigned long arch_jump_destination(stru
+ 	return insn->offset + insn->len + insn->immediate;
  }
  
-+#ifdef CONFIG_FUNCTION_PADDING_BYTES
-+#define PADDING_BYTES	CONFIG_FUNCTION_PADDING_BYTES
-+#else
-+#define PADDING_BYTES	0
-+#endif
++bool arch_pc_relative_reloc(struct reloc *reloc)
++{
++	/*
++	 * All relocation types where P (the address of the target)
++	 * is included in the computation.
++	 */
++	switch (reloc->type) {
++	case R_X86_64_PC8:
++	case R_X86_64_PC16:
++	case R_X86_64_PC32:
++	case R_X86_64_PC64:
 +
- /*
-  * Lookup an address but don't bother to find any names.
-  */
-@@ -299,13 +305,25 @@ int kallsyms_lookup_size_offset(unsigned
- 				unsigned long *offset)
- {
- 	char namebuf[KSYM_NAME_LEN];
-+	int ret;
++	case R_X86_64_PLT32:
++	case R_X86_64_GOTPC32:
++	case R_X86_64_GOTPCREL:
++		return true;
 +
-+	addr += PADDING_BYTES;
- 
- 	if (is_ksym_addr(addr)) {
- 		get_symbol_pos(addr, symbolsize, offset);
--		return 1;
-+		ret = 1;
-+		goto found;
- 	}
--	return !!module_address_lookup(addr, symbolsize, offset, NULL, NULL, namebuf) ||
--	       !!__bpf_address_lookup(addr, symbolsize, offset, namebuf);
-+
-+	ret = !!module_address_lookup(addr, symbolsize, offset, NULL, NULL, namebuf);
-+	if (!ret) {
-+		ret = !!__bpf_address_lookup(addr, symbolsize,
-+					     offset, namebuf);
++	default:
++		break;
 +	}
-+found:
-+	if (ret && offset)
-+		*offset -= PADDING_BYTES;
-+	return ret;
- }
- 
- static const char *kallsyms_lookup_buildid(unsigned long addr,
-@@ -318,6 +336,8 @@ static const char *kallsyms_lookup_build
- 	namebuf[KSYM_NAME_LEN - 1] = 0;
- 	namebuf[0] = 0;
- 
-+	addr += PADDING_BYTES;
 +
- 	if (is_ksym_addr(addr)) {
- 		unsigned long pos;
- 
-@@ -347,6 +367,8 @@ static const char *kallsyms_lookup_build
- 
- found:
- 	cleanup_symbol_name(namebuf);
-+	if (ret && offset)
-+		*offset -= PADDING_BYTES;
- 	return ret;
- }
- 
-@@ -373,6 +395,8 @@ int lookup_symbol_name(unsigned long add
- 	symname[0] = '\0';
- 	symname[KSYM_NAME_LEN - 1] = '\0';
- 
-+	addr += PADDING_BYTES;
++	return false;
++}
 +
- 	if (is_ksym_addr(addr)) {
- 		unsigned long pos;
+ #define ADD_OP(op) \
+ 	if (!(op = calloc(1, sizeof(*op)))) \
+ 		return -1; \
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -1622,7 +1620,7 @@ static int handle_group_alt(struct objto
+ 		 * accordingly.
+ 		 */
+ 		alt_reloc = insn_reloc(file, insn);
+-		if (alt_reloc &&
++		if (alt_reloc && arch_pc_relative_reloc(alt_reloc) &&
+ 		    !arch_support_alt_relocation(special_alt, insn, alt_reloc)) {
  
-@@ -400,6 +424,8 @@ int lookup_symbol_attrs(unsigned long ad
- 	name[0] = '\0';
- 	name[KSYM_NAME_LEN - 1] = '\0';
+ 			WARN_FUNC("unsupported relocation in alternatives section",
+--- a/tools/objtool/include/objtool/arch.h
++++ b/tools/objtool/include/objtool/arch.h
+@@ -93,4 +91,6 @@ bool arch_is_rethunk(struct symbol *sym)
  
-+	addr += PADDING_BYTES;
+ int arch_rewrite_retpolines(struct objtool_file *file);
+ 
++bool arch_pc_relative_reloc(struct reloc *reloc);
 +
- 	if (is_ksym_addr(addr)) {
- 		unsigned long pos;
- 
-@@ -416,6 +442,8 @@ int lookup_symbol_attrs(unsigned long ad
- 		return res;
- 
- found:
-+	if (offset)
-+		*offset -= PADDING_BYTES;
- 	cleanup_symbol_name(name);
- 	return 0;
- }
-@@ -441,8 +469,15 @@ static int __sprint_symbol(char *buffer,
- 	len = strlen(buffer);
- 	offset -= symbol_offset;
- 
--	if (add_offset)
--		len += sprintf(buffer + len, "+%#lx/%#lx", offset, size);
-+	if (add_offset) {
-+		char s = '+';
-+
-+		if ((long)offset < 0) {
-+			s = '-';
-+			offset = 0UL - offset;
-+		}
-+		len += sprintf(buffer + len, "%c%#lx/%#lx", s, offset, size);
-+	}
- 
- 	if (modname) {
- 		len += sprintf(buffer + len, " [%s", modname);
+ #endif /* _ARCH_H */
 
 
