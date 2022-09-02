@@ -2,174 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BF30ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 06:41:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCFECECAAA1
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 06:41:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235026AbiIBGlQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 02:41:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40196 "EHLO
+        id S235376AbiIBGly (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 02:41:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233577AbiIBGlJ (ORCPT
+        with ESMTP id S231660AbiIBGlw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 02:41:09 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E7B365579
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 23:41:04 -0700 (PDT)
-X-UUID: 2b6002d6ba3441508911b2ebbf6a9ec5-20220902
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=kVl11gCVG+L3OOSrvd7lAtcHP1USRC9hCAiJGILnyY4=;
-        b=MN+1p2tLk/0Ss3T0gDnC/RILNKMYkfaVwRJttNmTvVJYZiGiK+1Kik89lAlQMWenADYL12ASqKFcWl7cz4E3RgITiPh4mdiiJrb/cSbAJwMFL6MLFspNznSpuDlqQ/fH+LU66mqXaAhkSdQ8WER8Z1j3YBAs0e/1ACSUPtq+Gt8=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.10,REQID:cad20cac-07c1-43d2-a184-fd49ae91830c,OB:0,L
-        OB:10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:51,FILE:0,BULK:0,RULE:Releas
-        e_Ham,ACTION:release,TS:51
-X-CID-INFO: VERSION:1.1.10,REQID:cad20cac-07c1-43d2-a184-fd49ae91830c,OB:0,LOB
-        :10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:51,FILE:0,BULK:0,RULE:Release_
-        Ham,ACTION:release,TS:51
-X-CID-META: VersionHash:84eae18,CLOUDID:11206256-e800-47dc-8adf-0c936acf4f1b,C
-        OID:7a7498550631,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:1,File:nil,Bulk:40,QS:nil,BEC:nil,COL:0
-X-UUID: 2b6002d6ba3441508911b2ebbf6a9ec5-20220902
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <kuyo.chang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1405539393; Fri, 02 Sep 2022 14:41:00 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 2 Sep 2022 14:40:59 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 2 Sep 2022 14:40:59 +0800
-Message-ID: <5ce45c874d6a05ca69abed3961d413c4a4360e79.camel@mediatek.com>
-Subject: Re: [PATCH 1/1] sched/debug: fix dentry leak in
- update_sched_domain_debugfs
-From:   Kuyo Chang <kuyo.chang@mediatek.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     <major.chen@samsung.com>, Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>,
-        "Mel Gorman" <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <wsd_upstream@mediatek.com>, <hongfei.tang@samsung.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>
-Date:   Fri, 2 Sep 2022 14:40:59 +0800
-In-Reply-To: <YxGUBzp9C7kcNgps@kroah.com>
-References: <20220902031518.1116-1-kuyo.chang@mediatek.com>
-         <YxGUBzp9C7kcNgps@kroah.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Fri, 2 Sep 2022 02:41:52 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA746A4BC;
+        Thu,  1 Sep 2022 23:41:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1662100911; x=1693636911;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=N7b+BrAcz8J9YLN5iRLlFWpexdNNFc3MRpe4BTsX6Xs=;
+  b=qaVrVgv1tnactRnz4j3wsxq011zDolz8xrIQ1PZ/WfaCmeblPeACA7lb
+   oZjOMyzE7W0rTFOHlzibQKqX/s4eMjDVLKpasCXsDFwDay7cO4dqG0tpj
+   BztK0yCHhOqo9M19iFhlcfc/Kj60Hjx86KajsAMNOwQgprDDVaOOyXlzS
+   sjHRclI0ZETAjVc6xwSYBu+MS0HdqDeSvuTA2nj5oubYTd3zTHPUZZlPO
+   /C6l38skjamDDvyJ9sQFq8wA217mWQr55tOC/ClN6vmD+i2ehcvVm9Usz
+   Ks95TZocTfvcawDKLRvs197vlFMqjQBKoXxtZOBE14aKnrmEcXhQ9Qfd8
+   g==;
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="178880916"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Sep 2022 23:41:50 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Thu, 1 Sep 2022 23:41:50 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Thu, 1 Sep 2022 23:41:48 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <srinivas.kandagatla@linaro.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>,
+        <UNGLinuxDriver@microchip.com>,
+        "Horatiu Vultur" <horatiu.vultur@microchip.com>
+Subject: [PATCH v5 0/2] nvmem: lan9662-otpc: add support
+Date:   Fri, 2 Sep 2022 08:45:38 +0200
+Message-ID: <20220902064540.484967-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-09-02 at 07:26 +0200, Greg Kroah-Hartman wrote:
-> On Fri, Sep 02, 2022 at 11:15:15AM +0800, Kuyo Chang wrote:
-> > From: kuyo chang <kuyo.chang@mediatek.com>
-> > 
-> > [Syndrome]
-> > Lowmemorykiller triggered while doing hotplug stress test as below
-> > cmd:
-> > echo [0/1] > /sys/devices/system/cpu/cpu${index}/online
-> > 
-> > Rootcause:
-> > Call trace of the slab owner & usage as below after hotplug stress
-> > test(4hr).
-> > There exists dentry leak at update_sched_domain_debugfs.
-> > 
-> > Total size : 322000KB
-> > <prep_new_page+44>:
-> > <get_page_from_freelist+672>:
-> > <__alloc_pages+304>:
-> > <allocate_slab+144>:
-> > <___slab_alloc+404>:
-> > <__slab_alloc+60>:
-> > <kmem_cache_alloc+1204>:
-> > <alloc_inode+100>:
-> > <new_inode+40>:
-> > <__debugfs_create_file+172>:
-> > <update_sched_domain_debugfs+824>:
-> > <partition_sched_domains_locked+1292>:
-> > <rebuild_sched_domains_locked+576>:
-> > <cpuset_hotplug_workfn+1052>:
-> > <process_one_work+584>:
-> > <worker_thread+1008>:
-> > 
-> > [Solution]
-> > Provided by Major Chen <major.chen@samsung.com> as below link.
-> > 
-https://lore.kernel.org/lkml/20220711030341epcms5p173848e98b13c09eb2fcdf2fd7287526a@epcms5p1/
-> > update_sched_domain_debugfs() uses debugfs_lookup() to find wanted
-> > dentry(which has
-> > been created by debugfs_create_dir() before), but not call dput()
-> > to return this dentry
-> > back. This result in dentry leak even debugfs_remove() is called.
-> > 
-> > [Test result]
-> > Using below commands to check inode_cache & dentry leak.
-> > cat /proc/slabinfo | grep -w inode_cache
-> > cat /proc/slabinfo | grep -w dentry
-> > 
-> > With the patch, the inode_cache & dentry stays consistent
-> > so the lowmemorykiller will not triggered anymore.
-> > 
-> > Fixes: 8a99b6833c88 ("sched: Move SCHED_DEBUG sysctl to debugfs")
-> > 
-> > Signed-off-by: Major Chen <major.chen@samsung.com>
-> > Signed-off-by: kuyo chang <kuyo.chang@mediatek.com>
-> > Tested-by: kuyo chang <kuyo.chang@mediatek.com>
-> > 
-> > ---
-> >  kernel/sched/debug.c | 7 +++++--
-> >  1 file changed, 5 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/kernel/sched/debug.c b/kernel/sched/debug.c
-> > index bb3d63bdf4ae..4ffea2dc01da 100644
-> > --- a/kernel/sched/debug.c
-> > +++ b/kernel/sched/debug.c
-> > @@ -412,11 +412,14 @@ void update_sched_domain_debugfs(void)
-> >  
-> >  	for_each_cpu(cpu, sd_sysctl_cpus) {
-> >  		struct sched_domain *sd;
-> > -		struct dentry *d_cpu;
-> > +		struct dentry *d_cpu, *d_lookup;
-> >  		char buf[32];
-> >  
-> >  		snprintf(buf, sizeof(buf), "cpu%d", cpu);
-> > -		debugfs_remove(debugfs_lookup(buf, sd_dentry));
-> > +		d_lookup = debugfs_lookup(buf, sd_dentry);
-> > +		debugfs_remove(d_lookup);
-> > +		if (!IS_ERR_OR_NULL(d_lookup))
-> > +			dput(d_lookup);
-> 
-> That's odd, and means that something else is removing this file right
-> after we looked it up?  Is there a missing lock here that should be
-> used
-> instead?
-> 
-> thanks,
-> 
-> greg k-h
+Add support for lan9662 OTP controller that is available on lan9662.
+The driver gives access to non-volatile memory. It allows both write
+and read access to it.
 
+v4->v5:
+- add reviewed-by tag for patch 1
+- drop the full-stop from subject
 
-While doing cpu hotlug, the cpu_active_mask is changed, 
-so it need to update_sched_domain_debugfs.
+v3->v4:
+- remove lan9668 compatible string from driver
+- fix the bindings by changing the order of entries under items for
+  compatible property
 
-The original design is to recreate sd_dentry, so it doing
-debugfs_remove and then debugfs_create_dir.
-However, by debugfs_lookup function usage.
-The returned dentry must be passed to dput() when it is no longer
-needed to avoid dentry leak.
+v2->v3:
+- fix dt-bindings, make sure that make dt_binding_check passes
+- remove lan9662_writel/readl/clrbits/setbits and use writel/readl
+- remove WARN_ON(offset >= OTP_MEM_SIZE) as it can't happen
 
+v1->v2:
+- remove unneed quotes for $ref: nvmem.yaml#
+- rename lan966x to lan9662 as not to have any wildcards
+- remove compatible string syscon
+
+Horatiu Vultur (2):
+  dt-bindings: lan9662-otpc: document Lan9662 OTPC
+  nvmem: lan9662-otp: add support
+
+ .../nvmem/microchip,lan9662-otpc.yaml         |  45 ++++
+ drivers/nvmem/Kconfig                         |   8 +
+ drivers/nvmem/Makefile                        |   2 +
+ drivers/nvmem/lan9662-otpc.c                  | 222 ++++++++++++++++++
+ 4 files changed, 277 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/nvmem/microchip,lan9662-otpc.yaml
+ create mode 100644 drivers/nvmem/lan9662-otpc.c
+
+-- 
+2.33.0
 
