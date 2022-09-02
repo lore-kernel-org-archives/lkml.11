@@ -2,178 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7E75ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 01:00:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2D9EECAAD3
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 01:00:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234915AbiIBBAb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 1 Sep 2022 21:00:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55566 "EHLO
+        id S235039AbiIBBAg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 1 Sep 2022 21:00:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232835AbiIBBAX (ORCPT
+        with ESMTP id S234707AbiIBBAZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 1 Sep 2022 21:00:23 -0400
-Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23CC637FBE
-        for <linux-kernel@vger.kernel.org>; Thu,  1 Sep 2022 18:00:22 -0700 (PDT)
-Received: from localhost.localdomain (unknown [182.2.38.99])
-        by gnuweeb.org (Postfix) with ESMTPSA id BE9B480C0B;
-        Fri,  2 Sep 2022 01:00:17 +0000 (UTC)
-X-GW-Data: lPqxHiMPbJw1wb7CM9QUryAGzr0yq5atzVDdxTR0iA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1662080421;
-        bh=xlT8ZBYljMLF/iDvL7d497O6CwzFosNpW9mk4b4aomw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ClxGCIIcEIszw+3JW53Bqjpf88KCRC7NZBZ0GUYOvPwutLy3eWMMGhkQp6/LxlhiQ
-         CI3vjnnY1W98dPS+2nkcqkhZCTXJVsyxXjdngOIQk3j37k5eQyCVX/EQTeD0fvhXUd
-         fvyocMgjLvUGoZu0GRoS0+Se22Pg83dRANo/TisiH+5epjtUJZI/Og47BwUoXczzPs
-         3An1cA8CyRO+3+FcUqRvX7/WFGVDHEEi2wM4ekX0dyt+kBny1atdRphv/FgqN/cpNJ
-         X8U2bB7up2wyxRNMzUHSDW7r2q0GCb0Gv7M9j1twHtJ2O2MsvQaLTAgzeERIGrrAxQ
-         GzhioQ3koBIxA==
-From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        Dylan Yudaken <dylany@fb.com>,
-        Facebook Kernel Team <kernel-team@fb.com>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Kanna Scarlet <knscarlet@gnuweeb.org>,
-        Muhammad Rizki <kiizuha@gnuweeb.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        io-uring Mailing List <io-uring@vger.gnuweeb.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: [PATCH liburing v1 01/12] test/helpers: Add `t_bind_ephemeral_port()` function
-Date:   Fri,  2 Sep 2022 07:59:35 +0700
-Message-Id: <20220902005825.2484023-2-ammar.faizi@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220902005825.2484023-1-ammar.faizi@intel.com>
-References: <20220902005825.2484023-1-ammar.faizi@intel.com>
+        Thu, 1 Sep 2022 21:00:25 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4E603AB1E;
+        Thu,  1 Sep 2022 18:00:22 -0700 (PDT)
+Received: from canpemm500004.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MJfd15MSxzlWd3;
+        Fri,  2 Sep 2022 08:56:53 +0800 (CST)
+Received: from [10.174.179.106] (10.174.179.106) by
+ canpemm500004.china.huawei.com (7.192.104.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 2 Sep 2022 09:00:20 +0800
+Subject: Re: [PATCH next v2 2/2] dt-bindings: i2c: add entry for
+ hisilicon,hisi-i2c
+To:     Yicong Yang <yangyicong@huawei.com>, <yangyicong@hisilicon.com>,
+        <wsa@kernel.org>
+CC:     <linux-i2c@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <xuwei5@huawei.com>
+References: <20220825092412.307052-1-chenweilong@huawei.com>
+ <20220825092412.307052-2-chenweilong@huawei.com>
+ <ffa076ea-2675-05ab-00bb-30b77ef13cba@huawei.com>
+From:   chenweilong <chenweilong@huawei.com>
+Message-ID: <c9f34071-38ae-868f-1f9a-1630d96af727@huawei.com>
+Date:   Fri, 2 Sep 2022 09:00:20 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <ffa076ea-2675-05ab-00bb-30b77ef13cba@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.174.179.106]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500004.china.huawei.com (7.192.104.92)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+OK, I'll repost after correction.
 
-This is a prep patch to fix an intermittent issue with the port number.
+tks.
+On 2022/8/31 17:53, Yicong Yang wrote:
+> [+cc xuwei for device tree expertise]
+>
+> On 2022/8/25 17:24, Weilong Chen wrote:
+>> Add the new compatible for hisi common i2c.
+>>
+> s/hisi/HiSilicon
+>
+>> Signed-off-by: Weilong Chen <chenweilong@huawei.com>
+>> ---
+>>  .../bindings/i2c/hisilicon,hisi-i2c.yaml      | 50 +++++++++++++++++++
+>>  1 file changed, 50 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/i2c/hisilicon,hisi-i2c.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/i2c/hisilicon,hisi-i2c.yaml b/Documentation/devicetree/bindings/i2c/hisilicon,hisi-i2c.yaml
+>> new file mode 100644
+>> index 000000000000..ea967abfe144
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/i2c/hisilicon,hisi-i2c.yaml
+>> @@ -0,0 +1,50 @@
+>> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: "http://devicetree.org/schemas/i2c/hisilicon,hisi-i2c.yaml#"
+>> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+>> +
+>> +title: Hisilicon common IIC controller Device Tree Bindings
+>> +
+> It's ok to have "HiSilicon common IIC controller"
+>
+>> +maintainers:
+>> +  - yangyicong@huawei.com
+>> +
+>> +allOf:
+>> +  - $ref: /schemas/i2c/i2c-controller.yaml#
+>> +
+>> +properties:
+>> +  compatible:
+>> +    const: hisilicon,hisi-i2c
+>> +
+>> +  reg:
+>> +    maxItems: 1
+>> +
+>> +  interrupts:
+>> +    maxItems: 1
+>> +
+>> +  clk_rate:
+>> +    maxItems: 1
+>> +
+>> +  clock-frequency:
+>> +    default: 100000
+>> +
+> I think it misses some properties here?
+>
+> - i2c-sda-hold-time-ns
+> - sda_fall_ns
+> - scl_rise_ns
+> ...
+>
+> Do we need to mention them here?
+>
+> Thanks.
+>
+>> +required:
+>> +  - compatible
+>> +  - reg
+>> +  - interrupts
+>> +  - clk_rate
+>> +  - clock-frequency
+>> +
+>> +unevaluatedProperties: false
+>> +
+>> +examples:
+>> +  - |
+>> +    i2c1: i2c@5038B0000{
+>> +      compatible = "hisilicon,hisi-i2c";
+>> +      #address-cells = <1>;
+>> +      #size-cells = <0>;
+>> +      reg = <0x5 0x038B0000 0 0x10000>;
+>> +      interrupts = <0x0 120 0x4>;
+>> +      clk_rate = <0x0 0xEE6B280>;
+>> +      clock-frequency = <400000>;
+>> +    };
+>>
+> .
 
-We have many places where we need to bind() a socket to any unused port
-number. To achieve that, the current approach does one of the following
-mechanisms:
-
-  1) Randomly brute force the port number until the bind() syscall
-     succeeds.
-
-  2) Use a static port at compile time (randomly chosen too).
-
-This is not reliable and it results in an intermittent issue (test
-fails when the selected port is in use).
-
-Setting @addr->sin_port to zero on a bind() syscall lets the kernel
-choose a port number that is not in use. The caller then can know the
-port number to be bound by invoking a getsockname() syscall after
-bind() succeeds.
-
-Wrap this procedure in a new function called t_bind_ephemeral_port().
-The selected port will be returned into @addr->sin_port, the caller
-can use it later to connect() or whatever they need.
-
-Link: https://lore.kernel.org/r/918facd1-78ba-2de7-693a-5f8c65ea2fcd@gnuweeb.org
-Cc: Dylan Yudaken <dylany@fb.com>
-Cc: Facebook Kernel Team <kernel-team@fb.com>
-Cc: Pavel Begunkov <asml.silence@gmail.com>
-Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
----
- test/helpers.c | 18 ++++++++++++++++++
- test/helpers.h |  7 +++++++
- 2 files changed, 25 insertions(+)
-
-diff --git a/test/helpers.c b/test/helpers.c
-index 0146533..4d5c402 100644
---- a/test/helpers.c
-+++ b/test/helpers.c
-@@ -18,26 +18,44 @@
- #include "liburing.h"
- 
- /*
-  * Helper for allocating memory in tests.
-  */
- void *t_malloc(size_t size)
- {
- 	void *ret;
- 	ret = malloc(size);
- 	assert(ret);
- 	return ret;
- }
- 
-+/*
-+ * Helper for binding socket to an ephemeral port.
-+ * The port number to be bound is returned in @addr->sin_port.
-+ */
-+int t_bind_ephemeral_port(int fd, struct sockaddr_in *addr)
-+{
-+	socklen_t addrlen;
-+
-+	addr->sin_port = 0;
-+	if (bind(fd, (struct sockaddr *)addr, sizeof(*addr)))
-+		return -errno;
-+
-+	addrlen = sizeof(*addr);
-+	assert(!getsockname(fd, (struct sockaddr *)addr, &addrlen));
-+	assert(addr->sin_port != 0);
-+	return 0;
-+}
-+
- /*
-  * Helper for allocating size bytes aligned on a boundary.
-  */
- void t_posix_memalign(void **memptr, size_t alignment, size_t size)
- {
- 	int ret;
- 	ret = posix_memalign(memptr, alignment, size);
- 	assert(!ret);
- }
- 
- /*
-  * Helper for allocating space for an array of nmemb elements
-  * with size bytes for each element.
-diff --git a/test/helpers.h b/test/helpers.h
-index 6d5726c..9ad9947 100644
---- a/test/helpers.h
-+++ b/test/helpers.h
-@@ -12,26 +12,33 @@ extern "C" {
- #include "liburing.h"
- 
- enum t_setup_ret {
- 	T_SETUP_OK	= 0,
- 	T_SETUP_SKIP,
- };
- 
- enum t_test_result {
- 	T_EXIT_PASS   = 0,
- 	T_EXIT_FAIL   = 1,
- 	T_EXIT_SKIP   = 77,
- };
- 
-+/*
-+ * Helper for binding socket to an ephemeral port.
-+ * The port number to be bound is returned in @addr->sin_port.
-+ */
-+int t_bind_ephemeral_port(int fd, struct sockaddr_in *addr);
-+
-+
- /*
-  * Helper for allocating memory in tests.
-  */
- void *t_malloc(size_t size);
- 
- 
- /*
-  * Helper for allocating size bytes aligned on a boundary.
-  */
- void t_posix_memalign(void **memptr, size_t alignment, size_t size);
- 
- 
- /*
--- 
-Ammar Faizi
 
