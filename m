@@ -2,110 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3934FC001B5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 16:19:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C3FEC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 16:26:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233658AbiIBQT4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 12:19:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55478 "EHLO
+        id S235713AbiIBQ0g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 12:26:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230257AbiIBQTv (ORCPT
+        with ESMTP id S235064AbiIBQ0c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 12:19:51 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 107641ED;
-        Fri,  2 Sep 2022 09:19:42 -0700 (PDT)
-Received: from fraeml736-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MK34v1YjTz67NHg;
-        Sat,  3 Sep 2022 00:18:55 +0800 (CST)
-Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
- fraeml736-chm.china.huawei.com (10.206.15.217) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 2 Sep 2022 18:19:40 +0200
-Received: from [10.195.34.23] (10.195.34.23) by lhrpeml500003.china.huawei.com
- (7.191.162.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 2 Sep
- 2022 17:19:39 +0100
-Message-ID: <4b471300-a912-c3c0-ead4-7165c57cbbf8@huawei.com>
-Date:   Fri, 2 Sep 2022 17:19:37 +0100
+        Fri, 2 Sep 2022 12:26:32 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D202295AEA;
+        Fri,  2 Sep 2022 09:26:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662135991; x=1693671991;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=+zsnx7XILF5i1LZxX69+MDnUgD+gGFY/9ckzzb8j+iU=;
+  b=MK1KKAKy7jn9BOl9kV8eOkEPXZkNG4yfFKmVNeWxAQMa7HEeTGnbUr1V
+   mKS4VfenuvKnfcWFaG0kPNpIT8rNSvmGBK3/CUPDZgnxqQz7t3PN8TVyF
+   WQGZpD3iLDtbE8FhSQocAsoLfaIl5X3tGnYPB6uCSaRVcQ4stqRrYi/qy
+   GNU4+z7cGn4TBxYJ+HqVRdyFjNjiMCix1K6KZfLRThkhuRl5vCa2cr8/B
+   8q5wuLZCDv9cgftCPtHvCEouoCXW8xEFpHVNSw4aF2T3h84L8hzrshS4k
+   +V27RXipc63iinPIkTG87vV0wJbIjeRcnyf2WP0V0PyOL74IrMqzK5KXg
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10458"; a="293596371"
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="293596371"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 09:08:47 -0700
+X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
+   d="scan'208";a="674406814"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.42.34])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 09:08:44 -0700
+Message-ID: <8ed21b90-07e5-f611-2a7c-ce185c4d2a8c@intel.com>
+Date:   Fri, 2 Sep 2022 19:08:38 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-From:   John Garry <john.garry@huawei.com>
-Subject: Re: [PATCH v2 2/6] scsi: libsas: Add sas_ata_device_link_abort()
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
-        <jinpu.wang@cloud.ionos.com>, <yangxingui@huawei.com>
-CC:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linuxarm@huawei.com>, <hare@suse.de>
-References: <1660747934-60059-1-git-send-email-john.garry@huawei.com>
- <1660747934-60059-3-git-send-email-john.garry@huawei.com>
- <0bb6b134-7bad-7c39-ad6d-25d57bd343eb@opensource.wdc.com>
- <018080d5-fbc4-7f04-0d3f-587f2397cd20@huawei.com>
- <baf63982-810c-85eb-b28f-99ab0517c6ba@opensource.wdc.com>
- <eb3465a2-335e-a605-ba8a-4cce790b5b02@huawei.com>
-In-Reply-To: <eb3465a2-335e-a605-ba8a-4cce790b5b02@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: perf record --kcore does not work when /proc/modules changed
+ during copy
+Content-Language: en-US
+To:     Daniel Dao <dqminh@cloudflare.com>, acme@kernel.org,
+        linux-perf-users@vger.kernel.org,
+        kernel-team <kernel-team@cloudflare.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>, jolsa@redhat.com,
+        namhyung@kernel.org
+References: <CA+wXwBT_fiBrFG-=C=eWGHuJ3XzxDLe-Ba4ybOvuxvu5A1+Tig@mail.gmail.com>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <CA+wXwBT_fiBrFG-=C=eWGHuJ3XzxDLe-Ba4ybOvuxvu5A1+Tig@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.195.34.23]
-X-ClientProxiedBy: lhrpeml500004.china.huawei.com (7.191.163.9) To
- lhrpeml500003.china.huawei.com (7.191.162.67)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Damien,
-
->>>
->>> But the pm8001 manual and current driver indicate that the
->>> OPC_INB_SATA_ABORT command should be sent after read log ext when
->>> handling NCQ error, regardless of an autopsy. I send OPC_INB_SATA_ABORT
->>> in ata_eh_reset() -> pm8001_I_T_nexus_reset() -> pm8001_send_abort_all()
->> You lost me: ata_eh_recover() will call ata_eh_reset() only if the 
->> ATA_EH_RESET
->> action flag is set. So are you saying that even though it is not 
->> needed, you
->> still need to set ATA_EH_RESET for pm8001 ?
+On 2/09/22 18:46, Daniel Dao wrote:
+> Hi Perf tools maintainers,
 > 
-> As below, it was the only location I found suitable to call 
-> pm8001_send_abort_all().
+> `perf record --kcore` frequently did not work on a somewhat busy system.
+> For example:
 > 
-> However I am not really sure it is required now. For pm8001 NCQ error 
-> handling we require 2x steps:
-> - read log ext
-> - Send OPC_INB_SATA_ABORT - we do this in pm8001_send_abort_all()
+>   sudo perf record --kcore -- sleep 1
+>   ERROR: Failed to copy kcore
 > 
-> pm8001_send_abort_all() sends OPC_INB_SATA_ABORT in "device abort all" 
-> mode, meaning any IO in the HBA is aborted for the device. But we are 
-> also earlier in EH sending OPC_INB_SATA_ABORT for individual IOs in 
-> sas_eh_handle_sas_errors() -> sas_scsi_find_task() -> 
-> pm8001_abort_task() -> sas_execute_internal_abort_single() -> ... 
-> send_abort_task()
+> Using strace to look at the invocation, the failure looks like:
 > 
-> So I don't think that the pm8001_send_abort_all() call has any effect, 
-> as we're already aborting any outstanding IO earlier.
+>   ...
+>   openat(AT_FDCWD, "/proc/modules", O_RDONLY) = 56
+>   openat(AT_FDCWD, "perf.data/kcore_dir/modules", O_RDONLY) = 57
+>   read(56, "mpls_gso 16384 0 - Live 0xffffff"..., 4096) = 4070
+>   read(57, "mpls_gso 16384 0 - Live 0xffffff"..., 4070) = 4070
+>   read(56, "xt_conntrack 24576 22 - Live 0xf"..., 4096) = 3738
+>   read(57, "xt_conntrack 24576 22 - Live 0xf"..., 3738) = 3738
+>   close(57)                               = 0
+>   close(56)                               = 0
+>   close(55)                               = 0
+>   unlink("perf.data/kcore_dir/kcore")     = 0
+>   close(54)                               = 0
+>   unlink("perf.data/kcore_dir/modules")   = 0
+>   unlink("perf.data/kcore_dir/kallsyms")  = 0
+>   write(2, "ERROR: Failed to copy kcore\n", 28ERROR: Failed to copy kcore
+>   ...
 > 
-> Admittedly the order of the 2x steps is different, but 
-> OPC_INB_SATA_ABORT does not send any protocol message to the disk, so 
-> would not affect anything subsequently read with read log ext.
+> We can see that the verification of proc/modules failed because /proc/modules
+> output changed after we copied kcore. When i looked at it, they are caused by
+> changes of module refcount which seems expected on busy systems, such as
 > 
-> Having said all that, it may be wise to still send 
-> pm8001_send_abort_all()..
+>   < tcp_bbr 40960 12644 - Live 0x0000000000000000
+>   ---
+>   > tcp_bbr 40960 12678 - Live 0x0000000000000000
+> 
+> Any suggestions on how to make this work is much appreciated.
 
-Have you had a chance to consider all this yet?
-
-I am now starting to think that it is not necessary to call 
-pm8001_send_abort_all(), and instead rely only on 
-sas_eh_handle_sas_errors() -> sas_scsi_find_task() -> 
-pm8001_abort_task() -> sas_execute_internal_abort_single() -> ... -> 
-send_abort_task() to abort each outstanding IO. Then we would not have 
-the issue of forcing the reset in $subject (to lead to calling 
-pm8001_send_abort_all()).
-
-This idea could simply be tested by stubbing pm8001_send_abort_all()
-(and dropping the |= ATA_EH_RESET in $subject).
-
-Thanks,
-John
-
+At the moment I can't think why the proc/modules file needs to be
+compared at all since we also compare proc/kallsyms which should be
+enough.
