@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED404ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:47:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 517F8C54EE9
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 12:47:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237652AbiIBMra (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:47:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56086 "EHLO
+        id S237605AbiIBMro (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 08:47:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237579AbiIBMq7 (ORCPT
+        with ESMTP id S237581AbiIBMrO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 08:46:59 -0400
+        Fri, 2 Sep 2022 08:47:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E323E1920;
-        Fri,  2 Sep 2022 05:33:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3857DEB47;
+        Fri,  2 Sep 2022 05:34:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A81F262119;
-        Fri,  2 Sep 2022 12:24:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A894AC433C1;
-        Fri,  2 Sep 2022 12:24:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C5A76212E;
+        Fri,  2 Sep 2022 12:33:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4195BC433D7;
+        Fri,  2 Sep 2022 12:33:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121451;
-        bh=OKUUuTE70vUQ4v37IPdl4Glv/J2Tg1L7wt7BzbNJ8+8=;
+        s=korg; t=1662122027;
+        bh=Uk4hLiPJocqiO6tbAqBSSCacJn6LjD8UNbJhRkRruFM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q8JNXyVpNRF4VDg1Pa/yAoiiJLQckqjd123DpXVaS0FQpHuKc4Mf5xMirpAP/AkO3
-         2q2sKMagUV23SDU+dJe9Z9jcN2bq7yWtYXXKTHAF0XAuGdVoEH6L2cWHMKV5LpIQmN
-         PlFjYCQu4Vv31NP6eds0EKTzxfhbmn0sk9op4Ql4=
+        b=i0LnT3nQ75Q7oN1TwN5bqD7H5GBaODvpf7gaxbU16ZpR03FRi98ao9nqi5oJn+Wfs
+         FquWl5zDzx5jRK/hty3GCuOEmUuRhwIt2woT3/ot1tkQ7BfqfNY5XefmL5KD2S6MLe
+         G0ZegFzFxpNQD24pxsRr/Qb5BEIwls+bFa1XoV9k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Toppins <jtoppins@redhat.com>,
-        Jay Vosburgh <jay.vosburgh@canonical.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 12/56] bonding: 802.3ad: fix no transmission of LACPDUs
-Date:   Fri,  2 Sep 2022 14:18:32 +0200
-Message-Id: <20220902121400.596828218@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Letu Ren <fantasquex@gmail.com>, Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.15 32/73] fbdev: fb_pm2fb: Avoid potential divide by zero error
+Date:   Fri,  2 Sep 2022 14:18:56 +0200
+Message-Id: <20220902121405.506473778@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
-References: <20220902121400.219861128@linuxfoundation.org>
+In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
+References: <20220902121404.435662285@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,137 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Toppins <jtoppins@redhat.com>
+From: Letu Ren <fantasquex@gmail.com>
 
-[ Upstream commit d745b5062ad2b5da90a5e728d7ca884fc07315fd ]
+commit 19f953e7435644b81332dd632ba1b2d80b1e37af upstream.
 
-This is caused by the global variable ad_ticks_per_sec being zero as
-demonstrated by the reproducer script discussed below. This causes
-all timer values in __ad_timer_to_ticks to be zero, resulting
-in the periodic timer to never fire.
+In `do_fb_ioctl()` of fbmem.c, if cmd is FBIOPUT_VSCREENINFO, var will be
+copied from user, then go through `fb_set_var()` and
+`info->fbops->fb_check_var()` which could may be `pm2fb_check_var()`.
+Along the path, `var->pixclock` won't be modified. This function checks
+whether reciprocal of `var->pixclock` is too high. If `var->pixclock` is
+zero, there will be a divide by zero error. So, it is necessary to check
+whether denominator is zero to avoid crash. As this bug is found by
+Syzkaller, logs are listed below.
 
-To reproduce:
-Run the script in
-`tools/testing/selftests/drivers/net/bonding/bond-break-lacpdu-tx.sh` which
-puts bonding into a state where it never transmits LACPDUs.
+divide error in pm2fb_check_var
+Call Trace:
+ <TASK>
+ fb_set_var+0x367/0xeb0 drivers/video/fbdev/core/fbmem.c:1015
+ do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1110
+ fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1189
 
-line 44: ip link add fbond type bond mode 4 miimon 200 \
-            xmit_hash_policy 1 ad_actor_sys_prio 65535 lacp_rate fast
-setting bond param: ad_actor_sys_prio
-given:
-    params.ad_actor_system = 0
-call stack:
-    bond_option_ad_actor_sys_prio()
-    -> bond_3ad_update_ad_actor_settings()
-       -> set ad.system.sys_priority = bond->params.ad_actor_sys_prio
-       -> ad.system.sys_mac_addr = bond->dev->dev_addr; because
-            params.ad_actor_system == 0
-results:
-     ad.system.sys_mac_addr = bond->dev->dev_addr
-
-line 48: ip link set fbond address 52:54:00:3B:7C:A6
-setting bond MAC addr
-call stack:
-    bond->dev->dev_addr = new_mac
-
-line 52: ip link set fbond type bond ad_actor_sys_prio 65535
-setting bond param: ad_actor_sys_prio
-given:
-    params.ad_actor_system = 0
-call stack:
-    bond_option_ad_actor_sys_prio()
-    -> bond_3ad_update_ad_actor_settings()
-       -> set ad.system.sys_priority = bond->params.ad_actor_sys_prio
-       -> ad.system.sys_mac_addr = bond->dev->dev_addr; because
-            params.ad_actor_system == 0
-results:
-     ad.system.sys_mac_addr = bond->dev->dev_addr
-
-line 60: ip link set veth1-bond down master fbond
-given:
-    params.ad_actor_system = 0
-    params.mode = BOND_MODE_8023AD
-    ad.system.sys_mac_addr == bond->dev->dev_addr
-call stack:
-    bond_enslave
-    -> bond_3ad_initialize(); because first slave
-       -> if ad.system.sys_mac_addr != bond->dev->dev_addr
-          return
-results:
-     Nothing is run in bond_3ad_initialize() because dev_addr equals
-     sys_mac_addr leaving the global ad_ticks_per_sec zero as it is
-     never initialized anywhere else.
-
-The if check around the contents of bond_3ad_initialize() is no longer
-needed due to commit 5ee14e6d336f ("bonding: 3ad: apply ad_actor settings
-changes immediately") which sets ad.system.sys_mac_addr if any one of
-the bonding parameters whos set function calls
-bond_3ad_update_ad_actor_settings(). This is because if
-ad.system.sys_mac_addr is zero it will be set to the current bond mac
-address, this causes the if check to never be true.
-
-Fixes: 5ee14e6d336f ("bonding: 3ad: apply ad_actor settings changes immediately")
-Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Letu Ren <fantasquex@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/bonding/bond_3ad.c | 38 ++++++++++++++--------------------
- 1 file changed, 16 insertions(+), 22 deletions(-)
+ drivers/video/fbdev/pm2fb.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
-index b3eaef31b7673..a6bb7e915f74f 100644
---- a/drivers/net/bonding/bond_3ad.c
-+++ b/drivers/net/bonding/bond_3ad.c
-@@ -1977,30 +1977,24 @@ void bond_3ad_initiate_agg_selection(struct bonding *bond, int timeout)
-  */
- void bond_3ad_initialize(struct bonding *bond, u16 tick_resolution)
- {
--	/* check that the bond is not initialized yet */
--	if (!MAC_ADDRESS_EQUAL(&(BOND_AD_INFO(bond).system.sys_mac_addr),
--				bond->dev->dev_addr)) {
--
--		BOND_AD_INFO(bond).aggregator_identifier = 0;
--
--		BOND_AD_INFO(bond).system.sys_priority =
--			bond->params.ad_actor_sys_prio;
--		if (is_zero_ether_addr(bond->params.ad_actor_system))
--			BOND_AD_INFO(bond).system.sys_mac_addr =
--			    *((struct mac_addr *)bond->dev->dev_addr);
--		else
--			BOND_AD_INFO(bond).system.sys_mac_addr =
--			    *((struct mac_addr *)bond->params.ad_actor_system);
-+	BOND_AD_INFO(bond).aggregator_identifier = 0;
-+	BOND_AD_INFO(bond).system.sys_priority =
-+		bond->params.ad_actor_sys_prio;
-+	if (is_zero_ether_addr(bond->params.ad_actor_system))
-+		BOND_AD_INFO(bond).system.sys_mac_addr =
-+		    *((struct mac_addr *)bond->dev->dev_addr);
-+	else
-+		BOND_AD_INFO(bond).system.sys_mac_addr =
-+		    *((struct mac_addr *)bond->params.ad_actor_system);
+--- a/drivers/video/fbdev/pm2fb.c
++++ b/drivers/video/fbdev/pm2fb.c
+@@ -617,6 +617,11 @@ static int pm2fb_check_var(struct fb_var
+ 		return -EINVAL;
+ 	}
  
--		/* initialize how many times this module is called in one
--		 * second (should be about every 100ms)
--		 */
--		ad_ticks_per_sec = tick_resolution;
-+	/* initialize how many times this module is called in one
-+	 * second (should be about every 100ms)
-+	 */
-+	ad_ticks_per_sec = tick_resolution;
- 
--		bond_3ad_initiate_agg_selection(bond,
--						AD_AGGREGATOR_SELECTION_TIMER *
--						ad_ticks_per_sec);
--	}
-+	bond_3ad_initiate_agg_selection(bond,
-+					AD_AGGREGATOR_SELECTION_TIMER *
-+					ad_ticks_per_sec);
- }
- 
- /**
--- 
-2.35.1
-
++	if (!var->pixclock) {
++		DPRINTK("pixclock is zero\n");
++		return -EINVAL;
++	}
++
+ 	if (PICOS2KHZ(var->pixclock) > PM2_MAX_PIXCLOCK) {
+ 		DPRINTK("pixclock too high (%ldKHz)\n",
+ 			PICOS2KHZ(var->pixclock));
 
 
