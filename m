@@ -2,94 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 154C7C38145
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:52:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E0F4C38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:53:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235672AbiIBNwx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:52:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47156 "EHLO
+        id S237675AbiIBNxH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:53:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238016AbiIBNwY (ORCPT
+        with ESMTP id S236422AbiIBNwg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:52:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F10F4134193
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 06:26:31 -0700 (PDT)
+        Fri, 2 Sep 2022 09:52:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BDB82B250;
+        Fri,  2 Sep 2022 06:27:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7B96B829FB
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 12:46:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B85A0C433D6;
-        Fri,  2 Sep 2022 12:46:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B865F6219D;
+        Fri,  2 Sep 2022 12:31:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90FA5C433D6;
+        Fri,  2 Sep 2022 12:31:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662122807;
-        bh=hW87bCjg7mhQfCQ8qK8L55df2bf6Oy03cAkiFazu4jQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gRtcezHyRLdYAKxIdu4kAggfw0eKH/zs1cQ2efUFrRo1AS30kqqkFagEU4KstWLaC
-         04G/dmgX/kISBd/LoWRLHYmMNdFXr/H//90i3ynoJMrukKa0x2LLegCo3gOK5tG8XU
-         Pn4Yyz/D+SLbGUrDGTlabt8F51O7Zlp55hsTB3kE=
-Date:   Fri, 2 Sep 2022 14:46:44 +0200
+        s=korg; t=1662121906;
+        bh=BCPPt0LOctTxI2SeC9BJPqci9jzrGee47gQKv2P6LsI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=EIqPI+8+ASgUKw7HehNMaFIt3eXGODUekkoeRzzxD3/VFBhIZ26Skx3gTETqCVAJq
+         BQRrMjA7qG0qqaall+QfgskKLh+KSnKqMYgm5Bb8Or4NKn6K5mgTv0MmhswJTadQh+
+         iMn9ZLbi1BxC9iqGaL4kguCBHTly6SkzdCM79Ywo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Major Chen <major.chen@samsung.com>, stable <stable@kernel.org>,
-        Kuyo Chang <kuyo.chang@mediatek.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH 2/2] sched/debug: fix dentry leak in
- update_sched_domain_debugfs
-Message-ID: <YxH7NIe0Inz2V6sH@kroah.com>
-References: <20220902123107.109274-1-gregkh@linuxfoundation.org>
- <20220902123107.109274-2-gregkh@linuxfoundation.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jing Leng <jleng@ambarella.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nicolas Schier <n.schier@avm.de>
+Subject: [PATCH 5.15 24/73] kbuild: Fix include path in scripts/Makefile.modpost
+Date:   Fri,  2 Sep 2022 14:18:48 +0200
+Message-Id: <20220902121405.252442864@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
+References: <20220902121404.435662285@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220902123107.109274-2-gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Sep 02, 2022 at 02:31:07PM +0200, Greg Kroah-Hartman wrote:
-> Kuyo reports that the pattern of using debugfs_remove(debugfs_lookup())
-> leaks a dentry and with a hotplug stress test, the machine eventually
-> runs out of memory.
-> 
-> Fix this up by using the newly created debugfs_lookup_and_remove() call
-> instead which properly handles the dentry reference counting logic.
-> 
-> Cc: Major Chen <major.chen@samsung.com>
-> Cc: stable <stable@kernel.org>
-> Reported-by: Kuyo Chang <kuyo.chang@mediatek.com>
-> Tested-by: Kuyo Chang <kuyo.chang@mediatek.com>
-> Cc: Ingo Molnar <mingo@redhat.com>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: Juri Lelli <juri.lelli@redhat.com>
-> Cc: Vincent Guittot <vincent.guittot@linaro.org>
-> Cc: Dietmar Eggemann <dietmar.eggemann@arm.com>
-> Cc: Steven Rostedt <rostedt@goodmis.org>
-> Cc: Ben Segall <bsegall@google.com>
-> Cc: Mel Gorman <mgorman@suse.de>
-> Cc: Daniel Bristot de Oliveira <bristot@redhat.com>
-> Cc: Valentin Schneider <vschneid@redhat.com>
-> Cc: Matthias Brugger <matthias.bgg@gmail.com>
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> ---
->  kernel/sched/debug.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+From: Jing Leng <jleng@ambarella.com>
 
-As this needs patch 1/2 to work properly, and Kuyo has tested this out
-already, I'll take both of them through my driver core git tree to Linus
-so that we can start getting the other debugfs_lookup() leaks fixed up
-as well.
+commit 23a0cb8e3225122496bfa79172005c587c2d64bf upstream.
 
-thanks,
+When building an external module, if users don't need to separate the
+compilation output and source code, they run the following command:
+"make -C $(LINUX_SRC_DIR) M=$(PWD)". At this point, "$(KBUILD_EXTMOD)"
+and "$(src)" are the same.
 
-greg k-h
+If they need to separate them, they run "make -C $(KERNEL_SRC_DIR)
+O=$(KERNEL_OUT_DIR) M=$(OUT_DIR) src=$(PWD)". Before running the
+command, they need to copy "Kbuild" or "Makefile" to "$(OUT_DIR)" to
+prevent compilation failure.
+
+So the kernel should change the included path to avoid the copy operation.
+
+Signed-off-by: Jing Leng <jleng@ambarella.com>
+[masahiro: I do not think "M=$(OUT_DIR) src=$(PWD)" is the official way,
+but this patch is a nice clean up anyway.]
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Signed-off-by: Nicolas Schier <n.schier@avm.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ scripts/Makefile.modpost |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+--- a/scripts/Makefile.modpost
++++ b/scripts/Makefile.modpost
+@@ -87,8 +87,7 @@ obj := $(KBUILD_EXTMOD)
+ src := $(obj)
+ 
+ # Include the module's Makefile to find KBUILD_EXTRA_SYMBOLS
+-include $(if $(wildcard $(KBUILD_EXTMOD)/Kbuild), \
+-             $(KBUILD_EXTMOD)/Kbuild, $(KBUILD_EXTMOD)/Makefile)
++include $(if $(wildcard $(src)/Kbuild), $(src)/Kbuild, $(src)/Makefile)
+ 
+ # modpost option for external modules
+ MODPOST += -e
+
+
