@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 249D6ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:04:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A42DC38145
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 13:04:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238552AbiIBNEu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:04:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51626 "EHLO
+        id S238593AbiIBNEy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:04:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238396AbiIBNDK (ORCPT
+        with ESMTP id S238667AbiIBNDV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 09:03:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9044810F093;
-        Fri,  2 Sep 2022 05:41:52 -0700 (PDT)
+        Fri, 2 Sep 2022 09:03:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA0A1E68F3;
+        Fri,  2 Sep 2022 05:41:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5829E62133;
-        Fri,  2 Sep 2022 12:25:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E95EC433D7;
-        Fri,  2 Sep 2022 12:25:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C7BF0621B2;
+        Fri,  2 Sep 2022 12:32:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2678C433D7;
+        Fri,  2 Sep 2022 12:32:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121539;
-        bh=gkz6s2RIEKzRZ+614VP7yBempYAr+jNb4MNz4wJKp28=;
+        s=korg; t=1662121965;
+        bh=/67D0l64kojxp9yNGoxfMK9Sz6bEFeIamMgjd0pcGog=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xYSs6w1CbWg05GEPaip2rfePar7XVifphSk5nabcUq7oyXeKOIxQp6pf9LGHPmUic
-         oGFJ68YpevHzLtDo8+pmKDVYl+iPG4jRQH9Cyv0WRUWb+Fg48HWzB4HLvsMw3HolQf
-         BVqf78NdbHGd/pfB+oXha8tX8bRu2fIimQ+gIgAs=
+        b=dIF/67Mks7DdYdXhH+umdZqvHzmq5abPh8mT3wkSg9lv+EObblEUPccYa0M0lsg+0
+         IPBSl3TbEgXVNRR+ou2nIVZjvKYGHg4sb4HY2rQ68LGi0i1RKYWEzdD7KocDdVLjrc
+         2M2naNex2ou7cjd4Fz+5UY5LurBHYslY9m+Yk2dI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Hildenbrand <david@redhat.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-Subject: [PATCH 4.19 41/56] s390/mm: do not trigger write fault when vma does not allow VM_WRITE
-Date:   Fri,  2 Sep 2022 14:19:01 +0200
-Message-Id: <20220902121401.780910897@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 44/73] mmc: sdhci-of-dwcmshc: rename rk3568 to rk35xx
+Date:   Fri,  2 Sep 2022 14:19:08 +0200
+Message-Id: <20220902121405.902840073@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
-References: <20220902121400.219861128@linuxfoundation.org>
+In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
+References: <20220902121404.435662285@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,50 +50,204 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
 
-commit 41ac42f137080bc230b5882e3c88c392ab7f2d32 upstream.
+[ Upstream commit 86e1a8e1f9b555af342c53ae06284eeeab9a4263 ]
 
-For non-protection pXd_none() page faults in do_dat_exception(), we
-call do_exception() with access == (VM_READ | VM_WRITE | VM_EXEC).
-In do_exception(), vma->vm_flags is checked against that before
-calling handle_mm_fault().
+Prepare driver for rk3588 support by renaming the internal data
+structures.
 
-Since commit 92f842eac7ee3 ("[S390] store indication fault optimization"),
-we call handle_mm_fault() with FAULT_FLAG_WRITE, when recognizing that
-it was a write access. However, the vma flags check is still only
-checking against (VM_READ | VM_WRITE | VM_EXEC), and therefore also
-calling handle_mm_fault() with FAULT_FLAG_WRITE in cases where the vma
-does not allow VM_WRITE.
-
-Fix this by changing access check in do_exception() to VM_WRITE only,
-when recognizing write access.
-
-Link: https://lkml.kernel.org/r/20220811103435.188481-3-david@redhat.com
-Fixes: 92f842eac7ee3 ("[S390] store indication fault optimization")
-Cc: <stable@vger.kernel.org>
-Reported-by: David Hildenbrand <david@redhat.com>
-Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
-Signed-off-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
-Signed-off-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Acked-by: Adrian Hunter <adrian.hunter@intel.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20220504213251.264819-11-sebastian.reichel@collabora.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/mm/fault.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/mmc/host/sdhci-of-dwcmshc.c | 46 ++++++++++++++---------------
+ 1 file changed, 23 insertions(+), 23 deletions(-)
 
---- a/arch/s390/mm/fault.c
-+++ b/arch/s390/mm/fault.c
-@@ -455,7 +455,9 @@ static inline vm_fault_t do_exception(st
- 	flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
- 	if (user_mode(regs))
- 		flags |= FAULT_FLAG_USER;
--	if (access == VM_WRITE || (trans_exc_code & store_indication) == 0x400)
-+	if ((trans_exc_code & store_indication) == 0x400)
-+		access = VM_WRITE;
-+	if (access == VM_WRITE)
- 		flags |= FAULT_FLAG_WRITE;
- 	down_read(&mm->mmap_sem);
+diff --git a/drivers/mmc/host/sdhci-of-dwcmshc.c b/drivers/mmc/host/sdhci-of-dwcmshc.c
+index 3a1b5ba364051..f5fd88c7adef1 100644
+--- a/drivers/mmc/host/sdhci-of-dwcmshc.c
++++ b/drivers/mmc/host/sdhci-of-dwcmshc.c
+@@ -56,14 +56,14 @@
+ #define DLL_LOCK_WO_TMOUT(x) \
+ 	((((x) & DWCMSHC_EMMC_DLL_LOCKED) == DWCMSHC_EMMC_DLL_LOCKED) && \
+ 	(((x) & DWCMSHC_EMMC_DLL_TIMEOUT) == 0))
+-#define RK3568_MAX_CLKS 3
++#define RK35xx_MAX_CLKS 3
  
+ #define BOUNDARY_OK(addr, len) \
+ 	((addr | (SZ_128M - 1)) == ((addr + len - 1) | (SZ_128M - 1)))
+ 
+-struct rk3568_priv {
++struct rk35xx_priv {
+ 	/* Rockchip specified optional clocks */
+-	struct clk_bulk_data rockchip_clks[RK3568_MAX_CLKS];
++	struct clk_bulk_data rockchip_clks[RK35xx_MAX_CLKS];
+ 	struct reset_control *reset;
+ 	u8 txclk_tapnum;
+ };
+@@ -178,7 +178,7 @@ static void dwcmshc_rk3568_set_clock(struct sdhci_host *host, unsigned int clock
+ {
+ 	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
+ 	struct dwcmshc_priv *dwc_priv = sdhci_pltfm_priv(pltfm_host);
+-	struct rk3568_priv *priv = dwc_priv->priv;
++	struct rk35xx_priv *priv = dwc_priv->priv;
+ 	u8 txclk_tapnum = DLL_TXCLK_TAPNUM_DEFAULT;
+ 	u32 extra, reg;
+ 	int err;
+@@ -281,7 +281,7 @@ static const struct sdhci_ops sdhci_dwcmshc_ops = {
+ 	.adma_write_desc	= dwcmshc_adma_write_desc,
+ };
+ 
+-static const struct sdhci_ops sdhci_dwcmshc_rk3568_ops = {
++static const struct sdhci_ops sdhci_dwcmshc_rk35xx_ops = {
+ 	.set_clock		= dwcmshc_rk3568_set_clock,
+ 	.set_bus_width		= sdhci_set_bus_width,
+ 	.set_uhs_signaling	= dwcmshc_set_uhs_signaling,
+@@ -296,18 +296,18 @@ static const struct sdhci_pltfm_data sdhci_dwcmshc_pdata = {
+ 	.quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN,
+ };
+ 
+-static const struct sdhci_pltfm_data sdhci_dwcmshc_rk3568_pdata = {
+-	.ops = &sdhci_dwcmshc_rk3568_ops,
++static const struct sdhci_pltfm_data sdhci_dwcmshc_rk35xx_pdata = {
++	.ops = &sdhci_dwcmshc_rk35xx_ops,
+ 	.quirks = SDHCI_QUIRK_CAP_CLOCK_BASE_BROKEN |
+ 		  SDHCI_QUIRK_BROKEN_TIMEOUT_VAL,
+ 	.quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN |
+ 		   SDHCI_QUIRK2_CLOCK_DIV_ZERO_BROKEN,
+ };
+ 
+-static int dwcmshc_rk3568_init(struct sdhci_host *host, struct dwcmshc_priv *dwc_priv)
++static int dwcmshc_rk35xx_init(struct sdhci_host *host, struct dwcmshc_priv *dwc_priv)
+ {
+ 	int err;
+-	struct rk3568_priv *priv = dwc_priv->priv;
++	struct rk35xx_priv *priv = dwc_priv->priv;
+ 
+ 	priv->reset = devm_reset_control_array_get_optional_exclusive(mmc_dev(host->mmc));
+ 	if (IS_ERR(priv->reset)) {
+@@ -319,14 +319,14 @@ static int dwcmshc_rk3568_init(struct sdhci_host *host, struct dwcmshc_priv *dwc
+ 	priv->rockchip_clks[0].id = "axi";
+ 	priv->rockchip_clks[1].id = "block";
+ 	priv->rockchip_clks[2].id = "timer";
+-	err = devm_clk_bulk_get_optional(mmc_dev(host->mmc), RK3568_MAX_CLKS,
++	err = devm_clk_bulk_get_optional(mmc_dev(host->mmc), RK35xx_MAX_CLKS,
+ 					 priv->rockchip_clks);
+ 	if (err) {
+ 		dev_err(mmc_dev(host->mmc), "failed to get clocks %d\n", err);
+ 		return err;
+ 	}
+ 
+-	err = clk_bulk_prepare_enable(RK3568_MAX_CLKS, priv->rockchip_clks);
++	err = clk_bulk_prepare_enable(RK35xx_MAX_CLKS, priv->rockchip_clks);
+ 	if (err) {
+ 		dev_err(mmc_dev(host->mmc), "failed to enable clocks %d\n", err);
+ 		return err;
+@@ -348,7 +348,7 @@ static int dwcmshc_rk3568_init(struct sdhci_host *host, struct dwcmshc_priv *dwc
+ static const struct of_device_id sdhci_dwcmshc_dt_ids[] = {
+ 	{
+ 		.compatible = "rockchip,rk3568-dwcmshc",
+-		.data = &sdhci_dwcmshc_rk3568_pdata,
++		.data = &sdhci_dwcmshc_rk35xx_pdata,
+ 	},
+ 	{
+ 		.compatible = "snps,dwcmshc-sdhci",
+@@ -371,7 +371,7 @@ static int dwcmshc_probe(struct platform_device *pdev)
+ 	struct sdhci_pltfm_host *pltfm_host;
+ 	struct sdhci_host *host;
+ 	struct dwcmshc_priv *priv;
+-	struct rk3568_priv *rk_priv = NULL;
++	struct rk35xx_priv *rk_priv = NULL;
+ 	const struct sdhci_pltfm_data *pltfm_data;
+ 	int err;
+ 	u32 extra;
+@@ -426,8 +426,8 @@ static int dwcmshc_probe(struct platform_device *pdev)
+ 	host->mmc_host_ops.request = dwcmshc_request;
+ 	host->mmc_host_ops.hs400_enhanced_strobe = dwcmshc_hs400_enhanced_strobe;
+ 
+-	if (pltfm_data == &sdhci_dwcmshc_rk3568_pdata) {
+-		rk_priv = devm_kzalloc(&pdev->dev, sizeof(struct rk3568_priv), GFP_KERNEL);
++	if (pltfm_data == &sdhci_dwcmshc_rk35xx_pdata) {
++		rk_priv = devm_kzalloc(&pdev->dev, sizeof(struct rk35xx_priv), GFP_KERNEL);
+ 		if (!rk_priv) {
+ 			err = -ENOMEM;
+ 			goto err_clk;
+@@ -435,7 +435,7 @@ static int dwcmshc_probe(struct platform_device *pdev)
+ 
+ 		priv->priv = rk_priv;
+ 
+-		err = dwcmshc_rk3568_init(host, priv);
++		err = dwcmshc_rk35xx_init(host, priv);
+ 		if (err)
+ 			goto err_clk;
+ 	}
+@@ -452,7 +452,7 @@ static int dwcmshc_probe(struct platform_device *pdev)
+ 	clk_disable_unprepare(pltfm_host->clk);
+ 	clk_disable_unprepare(priv->bus_clk);
+ 	if (rk_priv)
+-		clk_bulk_disable_unprepare(RK3568_MAX_CLKS,
++		clk_bulk_disable_unprepare(RK35xx_MAX_CLKS,
+ 					   rk_priv->rockchip_clks);
+ free_pltfm:
+ 	sdhci_pltfm_free(pdev);
+@@ -464,14 +464,14 @@ static int dwcmshc_remove(struct platform_device *pdev)
+ 	struct sdhci_host *host = platform_get_drvdata(pdev);
+ 	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
+ 	struct dwcmshc_priv *priv = sdhci_pltfm_priv(pltfm_host);
+-	struct rk3568_priv *rk_priv = priv->priv;
++	struct rk35xx_priv *rk_priv = priv->priv;
+ 
+ 	sdhci_remove_host(host, 0);
+ 
+ 	clk_disable_unprepare(pltfm_host->clk);
+ 	clk_disable_unprepare(priv->bus_clk);
+ 	if (rk_priv)
+-		clk_bulk_disable_unprepare(RK3568_MAX_CLKS,
++		clk_bulk_disable_unprepare(RK35xx_MAX_CLKS,
+ 					   rk_priv->rockchip_clks);
+ 	sdhci_pltfm_free(pdev);
+ 
+@@ -484,7 +484,7 @@ static int dwcmshc_suspend(struct device *dev)
+ 	struct sdhci_host *host = dev_get_drvdata(dev);
+ 	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
+ 	struct dwcmshc_priv *priv = sdhci_pltfm_priv(pltfm_host);
+-	struct rk3568_priv *rk_priv = priv->priv;
++	struct rk35xx_priv *rk_priv = priv->priv;
+ 	int ret;
+ 
+ 	ret = sdhci_suspend_host(host);
+@@ -496,7 +496,7 @@ static int dwcmshc_suspend(struct device *dev)
+ 		clk_disable_unprepare(priv->bus_clk);
+ 
+ 	if (rk_priv)
+-		clk_bulk_disable_unprepare(RK3568_MAX_CLKS,
++		clk_bulk_disable_unprepare(RK35xx_MAX_CLKS,
+ 					   rk_priv->rockchip_clks);
+ 
+ 	return ret;
+@@ -507,7 +507,7 @@ static int dwcmshc_resume(struct device *dev)
+ 	struct sdhci_host *host = dev_get_drvdata(dev);
+ 	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
+ 	struct dwcmshc_priv *priv = sdhci_pltfm_priv(pltfm_host);
+-	struct rk3568_priv *rk_priv = priv->priv;
++	struct rk35xx_priv *rk_priv = priv->priv;
+ 	int ret;
+ 
+ 	ret = clk_prepare_enable(pltfm_host->clk);
+@@ -521,7 +521,7 @@ static int dwcmshc_resume(struct device *dev)
+ 	}
+ 
+ 	if (rk_priv) {
+-		ret = clk_bulk_prepare_enable(RK3568_MAX_CLKS,
++		ret = clk_bulk_prepare_enable(RK35xx_MAX_CLKS,
+ 					      rk_priv->rockchip_clks);
+ 		if (ret)
+ 			return ret;
+-- 
+2.35.1
+
 
 
