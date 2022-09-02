@@ -2,147 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDA4AC6FA82
-	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:34:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61EFFECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri,  2 Sep 2022 18:35:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229833AbiIBSey (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 14:34:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55222 "EHLO
+        id S229914AbiIBSel (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 14:34:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229791AbiIBSe1 (ORCPT
+        with ESMTP id S229729AbiIBSeZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 14:34:27 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8790110DB4;
-        Fri,  2 Sep 2022 11:26:51 -0700 (PDT)
+        Fri, 2 Sep 2022 14:34:25 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B237110D96;
+        Fri,  2 Sep 2022 11:26:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662143211; x=1693679211;
+  t=1662143207; x=1693679207;
   h=from:to:subject:date:message-id:in-reply-to:references:
    mime-version:content-transfer-encoding;
-  bh=gF2xAfEfw1RkrefI6n8YgdfanuwDVgivOEmhvTPqu1c=;
-  b=SlO92U+qBNpzWKyEFa5PPso60wWgxx7HDe3oPlYf6xE8cOpobMYS5XxS
-   35GgvFbIoL1oL+QJsStVsLZ5knevpauxh9VDkDcSf6tu7aD0XSadM9D+3
-   VWjmZ15fRjpRMRSzkESly34tGU+h32Fw9Y3/Q2YvYDyA+QVMw6ChExZt1
-   3M2aZu6XXwWBvJETEz9fVbc2kC8rK0mFZUep4jM0KTe+a4GIza+huVeDU
-   stA77mnuxf2uU8KrXoeWwts8+lfRbzvI4Eu38b49fO2IwbOrIMXosxYCI
-   mQvCY0N8Rf5/g94y6qH7QKlqncRv4SpXQV4tmNi1sn9X4PEmLv4HWvbT9
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10458"; a="283034559"
+  bh=MQdtzzlnd/8Z1I5x7bO0gzZYHKdwVRA8kRquAQW3UtM=;
+  b=BSfLl4RcyGTr0kkX4BRp+oRcjl2v/n3Q2AFMFfgJTSmj6GzFgwJrofpU
+   nbEdDEiDU7p6vd/VDKxT3ojXdev9w7F274hU+k82Hk5QP05YMfokFd8Oc
+   X+JAj3RrowSjwIv6CLyD78ca1Y04ZCQq4dyLz7wMn+NEBGOzvgLpeM0Hv
+   pRc9F/BerFYkT3X/G8j7VrSsSdfNtvI60DtMvVxKOjGB0CFRSYXgkuggQ
+   m8FpnfeI7IrgN4/feTo+WjCSZqG4E5hECx50HLmivB4AmYO+IvEKJrvEH
+   6zKPn9UnzEHuQWQGpdQ26gFQDTk3gDftyCSP2NelW7jjAnpgjow2f4SgA
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10458"; a="296832714"
 X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="283034559"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 11:26:50 -0700
+   d="scan'208";a="296832714"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 11:26:46 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="681373080"
+   d="scan'208";a="615791648"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga004.fm.intel.com with ESMTP; 02 Sep 2022 11:26:47 -0700
+  by fmsmga007.fm.intel.com with ESMTP; 02 Sep 2022 11:26:44 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 5FF5874E; Fri,  2 Sep 2022 21:27:00 +0300 (EEST)
+        id E9A65101; Fri,  2 Sep 2022 21:26:59 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Linus Walleij <linus.walleij@linaro.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Patrick Rudolph <patrick.rudolph@9elements.com>,
         linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 15/17] pinctrl: cy8c95x0: Override IRQ for one of the expanders on Galileo Gen 1
-Date:   Fri,  2 Sep 2022 21:26:48 +0300
-Message-Id: <20220902182650.83098-15-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 03/17] pinctrl: cy8c95x0: Allow most of the registers to be cached
+Date:   Fri,  2 Sep 2022 21:26:36 +0300
+Message-Id: <20220902182650.83098-3-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220902182650.83098-1-andriy.shevchenko@linux.intel.com>
 References: <20220902182650.83098-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ACPI table on Intel Galileo Gen 1 has wrong pin number for IRQ resource
-of the I²C GPIO expander. Since we know what that number is and luckily
-have GPIO bases fixed for SoC's controllers, we may use a simple DMI quirk
-to match the platform and retrieve GpioInt() pin on it for the expander in
-question.
+It's unclear why many of static registers were marked as volatile.
+They are pretty much bidirectional and static in a sense that
+written value is kept there until a new write or chip reset.
+Drop those registers from the list to allow them to be cached.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/pinctrl/pinctrl-cy8c95x0.c | 48 ++++++++++++++++++++++++++++++
- 1 file changed, 48 insertions(+)
+ drivers/pinctrl/pinctrl-cy8c95x0.c | 11 -----------
+ 1 file changed, 11 deletions(-)
 
 diff --git a/drivers/pinctrl/pinctrl-cy8c95x0.c b/drivers/pinctrl/pinctrl-cy8c95x0.c
-index 5d8a7d236e62..f38e7dc794e9 100644
+index 521acfdeef38..5ef772d29a36 100644
 --- a/drivers/pinctrl/pinctrl-cy8c95x0.c
 +++ b/drivers/pinctrl/pinctrl-cy8c95x0.c
-@@ -7,7 +7,9 @@
-  * Author: Naresh Solanki <Naresh.Solanki@9elements.com>
-  */
+@@ -303,17 +303,6 @@ static bool cy8c95x0_volatile_register(struct device *dev, unsigned int reg)
+ 	switch (reg) {
+ 	case CY8C95X0_INPUT_(0) ... CY8C95X0_INPUT_(7):
+ 	case CY8C95X0_INTSTATUS_(0) ... CY8C95X0_INTSTATUS_(7):
+-	case CY8C95X0_INTMASK:
+-	case CY8C95X0_INVERT:
+-	case CY8C95X0_PWMSEL:
+-	case CY8C95X0_DIRECTION:
+-	case CY8C95X0_DRV_PU:
+-	case CY8C95X0_DRV_PD:
+-	case CY8C95X0_DRV_ODH:
+-	case CY8C95X0_DRV_ODL:
+-	case CY8C95X0_DRV_PP_FAST:
+-	case CY8C95X0_DRV_PP_SLOW:
+-	case CY8C95X0_DRV_HIZ:
+ 		return true;
+ 	}
  
-+#include <linux/acpi.h>
- #include <linux/bitmap.h>
-+#include <linux/dmi.h>
- #include <linux/gpio/driver.h>
- #include <linux/gpio/consumer.h>
- #include <linux/i2c.h>
-@@ -73,6 +75,46 @@ static const struct of_device_id cy8c95x0_dt_ids[] = {
- 
- MODULE_DEVICE_TABLE(of, cy8c95x0_dt_ids);
- 
-+static const struct acpi_gpio_params cy8c95x0_irq_gpios = { 0, 0, true };
-+
-+static const struct acpi_gpio_mapping cy8c95x0_acpi_irq_gpios[] = {
-+	{ "irq-gpios", &cy8c95x0_irq_gpios, 1, ACPI_GPIO_QUIRK_ABSOLUTE_NUMBER },
-+	{ }
-+};
-+
-+static int cy8c95x0_acpi_get_irq(struct device *dev)
-+{
-+	int ret;
-+
-+	ret = devm_acpi_dev_add_driver_gpios(dev, cy8c95x0_acpi_irq_gpios);
-+	if (ret)
-+		dev_warn(dev, "can't add GPIO ACPI mapping\n");
-+
-+	ret = acpi_dev_gpio_irq_get_by(ACPI_COMPANION(dev), "irq-gpios", 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	dev_info(dev, "ACPI interrupt quirk (IRQ %d)\n", ret);
-+	return ret;
-+}
-+
-+static const struct dmi_system_id cy8c95x0_dmi_acpi_irq_info[] = {
-+	{
-+		/*
-+		 * On Intel Galileo Gen 1 board the IRQ pin is provided
-+		 * as an absolute number instead of being relative.
-+		 * Since first controller (gpio-sch.c) and second
-+		 * (gpio-dwapb.c) are at the fixed bases, we may safely
-+		 * refer to the number in the global space to get an IRQ
-+		 * out of it.
-+		 */
-+		.matches = {
-+			DMI_EXACT_MATCH(DMI_BOARD_NAME, "Galileo"),
-+		},
-+	},
-+	{}
-+};
-+
- #define MAX_BANK 8
- #define BANK_SZ 8
- #define MAX_LINE	(MAX_BANK * BANK_SZ)
-@@ -1298,6 +1340,12 @@ static int cy8c95x0_probe(struct i2c_client *client)
- 	bitmap_set(chip->shiftmask, 0, 20);
- 	mutex_init(&chip->i2c_lock);
- 
-+	if (dmi_first_match(cy8c95x0_dmi_acpi_irq_info)) {
-+		ret = cy8c95x0_acpi_get_irq(&client->dev);
-+		if (ret > 0)
-+			client->irq = ret;
-+	}
-+
- 	if (client->irq) {
- 		ret = cy8c95x0_irq_setup(chip, client->irq);
- 		if (ret)
 -- 
 2.35.1
 
