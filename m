@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7DD5C54EE9
-	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 12:25:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75298ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 12:25:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231127AbiICMZb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 3 Sep 2022 08:25:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48314 "EHLO
+        id S229593AbiICMZz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 3 Sep 2022 08:25:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231156AbiICMZX (ORCPT
+        with ESMTP id S229681AbiICMZw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 3 Sep 2022 08:25:23 -0400
-Received: from relay04.th.seeweb.it (relay04.th.seeweb.it [IPv6:2001:4b7a:2000:18::165])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 411CD356ED;
-        Sat,  3 Sep 2022 05:25:22 -0700 (PDT)
+        Sat, 3 Sep 2022 08:25:52 -0400
+Received: from relay01.th.seeweb.it (relay01.th.seeweb.it [5.144.164.162])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D548853D2D
+        for <linux-kernel@vger.kernel.org>; Sat,  3 Sep 2022 05:25:51 -0700 (PDT)
 Received: from [192.168.1.101] (afbd23.neoplus.adsl.tpnet.pl [95.49.29.23])
         (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by m-r1.th.seeweb.it (Postfix) with ESMTPSA id B82551F5FA;
-        Sat,  3 Sep 2022 14:25:19 +0200 (CEST)
-Message-ID: <66cf4000-34fc-46b4-1a43-50f4c8db9b78@somainline.org>
-Date:   Sat, 3 Sep 2022 14:25:19 +0200
+        by m-r1.th.seeweb.it (Postfix) with ESMTPSA id 8BB7B1F872;
+        Sat,  3 Sep 2022 14:25:49 +0200 (CEST)
+Message-ID: <2a292e48-890e-5a2a-4ab0-5ca038f8c988@somainline.org>
+Date:   Sat, 3 Sep 2022 14:25:48 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.12.0
-Subject: Re: [PATCH 3/3] arm64: dts: qcom: sm7225-fairphone-fp4: Add pm7250b
- PMIC
+Subject: Re: [PATCH] arm64: dts: qcom: sc8280xp: mark USB controllers as
+ wakeup-sources
 Content-Language: en-US
-To:     Luca Weiss <luca.weiss@fairphone.com>,
-        linux-arm-msm@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
+To:     Johan Hovold <johan+linaro@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>
+Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220902111055.106814-1-luca.weiss@fairphone.com>
- <20220902111055.106814-3-luca.weiss@fairphone.com>
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220902081652.12631-1-johan+linaro@kernel.org>
 From:   Konrad Dybcio <konrad.dybcio@somainline.org>
-In-Reply-To: <20220902111055.106814-3-luca.weiss@fairphone.com>
+In-Reply-To: <20220902081652.12631-1-johan+linaro@kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -49,110 +46,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 
 
-On 2.09.2022 13:10, Luca Weiss wrote:
-> The PM7250B is primarily used for charger and fuel gauge on Fairphone 4
-> but also has some thermal zones that we can configure already.
+On 2.09.2022 10:16, Johan Hovold wrote:
+> The primary and secondary USB controllers can be used to wake the system
+> from suspend so mark them accordingly.
 > 
-> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
+> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 > ---
->  .../boot/dts/qcom/sm7225-fairphone-fp4.dts    | 67 +++++++++++++++++++
->  1 file changed, 67 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts b/arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts
-> index c76abe7587b4..30c94fd4fe61 100644
-> --- a/arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts
-> +++ b/arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts
-> @@ -12,6 +12,7 @@
->  #include "sm7225.dtsi"
->  #include "pm6150l.dtsi"
->  #include "pm6350.dtsi"
-> +#include "pm7250b.dtsi"
->  
->  / {
->  	model = "Fairphone 4";
-> @@ -70,6 +71,36 @@ memory@efe01000 {
->  			qcom,vmid = <15>;
->  		};
->  	};
-> +
-> +	thermal-zones {
-> +		chg-skin-thermal {
-> +			polling-delay-passive = <0>;
-> +			polling-delay = <0>;
-> +			thermal-sensors = <&pm7250b_adc_tm 0>;
-> +
-> +			trips {
-> +				active-config0 {
-> +					temperature = <125000>;
-> +					hysteresis = <1000>;
-> +					type = "passive";
-> +				};
-> +			};
-> +		};
-> +
-> +		conn-thermal {
-> +			polling-delay-passive = <0>;
-> +			polling-delay = <0>;
-> +			thermal-sensors = <&pm7250b_adc_tm 1>;
-> +
-> +			trips {
-> +				active-config0 {
-> +					temperature = <125000>;
-> +					hysteresis = <1000>;
-> +					type = "passive";
-> +				};
-> +			};
-> +		};
-> +	};
->  };
->  
->  &adsp {
-> @@ -353,6 +384,42 @@ &pm6350_resin {
->  	linux,code = <KEY_VOLUMEDOWN>;
->  };
->  
-> +&pm7250b_adc {
-> +	adc-chan@4d {
-> +		reg = <ADC5_AMUX_THM1_100K_PU>;
-> +		qcom,ratiometric;
-> +		qcom,hw-settle-time = <200>;
-> +		qcom,pre-scaling = <1 1>;
-> +		label = "charger_skin_therm";
-> +	};
-> +
-> +	adc-chan@4f {
-> +		reg = <ADC5_AMUX_THM3_100K_PU>;
-> +		qcom,ratiometric;
-> +		qcom,hw-settle-time = <200>;
-> +		qcom,pre-scaling = <1 1>;
-> +		label = "conn_therm";
-> +	};
-> +};
-> +
-> +&pm7250b_adc_tm {
-> +	status = "okay";
-> +
-> +	charger-skin-therm@0 {
-> +		reg = <0>;
-> +		io-channels = <&pm7250b_adc ADC5_AMUX_THM1_100K_PU>;
-> +		qcom,ratiometric;
-> +		qcom,hw-settle-time-us = <200>;
-Reverse-Christmas-tree would have been nicer here and above, in pm7250b_adc,
-but for the code itself:
-
 Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
 
 Konrad
-> +	};
+>  arch/arm64/boot/dts/qcom/sc8280xp.dtsi | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> index 3bbaec97aee9..e441d632c3e8 100644
+> --- a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> @@ -1872,6 +1872,8 @@ usb_0: usb@a6f8800 {
+>  					<&gem_noc MASTER_APPSS_PROC 0 &config_noc SLAVE_USB3_0 0>;
+>  			interconnect-names = "usb-ddr", "apps-usb";
+>  
+> +			wakeup-source;
 > +
-> +	conn-therm@1 {
-> +		reg = <1>;
-> +		io-channels = <&pm7250b_adc ADC5_AMUX_THM3_100K_PU>;
-> +		qcom,ratiometric;
-> +		qcom,hw-settle-time-us = <200>;
-> +	};
-> +};
+>  			status = "disabled";
+>  
+>  			usb_0_dwc3: usb@a600000 {
+> @@ -1924,6 +1926,8 @@ usb_1: usb@a8f8800 {
+>  					<&gem_noc MASTER_APPSS_PROC 0 &config_noc SLAVE_USB3_1 0>;
+>  			interconnect-names = "usb-ddr", "apps-usb";
+>  
+> +			wakeup-source;
 > +
->  &qupv3_id_1 {
->  	status = "okay";
->  };
+>  			status = "disabled";
+>  
+>  			usb_1_dwc3: usb@a800000 {
