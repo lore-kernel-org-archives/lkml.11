@@ -2,137 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B84A4ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 18:40:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D556ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 18:40:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232415AbiICSk0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 3 Sep 2022 14:40:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58534 "EHLO
+        id S232356AbiICSkj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 3 Sep 2022 14:40:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232351AbiICSkU (ORCPT
+        with ESMTP id S232461AbiICSkc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 3 Sep 2022 14:40:20 -0400
-Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com [209.85.128.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 796EF1A802;
-        Sat,  3 Sep 2022 11:40:17 -0700 (PDT)
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-344fc86d87cso27377477b3.3;
-        Sat, 03 Sep 2022 11:40:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=T1/52acLzPH3fpYJ42n+mkhnZLrM5YDLaNq5+3CgHSI=;
-        b=xQ//ZkXVI4Fz0UPYUDhhm6EwXb/+6VCMW4xQJRc8whheAzQmFFf3N6bev4hFj6Cnrt
-         2J1KAXI/LfdH1Rz4LnSwfiNtp0HUjSdq3y801G2HHFV7Qrsof/R7AVyYX+oMrzjoSpOS
-         TMeMszg1ZMFIkiez8ZfTGgJDXrTJs3lvG2wSgo+ON9/jYteIdyfY225TmN93AFJctngi
-         B0r2pQHEG0WjsFSIjSa/xQktYleEDcDu0F3p1OxD6aXeZRJBB1dXH6cSU+xvABG9x0gS
-         fpgwasmOoswPuC0liZo7FnG8Ok0XNLUGaclcsgYadMuFjZ/jjv4o99txB34d8VEAc+mA
-         2jug==
-X-Gm-Message-State: ACgBeo2VReVWeq6geeDSuNFGZTbmi1EGolEygyO7mEZQjOvBzu8seFAf
-        zzbMmQ66Qyb1bFOgQXcV8WxbJ9Z5mRoh02pkC9w=
-X-Google-Smtp-Source: AA6agR7CujmcoTp0MTGrl5SwCHLmkkm7/pH0C663H6K9zq5b+i3WV8/i04haCcENfbsLI2j61ox4Or9HrsZ8DVxvjeE=
-X-Received: by 2002:a0d:c841:0:b0:33d:bf96:f823 with SMTP id
- k62-20020a0dc841000000b0033dbf96f823mr31304559ywd.326.1662230416723; Sat, 03
- Sep 2022 11:40:16 -0700 (PDT)
+        Sat, 3 Sep 2022 14:40:32 -0400
+Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7051275DF;
+        Sat,  3 Sep 2022 11:40:29 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 168295C00EC;
+        Sat,  3 Sep 2022 14:40:27 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Sat, 03 Sep 2022 14:40:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maxfierke.com;
+         h=cc:cc:content-transfer-encoding:date:date:from:from
+        :in-reply-to:message-id:mime-version:reply-to:sender:subject
+        :subject:to:to; s=fm1; t=1662230427; x=1662316827; bh=IqiTG1t+/u
+        o+949kVmzHS54OgkIf4SBM3u2xKwWgX0k=; b=eIR7SFqm4EG5TV6Vi7SUm9Y4go
+        gf/PLH+BddaaCkqTp3iiUi87wW7Q2/hMWP54nTsPBj4bwlUZJbfkDzgPuMje5Xmu
+        yx0G878H/5FfZqJ1t9UTRiRHzqjsiNPhfrnOeqDqVy/rHM/ytbX1OvIOCCps10Il
+        NX05AcmC0FqjJ+eKYyPTUQ2AtesSIC9hSunbIA+xROxoMre8md/Xd4WvMOpFytx0
+        uMrzlVtnEHydoChEKtD4Bmw52c5nANsQzQShIAyoVjzHuiXXTzMZ9Huz0Fg8S5l8
+        BtS3dgsTbtKHBFPdVDJ3PGyWnztuWSnU6C9lv2Le947G2p6QaEGt5B4vLIng==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
+        1662230427; x=1662316827; bh=IqiTG1t+/uo+949kVmzHS54OgkIf4SBM3u2
+        xKwWgX0k=; b=dZknFVdegFPWrBvFPFYzP5krm/GnYOSDoyIDwphRBFlwkVvtGvR
+        sKABzgpcOHKYNjyZGKQtdxfU3mKvzHpM1tg+Pw8nB5lDoAz+WQu/TGc2w5jSpqat
+        QJIPTGevF97EyVa+ih1F38LrhLt+hM92F/QFBTv4Z+Icvqxw1FCE0vF+tIkPeAOQ
+        0irehDy+xfbni6NR7NzDivhcdCZ5OYTgOPkJPCfJzzwOshwmQBJYcxB3uSJ+QA6A
+        odTZgfzSkIAWck/a9YEQV2xuE6QC6rxCD5rigU9nVQC4M3DZDpTLOP/mogF87SSQ
+        4y0ymVU1m+wOlGsK8aaVJRq2xOe/bDdka2w==
+X-ME-Sender: <xms:mp8TY7cihske003pFzWZoHd2sbANtTWIfzUc85N10Llewflqq0xMkA>
+    <xme:mp8TYxNO90tIFbgluK9auOQcmdtpOahyOIAon5ZEkKw6wjzZsV_N6kVnMeq2Yr3Ns
+    l97YFAFhAZuTp4cssA>
+X-ME-Received: <xmr:mp8TY0ioVfP3ylMZueRaxOaVWQ8ypAUeuSvLUGY7ZS8J-FHwGwsQML5w_PLYXMAZcdsXO77KRBex0B8OTIEb9rTtjXerGqwP4ivMQtcs1NCMUs-ceg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdelvddgudefudcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvvefufffkofgggfestdekre
+    dtredttdenucfhrhhomhepofgrgicuhfhivghrkhgvuceomhgrgiesmhgrgihfihgvrhhk
+    vgdrtghomheqnecuggftrfgrthhtvghrnhepvddtffffgedvjeehhedugeekfefggffggf
+    eguddtieehudehhefhfeegkefgkedtnecuffhomhgrihhnpehgihhthhhusgdrtghomhen
+    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmrgigse
+    hmrgigfhhivghrkhgvrdgtohhm
+X-ME-Proxy: <xmx:mp8TY8_C7GfSwRpaaAU6hCjNXPB5Ff_CW6AUpGuENSKj9JQrMuwZdQ>
+    <xmx:mp8TY3uw7Etx-EwiydFy6-tm3l8UMVCotKuv1zPwjua1MO8Mz4hwow>
+    <xmx:mp8TY7FCoNZTzERvxg_W9JaiqvkyiIsQL7HZstyo_g1Nb5ytoK-lRg>
+    <xmx:m58TYwH8sYUl_xHTEQotUdjkRSRE9Cgq1hbK0f4_zPJNg3dUcbiahw>
+Feedback-ID: idee9475d:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
+ 3 Sep 2022 14:40:25 -0400 (EDT)
+From:   Max Fierke <max@maxfierke.com>
+To:     thierry.reding@gmail.com, sam@ravnborg.org, airlied@linux.ie,
+        daniel@ffwll.ch, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Max Fierke <max@maxfierke.com>
+Subject: [PATCH v2 0/4] Introduce ClockworkPi CWD686 DRM panel driver
+Date:   Sat,  3 Sep 2022 13:37:49 -0500
+Message-Id: <20220903183753.25736-1-max@maxfierke.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-References: <20220826151457.7c13a407@endymion.delvare> <CAHp75VdBv4EkDgTwHSxNhA91b8FMwaMvvoeWZOaxJVcvwRQ4vg@mail.gmail.com>
-In-Reply-To: <CAHp75VdBv4EkDgTwHSxNhA91b8FMwaMvvoeWZOaxJVcvwRQ4vg@mail.gmail.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Sat, 3 Sep 2022 20:40:04 +0200
-Message-ID: <CAJZ5v0hhnaZ4WaduU1x8y3oCWLQt3UPFhuFSqZU14+K99bkAHg@mail.gmail.com>
-Subject: Re: [PATCH] ACPI: docs: enumeration: Fix a few typos and wording mistakes
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Jean Delvare <jdelvare@suse.de>
-Cc:     ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 5:31 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
-> On Fri, Aug 26, 2022 at 4:14 PM Jean Delvare <jdelvare@suse.de> wrote:
-> >
-> > "sturct" -> "struct"
-> > "similar than with" -> "similar to"
-> > Missing comma, "it" and "to"
->
-> Makes sense to me, thanks!
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
->
-> > Signed-off-by: Jean Delvare <jdelvare@suse.de>
-> > Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-> > Cc: Len Brown <lenb@kernel.org>
-> > ---
-> >  Documentation/firmware-guide/acpi/enumeration.rst |   16 ++++++++--------
-> >  1 file changed, 8 insertions(+), 8 deletions(-)
-> >
-> > --- linux-5.19.orig/Documentation/firmware-guide/acpi/enumeration.rst   2022-08-26 12:46:35.307949217 +0200
-> > +++ linux-5.19/Documentation/firmware-guide/acpi/enumeration.rst        2022-08-26 15:02:50.245981296 +0200
-> > @@ -21,7 +21,7 @@ In order to support this and re-use the
-> >    - Devices behind real busses where there is a connector resource
-> >      are represented as struct spi_device or struct i2c_device. Note
-> >      that standard UARTs are not busses so there is no struct uart_device,
-> > -    although some of them may be represented by sturct serdev_device.
-> > +    although some of them may be represented by struct serdev_device.
-> >
-> >  As both ACPI and Device Tree represent a tree of devices (and their
-> >  resources) this implementation follows the Device Tree way as much as
-> > @@ -205,7 +205,7 @@ enumerated once spi_register_master() is
-> >                 }
-> >                 ...
-> >
-> > -The SPI device drivers only need to add ACPI IDs in a similar way than with
-> > +The SPI device drivers only need to add ACPI IDs in a similar way to
-> >  the platform device drivers. Below is an example where we add ACPI support
-> >  to at25 SPI eeprom driver (this is meant for the above ACPI snippet)::
-> >
-> > @@ -362,7 +362,7 @@ These GPIO numbers are controller relati
-> >  specifies the path to the controller. In order to use these GPIOs in Linux
-> >  we need to translate them to the corresponding Linux GPIO descriptors.
-> >
-> > -There is a standard GPIO API for that and is documented in
-> > +There is a standard GPIO API for that and it is documented in
-> >  Documentation/admin-guide/gpio/.
-> >
-> >  In the above example we can get the corresponding two GPIO descriptors with
-> > @@ -538,8 +538,8 @@ information.
-> >  PCI hierarchy representation
-> >  ============================
-> >
-> > -Sometimes could be useful to enumerate a PCI device, knowing its position on the
-> > -PCI bus.
-> > +Sometimes it could be useful to enumerate a PCI device, knowing its position on
-> > +the PCI bus.
-> >
-> >  For example, some systems use PCI devices soldered directly on the mother board,
-> >  in a fixed position (ethernet, Wi-Fi, serial ports, etc.). In this conditions it
-> > @@ -550,7 +550,7 @@ To identify a PCI device, a complete hie
-> >  the chipset root port to the final device, through all the intermediate
-> >  bridges/switches of the board.
-> >
-> > -For example, let us assume to have a system with a PCIe serial port, an
-> > +For example, let's assume we have a system with a PCIe serial port, an
-> >  Exar XR17V3521, soldered on the main board. This UART chip also includes
-> >  16 GPIOs and we want to add the property ``gpio-line-names`` [1] to these pins.
-> >  In this case, the ``lspci`` output for this component is::
-> > @@ -593,8 +593,8 @@ To describe this Exar device on the PCI
-> >
-> >         Bus: 0 - Device: 14 - Function: 1
-> >
-> > -To find this information is necessary disassemble the BIOS ACPI tables, in
-> > -particular the DSDT (see also [2])::
-> > +To find this information, it is necessary to disassemble the BIOS ACPI tables,
-> > +in particular the DSDT (see also [2])::
-> >
-> >         mkdir ~/tables/
-> >         cd ~/tables/
-> >
-> >
-> > --
+The ClockworkPi DevTerm (all models) uses a 6.86" IPS display
+of unknown provenance, which uses the Chipone ICNL9707 IC driver[1].
 
-Applied as 6.1 material, thanks!
+The display panel I have has two model numbers: TXW686001 and WTL068601G,
+but cannot find any manufacturer associated with either, so opting for the
+ClockworkPi model number.
+
+This driver is based on the GPL-licensed driver released by ClockworkPi[1],
+authored by Pinfan Zhu, with some additional cleanup, rotation support,
+and display sleep re-enabling done by me.
+
+[1] https://github.com/clockworkpi/DevTerm/blob/main/Schematics/ICNL9707_Datasheet.pdf
+[2] https://github.com/clockworkpi/DevTerm/blob/main/Code/patch/armbian_build_a06/patch/kernel-004-panel.patch
+
+Thanks to Krzysztof Kozlowski, Rob Herring, and Sam Ravnborg for their
+prior reviews and apologies for the long delay between patch set versions.
+
+Changes in v2:
+ - dt-bindings: remove redundant backlight example
+ - add missing regulators
+ - remove some unused properties from definition (e.g. enable_gpio, supply)
+ - reorder includes
+ - remove redundant ctx->backlight in favor of backlight through drm_panel_of_backlight
+ - remove now-unneeded ctx->enabled and enable/disable hooks
+ - replace ICNL9707_DCS macro with mipi_dsi_dcs_write_seq
+ - use dev_err_probe instead of checking EPROBE_DEFER
+ - fixed return type of cwd686_remove to be void following changes to mipi_dsi_driver
+ - add .get_orientation callback
+
+Max Fierke (4):
+  dt-bindings: vendor-prefixes: Add prefix for ClockworkPi
+  dt-bindings: display: Add ClockworkPi CWD686 panel
+  drm: panel: Add driver for ClockworkPi cwd686 panel
+  drm/panel: clockworkpi-cwd686: Implement .get_orientation callback
+
+ .../display/panel/clockworkpi,cwd686.yaml     |  63 +++
+ .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+ drivers/gpu/drm/panel/Kconfig                 |  12 +
+ drivers/gpu/drm/panel/Makefile                |   1 +
+ .../gpu/drm/panel/panel-clockworkpi-cwd686.c  | 456 ++++++++++++++++++
+ 5 files changed, 534 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/display/panel/clockworkpi,cwd686.yaml
+ create mode 100644 drivers/gpu/drm/panel/panel-clockworkpi-cwd686.c
+
+-- 
+2.37.1
