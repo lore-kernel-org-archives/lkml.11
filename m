@@ -2,103 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32A6FC54EE9
-	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 02:12:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED1EBC6FA89
+	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 02:13:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231467AbiICCMl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 22:12:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57594 "EHLO
+        id S231539AbiICCNf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 22:13:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbiICCMi (ORCPT
+        with ESMTP id S229508AbiICCNc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 22:12:38 -0400
-Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78B5EE42CD;
-        Fri,  2 Sep 2022 19:12:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=+9hT3j8PY8NaJfAXBqOIgtHebUuVNz5evAMl6MQrDZM=; b=ImpVKficYcJZfn/PGfcZIeWwIT
-        i3sOwcqfBBOo9/04H4EvdYmeTXQyqAtQcUUjkDsZnYpJRYNaO4U6dnVOH1iSpI/nGtl1OCacl8I87
-        MdYdlxVyh2qd7jXqWuVtIq6HlPyyG14dBQavaEZpsCkdXQH160E55IuBfXZjOUHzzfmSWEVd0+4KR
-        KhJveS9tkCVcIwA/vUIGGiqf+FPIprO8pMMJR+IQZ/FLihVVJRKbKYr/4VZOw7QdYmk+zSTKUDXrG
-        gPUIP+3F0OZc6xNqaqid6OzICV0qSgi1hHR44HbzoYMA65n9TNsySthic+fDVLrJRs6/H5DqeOTBa
-        kY67tQEQ==;
-Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
-        id 1oUIe2-00BW85-2R;
-        Sat, 03 Sep 2022 02:12:26 +0000
-Date:   Sat, 3 Sep 2022 03:12:26 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     NeilBrown <neilb@suse.de>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Daire Byrne <daire@dneg.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 01/10] VFS: support parallel updates in the one directory.
-Message-ID: <YxK4CiVNaQ6egobJ@ZenIV>
-References: <166147828344.25420.13834885828450967910.stgit@noble.brown>
- <166147984370.25420.13019217727422217511.stgit@noble.brown>
- <YwmS63X3Sm4bhlcT@ZenIV>
- <166173834258.27490.151597372187103012@noble.neil.brown.name>
- <YxKaaN9cHD5yzlTr@ZenIV>
- <166216924401.28768.5809376269835339554@noble.neil.brown.name>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <166216924401.28768.5809376269835339554@noble.neil.brown.name>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+        Fri, 2 Sep 2022 22:13:32 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB590E42D3;
+        Fri,  2 Sep 2022 19:13:31 -0700 (PDT)
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2831x4DK021313;
+        Sat, 3 Sep 2022 02:13:20 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references; s=qcppdkim1;
+ bh=ZFXrryaYjDttXiD4SZkuchQKUakT1Az9vh77aUMaUWA=;
+ b=Qx9jlOjsxSzmmN8379fn1IqPtj1uiHCmWf5hSZtm6QkFFbUC6e98rHwsBmx9/mH+5cre
+ MMPJYMxKDe9G/ZKIvVOk1fDSq7wF2lAK8unKvDnDnhBidGvcVto8wwMciX+Os1tZjtr7
+ zGbs/kc9Ow/EuVPZ8rahj+Cia/+lPjT5v01siWn/LAGti80ONPKuXaSzwkuWPnjcYDOJ
+ 0Z59INO1u0FerZua8IIP2WIi6/6i13X20t/tC/5G37YIdkZJJWAk6DBJAyH0Mou2gv4i
+ oWtX8vj3poxsZBCuzO5020S+Ni1YYVw0UbjRY42Ldk/rNtbc6RhasCX+hwWYovHCZVRp dA== 
+Received: from apblrppmta02.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3jbj0m2307-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 03 Sep 2022 02:13:19 +0000
+Received: from pps.filterd (APBLRPPMTA02.qualcomm.com [127.0.0.1])
+        by APBLRPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 2832COXB005554;
+        Sat, 3 Sep 2022 02:13:15 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by APBLRPPMTA02.qualcomm.com (PPS) with ESMTP id 3j7cbktgw1-1;
+        Sat, 03 Sep 2022 02:13:15 +0000
+Received: from APBLRPPMTA02.qualcomm.com (APBLRPPMTA02.qualcomm.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2832DETI006205;
+        Sat, 3 Sep 2022 02:13:14 GMT
+Received: from hu-sgudaval-hyd.qualcomm.com (hu-krichai-hyd.qualcomm.com [10.213.110.37])
+        by APBLRPPMTA02.qualcomm.com (PPS) with ESMTP id 2832D7nW006175;
+        Sat, 03 Sep 2022 02:13:14 +0000
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 4058933)
+        id E6F6F447F; Sat,  3 Sep 2022 07:43:06 +0530 (+0530)
+From:   Krishna chaitanya chundru <quic_krichai@quicinc.com>
+To:     helgaas@kernel.org
+Cc:     linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mka@chromium.org,
+        quic_vbadigan@quicinc.com, quic_hemantk@quicinc.com,
+        quic_nitegupt@quicinc.com, quic_skananth@quicinc.com,
+        quic_ramkri@quicinc.com, manivannan.sadhasivam@linaro.org,
+        swboyd@chromium.org, dmitry.baryshkov@linaro.org,
+        Krishna chaitanya chundru <quic_krichai@quicinc.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
+        DEVICE TREE BINDINGS)
+Subject: [PATCH v3 2/3] dt-bindings: pci: QCOM Add missing sc7280 aggre0, aggre1 clocks
+Date:   Sat,  3 Sep 2022 07:43:03 +0530
+Message-Id: <1662171184-25211-3-git-send-email-quic_krichai@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1662171184-25211-1-git-send-email-quic_krichai@quicinc.com>
+References: <1662171184-25211-1-git-send-email-quic_krichai@quicinc.com>
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: 4frPmzU8UWmTee_u1N_lZuw2h219-Xtm
+X-Proofpoint-ORIG-GUID: 4frPmzU8UWmTee_u1N_lZuw2h219-Xtm
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-09-02_08,2022-08-31_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ clxscore=1015 mlxscore=0 malwarescore=0 phishscore=0 spamscore=0
+ adultscore=0 impostorscore=0 suspectscore=0 lowpriorityscore=0 bulkscore=0
+ mlxlogscore=989 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2209030010
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Sep 03, 2022 at 11:40:44AM +1000, NeilBrown wrote:
+Add missing aggre0 and aggre1 clocks.
 
-> I don't think that is a good idea.  Once you call d_lookup_done()
-> (without having first called d_add() or similar) the dentry becomes
-> invisible to normal path lookup, so another might be created.  But the
-> dentry will still be used for the 'create' or 'rename' and may then be
-> added to the dcache - at which point you could have two dentries with the
-> same name.
-> 
-> When ->lookup() returns success without d_add()ing the dentry, that
-> means that something else will complete the d_add() if/when necessary.
-> For NFS, it specifically means that the lookup is effectively being
-> combined with the following CREATE or RENAME.  In this case there is no
-> d_lookup_done() until the full operation is complete.
->
-> For autofs (thanks for pointing me to that) the operation is completed
-> when d_automount() signals the daemon to create the directory or
-> symlink.  In that case there IS a d_lookup_done() call and autofs needs
-> some extra magic (the internal 'active' list) to make sure subsequent
-> ->lookup requests can see that dentry which is still in the process of
-> being set up.
-> 
-> It might be nice if the dentry passed to autofs_lookup() could remain
-> "d_inlookup()" until after d_automount has completed.  Then autofs
-> wouldn't need that active list.  However I haven't yet looked at how
-> disruptive such a change might be.
+Signed-off-by: Krishna chaitanya chundru <quic_krichai@quicinc.com>
+---
+changes since v2:
+	- Increase the max items of clock's in common properties.
+---
+ Documentation/devicetree/bindings/pci/qcom,pcie.yaml | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-Very much so.  You are starting to invent new rules for ->lookup() that
-just never had been there, basing on nothing better than a couple of
-examples.  They are nowhere near everything there is.
+diff --git a/Documentation/devicetree/bindings/pci/qcom,pcie.yaml b/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
+index 0b69b12..b759465 100644
+--- a/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
++++ b/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
+@@ -53,11 +53,11 @@ properties:
+   # Platform constraints are described later.
+   clocks:
+     minItems: 3
+-    maxItems: 12
++    maxItems: 13
+ 
+   clock-names:
+     minItems: 3
+-    maxItems: 12
++    maxItems: 13
+ 
+   resets:
+     minItems: 1
+@@ -423,8 +423,8 @@ allOf:
+     then:
+       properties:
+         clocks:
+-          minItems: 11
+-          maxItems: 11
++          minItems: 13
++          maxItems: 13
+         clock-names:
+           items:
+             - const: pipe # PIPE clock
+@@ -437,6 +437,8 @@ allOf:
+             - const: bus_slave # Slave AXI clock
+             - const: slave_q2a # Slave Q2A clock
+             - const: tbu # PCIe TBU clock
++            - const: aggre0 # Aggre NoC PCIe CENTER SF AXI clock
++            - const: aggre1 # Aggre NoC PCIe1 AXI clock
+             - const: ddrss_sf_tbu # PCIe SF TBU clock
+         resets:
+           maxItems: 1
+-- 
+2.7.4
 
-And you can't rely upon d_add() done by a method, for very obvious
-reasons.  They are out of your control, they might very well decide
-that object creation has failed and drop the damn thing.  Which is
-not allowed for in-lookup dentries without d_lookup_done().
-
-Neil, *IF* you are introducing new rules like that, the absolutely minimal
-requirement is having them in Documentation/filesystems/porting.rst.
-And that includes "such-and-such method might be called with parent
-locked only shared; in that case it's guaranteed such-and-such things
-about its arguments (bitlocks held, etc.)".
-
-One thing we really need to avoid is that thing coming undocumented, with
-"NFS copes, nobody else has it enabled, whoever does it for other
-filesystems will just have to RTFS".  I hope it's obvious that this
-is not an option.  Because I can bloody guarantee that it will be
-cargo-culted over to other filesystems, with nobody (you and me included)
-understanding the resulting code.
