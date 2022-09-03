@@ -2,64 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1136FECAAD4
-	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 18:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBF39ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 18:38:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230320AbiICShz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 3 Sep 2022 14:37:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54274 "EHLO
+        id S231573AbiICSiX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 3 Sep 2022 14:38:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbiICShx (ORCPT
+        with ESMTP id S229657AbiICSiR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 3 Sep 2022 14:37:53 -0400
-Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com [209.85.219.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FBF75508D;
-        Sat,  3 Sep 2022 11:37:52 -0700 (PDT)
-Received: by mail-yb1-f171.google.com with SMTP id g5so7475453ybg.11;
-        Sat, 03 Sep 2022 11:37:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=acDSEwPpSGt3/Sa5qq4bY+mv4UxFi1+u/sdIo3dqsdA=;
-        b=eYIwM776Zt85HLgKO1nltSzhkzgtmZX/jfz3y92HAl5ZhzJGkEweHuG7xUVmNK6Ezk
-         uUxyIofTcuK7fWCuOTQcmyJVRQ/s3wxZPFcep9MpT7q+At88+ft6gIY0EqOa50H3TZyS
-         gr//rbWcywXXl0NYHr3SpWSFTaNi03p3C2WMiC4DjbD5nnCH2tST+W8WhGj2DxaUtaUZ
-         XG6hoGDD3smPUIV2D9NGkyzsUtBu0JizrDCt7lCfQpG40Yb/vap0D8FCOnq5/9EnBqFU
-         L3eEdvRNI1T5yigfE5AVB0sZq1p5R9vw57GXEmTk/BhwwpT2dDFofIQX0HiEsxFBCsLJ
-         i/vQ==
-X-Gm-Message-State: ACgBeo2O7GO9ZltxqiSbtj4CqRQs59COvu0pZ70N2+kywq4OlPJCuGjQ
-        HQHKM9Z1fbFN6Tgt5YSzyGsUt3aYaSvm8q3MyyA=
-X-Google-Smtp-Source: AA6agR6IMJjLlJF0+Lly/WQ6I0yuPNaw47XRD0jcLbl2HZeCIJDsqPDyndKaaTGcHOy837NXuZypEIr2aC/54bb8d5s=
-X-Received: by 2002:a25:2785:0:b0:69b:b1d2:fd05 with SMTP id
- n127-20020a252785000000b0069bb1d2fd05mr23015642ybn.81.1662230271421; Sat, 03
- Sep 2022 11:37:51 -0700 (PDT)
+        Sat, 3 Sep 2022 14:38:17 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FCD25508E;
+        Sat,  3 Sep 2022 11:38:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1662230296; x=1693766296;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=qpinBAJKB6E6Wwqx7GDFK6m+AcQ6AEB6MqMz5swIr2Y=;
+  b=g38UIYZkUn7CAATen4cC1McmvWpu/Lp29/pUnDlxvTXXv9Z0IzfOZdf+
+   49Ps4DLXXXzaN+ZHtfT0UmQcIq3oxfEHSKJMEADUz2YZe80vxjwQFGDZ0
+   lFYqQ4LRt38vsCqiJykekvnETPkoparRjYa8/7xpIytAHDrFIKfOyzrXS
+   wkTYjjTk0TZ2HOsvQk+TWgjljo5+aBqf7w8Se3Hyv2n919K2pa8O6RzV+
+   6yoAfiSnjIiH5+MgLzMrTt33r+lIOSNHfDXkWQOsH0wZP+cApCJjethtw
+   Fp5/3y+kFatRwjFGGdqczwMer6BFN/VEmYC0UxQqKAh8AyDovVZkqOG8n
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.93,287,1654585200"; 
+   d="scan'208";a="179063137"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 03 Sep 2022 11:38:16 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Sat, 3 Sep 2022 11:38:15 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
+ Transport; Sat, 3 Sep 2022 11:38:15 -0700
+Date:   Sat, 3 Sep 2022 20:42:33 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+CC:     "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH] pinctrl: ocelot: Fix interrupt controller
+Message-ID: <20220903184233.whjduwtdyuvyf6lv@soft-dev3-1.localhost>
+References: <20220902124354.630826-1-horatiu.vultur@microchip.com>
+ <CAHp75Ve7EkE3q3_nOvT_KLmpmnXzMw179nbOxYEYzUeLY0QRnw@mail.gmail.com>
 MIME-Version: 1.0
-References: <CAJZ5v0jVpCiwscgVQqS3yEwGaHUCPzR9pNDjt6qY6U4jJubt_A@mail.gmail.com>
- <20220829030555.22418-1-junming@nfschina.com>
-In-Reply-To: <20220829030555.22418-1-junming@nfschina.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Sat, 3 Sep 2022 20:37:40 +0200
-Message-ID: <CAJZ5v0g9L61BXztCVFreEE3W9skzR2LGukhwjEzDbbr8F6PaRw@mail.gmail.com>
-Subject: Re: [PATCH] tools: Delete the initialization value
-To:     shijm <junming@nfschina.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        "open list:ACPI COMPONENT ARCHITECTURE (ACPICA)" <devel@acpica.org>,
-        Len Brown <lenb@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <CAHp75Ve7EkE3q3_nOvT_KLmpmnXzMw179nbOxYEYzUeLY0QRnw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 5:06 AM shijm <junming@nfschina.com> wrote:
->
-> yes,just your said!
+The 09/02/2022 17:51, Andy Shevchenko wrote:
 
-OK
+Hi Andy,
 
-I've applied the patch as 6.1 material under a new subject and with a
-new changelog.
+> 
+> > +       /*
+> > +        * It is enough to read only one action because the trigger level is the
+> > +        * same for all of them.
+> > +        */
+> 
+> Hmm... this is interesting. How is the hardware supposed to work if
+> the user asks for two contradictory levels for two different IRQs?
 
-Thanks!
+The HW can detect the changes in line for each pin on which the IRQ is.
+And each pin will have a different irq_desc with different actions.
+Or maybe I missunderstood the question?
+
+Also maybe a better way to get trigger level is to use
+irqd_get_trigger_type.
+
+...
+
+> > +               struct ocelot_irq_work *work = kmalloc(sizeof(*work), GFP_ATOMIC);
+> 
+> It's more visible what's going on if you split this to definition and
+> assignment and move assignment closer to its first user.
+> 
+> > +               if (!work)
+> > +                       return;
+
+So you would like something like this:
+---
+struct ocelot_irq_work *work;
+
+work = kmalloc(sizeof(*work), GFP_ATOMIC);
+if (!work)
+    return;
+...
+---
+
+> 
+> ...
+> 
+> >         type &= IRQ_TYPE_SENSE_MASK;
+> 
+> This seems redundant, see below.
+> 
+> 
+> > -       if (!(type & (IRQ_TYPE_EDGE_BOTH | IRQ_TYPE_LEVEL_HIGH)))
+> > +       if (type == IRQ_TYPE_NONE)
+> >                 return -EINVAL;
+> 
+> Is it ever possible? IIRC the IRQ chip code, the set->type won't be
+> called at all in such a case. Also type is already limited to the
+> sense mask, no?
+
+It is not possible. From what I have seen on the callstack, the type is
+already anded with IRQ_TYPE_SENSE_MASK, and it would not call
+ocelot_irq_set_type for IRQ_TYPE_NONE.
+Therefor I will remove these.
+
+> 
+> --
+> With Best Regards,
+> Andy Shevchenko
+
+-- 
+/Horatiu
