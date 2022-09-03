@@ -2,94 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A0F7ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 06:51:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21178ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 06:52:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231799AbiICGvK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 3 Sep 2022 02:51:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34440 "EHLO
+        id S232758AbiICGwm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 3 Sep 2022 02:52:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231666AbiICGvC (ORCPT
+        with ESMTP id S231666AbiICGwj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 3 Sep 2022 02:51:02 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FB22481C0;
-        Fri,  2 Sep 2022 23:51:01 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MKQKv12F6zWfBL;
-        Sat,  3 Sep 2022 14:46:27 +0800 (CST)
-Received: from kwepemm600008.china.huawei.com (7.193.23.88) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 3 Sep 2022 14:50:53 +0800
-Received: from huawei.com (10.175.100.227) by kwepemm600008.china.huawei.com
- (7.193.23.88) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 3 Sep
- 2022 14:50:52 +0800
-From:   Shang XiaoJing <shangxiaojing@huawei.com>
-To:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
-        <mark.rutland@arm.com>, <alexander.shishkin@linux.intel.com>,
-        <jolsa@kernel.org>, <namhyung@kernel.org>,
-        <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <shangxiaojing@huawei.com>
-Subject: [PATCH 1/3] perf clean: Add same_cmd_with_prefix helper
-Date:   Sat, 3 Sep 2022 15:25:40 +0800
-Message-ID: <20220903072542.27678-2-shangxiaojing@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220903072542.27678-1-shangxiaojing@huawei.com>
-References: <20220903072542.27678-1-shangxiaojing@huawei.com>
+        Sat, 3 Sep 2022 02:52:39 -0400
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A5EBB6A3
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 23:52:38 -0700 (PDT)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-33dce2d4bc8so33483387b3.4
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 23:52:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=ReE86CAuXFmaMHJ7YOUAJHviWpFsT5ozIc0Vr/5is54=;
+        b=eFWMH5qnQtV84oUmcsyzFEuWFg1a1ann3d3GfyO1fKAPei7VpCFvt3PEKfE/LWBD2/
+         Pj0IwkfG+2UrAk+Zq2lM3COEfUfFcFCL7RYZ8nVuQQVQR9g4fxfif/tAASgmZvNSwy5z
+         Y5sDf66a6OFuM+7OPgHzMT8Vh6WqMdzYtjmRyUVf5YOYizLf6W8vQPfS7XALBBy/W9su
+         Z79aaLmYlUpfGtB+Cy1bI/PK7gDqEsmkPIwZLw3aKLtCIw/0Q98W6ps9rMgv8UCULCYK
+         HJ//3s87yITwqRnqEvMGVO5eUlnL9CUtmH25yMPL+B7zcobtXx6W/ibisQxa5Qiip/0D
+         5Vaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=ReE86CAuXFmaMHJ7YOUAJHviWpFsT5ozIc0Vr/5is54=;
+        b=5MUTINJY+Z4Qby5IhIbkh0HPFZU/h0h7Iij3Tnchju1Dtt1XVWVM9wNNBvPUYJFMDw
+         T18yFwC9BD389JxpqophXLQf1P1kSK706pNgeumpeQc/JAq9IB8pprD8hKzSKSAHvxHc
+         bSfv2cnX9STn3bQL6RHEzOkN004EyaO99by0yLiKyxVC0EW3ySbBRnd6E8k4MBLRCUE1
+         uYONLss/FSU9oqa3wX6TXH+heDe7YS5heNFjIOzY7JguAvzEibu+U+fkX20hahQuxAA1
+         EIAMJGsUmBGDg0jHQ6Ok10yEbYhVG6wAtY61ysiUPOQYPAh2Ag0+PowKQ52jhyiyWnxx
+         fWbw==
+X-Gm-Message-State: ACgBeo2XBKdhWg7zjY/Z64wvID/AW5VMVbNhv4ssqb9pKWR8bIPMquQR
+        1kyVSb8P7dzZkqDR/FW/gFw9/+vA3Ydl8wuu82H0+Q==
+X-Google-Smtp-Source: AA6agR5NLwbY37rIKDr5iizkgRfVc6QFlkp9VsnBMmmRAefLTFJUEUrxxvWaur/K+fvnqZ3yhMeQo3IQUNJX6X0GBnI=
+X-Received: by 2002:a81:6808:0:b0:345:be:890a with SMTP id d8-20020a816808000000b0034500be890amr3134610ywc.267.1662187957704;
+ Fri, 02 Sep 2022 23:52:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.100.227]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600008.china.huawei.com (7.193.23.88)
-X-CFilter-Loop: Reflected
+References: <20220903000210.1112014-1-namhyung@kernel.org>
+In-Reply-To: <20220903000210.1112014-1-namhyung@kernel.org>
+From:   Marco Elver <elver@google.com>
+Date:   Sat, 3 Sep 2022 08:52:01 +0200
+Message-ID: <CANpmjNMPh5QjdxXtrCc5FApjgzV=81CNNiwbeg_rE3NxN_WCZw@mail.gmail.com>
+Subject: Re: [PATCH] perf test: Skip sigtrap test on old kernels
+To:     Namhyung Kim <namhyung@kernel.org>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>, Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        linux-perf-users@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Wrap repeated code in helper function same_cmd_with_prefix for more
-clearly.
+On Sat, 3 Sept 2022 at 02:02, Namhyung Kim <namhyung@kernel.org> wrote:
+>
+> If it runs on an old kernel, perf_event_open would fail because of the
+> new fields sigtrap and sig_data.  Just skip the test if it failed.
+>
+> Cc: Marco Elver <elver@google.com>
+> Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+> ---
+>  tools/perf/tests/sigtrap.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/tools/perf/tests/sigtrap.c b/tools/perf/tests/sigtrap.c
+> index e32ece90e164..7057566e6ae4 100644
+> --- a/tools/perf/tests/sigtrap.c
+> +++ b/tools/perf/tests/sigtrap.c
+> @@ -140,6 +140,7 @@ static int test__sigtrap(struct test_suite *test __maybe_unused, int subtest __m
+>         fd = sys_perf_event_open(&attr, 0, -1, -1, perf_event_open_cloexec_flag());
+>         if (fd < 0) {
+>                 pr_debug("FAILED sys_perf_event_open(): %s\n", str_error_r(errno, sbuf, sizeof(sbuf)));
+> +               ret = TEST_SKIP;
 
-Signed-off-by: Shang XiaoJing <shangxiaojing@huawei.com>
----
- tools/perf/perf.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+Wouldn't we be interested if perf_event_open() fails because it could
+actually be a bug? By skipping we'll be more likely to miss the fact
+there's a real problem.
 
-diff --git a/tools/perf/perf.c b/tools/perf/perf.c
-index c21b3973641a..7af135dea1cd 100644
---- a/tools/perf/perf.c
-+++ b/tools/perf/perf.c
-@@ -99,10 +99,16 @@ struct pager_config {
- 	int val;
- };
- 
-+static bool same_cmd_with_prefix(const char *var, struct pager_config *c,
-+				  const char *header)
-+{
-+	return (strstarts(var, header) && !strcmp(var + strlen(header), c->cmd));
-+}
-+
- static int pager_command_config(const char *var, const char *value, void *data)
- {
- 	struct pager_config *c = data;
--	if (strstarts(var, "pager.") && !strcmp(var + 6, c->cmd))
-+	if (same_cmd_with_prefix(var, c, "pager."))
- 		c->val = perf_config_bool(var, value);
- 	return 0;
- }
-@@ -121,9 +127,9 @@ static int check_pager_config(const char *cmd)
- static int browser_command_config(const char *var, const char *value, void *data)
- {
- 	struct pager_config *c = data;
--	if (strstarts(var, "tui.") && !strcmp(var + 4, c->cmd))
-+	if (same_cmd_with_prefix(var, c, "tui."))
- 		c->val = perf_config_bool(var, value);
--	if (strstarts(var, "gtk.") && !strcmp(var + 4, c->cmd))
-+	if (same_cmd_with_prefix(var, c, "gtk."))
- 		c->val = perf_config_bool(var, value) ? 2 : 0;
- 	return 0;
- }
--- 
-2.17.1
+That's my naive thinking at least - what do other perf tests usually
+do in this case?
 
+Thanks,
+-- Marco
