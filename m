@@ -2,173 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7CABECAAD4
-	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 17:42:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02C64C54EE9
+	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 17:42:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232415AbiICRme (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 3 Sep 2022 13:42:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60784 "EHLO
+        id S232689AbiICRmh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 3 Sep 2022 13:42:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232143AbiICRm1 (ORCPT
+        with ESMTP id S230507AbiICRm2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 3 Sep 2022 13:42:27 -0400
-Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com [209.85.219.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3768250724;
-        Sat,  3 Sep 2022 10:42:25 -0700 (PDT)
-Received: by mail-yb1-f180.google.com with SMTP id p204so7433473yba.3;
-        Sat, 03 Sep 2022 10:42:25 -0700 (PDT)
+        Sat, 3 Sep 2022 13:42:28 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EB855141D;
+        Sat,  3 Sep 2022 10:42:27 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id u6so6475223eda.12;
+        Sat, 03 Sep 2022 10:42:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=0WRb2V91EcpbVW8u0Sp6LXTsiRGhW6DTkPaNDUU1Ni4=;
+        b=mH5r4nxkfCoO9Jc9cNOO//o7p3t3pMbkvQxbHkkMeH3VNnl6jaxSVReyAml88/UZbZ
+         2x9KQQQtTu1sBSgMFXVFjjikMIEov34tLdj++jlVNXIK3M4cYjh9GH37XJ5oUUCD2lHj
+         q/NUt6oL3EPBCeZVrOxnToqz8D2BWFH6WQeb0ubpY7y6q85Y88fB6rftDYD7fOVqsQU1
+         wR9QFnBszBQpddm2MfMNzycZjC4jJDCyWFWxLE9uo3z/dHrCy5CZ/qfqzIERNy4fpPpH
+         kAQu81znHT5MWM7C5DPcrmopAeVnJw3m1/eOg96AHyR9/FnLKoOdZO61biYfNjzn0OBf
+         DTVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=1Oh24JjJO3LtEF81yZui8vBF0ZiGpv8OhgBNhurKph4=;
-        b=FH2CsYiXibomipFA4EYuCzEgkeC8HtYPMzi+tpdJTN3+blXrCuY3xVpafDm1vmAw3A
-         nlXLrweTXemWU0HvINPyfnsIUiLq279t6NtBTjuD7M7+ybosHxhMGWDav3ifex+PjGV7
-         P6cIGlp869ioSQsZoJqfKShtoPjb6iEIwd5m3A3PQ03I+pMwVxzZPKd5panfAeWL12zf
-         +i8JDVmS2uNlh+wUBcX6r83LDeJf9HCUrV8e1IUr5PcmI9xkBxv9MX7BDDGFoGe7cHzp
-         st2su0jJMboncDKzgdswVDkyNLxpTCliMyimdfrz/RoqF8hXDRDHZ378ZOPZKd7Kjeo5
-         Xhhw==
-X-Gm-Message-State: ACgBeo0thODns2nJ+fSCGZVohqL1F8mVPMvnFdCXlbQzUh3Q3iMZmoBq
-        qgYeU7g7aiW0Sq83RHhKNq7dV83nVKDrq+1poW6k39N3
-X-Google-Smtp-Source: AA6agR46PFNH5PVO52b54ICBiP8sdJu9Fwr3ruyelbqhf0wAwMFXBgO3dIHlw9wt0aKF0pKyWPUhWvLtRgQJbEFmHwk=
-X-Received: by 2002:a25:2f0c:0:b0:6a8:f230:12ed with SMTP id
- v12-20020a252f0c000000b006a8f23012edmr288172ybv.633.1662226944425; Sat, 03
- Sep 2022 10:42:24 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=0WRb2V91EcpbVW8u0Sp6LXTsiRGhW6DTkPaNDUU1Ni4=;
+        b=ct+KRzZ4qHb3uKj02x12AbuSSarJuMAgV8vzrP9+1Mwn0BmiRgrufkmewqGEkQ2Lgy
+         f7u40Tpd766x1A4yijB512PXGYNJ0/bVLACTihRUn97bNBIPMOAmfSDnJ8bZQNR1MSeC
+         6w4pAoqsJWB7kWC3arib/2Ot+Tkz4zGVGWCOKE1DNiNBCEWDC7dMHp6nhMcveXFx3E0A
+         oiKe0XW27RMvrcP3cjnASiccKtgZ79zUT+WJ1XSoawaRSTqEx5VQERnDEqz7aZwZwVhp
+         73JY8tatYrDU1CYiNXjut9Es/gw/Ea8kXN0GpmVvUUQskgnv199Zb3BZLgQuGP6RGT45
+         6fig==
+X-Gm-Message-State: ACgBeo1cWNkxEWe8wfjx1r45pO8tLtGVZ2r/sBto8hRyywe9NYnsv3mq
+        SEzivx/Qq4K8BcgmCzEdNH4=
+X-Google-Smtp-Source: AA6agR4R9FsaOO172LC1Qlkygor8ueNi2Y4WqVoIHCT3jFpBFsSp1gBXWsspQ8Zz5Hc1+a25qrHMMQ==
+X-Received: by 2002:a05:6402:5008:b0:440:941a:93c3 with SMTP id p8-20020a056402500800b00440941a93c3mr37639760eda.47.1662226945606;
+        Sat, 03 Sep 2022 10:42:25 -0700 (PDT)
+Received: from localhost ([77.78.20.135])
+        by smtp.gmail.com with ESMTPSA id 7-20020a170906328700b00734bfab4d59sm2754221ejw.170.2022.09.03.10.42.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 03 Sep 2022 10:42:25 -0700 (PDT)
+From:   Iskren Chernev <iskren.chernev@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        Iskren Chernev <iskren.chernev@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 3/9] dt-bindings: nvmem: Add SoC compatible for sm6115
+Date:   Sat,  3 Sep 2022 20:41:44 +0300
+Message-Id: <20220903174150.3566935-4-iskren.chernev@gmail.com>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220903174150.3566935-1-iskren.chernev@gmail.com>
+References: <20220903174150.3566935-1-iskren.chernev@gmail.com>
 MIME-Version: 1.0
-References: <20220902233543.390890-1-helgaas@kernel.org> <20220902233543.390890-3-helgaas@kernel.org>
- <CAJZ5v0jV94TwifmoF2UfiDpXNP_Kgt6qNkQH7zwQjo=ZhyU-4A@mail.gmail.com>
-In-Reply-To: <CAJZ5v0jV94TwifmoF2UfiDpXNP_Kgt6qNkQH7zwQjo=ZhyU-4A@mail.gmail.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Sat, 3 Sep 2022 19:42:13 +0200
-Message-ID: <CAJZ5v0jp2y=hKr0PG0qTtpVW5qOPLtKhMJDqsNFh2vV1=0Umtg@mail.gmail.com>
-Subject: Re: [PATCH v2 2/3] PCI/PTM: Implement pci_enable_ptm() for Root
- Ports, Switch Upstream Ports
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Rajvi Jingar <rajvi.jingar@linux.intel.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Koba Ko <koba.ko@canonical.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        "David E . Box" <david.e.box@linux.intel.com>,
-        Sathyanarayanan Kuppuswamy 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Sep 3, 2022 at 7:40 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
->
-> On Sat, Sep 3, 2022 at 1:35 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> >
-> > From: Bjorn Helgaas <bhelgaas@google.com>
-> >
-> > Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-> > ---
-> >  drivers/pci/pcie/ptm.c | 34 +++++++++++++++++++++++++++-------
-> >  1 file changed, 27 insertions(+), 7 deletions(-)
-> >
-> > diff --git a/drivers/pci/pcie/ptm.c b/drivers/pci/pcie/ptm.c
-> > index b6a417247ce3..ad283818f37b 100644
-> > --- a/drivers/pci/pcie/ptm.c
-> > +++ b/drivers/pci/pcie/ptm.c
-> > @@ -167,11 +167,11 @@ int pci_enable_ptm(struct pci_dev *dev, u8 *granularity)
-> >         if (!pos)
-> >                 return -EINVAL;
-> >
-> > -       pci_read_config_dword(dev, pos + PCI_PTM_CAP, &cap);
-> > -       if (!(cap & PCI_PTM_CAP_REQ))
-> > -               return -EINVAL;
-> > -
-> >         /*
-> > +        * Root Ports and Switch Upstream Ports have been configured
-> > +        * by pci_ptm_init(), so preserve their PCI_PTM_CTRL_ROOT and
-> > +        * granularity.
-> > +        *
-> >          * For a PCIe Endpoint, PTM is only useful if the endpoint can
-> >          * issue PTM requests to upstream devices that have PTM enabled.
-> >          *
-> > @@ -179,19 +179,39 @@ int pci_enable_ptm(struct pci_dev *dev, u8 *granularity)
-> >          * device, so there must be some implementation-specific way to
-> >          * associate the endpoint with a time source.
-> >          */
-> > -       if (pci_pcie_type(dev) == PCI_EXP_TYPE_ENDPOINT) {
-> > +       if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT ||
-> > +           pci_pcie_type(dev) == PCI_EXP_TYPE_UPSTREAM) {
-> > +               if (pci_pcie_type(dev) == PCI_EXP_TYPE_UPSTREAM) {
-> > +                       ups = pci_upstream_bridge(dev);
-> > +                       if (!ups || !ups->ptm_enabled)
-> > +                               return -EINVAL;
-> > +               }
-> > +
-> > +               pci_read_config_dword(dev, pos + PCI_PTM_CTRL, &ctrl);
-> > +               ctrl |= PCI_PTM_CTRL_ENABLE;
-> > +       } else if (pci_pcie_type(dev) == PCI_EXP_TYPE_ENDPOINT) {
-> > +               pci_read_config_dword(dev, pos + PCI_PTM_CAP, &cap);
-> > +               if (!(cap & PCI_PTM_CAP_REQ))
-> > +                       return -EINVAL;
-> > +
-> >                 ups = pci_upstream_bridge(dev);
-> >                 if (!ups || !ups->ptm_enabled)
-> >                         return -EINVAL;
-> >
-> >                 dev->ptm_granularity = ups->ptm_granularity;
-> > +               ctrl = PCI_PTM_CTRL_ENABLE;
-> > +               ctrl |= dev->ptm_granularity << 8;
-> >         } else if (pci_pcie_type(dev) == PCI_EXP_TYPE_RC_END) {
-> > +               pci_read_config_dword(dev, pos + PCI_PTM_CAP, &cap);
-> > +               if (!(cap & PCI_PTM_CAP_REQ))
-> > +                       return -EINVAL;
-> > +
-> >                 dev->ptm_granularity = 0;
-> > +               ctrl = PCI_PTM_CTRL_ENABLE;
-> > +               ctrl |= dev->ptm_granularity << 8;
-> >         } else
-> >                 return -EINVAL;
->
-> I would do
->
-> if ((pci_pcie_type(dev) == PCI_EXP_TYPE_UPSTREAM || pci_pcie_type(dev)
-> == PCI_EXP_TYPE_ENDPOINT)) {
->         ups = pci_upstream_bridge(dev);
->         if (!ups || !ups->ptm_enabled)
->                 return -EINVAL;
->
->         dev->ptm_granularity = ups->ptm_granularity;
-> }
->
-> switch(pci_pcie_type(dev)) {
-> case PCI_EXP_TYPE_ROOT_PORT:
-> case PCI_EXP_TYPE_UPSTREAM:
->         pci_read_config_dword(dev, pos + PCI_PTM_CTRL, &ctrl);
->         ctrl |= PCI_PTM_CTRL_ENABLE;
->         break;
-> case PCI_EXP_TYPE_ENDPOINT:
-> case PCI_EXP_TYPE_RC_END:
+Document SoC compatible for sm6115.
 
-I missed the cap check here, sorry.
+Signed-off-by: Iskren Chernev <iskren.chernev@gmail.com>
+---
+ Documentation/devicetree/bindings/nvmem/qcom,qfprom.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
->         ctrl = PCI_PTM_CTRL_ENABLE;
->         break;
-> default:
->         return -EINVAL;
-> }
->
-> >
-> > -       ctrl = PCI_PTM_CTRL_ENABLE;
-> > -       ctrl |= dev->ptm_granularity << 8;
->
-> And I wouldn't remove the line above.
->
-> Note that for root ports dev->ptm_granularity must be set and reflect
-> the register setting or else the code wouldn't have worked for
-> downstream components.
->
-> >         pci_write_config_dword(dev, pos + PCI_PTM_CTRL, ctrl);
-> >         dev->ptm_enabled = 1;
-> >
-> > --
+diff --git a/Documentation/devicetree/bindings/nvmem/qcom,qfprom.yaml b/Documentation/devicetree/bindings/nvmem/qcom,qfprom.yaml
+index dede8892ee01..54053e16b8fd 100644
+--- a/Documentation/devicetree/bindings/nvmem/qcom,qfprom.yaml
++++ b/Documentation/devicetree/bindings/nvmem/qcom,qfprom.yaml
+@@ -26,6 +26,7 @@ properties:
+           - qcom,sc7180-qfprom
+           - qcom,sc7280-qfprom
+           - qcom,sdm845-qfprom
++          - qcom,sm6115-qfprom
+       - const: qcom,qfprom
+ 
+   reg:
+-- 
+2.37.2
+
