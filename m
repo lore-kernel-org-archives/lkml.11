@@ -2,96 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B714C6FA82
-	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 07:20:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E55CDC6FA83
+	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 07:36:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233046AbiICHUi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 3 Sep 2022 03:20:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50856 "EHLO
+        id S231826AbiICHgD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 3 Sep 2022 03:36:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233006AbiICHUe (ORCPT
+        with ESMTP id S229568AbiICHgB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 3 Sep 2022 03:20:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D05B6DF95
-        for <linux-kernel@vger.kernel.org>; Sat,  3 Sep 2022 00:20:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662189632;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UHFFj9vepk7u9EoGJKlFbytlhoGP7nwiP3Wn6nevpP8=;
-        b=JMGvW7VRGtqlEeEC8VsqYq+75zWvq7TvFqYH9RljL0bBISbKQBYQDHSXdsi0II1G8F3/gq
-        r/Vc1+ig8WNLmFsY7/tZRVRJ7uSnIhCg7q4pCCL+fMr9OXFAaK3Q1iThjO5XWufElsVJQv
-        GKqtOEH/canBWa0tCi6ZbplgM4NqPio=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-465-ppu4bCiwMhe62PT5SwKPug-1; Sat, 03 Sep 2022 03:20:28 -0400
-X-MC-Unique: ppu4bCiwMhe62PT5SwKPug-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3BED7811E76;
-        Sat,  3 Sep 2022 07:20:27 +0000 (UTC)
-Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.192.34])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 33575422E3;
-        Sat,  3 Sep 2022 07:20:20 +0000 (UTC)
-Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
-        oleg@redhat.com; Sat,  3 Sep 2022 09:20:26 +0200 (CEST)
-Date:   Sat, 3 Sep 2022 09:20:19 +0200
-From:   Oleg Nesterov <oleg@redhat.com>
-To:     Oleksandr Natalenko <oleksandr@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Huang Ying <ying.huang@intel.com>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>,
-        Will Deacon <will@kernel.org>,
-        "Guilherme G . Piccoli" <gpiccoli@igalia.com>,
-        Laurent Dufour <ldufour@linux.ibm.com>,
-        Stephen Kitt <steve@sk2.org>, Rob Herring <robh@kernel.org>,
-        Joel Savitz <jsavitz@redhat.com>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Kees Cook <keescook@chromium.org>,
-        Xiaoming Ni <nixiaoming@huawei.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Renaud =?iso-8859-1?Q?M=E9trich?= <rmetrich@redhat.com>,
-        Grzegorz Halat <ghalat@redhat.com>, Qi Guo <qguo@redhat.com>
-Subject: Re: [PATCH] core_pattern: add CPU specifier
-Message-ID: <20220903072018.GA15331@redhat.com>
-References: <20220903064330.20772-1-oleksandr@redhat.com>
+        Sat, 3 Sep 2022 03:36:01 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F1AD57554
+        for <linux-kernel@vger.kernel.org>; Sat,  3 Sep 2022 00:35:59 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id r22so3816367pgm.5
+        for <linux-kernel@vger.kernel.org>; Sat, 03 Sep 2022 00:35:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=heitbaum.com; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=oOpx8+S8W3ByJvY4eiWGxIeLAlsJyDYwXg3ZTvfYSuk=;
+        b=ansQjWS2vcjaDkL1B4J95z64Aw0Ay6LLn2/tMHKQxo+iKmnEdI7W5581xozW9+3HFR
+         1z5VlHqa7e3B0SujEvLF46EBG2K6tLjxAgn1Lu8z3WcA+QIi7RSRYiVgw3tgCA2wc0KT
+         235IkGWkRK4QC3+JOK3og3vWRR9y2f0CwgZdA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=oOpx8+S8W3ByJvY4eiWGxIeLAlsJyDYwXg3ZTvfYSuk=;
+        b=rYIX6i716ajOX36aKnDx3Cbne03Ql36DQTN68/1ITKKY5xG7bklxfilqtW2HcG8roZ
+         xO/WzrwvsHGiqpHe5ApuMGO30q3juhzG7/3HHmCxkVT8f/u9Fnknlq68vIegHtB0nACT
+         /vC82ZoUYdTslvKJKbMzfxPN+zbnsbgwLbaQikaWoE0ssXmaP69/rsS7l0TiB75IkBOG
+         Vtd7xVZt2dxxkMF2qhc80OJVn5TwOVSC0Lz5i1E0E02hi1to0zzOjGHHPehY1yMKQ7MP
+         KC0+UsIjmh5UDYwRUL4PZVeIsQudy7NFsj1AHE6zQil3Vdka56VJkgjTlyHHdxM9XROb
+         nkRA==
+X-Gm-Message-State: ACgBeo32YCrbs7Sx10/3xu3CjvX80qw7OzaAv4+vbMm3rKKAjPFBYrlK
+        9nILb+SJM3Wd+wme32Bimi0jcQ==
+X-Google-Smtp-Source: AA6agR4WdJurybDllLWQ0pl6TSzYJo9FOLBHE/C2Lp4xSVjNTNOe+ocv6DBmFwQlLyo+gdhJ9sAxQg==
+X-Received: by 2002:a63:445b:0:b0:42c:7b67:287e with SMTP id t27-20020a63445b000000b0042c7b67287emr19479366pgk.166.1662190558842;
+        Sat, 03 Sep 2022 00:35:58 -0700 (PDT)
+Received: from 89268b632b57 ([203.220.223.63])
+        by smtp.gmail.com with ESMTPSA id p14-20020a170902e74e00b001641b2d61d4sm2911029plf.30.2022.09.03.00.35.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 03 Sep 2022 00:35:58 -0700 (PDT)
+Date:   Sat, 3 Sep 2022 07:35:50 +0000
+From:   Rudi Heitbaum <rudi@heitbaum.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.19 00/72] 5.19.7-rc1 review
+Message-ID: <20220903073550.GA253851@89268b632b57>
+References: <20220902121404.772492078@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220903064330.20772-1-oleksandr@redhat.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+In-Reply-To: <20220902121404.772492078@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/03, Oleksandr Natalenko wrote:
->
-> Statistically, in a large deployment regular segfaults may indicate a CPU issue.
->
-> Currently, it is not possible to find out what CPU the segfault happened on.
-> There are at least two attempts to improve segfault logging with this regard,
-> but they do not help in case the logs rotate.
->
-> Hence, lets make sure it is possible to permanently record a CPU
-> the task ran on using a new core_pattern specifier.
->
-> Suggested-by: Renaud Métrich <rmetrich@redhat.com>
-> Signed-off-by: Oleksandr Natalenko <oleksandr@redhat.com>
-> ---
->  Documentation/admin-guide/sysctl/kernel.rst | 1 +
->  fs/coredump.c                               | 5 +++++
->  include/linux/coredump.h                    | 1 +
->  3 files changed, 7 insertions(+)
+On Fri, Sep 02, 2022 at 02:18:36PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.19.7 release.
+> There are 72 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Sun, 04 Sep 2022 12:13:47 +0000.
+> Anything received after that time might be too late.
 
-Reviewed-by: Oleg Nesterov <oleg@redhat.com>
+Hi Greg,
 
+5.19.7-rc1 tested.
+
+Run tested on:
+- Intel Tiger Lake x86_64 (nuc11 i7-1165G7)
+- Samsung Exynos5422 (Odroid XU4)
+
+In addition - build tested for:
+- Allwinner A64
+- Allwinner H3
+- Allwinner H5
+- Allwinner H6
+- NXP iMX6
+- NXP iMX8
+- Qualcomm Dragonboard
+- Rockchip RK3288
+- Rockchip RK3328
+- Rockchip RK3399pro
+
+Tested-by: Rudi Heitbaum <rudi@heitbaum.com>
+--
+Rudi
