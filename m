@@ -2,98 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52C77C38145
-	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 00:25:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E681ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 00:29:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232054AbiICAZb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 20:25:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54474 "EHLO
+        id S231693AbiICA3O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 20:29:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231646AbiICAYd (ORCPT
+        with ESMTP id S232026AbiICA2g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 20:24:33 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F16881114ED
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 17:23:53 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id i6-20020a259786000000b0069648392979so2772590ybo.11
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 17:23:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:reply-to:from:to:cc:subject:date;
-        bh=LdiXi7ZmRYWfAPERNLf/gz/Xml73VY2Moq9FlK1+JBc=;
-        b=gVjWhAQcAI+bfNHz4uTVmIx3nAkEmZPbWE9B7vVyZy+8Tjn5vubmdisoN87VgqcXAU
-         J/ZZFScLpXNbdE9gcLCv4qVgU4wyDTfEQR0rRpYqI4ySU1BJlDWuiEJdpHJQghuT7nC1
-         78zCwkkBSnLluOvdD24yDgEGPzjYTqVqZgL8nNUfcpPKtKD2NuIfJXXHV3Q99qZgkfQA
-         4AezuVeI6wEX9TexV0/N1o2EOwN9niYMB/rhYN9wZ00jYw3zkePsVEjvy5MrFeJG+pqV
-         jTqlCJmphQU3DmJtdw983qzAhF39W+UclFY53a9GNg2fN/6uHQ1AhN+TGVAg/DAKHtpt
-         iN1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:reply-to:x-gm-message-state:from:to:cc:subject:date;
-        bh=LdiXi7ZmRYWfAPERNLf/gz/Xml73VY2Moq9FlK1+JBc=;
-        b=3l35PwZVYwjd5x9obE48IeA0pDkPRKJHAySwqtak5VlktAy817em6SJzG4j50jLBDY
-         b7cCdTVBg1AVM8Ry3N+klNtZGc8abn4l6AgSOYNamhsYwcxU8a7iV06KWNCmwmhr8eSH
-         G8FbtfseBnQXlsMSWWmqePmBVc3CR+H9k31VPfNaeEtd0hqvvZ5Az7BZ/cHadWEgF1TA
-         UsutB3UEW9wbdjFTxiOcfCT+rT/i4ix1IQ1F8UIGdbTSr3pokrQE6ujzJJ4JmzBAgyOg
-         i8WFx4hTfLHARLaW7DjYQt3l3CKLCRyIGP7yPINOUdYSrLGOi1VssJgQKCZa4qMMO1L/
-         rb5A==
-X-Gm-Message-State: ACgBeo3/wguvV0gfz0jx6mvv5PitT2iiw6EKaoHluJwoj7HphGDLi3GA
-        hv/oXaVatmJ8Yw8fYkiC/M26confPTE=
-X-Google-Smtp-Source: AA6agR4Wlh7daQ+R0dhwpkQy+xCElmTBe/vKQcUjkr8uz9o2uhmDKQhgDfFFicXMqktQ8vLCwNZ3KrpAEPE=
-X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a0d:df92:0:b0:340:b90d:fb75 with SMTP id
- i140-20020a0ddf92000000b00340b90dfb75mr28814158ywe.149.1662164616127; Fri, 02
- Sep 2022 17:23:36 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Sat,  3 Sep 2022 00:22:53 +0000
-In-Reply-To: <20220903002254.2411750-1-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220903002254.2411750-1-seanjc@google.com>
-X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
-Message-ID: <20220903002254.2411750-23-seanjc@google.com>
-Subject: [PATCH v2 22/23] KVM: SVM: Ignore writes to Remote Read Data on AVIC
- write traps
-From:   Sean Christopherson <seanjc@google.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Li RongQing <lirongqing@baidu.com>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 2 Sep 2022 20:28:36 -0400
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AECD11EB5F;
+        Fri,  2 Sep 2022 17:26:30 -0700 (PDT)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 8EDEB6DD;
+        Sat,  3 Sep 2022 02:25:04 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1662164704;
+        bh=H2oIKKpl7vDJ+UZWMIb/3wmlWoyGMna5rxAUCLWh4mk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Me420Y6rkhnnjE3cmtE1eQhJLjVnyqoxTJulX2e9n1z/YSEpUTbVY03AFsoZdS+6m
+         QKRU+jSdrp1Ll1vBPqQLs379abGsgkxlNG3mF0N7IMZIBP0C4pkdkKFdHiI2kyFKwV
+         i6x72SSeG9MqHcxYqURlKq09XYaRXpnWRgnw/gww=
+Date:   Sat, 3 Sep 2022 03:24:51 +0300
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Francesco Dolcini <francesco.dolcini@toradex.com>
+Cc:     Max Krummenacher <max.oss.09@gmail.com>,
+        Max Krummenacher <max.krummenacher@toradex.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Philippe Schenker <philippe.schenker@toradex.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] arm64: dts: imx8mp-verdin: add dsi to hdmi
+ functionality
+Message-ID: <YxKe00H2S9AzF0Yi@pendragon.ideasonboard.com>
+References: <20220901154051.1885509-1-max.oss.09@gmail.com>
+ <YxD09SqpcbB3dt8I@pendragon.ideasonboard.com>
+ <20220902155720.GB5699@francesco-nb.int.toradex.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220902155720.GB5699@francesco-nb.int.toradex.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop writes to APIC_RRR, a.k.a. Remote Read Data Register, on AVIC
-unaccelerated write traps.  The register is read-only and isn't emulated
-by KVM.  Sending the register through kvm_apic_write_nodecode() will
-result in screaming when x2APIC is enabled due to the unexpected failure
-to retrieve the MSR (KVM expects that only "legal" accesses will trap).
+Hi Francesco,
 
-Fixes: 4d1d7942e36a ("KVM: SVM: Introduce logic to (de)activate x2AVIC mode")
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
----
- arch/x86/kvm/svm/avic.c | 3 +++
- 1 file changed, 3 insertions(+)
+On Fri, Sep 02, 2022 at 05:57:20PM +0200, Francesco Dolcini wrote:
+> Hello Laurent,
+> answering here for both patches (1/2 and 2/2).
+> 
+> On Thu, Sep 01, 2022 at 09:07:49PM +0300, Laurent Pinchart wrote:
+> > On Thu, Sep 01, 2022 at 05:40:50PM +0200, Max Krummenacher wrote:
+> > > From: Max Krummenacher <max.krummenacher@toradex.com>
+> > > 
+> > > Add the hdmi connector present on the dsi to hdmi adapter now
+> > > required by the upstream lontium bridge driver.
+> > > The dsi to hdmi adapter is enabled in an device tree overlay.
+> > 
+> > Shouldn't the connector also be in the overlay ? There's certainly no
+> > physical HDMI connector on the i.MX8MP Verdin SoM :-)
+> 
+> Toradex DTS include and overlay files structure so far has been a little
+> bit different and not following the expectation you just stated here,
+> you can just check the current *toradex*dts* files and you'll see that there
+> is other stuff that is not strictly part of the module.
+> 
+> Copying from a previous email thread on a very similar discussion [0]
+> some of the reasons:
+> 
+>  - The SoM dtsi representing not only the functionality implemented into
+>    the SoM, but the whole connector pinout to the carrier makes very easy
+>    to just include a different som.dtsi in the carrier board dts and just
+>    switch SoM, for example from a colibri-imx6 to a colibri-imx7.
 
-diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index 39b367a14a8c..17c78051f3ea 100644
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -658,6 +658,9 @@ static int avic_unaccel_trap_write(struct kvm_vcpu *vcpu)
- 	case APIC_DFR:
- 		avic_handle_dfr_update(vcpu);
- 		break;
-+	case APIC_RRR:
-+		/* Ignore writes to Read Remote Data, it's read-only. */
-+		return 1;
- 	default:
- 		break;
- 	}
+That's fine, but I don't see how that's related to the issue at hand.
+The DSI to HDMI bridge wouldn't be present on either SoM, would it ?
+
+>  - We avoid code duplication
+> 
+> This is working for us pretty well so far and the majority of the users
+> of ours modules rely on this structure, we would prefer not to change that.
+
+It may work for your current use cases, but it doesn't make it right :-)
+Someone can integrate a Verdin SoM with a carrier board that has no DSI
+to HDMI (or LVDS) bridge, there should thus be no such device in the
+device tree. The SoM has DSI signals present on its connector, that's
+what the SoM .dtsi should expose.
+
+> [0] https://lore.kernel.org/all/20220413094449.GB118560@francesco-nb.int.toradex.com/
+
 -- 
-2.37.2.789.g6183377224-goog
+Regards,
 
+Laurent Pinchart
