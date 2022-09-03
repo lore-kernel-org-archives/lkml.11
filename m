@@ -2,202 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEFEDC38145
-	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 17:04:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65547C38145
+	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 17:14:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231414AbiICREa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 3 Sep 2022 13:04:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34956 "EHLO
+        id S231344AbiICROE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 3 Sep 2022 13:14:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230422AbiICRE1 (ORCPT
+        with ESMTP id S229525AbiICROD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 3 Sep 2022 13:04:27 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F176EB0;
-        Sat,  3 Sep 2022 10:04:25 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id bj12so9348414ejb.13;
-        Sat, 03 Sep 2022 10:04:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=yxIgBn6wmYWPsRLdC51HzjmvMPKahEKhVb6/Ezsf8mA=;
-        b=ijUqM1sW6mBfkE8312xgrAE9ovi6QTzYF9G5bRdlJopYfEEo8RczFkLnWsPzA+hCPu
-         DgtA9/7hQa1L2Ml01WIt5kue58GqgQL0NpEFJva2/+wTK8Ycv+nRh9DKIRINXFPHSMWC
-         qMAMVIobLM68kXcjbNITPradRcbZ8HX3rkzC84vZ7+j9zb9/N/N8BjhXnhHE5vPQVvxc
-         DGZEvXWEbp3mAriGUJLvgSvO36crwcPhWrT/JdORFhmGWdy/+/TmOrBztEZRL0NBIoxk
-         2dkfem6hMT6NYE/rObRHBRMknb1LxEAlvZNnH9Az3jNu/Sq7bdY4IrHuheF8KiQ5mUHo
-         cNHw==
+        Sat, 3 Sep 2022 13:14:03 -0400
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C418501AC;
+        Sat,  3 Sep 2022 10:14:01 -0700 (PDT)
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-3321c2a8d4cso40619077b3.5;
+        Sat, 03 Sep 2022 10:14:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=yxIgBn6wmYWPsRLdC51HzjmvMPKahEKhVb6/Ezsf8mA=;
-        b=zCuNg6unDJUfD0bGw2Oa1XM8fX7Ij76m4hN2ptlBnB9ZhTgy2UIrB4IqYD+N04fOwv
-         LJC7yQZ1huxphA43up2Rm4KSYuqvhEVoJg9Xn/Dq2YU2+amndVxyWiuOl6IjhXmQlXTg
-         sm8gq8dt3JyfWg0GGlEFWYUGzS5ZP/jkQ7VPGmLocEfNx1ARhzB2oNI8QdsgDFwZETVY
-         c7TmX5a9XOw++n3T3SV65twfXtK4NasbD1MGCRUYeSQc6CMyoAiC0YX75VmTlX83h1zd
-         l5q0FI6jlFSd0KyLA9YWjDg+S95MSthpBHSXOqayHvoiak0iffS20HTk6ddrL5BKykI4
-         urGg==
-X-Gm-Message-State: ACgBeo0pJeJwf/XlZSLStYawVGft0hPyNZbErAoy1YS04b6YStPtU6iV
-        3Nc6dzwQnc5rWAlPkZ65j3Q=
-X-Google-Smtp-Source: AA6agR6LpCThAlRPo/ggANiOJBQT8ScLgVqJIejA+pV0Wm8SSnWY7ZA/pyHOPnOS4TlJmbpeUnE+Zg==
-X-Received: by 2002:a17:907:2bc7:b0:73d:d239:110b with SMTP id gv7-20020a1709072bc700b0073dd239110bmr30616553ejc.752.1662224663681;
-        Sat, 03 Sep 2022 10:04:23 -0700 (PDT)
-Received: from [192.168.74.101] ([77.78.20.135])
-        by smtp.gmail.com with ESMTPSA id e23-20020a50a697000000b004481ee9b4besm3464223edc.63.2022.09.03.10.04.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 03 Sep 2022 10:04:23 -0700 (PDT)
-Message-ID: <488be3d3-d4c4-6200-be99-b85e6ac72c34@gmail.com>
-Date:   Sat, 3 Sep 2022 20:04:19 +0300
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=8zzwcN3reCOlxr74HOVFrchW1VwXKT0pt6RPeCCDNH4=;
+        b=DiPQnxQyPK0l8vzlDgohcHAMYZ8Ly820ckVFS8BdVQwHEiIBlD+sBmf2+nKV2X5PY+
+         uLae7P3MjZ8iPL7YhWBKC4dhzSeVNHdGlk/QUFVmE4ct07bJV1CLfKj6/V5jR81SkHwa
+         RyAJCArCjefsz6WX/Hgi20DdfM5tvw8BCc9nCnzMog4an3w6OWKCkgYJ7EeADS480Bax
+         isykjYta9l3X6ue7TCgGTK7EDHQi0QK/B9zFg6pUIOMoJ+ZABflM3XwH9vj0OXYWFhk4
+         RERr22dSNYdcLAz4fs3Yw97uGOsPxjavVGVNRJYJEVpmlZSSFBFqs65Q1odcuny6O3xb
+         SUDg==
+X-Gm-Message-State: ACgBeo3aceMhY9mfCb19Ui3StQ/f61DB1KajJ51W2N5B1I6gZ1Mzcnh9
+        wYrYjAF+bhmRmytN5OSbBjMCR89TWRHtE1ZuyaLDJmstjuE=
+X-Google-Smtp-Source: AA6agR6loWRtB+4rsoEM4nDrPJpWRuyhtYOpBDIF+t3PWHRc3nBT8u1tEHbtkkYVCieqJXFo/Q6e0Z9gwaSRE33i6q4=
+X-Received: by 2002:a0d:da83:0:b0:329:9c04:fe6d with SMTP id
+ c125-20020a0dda83000000b003299c04fe6dmr32426979ywe.196.1662225240717; Sat, 03
+ Sep 2022 10:14:00 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 09/14] arm64: dts: qcom: sm6115: Add UFS nodes
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-kernel@vger.kernel.org
-References: <20220901072414.1923075-1-iskren.chernev@gmail.com>
- <20220901072414.1923075-10-iskren.chernev@gmail.com>
- <a0204dc3-af13-6b0b-d779-0f207d1aff7e@linaro.org>
-From:   Iskren Chernev <iskren.chernev@gmail.com>
-In-Reply-To: <a0204dc3-af13-6b0b-d779-0f207d1aff7e@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220902233543.390890-1-helgaas@kernel.org> <20220902233543.390890-4-helgaas@kernel.org>
+ <02dd4594-8055-cf14-8c62-ae8080b1caca@linux.intel.com>
+In-Reply-To: <02dd4594-8055-cf14-8c62-ae8080b1caca@linux.intel.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Sat, 3 Sep 2022 19:13:49 +0200
+Message-ID: <CAJZ5v0iScCTtWMv2j=AuK4od0G-4aCJuYY=oWnfVVnAhe32QVg@mail.gmail.com>
+Subject: Re: [PATCH v2 3/3] PCI/PM: Always disable PTM for all devices during suspend
+To:     Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Rajvi Jingar <rajvi.jingar@linux.intel.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Koba Ko <koba.ko@canonical.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        "David E . Box" <david.e.box@linux.intel.com>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 9/1/22 19:13, Krzysztof Kozlowski wrote:
-> On 01/09/2022 10:24, Iskren Chernev wrote:
->> The SM6115 comes with UFS support, so add the related UFS and UFS PHY
->> nodes.
->>
->> Signed-off-by: Iskren Chernev <iskren.chernev@gmail.com>
->> ---
->>  arch/arm64/boot/dts/qcom/sm6115.dtsi | 70 ++++++++++++++++++++++++++++
->>  1 file changed, 70 insertions(+)
->>
->> diff --git a/arch/arm64/boot/dts/qcom/sm6115.dtsi b/arch/arm64/boot/dts/qcom/sm6115.dtsi
->> index cde963c56ac9..491fffff8aa1 100644
->> --- a/arch/arm64/boot/dts/qcom/sm6115.dtsi
->> +++ b/arch/arm64/boot/dts/qcom/sm6115.dtsi
->> @@ -620,6 +620,76 @@ opp-202000000 {
->>  			};
->>  		};
->>
->> +		ufs_mem_hc: ufshc@4804000 {
->> +			compatible = "qcom,sm6115-ufshc", "qcom,ufshc",
->> +				     "jedec,ufs-2.0";
->> +			reg = <0x4804000 0x3000>, <0x4810000 0x8000>;
->> +			reg-names = "std", "ice";
+On Sat, Sep 3, 2022 at 1:59 AM Sathyanarayanan Kuppuswamy
+<sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
 >
-> I could imagine that testing DTS against existing bindings might miss a
-> lot, because we have still a lot of errors. But at least I would expect
-> you test your DTS against your own bindings, which you submit here (and
-> previously).
 >
-> You just wrote that ice is not allowed.
-
-OK, I'm an idiot. I didn't run the bindings checks, not against existing
-bindings or my bindings or whatever. It's my fault.
-
-Ice should be allowed, I fixed the bindings in v2.
-
-For the record, running dtbs_checks is a PITA, not only because of the
-thousands of warnings in unrelated code, but because it takes forever.
-
-Maybe the docs should be updated with instructions on how to run it on a single
-(or a small subset) of DTBs. I had to comment out a lot of Makefile lines to
-focus it on mine. It would really help if the binding check works more like
-a compiler, not some magic spell hidden in a bunch of Makefiles.
-
-I'll list all remaining issues with description/explanation in v2. The fact
-that some bindings break on all DTBs present doesn't help either.
-
->> +			interrupts = <GIC_SPI 356 IRQ_TYPE_LEVEL_HIGH>;
->> +			phys = <&ufs_mem_phy_lanes>;
->> +			phy-names = "ufsphy";
->> +			lanes-per-direction = <1>;
->> +			#reset-cells = <1>;
->> +			resets = <&gcc GCC_UFS_PHY_BCR>;
->> +			reset-names = "rst";
->> +
->> +			power-domains = <&gcc GCC_UFS_PHY_GDSC>;
->> +			iommus = <&apps_smmu 0x100 0>;
->> +
->> +			clocks = <&gcc GCC_UFS_PHY_AXI_CLK>,
->> +				 <&gcc GCC_SYS_NOC_UFS_PHY_AXI_CLK>,
->> +				 <&gcc GCC_UFS_PHY_AHB_CLK>,
->> +				 <&gcc GCC_UFS_PHY_UNIPRO_CORE_CLK>,
->> +				 <&gcc GCC_UFS_PHY_ICE_CORE_CLK>,
->> +				 <&rpmcc RPM_SMD_XO_CLK_SRC>,
->> +				 <&gcc GCC_UFS_PHY_TX_SYMBOL_0_CLK>,
->> +				 <&gcc GCC_UFS_PHY_RX_SYMBOL_0_CLK>;
->> +			clock-names = "core_clk",
->> +				      "bus_aggr_clk",
->> +				      "iface_clk",
->> +				      "core_clk_unipro",
->> +				      "core_clk_ice",
->> +				      "ref_clk",
->> +				      "tx_lane0_sync_clk",
->> +				      "rx_lane0_sync_clk";
->> +
->> +			freq-table-hz = <50000000 200000000>,
->> +					<0 0>,
->> +					<0 0>,
->> +					<37500000 150000000>,
->> +					<75000000 300000000>,
->> +					<0 0>,
->> +					<0 0>,
->> +					<0 0>;
->> +
->> +			non-removable;
 >
-> Is it allowed property?
-
-I dropped it.
-
->> +			status = "disabled";
->> +		};
->> +
->> +		ufs_mem_phy: phy@4807000 {
->> +			compatible = "qcom,sm6115-qmp-ufs-phy";
->> +			reg = <0x4807000 0x1c4>;
->> +			#address-cells = <1>;
->> +			#size-cells = <1>;
->> +			ranges;
->> +
->> +			clocks = <&gcc GCC_UFS_CLKREF_CLK>,
->> +				 <&gcc GCC_UFS_PHY_PHY_AUX_CLK>;
->> +			clock-names = "ref", "ref_aux";
->> +
->> +			resets = <&ufs_mem_hc 0>;
->> +			reset-names = "ufsphy";
->> +			status = "disabled";
->> +
->> +			ufs_mem_phy_lanes: lanes@4807400 {
->> +				reg = <0x4807400 0x098>,
->> +				      <0x4807600 0x130>,
->> +				      <0x4807c00 0x16c>;
->> +				#phy-cells = <0>;
->> +			};
->> +		};
->> +
->> +
+> On 9/2/22 4:35 PM, Bjorn Helgaas wrote:
+> > From: Bjorn Helgaas <bhelgaas@google.com>
+> >
+> > We want to disable PTM on Root Ports because that allows some chips, e.g.,
+> > Intel mobile chips since Coffee Lake, to enter a lower-power PM state.
+> >
+> > That means we also have to disable PTM on downstream devices.  PCIe r6.0,
+> > sec 2.2.8, recommends that functions support generation of messages in
+> > non-D0 states, so we have to assume Switch Upstream Ports or Endpoints may
+> > send PTM Requests while in D1, D2, and D3hot.  A PTM message received by a
+> > Downstream Port (including a Root Port) with PTM disabled must be treated
+> > as an Unsupported Request (sec 6.21.3).
+> >
+> > PTM was previously disabled only for Root Ports, and it was disabled in
+> > pci_prepare_to_sleep(), which is not called at all if a driver supports
+> > legacy PM or does its own state saving.
+> >
+> > Instead, disable PTM early in pci_pm_suspend() and pci_pm_runtime_suspend()
+> > so we do it in all cases.
+> >
+> > Previously PTM was disabled *after* saving device state, so the state
+> > restore on resume automatically re-enabled it.  Since we now disable PTM
+> > *before* saving state, we must explicitly re-enable it.
+> >
+> > Here's a sample of errors that occur when PTM is disabled only on the Root
+> > Port.  With this topology:
+> >
+> >   0000:00:1d.0 Root Port            to [bus 08-71]
+> >   0000:08:00.0 Switch Upstream Port to [bus 09-71]
+> >
+> > Kai-Heng reported errors like this:
+> >
+> >   pcieport 0000:00:1d.0: AER: Uncorrected (Non-Fatal) error received: 0000:00:1d.0
+> >   pcieport 0000:00:1d.0: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Requester ID)
+> >   pcieport 0000:00:1d.0:   device [8086:7ab0] error status/mask=00100000/00004000
+> >   pcieport 0000:00:1d.0:    [20] UnsupReq               (First)
+> >   pcieport 0000:00:1d.0: AER:   TLP Header: 34000000 08000052 00000000 00000000
+> >
+> > Decoding TLP header 0x34...... (0011 0100b) and 0x08000052:
+> >
+> >   Fmt                         001b  4 DW header, no data
+> >   Type                     1 0100b  Msg (Local - Terminate at Receiver)
+> >   Requester ID  0x0800              Bus 08 Devfn 00.0
+> >   Message Code    0x52  0101 0010b  PTM Request
+> >
+> > The 00:1d.0 Root Port logged an Unsupported Request error when it received
+> > a PTM Request with Requester ID 08:00.0.
+> >
+> > Fixes: a697f072f5da ("PCI: Disable PTM during suspend to save power")
+> > Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=215453
+> > Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=216210
+> > Based-on: https://lore.kernel.org/r/20220706123244.18056-1-kai.heng.feng@canonical.com
+> > Based-on-patch-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> > Reported-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> > Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+> > ---
+> >  drivers/pci/pci-driver.c | 14 ++++++++++++++
+> >  drivers/pci/pci.c        | 20 --------------------
+> >  2 files changed, 14 insertions(+), 20 deletions(-)
+> >
+> > diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+> > index 2815922ac525..115febaa7e0b 100644
+> > --- a/drivers/pci/pci-driver.c
+> > +++ b/drivers/pci/pci-driver.c
+> > @@ -772,6 +772,12 @@ static int pci_pm_suspend(struct device *dev)
+> >       struct pci_dev *pci_dev = to_pci_dev(dev);
+> >       const struct dev_pm_ops *pm = dev->driver ? dev->driver->pm : NULL;
+> >
+> > +     /*
+> > +      * Disabling PTM allows some systems, e.g., Intel mobile chips
+> > +      * since Coffee Lake, to enter a lower-power PM state.
+> > +      */
+> > +     pci_disable_ptm(pci_dev);
 >
-> Just one blank line.
+> I think you can use "if (pci_dev->ptm_enabled)" check for pci_disable_ptm()
+> as well. This will avoid unnecessary checks in pci_disable_ptm().
+
+Or use that check in pci_disable_ptm() instead of the pci_is_pcie() one.
+
+Also, I would remae pci_disable_ptm() to pci_suspend_ptm() (because
+its role is to temporarily disable PTM for system-wide suspend) and
+introduc pci_resume_ptm() that will do
+
+if (pci_dev->ptm_enabled)
+        pci_enable_ptm(pci_dev, NULL);
+
+> > +
+> >       pci_dev->skip_bus_pm = false;
+> >
+> >       if (pci_has_legacy_pm_support(pci_dev))
+> > @@ -982,6 +988,9 @@ static int pci_pm_resume(struct device *dev)
+> >       if (pci_dev->state_saved)
+> >               pci_restore_standard_config(pci_dev);
+> >
+> > +     if (pci_dev->ptm_enabled)
+> > +             pci_enable_ptm(pci_dev, NULL);
+> > +
+> >       if (pci_has_legacy_pm_support(pci_dev))
+> >               return pci_legacy_resume(dev);
+> >
+> > @@ -1269,6 +1278,8 @@ static int pci_pm_runtime_suspend(struct device *dev)
+> >       pci_power_t prev = pci_dev->current_state;
+> >       int error;
+> >
+> > +     pci_disable_ptm(pci_dev);
+> > +
+> >       /*
+> >        * If pci_dev->driver is not set (unbound), we leave the device in D0,
+> >        * but it may go to D3cold when the bridge above it runtime suspends.
+> > @@ -1331,6 +1342,9 @@ static int pci_pm_runtime_resume(struct device *dev)
+> >        */
+> >       pci_pm_default_resume_early(pci_dev);
+> >
+> > +     if (pci_dev->ptm_enabled)
+> > +             pci_enable_ptm(pci_dev, NULL);
+> > +
+> >       if (!pci_dev->driver)
+> >               return 0;
+> >
+> > diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> > index 95bc329e74c0..b0e2968c8cca 100644
+> > --- a/drivers/pci/pci.c
+> > +++ b/drivers/pci/pci.c
+> > @@ -2706,16 +2706,6 @@ int pci_prepare_to_sleep(struct pci_dev *dev)
+> >       if (target_state == PCI_POWER_ERROR)
+> >               return -EIO;
+> >
+> > -     /*
+> > -      * There are systems (for example, Intel mobile chips since Coffee
+> > -      * Lake) where the power drawn while suspended can be significantly
+> > -      * reduced by disabling PTM on PCIe root ports as this allows the
+> > -      * port to enter a lower-power PM state and the SoC to reach a
+> > -      * lower-power idle state as a whole.
+> > -      */
+> > -     if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT)
+> > -             pci_disable_ptm(dev);
+> > -
+> >       pci_enable_wake(dev, target_state, wakeup);
+> >
+> >       error = pci_set_power_state(dev, target_state);
+> > @@ -2764,16 +2754,6 @@ int pci_finish_runtime_suspend(struct pci_dev *dev)
+> >       if (target_state == PCI_POWER_ERROR)
+> >               return -EIO;
+> >
+> > -     /*
+> > -      * There are systems (for example, Intel mobile chips since Coffee
+> > -      * Lake) where the power drawn while suspended can be significantly
+> > -      * reduced by disabling PTM on PCIe root ports as this allows the
+> > -      * port to enter a lower-power PM state and the SoC to reach a
+> > -      * lower-power idle state as a whole.
+> > -      */
+> > -     if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT)
+> > -             pci_disable_ptm(dev);
+> > -
+> >       __pci_enable_wake(dev, target_state, pci_dev_run_wake(dev));
+> >
+> >       error = pci_set_power_state(dev, target_state);
 >
-> Best regards,
-> Krzysztof
+> --
+> Sathyanarayanan Kuppuswamy
+> Linux Kernel Developer
