@@ -2,58 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7E89ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 00:25:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C1DAC38145
+	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 00:25:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232021AbiICAZF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 20:25:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54686 "EHLO
+        id S231905AbiICAZX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 20:25:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231695AbiICAXw (ORCPT
+        with ESMTP id S231879AbiICAY2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 20:23:52 -0400
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 309F710F0BB
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 17:23:32 -0700 (PDT)
-Received: by mail-pl1-x64a.google.com with SMTP id d6-20020a170902cec600b00174be1616c4so2116432plg.22
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 17:23:32 -0700 (PDT)
+        Fri, 2 Sep 2022 20:24:28 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 578D310F0A8
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 17:23:59 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id gg12-20020a17090b0a0c00b001fbc6ba91bbso1683452pjb.4
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 17:23:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:from:to:cc:subject:date;
-        bh=IBvO4qkKDFwYqm7S6fXdHOVkKag46t3/GGPLwUice6c=;
-        b=nIs4eo4iqErAuI6XAFNgX6K77AZBYZYcdGu5RBfi6rLgj8zJaVKBGiFUF4jy+f2znL
-         k+qC3Efd6cGYqYiNAJBp29RDUUSv2MhLCeTShr4/p8PfeNBoFjjm1pmgLwA7N9MnAr3z
-         qjFin8J5UL85YT7wnMqEQ+7lLJUPh2RbQka0MzvYphGjsD/IksqIhauUYX33X0QJRmi0
-         IGsDmQ7WWt9MjzqOY+Kej5U6HJ1a3rr93F0KVIHfiaR0OGq94W+RVMqdNdJtOTMqRc/M
-         UQpkYD+AfhWjSEyTBzdmd1UHeb0n2VLqGhCI0ia5FE6PIyWOr/KtgRP61b6mOmSw4yYk
-         hdQQ==
+        bh=yq8rKHnlAx/4DWABYX1mFX9uFU/+PCTlIPB312439UQ=;
+        b=TKFhg3LAJMrV16A/4dAGF27lXzJUSFetR+f3A80VfApjg2+P9tJXoDm6Z4U9IUeY30
+         8jYY5yBOQWSFVC4BZ8MG9yoVBTSaBi7zNiArYlzrQLsEVTNjAzJVGoZr1Jl4sRa/1U/9
+         +VTq3+oQ/it6ZH+V3BCoPWC+XRGMG2N7F7hTW+vz6yq0GaP5GcqC+Io0VDVELUt/ntC7
+         MFlXLZEQpFQuO1akDGR9LdSbdY/5kt4hqBh6wmak0PO0cNrqVz1wyIsuPlvI7rwQX8oF
+         KNf3vHYei0aZVGJgxZer2NGpWwoFt4lToHld1QfOSsl48RHmZpkn5Ho8BnKridvsT9d5
+         zxHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:x-gm-message-state:from:to:cc:subject:date;
-        bh=IBvO4qkKDFwYqm7S6fXdHOVkKag46t3/GGPLwUice6c=;
-        b=fuG08FjDQkK0omlWYr1tg73UKNtFsgN40o+6Xs2E9nNuf7YRemcS1H5Ds/ezHu93Cc
-         hW75DohjTZcNaJxVa74sv4Fr0uB+uo7lEqFysFFbkh75GcwXVMsfVjyVaBzxAJg8ESbz
-         N+/vHJGjqvU4fRXLzLw5jRAvX0kpfdwg8iRrosIr6E4MApGko2jAI8YbfECzFS8vppqO
-         lnxav58TDXKdu7wTzhklMN1Q2yjqU/hMKlaI48VOiBzquw9yQDUlNjzML2OSamvu162t
-         mBJk/lN1rR9hsLNlos0WA5Fk0V2q8H1iGG2QGG4pVdYCwmssatqbsVJoPqGKaubf4Kn4
-         CixQ==
-X-Gm-Message-State: ACgBeo1AJP5PR/8DPqpvHN5QacR8pJb25e2FhKJ3AkhRMT5oBoj5tshE
-        IJcvNEvWzgYLVkSfxaIdV0fNPYA61hk=
-X-Google-Smtp-Source: AA6agR5KdEl4pFQ/8xGmdvMSfiM+U4GcrEKxOndZDwfISDdUasj0qKYxoDZRKwWyveAWxdAekfFTP/avhg8=
+        bh=yq8rKHnlAx/4DWABYX1mFX9uFU/+PCTlIPB312439UQ=;
+        b=wuaiNFkBRyeYLaN8DId+CST/qaHbLDySE/05mW39KhCHqXNLtafNv41RcjTNg0lFyb
+         OwJkaJEiRmv5qJRMn24pj604Fu5eQ0GiUIqbYPq0ZUMVzKMkfOguI2wUsRast8yhRRjI
+         Dz2wFEz8jdFCO7cvAmW1YdJ0ViLvgD7KTGk2AAgcZ4ST1UPCsUYQJAYSNa51o8vQ8Jeb
+         BVR3u5HSOic19oUW4X9LIyj0WN0ZO1kf0bUZqyxvNSIetGMyVY/weMLko0wlSrb6ze+x
+         HwjafM/iZidgnvJORBqaLCWn3M3Z1H+zho6mEala/qFIaMMVy2dv7eUM8phSc7sqZVFI
+         V9oA==
+X-Gm-Message-State: ACgBeo3cDq5ASH3nxv5NNdwhJloGj4u6mWUQLXUr779mI1+OZkLDbObk
+        z4sZ/q2GYGN48lq83QFxMJLByUR4tOU=
+X-Google-Smtp-Source: AA6agR4Bc9TlcFnkBSJ7Ifwme04Amv5NR4xxJxrKUpqAqHbGDTd3OghEmb9cnpUzT3+MkQMR6v4nBPcxnmk=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a17:903:22c7:b0:175:3682:9cf5 with SMTP id
- y7-20020a17090322c700b0017536829cf5mr17164030plg.150.1662164611463; Fri, 02
- Sep 2022 17:23:31 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:150e:b0:537:e2f5:dc87 with SMTP id
+ q14-20020a056a00150e00b00537e2f5dc87mr34332719pfu.44.1662164617809; Fri, 02
+ Sep 2022 17:23:37 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Sat,  3 Sep 2022 00:22:50 +0000
+Date:   Sat,  3 Sep 2022 00:22:54 +0000
 In-Reply-To: <20220903002254.2411750-1-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220903002254.2411750-1-seanjc@google.com>
 X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
-Message-ID: <20220903002254.2411750-20-seanjc@google.com>
-Subject: [PATCH v2 19/23] KVM: SVM: Update svm->ldr_reg cache even if LDR is "bad"
+Message-ID: <20220903002254.2411750-24-seanjc@google.com>
+Subject: [PATCH v2 23/23] Revert "KVM: SVM: Do not throw warning when calling
+ avic_vcpu_load on a running vcpu"
 From:   Sean Christopherson <seanjc@google.com>
 To:     Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
@@ -66,72 +67,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update SVM's cache of the LDR even if the new value is "bad".  Leaving
-stale information in the cache can result in KVM missing updates and/or
-invalidating the wrong entry, e.g. if avic_invalidate_logical_id_entry()
-is triggered after a different vCPU has "claimed" the old LDR.
+Turns out that some warnings exist for good reasons.  Restore the warning
+in avic_vcpu_load() that guards against calling avic_vcpu_load() on a
+running vCPU now that KVM avoids doing so when switching between x2APIC
+and xAPIC.  The entire point of the WARN is to highlight that KVM should
+not be reloading an AVIC.
 
-Fixes: 18f40c53e10f ("svm: Add VMEXIT handlers for AVIC")
+Opportunistically convert the WARN_ON() to WARN_ON_ONCE() to avoid
+spamming the kernel if it does fire.
+
+This reverts commit c0caeee65af3944b7b8abbf566e7cc1fae15c775.
+
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/svm/avic.c | 17 +++++++----------
- 1 file changed, 7 insertions(+), 10 deletions(-)
+ arch/x86/kvm/svm/avic.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index 456f24378961..894d0afd761b 100644
+index 17c78051f3ea..a13279205df3 100644
 --- a/arch/x86/kvm/svm/avic.c
 +++ b/arch/x86/kvm/svm/avic.c
-@@ -566,23 +566,24 @@ static u32 *avic_get_logical_id_entry(struct kvm_vcpu *vcpu, u32 ldr, bool flat)
- 	return &logical_apic_id_table[index];
- }
+@@ -1064,6 +1064,7 @@ void avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
+ 		return;
  
--static int avic_ldr_write(struct kvm_vcpu *vcpu, u8 g_physical_id, u32 ldr)
-+static void avic_ldr_write(struct kvm_vcpu *vcpu, u8 g_physical_id, u32 ldr)
- {
- 	bool flat;
- 	u32 *entry, new_entry;
+ 	entry = READ_ONCE(*(svm->avic_physical_id_cache));
++	WARN_ON_ONCE(entry & AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK);
  
-+	if (!ldr)
-+		return;
-+
- 	flat = kvm_lapic_get_reg(vcpu->arch.apic, APIC_DFR) == APIC_DFR_FLAT;
- 	entry = avic_get_logical_id_entry(vcpu, ldr, flat);
- 	if (!entry)
--		return -EINVAL;
-+		return;
- 
- 	new_entry = READ_ONCE(*entry);
- 	new_entry &= ~AVIC_LOGICAL_ID_ENTRY_GUEST_PHYSICAL_ID_MASK;
- 	new_entry |= (g_physical_id & AVIC_LOGICAL_ID_ENTRY_GUEST_PHYSICAL_ID_MASK);
- 	new_entry |= AVIC_LOGICAL_ID_ENTRY_VALID_MASK;
- 	WRITE_ONCE(*entry, new_entry);
--
--	return 0;
- }
- 
- static void avic_invalidate_logical_id_entry(struct kvm_vcpu *vcpu)
-@@ -602,7 +603,6 @@ static void avic_invalidate_logical_id_entry(struct kvm_vcpu *vcpu)
- 
- static void avic_handle_ldr_update(struct kvm_vcpu *vcpu)
- {
--	int ret = 0;
- 	struct vcpu_svm *svm = to_svm(vcpu);
- 	u32 ldr = kvm_lapic_get_reg(vcpu->arch.apic, APIC_LDR);
- 	u32 id = kvm_xapic_id(vcpu->arch.apic);
-@@ -616,11 +616,8 @@ static void avic_handle_ldr_update(struct kvm_vcpu *vcpu)
- 
- 	avic_invalidate_logical_id_entry(vcpu);
- 
--	if (ldr)
--		ret = avic_ldr_write(vcpu, id, ldr);
--
--	if (!ret)
--		svm->ldr_reg = ldr;
-+	svm->ldr_reg = ldr;
-+	avic_ldr_write(vcpu, id, ldr);
- }
- 
- static void avic_handle_dfr_update(struct kvm_vcpu *vcpu)
+ 	entry &= ~AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK;
+ 	entry |= (h_physical_id & AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK);
 -- 
 2.37.2.789.g6183377224-goog
 
