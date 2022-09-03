@@ -2,185 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02594C6FA83
-	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 16:43:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96B32ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 16:53:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230160AbiICQm7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 3 Sep 2022 12:42:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37768 "EHLO
+        id S230422AbiICQxo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 3 Sep 2022 12:53:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229732AbiICQm5 (ORCPT
+        with ESMTP id S230031AbiICQxk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 3 Sep 2022 12:42:57 -0400
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE0BA58DCA
-        for <linux-kernel@vger.kernel.org>; Sat,  3 Sep 2022 09:42:55 -0700 (PDT)
-Received: by mail-yb1-xb34.google.com with SMTP id c9so7264540ybf.5
-        for <linux-kernel@vger.kernel.org>; Sat, 03 Sep 2022 09:42:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=MSlpVQM6LPBbdPdYsvwpuDS2GznLXHNkiHs1OXe0l/E=;
-        b=dgVVPwawmNQY+PcfCST6C1ozjH/moAM3P6JfJ/jE+ALX0LudC/lNAeRkNsr2LO8CFO
-         DBt+z1dIDeLtRE/RDA7tcnKvBVRBUdzGO/tR7jDlPmF6sgWzNQyuJzbKelfbfRZi77bT
-         mZ5E8L1UOwHO63q8zTa2fnjVDGjttQP5vNHlVfu6W8IP3ujb6RUJYhBs5wlhO4vOI3dN
-         dPD1bETDc9TYJWXFemlKftkTU+5AN3Bum/kCpuMTDU7rpyMsWN5jOybqE8vd72jAL52r
-         6GPy13kOx8ZRdI537AbEla6QMmWGSKAosS687pUj+3i6+NUMbV0qh2PnL6GD/BQ1TnIY
-         qTvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=MSlpVQM6LPBbdPdYsvwpuDS2GznLXHNkiHs1OXe0l/E=;
-        b=oUo3fJltl4SEkaw35lTxJrCYqhtiexoRfqkgwTx5bnufAMrVJa5zHKoJY9mtEPO33K
-         wCCcP2zs3P4nszOQgsPx99oUBE5i2KmI4mDYQIkhdx/Nfgu1KR8qmZoZuPT8wjjbX5+N
-         uCSIuhrcFYhMqEJ4DPfD9wjqyGLAPZkE9rnsN8vlvsAX/P7wOCwa6hhXRhaCoaF1oz9R
-         hIz65HVtBeE6+c/r+MTX+pkzMLtBHULcs74+TNP2wXgc7e0MP19zY0tjcDFUlvJvZMYE
-         tAINZ92ifJQaiFLeIL513HZvTfSYK78hEIhtxq0WC6vLUDmEwCXX5cSDzqqo3jDN+Y8r
-         9Ymw==
-X-Gm-Message-State: ACgBeo1/ayE/OMRwdKkbwrhGQ4v5K0qhgFAgveAaygTvMgbcKWO7+OBo
-        oJtc9YWssTYWC8mC9mzKADxpyjqdwakrLgf/nDccbg==
-X-Google-Smtp-Source: AA6agR6ah/QjgtNirwQaFdAVShtS797fncfIZTBqVfrd8xWghWo0iF9beuaHqowoqp8R3YGFBT+ALgMpA2CH8vPcicU=
-X-Received: by 2002:a25:84cd:0:b0:67a:699e:4e84 with SMTP id
- x13-20020a2584cd000000b0067a699e4e84mr26241370ybm.407.1662223374901; Sat, 03
- Sep 2022 09:42:54 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220831133758.3741187-1-leitao@debian.org>
-In-Reply-To: <20220831133758.3741187-1-leitao@debian.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Sat, 3 Sep 2022 09:42:43 -0700
-Message-ID: <CANn89iLe9spogp7eaXPziA0L-FqJ0w=6VxdWDL6NKGobTyuQRw@mail.gmail.com>
-Subject: Re: [PATCH RESEND net-next] tcp: socket-specific version of WARN_ON_ONCE()
-To:     Breno Leitao <leitao@debian.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, leit@fb.com,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+        Sat, 3 Sep 2022 12:53:40 -0400
+Received: from xry111.site (xry111.site [89.208.246.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA35B4B4BE
+        for <linux-kernel@vger.kernel.org>; Sat,  3 Sep 2022 09:53:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
+        s=default; t=1662224018;
+        bh=t52IjX6+hBLIxyQMJHaMiz0wEz1Uswpk4fyzMkyIEAw=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=JETq2/CbFjHgWSfUSgGE/9SA/kHRz+tdtSQ7zd+KIjqlcevtKyCZ7MBMrkaA9lU8o
+         GZ6z35DI4ESFeMUlcHz+BP5CyjEaXPhkhYt73hKKS+yJv7iywDVg+3A7BCQmohO11G
+         jafxS/mtZQmRXqoJrBVND2Kd1OM6o4P91jdJjBuE=
+Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature ECDSA (P-384) server-digest SHA384)
+        (Client did not present a certificate)
+        (Authenticated sender: xry111@xry111.site)
+        by xry111.site (Postfix) with ESMTPSA id DC7C366783;
+        Sat,  3 Sep 2022 12:53:36 -0400 (EDT)
+Message-ID: <0b2d115c42ff6cb9b8c65d852ec2f0746ca6e8d9.camel@xry111.site>
+Subject: Re: [PATCH 1/3] LoongArch: tools: Add relocs tool support
+From:   Xi Ruoyao <xry111@xry111.site>
+To:     Jinyang He <hejinyang@loongson.cn>,
+        Youling Tang <tangyouling@loongson.cn>,
+        Huacai Chen <chenhuacai@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
+        Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>
+Date:   Sun, 04 Sep 2022 00:53:34 +0800
+In-Reply-To: <fffdd2ac-4ba6-8eb3-f269-b22a3d9c32f6@loongson.cn>
+References: <1662113335-14282-1-git-send-email-tangyouling@loongson.cn>
+         <1662113335-14282-2-git-send-email-tangyouling@loongson.cn>
+         <c9880165f0355fc3be3ec23153b43ad33e558b5d.camel@xry111.site>
+         <4df8a26c49a35c1fce36d80c370f738fa71a2bef.camel@xry111.site>
+         <f0e77716-9533-724a-2ea9-86bc5b52066c@loongson.cn>
+         <78a4a6b0970c309daa336a2329e69d28df486552.camel@xry111.site>
+         <fffdd2ac-4ba6-8eb3-f269-b22a3d9c32f6@loongson.cn>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.45.2 
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 6:38 AM Breno Leitao <leitao@debian.org> wrote:
->
-> There are cases where we need information about the socket during a
-> warning, so, it could help us to find bugs that happens that do not have
-> a easily repro.
->
-> BPF congestion control algorithms can change socket state in unexpected
-> ways, leading to WARNings. Additional information about the socket state
-> is useful to identify the culprit.
+On Sun, 2022-09-04 at 00:23 +0800, Jinyang He wrote:
+> On 2022/9/3 18:49, Xi Ruoyao wrote:
+>=20
+> > On Sat, 2022-09-03 at 09:57 +0800, Youling Tang wrote:
+> > > > > Unlike (pre-r6) MIPS, LoongArch has a complete support for PIC, a=
+nd
+> > > > > currently LoongArch toolchain always produces PIC (except, if -Wa=
+,-mla-
+> > > > > {local,global}-with-abs or la.abs macros are used explicitly).
+> > > > >=20
+> > > > > So would it be easier to review and correct the uses of "la.abs" =
+in the
+> > > > > code, and make the main kernel image a real PIE?=C2=A0 Then we ca=
+n load it
+> > > > > everywhere w/o any need to do relocation at load time.
+> > > At the beginning I also wanted to make the main kernel image a real P=
+IE
+> > > and tried it, some of the "la.abs" can be modified, but I encountered
+> > > difficulties in modifying the=C2=A0 exception handling code part, the=
+ kernel
+> > > will not=C2=A0 boot after modification :(, I will continue to work ha=
+rd try.
 
-Well, this suggests we need to fix BPF side ?
+> > I just tried the same thing and get the same result :(.=C2=A0 Will spen=
+d
+> > several hours reading the LoongArch manual about exception...
 
-Not sure how this can happen, because TCP_BPF_IW has
+The reason is the handler code is not executed in linker address, but
+copied elsewhere.  Then PC-relative offset is broken.  I managed to work
+around it by creating a trampoline and jump into the handler, instead of
+copy the handler code.  Then I could remove most "la.abs" occurrence
+(except two in kernel entry point, which seem deliberately used):
 
-if (val <= 0 || tp->data_segs_out > tp->syn_data)
-     ret = -EINVAL;
-else
-    tcp_snd_cwnd_set(tp, val);
+- https://github.com/xry111/linux/commit/56a433f
+- https://github.com/xry111/linux/commit/48203e6
 
-It seems you already found the issue in an eBPF CC, can you share the details ?
+Using the trampoline in handler table will definitely lead to sub-
+optimal performance. I just use it as a proof-of-concept. Later we may
+use some assembler trick to generate hard-coded handler table with
+correct PC-relative offsets.
+
+> The following ideas are based on experience, without validation. Patches
+> show that three types of relocation are needed to be done.
+> 1, GOT is generated by toolchain, so=C2=A0 I think eliminating them by=
+=20
+> toolchain is better.
+
+https://gcc.gnu.org/pipermail/gcc-patches/2022-September/600797.html
+
+I stop to read the mail here because it's 00:52 AM now :).
+
+> 2, Ex_table is generated but striped relocation info. We can plays pcrel
+> way to resolve this problem. One of ways like follows, (pseudo-code)
+
+/* snip */
 
 
->
-> This diff creates a TCP socket-specific version of WARN_ON_ONCE(), and
-> attaches it to tcp_snd_cwnd_set().
-
-Well, I feel this will need constant additions... the state of a
-custom BPF CC is opaque to core TCP stack anyway ?
-
->
-> Signed-off-by: Breno Leitao <leitao@debian.org>
-> ---
->  include/net/tcp.h       |  3 ++-
->  include/net/tcp_debug.h | 10 ++++++++++
->  net/ipv4/tcp.c          | 30 ++++++++++++++++++++++++++++++
->  3 files changed, 42 insertions(+), 1 deletion(-)
->  create mode 100644 include/net/tcp_debug.h
->
-> diff --git a/include/net/tcp.h b/include/net/tcp.h
-> index d10962b9f0d0..73c3970d8839 100644
-> --- a/include/net/tcp.h
-> +++ b/include/net/tcp.h
-> @@ -40,6 +40,7 @@
->  #include <net/inet_ecn.h>
->  #include <net/dst.h>
->  #include <net/mptcp.h>
-> +#include <net/tcp_debug.h>
->
->  #include <linux/seq_file.h>
->  #include <linux/memcontrol.h>
-> @@ -1222,7 +1223,7 @@ static inline u32 tcp_snd_cwnd(const struct tcp_sock *tp)
->
->  static inline void tcp_snd_cwnd_set(struct tcp_sock *tp, u32 val)
->  {
-> -       WARN_ON_ONCE((int)val <= 0);
-> +       TCP_SOCK_WARN_ON_ONCE(tp, (int)val <= 0);
->         tp->snd_cwnd = val;
->  }
->
-> diff --git a/include/net/tcp_debug.h b/include/net/tcp_debug.h
-> new file mode 100644
-> index 000000000000..50e96d87d335
-> --- /dev/null
-> +++ b/include/net/tcp_debug.h
-> @@ -0,0 +1,10 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _LINUX_TCP_DEBUG_H
-> +#define _LINUX_TCP_DEBUG_H
-> +
-> +void tcp_sock_warn(const struct tcp_sock *tp);
-> +
-> +#define TCP_SOCK_WARN_ON_ONCE(tcp_sock, condition) \
-> +               DO_ONCE_LITE_IF(condition, tcp_sock_warn, tcp_sock)
-> +
-> +#endif  /* _LINUX_TCP_DEBUG_H */
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index bbe218753662..71771fee72f7 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -4684,6 +4684,36 @@ int tcp_abort(struct sock *sk, int err)
->  }
->  EXPORT_SYMBOL_GPL(tcp_abort);
->
-> +void tcp_sock_warn(const struct tcp_sock *tp)
-> +{
-> +       const struct sock *sk = (const struct sock *)tp;
-> +       struct inet_sock *inet = inet_sk(sk);
-> +       struct inet_connection_sock *icsk = inet_csk(sk);
-> +
-> +       WARN_ON(1);
-> +
-> +       if (!tp)
-> +               return;
-> +
-> +       pr_warn("Socket Info: family=%u state=%d sport=%u dport=%u ccname=%s cwnd=%u",
-> +               sk->sk_family, sk->sk_state, ntohs(inet->inet_sport),
-> +               ntohs(inet->inet_dport), icsk->icsk_ca_ops->name, tcp_snd_cwnd(tp));
-> +
-> +       switch (sk->sk_family) {
-> +       case AF_INET:
-> +               pr_warn("saddr=%pI4 daddr=%pI4", &inet->inet_saddr,
-> +                       &inet->inet_daddr);
-> +               break;
-> +#if IS_ENABLED(CONFIG_IPV6)
-> +       case AF_INET6:
-> +               pr_warn("saddr=%pI6 daddr=%pI6", &sk->sk_v6_rcv_saddr,
-> +                       &sk->sk_v6_daddr);
-> +               break;
-> +#endif
-> +       }
-> +}
-> +EXPORT_SYMBOL_GPL(tcp_sock_warn);
-> +
->  extern struct tcp_congestion_ops tcp_reno;
->
->  static __initdata unsigned long thash_entries;
-> --
-> 2.30.2
->
+--=20
+Xi Ruoyao <xry111@xry111.site>
+School of Aerospace Science and Technology, Xidian University
