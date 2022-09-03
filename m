@@ -2,365 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C73FFC54EE9
-	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 12:40:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1246AECAAD4
+	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 12:51:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230488AbiICMk4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 3 Sep 2022 08:40:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40704 "EHLO
+        id S230369AbiICMvi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 3 Sep 2022 08:51:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230428AbiICMkv (ORCPT
+        with ESMTP id S229626AbiICMvg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 3 Sep 2022 08:40:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B76172A253;
-        Sat,  3 Sep 2022 05:39:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BFF2D6147C;
-        Sat,  3 Sep 2022 12:39:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F1A3C433D6;
-        Sat,  3 Sep 2022 12:39:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662208789;
-        bh=0F0I2sqYEFYRNU2XAAmsZATQL/3mfPMgHTmULZG0OYc=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=jBe5Lf0FTb2EuhEluJ0Zo/l02nzIq6jNyXwDrcxUOd2DQMcIby8p1jpfrQGuM/EnX
-         ur5M7qVayz7lj4gS7D92d0y3kT+mlzfC364vxYRH2UhhLAhx+BGOzrigHAXQus+Sg9
-         1arjDOER2LY3CuaaZDUoclRP+Z+jBjwsSmDITJXMxxP60+/+bOjLvrBnowjroHJs2Q
-         EsRwaZjptwC8FUFxqE67cdN2VOBSDguGlQ5HFVuietHgolIsB10uSxZkc7Dqpt7UNO
-         b1lDm6Ckdz6WXUGacewKqtjRdpAgwHn5doc7gysV9W5T/LeMfl0eilslr/Qm1oh28r
-         mHiJRQacSBk2w==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id B2FBA5C0691; Sat,  3 Sep 2022 05:39:48 -0700 (PDT)
-Date:   Sat, 3 Sep 2022 05:39:48 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     kernel test robot <lkp@intel.com>
-Cc:     "Joel Fernandes (Google)" <joel@joelfernandes.org>,
-        rcu@vger.kernel.org, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, rushikesh.s.kadam@intel.com,
-        urezki@gmail.com, neeraj.iitr10@gmail.com, frederic@kernel.org,
-        rostedt@goodmis.org, vineeth@bitbyteword.org, boqun.feng@gmail.com
-Subject: Re: [PATCH v5 08/18] rcu: Add per-CB tracing for queuing, flush and
- invocation.
-Message-ID: <20220903123948.GP6159@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220901221720.1105021-9-joel@joelfernandes.org>
- <202209030052.20CJhjTX-lkp@intel.com>
+        Sat, 3 Sep 2022 08:51:36 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BFA1326C8
+        for <linux-kernel@vger.kernel.org>; Sat,  3 Sep 2022 05:51:33 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id h5so8672477ejb.3
+        for <linux-kernel@vger.kernel.org>; Sat, 03 Sep 2022 05:51:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=eJUE8vueEQi2OhFeNkiz80OzcqrMw11t867XDorKxv0=;
+        b=ujev9nfmVmJRkKfLJ1a2/bFhFj9xjDNMHRhZe0bqeFk21rubFtUk/pPtQCd7/5nQI3
+         zzM9kS7jpA6q6lPR/wAywsZ0xAT4IVI3gt8Rvt7PEheqawp8W9rPvc1JLW0Yg2r+La+W
+         jM5wssp6f3IIilsruwM/Zyy84ci/2uu3TfRa8RfkqSCrCoxwoijxD+z4GiiUe2zfpcCU
+         BZFNN86h99lPBeNikUrFXorCWjakH5tx9lLRCpFUZCTKpYj91qybAihEjTgsxBK9wb7w
+         064xZVVHVaNNaiPE2pLp4KYKZlEERfEzaULITGQByVsdDzgNpHMCO4/H1sCdWJ/TqF5a
+         TY5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=eJUE8vueEQi2OhFeNkiz80OzcqrMw11t867XDorKxv0=;
+        b=KfMURqnbGuvFF8qohahQHhr9KGArpxOEF+0Bu7KkgGIRqwncLwMPnkhjRxNtSzVHMt
+         Ea8ivrsp9kNqEcBtABHVqvf8aKiYVOrNl6EDA91WJRQKARsd6VBwtznON+iwA3Ybwn0G
+         jQINfAJA4bzqNG5umEeYkTXbYakaPiFo6sTWCUypUGWWZNlVFMo5oxrGQGL1Sgk3CBbI
+         05FMZuITUGgQTkpGVVDiaXav4S9+XYJBaJxpuoC7dE6pENSXHhZUJrm425qQt6AZ+tas
+         IXJk3qxpo9XxYG2jAIn/41vuLSdBaIhLL0NpExB7ZpDSjw+7D2FR/MSns5IPkYVnD6aQ
+         7ATw==
+X-Gm-Message-State: ACgBeo05ZDRtLf8OO3OEiCg9zVUhG14FT00Ailo4bl+Yk/NK5ymemQ1y
+        A/6Q0JrqgyGHmLSPZXg2gL7dPVWIf7q9SHPcAnyvjw==
+X-Google-Smtp-Source: AA6agR61gtKPi6mnWauptBbFoGVShAZvKDU0puKpNic5/NRQ8bUTdqoVfwbWCmH49rTkRqRoksPlqF+5hSEiWKHZQog=
+X-Received: by 2002:a17:907:3188:b0:741:4bf7:ec1a with SMTP id
+ xe8-20020a170907318800b007414bf7ec1amr24090392ejb.448.1662209491887; Sat, 03
+ Sep 2022 05:51:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202209030052.20CJhjTX-lkp@intel.com>
+References: <20220902121400.219861128@linuxfoundation.org>
+In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Sat, 3 Sep 2022 18:21:20 +0530
+Message-ID: <CA+G9fYtiKCOZSrR+KFNGQ5n6P8jkwVhbd79Loxz2Vc9nkFWQ+Q@mail.gmail.com>
+Subject: Re: [PATCH 4.19 00/56] 4.19.257-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Sep 03, 2022 at 12:48:28AM +0800, kernel test robot wrote:
-> Hi "Joel,
-> 
-> Thank you for the patch! Yet something to improve:
-> 
-> [auto build test ERROR on paulmck-rcu/dev]
-> [also build test ERROR on pcmoore-selinux/next drm-intel/for-linux-next linus/master v6.0-rc3]
-> [cannot apply to vbabka-slab/for-next rostedt-trace/for-next tip/timers/core next-20220901]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch#_base_tree_information]
-> 
-> url:    https://github.com/intel-lab-lkp/linux/commits/Joel-Fernandes-Google/Implement-call_rcu_lazy-and-miscellaneous-fixes/20220902-062156
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev
-> config: mips-allyesconfig (https://download.01.org/0day-ci/archive/20220903/202209030052.20CJhjTX-lkp@intel.com/config)
-> compiler: mips-linux-gcc (GCC) 12.1.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://github.com/intel-lab-lkp/linux/commit/c0f09b1d42d06649680f74a78ca363e7f1c158b2
->         git remote add linux-review https://github.com/intel-lab-lkp/linux
->         git fetch --no-tags linux-review Joel-Fernandes-Google/Implement-call_rcu_lazy-and-miscellaneous-fixes/20220902-062156
->         git checkout c0f09b1d42d06649680f74a78ca363e7f1c158b2
->         # save the config file
->         mkdir build_dir && cp config build_dir/.config
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash
-> 
-> If you fix the issue, kindly add following tag where applicable
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All errors (new ones prefixed by >>):
-> 
->    In file included from <command-line>:
->    In function 'dst_hold',
->        inlined from 'dst_clone' at include/net/dst.h:251:3,
->        inlined from '__skb_dst_copy' at include/net/dst.h:284:3,
->        inlined from 'ovs_vport_output' at net/openvswitch/actions.c:787:2:
-> >> include/linux/compiler_types.h:354:45: error: call to '__compiletime_assert_490' declared with attribute error: BUILD_BUG_ON failed: offsetof(struct dst_entry, __refcnt) & 63
->      354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->          |                                             ^
->    include/linux/compiler_types.h:335:25: note: in definition of macro '__compiletime_assert'
->      335 |                         prefix ## suffix();                             \
->          |                         ^~~~~~
->    include/linux/compiler_types.h:354:9: note: in expansion of macro '_compiletime_assert'
->      354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->          |         ^~~~~~~~~~~~~~~~~~~
->    include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
->       39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
->          |                                     ^~~~~~~~~~~~~~~~~~
->    include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
->       50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
->          |         ^~~~~~~~~~~~~~~~
->    include/net/dst.h:230:9: note: in expansion of macro 'BUILD_BUG_ON'
->      230 |         BUILD_BUG_ON(offsetof(struct dst_entry, __refcnt) & 63);
->          |         ^~~~~~~~~~~~
+On Fri, 2 Sept 2022 at 17:55, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 4.19.257 release.
+> There are 56 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Sun, 04 Sep 2022 12:13:47 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.257-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-This looks like fallout from the rcu_head structure changing size,
-given that __refcnt comes after rcu_head on 32-bit systems.
+Results from Linaro's test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-It looks like the per-CB tracing code needs to be kept on the side for
-the time being rather than being sent to -next (let alone mainline).
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-Any reason I cannot just move this one to the end of the stack, after
-"fork: Move thread_stack_free_rcu() to call_rcu_lazy()"?
+## Build
+* kernel: 4.19.257-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-4.19.y
+* git commit: 56ebf961480f5507db5b5ff29f49ab7c03b05a24
+* git describe: v4.19.256-57-g56ebf961480f
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.19.y/build/v4.19.256-57-g56ebf961480f
 
-							Thanx, Paul
+## No test Regressions (compared to v4.19.256)
 
->    In function 'dst_hold',
->        inlined from 'execute_set_action' at net/openvswitch/actions.c:1093:3,
->        inlined from 'do_execute_actions' at net/openvswitch/actions.c:1377:10:
-> >> include/linux/compiler_types.h:354:45: error: call to '__compiletime_assert_490' declared with attribute error: BUILD_BUG_ON failed: offsetof(struct dst_entry, __refcnt) & 63
->      354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->          |                                             ^
->    include/linux/compiler_types.h:335:25: note: in definition of macro '__compiletime_assert'
->      335 |                         prefix ## suffix();                             \
->          |                         ^~~~~~
->    include/linux/compiler_types.h:354:9: note: in expansion of macro '_compiletime_assert'
->      354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->          |         ^~~~~~~~~~~~~~~~~~~
->    include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
->       39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
->          |                                     ^~~~~~~~~~~~~~~~~~
->    include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
->       50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
->          |         ^~~~~~~~~~~~~~~~
->    include/net/dst.h:230:9: note: in expansion of macro 'BUILD_BUG_ON'
->      230 |         BUILD_BUG_ON(offsetof(struct dst_entry, __refcnt) & 63);
->          |         ^~~~~~~~~~~~
-> --
->    In file included from <command-line>:
->    In function 'dst_hold',
->        inlined from 'dst_hold_and_use' at include/net/dst.h:244:2,
->        inlined from 'dn_insert_route.constprop.isra' at net/decnet/dn_route.c:334:4:
-> >> include/linux/compiler_types.h:354:45: error: call to '__compiletime_assert_490' declared with attribute error: BUILD_BUG_ON failed: offsetof(struct dst_entry, __refcnt) & 63
->      354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->          |                                             ^
->    include/linux/compiler_types.h:335:25: note: in definition of macro '__compiletime_assert'
->      335 |                         prefix ## suffix();                             \
->          |                         ^~~~~~
->    include/linux/compiler_types.h:354:9: note: in expansion of macro '_compiletime_assert'
->      354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->          |         ^~~~~~~~~~~~~~~~~~~
->    include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
->       39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
->          |                                     ^~~~~~~~~~~~~~~~~~
->    include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
->       50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
->          |         ^~~~~~~~~~~~~~~~
->    include/net/dst.h:230:9: note: in expansion of macro 'BUILD_BUG_ON'
->      230 |         BUILD_BUG_ON(offsetof(struct dst_entry, __refcnt) & 63);
->          |         ^~~~~~~~~~~~
->    In function 'dst_hold',
->        inlined from 'dst_hold_and_use' at include/net/dst.h:244:2,
->        inlined from 'dn_insert_route.constprop.isra' at net/decnet/dn_route.c:347:2:
-> >> include/linux/compiler_types.h:354:45: error: call to '__compiletime_assert_490' declared with attribute error: BUILD_BUG_ON failed: offsetof(struct dst_entry, __refcnt) & 63
->      354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->          |                                             ^
->    include/linux/compiler_types.h:335:25: note: in definition of macro '__compiletime_assert'
->      335 |                         prefix ## suffix();                             \
->          |                         ^~~~~~
->    include/linux/compiler_types.h:354:9: note: in expansion of macro '_compiletime_assert'
->      354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->          |         ^~~~~~~~~~~~~~~~~~~
->    include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
->       39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
->          |                                     ^~~~~~~~~~~~~~~~~~
->    include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
->       50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
->          |         ^~~~~~~~~~~~~~~~
->    include/net/dst.h:230:9: note: in expansion of macro 'BUILD_BUG_ON'
->      230 |         BUILD_BUG_ON(offsetof(struct dst_entry, __refcnt) & 63);
->          |         ^~~~~~~~~~~~
->    In function 'dst_hold',
->        inlined from 'dst_hold_and_use' at include/net/dst.h:244:2,
->        inlined from 'dn_route_input' at net/decnet/dn_route.c:1535:4:
-> >> include/linux/compiler_types.h:354:45: error: call to '__compiletime_assert_490' declared with attribute error: BUILD_BUG_ON failed: offsetof(struct dst_entry, __refcnt) & 63
->      354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->          |                                             ^
->    include/linux/compiler_types.h:335:25: note: in definition of macro '__compiletime_assert'
->      335 |                         prefix ## suffix();                             \
->          |                         ^~~~~~
->    include/linux/compiler_types.h:354:9: note: in expansion of macro '_compiletime_assert'
->      354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->          |         ^~~~~~~~~~~~~~~~~~~
->    include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
->       39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
->          |                                     ^~~~~~~~~~~~~~~~~~
->    include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
->       50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
->          |         ^~~~~~~~~~~~~~~~
->    include/net/dst.h:230:9: note: in expansion of macro 'BUILD_BUG_ON'
->      230 |         BUILD_BUG_ON(offsetof(struct dst_entry, __refcnt) & 63);
->          |         ^~~~~~~~~~~~
->    In function 'dst_hold',
->        inlined from 'dst_hold_and_use' at include/net/dst.h:244:2,
->        inlined from '__dn_route_output_key.isra' at net/decnet/dn_route.c:1257:5:
-> >> include/linux/compiler_types.h:354:45: error: call to '__compiletime_assert_490' declared with attribute error: BUILD_BUG_ON failed: offsetof(struct dst_entry, __refcnt) & 63
->      354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->          |                                             ^
->    include/linux/compiler_types.h:335:25: note: in definition of macro '__compiletime_assert'
->      335 |                         prefix ## suffix();                             \
->          |                         ^~~~~~
->    include/linux/compiler_types.h:354:9: note: in expansion of macro '_compiletime_assert'
->      354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->          |         ^~~~~~~~~~~~~~~~~~~
->    include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
->       39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
->          |                                     ^~~~~~~~~~~~~~~~~~
->    include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
->       50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
->          |         ^~~~~~~~~~~~~~~~
->    include/net/dst.h:230:9: note: in expansion of macro 'BUILD_BUG_ON'
->      230 |         BUILD_BUG_ON(offsetof(struct dst_entry, __refcnt) & 63);
->          |         ^~~~~~~~~~~~
->    In function 'dst_hold',
->        inlined from 'dst_clone' at include/net/dst.h:251:3,
->        inlined from 'dn_cache_dump' at net/decnet/dn_route.c:1752:4:
-> >> include/linux/compiler_types.h:354:45: error: call to '__compiletime_assert_490' declared with attribute error: BUILD_BUG_ON failed: offsetof(struct dst_entry, __refcnt) & 63
->      354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->          |                                             ^
->    include/linux/compiler_types.h:335:25: note: in definition of macro '__compiletime_assert'
->      335 |                         prefix ## suffix();                             \
->          |                         ^~~~~~
->    include/linux/compiler_types.h:354:9: note: in expansion of macro '_compiletime_assert'
->      354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->          |         ^~~~~~~~~~~~~~~~~~~
->    include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
->       39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
->          |                                     ^~~~~~~~~~~~~~~~~~
->    include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
->       50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
->          |         ^~~~~~~~~~~~~~~~
->    include/net/dst.h:230:9: note: in expansion of macro 'BUILD_BUG_ON'
->      230 |         BUILD_BUG_ON(offsetof(struct dst_entry, __refcnt) & 63);
->          |         ^~~~~~~~~~~~
-> --
->    In file included from <command-line>:
->    In function 'dst_hold',
->        inlined from 'dst_clone' at include/net/dst.h:251:3,
->        inlined from 'ip6_copy_metadata' at net/ipv6/ip6_output.c:654:2:
-> >> include/linux/compiler_types.h:354:45: error: call to '__compiletime_assert_490' declared with attribute error: BUILD_BUG_ON failed: offsetof(struct dst_entry, __refcnt) & 63
->      354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->          |                                             ^
->    include/linux/compiler_types.h:335:25: note: in definition of macro '__compiletime_assert'
->      335 |                         prefix ## suffix();                             \
->          |                         ^~~~~~
->    include/linux/compiler_types.h:354:9: note: in expansion of macro '_compiletime_assert'
->      354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->          |         ^~~~~~~~~~~~~~~~~~~
->    include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
->       39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
->          |                                     ^~~~~~~~~~~~~~~~~~
->    include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
->       50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
->          |         ^~~~~~~~~~~~~~~~
->    include/net/dst.h:230:9: note: in expansion of macro 'BUILD_BUG_ON'
->      230 |         BUILD_BUG_ON(offsetof(struct dst_entry, __refcnt) & 63);
->          |         ^~~~~~~~~~~~
->    In function 'dst_hold',
->        inlined from 'ip6_append_data' at net/ipv6/ip6_output.c:1838:3:
-> >> include/linux/compiler_types.h:354:45: error: call to '__compiletime_assert_490' declared with attribute error: BUILD_BUG_ON failed: offsetof(struct dst_entry, __refcnt) & 63
->      354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->          |                                             ^
->    include/linux/compiler_types.h:335:25: note: in definition of macro '__compiletime_assert'
->      335 |                         prefix ## suffix();                             \
->          |                         ^~~~~~
->    include/linux/compiler_types.h:354:9: note: in expansion of macro '_compiletime_assert'
->      354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->          |         ^~~~~~~~~~~~~~~~~~~
->    include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
->       39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
->          |                                     ^~~~~~~~~~~~~~~~~~
->    include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
->       50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
->          |         ^~~~~~~~~~~~~~~~
->    include/net/dst.h:230:9: note: in expansion of macro 'BUILD_BUG_ON'
->      230 |         BUILD_BUG_ON(offsetof(struct dst_entry, __refcnt) & 63);
->          |         ^~~~~~~~~~~~
->    In function 'dst_hold',
->        inlined from 'dst_clone' at include/net/dst.h:251:3,
->        inlined from 'ip6_sk_dst_lookup_flow' at net/ipv6/ip6_output.c:1262:3:
-> >> include/linux/compiler_types.h:354:45: error: call to '__compiletime_assert_490' declared with attribute error: BUILD_BUG_ON failed: offsetof(struct dst_entry, __refcnt) & 63
->      354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->          |                                             ^
->    include/linux/compiler_types.h:335:25: note: in definition of macro '__compiletime_assert'
->      335 |                         prefix ## suffix();                             \
->          |                         ^~~~~~
->    include/linux/compiler_types.h:354:9: note: in expansion of macro '_compiletime_assert'
->      354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->          |         ^~~~~~~~~~~~~~~~~~~
->    include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
->       39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
->          |                                     ^~~~~~~~~~~~~~~~~~
->    include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
->       50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
->          |         ^~~~~~~~~~~~~~~~
->    include/net/dst.h:230:9: note: in expansion of macro 'BUILD_BUG_ON'
->      230 |         BUILD_BUG_ON(offsetof(struct dst_entry, __refcnt) & 63);
->          |         ^~~~~~~~~~~~
-> --
->    In file included from <command-line>:
->    In function 'dst_hold',
->        inlined from 'dst_clone' at include/net/dst.h:251:3,
->        inlined from '__skb_dst_copy' at include/net/dst.h:284:3,
->        inlined from 'skb_dst_copy' at include/net/dst.h:289:2,
->        inlined from 'ip6_list_rcv_finish.constprop' at net/ipv6/ip6_input.c:128:4:
-> >> include/linux/compiler_types.h:354:45: error: call to '__compiletime_assert_490' declared with attribute error: BUILD_BUG_ON failed: offsetof(struct dst_entry, __refcnt) & 63
->      354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->          |                                             ^
->    include/linux/compiler_types.h:335:25: note: in definition of macro '__compiletime_assert'
->      335 |                         prefix ## suffix();                             \
->          |                         ^~~~~~
->    include/linux/compiler_types.h:354:9: note: in expansion of macro '_compiletime_assert'
->      354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->          |         ^~~~~~~~~~~~~~~~~~~
->    include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
->       39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
->          |                                     ^~~~~~~~~~~~~~~~~~
->    include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
->       50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
->          |         ^~~~~~~~~~~~~~~~
->    include/net/dst.h:230:9: note: in expansion of macro 'BUILD_BUG_ON'
->      230 |         BUILD_BUG_ON(offsetof(struct dst_entry, __refcnt) & 63);
->          |         ^~~~~~~~~~~~
-> 
-> 
-> vim +/__compiletime_assert_490 +354 include/linux/compiler_types.h
-> 
-> eb5c2d4b45e3d2 Will Deacon 2020-07-21  340  
-> eb5c2d4b45e3d2 Will Deacon 2020-07-21  341  #define _compiletime_assert(condition, msg, prefix, suffix) \
-> eb5c2d4b45e3d2 Will Deacon 2020-07-21  342  	__compiletime_assert(condition, msg, prefix, suffix)
-> eb5c2d4b45e3d2 Will Deacon 2020-07-21  343  
-> eb5c2d4b45e3d2 Will Deacon 2020-07-21  344  /**
-> eb5c2d4b45e3d2 Will Deacon 2020-07-21  345   * compiletime_assert - break build and emit msg if condition is false
-> eb5c2d4b45e3d2 Will Deacon 2020-07-21  346   * @condition: a compile-time constant condition to check
-> eb5c2d4b45e3d2 Will Deacon 2020-07-21  347   * @msg:       a message to emit if condition is false
-> eb5c2d4b45e3d2 Will Deacon 2020-07-21  348   *
-> eb5c2d4b45e3d2 Will Deacon 2020-07-21  349   * In tradition of POSIX assert, this macro will break the build if the
-> eb5c2d4b45e3d2 Will Deacon 2020-07-21  350   * supplied condition is *false*, emitting the supplied error message if the
-> eb5c2d4b45e3d2 Will Deacon 2020-07-21  351   * compiler has support to do so.
-> eb5c2d4b45e3d2 Will Deacon 2020-07-21  352   */
-> eb5c2d4b45e3d2 Will Deacon 2020-07-21  353  #define compiletime_assert(condition, msg) \
-> eb5c2d4b45e3d2 Will Deacon 2020-07-21 @354  	_compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-> eb5c2d4b45e3d2 Will Deacon 2020-07-21  355  
-> 
-> -- 
-> 0-DAY CI Kernel Test Service
-> https://01.org/lkp
+## No metric Regressions (compared to v4.19.256)
+
+## No test Fixes (compared to v4.19.256)
+
+## No metric Fixes (compared to v4.19.256)
+
+## Test result summary
+total: 84836, pass: 74060, fail: 668, skip: 9690, xfail: 418
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 291 total, 286 passed, 5 failed
+* arm64: 58 total, 57 passed, 1 failed
+* i386: 26 total, 25 passed, 1 failed
+* mips: 35 total, 35 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 54 total, 54 passed, 0 failed
+* s390: 12 total, 12 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x86_64: 52 total, 51 passed, 1 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kunit
+* kvm-unit-tests
+* libhugetlbfs
+* log-parser-boot
+* log-parser-test
+* ltp-cap_bounds
+* ltp-commands
+* ltp-containers
+* ltp-controllers
+* ltp-cpuhotplug
+* ltp-crypto
+* ltp-cve
+* ltp-dio
+* ltp-fcntl-locktests
+* ltp-filecaps
+* ltp-fs
+* ltp-fs_bind
+* ltp-fs_perms_simple
+* ltp-fsx
+* ltp-hugetlb
+* ltp-io
+* ltp-ipc
+* ltp-math
+* ltp-mm
+* ltp-nptl
+* ltp-open-posix-tests
+* ltp-pty
+* ltp-sched
+* ltp-securebits
+* ltp-syscalls
+* ltp-tracing
+* network-basic-tests
+* packetdrill
+* rcutorture
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
