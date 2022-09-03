@@ -2,136 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E90A9C38145
-	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 12:56:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E143AC54EE9
+	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 13:09:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230417AbiICM4k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 3 Sep 2022 08:56:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32816 "EHLO
+        id S230130AbiICNJP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 3 Sep 2022 09:09:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229594AbiICM4i (ORCPT
+        with ESMTP id S229463AbiICNJN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 3 Sep 2022 08:56:38 -0400
-X-Greylist: delayed 528 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 03 Sep 2022 05:56:35 PDT
-Received: from smtp-out-12.comm2000.it (smtp-out-12.comm2000.it [212.97.32.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EBBD5A2F8;
-        Sat,  3 Sep 2022 05:56:35 -0700 (PDT)
-Received: from gaggiata.pivistrello.it (93-49-2-63.ip317.fastwebnet.it [93.49.2.63])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: francesco@dolcini.it)
-        by smtp-out-12.comm2000.it (Postfix) with ESMTPSA id 01C3CBA25E1;
-        Sat,  3 Sep 2022 14:47:43 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailserver.it;
-        s=mailsrv; t=1662209265;
-        bh=APUy4pD+abROss/4Re7mQqViE2HTRzQPVmnnE6kjZ7w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=qAyKS4uTdZHH0KoCYpGDdd4ujyrOc0PXH4vyAhtAvk5fMvPB6kAYMT/kZlDGr/WPW
-         +9q0bRUC4xnlNoYtewDJImT89MPIoKEGqHVV89EE2oEMKzPIoxpkTF2PXe3PDH3owh
-         kgKWD/80rqF8uzbC4ssFD/jyog86hmjiDzZygs9l71Ts4psDXwOOhac9s1dfrOhYIw
-         2q88JSk297b5MspQQ5LW3zgxMTJRPksRDyT3qe71c4Ons8F4ewjk6XjmIa7rbbRW5B
-         5OVteA2sqpcKb8zhBkvIqK16dhvhI3aYeG3HKjWHMpkESK9t2YwWz2LkBEBVS7Bs75
-         mTWEnQu1JeKag==
-Received: from livingston (unknown [192.168.42.11])
-        by gaggiata.pivistrello.it (Postfix) with ESMTP id B7C277F910;
-        Sat,  3 Sep 2022 14:47:43 +0200 (CEST)
-Received: from pivi by livingston with local (Exim 4.94.2)
-        (envelope-from <francesco@dolcini.it>)
-        id 1oUSYp-0001Tn-6F; Sat, 03 Sep 2022 14:47:43 +0200
-Date:   Sat, 3 Sep 2022 14:47:43 +0200
-From:   Francesco Dolcini <francesco@dolcini.it>
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc:     Francesco Dolcini <francesco.dolcini@toradex.com>,
-        Max Krummenacher <max.oss.09@gmail.com>,
-        Max Krummenacher <max.krummenacher@toradex.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] arm64: dts: imx8mp-verdin: add dsi to hdmi
- functionality
-Message-ID: <YxNM75ZtHVKDjTa/@livingston.pivistrello.it>
-References: <20220901154051.1885509-1-max.oss.09@gmail.com>
- <YxD09SqpcbB3dt8I@pendragon.ideasonboard.com>
- <20220902155720.GB5699@francesco-nb.int.toradex.com>
- <YxKe00H2S9AzF0Yi@pendragon.ideasonboard.com>
+        Sat, 3 Sep 2022 09:09:13 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2126.outbound.protection.outlook.com [40.107.94.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 429785AA29
+        for <linux-kernel@vger.kernel.org>; Sat,  3 Sep 2022 06:09:10 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BxxY4BcgWsuvGdNYUUmm7HabUkriuyge6giRTWXrudAn2D/0R4j4oCoXUEtcglRKU7thVWciszyl/rxQZ6tJoeNE7W1M8+RZ3n7XzaRvrX0evgklSUkFsEdArbdRge9nfBy5QiGdw4U9e7JRKY0VItHrkicLkvP3sbfABTYO1HXGT3G+Q0FDb5AWaLtDM2GXiFPfEpIDx2STjuFNbu4/1JIA2wz66uuXDbSnjrTlSBho/U4PxK+z3/fq+QC2cSuS2KiYfWZQukVtavmghYbEq8NGFkD8YmjtR6Q0fR0Bi+LcmtHVHMwy5yOQQ6Q84AIMsTnY4uic7vpn3UveM9XHjQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=c2UaCSavDG62F08hDCwHmoO+mWP1oqYWzJVTbj+2l7I=;
+ b=IcakWxXbj//pcTPP0gzyKTPdPKpekhfomTtFD1xHbsQa3dzcVll5WObO/zDLq3yp62jU1er+Kr256Ub64hpQ3h+cVCFFfPzr3SH4AZlXKybJ9wDLPFNfM2UZco8ef5obuwL5fidc06vRPWcJaPPGj1wiNNyhwplHj74sUwE/QYMJM7LRDL369vebdf8F6hE5HntHWOz+NWSNegSliNyP0VMaxTi/B/+6ot9Hbm/bSVCTurBJTAKB/SGSqL29gC/uXK9m0zrpEUDpAzVTuwWAWpftVUUwEXWOetfczmp7YUYKltcTOCNRc8O3zTSAByxwao0ZAP9XkKraguXLYO/TDw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=analogixsemi.com; dmarc=pass action=none
+ header.from=analogixsemi.com; dkim=pass header.d=analogixsemi.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=Analogixsemi.onmicrosoft.com; s=selector2-Analogixsemi-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=c2UaCSavDG62F08hDCwHmoO+mWP1oqYWzJVTbj+2l7I=;
+ b=gKT8VehpCZofl9mam3zAb3UGRMYgm3MjlajaOvwijTjyCB6e+SZAGDeHBnaBOlE2dSV1CzG3bD9Gby22PRO2WEg2CeN9Af9lbfdnW3mXeFwSTHQT6cPWLjFZhlY2a0WRopK0D6B/S9YBJAgZggKJzQvnLof+Lleq+LhbqOKHrns=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=analogixsemi.com;
+Received: from BY5PR04MB6739.namprd04.prod.outlook.com (2603:10b6:a03:229::8)
+ by DM6PR04MB4458.namprd04.prod.outlook.com (2603:10b6:5:2e::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.21; Sat, 3 Sep
+ 2022 13:09:07 +0000
+Received: from BY5PR04MB6739.namprd04.prod.outlook.com
+ ([fe80::1ad:536d:f2aa:8d13]) by BY5PR04MB6739.namprd04.prod.outlook.com
+ ([fe80::1ad:536d:f2aa:8d13%3]) with mapi id 15.20.5588.017; Sat, 3 Sep 2022
+ 13:09:07 +0000
+From:   Xin Ji <xji@analogixsemi.com>
+To:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     bliang@analogixsemi.com, qwen@analogixsemi.com,
+        mliu@analogixsemi.com, hsinyi@chromium.org,
+        Xin Ji <xji@analogixsemi.com>, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] drm/bridge: anx7625: Set HPD irq detect window to 2ms
+Date:   Sat,  3 Sep 2022 21:08:33 +0800
+Message-Id: <20220903130833.541463-1-xji@analogixsemi.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: TY2PR0101CA0038.apcprd01.prod.exchangelabs.com
+ (2603:1096:404:8000::24) To BY5PR04MB6739.namprd04.prod.outlook.com
+ (2603:10b6:a03:229::8)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YxKe00H2S9AzF0Yi@pendragon.ideasonboard.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a2345198-b7d9-4e5e-1dc8-08da8dad7bc0
+X-MS-TrafficTypeDiagnostic: DM6PR04MB4458:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pRrqIj8jRP7Bu6YsYJhc0itWnndGQtSl22TL17Rn7xK11K+pjvd8hZmtXRvMNjooO5b4hXTZSKcelz4xjMCiM2R69rp0AmxazrIFV0A+9Hf3xHV1CrU0I8+Rc4Rre8jR7ZeaNv9/6tLE5QbaNK9Iwz81ONUVmXUC1BF1wc8VOMegdwh7/Wz+N/wCwrgwzXvlIlOD1OyK3Ygku2SrThiQl3KEAZKIX6MavV8KGDMFV/Ym+KljpnaKr1/Nt/2/ehuL6W6NgXm3t0hGXItYjARa/gdfr963OFwOlLlCtxbjAk7p9H4HwopC7sRQ0eK82pj8SNAhBznCMWdRwAY4eILaSW+CpOY2nEaJbhZrAXNMZZnoPB9lb38vuUBjPPkgfAOorv5dKGJPjrOFBs06u9fl7yZBRwwQaovL1W5efD1BbPiMlUIbd1G8Z7AlPn4w07tSG8nAhb0CukyjyJuyM90s/L9Cy/wqauGACGjd+GaH0EpIUpfwCzi3sHLbG+CzGCDKOhQsbpLsZUBo1ngN+eDldG5EJlIa3Kw73uj3GmDFut6gXV92o67ZgGmCIhtQVwO7A4fiBtz7HTYqm4xAuLZs5v2p9HKYD1KNrvTObUpb1sGkSsuiuEPSTVirA6cGbUl9f6ooHBTDpHPgyHiqOKWFbWB4WQse3IwUuJ/hMR3yS0jZ9PgPxxswGHb85MK6zilfoduwf1fUXmlOupAwEA11UsuiSSds2jvWBTpgWMu3XanoLb1VpPywi3Pg8gNYz40OQvtdIUkHuzg7nKdDJp7yTg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR04MB6739.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(376002)(39830400003)(346002)(396003)(366004)(38350700002)(5660300002)(66476007)(110136005)(66556008)(316002)(4326008)(66946007)(7416002)(2906002)(8936002)(38100700002)(8676002)(52116002)(6666004)(36756003)(6512007)(6506007)(86362001)(1076003)(26005)(2616005)(41300700001)(6486002)(83380400001)(478600001)(186003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ZNXgPHRGVLkpnrK67SfGQfE6jumMSL9+6iWNrNHzqGFU00Pa+2QGHjfB8uih?=
+ =?us-ascii?Q?GkdjB4Ba6L/SsFxIpwn9kd9PGVu9JFky52U94L8RUfxG0cLvtz5aBFw4Gc8A?=
+ =?us-ascii?Q?yuEaAFBAb8uefsQZf9AsXh8gZqLE43fwecQFWUloUEr5WAAlnAJcEUYBEjw9?=
+ =?us-ascii?Q?w8GDFOrjkTFii1Vufg60OsRje1nsNwIkXjH0KWamQWaiEpj/4v6TzB2eTZYC?=
+ =?us-ascii?Q?ji2HA46scrjhlCyyg9PXFQ++DW8YZvq91S2Gag60pcoAx9Yhf8bPJZOmQ/ps?=
+ =?us-ascii?Q?/HeEnvGjFxoGGG9kleUHaMZvM2O/FL3VDx/9AXEl/dZz0CXymi5qmjg4ZpIs?=
+ =?us-ascii?Q?nCOSfBleYrde0YAWuS7rBJA8VD3xdPbLtUtz16jDpe3RCwf2jGJNExA4mpNf?=
+ =?us-ascii?Q?OkoKD68OojFoy05Jkk2R6RkxI4UsLnXxQkHQpB0zMmC5BrMmvOVl6YEYHhNv?=
+ =?us-ascii?Q?Khxxj20Q8FGCoB4UZ2QFOR4/sU0oYLFililx4+TKDOquBAFu1aL3DBTEG/q8?=
+ =?us-ascii?Q?ZGmoMU+H0RteBDA/5//R04q5jr2sn+teZidD13x2Ap3HmNL9cTdChl8Fi80Z?=
+ =?us-ascii?Q?hchqieH6xp0qY4AaN5dPZlVVS2AkMQta1uldQ/+nN58hG2sse4GwjWnxjeBt?=
+ =?us-ascii?Q?A2DSM2SJlVSXkD5wecqHRTmE+wRX/pu7X+0jBQw0AdIOUwj4R/5NC58ul/Ek?=
+ =?us-ascii?Q?ORiMSifpNv00jaMZLEs++lz9cJcvKtb+AK6CWMUSlxGprv2N/idgXa4cvllR?=
+ =?us-ascii?Q?TpQQJXqlIF0amRfjQbnToAl3O11mMsvTc6QCYvJ+JU5OX5da3UCd2SsrHKc3?=
+ =?us-ascii?Q?B4/DR7E/oX1VtmRYBLnWWv8aDuDl4RjvNscI/n6jC4l6K1DmzVS+dxy0kbC3?=
+ =?us-ascii?Q?kgHRC/igqFwiGcnIzO74x/+Lf++J7AK/pby7dyXTC1+bGYyC2EwaeFgxjZ8h?=
+ =?us-ascii?Q?Lcm+pm3ZpwELv5GrOoH/hYS/7WjgA3BOIZ8L4L45TSkfqp+huBx9yoBpCHIo?=
+ =?us-ascii?Q?6JZLn7PFP8U0ATiLu6RNJtOr9hwrWaTuAifRXJMjpB8cijUX7VnyRHKmOK6k?=
+ =?us-ascii?Q?oyuNTp/Ku6hj/94QZIFBwKoHaBxLZ6IjJCwKIg/CvJ0SU2t/zBLhP0jy2EFH?=
+ =?us-ascii?Q?8YmNx941M1LcCjJYELWfLTCzLYB/E4FSQWedSnEopJRgoY+oRZEAxQHBrMmL?=
+ =?us-ascii?Q?EFZ4rLvKbrkXhHTd+gAgPVfOmasoojmuNGn+KLbTIfh5JfTlR/TsP5EYINMx?=
+ =?us-ascii?Q?yqhK0PAW45HqLCrV76CVuBwvRPUGW8GNXegWdQH/EpHsRJ9DnwnAnk7pXfC8?=
+ =?us-ascii?Q?5qeYxexgMmIKZb7vKwawT7AkKOcW4GqLfvbuk08YsCmBuKnUhLb9USZyeWbB?=
+ =?us-ascii?Q?cOL6NZ52n3QEmkY8YqMcUKdVXJDbDnsPqsYKmw87KJroyZcWqG2VXHDIE9Bt?=
+ =?us-ascii?Q?VxM5D0jMuKd1g7VitFOpvUEfF8BUYiyWsYVhSAdRyEu9fxlYjRBNtgx3UVoK?=
+ =?us-ascii?Q?NSHXNrAldpG56G15adlZL4fCs552vVxpLWO6+PXetKnUcTMUsQvIFqOA9h3W?=
+ =?us-ascii?Q?VOuqYs/jJSaFv5Fgq5yFfJQZxDzaH0rD+THp/DEJ?=
+X-OriginatorOrg: analogixsemi.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a2345198-b7d9-4e5e-1dc8-08da8dad7bc0
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR04MB6739.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Sep 2022 13:09:07.3424
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: b099b0b4-f26c-4cf5-9a0f-d5be9acab205
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: oIppu2hiWXpkHtwNFRin+WsGvsTXBbZIsiIPrf6LPvYf0ze0PjxXF9X865SrsYrkAwbvSRaVmsanHjGTEy8mKQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR04MB4458
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Sep 03, 2022 at 03:24:51AM +0300, Laurent Pinchart wrote:
-> Hi Francesco,
-> 
-> On Fri, Sep 02, 2022 at 05:57:20PM +0200, Francesco Dolcini wrote:
-> > Hello Laurent,
-> > answering here for both patches (1/2 and 2/2).
-> > 
-> > On Thu, Sep 01, 2022 at 09:07:49PM +0300, Laurent Pinchart wrote:
-> > > On Thu, Sep 01, 2022 at 05:40:50PM +0200, Max Krummenacher wrote:
-> > > > From: Max Krummenacher <max.krummenacher@toradex.com>
-> > > > 
-> > > > Add the hdmi connector present on the dsi to hdmi adapter now
-> > > > required by the upstream lontium bridge driver.
-> > > > The dsi to hdmi adapter is enabled in an device tree overlay.
-> > > 
-> > > Shouldn't the connector also be in the overlay ? There's certainly no
-> > > physical HDMI connector on the i.MX8MP Verdin SoM :-)
-> > 
-> > Toradex DTS include and overlay files structure so far has been a little
-> > bit different and not following the expectation you just stated here,
-> > you can just check the current *toradex*dts* files and you'll see that there
-> > is other stuff that is not strictly part of the module.
-> > 
-> > Copying from a previous email thread on a very similar discussion [0]
-> > some of the reasons:
-> > 
-> >  - The SoM dtsi representing not only the functionality implemented into
-> >    the SoM, but the whole connector pinout to the carrier makes very easy
-> >    to just include a different som.dtsi in the carrier board dts and just
-> >    switch SoM, for example from a colibri-imx6 to a colibri-imx7.
-> 
-> That's fine, but I don't see how that's related to the issue at hand.
-> The DSI to HDMI bridge wouldn't be present on either SoM, would it ?
-> 
-> >  - We avoid code duplication
-> > 
-> > This is working for us pretty well so far and the majority of the users
-> > of ours modules rely on this structure, we would prefer not to change that.
-> 
-> It may work for your current use cases, but it doesn't make it right :-)
+Some panels trigger HPD irq due to noise, the HPD debounce
+may be 1.8ms, exceeding the default irq detect window, ~1.4ms.
+This patch set HPD irq detection window to 2ms to
+tolerate the HPD noise.
 
-Most of engineering is about compromise, being consistent with what we
-did so far and the end-user experience need to be taken into account.
+Signed-off-by: Xin Ji <xji@analogixsemi.com>
+---
+ drivers/gpu/drm/bridge/analogix/anx7625.c | 14 ++++++++++++++
+ drivers/gpu/drm/bridge/analogix/anx7625.h |  6 ++++++
+ 2 files changed, 20 insertions(+)
 
-> Someone can integrate a Verdin SoM with a carrier board that has no DSI
-> to HDMI (or LVDS) bridge, there should thus be no such device in the
-> device tree. The SoM has DSI signals present on its connector, that's
-> what the SoM .dtsi should expose.
+diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
+index c74b5df4cade..0c323b5a1c99 100644
+--- a/drivers/gpu/drm/bridge/analogix/anx7625.c
++++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
+@@ -1440,6 +1440,20 @@ static void anx7625_start_dp_work(struct anx7625_data *ctx)
+ 
+ static int anx7625_read_hpd_status_p0(struct anx7625_data *ctx)
+ {
++	int ret;
++
++	/* Set irq detect window to 2ms */
++	ret = anx7625_reg_write(ctx, ctx->i2c.tx_p2_client,
++				HPD_DET_TIMER_BIT0_7, HPD_TIME & 0xFF);
++	ret |= anx7625_reg_write(ctx, ctx->i2c.tx_p2_client,
++				 HPD_DET_TIMER_BIT8_15,
++				 (HPD_TIME >> 8) & 0xFF);
++	ret |= anx7625_reg_write(ctx, ctx->i2c.tx_p2_client,
++				 HPD_DET_TIMER_BIT16_23,
++				 (HPD_TIME >> 16) & 0xFF);
++	if (ret < 0)
++		return ret;
++
+ 	return anx7625_reg_read(ctx, ctx->i2c.rx_p0_client, SYSTEM_STSTUS);
+ }
+ 
+diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.h b/drivers/gpu/drm/bridge/analogix/anx7625.h
+index e257a84db962..14f33d6be289 100644
+--- a/drivers/gpu/drm/bridge/analogix/anx7625.h
++++ b/drivers/gpu/drm/bridge/analogix/anx7625.h
+@@ -132,6 +132,12 @@
+ #define I2S_SLAVE_MODE 0x08
+ #define AUDIO_LAYOUT   0x01
+ 
++#define HPD_DET_TIMER_BIT0_7   0xea
++#define HPD_DET_TIMER_BIT8_15  0xeb
++#define HPD_DET_TIMER_BIT16_23 0xec
++/* HPD debounce time 2ms for 27M clock */
++#define HPD_TIME               54000
++
+ #define AUDIO_CONTROL_REGISTER 0xe6
+ #define TDM_TIMING_MODE 0x08
+ 
+-- 
+2.25.1
 
-Just for the record Verdin i.MX8M Plus do have both HDMI and LVDS on the
-connector (in addition to DSI) [1], of course we do have also the option to
-have LVDS or HDMI using an external add-on DSI bridge as this patches are
-about.
-
-Said that it's true that sometime we describe peripherals that are part of the
-SOM family into the SOM dtsi, this avoid quite a lot of duplications given the
-amount of carrier board that are available on the market that use just the same
-building blocks (and this was one of the 2 points I mentioned as a reasoning
-for our current DTS files structure).
-
-Of course, we keep these stuff disabled by default, so apart for some small size
-increase I do not see a real issue.
-
-Francesco
-
-[1] https://docs.toradex.com/110977-verdin_imx8m_plus_v1.1_datasheet.pdf
