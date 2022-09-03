@@ -2,163 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B770ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 01:12:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82874C38145
+	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 01:24:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230010AbiICBMI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 21:12:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52788 "EHLO
+        id S230230AbiICBYv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 21:24:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiICBMG (ORCPT
+        with ESMTP id S229436AbiICBYs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 21:12:06 -0400
-Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 142D5CE32B;
-        Fri,  2 Sep 2022 18:12:04 -0700 (PDT)
-Received: from mail-oa1-f50.google.com (mail-oa1-f50.google.com [209.85.160.50]) (authenticated)
-        by conssluserg-03.nifty.com with ESMTP id 2831BfNL007480;
-        Sat, 3 Sep 2022 10:11:41 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 2831BfNL007480
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1662167502;
-        bh=d1zZMjIp/AEHUFQaxKnZBp8fdpmaAc/pofnE8yjoj0Q=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=RvpB/SQMo96ICeGqOoYzZR985R9GyCMDlN+mwMjn5EwdfWIYOitLm0k32VB+6DwDi
-         zjcbewmZ76ZIcAbaxfHRsZU75b4hxDgHXYupFt5IEoMzAOg8T6ArhQ+LIuYsPkBgrH
-         Ts335P0Eu+WGad8AiBOaeBAKBCVasValNRknV6nUW5by0AInrjF9QdY8kIp+oZ4rKW
-         1HkUyONcQaAxT+mYSnqYF0vv19P4OjTt6W263grjTQyDCOr9HGeq/GkOLFh79ylLjr
-         3hadkAfYdl0Wukv70mKNGLaHfn2mIJWvq2+jDvIdaxq6n29FEdKX9+UDR5fspzxwpt
-         nTPVY6hn2ldXg==
-X-Nifty-SrcIP: [209.85.160.50]
-Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-11e7e0a63e2so8917776fac.4;
-        Fri, 02 Sep 2022 18:11:41 -0700 (PDT)
-X-Gm-Message-State: ACgBeo23/9Bx9fBSgqXY+V8F2t8atsEQ3Ya176aHpL0xOIoKMQYPYwMW
-        9CNhLIyeNTvdN/DQ6yAbb7JwJPx0IrmGA7xOeVk=
-X-Google-Smtp-Source: AA6agR72d0VE/5+VJ8O5be1iaUMumL9bYP4n7YcvmqeZwMvwba4zChF2mHdngQ3NQeGza6WcSrTPTKGhHRRK+itE67o=
-X-Received: by 2002:a05:6808:1189:b0:33a:34b3:6788 with SMTP id
- j9-20020a056808118900b0033a34b36788mr3025795oil.194.1662167500600; Fri, 02
- Sep 2022 18:11:40 -0700 (PDT)
+        Fri, 2 Sep 2022 21:24:48 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE0F1C132
+        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 18:24:45 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id p8-20020a17090ad30800b001fdfc8c7567so8657240pju.1
+        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 18:24:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=jP6EPggHjkZX1NaV9U8a8QOu1uLproFoHSDlqllEgzg=;
+        b=HEhKmQ7gwK/HxPmpwnIWy4QlrEFl9/wj4w99hLp/jVkhQLgZ4BAmC76DOTiCqRjsDr
+         fZiLkszhkXerCXtNDQLNeXW1GK3grzipGrmPCQkBVgNn0+S9w2zh5nIa+W5kpdZEwKSu
+         0i4UIFEZqLZAm8d4Jtdw4nUGMB0wMY12p9HUEmuRkxF1ybhxrIg3uAFswaj+QR2ODU4k
+         nLTL9W45u7hJ3vfGnUikejtAJts46K+2IZKiBObrqrnR8CFOys0o04MzBWJYKX9ByATv
+         FbKqt59LgeJs6PO3Fpfgmv9lSJWaCjB6BiK22ChN/bjbUJ0nH5cHRENg0IxCSxxbBb3L
+         abBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=jP6EPggHjkZX1NaV9U8a8QOu1uLproFoHSDlqllEgzg=;
+        b=d/JYAoOV6EmVO93BYOkO95n6KpejiovCi8G04hJ6M/5QswyvVPBsVN0q/OMsHkEdre
+         1y+EoQKc1V85vPtELailq5LR0z8od/SejMLZpXCuU8myN6SwXWj+JyxoBW/SC9NF/LK8
+         0m7yWGrJulBXY4Tj2p8FISBzTRJ8POhwRDR2e2GTSLkX9OOU+bsLMSwCouO0ntYz9EE7
+         nxsXE07p9ajng+MJJgfsDqa12EYyAYtXuZTK7/pOE+a4qgIO5M/ddYcKSb9mcqLIeZjY
+         4+qEVYeGztsTC/tyvB3fYPqpIoNq4cEu5NtvySqCGsI+juDsmcRseuhn50rWR+bhnADn
+         spZw==
+X-Gm-Message-State: ACgBeo0kSiwYvhDEH7iWLE4NmdB6CUR3VWGy60UKmHillIoUEvxnfzoN
+        Ux6ZYkFzoxzEL9JhmTuFwtmupnB3S03Qug==
+X-Google-Smtp-Source: AA6agR5IEz5aJDLkp5TRHq5P2h/qWb7MGKFVw0S3OHTvkLzzJ2T8H7XmTUu8Ga+mU6r2dqZKmJDQJw==
+X-Received: by 2002:a17:902:e94c:b0:171:3df0:c886 with SMTP id b12-20020a170902e94c00b001713df0c886mr39349023pll.39.1662168284652;
+        Fri, 02 Sep 2022 18:24:44 -0700 (PDT)
+Received: from C02GD5ZHMD6R.bytedance.net ([139.177.225.238])
+        by smtp.gmail.com with ESMTPSA id d7-20020a170902654700b00172ba718ed4sm2262494pln.138.2022.09.02.18.24.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 18:24:43 -0700 (PDT)
+From:   Jinke Han <hanjinke.666@bytedance.com>
+X-Google-Original-From: Jinke Han <hnajinke.666@bytedance>
+To:     tytso@mit.edu, adilger.kernel@dilger.ca
+Cc:     linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yi.zhang@huawei.com, Jinke Han <hanjinke.666@bytedance.com>
+Subject: [PATCH v2] ext4: place buffer head allocation before handle start
+Date:   Sat,  3 Sep 2022 09:24:29 +0800
+Message-Id: <20220903012429.22555-1-hanjinke.666@bytedance.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
 MIME-Version: 1.0
-References: <20220902130846.654526-1-masahiroy@kernel.org>
-In-Reply-To: <20220902130846.654526-1-masahiroy@kernel.org>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Sat, 3 Sep 2022 10:11:04 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASAJPb06oE7yAhAtAWSB5_So_1PP8L8jgnkpgEb035JoA@mail.gmail.com>
-Message-ID: <CAK7LNASAJPb06oE7yAhAtAWSB5_So_1PP8L8jgnkpgEb035JoA@mail.gmail.com>
-Subject: Re: [PATCH] kbuild: use objtool-args-y to clean up objtool arguments
-To:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Sep 2, 2022 at 10:11 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> Based on Linus' patch.
->
-> Link: https://lore.kernel.org/lkml/CAHk-=wgjTMQgiKzBZTmb=uWGDEQxDdyF1+qxBkODYciuNsmwnw@mail.gmail.com/
-> Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
->
->  scripts/Makefile.lib       | 31 ++++++++++++++++---------------
->  scripts/Makefile.vmlinux_o | 17 ++++++++---------
->  2 files changed, 24 insertions(+), 24 deletions(-)
->
-> diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
-> index b594705d571a..731f735240f8 100644
-> --- a/scripts/Makefile.lib
-> +++ b/scripts/Makefile.lib
-> @@ -229,25 +229,26 @@ ifdef CONFIG_OBJTOOL
->
->  objtool := $(objtree)/tools/objtool/objtool
->
-> -objtool_args =                                                         \
-> -       $(if $(CONFIG_HAVE_JUMP_LABEL_HACK), --hacks=jump_label)        \
-> -       $(if $(CONFIG_HAVE_NOINSTR_HACK), --hacks=noinstr)              \
-> -       $(if $(CONFIG_X86_KERNEL_IBT), --ibt)                           \
-> -       $(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)             \
-> -       $(if $(CONFIG_UNWINDER_ORC), --orc)                             \
-> -       $(if $(CONFIG_RETPOLINE), --retpoline)                          \
-> -       $(if $(CONFIG_RETHUNK), --rethunk)                              \
-> -       $(if $(CONFIG_SLS), --sls)                                      \
-> -       $(if $(CONFIG_STACK_VALIDATION), --stackval)                    \
-> -       $(if $(CONFIG_HAVE_STATIC_CALL_INLINE), --static-call)          \
-> -       $(if $(CONFIG_HAVE_UACCESS_VALIDATION), --uaccess)              \
-> +objtool-args-$(CONFIG_HAVE_JUMP_LABEL_HACK)            += --hacks=jump_label
-> +objtool-args-$(CONFIG_HAVE_NOINSTR_HACK)               += --hacks=noinstr
-> +objtool-args-$(CONFIG_X86_KERNEL_IBT)                  += --ibt
-> +objtool-args-$(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL)       += --mcount
-> +objtool-args-$(CONFIG_UNWINDER_ORC)                    += --orc
-> +objtool-args-$(CONFIG_RETPOLINE)                       += --retpoline
-> +objtool-args-$(CONFIG_RETHUNK)                         += --rethunk
-> +objtool-args-$(CONFIG_SLS)                             += --sls
-> +objtool-args-$(CONFIG_STACK_VALIDATION)                        += --stackval
-> +objtool-args-$(CONFIG_HAVE_STATIC_CALL_INLINE)         += --static-call
-> +objtool-args-$(CONFIG_HAVE_UACCESS_VALIDATION)         += --uaccess
-> +objtool-args-$(CONFIG_GCOV_KERNEL)                     += --no-unreachable
-> +
-> +objtool-args = $(objtool-args-y)                                       \
->         $(if $(delay-objtool), --link)                                  \
-> -       $(if $(part-of-module), --module)                               \
-> -       $(if $(CONFIG_GCOV_KERNEL), --no-unreachable)
-> +       $(if $(part-of-module), --module)
->
->  delay-objtool := $(or $(CONFIG_LTO_CLANG),$(CONFIG_X86_KERNEL_IBT))
->
-> -cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool_args) $@)
-> +cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool-args) $@)
->  cmd_gen_objtooldep = $(if $(objtool-enabled), { echo ; echo '$@: $$(wildcard $(objtool))' ; } >> $(dot-target).cmd)
->
->  endif # CONFIG_OBJTOOL
-> diff --git a/scripts/Makefile.vmlinux_o b/scripts/Makefile.vmlinux_o
-> index 81a4e0484457..df928a6717a1 100644
-> --- a/scripts/Makefile.vmlinux_o
-> +++ b/scripts/Makefile.vmlinux_o
-> @@ -35,18 +35,17 @@ endif
->
->  objtool-enabled := $(or $(delay-objtool),$(CONFIG_NOINSTR_VALIDATION))
->
-> -# Reuse objtool_args defined in scripts/Makefile.lib if LTO or IBT is enabled.
-> +# Reuse objtool-args-y defined in scripts/Makefile.lib if LTO or IBT is enabled.
-> +# (Expand objtool-args-y to a simple variable to avoid circular reference)
->  #
->  # Add some more flags as needed.
-> -# --no-unreachable and --link might be added twice, but it is fine.
-> -#
-> -# Expand objtool_args to a simple variable to avoid circular reference.
-> +# --no-unreachable might be added twice, but it is fine.
-> +
-> +objtool-args-$(delay-objtool)                  := $(objtool-args-y)
+From: Jinke Han <hanjinke.666@bytedance.com>
 
-This line is wrong. I will change like follows:
+In our product environment, we encounter some jbd hung waiting handles to
+stop while several writters were doing memory reclaim for buffer head
+allocation in delay alloc write path. Ext4 do buffer head allocation with
+holding transaction handle which may be blocked too long if the reclaim
+works not so smooth. According to our bcc trace, the reclaim time in
+buffer head allocation can reach 258s and the jbd transaction commit also
+take almost the same time meanwhile. Except for these extreme cases,
+we often see several seconds delays for cgroup memory reclaim on our
+servers. This is more likely to happen considering docker environment.
 
-objtool-args-y    := $(if $(delay-objtool), $(objtool-args-y))
+One thing to note, the allocation of buffer heand is as often as page
+allocation or more often when blocksize less than page size. Just like
+page cache allocation, we should also place the buffer head allocation
+before startting the handle.
 
+After commit:cc883236b792, no nore need to do for delay alloc path, just
+do it for no delay alloc code.
 
+Signed-off-by: Jinke Han <hanjinke.666@bytedance.com>
+---
+ fs/ext4/inode.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-> +objtool-args-$(CONFIG_GCOV_KERNEL)             += --no-unreachable
-> +objtool-args-$(CONFIG_NOINSTR_VALIDATION)      += --noinstr $(if $(CONFIG_CPU_UNRET_ENTRY), --unret))
->
-> -objtool_args := \
-> -       $(if $(delay-objtool),$(objtool_args)) \
-> -       $(if $(CONFIG_NOINSTR_VALIDATION), --noinstr $(if $(CONFIG_CPU_UNRET_ENTRY), --unret)) \
-> -       $(if $(CONFIG_GCOV_KERNEL), --no-unreachable) \
-> -       --link
-> +objtool-args = $(objtool-args-y) --link
->
->  # Link of vmlinux.o used for section mismatch analysis
->  # ---------------------------------------------------------------------------
-> --
-> 2.34.1
->
-
-
+diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+index 601214453c3a..0d6c4ec7c840 100644
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -1188,6 +1188,13 @@ static int ext4_write_begin(struct file *file, struct address_space *mapping,
+ 	page = grab_cache_page_write_begin(mapping, index);
+ 	if (!page)
+ 		return -ENOMEM;
++	/*
++	 * The same as page allocation, we prealloc buffer heads before
++	 * starting the handle.
++	 */
++	if (!page_has_buffers(page))
++		create_empty_buffers(page, inode->i_sb->s_blocksize, 0);
++
+ 	unlock_page(page);
+ 
+ retry_journal:
 -- 
-Best Regards
-Masahiro Yamada
+2.20.1
+
