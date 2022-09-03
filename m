@@ -2,111 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF141ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 07:42:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19218ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 07:43:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231760AbiICHmo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 3 Sep 2022 03:42:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51040 "EHLO
+        id S232324AbiICHn2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 3 Sep 2022 03:43:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229666AbiICHmk (ORCPT
+        with ESMTP id S229580AbiICHn0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 3 Sep 2022 03:42:40 -0400
-Received: from alt-proxy28.mail.unifiedlayer.com (alt-proxy28.mail.unifiedlayer.com [74.220.216.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B68B8E0F1
-        for <linux-kernel@vger.kernel.org>; Sat,  3 Sep 2022 00:42:40 -0700 (PDT)
-Received: from cmgw10.mail.unifiedlayer.com (unknown [10.0.90.125])
-        by progateway1.mail.pro1.eigbox.com (Postfix) with ESMTP id 7C7A210040423
-        for <linux-kernel@vger.kernel.org>; Sat,  3 Sep 2022 07:42:26 +0000 (UTC)
-Received: from box5620.bluehost.com ([162.241.219.59])
-        by cmsmtp with ESMTP
-        id UNnNofIMzCokGUNnOoe2kS; Sat, 03 Sep 2022 07:42:26 +0000
-X-Authority-Reason: nr=8
-X-Authority-Analysis: v=2.4 cv=c8Nu/Txl c=1 sm=1 tr=0 ts=63130562
- a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
- a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
- a=xOM3xZuef0cA:10:nop_rcvd_month_year
- a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
- a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
- a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
-        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
-        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=5xG0qatLwsUtCEOjZrSnwM0Wv+TJ7yVp3aG+uUj4Tkc=; b=lhaTMDvARTxHPovyIEqlaonj3w
-        7mgYlVFLGaSZM76KOg0CwOVP/iGN4wrvLihsnUhNz9aS0e+IXhO/ARMziteFiIywmsuReCU+EE9UW
-        EYD4Bl5c9dMyCmtsFr2mSgdEwVJeABPXL2BwTJlAEm9DOHyd5GrRkEoZ5eQ7u+gW1W+CIs9+uCsDE
-        KdZPqzSG2oT78pmS78K41ewlV88IWNPK5nHqMIC95vE0v1BRmF8zLbQgEGw6TYMR7klxX685t1oaW
-        wK6i1Cp0JYdBk7r9lISYKGTk/jatwRCaDkD/Xw37lL+HvZGTiQ0WsoCHiNvYN6IZk+RVsRwENowXl
-        TEZOdY1w==;
-Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:43016 helo=[10.0.1.48])
-        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <re@w6rz.net>)
-        id 1oUNnM-0044cf-Or;
-        Sat, 03 Sep 2022 01:42:24 -0600
-Subject: Re: [PATCH 5.15 00/73] 5.15.65-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220902121404.435662285@linuxfoundation.org>
-In-Reply-To: <20220902121404.435662285@linuxfoundation.org>
-From:   Ron Economos <re@w6rz.net>
-Message-ID: <970b2a07-e2ce-a68e-9d24-51482dccba91@w6rz.net>
-Date:   Sat, 3 Sep 2022 00:42:21 -0700
-User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Sat, 3 Sep 2022 03:43:26 -0400
+X-Greylist: delayed 545 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 03 Sep 2022 00:43:24 PDT
+Received: from mail-m118112.qiye.163.com (mail-m118112.qiye.163.com [115.236.118.112])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6624898376;
+        Sat,  3 Sep 2022 00:43:24 -0700 (PDT)
+Received: from [172.16.12.102] (unknown [58.22.7.114])
+        by mail-m118112.qiye.163.com (Hmail) with ESMTPA id 8D36D360184;
+        Sat,  3 Sep 2022 15:34:16 +0800 (CST)
+Subject: Re: [PATCH] usb: dwc3: core: leave default DMA if the controller does
+ not support 64-bit DMA
+To:     Sven Peter <sven@svenpeter.dev>,
+        William Wu <william.wu@rock-chips.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Fabio Aiuto <fabioaiuto83@gmail.com>,
+        frank.wang@rock-chips.com, jianwei.zheng@rock-chips.com
+References: <20220901083446.3799754-1-william.wu@rock-chips.com>
+ <8fc4eb4b-25c4-4d4c-8203-1e5c314436b3@www.fastmail.com>
+From:   wuliangfeng <wulf@rock-chips.com>
+Message-ID: <5d1c1338-b820-e10b-76eb-daee9abda7c2@rock-chips.com>
+Date:   Sat, 3 Sep 2022 23:33:09 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <8fc4eb4b-25c4-4d4c-8203-1e5c314436b3@www.fastmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
 Content-Language: en-US
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - box5620.bluehost.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - w6rz.net
-X-BWhitelist: no
-X-Source-IP: 73.162.232.9
-X-Source-L: No
-X-Exim-ID: 1oUNnM-0044cf-Or
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:43016
-X-Source-Auth: re@w6rz.net
-X-Email-Count: 2
-X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
-X-Local-Domain: yes
+Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+        tZV1koWUFJSktLSjdXWS1ZQUlXWQ8JGhUIEh9ZQVkZGB5LVkNOGR9JQx5CSUIfSFUTARMWGhIXJB
+        QOD1lXWRgSC1lBWU5DVUlJVUxVSkpPWVdZFhoPEhUdFFlBWU9LSFVKSktMSkhVSktLWQY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MBw6LRw*SD0pGDk0LiEVNgIw
+        HRlPCzpVSlVKTU1JSkJLT05MSUhNVTMWGhIXVQwOFx07CRQYEFYYExILCFUYFBZFWVdZEgtZQVlO
+        Q1VJSVVMVUpKT1lXWQgBWUFPSEhJNwY+
+X-HM-Tid: 0a830245901a2ec0kusn8d36d360184
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 9/2/22 5:18 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.65 release.
-> There are 73 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Sun, 04 Sep 2022 12:13:47 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.65-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
 
-Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
 
-Tested-by: Ron Economos <re@w6rz.net>
+On 2022/9/2 上午1:38, Sven Peter wrote:
+> 
+> 
+> On Thu, Sep 1, 2022, at 10:34, William Wu wrote:
+>> On some DWC3 controllers (e.g. Rockchip SoCs), the DWC3 core
+>> doesn't support 64-bit DMA address width. In this case, this
+>> driver should use the default 32-bit mask. Otherwise, the DWC3
+>> controller will break if it runs on above 4GB physical memory
+>> environment.
+>>
+>> This patch reads the DWC_USB3_AWIDTH bits of GHWPARAMS0 which
+>> used for the DMA address width, and only configure 64-bit DMA
+>> mask if the DWC_USB3_AWIDTH is 64.
+>>
+>> Fixes: 45d39448b4d0 ("usb: dwc3: support 64 bit DMA in platform driver")
+>> Signed-off-by: William Wu <william.wu@rock-chips.com>
+> 
+> Reviewed-by: Sven Peter <sven@svenpeter.dev>
+> 
+>> ---
+>>   drivers/usb/dwc3/core.c | 13 +++++++------
+>>   1 file changed, 7 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+>> index c5c238ab3083..2fcbd05b2af1 100644
+>> --- a/drivers/usb/dwc3/core.c
+>> +++ b/drivers/usb/dwc3/core.c
+>> @@ -1751,12 +1751,6 @@ static int dwc3_probe(struct platform_device *pdev)
+>>
+>>   	dwc3_get_properties(dwc);
+>>
+>> -	if (!dwc->sysdev_is_parent) {
+>> -		ret = dma_set_mask_and_coherent(dwc->sysdev, DMA_BIT_MASK(64));
+>> -		if (ret)
+>> -			return ret;
+>> -	}
+>> -
+>>   	dwc->reset = devm_reset_control_array_get_optional_shared(dev);
+>>   	if (IS_ERR(dwc->reset))
+>>   		return PTR_ERR(dwc->reset);
+>> @@ -1823,6 +1817,13 @@ static int dwc3_probe(struct platform_device
+>> *pdev)
+>>   	dwc3_cache_hwparams(dwc);
+>>   	device_init_wakeup(&pdev->dev, of_property_read_bool(dev->of_node,
+>> "wakeup-source"));
+>>
+>> +	if (!dwc->sysdev_is_parent &&
+>> +	    DWC3_GHWPARAMS0_AWIDTH(dwc->hwparams.hwparams0) == 64) {
+>> +		ret = dma_set_mask_and_coherent(dwc->sysdev, DMA_BIT_MASK(64));
+>> +		if (ret)
+>> +			goto disable_clks;
+>> +	}
+> 
+> I guess you could also create the mask from DWC3_GHWPARAMS0_AWIDTH(dwc->hwparams.hwparams0)
+> directly instead of hardcoding it to 64bit here. Probably doesn't matter though unless
+> there are some weird systems where dwc3 can only do 48bit DMA but there's actually memory
+> above that.
+> 
+> 
+Refer to the DWC3 databook "Table 4-1 Basic Config Parameters", it 
+describe that "If your system address bus width for example is 40bits, 
+select 64 and tie the address bits[63:40] of the DWC3_usb3 to 0", so it 
+seems that "DWC3_GHWPARAMS0_AWIDTH(dwc->hwparams.hwparams0) == 64" can 
+cover 40-bit DMA or 48-bit DMA.
 
