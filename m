@@ -2,85 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBAE9ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 06:25:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4846C6FA83
+	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 06:30:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232249AbiICGZq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 3 Sep 2022 02:25:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54102 "EHLO
+        id S232114AbiICGaB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 3 Sep 2022 02:30:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiICGZo (ORCPT
+        with ESMTP id S231748AbiICG36 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 3 Sep 2022 02:25:44 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCD625F9B6
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 23:25:42 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id n65-20020a17090a5ac700b001fbb4fad865so4018610pji.1
-        for <linux-kernel@vger.kernel.org>; Fri, 02 Sep 2022 23:25:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date;
-        bh=2aBg7pOkFNE7VKGxuLLp1g4emrck3wu0cGWeIb1Nuyg=;
-        b=e9NyOGCVOoHERqtP9FWbaLvdnL45HR9KJdZ6n+WU3RMhAAGCvxMOKrV5DdPrftiY0l
-         LqXv8VvH95AeYr3F5gCSXsK0PtXb1D4TgvkmgHuvrCNbpGCQXT5GxGpeWi2eYdhGQ4JS
-         eLrHIirNkkBnGsWiSi2IoOE1qCNiV+NA1sUjZ2VRbgXQV+Cp9bfbbYxVG5KjRJ/DnBvh
-         piCbB2scIySf2FVMPl3/B2gwdWPvrHgeuUa+c1dv9eX/TmmLAp3rm7JU/w+cxyOpH+qi
-         gtwWYbC0pcA6dFQGjGVubnIIW2FA75rUDsj4+TRLQfalT9XH8xplhL8d05HpbIzzwFzZ
-         JwoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=2aBg7pOkFNE7VKGxuLLp1g4emrck3wu0cGWeIb1Nuyg=;
-        b=6LDLmJ7pLGEizt7rtFg+XT0g+ZqNhQfWhKhH/bhWleYmklG4OJRzD5phoRV4SlWwVS
-         7Gd6d1oRys2aLcb/DZyKG4SQ3sgNNMBl3nyUH1Vsk8NgUa5GNGn0kbXL09mulY7wVQrO
-         NXE9bPl+hG9t/hREOoOxg+lIEokX16iKbX8fmH34jbTSBjygEppZxxzpbzBJtinEma5r
-         jIGGV6n2zutP56p7uYPQspOfI1QIVHMFnsr68tffQAzXLZ8M1p2fZPMh3IqajJxk+KvW
-         DveCWhIdR5JdaE0zBaM843w6atlcG/v15EkKiYvXjsWC9iLdQ5zhN9gcA+P0NUbci0cR
-         8q2g==
-X-Gm-Message-State: ACgBeo0bDO8OzjhVP7mxhZmYhP2mZ22yDivBYownEaJIta6xBKe6OmLn
-        aFqGczFXHhCNGqrm/rCvetyYv1QfuuXq3+Y7JhmnSXTlDkM=
-X-Google-Smtp-Source: AA6agR6sr4jNEq4k453W+zKpgGKqeDKMhvTASI0vrm279pLGh9U0TKPHnHYlraohiO7CBfX44Uq0dP6PnlIie7lH+UI=
-X-Received: by 2002:a17:90a:9f96:b0:1fa:b4fb:6297 with SMTP id
- o22-20020a17090a9f9600b001fab4fb6297mr8578755pjp.80.1662186342139; Fri, 02
- Sep 2022 23:25:42 -0700 (PDT)
+        Sat, 3 Sep 2022 02:29:58 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D20692CCA1;
+        Fri,  2 Sep 2022 23:29:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662186596; x=1693722596;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=n5uDU9eTIPVXLJGf/uaHEOKAI/9grpTLNatMEbtbiLc=;
+  b=PFZq2akMNvFY9zv0pFj+8iPg9dZZpWHQrWphY/a83+8Tq1VR5WP90uyu
+   U1JuoH63nMBakcZVIDMl33C/b/wm9eUQTxoQE/fuZOEgvhE2WhqzAOQfF
+   myMJWCQvlfppFARbmUAom8Gg9+4IKRW5GD19AlIP6FbbQ+4mahikt1rWf
+   xS8SykDp1o1peV2TST726MQze8YEy4tgJ8+wKQhh8cJSsNNA891g6l5Zg
+   +0I1WyrYFau+rLaJ6RgudeT7vg+1LV4DX3LtsSCI42X9QKq51Gtz4Czdy
+   K+TtD7rq4sgEIDCfJXBP0iiarinWSKKfqu5c6Q2W6i3cyssUoi2x026AO
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10458"; a="357850440"
+X-IronPort-AV: E=Sophos;i="5.93,286,1654585200"; 
+   d="scan'208";a="357850440"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 23:29:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,286,1654585200"; 
+   d="scan'208";a="755489507"
+Received: from lkp-server02.sh.intel.com (HELO 95dfd251caa2) ([10.239.97.151])
+  by fmsmga001.fm.intel.com with ESMTP; 02 Sep 2022 23:29:54 -0700
+Received: from kbuild by 95dfd251caa2 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oUMfB-0001B5-2D;
+        Sat, 03 Sep 2022 06:29:53 +0000
+Date:   Sat, 3 Sep 2022 14:29:11 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hans Verkuil <hverkuil@xs4all.nl>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org,
+        Sakari Ailus <sakari.ailus@linux.intel.com>
+Subject: drivers/media/i2c/ar0521.c:409:5-8: Unneeded variable: "ret". Return
+ "0" on line 426
+Message-ID: <202209031459.IAynxt5W-lkp@intel.com>
 MIME-Version: 1.0
-From:   Li Zhong <floridsleeves@gmail.com>
-Date:   Fri, 2 Sep 2022 23:25:31 -0700
-Message-ID: <CAMEuxRrg0nSroVGXwaCM1579Ddb822mY0hkSX5_Kcz1YqF_9sg@mail.gmail.com>
-Subject: [PATCH v1] drivers/base/auxiliary: check return value of strrchr()
-To:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Cc:     Greg KH <gregkh@linuxfoundation.org>, rafael@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Li Zhong <floridsleeves@gmail.com>
+Hi Hans,
 
-The return value of strrchr() could be NULL, which will cause invalid
-offset in (int)(p - name). So we check it here.
+FYI, the error/warning was bisected to this commit, please ignore it if it's irrelevant.
 
-Signed-off-by: Li Zhong <floridsleeves@gmail.com>
----
- drivers/base/auxiliary.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   d895ec7938c431fe61a731939da76a6461bc6133
+commit: dbae22e2008ee6a3acf2b7d989800eff80f0aa1f media: ar0521: fix Kconfig: VIDEO_V4L2 -> VIDEO_DEV
+date:   7 weeks ago
+config: s390-randconfig-c024-20220901 (https://download.01.org/0day-ci/archive/20220903/202209031459.IAynxt5W-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 12.1.0
 
-diff --git a/drivers/base/auxiliary.c b/drivers/base/auxiliary.c
-index 8c5e65930617..7ac23be47e1f 100644
---- a/drivers/base/auxiliary.c
-+++ b/drivers/base/auxiliary.c
-@@ -191,7 +191,8 @@ static int auxiliary_uevent(struct device *dev,
-struct kobj_uevent_env *env)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-  name = dev_name(dev);
-  p = strrchr(name, '.');
--
-+ if (!p)
-+ return -EINVAL;
-  return add_uevent_var(env, "MODALIAS=%s%.*s", AUXILIARY_MODULE_PREFIX,
-        (int)(p - name), name);
- }
+cocci warnings: (new ones prefixed by >>)
+>> drivers/media/i2c/ar0521.c:409:5-8: Unneeded variable: "ret". Return "0" on line 426
+
 -- 
-2.25.1
+0-DAY CI Kernel Test Service
+https://01.org/lkp
