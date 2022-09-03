@@ -2,145 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5C29C38145
-	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 00:39:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDA46ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 00:44:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231614AbiICAjP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 2 Sep 2022 20:39:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60210 "EHLO
+        id S230244AbiICAoe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 2 Sep 2022 20:44:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230234AbiICAjM (ORCPT
+        with ESMTP id S229508AbiICAo1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 2 Sep 2022 20:39:12 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6B291AA354
-        for <linux-kernel@vger.kernel.org>; Fri,  2 Sep 2022 17:39:10 -0700 (PDT)
-Received: from [10.130.0.63] (unknown [113.200.148.30])
-        by localhost.localdomain (Coremail) with SMTP id AQAAf8CxrmsjohJjGj8QAA--.55594S3;
-        Sat, 03 Sep 2022 08:39:00 +0800 (CST)
-Subject: Re: [PATCH v2 3/9] LoongArch/ftrace: Add dynamic function tracer
- support
-To:     Jeff Xie <xiehuan09@gmail.com>
-Cc:     Huacai Chen <chenhuacai@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        WANG Xuerui <kernel@xen0n.name>, loongarch@lists.linux.dev,
-        linux-kernel@vger.kernel.org,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>, hejinyang@loongson.cn
-References: <20220826073114.1515-1-zhangqing@loongson.cn>
- <20220826073114.1515-4-zhangqing@loongson.cn>
- <CAEr6+EC9vtsPmj5f+b5iqJWOGyC7D5g+mpv01_ekzA9gQjgeAg@mail.gmail.com>
-From:   Qing Zhang <zhangqing@loongson.cn>
-Message-ID: <374ddd54-4c04-65cc-4097-c7a145c2c029@loongson.cn>
-Date:   Sat, 3 Sep 2022 08:38:59 +0800
-User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        Fri, 2 Sep 2022 20:44:27 -0400
+Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D15285F7F;
+        Fri,  2 Sep 2022 17:44:23 -0700 (PDT)
+Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-11e7e0a63e2so8815387fac.4;
+        Fri, 02 Sep 2022 17:44:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc:subject:date;
+        bh=jEzcKz6FKmdXeF28nUatQbqM8KhBDWatkvEgSRjOY/I=;
+        b=o/YuoRjVc6z+7Y3M/g5dhJduek8Wh5+hETo7wPipy9hmDuMbHs+QP19GUdcmkUgatY
+         ppEhzykxz63Mz6TKTzQ8R70ZlCdJLZQW5kUH8dbuomVXfLvk0nmbAcQUmGYHoHYilDH+
+         73dYBLSNS90MrFdTioGt7qGthWVIJGMKrnjZh60+tqlLMZkx5fG8XVndmPRBHTzoNFUo
+         1BZL4y0R3W3Tt4S7T8AjJXa9fYFXdHSPbmre2TsAx6b78D1VDkTg2aprKR5OPRLnoE55
+         cp2LIouYCOEmHKh1U+4yMecgJ+yaKnsvfsne5gFfcjx176aqMyME/o4IgWpo2QzZ+nov
+         +Ajg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=jEzcKz6FKmdXeF28nUatQbqM8KhBDWatkvEgSRjOY/I=;
+        b=Bd4jnKOixchS7IkjMBEDkpdGl0ymHucpgE35Y6Po2eG21DssRMprKZiyZWLeSEhkC9
+         vcTfJPhMTvlbPm/qxfuSivXQn16gle1Olmg44FxB6igs8hGxxEcwyH0Au25ogob0IKMD
+         2Mjm1sSWie/E7Myj67Uj53d5XC2YrlXxL/M5MHP/2XfzWy9g1lm+3FAGFMDrCKJLX2Xq
+         ZIhW97oFnqO3GqlZUqQawId4/bZmVvcn0O2Jqabc2XrARnud5NHP+GkLpPvn6CmLbF3i
+         m7bTDZ268KmC8bgihSxrFmkr2JEsJ/Xk5o0Us50nMcAgFwOkEUTz+erJvX6O9A3q8fW2
+         r29w==
+X-Gm-Message-State: ACgBeo3hs+9kXDhwJMbiezZkerwRZfalUu4ESOz6wPd/s7C2pHBAea56
+        Rf5kWcpPrP3y7v8VPQXkKlXakAngbnSrrg==
+X-Google-Smtp-Source: AA6agR4afCAT0SW/SvmJecwsIz03DcjSZYYUY7myGaqdf9pPIohN4Mgqr3XJ1ke6OUSr7DCMXu5S8w==
+X-Received: by 2002:a17:90a:d685:b0:1fb:2d31:84fa with SMTP id x5-20020a17090ad68500b001fb2d3184famr7605198pju.51.1662165319527;
+        Fri, 02 Sep 2022 17:35:19 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id d16-20020a170902ced000b00174f7d10a03sm2255065plg.86.2022.09.02.17.35.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 17:35:18 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Fri, 2 Sep 2022 17:35:18 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 4.19 00/56] 4.19.257-rc1 review
+Message-ID: <20220903003518.GC847372@roeck-us.net>
+References: <20220902121400.219861128@linuxfoundation.org>
 MIME-Version: 1.0
-In-Reply-To: <CAEr6+EC9vtsPmj5f+b5iqJWOGyC7D5g+mpv01_ekzA9gQjgeAg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: AQAAf8CxrmsjohJjGj8QAA--.55594S3
-X-Coremail-Antispam: 1UD129KBjvJXoW7Ar17Xr18ZrW3tF1xuF4fAFb_yoW5JrW8pa
-        93CanFkr1UZF4jyw10gr48Ary3ArWFyry5GFs8JryrCr9rCw1Fgr12qr1rCa9rA345GryI
-        va4UZw1DXrn0va7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvq14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26r1j6r1xM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r1j
-        6r4UM28EF7xvwVC2z280aVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVCY1x0267AKxVW8Jr
-        0_Cr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj
-        6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr
-        0_Gr1lF7xvr2IY64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7Mxk0xIA0c2IEe2xFo4CE
-        bIxvr21lc2xSY4AK67AK6w1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr
-        1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE
-        14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7
-        IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E
-        87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0x
-        ZFpf9x0JU3DG5UUUUU=
-X-CM-SenderInfo: x2kd0wptlqwqxorr0wxvrqhubq/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2022/9/1 上午10:59, Jeff Xie wrote:
-> On Fri, Aug 26, 2022 at 4:24 PM Qing Zhang <zhangqing@loongson.cn> wrote:
->>
->> The compiler has inserted 2 NOPs before the regular function prologue.
->> T series registers are available and safe because of LoongArch psABI.
->>
->> At runtime, replace nop with bl to enable ftrace call and replace bl with
->> nop to disable ftrace call. The bl requires us to save the original RA value,
->> so here it saves RA at t0.
->> details are:
->>
->> | Compiled   |       Disabled         |        Enabled         |
->> +------------+------------------------+------------------------+
->> | nop        | move     t0, ra        | move     t0, ra        |
->> | nop        | nop                    | bl      ftrace_caller  |
->> | func_body  | func_body              | func_body              |
->>
->> The RA value will be recovered by ftrace_regs_entry, and restored into RA
->> before returning to the regular function prologue. When a function is not
->> being traced, the move t0, ra is not harmful.
->>
->> 1) ftrace_make_call, ftrace_make_nop (in kernel/ftrace.c)
->>     The two functions turn each recorded call site of filtered functions
->>     into a call to ftrace_caller or nops.
->>
->> 2) ftracce_update_ftrace_func (in kernel/ftrace.c)
->>     turns the nops at ftrace_call into a call to a generic entry for
->>     function tracers.
->>
->> 3) ftrace_caller (in kernel/mcount-dyn.S)
->>     The entry where each _mcount call sites calls to once they are
->>     filtered to be traced.
->>
-[...]
->>
+On Fri, Sep 02, 2022 at 02:18:20PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.19.257 release.
+> There are 56 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> When use the option func_stack_trace for the function tracer, I found a issue:
-> 
-> Steps:
-> 1. Enable the function tracer and the option func_stack_trace:
-> 
-> /sys/kernel/tracing # echo blk_update_request > ./set_ftrace_filter
-> /sys/kernel/tracing # echo 1 > ./options/func_stack_trace
-> /sys/kernel/tracing # echo function > ./current_tracer
-> 
-> 2. Let the blk_update_request() be called.
-> 
->   # mount /dev/vda /tmp
-> 
-> 
-> 3. cat ./trace
->            <idle>-0       [000] ..s1.   126.016445: blk_update_request
-> <-blk_mq_end_request
->            <idle>-0       [000] ..s1.   126.017937: <stack trace>
->   => blk_mq_end_request
-> 
-> We can see only one stack trace.
-> 
-> 
-> I found the default unwinder(for loongson3_defconfig) is
-> CONFIG_UNWINDER_PROLOGUE, if switch it to CONFIG_UNWINDER_GUESS
-> it works well:
-> 
-[...]
-> 
-> Maybe the issue happened on the CONFIG_UNWINDER_PROLOGUE,  but I
-> haven't dug deep into it ;)
-
-Hi, Jeff
-
-Thanks a lot for your feedback!
-
-I fixed it in v3, which was caused by the ftrace_regs_entry assembly not 
-being considered by the prologue analyze method. :)
-
-regards
--Qing
-
+> Responses should be made by Sun, 04 Sep 2022 12:13:47 +0000.
+> Anything received after that time might be too late.
 > 
 
+Build results:
+	total: 157 pass: 157 fail: 0
+Qemu test results:
+	total: 422 pass: 422 fail: 0
+
+Tested-by: Guenter Roeck <linux@roeck-us.net>
+
+Guenter
