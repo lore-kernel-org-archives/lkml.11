@@ -2,133 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E54B9ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 18:41:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43F07ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 18:42:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232090AbiICSlx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 3 Sep 2022 14:41:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32860 "EHLO
+        id S232782AbiICSmR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 3 Sep 2022 14:42:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229698AbiICSlu (ORCPT
+        with ESMTP id S232681AbiICSmO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 3 Sep 2022 14:41:50 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE0DF2CC95;
-        Sat,  3 Sep 2022 11:41:49 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id z8so6637525edb.6;
-        Sat, 03 Sep 2022 11:41:49 -0700 (PDT)
+        Sat, 3 Sep 2022 14:42:14 -0400
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5229731DF6
+        for <linux-kernel@vger.kernel.org>; Sat,  3 Sep 2022 11:42:12 -0700 (PDT)
+Received: by mail-qt1-x82b.google.com with SMTP id y18so3762705qtv.5
+        for <linux-kernel@vger.kernel.org>; Sat, 03 Sep 2022 11:42:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date;
-        bh=y/fyX7Fgx7pidbZm1EbW1sYH2qqBKD2aPEMgJoc7r7A=;
-        b=cKK/oblrAd4xpjnI2tAso16qm9Dx5ZK4cT9a7pOslArAyWGvZQRvP1C+61uKZGqXk0
-         ChPwXWrEMKYiQTq5IUIaeVfy0FoC83K/EIqZxIdqHQuY1C+C3J3FbAQt30nvIvJlm5Px
-         N56ZDNfNHMvDNvJ/WpHR2Sro4SujJxEZILta2c04tx4IWWRio66XCVXRrHUhADjYrsgV
-         3Cx+lmZ3pKqnBvGhIZGIp4Q1m3da4V+loZCcfZhXRR9BdqmogEpQ3nFQVeO8xa8osaTy
-         Iu1mgRjIIMfhXeIDFDV/CXGyXgA4zOfkCwXINP1A6Ae0KVVSRKR+9XdjkiXEClxQCgWb
-         KsFg==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=J6XE1O2ZWCpY/clzvoN88TJg9PZ0eb26xbhiVvKP4lo=;
+        b=ZLRqn/c0+rzTsE0ll2clObgAAimBVEPP9MBpfugRmWtY5mYL5FNjYMzFbDhaVOvk4T
+         ee4RwcJLQ0DN4yFn7iFLl+BZZyGL0FQizewfH+HGkeRu7msjQCNQ98DgC4h8tNwX1em/
+         KQw6LehBXLAFtmcDQUNJ+iX0dD2D3QBGbzpgbjXmmiJxZbhh+2GsXq2aYwIN3/UZQvIX
+         y0Nl8CMK1TEXvQ/QsnQgPP6Iw3XZW1clbatqKuGfdHIQUEznNwz+JGDcMlqKOCxNgxbm
+         jH6k1U6aRneVWVKg3nLs7TJlwG7WAv3PtJUdRA/KGJmmHvoBtFmitCqAZv4KkJjjD/DB
+         prcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=y/fyX7Fgx7pidbZm1EbW1sYH2qqBKD2aPEMgJoc7r7A=;
-        b=HvwYyNXmNSh9wZ9cSfSLbT77NRqkgJBuS0/0ECRCavo1MgHn+2F8WHNJQoq6GY3NO2
-         OXbXK0PHaI93iLleoZyiO+W79GdSeqr6UQWPF7iIOTGahwtd5dbKWJMp+uBY5zoc3O54
-         zLtFOuLjbHSszrBi2YxISQ3PY86JjHBNAGEgxh7ylhIDf8a52Uz9XXzwoH0Qq/T60Y0l
-         D1VPczKbQFZO/lrrWyaN2hjCsxjyYt3wrLJ1SCaZOfpXijJfjYCwLZ83b/9p3FOHbsvK
-         tKXu8HYl92EHM+QZ9y2upx7roLjbyNF0XBpMhTSgcV83jcePiXVF2KgWiyH2PqY2ZkRL
-         qFUQ==
-X-Gm-Message-State: ACgBeo2Dh+k1vhQ2Bw6/feoGECxRJDhSaW1IFoRsTaTO33DorHgVQYaT
-        /fEZQr8MYfdll2eSMAffiWdzd1/MVSGhm9NC6og=
-X-Google-Smtp-Source: AA6agR5kquHLK08sJV7wPSiA6uDfnxrcaGSZokgPnt8ENqvTPyodp6p6/lTYfIShLzXKEcAmhUXvwNyourKGFKn/PFU=
-X-Received: by 2002:a05:6402:11d0:b0:448:89ff:88f0 with SMTP id
- j16-20020a05640211d000b0044889ff88f0mr23145854edw.166.1662230508161; Sat, 03
- Sep 2022 11:41:48 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=J6XE1O2ZWCpY/clzvoN88TJg9PZ0eb26xbhiVvKP4lo=;
+        b=1W2DYTF/2lKtlo/ETFNYWm84g5Fi1KYfPeUngvr3CIULI4tXsANWsT7GAkA6iZPAwv
+         Yn56QFcEnk5NczGS/NgFwZ13Yp0KVjbRqLus/EHJZmT1xfZD8LlLkfixCmYLteci178L
+         5V0lLAUz2+E5bEYRHdnulYpXmYGpWqx+dJ6KHmu/kxCNIDKhjVPMn7suUvPyGD4MKjEH
+         mESdVFwqRQxIn+II/BgYluypxvvkSmTxsBMIuUJOfykc8DWm7aEfzoqKDGDWDVBB0roS
+         g4Z9b6DOUdrkovkTFRv5WPyXviOFXcb+VUltRFjxH8Db7R0ZRhmqDTCf/FkLe8bjMvqV
+         5I3A==
+X-Gm-Message-State: ACgBeo3YjIJ1pitX6KWkT3MXGko+p05gz6Tvfwxaha7zr5Yfzn0zeHuz
+        AExHIq53i57weCoSaxX5EyM=
+X-Google-Smtp-Source: AA6agR7HxzIwTJ9RWwG3gXmLje2tPCj6V0jw/52dT39Mb7QmN934e3u3R0eV3Zbu5KvY9JGCDDU+hQ==
+X-Received: by 2002:a05:622a:1a01:b0:343:310d:fedf with SMTP id f1-20020a05622a1a0100b00343310dfedfmr34464267qtb.622.1662230531251;
+        Sat, 03 Sep 2022 11:42:11 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id o12-20020ac841cc000000b003430589dd34sm3390388qtm.57.2022.09.03.11.42.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 03 Sep 2022 11:42:10 -0700 (PDT)
+Message-ID: <cdde4e0a-dfd7-51d7-0800-7ac124c34ff7@gmail.com>
+Date:   Sat, 3 Sep 2022 11:42:07 -0700
 MIME-Version: 1.0
-References: <20220821173051.155038-1-peron.clem@gmail.com> <20220821173051.155038-5-peron.clem@gmail.com>
- <0c028109-bb50-fbaa-de18-9876706a7477@sholland.org>
-In-Reply-To: <0c028109-bb50-fbaa-de18-9876706a7477@sholland.org>
-From:   =?UTF-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>
-Date:   Sat, 3 Sep 2022 20:41:36 +0200
-Message-ID: <CAJiuCcf7NuXFFLw6-RFcyZPNFPagfSB5aR7rY5528USzNB-iKg@mail.gmail.com>
-Subject: Re: [PATCH v2 4/4] arm64: dts: allwinner: beelink-gs1: Enable GPU OPP
-To:     Samuel Holland <samuel@sholland.org>
-Cc:     Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-sunxi@lists.linux.dev,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Subject: Re: [PATCH 0/2] mtd: rawnand: brcmnand: Glue driver Kconfig entries
+Content-Language: en-US
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        linux-mtd@lists.infradead.org,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Brian Norris <computersforpeace@gmail.com>,
+        Kamal Dasu <kdasu.kdev@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Roger Quadros <rogerq@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Cai Huoqing <cai.huoqing@linux.dev>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Colin Ian King <colin.king@intel.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        William Zhang <william.zhang@broadcom.com>
+References: <20220711222323.4048197-1-f.fainelli@gmail.com>
+ <6008ef46-ccdb-ea01-f9fb-4f8fceed2d29@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <6008ef46-ccdb-ea01-f9fb-4f8fceed2d29@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Samuel,
-
-On Tue, 23 Aug 2022 at 05:07, Samuel Holland <samuel@sholland.org> wrote:
->
-> On 8/21/22 12:30 PM, Cl=C3=A9ment P=C3=A9ron wrote:
-> > Enable GPU OPP table for Beelink GS1
-> >
-> > Signed-off-by: Cl=C3=A9ment P=C3=A9ron <peron.clem@gmail.com>
-> > ---
-> >  arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >
-> > diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts b/=
-arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts
-> > index 6249e9e02928..20fc0584d1c6 100644
-> > --- a/arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts
-> > +++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts
-> > @@ -5,6 +5,7 @@
-> >
-> >  #include "sun50i-h6.dtsi"
-> >  #include "sun50i-h6-cpu-opp.dtsi"
-> > +#include "sun50i-h6-gpu-opp.dtsi"
-> >
-> >  #include <dt-bindings/gpio/gpio.h>
-> >
-> > @@ -261,6 +262,7 @@ reg_dcdca: dcdca {
-> >                       };
-> >
-> >                       reg_dcdcc: dcdcc {
-> > +                             regulator-always-on;
->
-> Why is this necessary? This file already has:
-
-This is a relica from the first serie at this time the OPP doesn't
-properly enable the regulator it's now fixed since:
-https://patchwork.kernel.org/project/linux-pm/patch/81eb2efeeed1556d1240652=
-52f32777838a6d850.1589528491.git.viresh.kumar@linaro.org/
-
-I will drop it.
-
-Thanks for the review.
-Regards,
-Clement
 
 
+On 8/4/2022 10:55 AM, Florian Fainelli wrote:
+> On 7/11/22 15:23, Florian Fainelli wrote:
+>> Hi all,
+>>
+>> This patch series allows for a finer control over the BRCMNAND driver
+>> glue driver selection such that it defaults to the various platforms
+>> enabled in the configuration file.
+> 
+> Miquel are you able to review and apply those patches if satisfactory? Thanks!
 
-
->
-> &gpu {
->         mali-supply =3D <&reg_dcdcc>;
->         status =3D "okay";
-> };
->
-> So there is a consumer for this regulator.
->
-> Regards,
-> Samuel
->
-> >                               regulator-enable-ramp-delay =3D <32000>;
-> >                               regulator-min-microvolt =3D <810000>;
-> >                               regulator-max-microvolt =3D <1080000>;
-> >
->
+Ping?
+-- 
+Florian
