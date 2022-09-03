@@ -2,99 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64DC3ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 07:59:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA118C6FA82
+	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 08:31:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232422AbiICH7F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 3 Sep 2022 03:59:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43590 "EHLO
+        id S232116AbiICIbZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 3 Sep 2022 04:31:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229464AbiICH7A (ORCPT
+        with ESMTP id S229515AbiICIbX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 3 Sep 2022 03:59:00 -0400
-X-Greylist: delayed 523 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 03 Sep 2022 00:58:53 PDT
-Received: from gofer.mess.org (gofer.mess.org [IPv6:2a02:8011:d000:212::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4155979EE
-        for <linux-kernel@vger.kernel.org>; Sat,  3 Sep 2022 00:58:53 -0700 (PDT)
-Received: by gofer.mess.org (Postfix, from userid 1000)
-        id 9E6EF100072; Sat,  3 Sep 2022 08:49:56 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mess.org; s=2020;
-        t=1662191396; bh=G4MT1MV4esuAr0v8xfY1oNqEbcDxmnusDDYk2WFLurE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lPjBKz4YJU0zBRkohIzEImV5T8Vdxs3wm3YIKJvuSG6n3TB5kkoRxK7v2E4acMO2d
-         wRNpdZ7ncFfzgIgDoTZ0FPXvOJYNkd1qBW3JGyLXG+hwHoLR+dtAK2mB/V+xbG8BOj
-         kr+24owdZBA84+AdXiaC3KBw8zpIJlwIw06m7r01O4VbhvPt3hWdfaAPdNHigCVaDT
-         cq2ekM0T3kjS54NikN5pyi+teKRf6CeO/9Fs7iMj7rrHpP0PIGSjr92PwUXDMF1ZxM
-         JT4G088rtwYzRwPVxDTHTZ39ZEaLduSAbFMESumMoT3B+cgDOI7Df06ATHNCqloLPN
-         48CCuyN81XiXA==
-Date:   Sat, 3 Sep 2022 08:49:56 +0100
-From:   Sean Young <sean@mess.org>
-To:     Gautam Menghani <gautammenghani201@gmail.com>
-Cc:     mchehab@kernel.org, linux-media@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzbot+0c3cb6dc05fbbdc3ad66@syzkaller.appspotmail.com,
-        hdanton@sina.com
-Subject: Re: [PATCH] drivers/media/rc: Ensure usb_submit_urb() is not called
- if write is in progress
-Message-ID: <YxMHJNNq2e3kLxdQ@gofer.mess.org>
-References: <20220814142543.24910-1-gautammenghani201@gmail.com>
- <YxJHmYDMtmzaHWQG@biggie>
+        Sat, 3 Sep 2022 04:31:23 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7BBE101DD;
+        Sat,  3 Sep 2022 01:31:19 -0700 (PDT)
+Received: from [127.0.0.1] (dynamic-002-247-242-004.2.247.pool.telefonica.de [2.247.242.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 09E311EC06EE;
+        Sat,  3 Sep 2022 10:31:14 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1662193874;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dHXOkzxgjsBtZM539cRCQ2oOl4G/USWxuxSAXY3DyOs=;
+        b=Gs6Qlvxs8gNpEUHeMBASMK9yQo6Y7FspgcI4jU/TDL4PyDkxNsQfAH1Paj6VGlvA4fTxXc
+        rP1bxXy5M8rQhgmB6LUcaejLkEo6203LQUbYX892e1hz0XVqmaDIgGDePeuwjxC+1N/d/j
+        TivrvEgG+eKbx+fbHeDorEmyY6hdGcU=
+Date:   Sat, 03 Sep 2022 08:31:09 +0000
+From:   Boris Petkov <bp@alien8.de>
+To:     "Kalra, Ashish" <Ashish.Kalra@amd.com>
+CC:     "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "rientjes@google.com" <rientjes@google.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "slp@redhat.com" <slp@redhat.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "ak@linux.intel.com" <ak@linux.intel.com>,
+        "Lendacky, Thomas" <Thomas.Lendacky@amd.com>,
+        "alpergun@google.com" <alpergun@google.com>,
+        "jroedel@suse.de" <jroedel@suse.de>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "seanjc@google.com" <seanjc@google.com>,
+        "pgonda@google.com" <pgonda@google.com>,
+        "pbonzini@redhat.com" <pbonzini@redhat.com>,
+        "srinivas.pandruvada@linux.intel.com" 
+        <srinivas.pandruvada@linux.intel.com>,
+        "ardb@kernel.org" <ardb@kernel.org>,
+        "dovmurik@linux.ibm.com" <dovmurik@linux.ibm.com>,
+        "tobin@ibm.com" <tobin@ibm.com>,
+        "Roth, Michael" <Michael.Roth@amd.com>,
+        "jmattson@google.com" <jmattson@google.com>,
+        "kirill@shutemov.name" <kirill@shutemov.name>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "tony.luck@intel.com" <tony.luck@intel.com>,
+        "vbabka@suse.cz" <vbabka@suse.cz>,
+        "sathyanarayanan.kuppuswamy@linux.intel.com" 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "dgilbert@redhat.com" <dgilbert@redhat.com>,
+        "marcorr@google.com" <marcorr@google.com>,
+        "jarkko@kernel.org" <jarkko@kernel.org>
+Subject: =?US-ASCII?Q?RE=3A_=5BPATCH_Part2_v6_09/49=5D_x86/fault=3A_Add_sup?= =?US-ASCII?Q?port_to_handle_the_RMP_fault_for_user_address?=
+In-Reply-To: <SN6PR12MB2767074DEB38477356A3C0F98E7D9@SN6PR12MB2767.namprd12.prod.outlook.com>
+References: <cover.1655761627.git.ashish.kalra@amd.com> <0ecb0a4781be933fcadeb56a85070818ef3566e7.1655761627.git.ashish.kalra@amd.com> <YvKRjxgipxLSNCLe@zn.tnic> <SN6PR12MB2767322F8C573EDFA1C20AD78E659@SN6PR12MB2767.namprd12.prod.outlook.com> <YvN9bKQ0XtUVJE7z@zn.tnic> <SN6PR12MB2767A87F12B8E704EB80CC458E659@SN6PR12MB2767.namprd12.prod.outlook.com> <SN6PR12MB27672B74D1A6A6E920F364A78E7B9@SN6PR12MB2767.namprd12.prod.outlook.com> <YxGoBzOFT+sfwr4w@nazgul.tnic> <SN6PR12MB2767E95BA3A99A6263F1F9AE8E7A9@SN6PR12MB2767.namprd12.prod.outlook.com> <YxLXJk36EKxldC1S@nazgul.tnic> <SN6PR12MB276767FDF3528BC1849EEA0A8E7D9@SN6PR12MB2767.namprd12.prod.outlook.com> <SN6PR12MB2767074DEB38477356A3C0F98E7D9@SN6PR12MB2767.namprd12.prod.outlook.com>
+Message-ID: <BC747219-7808-4C39-A17C-A76B35DD6CB3@alien8.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YxJHmYDMtmzaHWQG@biggie>
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Sep 02, 2022 at 11:42:41PM +0530, Gautam Menghani wrote:
-> On Sun, Aug 14, 2022 at 07:55:42PM +0530, Gautam Menghani wrote:
-> > The warning "URB submitted while active" is reported if the function
-> > send_packet() in imon.c is called if a write is already is in progress.
-> > Add a check to return -EBUSY in case a write is already is in progress.
-> > Also, mark tx.busy as false after transmission is completed.
-> > 
-> > Fixes: 21677cfc562a ("V4L/DVB: ir-core: add imon driver")
-> > Cc: hdanton@sina.com
-> > Suggested-by: hdanton@sina.com
-> > Link: https://syzkaller.appspot.com/bug?id=e378e6a51fbe6c5cc43e34f131cc9a315ef0337e
-> > Reported-by: syzbot+0c3cb6dc05fbbdc3ad66@syzkaller.appspotmail.com
-> > Signed-off-by: Gautam Menghani <gautammenghani201@gmail.com>
-> > ---
-> >  drivers/media/rc/imon.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> > 
-> > diff --git a/drivers/media/rc/imon.c b/drivers/media/rc/imon.c
-> > index 735b925da998..a5b997c2c7e2 100644
-> > --- a/drivers/media/rc/imon.c
-> > +++ b/drivers/media/rc/imon.c
-> > @@ -598,6 +598,8 @@ static int send_packet(struct imon_context *ictx)
-> >  	int retval = 0;
-> >  	struct usb_ctrlrequest *control_req = NULL;
-> >  
-> > +	if (ictx->tx.busy)
-> > +		return -EBUSY;
-> >  	/* Check if we need to use control or interrupt urb */
-> >  	if (!ictx->tx_control) {
-> >  		pipe = usb_sndintpipe(ictx->usbdev_intf0,
-> > @@ -654,6 +656,7 @@ static int send_packet(struct imon_context *ictx)
-> >  			pr_err_ratelimited("task interrupted\n");
-> >  		}
-> >  		mutex_lock(&ictx->lock);
-> > +		ictx->tx.busy = false;
-> >  
-> >  		retval = ictx->tx.status;
-> >  		if (retval)
-> > -- 
-> > 2.34.1
-> > 
-> Hi,
-> 
-> Please review the above fix and let me know if any changes are needed.
+On September 3, 2022 6:57:51 AM UTC, "Kalra, Ashish" <Ashish=2EKalra@amd=2E=
+com> wrote:
+>[AMD Official Use Only - General]
+>
+>So essentially we want to map the faulting address to a RMP entry, consid=
+ering the fact that a 2M host hugepage can be mapped as=20
+>4K RMP table entries and 1G host hugepage can be mapped as 2M RMP table e=
+ntries=2E
 
-Greg has pointed out issues with this patch: there is no locking.
+So something's seriously confusing or missing here because if you fault on=
+ a 2M host page and the underlying RMP entries are 4K then you can use pte_=
+index()=2E
 
-Thanks,
+If the host page is 1G and the underlying RMP entries are 2M, pmd_index() =
+should work here too=2E
 
-Sean
+But this piecemeal back'n'forth doesn't seem to resolve this so I'd like t=
+o ask you pls to sit down, take your time and give a detailed example of th=
+e two possible cases and what the difference is between pte_/pmd_index and =
+your way=2E Feel free to add actual debug output and paste it here=2E
+
+Thanks=2E
+
+--=20
+Sent from a small device: formatting sux and brevity is inevitable=2E 
