@@ -2,155 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CC26C38145
-	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 17:23:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC79EC38145
+	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 17:27:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231472AbiICRXH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 3 Sep 2022 13:23:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57818 "EHLO
+        id S231156AbiICR1I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 3 Sep 2022 13:27:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229526AbiICRXD (ORCPT
+        with ESMTP id S229526AbiICR1G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 3 Sep 2022 13:23:03 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29138564E2;
-        Sat,  3 Sep 2022 10:23:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662225783; x=1693761783;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=E7SV1tvE14Rrta1eoerSvxDnugKpcVZ31cMcGlREDBs=;
-  b=ajUkTe+MiIF6zES0tsCMZ2MbS9DaEgWkDE1b0uYb9GJ9MCTQ2kHFGl5A
-   +/HQQmVCAMlS22zxas1aHx6srTbX2Mg3aUkDAiiObN5tQrPa/Rz5+cYx8
-   UFaTmjh6gx2CSho3Td/Zzpu8tC3BuV3dj+F2jJZxUJvQZmOPnzun1fPR/
-   3AzTxo80aKLa6mIcK/mLAo1X8UWAlP4CZ9nBdTqlJCKsaAmOhT5PEGwu4
-   sH3RLuohrs1NG6GLCBBNniOyfnSgLJr2Zk/8wIgaZtgJ5PfGiGHQmJV5A
-   bwTkb5AbpKYXYI4oHbNSET/AK4iDJIZAYrEoNE4NFjsb7XZrB6CEu4Wbo
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10459"; a="293762106"
-X-IronPort-AV: E=Sophos;i="5.93,287,1654585200"; 
-   d="scan'208";a="293762106"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2022 10:23:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,287,1654585200"; 
-   d="scan'208";a="590428747"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by orsmga006.jf.intel.com with ESMTP; 03 Sep 2022 10:22:57 -0700
-Date:   Sun, 4 Sep 2022 01:13:34 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     "Manne, Nava kishore" <nava.kishore.manne@amd.com>
-Cc:     "git (AMD-Xilinx)" <git@amd.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "michal.simek@xilinx.com" <michal.simek@xilinx.com>,
-        "mdf@kernel.org" <mdf@kernel.org>,
-        "hao.wu@intel.com" <hao.wu@intel.com>,
-        "trix@redhat.com" <trix@redhat.com>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "ronak.jain@xilinx.com" <ronak.jain@xilinx.com>,
-        "rajan.vaja@xilinx.com" <rajan.vaja@xilinx.com>,
-        "abhyuday.godhasara@xilinx.com" <abhyuday.godhasara@xilinx.com>,
-        "piyush.mehta@xilinx.com" <piyush.mehta@xilinx.com>,
-        "lakshmi.sai.krishna.potthuri@xilinx.com" 
-        <lakshmi.sai.krishna.potthuri@xilinx.com>,
-        "harsha.harsha@xilinx.com" <harsha.harsha@xilinx.com>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "nava.manne@xilinx.com" <nava.manne@xilinx.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-fpga@vger.kernel.org" <linux-fpga@vger.kernel.org>
-Subject: Re: [PATCH 1/4] firmware: xilinx: Add afi ioctl support
-Message-ID: <YxOLPrwwvMWatObc@yilunxu-OptiPlex-7050>
-References: <20220824035542.706433-1-nava.kishore.manne@amd.com>
- <20220824035542.706433-2-nava.kishore.manne@amd.com>
- <Ywm39iYGLliU9ncv@yilunxu-OptiPlex-7050>
- <DM6PR12MB3993321B918B2124B6776320CD799@DM6PR12MB3993.namprd12.prod.outlook.com>
+        Sat, 3 Sep 2022 13:27:06 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 544E556BB1
+        for <linux-kernel@vger.kernel.org>; Sat,  3 Sep 2022 10:27:05 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id gb36so9442366ejc.10
+        for <linux-kernel@vger.kernel.org>; Sat, 03 Sep 2022 10:27:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=6Zew9P4ZCPse5+99+pbN99tpIeaKYGurGm8E2KQ/Iqc=;
+        b=cLoOMXVEzLAYI6/u/OLVdw/Cd5F6Ag28KB2pq2gZzugt2NlOgYAFEH+4THRyDfciWk
+         WUh9eLW5+O/oVLjJn36zqO0hZp5iQlIc1ZMBBAL9xg7AGgTx0jGH/R4cSWVPM8mDR9gY
+         R+Krqcgfx0+ZnW3d/8AWDjpCgyBNhnjUMmHhY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=6Zew9P4ZCPse5+99+pbN99tpIeaKYGurGm8E2KQ/Iqc=;
+        b=e24Zj1ux5N4C0aB1BE9yTc9uSeaH+L6aT/+JP0jSk3YkfloG6Zc0lWHuedx5WBKZ2+
+         asBDoq8gav4Eh2US84q7FpnSvlBrQsgF5dWlwpBRPKdCWR7tmSfClsgkzlxXxLu56Lzk
+         5xUoSr96UoxkDjRHeMy9DGQdLXQHgUGWoHrR1KKLlNBHcYlPGdjPsm2qIXqAeligqyIs
+         KLwBn+93fCKx8Y9neU8dPMvG+OOp/liqhUA2Mjs5UFnm53r1hon9x25I5LtOh0aBSqW1
+         7gvXp1TIRu8nHOMPWYbvvfqYEqGgsVhNk8CyIlPhYwqpJFalKjpEO8wJzeGZJFu2Z4Rg
+         Iwew==
+X-Gm-Message-State: ACgBeo0nNiIuAj2NqrQJkOsjXGY3t8XPJ2gL2lVQRsK4adOMUa1oCE+L
+        geuVxzeWAy79yxZoc0+4jSu6xk1pWzGP9A0Ycxk=
+X-Google-Smtp-Source: AA6agR55w9rsnxxJ9AU1Y7V7W43fOpiMcDvrjtvZe7/JTIO6gEuOJpj4JIatgZqAg4Oy3q30nuMZiQ==
+X-Received: by 2002:a17:906:c154:b0:733:197:a8c with SMTP id dp20-20020a170906c15400b0073301970a8cmr31222281ejc.483.1662226023582;
+        Sat, 03 Sep 2022 10:27:03 -0700 (PDT)
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com. [209.85.221.53])
+        by smtp.gmail.com with ESMTPSA id q17-20020a1709064cd100b0073d678f50bfsm2706764ejt.164.2022.09.03.10.27.01
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 03 Sep 2022 10:27:02 -0700 (PDT)
+Received: by mail-wr1-f53.google.com with SMTP id n17so6032135wrm.4
+        for <linux-kernel@vger.kernel.org>; Sat, 03 Sep 2022 10:27:01 -0700 (PDT)
+X-Received: by 2002:a05:6000:1888:b0:222:ca41:dc26 with SMTP id
+ a8-20020a056000188800b00222ca41dc26mr19318106wri.442.1662226021197; Sat, 03
+ Sep 2022 10:27:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DM6PR12MB3993321B918B2124B6776320CD799@DM6PR12MB3993.namprd12.prod.outlook.com>
+References: <20220902130625.217071627@infradead.org> <20220902130950.205726504@infradead.org>
+ <CAHk-=wig7_=CpkvZXrbcM97pBGk5MCbVkA0yBGP2moiho-XS_Q@mail.gmail.com>
+ <YxI3Zf5drSHAkBL3@hirez.programming.kicks-ass.net> <YxJmdG9Ug7euJdZS@hirez.programming.kicks-ass.net>
+ <CAHk-=wj-njE+DwycFcVQ=ouXZpgKU2rjG3G0keNXSFWa_etrEA@mail.gmail.com>
+In-Reply-To: <CAHk-=wj-njE+DwycFcVQ=ouXZpgKU2rjG3G0keNXSFWa_etrEA@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sat, 3 Sep 2022 10:26:45 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whbunYr933WanyFxjp_WkT-NWNtSE6pt5A9Jq9_DjymEw@mail.gmail.com>
+Message-ID: <CAHk-=whbunYr933WanyFxjp_WkT-NWNtSE6pt5A9Jq9_DjymEw@mail.gmail.com>
+Subject: Re: [PATCH v2 37/59] x86/putuser: Provide room for padding
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+        x86@kernel.org, Tim Chen <tim.c.chen@linux.intel.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Andrew Cooper <Andrew.Cooper3@citrix.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Johannes Wikner <kwikner@ethz.ch>,
+        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
+        Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
+        Joao Moreira <joao.moreira@intel.com>,
+        Joseph Nuzman <joseph.nuzman@intel.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Juergen Gross <jgross@suse.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        K Prateek Nayak <kprateek.nayak@amd.com>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-08-30 at 09:25:47 +0000, Manne, Nava kishore wrote:
-> Hi Yilun,
-> 
-> 	Please find my response inline. 
-> 
-> > -----Original Message-----
-> > From: Xu Yilun <yilun.xu@intel.com>
-> > Sent: Saturday, August 27, 2022 11:52 AM
-> > To: Manne, Nava kishore <nava.kishore.manne@amd.com>
-> > Cc: git (AMD-Xilinx) <git@amd.com>; robh+dt@kernel.org;
-> > krzysztof.kozlowski+dt@linaro.org; michal.simek@xilinx.com;
-> > mdf@kernel.org; hao.wu@intel.com; trix@redhat.com;
-> > p.zabel@pengutronix.de; gregkh@linuxfoundation.org;
-> > ronak.jain@xilinx.com; rajan.vaja@xilinx.com;
-> > abhyuday.godhasara@xilinx.com; piyush.mehta@xilinx.com;
-> > lakshmi.sai.krishna.potthuri@xilinx.com; harsha.harsha@xilinx.com;
-> > linus.walleij@linaro.org; nava.manne@xilinx.com;
-> > devicetree@vger.kernel.org; linux-arm-kernel@lists.infradead.org; linux-
-> > kernel@vger.kernel.org; linux-fpga@vger.kernel.org; yilun.xu@intel.com
-> > Subject: Re: [PATCH 1/4] firmware: xilinx: Add afi ioctl support
-> > 
-> > On 2022-08-24 at 09:25:39 +0530, Nava kishore Manne wrote:
-> > > Adds afi ioctl to support dynamic PS-PL bus width settings.
-> > 
-> > Please also describe what is afi, PS, PL here, Patch #0 won't appear in
-> > upstream tree finally.
-> > 
-> 
-> Agree, Will update the description in v2.
-> 
-> > Thanks,
-> > Yilun
-> > 
-> > >
-> > > Signed-off-by: Nava kishore Manne <nava.kishore.manne@amd.com>
-> > > ---
-> > >  drivers/firmware/xilinx/zynqmp.c     | 14 +++++++++++
-> > >  include/linux/firmware/xlnx-zynqmp.h | 36
-> > > ++++++++++++++++++++++++++++
-> > >  2 files changed, 50 insertions(+)
-> > >
-> > > diff --git a/drivers/firmware/xilinx/zynqmp.c
-> > > b/drivers/firmware/xilinx/zynqmp.c
-> > > index d1f652802181..cbd84c96a66a 100644
-> > > --- a/drivers/firmware/xilinx/zynqmp.c
-> > > +++ b/drivers/firmware/xilinx/zynqmp.c
-> > > @@ -843,6 +843,20 @@ int zynqmp_pm_read_pggs(u32 index, u32
-> > *value)  }
-> > > EXPORT_SYMBOL_GPL(zynqmp_pm_read_pggs);
-> > >
-> > > +/**
-> > > + * zynqmp_pm_afi() - PM API for setting the PS-PL bus width
-> > > + * @config_id:	Register index value
-> > > + * @bus_width:	Afi interface bus width value.
-> > > + *
-> > > + * Return:	Returns status, either success or error+reason
-> > 
-> > I see other functions are also like this, but I still can't figure out what values
-> > for success and what for error+reason.
-> > 
-> 
-> Please find the relevant error info here:
-> https://elixir.bootlin.com/linux/v6.0-rc3/source/drivers/firmware/xilinx/zynqmp.c#L81
+On Fri, Sep 2, 2022 at 2:46 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> Hmm. It doesn't look too horrible, but yeah, fi it still ends up
+> getting the same padding overhead I'm not sure it ends up really
+> mattering.
 
-The caller should at least know what value is success and what are
-failures from the kernel doc, so they could write the code which call
-your API.
+Oh, and I think it's buggy anyway.
 
-Thanks,
-Yilun
+If there are any tail-calls to a leaf function, the tracking now gets
+out of whack. So it's no longer a "don't bother counting the last
+level", now it ends up being a "count got off by one".
 
-> 
-> Regards,
-> Navakishore.
-> 
+Oh well.
+
+             Linus
