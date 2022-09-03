@@ -2,875 +2,253 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FB0EC54EE9
-	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 17:03:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0A88ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 17:04:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230391AbiICRC7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 3 Sep 2022 13:02:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34096 "EHLO
+        id S229525AbiICREE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 3 Sep 2022 13:04:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbiICRC5 (ORCPT
+        with ESMTP id S230422AbiICREB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 3 Sep 2022 13:02:57 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71B524DF10;
-        Sat,  3 Sep 2022 10:02:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662224575; x=1693760575;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=iWDRfk8mhUEIqpKsUsu72kRfhTBRSHRzTtzmrNf/O7g=;
-  b=aR3ngfALkNBw9K+LhCC43tdiHXGeJdQGxYpPo1+5AFyCD0aBhXXn8pUR
-   cNJzPyk4PON/Rm+lzlT3krs4tWFIPCBFU9vMai3g/RPjR+PVxyOCa6VJZ
-   VFMilQtsYx9IWF8MHM66iug2WGassHn4UyZnfhS1OBTeWt+R+cPlUTs6e
-   12PN1n8A2ERE2D1miK32diCB5H/6U+vAjGRFQi0TGawGB8fyEGL8jD3ku
-   EWj94rFUyyegHRBiZ8J6Mp1Z8RlAmxVNSYldnEln+pqol6newZRvjpdP8
-   nDGfYgDVNV9pkqCQHT/3oI4rtxGfI492GS6srzjT7C6dYESVXQAkhV2jS
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10459"; a="294912216"
-X-IronPort-AV: E=Sophos;i="5.93,287,1654585200"; 
-   d="scan'208";a="294912216"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2022 10:02:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,287,1654585200"; 
-   d="scan'208";a="590425208"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by orsmga006.jf.intel.com with ESMTP; 03 Sep 2022 10:02:51 -0700
-Date:   Sun, 4 Sep 2022 00:53:27 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com, dg@emlix.com,
-        j.zink@pengutronix.de, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, system@metrotek.ru
-Subject: Re: [PATCH v9 1/2] fpga: lattice-sysconfig-spi: add Lattice
- sysCONFIG FPGA manager
-Message-ID: <YxOGh5Qu1SLzZKgU@yilunxu-OptiPlex-7050>
-References: <20220830095405.31609-1-i.bornyakov@metrotek.ru>
- <20220830095405.31609-2-i.bornyakov@metrotek.ru>
+        Sat, 3 Sep 2022 13:04:01 -0400
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C79624DF2A;
+        Sat,  3 Sep 2022 10:03:59 -0700 (PDT)
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-33dc31f25f9so40302177b3.11;
+        Sat, 03 Sep 2022 10:03:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=JgSQJQrFl0rSiXz9IMqGp2Wpf0/dqAi3JjYTCVyHmUQ=;
+        b=sj5tupm/U2K99MCeNnIpLxU9a5HruEzY8WAKBoshlC3iMN28aFKBu0sN1+deCyMrBl
+         BYDMjWaOgIg39kBHtn0O0mDKqS/oI2ryAgybsPaKwYSVhDDygr9qKrDLedAo9zEnVTQ+
+         Jn2nYFdcEgIPqeZHmq+JzSL77Q+jTAaCWwTeBmR7T51hJ6kb4At9YIH5GeK5Xdrfs6ny
+         DlOmIYLD61OackXFq6iKdxhL4NAASoM2x0Od0lqNsT5lZblhifpkf4AepZfG8x+0xtA7
+         af6UG1YH4ZoGyCXj3AuBP9z+CF4ppbpqN4Vd+eBVNcY/3c8xOvD/d4VDXakaQtCb+ETG
+         kLhg==
+X-Gm-Message-State: ACgBeo1EWqtwEx5lt8UgVv8JkKS79sC3BXV4fHjZRQ1hpoq6L1SmrnCu
+        ZIhwpBopaXOWaKQm04qFzZoTCeZlNe1SstYs0EY=
+X-Google-Smtp-Source: AA6agR7EXLzv1zu3fvIr/maPTZ5i4xfOjZGbNLwkQPzIqRxev0XP+/UekAGp3HKPSula8b7kHPuD7iacZmS+s9KdZs4=
+X-Received: by 2002:a0d:df92:0:b0:340:b90d:fb75 with SMTP id
+ i140-20020a0ddf92000000b00340b90dfb75mr31334425ywe.149.1662224638934; Sat, 03
+ Sep 2022 10:03:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220830095405.31609-2-i.bornyakov@metrotek.ru>
+References: <CAJZ5v0jdFPauNKurpXFdCJBtsXavvLzV9fu02divz61hE_STbQ@mail.gmail.com>
+ <20220901212631.GA250789@bhelgaas>
+In-Reply-To: <20220901212631.GA250789@bhelgaas>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Sat, 3 Sep 2022 19:03:47 +0200
+Message-ID: <CAJZ5v0guiJ7JzN1gzhuBQxxELHUPyNaHUmTpE99yCqSRgE1gqg@mail.gmail.com>
+Subject: Re: [RESEND PATCH v3 2/2] PCI/PTM: fix to maintain pci_dev->ptm_enabled
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Rajvi Jingar <rajvi.jingar@linux.intel.com>,
+        Rafael Wysocki <rafael.j.wysocki@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        David Box <david.e.box@linux.intel.com>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-08-30 at 12:54:04 +0300, Ivan Bornyakov wrote:
-> Add support to the FPGA manager for programming Lattice ECP5 and MachXO2
-> FPGAs over slave SPI sysCONFIG interface.
-> 
-> Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
-> ---
->  drivers/fpga/Kconfig         |   7 +
->  drivers/fpga/Makefile        |   3 +
->  drivers/fpga/sysconfig-spi.c | 216 +++++++++++++++++
->  drivers/fpga/sysconfig.c     | 433 +++++++++++++++++++++++++++++++++++
->  drivers/fpga/sysconfig.h     |  67 ++++++
->  5 files changed, 726 insertions(+)
->  create mode 100644 drivers/fpga/sysconfig-spi.c
->  create mode 100644 drivers/fpga/sysconfig.c
->  create mode 100644 drivers/fpga/sysconfig.h
-> 
-> diff --git a/drivers/fpga/Kconfig b/drivers/fpga/Kconfig
-> index 6c416955da53..991d9d976dca 100644
-> --- a/drivers/fpga/Kconfig
-> +++ b/drivers/fpga/Kconfig
-> @@ -263,4 +263,11 @@ config FPGA_MGR_MICROCHIP_SPI
->  	  programming over slave SPI interface with .dat formatted
->  	  bitstream image.
->  
-> +config FPGA_MGR_LATTICE_SPI
-> +	tristate "Lattice sysCONFIG SPI FPGA manager"
-> +	depends on SPI
-> +	help
-> +	  FPGA manager driver support for Lattice FPGAs programming over slave
-> +	  SPI sysCONFIG interface.
-> +
->  endif # FPGA
-> diff --git a/drivers/fpga/Makefile b/drivers/fpga/Makefile
-> index 42ae8b58abce..70e5f58d0c10 100644
-> --- a/drivers/fpga/Makefile
-> +++ b/drivers/fpga/Makefile
-> @@ -20,9 +20,12 @@ obj-$(CONFIG_FPGA_MGR_ZYNQ_FPGA)	+= zynq-fpga.o
->  obj-$(CONFIG_FPGA_MGR_ZYNQMP_FPGA)	+= zynqmp-fpga.o
->  obj-$(CONFIG_FPGA_MGR_VERSAL_FPGA)	+= versal-fpga.o
->  obj-$(CONFIG_FPGA_MGR_MICROCHIP_SPI)	+= microchip-spi.o
-> +obj-$(CONFIG_FPGA_MGR_LATTICE_SPI)	+= lattice-sysconfig-spi.o
->  obj-$(CONFIG_ALTERA_PR_IP_CORE)		+= altera-pr-ip-core.o
->  obj-$(CONFIG_ALTERA_PR_IP_CORE_PLAT)	+= altera-pr-ip-core-plat.o
->  
-> +lattice-sysconfig-spi-objs		:= sysconfig-spi.o sysconfig.o
-> +
->  # FPGA Secure Update Drivers
->  obj-$(CONFIG_FPGA_M10_BMC_SEC_UPDATE)	+= intel-m10-bmc-sec-update.o
->  
-> diff --git a/drivers/fpga/sysconfig-spi.c b/drivers/fpga/sysconfig-spi.c
-> new file mode 100644
-> index 000000000000..449f9f623762
-> --- /dev/null
-> +++ b/drivers/fpga/sysconfig-spi.c
-> @@ -0,0 +1,216 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Lattice FPGA programming over slave SPI sysCONFIG interface.
-> + */
-> +
-> +#include <linux/fpga/fpga-mgr.h>
-> +#include <linux/of_device.h>
-> +#include <linux/spi/spi.h>
-> +
-> +#include "sysconfig.h"
-> +
-> +static int sysconfig_spi_transfer(struct sysconfig_priv *priv,
-> +				  const void *tx_buf, size_t tx_len,
-> +				  void *rx_buf, size_t rx_len)
-> +{
-> +	if (!rx_buf)
-> +		return spi_write(priv->spi, tx_buf, tx_len);
-> +
-> +	return spi_write_then_read(priv->spi, tx_buf, tx_len, rx_buf, rx_len);
-> +}
-> +
-> +int sysconfig_lsc_burst_init(struct sysconfig_priv *priv)
-> +{
-> +	const u8 lsc_bitstream_burst[] = SYSCONFIG_LSC_BITSTREAM_BURST;
-> +	struct spi_device *spi = priv->spi;
-> +	struct spi_transfer xfer = {
-> +		.tx_buf = lsc_bitstream_burst,
-> +		.len = sizeof(lsc_bitstream_burst),
-> +		.cs_change = 1,
-> +	};
-> +	struct spi_message msg;
-> +	int ret;
-> +
-> +	if (!spi)
-> +		return -EOPNOTSUPP;
-> +
-> +	spi_message_init_with_transfers(&msg, &xfer, 1);
-> +
-> +	/*
-> +	 * Lock SPI bus for exclusive usage until FPGA programming is done.
-> +	 * SPI bus will be released in sysconfig_lsc_burst_complete().
-> +	 */
-> +	spi_bus_lock(spi->controller);
-> +
-> +	ret = spi_sync_locked(spi, &msg);
-> +	if (ret)
-> +		spi_bus_unlock(spi->controller);
-> +
-> +	return ret;
-> +}
-> +
-> +int sysconfig_lsc_burst_complete(struct sysconfig_priv *priv)
-> +{
-> +	struct spi_device *spi = priv->spi;
-> +	int ret;
-> +
-> +	if (!spi)
-> +		return -EOPNOTSUPP;
-> +
-> +	/* Bitstream burst write is done, release SPI bus */
-> +	spi_bus_unlock(spi->controller);
-> +
-> +	/* Toggle CS and wait for bitstream write to finish */
-> +	ret = priv->sysconfig_transfer(priv, NULL, 0, NULL, 0);
-> +	if (!ret)
-> +		ret = sysconfig_poll_busy(priv);
-> +
-> +	return ret;
-> +}
-> +
-> +static int sysconfig_bitstream_burst_write(struct sysconfig_priv *priv,
-> +					   const char *buf, size_t count)
-> +{
-> +	struct spi_device *spi = priv->spi;
-> +	struct spi_transfer xfer = {
-> +		.tx_buf = buf,
-> +		.len = count,
-> +		.cs_change = 1,
-> +	};
-> +	struct spi_message msg;
-> +	int ret;
-> +
-> +	spi_message_init_with_transfers(&msg, &xfer, 1);
-> +	ret = spi_sync_locked(spi, &msg);
-> +	if (ret)
-> +		spi_bus_unlock(spi->controller);
-> +
-> +	return ret;
-> +}
-> +
-> +static int sysconfig_bitstream_paged_write(struct sysconfig_priv *priv,
-> +					   const char *buf, size_t count)
-> +{
-> +	const u8 lsc_progincr[] = SYSCONFIG_LSC_PROG_INCR_NV;
-> +	struct spi_device *spi = priv->spi;
-> +	struct spi_transfer xfers[2] = {
-> +		{
-> +			.tx_buf = lsc_progincr,
-> +			.len = sizeof(lsc_progincr),
-> +		}, {
-> +			.len = SYSCONFIG_PAGE_SIZE,
-> +		},
-> +	};
-> +	size_t i;
-> +	int ret;
-> +
-> +	if (count % SYSCONFIG_PAGE_SIZE)
-> +		return -EINVAL;
-> +
-> +	for (i = 0; i < count; i += SYSCONFIG_PAGE_SIZE) {
-> +		xfers[1].tx_buf = buf + i;
-> +
-> +		ret = spi_sync_transfer(spi, xfers, 2);
-> +		if (!ret)
-> +			ret = sysconfig_poll_busy(priv);
-> +
-> +		if (ret)
-> +			break;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static int sysconfig_ops_spi_write(struct fpga_manager *mgr, const char *buf,
-> +				   size_t count)
-> +{
-> +	const struct sysconfig_fpga_priv *fpga_priv;
-> +	struct sysconfig_priv *priv;
-> +
-> +	priv = mgr->priv;
-> +	fpga_priv = priv->fpga_priv;
-> +
-> +	if (fpga_priv->spi_burst_write)
-> +		return sysconfig_bitstream_burst_write(priv, buf, count);
-> +
-> +	return sysconfig_bitstream_paged_write(priv, buf, count);
-> +}
-> +
-> +static int sysconfig_spi_probe(struct spi_device *spi)
-> +{
-> +	const struct sysconfig_fpga_priv *fpga_priv;
-> +	const struct spi_device_id *dev_id;
-> +	struct device *dev = &spi->dev;
-> +	struct sysconfig_priv *priv;
-> +
-> +	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-> +	if (!priv)
-> +		return -ENOMEM;
-> +
-> +	fpga_priv = of_device_get_match_data(dev);
-> +	if (!fpga_priv) {
-> +		dev_id = spi_get_device_id(spi);
-> +		if (!dev_id)
-> +			return -ENODEV;
-> +
-> +		fpga_priv = (const struct sysconfig_fpga_priv *)dev_id->driver_data;
-> +	}
-> +
-> +	if (!fpga_priv)
-> +		return -EINVAL;
-> +
-> +	if (spi->max_speed_hz > fpga_priv->spi_max_speed_hz) {
-> +		dev_err(dev, "SPI speed %u is too high, maximum speed is %u\n",
-> +			spi->max_speed_hz, fpga_priv->spi_max_speed_hz);
-> +		return -EINVAL;
-> +	}
-> +
-> +	priv->dev = dev;
-> +	priv->spi = spi;
-> +	priv->fpga_priv = fpga_priv;
-> +	priv->sysconfig_transfer = sysconfig_spi_transfer;
-> +	priv->sysconfig_fpga_mgr_ops.state = sysconfig_ops_state;
-> +	priv->sysconfig_fpga_mgr_ops.write_init = sysconfig_ops_write_init;
+On Thu, Sep 1, 2022 at 11:26 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+>
+> On Wed, Aug 31, 2022 at 07:53:05PM +0200, Rafael J. Wysocki wrote:
+> > ...
+>
+> > In the meantime, I recalled that nvme wanted to leave the device in D0
+> > and program it into an internal low-power state in some cases which
+> > would be disturbed by disabling PTM later on (a config space write
+> > would kick the device out of the internal low-power state).
+> >
+> > So it looks like it would be better to disable PTM as the first thing
+> > in pci_pm_suspend() before calling the driver's suspend callback
+> > (which may be nvme suspend),
+>
+> Yes, I was thinking the same thing.  There's no reason we need to wait
+> until interrupts are disabled to disable PTM.
+>
+> > but then we'd need to save the original PTM status and restore it
+> > during the subsequent resume.  That could be done as early as in
+> > pci_pm_resume_noirq(), but I think the cleanest way would be to add
+> > a new bit to struct pci_device for that.
+>
+> > Alternatively, we can drop the $subject patch, so ptm_enabled still
+> > only means that it has been enabled during enumeration and it can be
+> > used to restore the original PTM status during resume.
+>
+> I like this second idea of dropping this "PCI/PTM: fix to maintain
+> pci_dev->ptm_enabled" patch and using "dev->ptm_enabled" to set the
+> PTM Enable bit on restore, as in the patches below.  Then we don't
+> need to do anything explicit to re-enable PTM.
+>
+> If this makes sense, I'll add a few cleanups on top and post as a
+> formal series.
 
-Why initialize the fpga_mgr_ops in spi driver? I think it should be the
-sysconfig core driver's job.
+It does to me.
 
-> +	priv->sysconfig_fpga_mgr_ops.write = sysconfig_ops_spi_write;
+Thanks for taking care of this!
 
-We already have the transfer callback, why we need a special spi write
-here.
-
-> +	priv->sysconfig_fpga_mgr_ops.write_complete = sysconfig_ops_write_complete;
-
-same concern
-
-> +
-> +	return sysconfig_probe(priv);
-> +}
-> +
-> +static const struct spi_device_id sysconfig_spi_ids[] = {
-> +	{
-> +		.name = "ecp5-fpga-mgr",
-> +		.driver_data = (kernel_ulong_t)&ecp5_data,
-> +	}, {
-> +		.name = "machxo2-fpga-mgr",
-> +		.driver_data = (kernel_ulong_t)&machxo2_data,
-> +	}, {},
-> +};
-> +MODULE_DEVICE_TABLE(spi, sysconfig_spi_ids);
-> +
-> +#if IS_ENABLED(CONFIG_OF)
-> +static const struct of_device_id sysconfig_of_ids[] = {
-> +	{
-> +		.compatible = "lattice,ecp5-fpga-mgr",
-> +		.data = &ecp5_data,
-> +	}, {
-> +		.compatible = "lattice,machxo2-fpga-mgr",
-> +		.data = &machxo2_data,
-> +	}, {},
-> +};
-> +MODULE_DEVICE_TABLE(of, sysconfig_of_ids);
-> +#endif /* IS_ENABLED(CONFIG_OF) */
-> +
-> +static struct spi_driver lattice_sysconfig_driver = {
-> +	.probe = sysconfig_spi_probe,
-> +	.id_table = sysconfig_spi_ids,
-> +	.driver = {
-> +		.name = "lattice_sysconfig_spi_fpga_mgr",
-> +		.of_match_table = of_match_ptr(sysconfig_of_ids),
-> +	},
-> +};
-> +
-> +module_spi_driver(lattice_sysconfig_driver);
-> +
-> +MODULE_DESCRIPTION("Lattice sysCONFIG Slave SPI FPGA Manager");
-> +MODULE_LICENSE("GPL");
-> diff --git a/drivers/fpga/sysconfig.c b/drivers/fpga/sysconfig.c
-> new file mode 100644
-> index 000000000000..122937eb89a3
-> --- /dev/null
-> +++ b/drivers/fpga/sysconfig.c
-> @@ -0,0 +1,433 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Lattice FPGA sysCONFIG interface functions independent of port type.
-> + */
-> +
-> +#include <linux/delay.h>
-> +#include <linux/fpga/fpga-mgr.h>
-> +#include <linux/gpio/consumer.h>
-> +
-> +#include "sysconfig.h"
-> +
-> +const struct sysconfig_fpga_priv ecp5_data = {
-> +	.spi_max_speed_hz = 60000000,
-> +	.isc_enable_operand = 0x00,
-> +	.spi_burst_write = true,
-> +	.internal_flash = false,
-> +};
-> +
-> +const struct sysconfig_fpga_priv machxo2_data = {
-> +	.spi_max_speed_hz = 66000000,
-> +	.isc_enable_operand = 0x08,
-> +	.spi_burst_write = false,
-> +	.internal_flash = true,
-> +};
-> +
-> +static int sysconfig_read_busy(struct sysconfig_priv *priv)
-> +{
-> +	const u8 lsc_check_busy[] = SYSCONFIG_LSC_CHECK_BUSY;
-> +	u8 busy;
-> +	int ret;
-> +
-> +	ret = priv->sysconfig_transfer(priv, lsc_check_busy, sizeof(lsc_check_busy),
-> +				       &busy, sizeof(busy));
-> +
-> +	return ret ? : busy;
-> +}
-> +
-> +int sysconfig_poll_busy(struct sysconfig_priv *priv)
-> +{
-> +	size_t retries = SYSCONFIG_POLL_RETRIES;
-> +	int ret;
-> +
-> +	while (retries--) {
-> +		ret = sysconfig_read_busy(priv);
-> +		if (ret <= 0)
-> +			return ret;
-> +
-> +		usleep_range(SYSCONFIG_POLL_INTERVAL_US,
-> +			     SYSCONFIG_POLL_INTERVAL_US * 2);
-> +	}
-> +
-> +	return -EBUSY;
-> +}
-> +
-> +static int sysconfig_read_status(struct sysconfig_priv *priv, u32 *status)
-> +{
-> +	const u8 lsc_read_status[] = SYSCONFIG_LSC_READ_STATUS;
-> +	__be32 device_status;
-> +	int ret;
-> +
-> +	ret = priv->sysconfig_transfer(priv, lsc_read_status,
-> +				       sizeof(lsc_read_status),
-> +				       &device_status, sizeof(device_status));
-> +	if (ret)
-> +		return ret;
-> +
-> +	*status = be32_to_cpu(device_status);
-> +
-> +	return 0;
-> +}
-> +
-> +static int sysconfig_poll_status(struct sysconfig_priv *priv, u32 *status)
-> +{
-> +	int ret = sysconfig_poll_busy(priv);
-> +
-> +	if (ret)
-> +		return ret;
-> +
-> +	return sysconfig_read_status(priv, status);
-> +}
-> +
-> +static int sysconfig_poll_gpio(struct gpio_desc *gpio, bool is_active)
-> +{
-> +	size_t retries = SYSCONFIG_POLL_RETRIES;
-> +	int value;
-> +
-> +	while (retries--) {
-> +		value = gpiod_get_value(gpio);
-> +		if (value < 0)
-> +			return value;
-> +
-> +		if ((is_active && value) || (!is_active && !value))
-> +			return 0;
-> +	}
-> +
-> +	return -ETIMEDOUT;
-> +}
-> +
-> +static int sysconfig_gpio_refresh(struct sysconfig_priv *priv)
-> +{
-> +	struct gpio_desc *program = priv->program;
-> +	struct gpio_desc *init = priv->init;
-> +	struct gpio_desc *done = priv->done;
-> +	int ret;
-> +
-> +	/* Enter init mode */
-> +	gpiod_set_value(program, 1);
-> +
-> +	ret = sysconfig_poll_gpio(init, true);
-> +	if (!ret)
-> +		ret = sysconfig_poll_gpio(done, false);
-> +
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* Enter program mode */
-> +	gpiod_set_value(program, 0);
-> +
-> +	return sysconfig_poll_gpio(init, false);
-> +}
-> +
-> +static int sysconfig_lsc_refresh(struct sysconfig_priv *priv)
-> +{
-> +	static const u8 lsc_refresh[] = SYSCONFIG_LSC_REFRESH;
-> +	int ret;
-> +
-> +	ret = priv->sysconfig_transfer(priv, lsc_refresh, sizeof(lsc_refresh),
-> +				       NULL, 0);
-> +	if (ret)
-> +		return ret;
-> +
-> +	usleep_range(4000, 8000);
-> +
-> +	return 0;
-> +}
-> +
-> +static int sysconfig_refresh(struct sysconfig_priv *priv)
-> +{
-> +	struct gpio_desc *program = priv->program;
-> +	struct gpio_desc *init = priv->init;
-> +	struct gpio_desc *done = priv->done;
-> +
-> +	if (program && init && done)
-> +		return sysconfig_gpio_refresh(priv);
-> +
-> +	return sysconfig_lsc_refresh(priv);
-> +}
-> +
-> +static int sysconfig_isc_enable(struct sysconfig_priv *priv)
-> +{
-> +	const struct sysconfig_fpga_priv *fpga_priv = priv->fpga_priv;
-> +	u8 isc_enable[] = SYSCONFIG_ISC_ENABLE;
-> +	u32 status;
-> +	int ret;
-> +
-> +	isc_enable[1] = fpga_priv->isc_enable_operand;
-> +
-> +	ret = priv->sysconfig_transfer(priv, isc_enable, sizeof(isc_enable),
-> +				       NULL, 0);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = sysconfig_poll_status(priv, &status);
-> +	if (ret || (status & SYSCONFIG_STATUS_FAIL))
-> +		return ret ? : -EFAULT;
-> +
-> +	return 0;
-> +}
-> +
-> +static int sysconfig_isc_erase(struct sysconfig_priv *priv)
-> +{
-> +	const struct sysconfig_fpga_priv *fpga_priv = priv->fpga_priv;
-> +	u8 isc_erase[] = SYSCONFIG_ISC_ERASE;
-> +	u32 status;
-> +	int ret;
-> +
-> +	isc_erase[1] = SYSCONFIG_ISC_ERASE_SRAM;
-> +
-> +	if (fpga_priv->internal_flash)
-> +		isc_erase[1] |= SYSCONFIG_ISC_ERASE_FLASH;
-> +
-> +	ret = priv->sysconfig_transfer(priv, isc_erase, sizeof(isc_erase),
-> +				       NULL, 0);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = sysconfig_poll_status(priv, &status);
-> +	if (ret || (status & SYSCONFIG_STATUS_FAIL))
-> +		return ret ? : -EFAULT;
-> +
-> +	return 0;
-> +}
-> +
-> +static int sysconfig_isc_init(struct sysconfig_priv *priv)
-> +{
-> +	int ret = sysconfig_isc_enable(priv);
-> +
-> +	if (ret)
-> +		return ret;
-> +
-> +	return sysconfig_isc_erase(priv);
-> +}
-> +
-> +static int sysconfig_lsc_init_addr(struct sysconfig_priv *priv)
-> +{
-> +	const u8 lsc_init_addr[] = SYSCONFIG_LSC_INIT_ADDR;
-> +
-> +	return priv->sysconfig_transfer(priv, lsc_init_addr,
-> +					sizeof(lsc_init_addr), NULL, 0);
-> +}
-> +
-> +static int sysconfig_isc_prog_done(struct sysconfig_priv *priv)
-> +{
-> +	const u8 isc_prog_done[] = SYSCONFIG_ISC_PROGRAM_DONE;
-> +	u32 status;
-> +	int ret;
-> +
-> +	ret = priv->sysconfig_transfer(priv, isc_prog_done,
-> +				       sizeof(isc_prog_done), NULL, 0);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = sysconfig_poll_status(priv, &status);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (status & SYSCONFIG_STATUS_DONE)
-> +		return 0;
-> +
-> +	return -EFAULT;
-> +}
-> +
-> +static int sysconfig_isc_disable(struct sysconfig_priv *priv)
-> +{
-> +	const u8 isc_disable[] = SYSCONFIG_ISC_DISABLE;
-> +
-> +	return priv->sysconfig_transfer(priv, isc_disable, sizeof(isc_disable),
-> +					NULL, 0);
-> +}
-> +
-> +enum fpga_mgr_states sysconfig_ops_state(struct fpga_manager *mgr)
-> +{
-> +	struct sysconfig_priv *priv = mgr->priv;
-> +	struct gpio_desc *done = priv->done;
-> +	u32 status;
-> +	int ret;
-> +
-> +	if (done && (gpiod_get_value(done) > 0))
-> +		return FPGA_MGR_STATE_OPERATING;
-> +
-> +	ret = sysconfig_read_status(priv, &status);
-> +	if (!ret && (status & SYSCONFIG_STATUS_DONE))
-> +		return FPGA_MGR_STATE_OPERATING;
-> +
-> +	return FPGA_MGR_STATE_UNKNOWN;
-> +}
-> +
-> +int sysconfig_ops_write_init(struct fpga_manager *mgr,
-> +			     struct fpga_image_info *info,
-> +			     const char *buf, size_t count)
-> +{
-> +	const struct sysconfig_fpga_priv *fpga_priv;
-> +	struct sysconfig_priv *priv;
-> +	struct device *dev;
-> +	int ret;
-> +
-> +	dev = &mgr->dev;
-> +	priv = mgr->priv;
-> +	fpga_priv = priv->fpga_priv;
-> +
-> +	if (info->flags & FPGA_MGR_PARTIAL_RECONFIG) {
-> +		dev_err(dev, "Partial reconfiguration is not supported\n");
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	if (!fpga_priv->internal_flash) {
-> +		/* Write directly to SRAM */
-> +		ret = sysconfig_refresh(priv);
-> +		if (ret) {
-> +			dev_err(dev, "Failed to go to program mode\n");
-> +			return ret;
-> +		}
-> +	}
-> +
-> +	/* Enter ISC mode */
-> +	ret = sysconfig_isc_init(priv);
-> +	if (ret) {
-> +		dev_err(dev, "Failed to go to ISC mode\n");
-> +		return ret;
-> +	}
-> +
-> +	/* Initialize the Address Shift Register */
-> +	ret = sysconfig_lsc_init_addr(priv);
-> +	if (ret) {
-> +		dev_err(dev,
-> +			"Failed to initialize the Address Shift Register\n");
-> +		return ret;
-> +	}
-> +
-> +	if (fpga_priv->spi_burst_write) {
-> +		/* Prepare for SPI burst write */
-> +		ret = sysconfig_lsc_burst_init(priv);
-
-Don't make the sysconfig.c dependent to sysconfig-spi.c, sysconfig.c
-should be common and workable without sysconfig-spi.c
-
-> +		if (ret)
-> +			dev_err(dev,
-> +				"Failed to prepare for bitstream burst write\n");
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static void sysconfig_cleanup(struct sysconfig_priv *priv)
-> +{
-> +	sysconfig_isc_erase(priv);
-> +	sysconfig_refresh(priv);
-> +}
-> +
-> +static int sysconfig_isc_finish(struct sysconfig_priv *priv)
-> +{
-> +	const struct sysconfig_fpga_priv *fpga_priv = priv->fpga_priv;
-> +	int ret, retries = SYSCONFIG_REFRESH_RETRIES;
-> +	struct gpio_desc *done_gpio = priv->done;
-> +	u32 status;
-> +
-> +	if (done_gpio) {
-> +		ret = sysconfig_isc_disable(priv);
-> +		if (ret)
-> +			return ret;
-> +
-> +		return sysconfig_poll_gpio(done_gpio, true);
-> +	}
-> +
-> +	while (retries--) {
-> +		ret = sysconfig_poll_status(priv, &status);
-> +		if (ret)
-> +			break;
-> +
-> +		if ((status & SYSCONFIG_STATUS_DONE) &&
-> +		    !(status & SYSCONFIG_STATUS_BUSY) &&
-> +		    !(status & SYSCONFIG_STATUS_ERR)) {
-> +			return sysconfig_isc_disable(priv);
-> +		}
-> +
-> +		if (fpga_priv->internal_flash) {
-> +			ret = sysconfig_refresh(priv);
-> +			if (ret)
-> +				break;
-> +		}
-> +	}
-> +
-> +	return -EFAULT;
-> +}
-> +
-> +int sysconfig_ops_write_complete(struct fpga_manager *mgr,
-> +				 struct fpga_image_info *info)
-> +{
-> +	const struct sysconfig_fpga_priv *fpga_priv;
-> +	struct sysconfig_priv *priv;
-> +	struct device *dev;
-> +	int ret;
-> +
-> +	dev = &mgr->dev;
-> +	priv = mgr->priv;
-> +	fpga_priv = priv->fpga_priv;
-> +
-> +	if (fpga_priv->spi_burst_write) {
-> +		ret = sysconfig_lsc_burst_complete(priv);
-
-Same concern
-
-> +		if (ret) {
-> +			dev_err(dev,
-> +				"Error while waiting bitstream write to finish\n");
-> +			goto fail;
-> +		}
-> +	}
-> +
-> +	if (fpga_priv->internal_flash) {
-> +		ret = sysconfig_isc_prog_done(priv);
-> +		if (!ret)
-> +			ret = sysconfig_refresh(priv);
-> +
-> +		if (ret) {
-> +			dev_err(dev, "Failed to enable Self-Download Mode\n");
-> +			goto fail;
-> +		}
-> +	}
-> +
-> +	ret = sysconfig_isc_finish(priv);
-> +
-> +fail:
-> +	if (ret)
-> +		sysconfig_cleanup(priv);
-> +
-> +	return ret;
-> +}
-> +
-> +int sysconfig_probe(struct sysconfig_priv *priv)
-> +{
-> +	struct gpio_desc *program, *init, *done;
-> +	struct device *dev = priv->dev;
-> +	struct fpga_manager *mgr;
-> +	int ret;
-> +
-> +	if (!dev)
-> +		return -ENODEV;
-> +
-> +	program = devm_gpiod_get_optional(dev, "program", GPIOD_OUT_LOW);
-> +	if (IS_ERR(program)) {
-> +		ret = PTR_ERR(program);
-> +		dev_err(dev, "Failed to get PROGRAM GPIO: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	init = devm_gpiod_get_optional(dev, "init", GPIOD_IN);
-> +	if (IS_ERR(init)) {
-> +		ret = PTR_ERR(init);
-> +		dev_err(dev, "Failed to get INIT GPIO: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	done = devm_gpiod_get_optional(dev, "done", GPIOD_IN);
-> +	if (IS_ERR(done)) {
-> +		ret = PTR_ERR(done);
-> +		dev_err(dev, "Failed to get DONE GPIO: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	priv->program = program;
-> +	priv->init = init;
-> +	priv->done = done;
-> +
-> +	mgr = devm_fpga_mgr_register(dev, "Lattice sysCONFIG FPGA Manager",
-> +				     &priv->sysconfig_fpga_mgr_ops, priv);
-> +
-> +	return PTR_ERR_OR_ZERO(mgr);
-> +}
-> diff --git a/drivers/fpga/sysconfig.h b/drivers/fpga/sysconfig.h
-> new file mode 100644
-> index 000000000000..997c24c35975
-> --- /dev/null
-> +++ b/drivers/fpga/sysconfig.h
-> @@ -0,0 +1,67 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +
-> +#ifndef	__LATTICE_SYSCONFIG_H
-> +#define	__LATTICE_SYSCONFIG_H
-> +
-> +#define	SYSCONFIG_ISC_ENABLE		{0xC6, 0x00, 0x00, 0x00}
-> +#define	SYSCONFIG_ISC_DISABLE		{0x26, 0x00, 0x00, 0x00}
-> +#define	SYSCONFIG_ISC_ERASE		{0x0E, 0x00, 0x00, 0x00}
-> +#define	SYSCONFIG_ISC_PROGRAM_DONE	{0x5E, 0x00, 0x00, 0x00}
-> +#define	SYSCONFIG_LSC_READ_STATUS	{0x3C, 0x00, 0x00, 0x00}
-> +#define	SYSCONFIG_LSC_CHECK_BUSY	{0xF0, 0x00, 0x00, 0x00}
-> +#define	SYSCONFIG_LSC_REFRESH		{0x79, 0x00, 0x00, 0x00}
-> +#define	SYSCONFIG_LSC_INIT_ADDR		{0x46, 0x00, 0x00, 0x00}
-> +#define	SYSCONFIG_LSC_BITSTREAM_BURST	{0x7a, 0x00, 0x00, 0x00}
-> +#define	SYSCONFIG_LSC_PROG_INCR_NV	{0x70, 0x00, 0x00, 0x01}
-> +
-> +#define	SYSCONFIG_ISC_ERASE_SRAM	BIT(0)
-> +#define	SYSCONFIG_ISC_ERASE_FLASH	BIT(2)
-> +
-> +#define	SYSCONFIG_STATUS_DONE		BIT(8)
-> +#define	SYSCONFIG_STATUS_BUSY		BIT(12)
-> +#define	SYSCONFIG_STATUS_FAIL		BIT(13)
-> +#define	SYSCONFIG_STATUS_ERR		(BIT(23) | BIT(24) | BIT(25))
-> +
-> +#define	SYSCONFIG_REFRESH_RETRIES	16
-> +#define	SYSCONFIG_POLL_RETRIES		1000000
-> +#define	SYSCONFIG_POLL_INTERVAL_US	30
-> +
-> +#define	SYSCONFIG_PAGE_SIZE		16
-> +
-> +struct sysconfig_fpga_priv {
-> +	u32 spi_max_speed_hz;
-
-Don't put bus specific stuff here, this should be common across all
-transport.
-
-> +	u8 isc_enable_operand;
-> +	bool spi_burst_write;
-
-same concern
-
-> +	bool internal_flash;
-> +};
-> +
-> +extern const struct sysconfig_fpga_priv ecp5_data;
-> +extern const struct sysconfig_fpga_priv machxo2_data;
-> +
-> +struct sysconfig_priv {
-> +	struct fpga_manager_ops sysconfig_fpga_mgr_ops;
-> +	const struct sysconfig_fpga_priv *fpga_priv;
-> +	struct gpio_desc *program;
-> +	struct gpio_desc *init;
-> +	struct gpio_desc *done;
-> +	struct spi_device *spi;
-
-same concern
-
-> +	struct device *dev;
-> +	int (*sysconfig_transfer)(struct sysconfig_priv *priv,
-> +				  const void *tx_buf, size_t tx_len,
-> +				  void *rx_buf, size_t rx_len);
-> +};
-> +
-> +int sysconfig_poll_busy(struct sysconfig_priv *priv);
-> +int sysconfig_lsc_burst_init(struct sysconfig_priv *priv);
-> +int sysconfig_lsc_burst_complete(struct sysconfig_priv *priv);
-> +
-> +enum fpga_mgr_states sysconfig_ops_state(struct fpga_manager *mgr);
-> +int sysconfig_ops_write_init(struct fpga_manager *mgr,
-> +			     struct fpga_image_info *info,
-> +			     const char *buf, size_t count);
-> +int sysconfig_ops_write_complete(struct fpga_manager *mgr,
-> +				 struct fpga_image_info *info);
-> +
-> +int sysconfig_probe(struct sysconfig_priv *priv);
-> +
-> +#endif /* __LATTICE_SYSCONFIG_H */
-> -- 
-> 2.37.2
-> 
-> 
+> commit 73690aa361a7 ("PCI/PM: Always disable PTM for all devices during suspend")
+> Author: Bjorn Helgaas <bhelgaas@google.com>
+> Date:   Thu Sep 1 16:14:45 2022 -0500
+>
+>     PCI/PM: Always disable PTM for all devices during suspend
+>
+>     We want to disable PTM on Root Ports because that allows some chips, e.g.,
+>     Intel mobile chips since Coffee Lake, to enter a lower-power PM state.
+>
+>     That means we also have to disable PTM on downstream devices because PCIe
+>     r6.0, sec 2.2.8, strongly recommends that functions support generation of
+>     messages in non-D0 states, so we assume Switch Upstream Ports or Endpoints
+>     may send PTM Requests while in D1, D2, and D3hot.  A PTM message received
+>     by a Downstream Port (including a Root Port) with PTM disabled must be
+>     treated as an Unsupported Request (sec 6.21.3).
+>
+>     PTM was previously disabled only for Root Ports, and it was disabled in
+>     pci_prepare_to_sleep(), which is not called at all if a driver supports
+>     legacy PM or does its own state saving.
+>
+>     Instead, disable PTM early in pci_pm_suspend() and pci_pm_runtime_suspend()
+>     so we do it in all cases.
+>
+>     Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+>
+> diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+> index 2815922ac525..f07399a94807 100644
+> --- a/drivers/pci/pci-driver.c
+> +++ b/drivers/pci/pci-driver.c
+> @@ -772,6 +772,12 @@ static int pci_pm_suspend(struct device *dev)
+>         struct pci_dev *pci_dev = to_pci_dev(dev);
+>         const struct dev_pm_ops *pm = dev->driver ? dev->driver->pm : NULL;
+>
+> +       /*
+> +        * Disabling PTM allows some systems, e.g., Intel mobile chips
+> +        * since Coffee Lake, to enter a lower-power PM state.
+> +        */
+> +       pci_disable_ptm(pci_dev);
+> +
+>         pci_dev->skip_bus_pm = false;
+>
+>         if (pci_has_legacy_pm_support(pci_dev))
+> @@ -1269,6 +1275,8 @@ static int pci_pm_runtime_suspend(struct device *dev)
+>         pci_power_t prev = pci_dev->current_state;
+>         int error;
+>
+> +       pci_disable_ptm(pci_dev);
+> +
+>         /*
+>          * If pci_dev->driver is not set (unbound), we leave the device in D0,
+>          * but it may go to D3cold when the bridge above it runtime suspends.
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> index 95bc329e74c0..b0e2968c8cca 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -2706,16 +2706,6 @@ int pci_prepare_to_sleep(struct pci_dev *dev)
+>         if (target_state == PCI_POWER_ERROR)
+>                 return -EIO;
+>
+> -       /*
+> -        * There are systems (for example, Intel mobile chips since Coffee
+> -        * Lake) where the power drawn while suspended can be significantly
+> -        * reduced by disabling PTM on PCIe root ports as this allows the
+> -        * port to enter a lower-power PM state and the SoC to reach a
+> -        * lower-power idle state as a whole.
+> -        */
+> -       if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT)
+> -               pci_disable_ptm(dev);
+> -
+>         pci_enable_wake(dev, target_state, wakeup);
+>
+>         error = pci_set_power_state(dev, target_state);
+> @@ -2764,16 +2754,6 @@ int pci_finish_runtime_suspend(struct pci_dev *dev)
+>         if (target_state == PCI_POWER_ERROR)
+>                 return -EIO;
+>
+> -       /*
+> -        * There are systems (for example, Intel mobile chips since Coffee
+> -        * Lake) where the power drawn while suspended can be significantly
+> -        * reduced by disabling PTM on PCIe root ports as this allows the
+> -        * port to enter a lower-power PM state and the SoC to reach a
+> -        * lower-power idle state as a whole.
+> -        */
+> -       if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT)
+> -               pci_disable_ptm(dev);
+> -
+>         __pci_enable_wake(dev, target_state, pci_dev_run_wake(dev));
+>
+>         error = pci_set_power_state(dev, target_state);
+>
+> commit f84a7e954e37 ("PCI/PTM: Enable PTM when restoring state")
+> Author: Bjorn Helgaas <bhelgaas@google.com>
+> Date:   Thu Sep 1 15:51:23 2022 -0500
+>
+>     PCI/PTM: Enable PTM when restoring state
+>
+>     The suspend path may disable PTM before saving config state, which means
+>     the PCI_PTM_CTRL_ENABLE bit in the saved state may be cleared even though
+>     we want PTM to be enabled when resuming.
+>
+>     If "dev->ptm_enabled" is set, it means PTM should be enabled, so make sure
+>     PCI_PTM_CTRL_ENABLE is set when restoring the PTM state.
+>
+>     Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+>
+> diff --git a/drivers/pci/pcie/ptm.c b/drivers/pci/pcie/ptm.c
+> index b6a417247ce3..3115601a85ef 100644
+> --- a/drivers/pci/pcie/ptm.c
+> +++ b/drivers/pci/pcie/ptm.c
+> @@ -82,6 +82,14 @@ void pci_restore_ptm_state(struct pci_dev *dev)
+>                 return;
+>
+>         cap = (u16 *)&save_state->cap.data[0];
+> +
+> +       /*
+> +        * The suspend path may disable PTM before saving config state.
+> +        * Make sure PCI_PTM_CTRL_ENABLE is set if PTM should be enabled.
+> +        */
+> +       if (dev->ptm_enabled)
+> +               *cap |= PCI_PTM_CTRL_ENABLE;
+> +
+>         pci_write_config_word(dev, ptm + PCI_PTM_CTRL, *cap);
+>  }
+>
+>
+> commit 1d7d32a35df0 ("PCI/PTM: Preserve PTM Root Select")
+> Author: Bjorn Helgaas <bhelgaas@google.com>
+> Date:   Thu Sep 1 15:54:15 2022 -0500
+>
+>     PCI/PTM: Preserve PTM Root Select
+>
+>     When disabling PTM, there's no need to clear the Root Select bit.  We
+>     disable PTM during suspend, and we want to re-enable it during resume.
+>     Clearing Root Select here makes re-enabling more complicated.
+>
+>     Per PCIe r6.0, sec 7.9.15.3, "When set, if the PTM Enable bit is also Set,
+>     this Time Source is the PTM Root," so if PTM Enable is cleared, the value
+>     of Root Select should be irrelevant.
+>
+>     Preserve Root Select to simplify re-enabling PTM.
+>
+>     Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+>     Cc: David E. Box <david.e.box@linux.intel.com>
+>
+> diff --git a/drivers/pci/pcie/ptm.c b/drivers/pci/pcie/ptm.c
+> index 368a254e3124..b6a417247ce3 100644
+> --- a/drivers/pci/pcie/ptm.c
+> +++ b/drivers/pci/pcie/ptm.c
+> @@ -42,7 +42,7 @@ void pci_disable_ptm(struct pci_dev *dev)
+>                 return;
+>
+>         pci_read_config_word(dev, ptm + PCI_PTM_CTRL, &ctrl);
+> -       ctrl &= ~(PCI_PTM_CTRL_ENABLE | PCI_PTM_CTRL_ROOT);
+> +       ctrl &= ~PCI_PTM_CTRL_ENABLE;
+>         pci_write_config_word(dev, ptm + PCI_PTM_CTRL, ctrl);
+>  }
+>
