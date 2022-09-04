@@ -2,172 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AB08ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Sun,  4 Sep 2022 09:03:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33980ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Sun,  4 Sep 2022 09:09:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233475AbiIDJDp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 4 Sep 2022 05:03:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41206 "EHLO
+        id S233046AbiIDJJD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 4 Sep 2022 05:09:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbiIDJDn (ORCPT
+        with ESMTP id S229617AbiIDJJC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 4 Sep 2022 05:03:43 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65B8C481FF
-        for <linux-kernel@vger.kernel.org>; Sun,  4 Sep 2022 02:03:42 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id o15-20020a17090a3d4f00b002004ed4d77eso490958pjf.5
-        for <linux-kernel@vger.kernel.org>; Sun, 04 Sep 2022 02:03:42 -0700 (PDT)
+        Sun, 4 Sep 2022 05:09:02 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A967491D5;
+        Sun,  4 Sep 2022 02:09:01 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id e18so7906582edj.3;
+        Sun, 04 Sep 2022 02:09:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=/nOdZT0dya6kDHenQdU2BmxT3CFwwxmGevkfqFbAuFY=;
-        b=DjQylxg2aCtbrA/Enu4bJ9WBUJ37jX/G4ldPk0TEIGmrJzSn/zLiF+TBkfaa+cbrX5
-         3rHQlye8TJ/GDmM4KVl3TCsFEEU/iFzXdTPBT0b5DvP7KbLGgJHVIjqeOvmSsslqOqAm
-         Uo6DbAvaOyotLi2NAzyU42v8UyvuhP45zMHR09YVD+ISWm6pkUF9y//qdH0VDKUdBEuY
-         ha9qmcpYaf3JZpVs/GCF0jTUMMQzngK8O2+fppzsCsGhyoEkY4XjtM6ZC8J9Im4tKuYf
-         AjV5Yw4CeyR0jWCAuGEUnGKVqZhMAR/B721f5KUA9PNJFUx7sPeR3qe2zDNuchO3xwjI
-         lQBQ==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=O2typRxdzqsHfp2kEBOr4WNIbnu/ovQ09qqv/Hu1pIU=;
+        b=mEwv2YDOLkvyR5SAWvf1KvXxyVk/W4CM3FINHf0fPt6/1CATbsBeLTMvw7NAxBITnL
+         beIONGwUkW/Emdz3lnPVQxGohbnsuzOSZGy0nCqHiQH17U1lMP7Z2pN0JzcqlYz3PtUj
+         OO8z8KxVH1Fhbqz6ELFXF0nSOLhm34jt66kw6ypGQmUYPWk3UGNGhgsnMdY1/gp1nq38
+         0rOjQ/8mWEZl7TcIG+kLCBhjNqdgkJYjpRFA5YFWfcvXVK5i0uY35XmjhLL51T/HMO5x
+         GExGiQd6KOQEFt9dUqlOWWPDdWB6VOUA3yYd0eBYtMnUh8W1UVNzW1T/mTLg3GlKvt8d
+         YYDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=/nOdZT0dya6kDHenQdU2BmxT3CFwwxmGevkfqFbAuFY=;
-        b=wHVcRxPliLzQKmFk7aJGMCE7dIznqDkMyrazmDMsDEmaLAFqu4n99YQyp48ToUV0Jc
-         oC8jKjzzXkeCPde/xSBAnQ8Kd+5nVgIAtHjg+fryobyrOzMcio3YNeWAlRDj9p30wbfh
-         1Oe3wkdaYxTahwYA2y5XmjCVBXAndIoptgo1EvRKoyXk0Pk4GFJUAS9BMuGha0vdUrd0
-         9i1FrFUIzuUJMBKwaKf3dcB611HPA7PptoLiG45keqCKa3EhVhHyUYmRr2QXTqZ7OS69
-         KTJrrYo/fSzJYCPIFGnnI8jb1GRn772y542q2xpzPzt7XJURGegLQeFQNV7LHhT/jnON
-         0mEg==
-X-Gm-Message-State: ACgBeo2OejZWF7mDGjoqV9tfoqp0RzdiqY9MOpNYwXTl2UUS2m774EWL
-        dAl1OBqTlHrEEz5AtlDlOGU=
-X-Google-Smtp-Source: AA6agR4HqDNxujARcBBMEzZncfiL/3fOmXb4uuIXGVv8HCNSZLvLPUW0S8S4ZdHoKEUeakdbt/4WqQ==
-X-Received: by 2002:a17:90a:cb07:b0:1fd:f273:dd90 with SMTP id z7-20020a17090acb0700b001fdf273dd90mr13777483pjt.95.1662282221574;
-        Sun, 04 Sep 2022 02:03:41 -0700 (PDT)
-Received: from hyeyoo ([114.29.91.56])
-        by smtp.gmail.com with ESMTPSA id m15-20020a17090a34cf00b001fb35e4044bsm8191706pjf.40.2022.09.04.02.03.36
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=O2typRxdzqsHfp2kEBOr4WNIbnu/ovQ09qqv/Hu1pIU=;
+        b=tEznhUfTIFa17HiNm72KpBM/qBCqux3Y7FRfnVY5/5h/MQC5xFTMgpnbun1REFjTFi
+         YIvffqJo4G+tq2wQfE+YLCyiRYg2j9ZKScsVCu2DThEzhjmfccanMFSfV1fkLsOwEzv9
+         aLwU/AymUeIPomnWRk+6lKlkvrlAji9donRAl4sDyUDQXxp/3M7BGzOwaGYE4bmqKOh4
+         vSqS7GztIPVgM8gQzmhgyYhadd005N5w825fm3AcFaGvZJsmmgJaNouLdc5yOUCWaOBM
+         F0wfqHqDz7hZG34vPC+fdo0MRJOyTWGYHs0e2a/PfTfSGUj4Ski88wjlTuekcn/6nsFI
+         9Sag==
+X-Gm-Message-State: ACgBeo0CuoSAjenq9DFEQUfNgWhSvnVZSyyNUtvE2lhHqGTReC7XlNdo
+        4eWbvrmSOOf7OKNinGU8moOCzuzgfuA=
+X-Google-Smtp-Source: AA6agR4NJnx5sNg8PNykLl1mgRsJURuIQHjA9zZgAk1EeYC3FtDilwF6YINYFa0BfKPRxYHeSe0T6A==
+X-Received: by 2002:a05:6402:1f8c:b0:43e:8fab:76c with SMTP id c12-20020a0564021f8c00b0043e8fab076cmr38989547edc.126.1662282539472;
+        Sun, 04 Sep 2022 02:08:59 -0700 (PDT)
+Received: from masalkhi.. (p5ddb3241.dip0.t-ipconnect.de. [93.219.50.65])
+        by smtp.gmail.com with ESMTPSA id eg46-20020a05640228ae00b0044e7862ab3fsm447553edb.7.2022.09.04.02.08.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 04 Sep 2022 02:03:40 -0700 (PDT)
-Date:   Sun, 4 Sep 2022 18:03:34 +0900
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     Feng Tang <feng.tang@intel.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "Hansen, Dave" <dave.hansen@intel.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        John Garry <john.garry@huawei.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: Re: [PATCH v4 1/4] mm/slub: enable debugging memory wasting of
- kmalloc
-Message-ID: <YxRp5uz9KSY0S9id@hyeyoo>
-References: <20220829075618.69069-1-feng.tang@intel.com>
- <20220829075618.69069-2-feng.tang@intel.com>
- <YxC7Kda5g/aEqarm@hyeyoo>
- <YxGfkdvJcNJma/88@feng-clx>
+        Sun, 04 Sep 2022 02:08:59 -0700 (PDT)
+From:   Abd-Alrhman Masalkhi <abd.masalkhi@gmail.com>
+To:     bhelgaas@google.com, makvihas@gmail.com, kw@linux.com
+Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Abd-Alrhman Masalkhi <abd.masalkhi@gmail.com>
+Subject: [PATCH] PCI: ibmphp: Convert a double pointer to single pointer parameter
+Date:   Sun,  4 Sep 2022 11:08:22 +0200
+Message-Id: <20220904090822.8083-1-abd.masalkhi@gmail.com>
+X-Mailer: git-send-email 2.29.0.rc1.dirty
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YxGfkdvJcNJma/88@feng-clx>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Sep 02, 2022 at 02:15:45PM +0800, Feng Tang wrote:
-> On Thu, Sep 01, 2022 at 10:01:13PM +0800, Hyeonggon Yoo wrote:
-> > On Mon, Aug 29, 2022 at 03:56:15PM +0800, Feng Tang wrote:
-> > > kmalloc's API family is critical for mm, with one nature that it will
-> > > round up the request size to a fixed one (mostly power of 2). Say
-> > > when user requests memory for '2^n + 1' bytes, actually 2^(n+1) bytes
-> > > could be allocated, so in worst case, there is around 50% memory
-> > > space waste.
-> > > 
+Convert the parameter of type 'struct slot **' to 'struct slot *' of
+ibmphp_init_devno() to improve code readability.
 
-[...]
+Signed-off-by: Abd-Alrhman Masalkhi <abd.masalkhi@gmail.com>
+---
+ drivers/pci/hotplug/TODO          |  3 ---
+ drivers/pci/hotplug/ibmphp.h      |  2 +-
+ drivers/pci/hotplug/ibmphp_core.c | 30 +++++++++++++++---------------
+ drivers/pci/hotplug/ibmphp_ebda.c |  2 +-
+ 4 files changed, 17 insertions(+), 20 deletions(-)
 
-> > > 
-> > > Signed-off-by: Feng Tang <feng.tang@intel.com>
-> > > Cc: Robin Murphy <robin.murphy@arm.com>
-> > > Cc: John Garry <john.garry@huawei.com>
-> > > Cc: Kefeng Wang <wangkefeng.wang@huawei.com>
-> > > ---
-> > >  include/linux/slab.h |  2 +
-> > >  mm/slub.c            | 94 +++++++++++++++++++++++++++++++++++++-------
-> > >  2 files changed, 81 insertions(+), 15 deletions(-)
-> > 
-> > 
-> > Would you update Documentation/mm/slub.rst as well?
-> > (alloc_traces part)
->  
-> Sure, will do.
-> 
-> > [...]
-> > 
-> > >   */
-> > >  static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
-> > > -			  unsigned long addr, struct kmem_cache_cpu *c)
-> > > +			  unsigned long addr, struct kmem_cache_cpu *c, unsigned int orig_size)
-> > >  {
-> > >  	void *freelist;
-> > >  	struct slab *slab;
-> > > @@ -3115,6 +3158,7 @@ static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
-> > >  
-> > >  		if (s->flags & SLAB_STORE_USER)
-> > >  			set_track(s, freelist, TRACK_ALLOC, addr);
-> > > +		set_orig_size(s, freelist, orig_size);
-> > >  
-> > >  		return freelist;
-> > >  	}
-> > > @@ -3140,6 +3184,8 @@ static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
-> > >  		 */
-> > >  		if (s->flags & SLAB_STORE_USER)
-> > >  			set_track(s, freelist, TRACK_ALLOC, addr);
-> > > +		set_orig_size(s, freelist, orig_size);
-> > > +
-> > >  		return freelist;
-> > >  	}
-> > 
-> > 
-> > This patch is okay but with patch 4, init_object() initializes redzone/poison area
-> > using s->object_size, and init_kmalloc_object() fixes redzone/poison area using orig_size.
-> > Why not do it in init_object() in the first time?
-> > 
-> > Also, updating redzone/poison area after alloc_single_from_new_slab()
-> > (outside list_lock, after adding slab to list) will introduce races with validation.
-> > 
-> > So I think doing set_orig_size()/init_kmalloc_object() in alloc_debug_processing() would make more sense.
-> 
-> Yes, this makes sense, and in v3, kmalloc redzone/poison setup was
-> done in alloc_debug_processing() (through init_object()). When
-> rebasing to v4, I met the classical problem: how to pass 'orig_size'
-> parameter :)
-> 
-> In latest 'for-next' branch, one call path for alloc_debug_processing()
-> is
->   ___slab_alloc
->     get_partial
->       get_any_partial
->         get_partial_node
->           alloc_debug_processing
-> 
-> Adding 'orig_size' paramter to all these function looks horrible, and
-> I couldn't figure out a good way and chosed to put those ops after
-> 'set_track()'
-
-IMO adding a parameter to them isn't too horrible...
-I don't see better solution than adding a parameter with current implementation.
-(Yeah, the code is quite complicated...)
-
-It won't affect performance to meaningful degree as most of
-allocations will be served from cpu slab or percpu partial list. 
-
+diff --git a/drivers/pci/hotplug/TODO b/drivers/pci/hotplug/TODO
+index 88f217c82b4f..63a9fed407ed 100644
+--- a/drivers/pci/hotplug/TODO
++++ b/drivers/pci/hotplug/TODO
+@@ -30,9 +30,6 @@ ibmphp:
+   or ibmphp should store a pointer to its bus in struct slot.  Probably the
+   former.
+ 
+-* ibmphp_init_devno() takes a struct slot **, it could instead take a
+-  struct slot *.
+-
+ * The return value of pci_hp_register() is not checked.
+ 
+ * The various slot data structures are difficult to follow and need to be
+diff --git a/drivers/pci/hotplug/ibmphp.h b/drivers/pci/hotplug/ibmphp.h
+index 0399c60d2ec1..28fe92cf544a 100644
+--- a/drivers/pci/hotplug/ibmphp.h
++++ b/drivers/pci/hotplug/ibmphp.h
+@@ -734,7 +734,7 @@ struct controller {
+ 
+ /* Functions */
+ 
+-int ibmphp_init_devno(struct slot **);	/* This function is called from EBDA, so we need it not be static */
++int ibmphp_init_devno(struct slot *cur_slot);	/* This function is called from EBDA, so we need it not be static */
+ int ibmphp_do_disable_slot(struct slot *slot_cur);
+ int ibmphp_update_slot_info(struct slot *);	/* This function is called from HPC, so we need it to not be static */
+ int ibmphp_configure_card(struct pci_func *, u8);
+diff --git a/drivers/pci/hotplug/ibmphp_core.c b/drivers/pci/hotplug/ibmphp_core.c
+index 197997e264a2..107752b11f2c 100644
+--- a/drivers/pci/hotplug/ibmphp_core.c
++++ b/drivers/pci/hotplug/ibmphp_core.c
+@@ -109,7 +109,7 @@ static int __init get_max_slots(void)
+  * Parameters: struct slot
+  * Returns 0 or errors
+  */
+-int ibmphp_init_devno(struct slot **cur_slot)
++int ibmphp_init_devno(struct slot *cur_slot)
+ {
+ 	struct irq_routing_table *rtable;
+ 	int len;
+@@ -130,21 +130,21 @@ int ibmphp_init_devno(struct slot **cur_slot)
+ 		return -1;
+ 	}
+ 	for (loop = 0; loop < len; loop++) {
+-		if ((*cur_slot)->number == rtable->slots[loop].slot &&
+-		    (*cur_slot)->bus == rtable->slots[loop].bus) {
+-			(*cur_slot)->device = PCI_SLOT(rtable->slots[loop].devfn);
++		if (cur_slot->number == rtable->slots[loop].slot &&
++		    cur_slot->bus == rtable->slots[loop].bus) {
++			cur_slot->device = PCI_SLOT(rtable->slots[loop].devfn);
+ 			for (i = 0; i < 4; i++)
+-				(*cur_slot)->irq[i] = IO_APIC_get_PCI_irq_vector((int) (*cur_slot)->bus,
+-						(int) (*cur_slot)->device, i);
+-
+-			debug("(*cur_slot)->irq[0] = %x\n",
+-					(*cur_slot)->irq[0]);
+-			debug("(*cur_slot)->irq[1] = %x\n",
+-					(*cur_slot)->irq[1]);
+-			debug("(*cur_slot)->irq[2] = %x\n",
+-					(*cur_slot)->irq[2]);
+-			debug("(*cur_slot)->irq[3] = %x\n",
+-					(*cur_slot)->irq[3]);
++				cur_slot->irq[i] = IO_APIC_get_PCI_irq_vector((int) cur_slot->bus,
++						(int) cur_slot->device, i);
++
++			debug("cur_slot->irq[0] = %x\n",
++					cur_slot->irq[0]);
++			debug("cur_slot->irq[1] = %x\n",
++					cur_slot->irq[1]);
++			debug("cur_slot->irq[2] = %x\n",
++					cur_slot->irq[2]);
++			debug("cur_slot->irq[3] = %x\n",
++					cur_slot->irq[3]);
+ 
+ 			debug("rtable->exclusive_irqs = %x\n",
+ 					rtable->exclusive_irqs);
+diff --git a/drivers/pci/hotplug/ibmphp_ebda.c b/drivers/pci/hotplug/ibmphp_ebda.c
+index 7fb75401ad8a..5c7821ad9c2c 100644
+--- a/drivers/pci/hotplug/ibmphp_ebda.c
++++ b/drivers/pci/hotplug/ibmphp_ebda.c
+@@ -880,7 +880,7 @@ static int __init ebda_rsrc_controller(void)
+ 			if (rc)
+ 				goto error;
+ 
+-			rc = ibmphp_init_devno(&tmp_slot);
++			rc = ibmphp_init_devno(tmp_slot);
+ 			if (rc)
+ 				goto error;
+ 			tmp_slot->hotplug_slot.ops = &ibmphp_hotplug_slot_ops;
 -- 
-Thanks,
-Hyeonggon
+2.29.0.rc1.dirty
+
