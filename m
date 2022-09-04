@@ -2,147 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 766D1C6FA82
-	for <linux-kernel@archiver.kernel.org>; Sat,  3 Sep 2022 23:15:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 106A4C54EE9
+	for <linux-kernel@archiver.kernel.org>; Sun,  4 Sep 2022 00:04:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230348AbiICXPQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 3 Sep 2022 19:15:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39270 "EHLO
+        id S229754AbiIDAE3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 3 Sep 2022 20:04:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbiICXPM (ORCPT
+        with ESMTP id S229509AbiIDAE0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 3 Sep 2022 19:15:12 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD8A91F639;
-        Sat,  3 Sep 2022 16:15:10 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id y136so399210pfb.3;
-        Sat, 03 Sep 2022 16:15:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date;
-        bh=/UIVvNPGGuVuyXHfCkfmj/E2Gp1v4KdZ0mdzCPC+OYw=;
-        b=dAOkDv239fvFc7/ElwPWxTQH97P40kR/orJoA9Xlw9ccnznIfgqb7O7ekI18YfqFzL
-         CrbNXeJuh1WRELXO5l5EEyfLyPNCmvr5BcoUy/8utEYpzcqWRskhJK/8S1V+vcI6fP5F
-         G6dCyUGPo1QT5tC/KxnkhuQaO5MB6iYety1tAk0VMZEvWNxaH8mVOSDeWdF2E8lRdLQ0
-         sbzXagjXQM76ElnUNNA+bdtahiI0yYy9RbVitZe3tNynkJQgszj/zjNXVfexLscw/m7q
-         OUIg4Nl+Xgu/Uk36j/7Z4ZjsNGh4NNRTGrTjibMMqq4inQeMx7P28opw1ii3f2cO/yi+
-         25Ag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=/UIVvNPGGuVuyXHfCkfmj/E2Gp1v4KdZ0mdzCPC+OYw=;
-        b=QN896bwRbdDJIk3Kec0qTDO8Y4EXzNUTMQlD7R4f6d6HyjqyMsXwdeurD/bWBqWa9E
-         zhVBJVIl8b6egETATO1boHZy7o2O4DG87HODo95HEPnEz7/rSFlJShFi6kXM4DumZdZg
-         aUoNQv5wmL7pHBTds6GmsztIwe0wLPb+xdRutXqB9njovEEvsznPboPmbvPNIxJvZ4OJ
-         u5TbjfiWqQzLkcFnF+nqzM6qO622qsEE2RFhEIZ6opZmPnEcYFMec1Yab4FRSHidJUca
-         yOAlMKhwzhxhTv9OOlK1+04jKLmcHDAWC6cjncFLKBphcxLF6ie/hOPafl322rGiZBFc
-         CelA==
-X-Gm-Message-State: ACgBeo1bH0Ksn2STTnomt/jqAX94rEYqJK1l1f/KTP7S7UuIf7EXvp6E
-        i+RVRT+8HEJoPxrRPhPI4VMawnVSwXfWkv1ImGesAJaZxg2tFg==
-X-Google-Smtp-Source: AA6agR43Cdz+UJ42BXrfaxVQWH39Ywbee/ktCZmqwsjoke9j9bXqOMVfSIGBra4PqrCx+G43S5ttLLDNt3JpF6Nynos=
-X-Received: by 2002:a63:62c3:0:b0:434:2b09:6f62 with SMTP id
- w186-20020a6362c3000000b004342b096f62mr2166716pgb.374.1662246910212; Sat, 03
- Sep 2022 16:15:10 -0700 (PDT)
+        Sat, 3 Sep 2022 20:04:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D95B1295;
+        Sat,  3 Sep 2022 17:04:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4A2C0B80C7E;
+        Sun,  4 Sep 2022 00:04:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03865C433D7;
+        Sun,  4 Sep 2022 00:04:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662249859;
+        bh=KoBcKASn8qA//k0q8Ko3Kw15nV3tnc0Cq8A9Lc6qS2M=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=NdxZRRaQDTmrzkWXFeVybd/TdF7FjscPT47/ARklt7ZgWR5S+22+TXu0dzkVPVhb1
+         a31Cke7rub19cP4VJgeULHCBnvBfnbOSmyFnYFrC5z8nYwGc4/SYys88p9cU0HRLM8
+         n11Ow83e4k1mzbNUcQ4U+sM7kNmFEeEO4ujAQRmSyzlK3WqCMPRN3eEDh8YFkPMRUs
+         v3wFPU0WCJluAOT5bBymKqxvM3FA6TdQdil432D5MhA29TkldSBdR50cy17pSC95Zf
+         pUBPHMeGbvJFjbxQ+7RplRCgdQ5pbRqMFcwU81X7NAXL5p3c2BnfJC1gR8eHhc3Hbr
+         98UppoBmbfPng==
+Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-11ee4649dfcso13895800fac.1;
+        Sat, 03 Sep 2022 17:04:18 -0700 (PDT)
+X-Gm-Message-State: ACgBeo3ImbrWYS8rXAVqfuwLFDcNih1t5g2M/PZ2dLmVkKuZUqFOHFf9
+        +svcwsN/x6Bf0hCMeb4QGDT2WK51/5Ez2J8OIFc=
+X-Google-Smtp-Source: AA6agR77EBLmMj9+Q0o/9QIp5FTxFDt+rkmb/qt7Y2jzmFtjgapjSdtfZhSF08/NbwXO8Vu04joLKLktUvxiUio0tnU=
+X-Received: by 2002:a05:6870:7092:b0:11e:ff3a:d984 with SMTP id
+ v18-20020a056870709200b0011eff3ad984mr5348554oae.19.1662249858171; Sat, 03
+ Sep 2022 17:04:18 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220826083612.1699194-1-floridsleeves@gmail.com>
- <CAHp75VcdqL4wYnhEi8LrxqJktA2uDzP3a6-08suJRghX=1UZsg@mail.gmail.com>
- <CAMEuxRqBEMdva3qEphvuYkFLpRjp=xg7vpqQT1oqb2AgkkG2+w@mail.gmail.com>
- <2033d06d-10a4-5a57-d650-7541c39990ee@linux.intel.com> <CAMEuxRq6wn+wakYHGtnS_vSgpcw6aNOir=KyXWb12vPrOr76pA@mail.gmail.com>
- <40e16474-99d2-2359-a545-4a437f555ec1@linux.intel.com>
-In-Reply-To: <40e16474-99d2-2359-a545-4a437f555ec1@linux.intel.com>
-From:   Li Zhong <floridsleeves@gmail.com>
-Date:   Sat, 3 Sep 2022 16:14:59 -0700
-Message-ID: <CAMEuxRpm5xNm2kEnhCSimoaCE3zSxbyoo7xUxNg74QrL7F6YUg@mail.gmail.com>
-Subject: Re: [PATCH v2] drivers/tty/serial: check the return value of uart_port_check()
-To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
+References: <20220903163808.1954131-4-guoren@kernel.org> <202209040118.GmG1Lby1-lkp@intel.com>
+In-Reply-To: <202209040118.GmG1Lby1-lkp@intel.com>
+From:   Guo Ren <guoren@kernel.org>
+Date:   Sun, 4 Sep 2022 08:04:05 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTQFYAth8WDwch-d1ASFEaKFJTuMrZgJEttOoBZtxay6nQ@mail.gmail.com>
+Message-ID: <CAJF2gTQFYAth8WDwch-d1ASFEaKFJTuMrZgJEttOoBZtxay6nQ@mail.gmail.com>
+Subject: Re: [PATCH 3/3] riscv: Support HAVE_SOFTIRQ_ON_OWN_STACK
+To:     kernel test robot <lkp@intel.com>
+Cc:     arnd@arndb.de, palmer@rivosinc.com, tglx@linutronix.de,
+        luto@kernel.org, kbuild-all@lists.01.org,
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, Guo Ren <guoren@linux.alibaba.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 12:20 AM Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@linux.intel.com> wrote:
->
-> On Mon, 29 Aug 2022, Li Zhong wrote:
->
-> > On Mon, Aug 29, 2022 at 12:09 AM Ilpo J=C3=A4rvinen
-> > <ilpo.jarvinen@linux.intel.com> wrote:
-> > >
-> > > On Sun, 28 Aug 2022, Li Zhong wrote:
-> > >
-> > > > On Fri, Aug 26, 2022 at 9:01 AM Andy Shevchenko
-> > > > <andy.shevchenko@gmail.com> wrote:
-> > > > >
-> > > > > On Fri, Aug 26, 2022 at 11:38 AM Li Zhong <floridsleeves@gmail.co=
-m> wrote:
-> > > > > >
-> > > > > > uart_port_check() will return NULL pointer when state->uart_por=
-t is
-> > > > > > NULL. Check the return value before dereference it to avoid
-> > > > > > null-pointer-dereference error.
-> > > > >
-> > > > > Have you taken the locking into consideration?
-> > > > > If no, please do, if yes, expand your commit message to explain w=
-hy
-> > > > > the current locking scheme doesn't prevent an error from happenin=
-g.
-> > > > >
-> > > >
-> > > > The locking is taken into consideration but these three checks do n=
-ot need to
-> > > > unlock in error-handling because unlock() will be called in the cal=
-lers. Will
-> > > > add the comment in v2 patch.
-> > >
-> > > I think he meant you should indicate why the current locking doesn't =
-cover
-> > > the case you're fixing, not whether this function should call unlock(=
-) or
-> > > not.
-> > >
-> >
-> > Thanks for clarifications. The locking does not guarantee the return va=
-lue of
-> > uart_port_check()  is not NULL.
->
-> Please put such explanation into the commit message like Andy was asking,
-> thank you.
->
+Oops, there is no warning with 6.0-rc3. But it's a bug, I fixed that by:
 
-Thanks! I'll add this into the v3 patch.
+diff --git a/arch/riscv/kernel/signal.c b/arch/riscv/kernel/signal.c
+index afc8c030c222..5871eccbbd94 100644
+--- a/arch/riscv/kernel/signal.c
++++ b/arch/riscv/kernel/signal.c
+@@ -12,6 +12,7 @@
+ #include <linux/syscalls.h>
+ #include <linux/resume_user_mode.h>
+ #include <linux/linkage.h>
++#include <linux/entry-common.h>
 
-> And make sure you properly mention what has changed for any new version
-> of any patch you send so that Greg don't need to auto-mail you about it
-> (and end up ignoring your patch).
+ #include <asm/ucontext.h>
+ #include <asm/vdso.h>
+@@ -272,7 +273,7 @@ static void handle_signal(struct ksignal *ksig,
+struct pt_regs *regs)
+        signal_setup_done(ret, ksig, 0);
+ }
+
+-void arch_do_signal_or_restart(struct pt_regs *regs, bool has_signal)
++void arch_do_signal_or_restart(struct pt_regs *regs)
+ {
+        struct ksignal ksig;
+
+On Sun, Sep 4, 2022 at 1:59 AM kernel test robot <lkp@intel.com> wrote:
 >
-
-I'll mention this in the commit message of new patch.
-
-> > Actually in line 773 of this file
-> > (drivers/tty/serial/serial_core.c), uart_port_check() is also called in
-> > critical section but still there is check on whether the return value i=
-s NULL.
+> Hi,
 >
-> Existance of such a check elsewhere alone isn't enough to guarantee that
-> the check is necessary (and not even that the check in that other place
-> would be necessary). You need a deeper analysis than that. I'm not
-> claiming its either way here, just pointing out to the direction/details
-> you should consider while writing the analysis of the problem.
+> I love your patch! Perhaps something to improve:
 >
-
-Thanks for the suggestions. We will try consider more factor into our analy=
-sis
-tools to reduce false postives.
-
+> [auto build test WARNING on soc/for-next]
+> [also build test WARNING on linus/master v6.0-rc3 next-20220901]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch#_base_tree_information]
+>
+> url:    https://github.com/intel-lab-lkp/linux/commits/guoren-kernel-org/riscv-Add-GENERIC_ENTRY-IRQ_STACKS-support/20220904-003954
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git for-next
+> config: riscv-allyesconfig (https://download.01.org/0day-ci/archive/20220904/202209040118.GmG1Lby1-lkp@intel.com/config)
+> compiler: riscv64-linux-gcc (GCC) 12.1.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://github.com/intel-lab-lkp/linux/commit/6ed1ef93b372116f7d4586b13bfd352e19453740
+>         git remote add linux-review https://github.com/intel-lab-lkp/linux
+>         git fetch --no-tags linux-review guoren-kernel-org/riscv-Add-GENERIC_ENTRY-IRQ_STACKS-support/20220904-003954
+>         git checkout 6ed1ef93b372116f7d4586b13bfd352e19453740
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/
+>
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All warnings (new ones prefixed by >>):
+>
+> >> arch/riscv/kernel/irq.c:48:6: warning: no previous prototype for 'do_softirq_own_stack' [-Wmissing-prototypes]
+>       48 | void do_softirq_own_stack(void)
+>          |      ^~~~~~~~~~~~~~~~~~~~
+>    arch/riscv/kernel/irq.c:74:25: warning: no previous prototype for 'handle_riscv_irq' [-Wmissing-prototypes]
+>       74 | asmlinkage void noinstr handle_riscv_irq(struct pt_regs *regs)
+>          |                         ^~~~~~~~~~~~~~~~
+>    arch/riscv/kernel/irq.c:85:25: warning: no previous prototype for 'do_riscv_irq' [-Wmissing-prototypes]
+>       85 | asmlinkage void noinstr do_riscv_irq(struct pt_regs *regs)
+>          |                         ^~~~~~~~~~~~
+>
+>
+> vim +/do_softirq_own_stack +48 arch/riscv/kernel/irq.c
+>
+>     47
+>   > 48  void do_softirq_own_stack(void)
+>     49  {
+>     50          ulong *sp = per_cpu(irq_stack_ptr, smp_processor_id());
+>     51
+>     52          call_on_stack(NULL, sp, do_riscv_softirq, 0);
+>     53  }
+>     54  #endif /* CONFIG_PREEMPT_RT */
+>     55
 >
 > --
->  i.
+> 0-DAY CI Kernel Test Service
+> https://01.org/lkp
+
+
+
+-- 
+Best Regards
+ Guo Ren
