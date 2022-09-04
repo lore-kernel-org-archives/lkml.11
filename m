@@ -2,326 +2,513 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA967ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Sun,  4 Sep 2022 04:02:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3777ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Sun,  4 Sep 2022 04:03:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231414AbiIDECi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 4 Sep 2022 00:02:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54054 "EHLO
+        id S230163AbiIDEDE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 4 Sep 2022 00:03:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbiIDECf (ORCPT
+        with ESMTP id S229698AbiIDEC7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 4 Sep 2022 00:02:35 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8790357C9;
-        Sat,  3 Sep 2022 21:02:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662264153; x=1693800153;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=BSzW8fnfWx0Sr4kYsFe9fl53do3nykMdsh64QZJsHsI=;
-  b=Ml1FidrxZyz6HZhWYvKVmILY3PaicWtPVzUj59aQKOASbLdUyvRkXwMX
-   b1fvz+aPF+Y++qNNc0LigapNkQOy8u5v3bX/bzSZVw4jL7IUPkL7vRs/X
-   KiGVVgJ+xNhD/b5WsXwMs+29wREm3IJ1SAjh7AATKU9vCZb+9A3Qa3nbW
-   g3OvJs+CU/U5/LNLAPwiiaX3CnaMmrADIxTc2jukf5e5JzFd7bSsIixGL
-   kD5pYf5hmGQ3TLz07YLFljHUwDZfW9Fvf1EvHuqQpDkzFUfjFP0pHeQhg
-   hZ1zdH515gRQzoeBmFD0XMXk0A5udKT1jTN3qZl8Fr4jp9NL4yd2OXGy2
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10459"; a="283199030"
-X-IronPort-AV: E=Sophos;i="5.93,288,1654585200"; 
-   d="scan'208";a="283199030"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2022 21:02:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,288,1654585200"; 
-   d="scan'208";a="739254083"
-Received: from lkp-server02.sh.intel.com (HELO 95dfd251caa2) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 03 Sep 2022 21:02:29 -0700
-Received: from kbuild by 95dfd251caa2 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oUgq5-0002WP-0p;
-        Sun, 04 Sep 2022 04:02:29 +0000
-Date:   Sun, 4 Sep 2022 12:02:03 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Abel Vesa <abel.vesa@linaro.org>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorande@qti.qualcomm.com>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Amol Maheshwari <amahesh@qti.qualcomm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Ekansh Gupta <ekangupt@qti.qualcomm.com>
-Cc:     kbuild-all@lists.01.org, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 10/14] misc: fastrpc: Add support for audiopd
-Message-ID: <202209041138.pdoIATKj-lkp@intel.com>
-References: <20220902131344.3029826-11-abel.vesa@linaro.org>
+        Sun, 4 Sep 2022 00:02:59 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B926C3718C
+        for <linux-kernel@vger.kernel.org>; Sat,  3 Sep 2022 21:02:57 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id n65-20020a17090a5ac700b001fbb4fad865so5713315pji.1
+        for <linux-kernel@vger.kernel.org>; Sat, 03 Sep 2022 21:02:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=S+YO3HVtXRaQAdmhc0xL9yDdiDnXmc6HtfEihdsrkxU=;
+        b=G/xyMTjqN25DfHQfHmSq9gbGrVtnQYsU9pE34TFjGdzut/IEZqtJpTBtSnF/rWsIty
+         ivgbtvSqb88BDwy5UwbF3IdPIAzVbYxfGH2QVkw/PXnVL1QrHbcGrA0Kbf33hgjPZl5a
+         s5+ClxGOTPJqkc/xcWJY8aCHNVbafxuc6x+7+v7hlaqBtkyIzFKxI8e9CPMdToMjZYM+
+         8N17f33TQjfpMSild0clJCnzMu8TWSZ0DUHilBVGnfGnyGMGuMmzMSs6959kI8Jt0/35
+         0wmoj1f/ahDVOLwCPapajNcc86QMiUQyY8vGG7IrqqMTQFLPg+OkRi7j7V6FxeeVhp5P
+         4tuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=S+YO3HVtXRaQAdmhc0xL9yDdiDnXmc6HtfEihdsrkxU=;
+        b=u7Psr+GCSSCJxeoegO4PfGfY9MN4MjN1nTbyIw1Rrpoc9zgbaNYfoznlCn9VQKGEqW
+         5XznzdzAU47EM1PQyTd6+vVBoYP8yE5PhSk85MUvquBmNCi1umujKnwhDQQ0xSykzhbh
+         QHN7WoEkxGmg+Y/+ZkAZ/inBijnO/Nn6ZR2XtkbTXQYz6m/a0QYbD2XjTESnfApqJQ/L
+         U2br+i95vMdz/5lZ5FKeRosx4wX+tHbdSPAt6Ij8hhP9KOkNHpQWIW55ONRzoPAMQht4
+         0ij3BFA2i3XVk0Fuv5GMJlre+6Ah3Ccd7Xgn9VjCLuTIF0HLnftqXcd8ZiwyuWzjJf/9
+         wADQ==
+X-Gm-Message-State: ACgBeo33DMQKQaoWCPjCmM7ZMbQV32VkH3fuuZU+UAaA/akvd2mGwwrQ
+        CuKZu1nLvlp64McfzIXuwkANmg==
+X-Google-Smtp-Source: AA6agR4u+y7CvWBgghC/S5UaKpqRGOBtA2FIlUvoCt6KXMDXbzaR61tE2sSyL3dVvGCg0R1JDh0oEw==
+X-Received: by 2002:a17:90b:1804:b0:1fb:141:a09d with SMTP id lw4-20020a17090b180400b001fb0141a09dmr12658281pjb.170.1662264176961;
+        Sat, 03 Sep 2022 21:02:56 -0700 (PDT)
+Received: from R911R1VA-1UT.inc.bytedance.com ([220.243.131.6])
+        by smtp.gmail.com with ESMTPSA id d18-20020a170903231200b0017555cef23asm4192668plh.232.2022.09.03.21.02.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 03 Sep 2022 21:02:56 -0700 (PDT)
+From:   hezhongkun <hezhongkun.hzk@bytedance.com>
+To:     hannes@cmpxchg.org, mhocko@kernel.org, roman.gushchin@linux.dev
+Cc:     linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-mm@kvack.org, lizefan.x@bytedance.com,
+        wuyun.abel@bytedance.com,
+        Zhongkun He <hezhongkun.hzk@bytedance.com>
+Subject: [PATCH] cgroup/cpuset: Add a new isolated mems.policy type.
+Date:   Sun,  4 Sep 2022 12:02:41 +0800
+Message-Id: <20220904040241.1708-1-hezhongkun.hzk@bytedance.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220902131344.3029826-11-abel.vesa@linaro.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Abel,
+From: Zhongkun He <hezhongkun.hzk@bytedance.com>
 
-I love your patch! Perhaps something to improve:
+Mempolicy is difficult to use because it is set in-process
+via a system call. We want to make it easier to use mempolicy
+in cpuset, and  we can control low-priority cgroups to
+allocate memory in specified nodes. So this patch want to
+adds the mempolicy interface in cpuset.
 
-[auto build test WARNING on char-misc/char-misc-testing]
-[also build test WARNING on robh/for-next linus/master v6.0-rc3 next-20220901]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+The mempolicy priority of cpuset is lower than the task.
+The order of getting the policy is:
+	1) vma mempolicy
+	2) task->mempolicy
+	3) cpuset->mempolicy
+	4) default policy.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Abel-Vesa/misc-fastrpc-Add-audiopd-support-and-some-fixes/20220902-215548
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git 4ec7ac90ff399b7d9af81cc8afd430a22786c61b
-config: ia64-allyesconfig (https://download.01.org/0day-ci/archive/20220904/202209041138.pdoIATKj-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/40e5982368fa8e5eeb1a3ff7b955d0c0b54656d1
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Abel-Vesa/misc-fastrpc-Add-audiopd-support-and-some-fixes/20220902-215548
-        git checkout 40e5982368fa8e5eeb1a3ff7b955d0c0b54656d1
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/misc/
+cpuset's policy is owned by itself, but descendants will
+get the default mempolicy from parent.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+How to use the mempolicy interface:
+	echo prefer:2 > /sys/fs/cgroup/zz/cpuset.mems.policy
+	echo bind:1-3 > /sys/fs/cgroup/zz/cpuset.mems.policy
+        echo interleave:0,1,2,3 >/sys/fs/cgroup/zz/cpuset.mems.policy
+Show the policy:
+	cat /sys/fs/cgroup/zz/cpuset.mems.policy
+		prefer:2
+	cat /sys/fs/cgroup/zz/cpuset.mems.policy
+		bind:1-3
+	cat /sys/fs/cgroup/zz/cpuset.mems.policy
+		interleave:0-3
+Clear the policy:
+	echo default > /sys/fs/cgroup/zz/cpuset.mems.policy
 
-All warnings (new ones prefixed by >>):
+Signed-off-by: Zhongkun He <hezhongkun.hzk@bytedance.com>
+---
+ include/linux/mempolicy.h |   9 ++
+ include/linux/sched.h     |   2 +
+ kernel/cgroup/cpuset.c    | 182 +++++++++++++++++++++++++++++++++++++-
+ kernel/fork.c             |   1 +
+ mm/mempolicy.c            |  25 ++++--
+ 5 files changed, 209 insertions(+), 10 deletions(-)
 
-   In file included from include/linux/printk.h:573,
-                    from include/asm-generic/bug.h:22,
-                    from arch/ia64/include/asm/bug.h:17,
-                    from include/linux/bug.h:5,
-                    from include/linux/thread_info.h:13,
-                    from include/asm-generic/preempt.h:5,
-                    from ./arch/ia64/include/generated/asm/preempt.h:1,
-                    from include/linux/preempt.h:78,
-                    from include/linux/spinlock.h:55,
-                    from include/linux/swait.h:7,
-                    from include/linux/completion.h:12,
-                    from drivers/misc/fastrpc.c:5:
-   drivers/misc/fastrpc.c: In function 'fastrpc_init_create_static_process':
->> drivers/misc/fastrpc.c:1259:48: warning: format '%x' expects argument of type 'unsigned int', but argument 7 has type 'struct qcom_scm_vmperm *' [-Wformat=]
-    1259 |                         dev_dbg(fl->sctx->dev, "Assinging memory with phys 0x%llx size 0x%llx perms 0x%x, vmperms %x, vmcount %x\n",
-         |                                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dynamic_debug.h:134:29: note: in definition of macro '__dynamic_func_call'
-     134 |                 func(&id, ##__VA_ARGS__);               \
-         |                             ^~~~~~~~~~~
-   include/linux/dynamic_debug.h:166:9: note: in expansion of macro '_dynamic_func_call'
-     166 |         _dynamic_func_call(fmt,__dynamic_dev_dbg,               \
-         |         ^~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:155:9: note: in expansion of macro 'dynamic_dev_dbg'
-     155 |         dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |         ^~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:155:30: note: in expansion of macro 'dev_fmt'
-     155 |         dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |                              ^~~~~~~
-   drivers/misc/fastrpc.c:1259:25: note: in expansion of macro 'dev_dbg'
-    1259 |                         dev_dbg(fl->sctx->dev, "Assinging memory with phys 0x%llx size 0x%llx perms 0x%x, vmperms %x, vmcount %x\n",
-         |                         ^~~~~~~
-   drivers/misc/fastrpc.c:1259:116: note: format string is defined here
-    1259 |                         dev_dbg(fl->sctx->dev, "Assinging memory with phys 0x%llx size 0x%llx perms 0x%x, vmperms %x, vmcount %x\n",
-         |                                                                                                                   ~^
-         |                                                                                                                    |
-         |                                                                                                                    unsigned int
-   {standard input}: Assembler messages:
-   {standard input}:1031: Error: Register number out of range 0..4
-   {standard input}:1032: Error: Register number out of range 0..4
-   {standard input}:1032: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 44
-   {standard input}:1032: Warning: Only the first path encountering the conflict is reported
-   {standard input}:1031: Warning: This is the location of the conflicting usage
-   {standard input}:1036: Error: Register number out of range 0..4
-   {standard input}:1193: Error: Register number out of range 0..2
-   {standard input}:1193: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 38
-   {standard input}:1193: Warning: Only the first path encountering the conflict is reported
-   {standard input}:1189: Warning: This is the location of the conflicting usage
-   {standard input}:1194: Error: Register number out of range 0..2
-   {standard input}:1194: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 38
-   {standard input}:1194: Warning: Only the first path encountering the conflict is reported
-   {standard input}:1189: Warning: This is the location of the conflicting usage
-   {standard input}:1194: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 38
-   {standard input}:1194: Warning: Only the first path encountering the conflict is reported
-   {standard input}:1193: Warning: This is the location of the conflicting usage
-   {standard input}:1195: Error: Register number out of range 0..2
-   {standard input}:1195: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 38
-   {standard input}:1195: Warning: Only the first path encountering the conflict is reported
-   {standard input}:1189: Warning: This is the location of the conflicting usage
-   {standard input}:1195: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 38
-   {standard input}:1195: Warning: Only the first path encountering the conflict is reported
-   {standard input}:1193: Warning: This is the location of the conflicting usage
-   {standard input}:1195: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 38
-   {standard input}:1195: Warning: Only the first path encountering the conflict is reported
-   {standard input}:1194: Warning: This is the location of the conflicting usage
-   {standard input}:1198: Error: Register number out of range 0..2
-   {standard input}:1199: Error: Register number out of range 0..2
-   {standard input}:1199: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 38
-   {standard input}:1199: Warning: Only the first path encountering the conflict is reported
-   {standard input}:1198: Warning: This is the location of the conflicting usage
-   {standard input}:2810: Error: Register number out of range 0..3
-   {standard input}:2811: Error: Register number out of range 0..3
-   {standard input}:2811: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 46
-   {standard input}:2811: Warning: Only the first path encountering the conflict is reported
-   {standard input}:2810: Warning: This is the location of the conflicting usage
-   {standard input}:2812: Error: Register number out of range 0..3
-   {standard input}:2812: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 46
-   {standard input}:2812: Warning: Only the first path encountering the conflict is reported
-   {standard input}:2810: Warning: This is the location of the conflicting usage
-   {standard input}:2812: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 46
-   {standard input}:2812: Warning: Only the first path encountering the conflict is reported
-   {standard input}:2811: Warning: This is the location of the conflicting usage
-   {standard input}:2816: Error: Register number out of range 0..3
-   {standard input}:3634: Error: Register number out of range 0..3
-   {standard input}:3635: Error: Register number out of range 0..3
-   {standard input}:3635: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 51
-   {standard input}:3635: Warning: Only the first path encountering the conflict is reported
-   {standard input}:3634: Warning: This is the location of the conflicting usage
-   {standard input}:3636: Error: Register number out of range 0..3
-   {standard input}:3636: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 51
-   {standard input}:3636: Warning: Only the first path encountering the conflict is reported
-   {standard input}:3634: Warning: This is the location of the conflicting usage
-   {standard input}:3636: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 51
-   {standard input}:3636: Warning: Only the first path encountering the conflict is reported
-   {standard input}:3635: Warning: This is the location of the conflicting usage
-   {standard input}:3640: Error: Register number out of range 0..3
-   {standard input}:3955: Error: Register number out of range 0..4
-   {standard input}:3955: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 44
-   {standard input}:3955: Warning: Only the first path encountering the conflict is reported
-   {standard input}:3949: Warning: This is the location of the conflicting usage
-   {standard input}:3958: Error: Register number out of range 0..4
-   {standard input}:3959: Error: Register number out of range 0..4
-   {standard input}:3959: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 44
-   {standard input}:3959: Warning: Only the first path encountering the conflict is reported
-   {standard input}:3958: Warning: This is the location of the conflicting usage
-   {standard input}:4343: Error: Register number out of range 0..4
-   {standard input}:4343: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 43
-   {standard input}:4343: Warning: Only the first path encountering the conflict is reported
-   {standard input}:4337: Warning: This is the location of the conflicting usage
-   {standard input}:4346: Error: Register number out of range 0..4
-   {standard input}:4347: Error: Register number out of range 0..4
-   {standard input}:4347: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 43
-   {standard input}:4347: Warning: Only the first path encountering the conflict is reported
-   {standard input}:4346: Warning: This is the location of the conflicting usage
-   {standard input}:4497: Error: Register number out of range 0..2
+diff --git a/include/linux/mempolicy.h b/include/linux/mempolicy.h
+index 668389b4b53d..41c4b28fb71f 100644
+--- a/include/linux/mempolicy.h
++++ b/include/linux/mempolicy.h
+@@ -142,6 +142,7 @@ extern void numa_default_policy(void);
+ extern void numa_policy_init(void);
+ extern void mpol_rebind_task(struct task_struct *tsk, const nodemask_t *new);
+ extern void mpol_rebind_mm(struct mm_struct *mm, nodemask_t *new);
++extern void mpol_rebind_policy(struct mempolicy *pol, const nodemask_t *newmask);
+ 
+ extern int huge_node(struct vm_area_struct *vma,
+ 				unsigned long addr, gfp_t gfp_flags,
+@@ -211,6 +212,11 @@ static inline void mpol_get(struct mempolicy *pol)
+ {
+ }
+ 
++static inline struct mempolicy *mpol_dup(struct mempolicy *pol)
++{
++	return NULL;
++}
++
+ struct shared_policy {};
+ 
+ static inline void mpol_shared_policy_init(struct shared_policy *sp,
+@@ -252,6 +258,9 @@ static inline void mpol_rebind_task(struct task_struct *tsk,
+ static inline void mpol_rebind_mm(struct mm_struct *mm, nodemask_t *new)
+ {
+ }
++static inline void mpol_rebind_policy(struct mempolicy *pol, const nodemask_t *newmask)
++{
++}
+ 
+ static inline int huge_node(struct vm_area_struct *vma,
+ 				unsigned long addr, gfp_t gfp_flags,
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index e7b2f8a5c711..f935e1707e7c 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -1236,6 +1236,8 @@ struct task_struct {
+ 	unsigned long			preempt_disable_ip;
+ #endif
+ #ifdef CONFIG_NUMA
++	/* cpuset memory policy */
++	struct mempolicy		*cs_mpol;
+ 	/* Protected by alloc_lock: */
+ 	struct mempolicy		*mempolicy;
+ 	short				il_prev;
+diff --git a/kernel/cgroup/cpuset.c b/kernel/cgroup/cpuset.c
+index 1f3a55297f39..19fd359dc8d8 100644
+--- a/kernel/cgroup/cpuset.c
++++ b/kernel/cgroup/cpuset.c
+@@ -118,6 +118,9 @@ struct cpuset {
+ 	cpumask_var_t effective_cpus;
+ 	nodemask_t effective_mems;
+ 
++	/*cpuset mem policy */
++	struct mempolicy *mempolicy;
++
+ 	/*
+ 	 * CPUs allocated to child sub-partitions (default hierarchy only)
+ 	 * - CPUs granted by the parent = effective_cpus U subparts_cpus
+@@ -378,6 +381,10 @@ static void cpuset_hotplug_workfn(struct work_struct *work);
+ static DECLARE_WORK(cpuset_hotplug_work, cpuset_hotplug_workfn);
+ 
+ static DECLARE_WAIT_QUEUE_HEAD(cpuset_attach_wq);
++static void cpuset_change_task_cs_mpol(struct task_struct *tsk,
++		struct mempolicy *mpol);
++static inline void update_cs_mpol_nodemask(struct cpuset *cs,
++		struct mempolicy *mpol);
+ 
+ static inline void check_insane_mems_config(nodemask_t *nodes)
+ {
+@@ -570,7 +577,10 @@ static struct cpuset *alloc_trial_cpuset(struct cpuset *cs)
+ 	if (!trial)
+ 		return NULL;
+ 
++	mpol_get(trial->mempolicy);
++
+ 	if (alloc_cpumasks(trial, NULL)) {
++		mpol_put(trial->mempolicy);
+ 		kfree(trial);
+ 		return NULL;
+ 	}
+@@ -587,6 +597,7 @@ static struct cpuset *alloc_trial_cpuset(struct cpuset *cs)
+ static inline void free_cpuset(struct cpuset *cs)
+ {
+ 	free_cpumasks(cs, NULL);
++	mpol_put(cs->mempolicy);
+ 	kfree(cs);
+ }
+ 
+@@ -1849,6 +1860,7 @@ static void update_nodemasks_hier(struct cpuset *cs, nodemask_t *new_mems)
+ 
+ 		spin_lock_irq(&callback_lock);
+ 		cp->effective_mems = *new_mems;
++		update_cs_mpol_nodemask(cp, cp->mempolicy);
+ 		spin_unlock_irq(&callback_lock);
+ 
+ 		WARN_ON(!is_in_v2_mode() &&
+@@ -2304,7 +2316,8 @@ static void cpuset_attach(struct cgroup_taskset *tset)
+ 		 * fail.  TODO: have a better way to handle failure here
+ 		 */
+ 		WARN_ON_ONCE(set_cpus_allowed_ptr(task, cpus_attach));
+-
++		/*update the cpuset mempolicy to task*/
++		cpuset_change_task_cs_mpol(task, cs->mempolicy);
+ 		cpuset_change_task_nodemask(task, &cpuset_attach_nodemask_to);
+ 		cpuset_update_task_spread_flag(cs, task);
+ 	}
+@@ -2441,6 +2454,140 @@ static int cpuset_write_s64(struct cgroup_subsys_state *css, struct cftype *cft,
+ 	return retval;
+ }
+ 
++#ifdef CONFIG_NUMA
++
++/*update the mpol nodemask based on cpuset  nodemask*/
++static inline void update_cs_mpol_nodemask(struct cpuset *cs, struct mempolicy *mpol)
++{
++	nodemask_t newmems;
++
++	if (!mpol)
++		return;
++	nodes_and(newmems, cs->effective_mems, mpol->w.user_nodemask);
++
++	/*If no intersection between effective_mems and mpol user_nodemask,
++	 *use effective_mems to allocate mems.
++	 */
++	if (!nodes_weight(newmems))
++		newmems = cs->effective_mems;
++	mpol_rebind_policy(mpol, &newmems);
++}
++
++/*update cpuset policy for task*/
++static void cpuset_change_task_cs_mpol(struct task_struct *tsk,
++		struct mempolicy *mpol)
++{
++	struct mempolicy *old = NULL;
++
++	task_lock(tsk);
++	local_irq_disable();
++	write_seqcount_begin(&tsk->mems_allowed_seq);
++
++	old = tsk->cs_mpol;
++	tsk->cs_mpol = mpol;
++	mpol_get(mpol);
++	tsk->il_prev = 0;
++
++	write_seqcount_end(&tsk->mems_allowed_seq);
++	local_irq_enable();
++	task_unlock(tsk);
++	mpol_put(old);
++}
++
++static void update_tasks_cs_mpol(struct cpuset *cs)
++{
++	struct css_task_iter it;
++	struct task_struct *task;
++
++	css_task_iter_start(&cs->css, 0, &it);
++
++	while ((task = css_task_iter_next(&it)))
++		cpuset_change_task_cs_mpol(task, cs->mempolicy);
++	css_task_iter_end(&it);
++}
++
++/* change cpuset mempolicy */
++static ssize_t cpuset_mpol_write(struct kernfs_open_file *of,
++		char *buf, size_t nbytes, loff_t off)
++{
++	struct mempolicy *mpol, *old = NULL;
++	struct cpuset *cs = css_cs(of_css(of));
++	nodemask_t cs_allowed;
++	int err = -ENODEV;
++
++	css_get(&cs->css);
++	kernfs_break_active_protection(of->kn);
++	percpu_down_write(&cpuset_rwsem);
++
++	if (!is_cpuset_online(cs))
++		goto out_unlock;
++
++	buf = strstrip(buf);
++	err = mpol_parse_str(buf, &mpol);
++
++	if (err) {
++		err = -EINVAL;
++		goto out_unlock;
++	}
++
++	spin_lock_irq(&callback_lock);
++	old = cs->mempolicy;
++	update_cs_mpol_nodemask(cs, mpol);
++	cs->mempolicy = mpol;
++	spin_unlock_irq(&callback_lock);
++
++	update_tasks_cs_mpol(cs);
++
++out_unlock:
++	percpu_up_write(&cpuset_rwsem);
++	kernfs_unbreak_active_protection(of->kn);
++	css_put(&cs->css);
++
++	if (old) {
++	/*Wait for outstanding programs to complete.*/
++		synchronize_rcu();
++		mpol_put(old);
++	}
++	return err ?: nbytes;
++}
++
++/*show cpuset mempolicy*/
++static int cpuset_mpol_show(struct seq_file *seq, void *v)
++{
++	char buffer[64];
++	int ret = 0;
++	struct mempolicy *mpol;
++	struct cpuset *cs = css_cs(seq_css(seq));
++
++	memset(buffer, 0, sizeof(buffer));
++	spin_lock_irq(&callback_lock);
++	mpol = cs->mempolicy;
++
++	if (!mpol || mpol->mode == MPOL_DEFAULT)
++		goto out_unlock;
++
++	mpol_to_str(buffer, sizeof(buffer), mpol);
++	seq_printf(seq, buffer);
++	seq_putc(seq, '\n');
++
++out_unlock:
++	spin_unlock_irq(&callback_lock);
++	return ret;
++}
++
++#else
++static void cpuset_change_task_cs_mpol(struct task_struct *tsk,
++		struct mempolicy *mpol)
++{
++}
++
++static inline void update_cs_mpol_nodemask(struct cpuset *cs,
++		struct mempolicy *mpol)
++{
++}
++
++#endif
++
+ /*
+  * Common handling for a write to a "cpus" or "mems" file.
+  */
+@@ -2678,7 +2825,14 @@ static struct cftype legacy_files[] = {
+ 		.seq_show = cpuset_common_seq_show,
+ 		.private = FILE_EFFECTIVE_MEMLIST,
+ 	},
+-
++#ifdef CONFIG_NUMA
++	{
++		.name = "mems_policy",
++		.flags = CFTYPE_NOT_ON_ROOT,
++		.seq_show = cpuset_mpol_show,
++		.write = cpuset_mpol_write,
++	},
++#endif
+ 	{
+ 		.name = "cpu_exclusive",
+ 		.read_u64 = cpuset_read_u64,
+@@ -2786,7 +2940,14 @@ static struct cftype dfl_files[] = {
+ 		.seq_show = cpuset_common_seq_show,
+ 		.private = FILE_EFFECTIVE_MEMLIST,
+ 	},
+-
++#ifdef CONFIG_NUMA
++	{
++		.name = "mems.policy",
++		.flags = CFTYPE_NOT_ON_ROOT,
++		.seq_show = cpuset_mpol_show,
++		.write = cpuset_mpol_write,
++	},
++#endif
+ 	{
+ 		.name = "cpus.partition",
+ 		.seq_show = sched_partition_show,
+@@ -2835,6 +2996,21 @@ cpuset_css_alloc(struct cgroup_subsys_state *parent_css)
+ 	fmeter_init(&cs->fmeter);
+ 	cs->relax_domain_level = -1;
+ 
++	if (IS_ENABLED(CONFIG_NUMA)) {
++		struct cpuset *pcs = css_cs(parent_css);
++		struct mempolicy *new;
++
++		/*Inherit mempolicy from parent.*/
++		spin_lock_irq(&callback_lock);
++		new = mpol_dup(pcs->mempolicy);
++
++		if (IS_ERR(new))
++			new = NULL;
++
++		cs->mempolicy = new;
++		spin_unlock_irq(&callback_lock);
++	}
++
+ 	/* Set CS_MEMORY_MIGRATE for default hierarchy */
+ 	if (cgroup_subsys_on_dfl(cpuset_cgrp_subsys))
+ 		__set_bit(CS_MEMORY_MIGRATE, &cs->flags);
+diff --git a/kernel/fork.c b/kernel/fork.c
+index 90c85b17bf69..3f695449e2a5 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -2190,6 +2190,7 @@ static __latent_entropy struct task_struct *copy_process(
+ 		p->mempolicy = NULL;
+ 		goto bad_fork_cleanup_delayacct;
+ 	}
++	mpol_get(p->cs_mpol); /*ref cpuset mempolicy*/
+ #endif
+ #ifdef CONFIG_CPUSETS
+ 	p->cpuset_mem_spread_rotor = NUMA_NO_NODE;
+diff --git a/mm/mempolicy.c b/mm/mempolicy.c
+index b73d3248d976..144f79887df9 100644
+--- a/mm/mempolicy.c
++++ b/mm/mempolicy.c
+@@ -158,9 +158,15 @@ int numa_map_to_online_node(int node)
+ }
+ EXPORT_SYMBOL_GPL(numa_map_to_online_node);
+ 
++static inline struct mempolicy *task_or_cs_mpol(struct task_struct *p)
++{
++	return p->mempolicy ?
++		p->mempolicy : p->cs_mpol;
++}
++
+ struct mempolicy *get_task_policy(struct task_struct *p)
+ {
+-	struct mempolicy *pol = p->mempolicy;
++	struct mempolicy *pol = task_or_cs_mpol(p);
+ 	int node;
+ 
+ 	if (pol)
+@@ -349,7 +355,7 @@ static void mpol_rebind_preferred(struct mempolicy *pol,
+  * policies are protected by task->mems_allowed_seq to prevent a premature
+  * OOM/allocation failure due to parallel nodemask modification.
+  */
+-static void mpol_rebind_policy(struct mempolicy *pol, const nodemask_t *newmask)
++void mpol_rebind_policy(struct mempolicy *pol, const nodemask_t *newmask)
+ {
+ 	if (!pol || pol->mode == MPOL_LOCAL)
+ 		return;
+@@ -1895,7 +1901,7 @@ unsigned int mempolicy_slab_node(void)
+ 	if (!in_task())
+ 		return node;
+ 
+-	policy = current->mempolicy;
++	policy = task_or_cs_mpol(current);
+ 	if (!policy)
+ 		return node;
+ 
+@@ -2043,7 +2049,7 @@ bool init_nodemask_of_mempolicy(nodemask_t *mask)
+ 		return false;
+ 
+ 	task_lock(current);
+-	mempolicy = current->mempolicy;
++	mempolicy = task_or_cs_mpol(current);
+ 	switch (mempolicy->mode) {
+ 	case MPOL_PREFERRED:
+ 	case MPOL_PREFERRED_MANY:
+@@ -2633,13 +2639,16 @@ int mpol_misplaced(struct page *page, struct vm_area_struct *vma, unsigned long
+  */
+ void mpol_put_task_policy(struct task_struct *task)
+ {
+-	struct mempolicy *pol;
++	struct mempolicy *pol, *cs_pol;
+ 
+ 	task_lock(task);
+ 	pol = task->mempolicy;
++	cs_pol = task->cs_mpol;
++	task->cs_mpol = NULL;
+ 	task->mempolicy = NULL;
+ 	task_unlock(task);
+ 	mpol_put(pol);
++	mpol_put(cs_pol);
+ }
+ 
+ static void sp_delete(struct shared_policy *sp, struct sp_node *n)
+@@ -2957,8 +2966,7 @@ static const char * const policy_modes[] =
+ 	[MPOL_PREFERRED_MANY]  = "prefer (many)",
+ };
+ 
+-
+-#ifdef CONFIG_TMPFS
++#if defined(CONFIG_TMPFS) || defined(CONFIG_NUMA)
+ /**
+  * mpol_parse_str - parse string to mempolicy, for tmpfs mpol mount option.
+  * @str:  string containing mempolicy to parse
+@@ -3054,6 +3062,9 @@ int mpol_parse_str(char *str, struct mempolicy **mpol)
+ 			mode_flags |= MPOL_F_RELATIVE_NODES;
+ 		else
+ 			goto out;
++	} else {
++		/*use static mode_flags in default*/
++		mode_flags |= MPOL_F_STATIC_NODES;
+ 	}
+ 
+ 	new = mpol_new(mode, mode_flags, &nodes);
 
-
-vim +1259 drivers/misc/fastrpc.c
-
-  1208	
-  1209	static int fastrpc_init_create_static_process(struct fastrpc_user *fl,
-  1210						      char __user *argp)
-  1211	{
-  1212		struct fastrpc_init_create_static init;
-  1213		struct fastrpc_invoke_args *args;
-  1214		struct fastrpc_phy_page pages[1];
-  1215		char *name;
-  1216		int err;
-  1217		struct {
-  1218			int pgid;
-  1219			u32 namelen;
-  1220			u32 pageslen;
-  1221		} inbuf;
-  1222		u32 sc;
-  1223	
-  1224		args = kcalloc(FASTRPC_CREATE_STATIC_PROCESS_NARGS, sizeof(*args), GFP_KERNEL);
-  1225		if (!args)
-  1226			return -ENOMEM;
-  1227	
-  1228		if (copy_from_user(&init, argp, sizeof(init))) {
-  1229			err = -EFAULT;
-  1230			goto err;
-  1231		}
-  1232	
-  1233		if (init.namelen > INIT_FILE_NAMELEN_MAX) {
-  1234			err = -EINVAL;
-  1235			goto err;
-  1236		}
-  1237	
-  1238		name = kzalloc(init.namelen, GFP_KERNEL);
-  1239		if (!name) {
-  1240			err = -ENOMEM;
-  1241			goto err;
-  1242		}
-  1243	
-  1244		if (copy_from_user(name, (void __user *)(uintptr_t)init.name, init.namelen)) {
-  1245			err = -EFAULT;
-  1246			goto err_name;
-  1247		}
-  1248	
-  1249		if (!fl->cctx->remote_heap) {
-  1250			err = fastrpc_remote_heap_alloc(fl, fl->sctx->dev, init.memlen,
-  1251							&fl->cctx->remote_heap);
-  1252			if (err)
-  1253				goto err_name;
-  1254	
-  1255			/* Map if we have any heap VMIDs associated with this ADSP Static Process. */
-  1256			if (fl->cctx->vmcount) {
-  1257				unsigned int perms = BIT(QCOM_SCM_VMID_HLOS);
-  1258	
-> 1259				dev_dbg(fl->sctx->dev, "Assinging memory with phys 0x%llx size 0x%llx perms 0x%x, vmperms %x, vmcount %x\n",
-  1260					fl->cctx->remote_heap->phys, fl->cctx->remote_heap->size,
-  1261					perms, fl->cctx->vmperms, fl->cctx->vmcount);
-  1262				err = qcom_scm_assign_mem(fl->cctx->remote_heap->phys,
-  1263								(u64)fl->cctx->remote_heap->size, &perms,
-  1264								fl->cctx->vmperms, fl->cctx->vmcount);
-  1265				if (err) {
-  1266					dev_err(fl->sctx->dev, "Failed to assign memory with phys 0x%llx size 0x%llx err %d",
-  1267						fl->cctx->remote_heap->phys, fl->cctx->remote_heap->size, err);
-  1268					goto err_map;
-  1269				}
-  1270			}
-  1271		}
-  1272	
-  1273		inbuf.pgid = fl->tgid;
-  1274		inbuf.namelen = init.namelen;
-  1275		inbuf.pageslen = 0;
-  1276		fl->pd = USER_PD;
-  1277	
-  1278		args[0].ptr = (u64)(uintptr_t)&inbuf;
-  1279		args[0].length = sizeof(inbuf);
-  1280		args[0].fd = -1;
-  1281	
-  1282		args[1].ptr = (u64)(uintptr_t)name;
-  1283		args[1].length = inbuf.namelen;
-  1284		args[1].fd = -1;
-  1285	
-  1286		pages[0].addr = fl->cctx->remote_heap->phys;
-  1287		pages[0].size = fl->cctx->remote_heap->size;
-  1288	
-  1289		args[2].ptr = (u64)(uintptr_t) pages;
-  1290		args[2].length = sizeof(*pages);
-  1291		args[2].fd = -1;
-  1292	
-  1293		sc = FASTRPC_SCALARS(FASTRPC_RMID_INIT_CREATE_STATIC, 3, 0);
-  1294	
-  1295		err = fastrpc_internal_invoke(fl, true, FASTRPC_INIT_HANDLE,
-  1296					      sc, args);
-  1297		if (err)
-  1298			goto err_invoke;
-  1299	
-  1300		kfree(args);
-  1301	
-  1302		return 0;
-  1303	err_invoke:
-  1304	err_map:
-  1305		fastrpc_buf_free(fl->cctx->remote_heap);
-  1306	err_name:
-  1307		kfree(name);
-  1308	err:
-  1309		kfree(args);
-  1310	
-  1311		return err;
-  1312	}
-  1313	
-
+base-commit: c40e8341e3b3bb27e3a65b06b5b454626234c4f0
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
