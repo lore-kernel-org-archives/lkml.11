@@ -2,163 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9953ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Sun,  4 Sep 2022 03:32:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD7BCECAAD3
+	for <linux-kernel@archiver.kernel.org>; Sun,  4 Sep 2022 04:02:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231414AbiIDDcm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 3 Sep 2022 23:32:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52438 "EHLO
+        id S229718AbiIDECO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 4 Sep 2022 00:02:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbiIDDci (ORCPT
+        with ESMTP id S229475AbiIDECM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 3 Sep 2022 23:32:38 -0400
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF531900B;
-        Sat,  3 Sep 2022 20:32:37 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 4B4465C008C;
-        Sat,  3 Sep 2022 23:32:37 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Sat, 03 Sep 2022 23:32:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; t=1662262357; x=
-        1662348757; bh=TeyTyQi/4NWG/VEID8iA849BFUgiaZmUHO9VJnS0F00=; b=z
-        K9fO9/EGETZ+rM52VCnLG9+AIwT9QVDpkLo3BhDz8xBk0SZDpjWJv+UtIwGbLq3i
-        VHIkeDDKcu/OkYeMZeqvORa3wN9aiXSZqcGVTkgPea2/+FEtku0Yfr5jzshE271J
-        PMF0QkKTrKeVjWmytI06gpbh3e+0uTQ7H8ahXwOMwCiri0tHhswmwUF15j/QHpBl
-        86YdoWr8W/zs7/BWzJsiIOutZdPAN+3W+iYpUGGxwLUsgd6yN2DvFerK9yjQAFP6
-        Smi78oOrwYRBmoOpPOUb/59ZqowH6HcgDaSb4Zy90dGWjz7sdROraysFiscwnuaO
-        lxOWy1ETloFnF+M1kmNqg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1662262357; x=
-        1662348757; bh=TeyTyQi/4NWG/VEID8iA849BFUgiaZmUHO9VJnS0F00=; b=Z
-        vVKa2RrDlsfzt521ZxeAe13JsaCwjQvxizZ02heXNnqmZB8D7BSQK6xIXmQGDS92
-        XNk/qR2XDpXE8QNBfBggMChTt9lErfa6kkoX7OfrXN8mWH93P33q215yLpkCN4+m
-        +CHxxG2zbeYf4NlUyZoCqQtFjWS4zKs1RN+98diAwCZQqBC3nKgLNcaMkxvK+0DV
-        7pDH7clbwFIZJgBxDJB51SyM2epMX7v8TqPwHGDyvc9z4Wycb6rfV3y34Sh/g7lP
-        vO/XOyoy42DxYY8R24wKl6bTjT70dQ7PyvTHXrfeu5JTCHcL7AP6CGKTwtqP3BWk
-        30I2TbHgQtIySlwLyAJvg==
-X-ME-Sender: <xms:VBwUYzvVdjLoImfawq72Yk8jlj1_6s7M14ZjgZLnsO235I4_wKUbSQ>
-    <xme:VBwUY0fohUQAPL4mklQyw2KB8Hl1B6D3BdJYDG2bVb5nSyqR9u66F20PzO1iCMM1h
-    qYIgLjEqWXY0fWtEA>
-X-ME-Received: <xmr:VBwUY2wIiCZl-PeXUls03AjAxdo0nus3W3nmQNCkMzCJJ4xfa09WZ43uXBAuys0B28W1PlkiqdL3KZ16IT6nq61_mmnsepk_Eac5p_Wj2mLVIOp_IuffVYuHTg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdelfedgjedtucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepuffvvehfhffkffgfgggjtgfgsehtkeertddtfeejnecuhfhrohhmpefurghm
-    uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
-    ggtffrrghtthgvrhhnpeejleefuddtgeegvedvkeehfeejfeevgfefiefffeegudeiuedt
-    heekjeelgeeujeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrh
-    fuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshgrmhhuvghlsehshhholhhl
-    rghnugdrohhrgh
-X-ME-Proxy: <xmx:VRwUYyMK8E-77mvvxWeQkNqxtZmfhDBmOWQD7qjQk1U1juoE2r3bxw>
-    <xmx:VRwUYz-H16B3lqXVbfmCqLiHZaNtY6PBZoFFygjS2O-gU21x6UN8Rg>
-    <xmx:VRwUYyXMQfARxFylCv-t_lvJLZyLM4F6kBgWCTNFbj7TrW0YqghMMQ>
-    <xmx:VRwUY0MSZkSa9U4rsgB6Ro9VWw8r3qXWsisf70qI2XENz86inPrDhA>
-Feedback-ID: i0ad843c9:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
- 3 Sep 2022 23:32:36 -0400 (EDT)
-Subject: Re: [PATCH v2 4/4] arm64: dts: allwinner: beelink-gs1: Enable GPU OPP
-To:     =?UTF-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>
-Cc:     Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-sunxi@lists.linux.dev,
-        linux-kernel <linux-kernel@vger.kernel.org>
-References: <20220821173051.155038-1-peron.clem@gmail.com>
- <20220821173051.155038-5-peron.clem@gmail.com>
- <0c028109-bb50-fbaa-de18-9876706a7477@sholland.org>
- <CAJiuCcf7NuXFFLw6-RFcyZPNFPagfSB5aR7rY5528USzNB-iKg@mail.gmail.com>
- <CAJiuCcf0io5T=+Ap8io2uKn+CNqrCi2pbaCtyq2PVW=bEqKakg@mail.gmail.com>
-From:   Samuel Holland <samuel@sholland.org>
-Message-ID: <26ebdc2d-caca-2d53-45bc-8c8b90c7c1fd@sholland.org>
-Date:   Sat, 3 Sep 2022 22:32:36 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        Sun, 4 Sep 2022 00:02:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5D833336C;
+        Sat,  3 Sep 2022 21:02:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A19560E92;
+        Sun,  4 Sep 2022 04:02:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72A46C433C1;
+        Sun,  4 Sep 2022 04:02:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662264129;
+        bh=TIoOTSREpvkvhl9eSkOM8oVjPAEJAUA02SCQCR6SdbY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YiT58vTpgqD6qCXUZgUsF4ckAtznccfJnq1mmLjCK8UVp7YTLcnAjqERh7613K/UH
+         fv0rTRe9/U5bt9Hi10/Ja7QWcHlksFoVRN16wTShPNbFf5agDCBz8iifOxRbnLT3Rt
+         ptfxfWjACqee5aMhG7bOiV7wXcl1Han+qTOru0ui6TNVpQ7nS4twPAwOxNj3ZFZO2n
+         vJq/dcTi285CSgnS62oIn7f/ZzjiPPz4CThAYjq575CT7c+QW83ozQqc3UWIzLuNLM
+         879KJ0hSzYG3pwAqZKmWfPuweq2OOZWBTQ3WL8DDYx9BT3ssYfQn0uLYbjhh44T5Vq
+         Agque2y1l+VnQ==
+Date:   Sun, 4 Sep 2022 07:02:05 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Reinette Chatre <reinette.chatre@intel.com>
+Cc:     linux-sgx@vger.kernel.org,
+        Haitao Huang <haitao.huang@linux.intel.com>,
+        Vijay Dhanraj <vijay.dhanraj@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Shuah Khan <shuah@kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 4/6] selftests/sgx: Add SGX selftest
+ augment_via_eaccept_long
+Message-ID: <YxQjPbFSHOThq4c5@kernel.org>
+References: <20220831173829.126661-1-jarkko@kernel.org>
+ <20220831173829.126661-5-jarkko@kernel.org>
+ <d2b76530-82a2-6ac1-32ea-696e653d767d@intel.com>
+ <YxEwwzXOsCliznQJ@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <CAJiuCcf0io5T=+Ap8io2uKn+CNqrCi2pbaCtyq2PVW=bEqKakg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YxEwwzXOsCliznQJ@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 9/3/22 2:06 PM, Clément Péron wrote:
-> Hi Samuel,
+On Fri, Sep 02, 2022 at 01:22:59AM +0300, Jarkko Sakkinen wrote:
+> > Is this test passing on your system? This version is missing the change to
+> > mrenclave_ecreate() that causes SGX_IOC_ENCLAVE_INIT to fail when I try it out.
 > 
-> On Sat, 3 Sept 2022 at 20:41, Clément Péron <peron.clem@gmail.com> wrote:
->>
->> Hi Samuel,
->>
->> On Tue, 23 Aug 2022 at 05:07, Samuel Holland <samuel@sholland.org> wrote:
->>>
->>> On 8/21/22 12:30 PM, Clément Péron wrote:
->>>> Enable GPU OPP table for Beelink GS1
->>>>
->>>> Signed-off-by: Clément Péron <peron.clem@gmail.com>
->>>> ---
->>>>  arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts | 2 ++
->>>>  1 file changed, 2 insertions(+)
->>>>
->>>> diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts b/arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts
->>>> index 6249e9e02928..20fc0584d1c6 100644
->>>> --- a/arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts
->>>> +++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts
->>>> @@ -5,6 +5,7 @@
->>>>
->>>>  #include "sun50i-h6.dtsi"
->>>>  #include "sun50i-h6-cpu-opp.dtsi"
->>>> +#include "sun50i-h6-gpu-opp.dtsi"
->>>>
->>>>  #include <dt-bindings/gpio/gpio.h>
->>>>
->>>> @@ -261,6 +262,7 @@ reg_dcdca: dcdca {
->>>>                       };
->>>>
->>>>                       reg_dcdcc: dcdcc {
->>>> +                             regulator-always-on;
->>>
->>> Why is this necessary? This file already has:
->>
->> This is a relica from the first serie at this time the OPP doesn't
->> properly enable the regulator it's now fixed since:
->> https://patchwork.kernel.org/project/linux-pm/patch/81eb2efeeed1556d124065252f32777838a6d850.1589528491.git.viresh.kumar@linaro.org/
-
-This should have nothing to do with the OPP driver; lima already has a "mali"
-regulator consumer that should be enabled whenever the GPU is in use.
-
-_Adding_ a regulator consumer from the OPP driver should not somehow decrease
-the refcount.
-
->> I will drop it.
+> I *did* get a pass in my test machine. Hmm... I'll check if
+> the kernel tree was out-of-sync, which could be the reason.
 > 
-> After retesting it, it seems to still no take the regulator and make
-> my board hang... :(
-> 
-> [   17.698597] sun8i-dw-hdmi 6000000.hdmi: registered DesignWare HDMI
-> I2C bus driver
-> [   17.708475] sun4i-drm display-engine: bound 6000000.hdmi (ops
-> sun8i_dw_hdmi_ops [sun8i_drm_hdmi])
-> [   17.718350] [drm] Initialized sun4i-drm 1.0.0 20150629 for
-> display-engine on minor 1
-> [   17.877443] Console: switching to colour frame buffer device 320x90
-> [   17.936050] sun4i-drm display-engine: [drm] fb0: sun4i-drmdrmfb
-> frame buffer device
-> [   17.961881] platform 5200000.usb: deferred probe pending
->>>>> [   31.710731] vdd-gpu: disabling <<<<<
+> I do not compile kernel on that machine but have the kernel
+> tree for running selftests. So there is a possiblity for
+> a human error. Thanks for pointing this out.
 
-Are there any messages from lima, especially about mali-supply? Can you provide
-regulators_summary from debugfs?
+Apparently, v1 and v2 break the encl->src_size calculation:
+the dynamic heap size is not added.
 
-Regards,
-Samuel
+So, in order to revert sigstruct change:
+
+diff --git a/tools/testing/selftests/sgx/load.c b/tools/testing/selftests/sgx/load.c
+index 47b2786d6a77..0e4e12e1e3eb 100644
+--- a/tools/testing/selftests/sgx/load.c
++++ b/tools/testing/selftests/sgx/load.c
+@@ -172,7 +172,7 @@ uint64_t encl_get_entry(struct encl *encl, const char *symbol)
+ }
+
+ bool encl_load(const char *path, struct encl *encl, unsigned long heap_size,
+-              unsigned long edmm_size)
++              unsigned long dynamic_heap_size)
+ {
+        const char device_path[] = "/dev/sgx_enclave";
+        struct encl_segment *seg;
+@@ -299,9 +299,9 @@ bool encl_load(const char *path, struct encl *encl, unsigned long heap_size,
+        if (seg->src == MAP_FAILED)
+                goto err;
+
+-       encl->src_size = encl->segment_tbl[j].offset + encl->segment_tbl[j].size;
++       encl->src_size = encl->segment_tbl[j].offset + encl->segment_tbl[j].size + dynamic_heap_size;
+
+-       for (encl->encl_size = 4096; encl->encl_size < encl->src_size + edmm_size;)
++       for (encl->encl_size = 4096; encl->encl_size < encl->src_size;)
+                encl->encl_size <<= 1;
+
+        return true;
+
+BR, Jarkko
