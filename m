@@ -2,116 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 783BBC54EE9
-	for <linux-kernel@archiver.kernel.org>; Sun,  4 Sep 2022 00:04:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B5ECC54EE9
+	for <linux-kernel@archiver.kernel.org>; Sun,  4 Sep 2022 00:35:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229612AbiIDAEe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 3 Sep 2022 20:04:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32930 "EHLO
+        id S229612AbiIDAf1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 3 Sep 2022 20:35:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbiIDAE0 (ORCPT
+        with ESMTP id S229478AbiIDAfX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 3 Sep 2022 20:04:26 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D66422A;
-        Sat,  3 Sep 2022 17:04:21 -0700 (PDT)
+        Sat, 3 Sep 2022 20:35:23 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCFCE25E84;
+        Sat,  3 Sep 2022 17:35:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662249861; x=1693785861;
+  t=1662251721; x=1693787721;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=RVEhZ6y4T1JLmd8UZJsB2e4A0dQiVCt7KFVfFW0jwQA=;
-  b=cAtyjK00jWHVtA2WvzESCxsPrAKFS0tycokzzT+8Tt+S9CfaBxUeKnJc
-   R3jSL9ttdEEmeQjCuRodx4Vb8PS5Ir3/1iWekFv3JmzDCYIoUkaxT2rKZ
-   AjbQ6jPZtDwbhFAHygsg2uisHpGslDA1AScnhwRrZMaoLwAYunSrQLQRy
-   2+fAJk9tCYavi+M1t8kU1c3HTF6pMIfoRJsFheoR6e+X9JXBIVNiDY6Fu
-   3HGn7Zx+MD1817DUVUGoz0uAcveV4ZsdGfgmlUSKILxLP3X5zM1Pgb+Wc
-   5D/a72JXPKwNeL9/2MVDREaIkfc2oxXGu2AMHeCUHmcQ0i5gx2lOLJK8R
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10459"; a="297494730"
-X-IronPort-AV: E=Sophos;i="5.93,287,1654585200"; 
-   d="scan'208";a="297494730"
+  bh=DR9Og7TufHVcJZwDjl7qukiXl119wqG8vdjGKb2Jlbs=;
+  b=P8rF2aPzEc1aKM28MgM5uZ0yIuTntCOfOfUAlgAE2eQWUYbL7Opv2MOK
+   xyBW3j0RobPs0cJrHOD+xFSIn3KrE+oJq+VbPs9ctmguhg5EzbGDTrnJs
+   B4Jl4rNXlqfn0JeAqDuk63p7t4A88vAo2/NE3TYoLT/rAH9ds/p5FH88x
+   Q18I56NVusfufRD9kVnO8ZMagUT5NMccp+Y2q3Jrl7N2DZT8LEs0IP89K
+   EMiraM6k14TNwq60iCmXY55sm1TG7XGlKHQab1+PO4vRJFS393UovyESf
+   ItepUTR3lu+KhioBelasvfP9ykYe0cRqDJt010BY1QZraFz5qs7bDqvmR
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10459"; a="296202531"
+X-IronPort-AV: E=Sophos;i="5.93,288,1654585200"; 
+   d="scan'208";a="296202531"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2022 17:04:20 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2022 17:35:21 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,287,1654585200"; 
-   d="scan'208";a="564348244"
+X-IronPort-AV: E=Sophos;i="5.93,288,1654585200"; 
+   d="scan'208";a="564351821"
 Received: from lkp-server02.sh.intel.com (HELO 95dfd251caa2) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 03 Sep 2022 17:04:17 -0700
+  by orsmga003.jf.intel.com with ESMTP; 03 Sep 2022 17:35:18 -0700
 Received: from kbuild by 95dfd251caa2 with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1oUd7Y-0002Ll-1R;
-        Sun, 04 Sep 2022 00:04:16 +0000
-Date:   Sun, 4 Sep 2022 08:03:51 +0800
+        id 1oUdbZ-0002Mj-1I;
+        Sun, 04 Sep 2022 00:35:17 +0000
+Date:   Sun, 4 Sep 2022 08:34:20 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Szuying Chen <chensiying21@gmail.com>, gregkh@linuxfoundation.org,
-        mario.limonciello@amd.com, mika.westerberg@linux.intel.com,
-        andreas.noever@gmail.com, michael.jamet@intel.com,
-        YehezkelShB@gmail.com, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Yd_Tseng@asmedia.com.tw,
-        Chloe_Chen@asmedia.com.tw, Richard_Hsu@asmedia.com.tw
-Subject: Re: [PATCH v8 1/3] thunderbolt: Add vendor's specific operations of
- NVM
-Message-ID: <202209040723.T3GBSVUx-lkp@intel.com>
-References: <20220902094010.2170-2-chensiying21@gmail.com>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, Hannes Reinecke <hare@suse.de>,
+        Serge Semin <fancer.lancer@gmail.com>
+Cc:     kbuild-all@lists.01.org,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v7 19/23] ata: ahci: Add DWC AHCI SATA controller support
+Message-ID: <202209040834.w5y0s1NR-lkp@intel.com>
+References: <20220822183728.24434-20-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220902094010.2170-2-chensiying21@gmail.com>
+In-Reply-To: <20220822183728.24434-20-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Szuying,
+Hi Serge,
 
-Thank you for the patch! Perhaps something to improve:
+I love your patch! Yet something to improve:
 
-[auto build test WARNING on linus/master]
-[also build test WARNING on v6.0-rc3 next-20220901]
+[auto build test ERROR on robh/for-next]
+[also build test ERROR on axboe-block/for-next linus/master v6.0-rc3 next-20220901]
 [If your patch is applied to the wrong git tree, kindly drop us a note.
 And when submitting patch, we suggest to use '--base' as documented in
 https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Szuying-Chen/thunderbolt-add-vendor-s-NVM-formats/20220902-174246
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 42e66b1cc3a070671001f8a1e933a80818a192bf
-config: loongarch-randconfig-s051-20220901 (https://download.01.org/0day-ci/archive/20220904/202209040723.T3GBSVUx-lkp@intel.com/config)
-compiler: loongarch64-linux-gcc (GCC) 12.1.0
-reproduce:
+url:    https://github.com/intel-lab-lkp/linux/commits/Serge-Semin/ata-ahci-Add-DWC-Baikal-T1-AHCI-SATA-support/20220823-024133
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
+config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20220904/202209040834.w5y0s1NR-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/02a1339d2c5a67367909bfcb11e307d3cfa44f74
+        # https://github.com/intel-lab-lkp/linux/commit/e628913a210e29775bc995d1ed3ed58ab13416b8
         git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Szuying-Chen/thunderbolt-add-vendor-s-NVM-formats/20220902-174246
-        git checkout 02a1339d2c5a67367909bfcb11e307d3cfa44f74
+        git fetch --no-tags linux-review Serge-Semin/ata-ahci-Add-DWC-Baikal-T1-AHCI-SATA-support/20220823-024133
+        git checkout e628913a210e29775bc995d1ed3ed58ab13416b8
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=loongarch SHELL=/bin/bash drivers/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash drivers/ata/
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
 
-sparse warnings: (new ones prefixed by >>)
-   drivers/thunderbolt/nvm.c: note: in included file:
->> drivers/thunderbolt/tb.h:743:20: sparse: sparse: marked inline, but without a definition
->> drivers/thunderbolt/tb.h:743:20: sparse: sparse: marked inline, but without a definition
+All errors (new ones prefixed by >>):
 
-vim +743 drivers/thunderbolt/tb.h
+   In file included from include/linux/clk.h:13,
+                    from drivers/ata/ahci_dwc.c:11:
+>> drivers/ata/ahci_dwc.c:372:50: error: 'ahci_dwc_suspend' undeclared here (not in a function); did you mean 'ahci_dwc_probe'?
+     372 | static DEFINE_SIMPLE_DEV_PM_OPS(ahci_dwc_pm_ops, ahci_dwc_suspend,
+         |                                                  ^~~~~~~~~~~~~~~~
+   include/linux/kernel.h:57:44: note: in definition of macro 'PTR_IF'
+      57 | #define PTR_IF(cond, ptr)       ((cond) ? (ptr) : NULL)
+         |                                            ^~~
+   include/linux/pm.h:313:20: note: in expansion of macro 'pm_sleep_ptr'
+     313 |         .suspend = pm_sleep_ptr(suspend_fn), \
+         |                    ^~~~~~~~~~~~
+   include/linux/pm.h:373:9: note: in expansion of macro 'SYSTEM_SLEEP_PM_OPS'
+     373 |         SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn) \
+         |         ^~~~~~~~~~~~~~~~~~~
+   include/linux/pm.h:399:9: note: in expansion of macro '_DEFINE_DEV_PM_OPS'
+     399 |         _DEFINE_DEV_PM_OPS(name, suspend_fn, resume_fn, NULL, NULL, NULL)
+         |         ^~~~~~~~~~~~~~~~~~
+   drivers/ata/ahci_dwc.c:372:8: note: in expansion of macro 'DEFINE_SIMPLE_DEV_PM_OPS'
+     372 | static DEFINE_SIMPLE_DEV_PM_OPS(ahci_dwc_pm_ops, ahci_dwc_suspend,
+         |        ^~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/ata/ahci_dwc.c:373:33: error: 'ahci_dwc_resume' undeclared here (not in a function); did you mean 'ahci_port_resume'?
+     373 |                                 ahci_dwc_resume);
+         |                                 ^~~~~~~~~~~~~~~
+   include/linux/kernel.h:57:44: note: in definition of macro 'PTR_IF'
+      57 | #define PTR_IF(cond, ptr)       ((cond) ? (ptr) : NULL)
+         |                                            ^~~
+   include/linux/pm.h:314:19: note: in expansion of macro 'pm_sleep_ptr'
+     314 |         .resume = pm_sleep_ptr(resume_fn), \
+         |                   ^~~~~~~~~~~~
+   include/linux/pm.h:373:9: note: in expansion of macro 'SYSTEM_SLEEP_PM_OPS'
+     373 |         SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn) \
+         |         ^~~~~~~~~~~~~~~~~~~
+   include/linux/pm.h:399:9: note: in expansion of macro '_DEFINE_DEV_PM_OPS'
+     399 |         _DEFINE_DEV_PM_OPS(name, suspend_fn, resume_fn, NULL, NULL, NULL)
+         |         ^~~~~~~~~~~~~~~~~~
+   drivers/ata/ahci_dwc.c:372:8: note: in expansion of macro 'DEFINE_SIMPLE_DEV_PM_OPS'
+     372 | static DEFINE_SIMPLE_DEV_PM_OPS(ahci_dwc_pm_ops, ahci_dwc_suspend,
+         |        ^~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/ata/ahci_dwc.c:267:12: warning: 'ahci_dwc_reinit_host' defined but not used [-Wunused-function]
+     267 | static int ahci_dwc_reinit_host(struct ahci_host_priv *hpriv)
+         |            ^~~~~~~~~~~~~~~~~~~~
 
-   742	
- > 743	inline int nvm_read(struct tb_switch *sw, unsigned int address,
-   744				   void *buf, size_t size);
-   745	struct tb_nvm *tb_nvm_alloc(struct device *dev);
-   746	int tb_nvm_add_active(struct tb_nvm *nvm, size_t size, nvmem_reg_read_t reg_read);
-   747	int tb_nvm_write_buf(struct tb_nvm *nvm, unsigned int offset, void *val,
-   748			     size_t bytes);
-   749	int tb_nvm_add_non_active(struct tb_nvm *nvm, size_t size,
-   750				  nvmem_reg_write_t reg_write);
-   751	void tb_nvm_free(struct tb_nvm *nvm);
-   752	void tb_nvm_exit(void);
-   753	
+
+vim +372 drivers/ata/ahci_dwc.c
+
+   371	
+ > 372	static DEFINE_SIMPLE_DEV_PM_OPS(ahci_dwc_pm_ops, ahci_dwc_suspend,
+ > 373					ahci_dwc_resume);
+   374	
 
 -- 
 0-DAY CI Kernel Test Service
