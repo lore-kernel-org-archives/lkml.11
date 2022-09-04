@@ -2,68 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFAEFC6FA83
-	for <linux-kernel@archiver.kernel.org>; Sun,  4 Sep 2022 08:20:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CDE3ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Sun,  4 Sep 2022 08:27:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232484AbiIDIUK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 4 Sep 2022 04:20:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52404 "EHLO
+        id S233036AbiIDI1I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 4 Sep 2022 04:27:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbiIDIUJ (ORCPT
+        with ESMTP id S229537AbiIDI1G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 4 Sep 2022 04:20:09 -0400
+        Sun, 4 Sep 2022 04:27:06 -0400
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00FF42CCA8;
-        Sun,  4 Sep 2022 01:20:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D58A419A8
+        for <linux-kernel@vger.kernel.org>; Sun,  4 Sep 2022 01:27:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662279608; x=1693815608;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=vUkKqMd+013HwWmzXgAGkD/lAPQSyq4o+Dw/LJBJna8=;
-  b=VGOtql+HwvHXobTuwyhVS967CJSEIXF/Ow0QB9elXLUmMxTs9QofsKaB
-   o6sO6vlJj2Vkx9KGEHdC84knx50tEUnJItEs3nsHZyoKmcrXtwQszfP1z
-   tMkH+sIXsHQvIf7nI5UKXvEqCjXrGpXHPZqPW4FOF/4YyLib5LEDLq2aT
-   IQQ8KsVvgYLgFCuusqXkU7dtW7ZGk0aC68S3pCZW+elTPnU1seTVrZoKC
-   01wB2jp8J+QXqAY1wk5L1DGIc9tY0Ew9GRBMpS39gSTM9EmPgf88K5TM5
-   Nmv+RdwUquFhX6zIlj3petyEVeCCf1RspeIRCu0K8ULV0SE7uFyuZ2pYE
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10459"; a="296225827"
+  t=1662280025; x=1693816025;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=JQeFaJ4f95e8WYDw78FGLeuc+EIjHNI0iN4qkwgBqg0=;
+  b=RP5+FZDCcPSF4B2vUBJj+Qg6qKuwRrGicPm3krJY9L5FFT2KC4bZO9Wt
+   Atg5eRE1hzd1l1GOWXsbJ3qqScgDyMg8mlYisgOernOBpWkAJJuNOHsn1
+   8Nm0uuCCc4bUqLtBu/GFMWt7qjB3A25g5RxNJd608WqbdLu8xvRqJvRZW
+   yL3adQ8BQBrTFB2TBRigjZ+O7XHb6udz3v0RJZFsgaVDd4db9Bv3qlnsU
+   3yqC/1p8F3BVry1UuzbOCEcWK5G85U3vzHnxsOcDtmQAYhIH5ZypAeAI7
+   o7QS4EFcXr9VDIZo02qzTkUhtDMp5+gmBxpJN7UaQbOef0H6K8LXX6j5J
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10459"; a="296226830"
 X-IronPort-AV: E=Sophos;i="5.93,288,1654585200"; 
-   d="scan'208";a="296225827"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2022 01:19:56 -0700
+   d="scan'208";a="296226830"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2022 01:26:41 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,288,1654585200"; 
-   d="scan'208";a="643438167"
-Received: from naamamex-mobl.ger.corp.intel.com (HELO [10.13.13.50]) ([10.13.13.50])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2022 01:19:54 -0700
-Message-ID: <2a31d5cc-63db-9b4a-94ca-264ed5cd2adf@linux.intel.com>
-Date:   Sun, 4 Sep 2022 11:19:45 +0300
+   d="scan'208";a="616113245"
+Received: from lkp-server02.sh.intel.com (HELO 95dfd251caa2) ([10.239.97.151])
+  by fmsmga007.fm.intel.com with ESMTP; 04 Sep 2022 01:26:40 -0700
+Received: from kbuild by 95dfd251caa2 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oUkxj-0002or-28;
+        Sun, 04 Sep 2022 08:26:39 +0000
+Date:   Sun, 04 Sep 2022 16:26:37 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [paulmck-rcu:lazy.2022.09.03a] BUILD SUCCESS
+ e0c7d40eb8b115b099f2a5a01bf1d6719c0aa228
+Message-ID: <6314613d.Sr3zYvr16cna560u%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [Intel-wired-lan] [PATCH v3] drivers/net/ethernet/e1000e: check
- return value of e1e_rphy()
-Content-Language: en-US
-To:     Li Zhong <floridsleeves@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org
-Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        davem@davemloft.net
-References: <20220830071549.2137413-1-floridsleeves@gmail.com>
-From:   "naamax.meir" <naamax.meir@linux.intel.com>
-In-Reply-To: <20220830071549.2137413-1-floridsleeves@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/30/2022 10:15, Li Zhong wrote:
-> e1e_rphy() could return error value when reading PHY register, which
-> needs to be checked.
-> 
-> Signed-off-by: Li Zhong <floridsleeves@gmail.com>
-> ---
->   drivers/net/ethernet/intel/e1000e/phy.c | 20 +++++++++++++++++---
->   1 file changed, 17 insertions(+), 3 deletions(-)
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git lazy.2022.09.03a
+branch HEAD: e0c7d40eb8b115b099f2a5a01bf1d6719c0aa228  squash! rcu: Fix late wakeup when flush of bypass cblist happens
+
+elapsed time: 725m
+
+configs tested: 78
+configs skipped: 2
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+um                             i386_defconfig
+um                           x86_64_defconfig
+x86_64                              defconfig
+x86_64                        randconfig-a004
+arm                                 defconfig
+x86_64                        randconfig-a002
+x86_64                               rhel-8.3
+i386                                defconfig
+x86_64                        randconfig-a006
+x86_64                    rhel-8.3-kselftests
+arc                  randconfig-r043-20220904
+x86_64                           allyesconfig
+alpha                            allyesconfig
+x86_64                          rhel-8.3-func
+powerpc                           allnoconfig
+arc                              allyesconfig
+x86_64                        randconfig-a013
+riscv                randconfig-r042-20220904
+powerpc                          allmodconfig
+x86_64                         rhel-8.3-kunit
+s390                 randconfig-r044-20220904
+sh                               allmodconfig
+x86_64                           rhel-8.3-kvm
+m68k                             allyesconfig
+mips                             allyesconfig
+arm                              allyesconfig
+m68k                             allmodconfig
+arm64                            allyesconfig
+x86_64                           rhel-8.3-syz
+x86_64                        randconfig-a011
+i386                          randconfig-a001
+i386                          randconfig-a003
+ia64                             allmodconfig
+csky                              allnoconfig
+x86_64                        randconfig-a015
+i386                          randconfig-a005
+arc                               allnoconfig
+i386                          randconfig-a014
+alpha                             allnoconfig
+riscv                             allnoconfig
+i386                          randconfig-a012
+arm                           u8500_defconfig
+m68k                       m5475evb_defconfig
+sh                           se7722_defconfig
+sh                          sdk7780_defconfig
+sparc64                          alldefconfig
+i386                          randconfig-a016
+m68k                             alldefconfig
+i386                             allyesconfig
+mips                      fuloong2e_defconfig
+m68k                           sun3_defconfig
+arc                            hsdk_defconfig
+powerpc                 mpc837x_rdb_defconfig
+arm                         assabet_defconfig
+m68k                          atari_defconfig
+mips                         bigsur_defconfig
+arm                           tegra_defconfig
+mips                  decstation_64_defconfig
+i386                          randconfig-c001
+powerpc              randconfig-c003-20220904
+
+clang tested configs:
+x86_64                        randconfig-a005
+x86_64                        randconfig-a001
+hexagon              randconfig-r045-20220904
+x86_64                        randconfig-a003
+hexagon              randconfig-r041-20220904
+i386                          randconfig-a006
+x86_64                        randconfig-a016
+x86_64                        randconfig-a012
+i386                          randconfig-a002
+x86_64                        randconfig-a014
+i386                          randconfig-a004
+arm                   milbeaut_m10v_defconfig
+arm                         orion5x_defconfig
+arm                           sama7_defconfig
+i386                          randconfig-a013
+i386                          randconfig-a011
+i386                          randconfig-a015
+powerpc                 xes_mpc85xx_defconfig
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
