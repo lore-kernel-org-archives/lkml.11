@@ -2,140 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C58F2C54EE9
-	for <linux-kernel@archiver.kernel.org>; Sun,  4 Sep 2022 09:56:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDF85C54EE9
+	for <linux-kernel@archiver.kernel.org>; Sun,  4 Sep 2022 10:02:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233582AbiIDJ40 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 4 Sep 2022 05:56:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42394 "EHLO
+        id S233616AbiIDKCZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 4 Sep 2022 06:02:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbiIDJ4U (ORCPT
+        with ESMTP id S230260AbiIDKCX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 4 Sep 2022 05:56:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9439D33374
-        for <linux-kernel@vger.kernel.org>; Sun,  4 Sep 2022 02:56:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662285378;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=jimRioD4+++SuaoJblcBl1o/gjoraYSNzOcLbvs8+DQ=;
-        b=Wm3Y1utdRCBhaDLLGJILpHv2rA7BxxBZKLVmF26tb4Sq5AxXMVLQY67UdKCRnwJPoS0aT5
-        di/teFvFWdNf9VKv4NXaa89Wu07rK41vJGWZPFNQptSMW2rPkUWsV4Z8f2CiBn0ky8RhGq
-        LvNGZMab/1AxmMMxwBTpgzkhTnOYFGk=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-251-xna6bcvkPUOpI1hzsdyM-Q-1; Sun, 04 Sep 2022 05:56:17 -0400
-X-MC-Unique: xna6bcvkPUOpI1hzsdyM-Q-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 140E938041C0;
-        Sun,  4 Sep 2022 09:56:17 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EB99FC15BB3;
-        Sun,  4 Sep 2022 09:56:16 +0000 (UTC)
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     torvalds@linux-foundation.org
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Subject: [GIT PULL] KVM fixes for Linux 6.0-rc4
-Date:   Sun,  4 Sep 2022 05:56:16 -0400
-Message-Id: <20220904095616.3966213-1-pbonzini@redhat.com>
+        Sun, 4 Sep 2022 06:02:23 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0F2640BFD
+        for <linux-kernel@vger.kernel.org>; Sun,  4 Sep 2022 03:02:21 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oUmS7-0005cr-FH; Sun, 04 Sep 2022 12:02:07 +0200
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oUmS4-003qVp-8u; Sun, 04 Sep 2022 12:02:06 +0200
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oUmS5-00FAJQ-0A; Sun, 04 Sep 2022 12:02:05 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [PATCH v6 1/3] dt-bindings: iio: adc: ti,tsc2046: add vref-supply property
+Date:   Sun,  4 Sep 2022 12:02:01 +0200
+Message-Id: <20220904100203.3614502-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Linus,
+Add property for the voltage reference supply.
 
-The following changes since commit b90cb1053190353cc30f0fef0ef1f378ccc063c5:
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ Documentation/devicetree/bindings/iio/adc/ti,tsc2046.yaml | 3 +++
+ 1 file changed, 3 insertions(+)
 
-  Linux 6.0-rc3 (2022-08-28 15:05:29 -0700)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/virt/kvm/kvm.git tags/for-linus
-
-for you to fetch changes up to 29250ba51bc1cbe8a87e923f76978b87c3247a8c:
-
-  Merge tag 'kvm-s390-master-6.0-1' of git://git.kernel.org/pub/scm/linux/kernel/git/kvms390/linux into HEAD (2022-09-01 19:21:27 -0400)
-
-----------------------------------------------------------------
-s390:
-
-* PCI interpretation compile fixes
-
-RISC-V:
-
-* Fix unused variable warnings in vcpu_timer.c
-
-* Move extern sbi_ext declarations to a header
-
-x86:
-
-* check validity of argument to KVM_SET_MP_STATE
-
-* use guest's global_ctrl to completely disable guest PEBS
-
-* fix a memory leak on memory allocation failure
-
-* mask off unsupported and unknown bits of IA32_ARCH_CAPABILITIES
-
-* fix build failure with Clang integrated assembler
-
-* fix MSR interception
-
-* Always flush TLBs when enabling dirty logging
-
-----------------------------------------------------------------
-Conor Dooley (2):
-      riscv: kvm: vcpu_timer: fix unused variable warnings
-      riscv: kvm: move extern sbi_ext declarations to a header
-
-David Matlack (2):
-      KVM: selftests: Fix KVM_EXCEPTION_MAGIC build with Clang
-      KVM: selftests: Fix ambiguous mov in KVM_ASM_SAFE()
-
-Jim Mattson (2):
-      KVM: VMX: Heed the 'msr' argument in msr_write_intercepted()
-      KVM: x86: Mask off unsupported and unknown bits of IA32_ARCH_CAPABILITIES
-
-Junaid Shahid (2):
-      kvm: x86: mmu: Drop the need_remote_flush() function
-      kvm: x86: mmu: Always flush TLBs when enabling dirty logging
-
-Like Xu (1):
-      perf/x86/core: Completely disable guest PEBS via guest's global_ctrl
-
-Miaohe Lin (1):
-      KVM: x86: fix memoryleak in kvm_arch_vcpu_create()
-
-Paolo Bonzini (3):
-      KVM: x86: check validity of argument to KVM_SET_MP_STATE
-      Merge tag 'kvm-riscv-fixes-6.0-1' of https://github.com/kvm-riscv/linux into HEAD
-      Merge tag 'kvm-s390-master-6.0-1' of git://git.kernel.org/pub/scm/linux/kernel/git/kvms390/linux into HEAD
-
-Pierre Morel (1):
-      KVM: s390: pci: Hook to access KVM lowlevel from VFIO
-
- arch/riscv/include/asm/kvm_vcpu_sbi.h              | 12 +++
- arch/riscv/kvm/vcpu_sbi.c                          | 12 +--
- arch/riscv/kvm/vcpu_timer.c                        |  4 -
- arch/s390/include/asm/kvm_host.h                   | 17 ++--
- arch/s390/kvm/pci.c                                | 12 ++-
- arch/s390/pci/Makefile                             |  2 +-
- arch/s390/pci/pci_kvm_hook.c                       | 11 +++
- arch/x86/events/intel/core.c                       |  3 +-
- arch/x86/kvm/mmu/mmu.c                             | 60 ++------------
- arch/x86/kvm/mmu/spte.h                            | 14 +++-
- arch/x86/kvm/vmx/vmx.c                             |  3 +-
- arch/x86/kvm/x86.c                                 | 92 +++++++++++++++++++---
- drivers/vfio/pci/vfio_pci_zdev.c                   |  8 +-
- .../selftests/kvm/include/x86_64/processor.h       |  4 +-
- 14 files changed, 151 insertions(+), 103 deletions(-)
- create mode 100644 arch/s390/pci/pci_kvm_hook.c
+diff --git a/Documentation/devicetree/bindings/iio/adc/ti,tsc2046.yaml b/Documentation/devicetree/bindings/iio/adc/ti,tsc2046.yaml
+index 601d69971d84a..7faf12b1598b9 100644
+--- a/Documentation/devicetree/bindings/iio/adc/ti,tsc2046.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/ti,tsc2046.yaml
+@@ -25,6 +25,9 @@ properties:
+ 
+   spi-max-frequency: true
+ 
++  vref-supply:
++    description: Optional supply of the reference voltage
++
+   "#io-channel-cells":
+     const: 1
+ 
+-- 
+2.30.2
 
