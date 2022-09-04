@@ -2,213 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F1E3ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Sun,  4 Sep 2022 08:27:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C384ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Sun,  4 Sep 2022 08:40:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232014AbiIDI1S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 4 Sep 2022 04:27:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59708 "EHLO
+        id S232484AbiIDIj7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 4 Sep 2022 04:39:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbiIDI1L (ORCPT
+        with ESMTP id S229537AbiIDIjz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 4 Sep 2022 04:27:11 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0608941D1C;
-        Sun,  4 Sep 2022 01:27:09 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id s14-20020a17090a6e4e00b0020057c70943so231627pjm.1;
-        Sun, 04 Sep 2022 01:27:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=zfiWejN/Bz3YBQupNom1bcY/9klYVsjCN66XEd476z0=;
-        b=SBEuv7blCe057KcuIJdNRyj3g2VOPTQq1llrfLNFf289npI8wf/m4D6m8V6XY3lUXp
-         Re5/g1GMCzHeowzixKLlyMxv657lA13nPeZhWWJ2OC266RIOX72T1P7U1QIAkGITZTkZ
-         OhFiv4GP/cj1MqfFk/e6TYkNwyKqbZZknzVH95RjMeoEs2gWuzEfbEQyCHG1wbtuLJHO
-         pjSg3+fSIKJmTcugr2ndTCmihpEGjkt8TbVpopZ7zzVFWdZ8gYe+YJI8gXqyPjNVYdVK
-         Rz3pc71J6gK/cLFZWzrR+DMSWgYikjoU/F8/eqeKn7KVfwAFofKX6tJeywPhCEF2HQqP
-         7Blw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=zfiWejN/Bz3YBQupNom1bcY/9klYVsjCN66XEd476z0=;
-        b=gkb7W3gUoeEZxpMzzIclRYJJa2pHcrDJ+1jVRnHM2CW9ehjuYjXLvAXk6f/LWQb/K5
-         VnOhJPAnq8O8UqR0vEOTUFMCOShg/+m/xcIjS6uvCMGab9ZRsKTvVHpColDVJzNfa4uc
-         tvlaon62fjei1jT4JBZYBkAS23qpNVmVUKhXZpGFjnC5nqmVpcoNmelufXN5fagunMAR
-         H85xuZPrRESC7pYcv4vtle8yGqol89VEH7rBp0rN4TiSxwiFDr0cUcs8+LK5tsfxsnkD
-         xIcOws+M/Xl/x1RgyzSiJWKEgoRj138U8/jLYdQi3I/9GaVSY1JlpSQIoiR8zA93ufPN
-         VkiQ==
-X-Gm-Message-State: ACgBeo1vymS+0VUVjsXKMdixhPKv8I96PsIXcpdcmcC7EBnIG372qad4
-        vlAvFdvAggwFOiiKybqZmyo=
-X-Google-Smtp-Source: AA6agR6p1vnEmVhMR4O8lPoCRt91HpCjcE3g3bJe1rFhs/kMi/uJluoc3/u+nZq0YPRXXKdaBaDdUg==
-X-Received: by 2002:a17:90b:3a81:b0:1fd:c490:4f08 with SMTP id om1-20020a17090b3a8100b001fdc4904f08mr13328363pjb.105.1662280028369;
-        Sun, 04 Sep 2022 01:27:08 -0700 (PDT)
-Received: from debian.me (subs02-180-214-232-16.three.co.id. [180.214.232.16])
-        by smtp.gmail.com with ESMTPSA id y11-20020a17090322cb00b001744018def7sm4901806plg.90.2022.09.04.01.27.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 04 Sep 2022 01:27:08 -0700 (PDT)
-Received: by debian.me (Postfix, from userid 1000)
-        id 521D0102D35; Sun,  4 Sep 2022 15:20:28 +0700 (WIB)
-Date:   Sun, 4 Sep 2022 15:20:27 +0700
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shuah Khan <shuah@kernel.org>, cgroups@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <guro@fb.com>, Phil Auld <pauld@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>
-Subject: Re: [PATCH v12 09/10] cgroup/cpuset: Update description of
- cpuset.cpus.partition in cgroup-v2.rst
-Message-ID: <YxRfy/SaKkJSm5jY@debian.me>
-References: <20220901205745.323326-1-longman@redhat.com>
- <20220901205745.323326-10-longman@redhat.com>
+        Sun, 4 Sep 2022 04:39:55 -0400
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6170618360;
+        Sun,  4 Sep 2022 01:39:53 -0700 (PDT)
+Received: from [192.168.230.80] (unknown [182.2.71.200])
+        by gnuweeb.org (Postfix) with ESMTPSA id 2D7AB804D1;
+        Sun,  4 Sep 2022 08:39:49 +0000 (UTC)
+X-GW-Data: lPqxHiMPbJw1wb7CM9QUryAGzr0yq5atzVDdxTR0iA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1662280792;
+        bh=awbFdPWx5OJ12EhTNx9Kf8fsQ9KbanR2HansLBdvSz4=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=lZQdqIM/0i0vUqj7d4xtqKLoB0yIf+/cm23eWgvoF/Wk73YvxJR+TMtgI+oJxImGD
+         W74DTTYJHtp34cn7l5ZJAZJv3cA5UIsEzZxymJbfTDBYe8D6LaMH9EiSioSug9I5qx
+         dibMA/zIefYeTrDkC1eRVhlB1WsMC999tdBqiK1PZ034afqdoh1lgCFOd+ccx21mey
+         Sum6tZzHoVbGfKArrdF8O72Yz1UEt37E9gZrpDLYjEqiu5L1bO4DFyn2N0nN3Yhpzu
+         S/2YyhbK0/b1EWB2XLtUo1sP/CYdz6BKBX9WKX+MpmZbmC3qts5qtIh2ZptP1fGIoE
+         rMQkDzBH6LyXA==
+Message-ID: <cbd29bbc-09d6-efb7-fa3f-88ae5e1796ef@gnuweeb.org>
+Date:   Sun, 4 Sep 2022 15:39:46 +0700
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="oIHDfZi7tkZKklmK"
-Content-Disposition: inline
-In-Reply-To: <20220901205745.323326-10-longman@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Content-Language: en-US
+To:     Binyi Han <dantengknight@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Mike Rapoport <rppt@linux.ibm.com>,
+        Linux Memory Management Mailing List <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org,
+        Hagen Paul Pfeifer <hagen@jauu.net>,
+        James Bottomley <James.Bottomley@HansenPartnership.com>
+References: <20220904074647.GA64291@cloud-MacBookPro>
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Subject: Re: [PATCH] mm: fix dereferencing possible ERR_PTR
+In-Reply-To: <20220904074647.GA64291@cloud-MacBookPro>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 9/4/22 2:46 PM, Binyi Han wrote:
+> Smatch checker complains that 'secretmem_mnt' dereferencing possible
+> ERR_PTR().
+> Let the function return if 'secretmem_mnt' is ERR_PTR, to avoid
+> deferencing it.
+> 
+> Signed-off-by: Binyi Han <dantengknight@gmail.com>
+> ---
 
---oIHDfZi7tkZKklmK
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Fixes: 1507f51255c9ff07d75909a84e7c0d7f3c4b2f49 ("mm: introduce memfd_secret system call to create "secret" memory areas")
 
-On Thu, Sep 01, 2022 at 04:57:44PM -0400, Waiman Long wrote:
->  	It accepts only the following input values when written to.
-> =20
->  	  =3D=3D=3D=3D=3D=3D=3D=3D	=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> -	  "root"	a partition root
-> -	  "member"	a non-root member of a partition
-> +	  "member"	Non-root member of a partition
-> +	  "root"	Partition root
-> +	  "isolated"	Partition root without load balancing
->  	  =3D=3D=3D=3D=3D=3D=3D=3D	=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> =20
-><snipped>
-> +	On read, the "cpuset.cpus.partition" file can show the following
-> +	values.
-> +
-> +	  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D	=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D
-> +	  "member"			Non-root member of a partition
-> +	  "root"			Partition root
-> +	  "isolated"			Partition root without load balancing
-> +	  "root invalid (<reason>)"	Invalid partition root
-> +	  "isolated invalid (<reason>)"	Invalid isolated partition root
-> +	  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D	=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D
-> +
+>   mm/secretmem.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/mm/secretmem.c b/mm/secretmem.c
+> index e3e9590c6fb3..3f7154099795 100644
+> --- a/mm/secretmem.c
+> +++ b/mm/secretmem.c
+> @@ -285,7 +285,7 @@ static int secretmem_init(void)
+>   
+>   	secretmem_mnt = kern_mount(&secretmem_fs);
+>   	if (IS_ERR(secretmem_mnt))
+> -		ret = PTR_ERR(secretmem_mnt);
+> +		return PTR_ERR(secretmem_mnt);
+>   
+>   	/* prevent secretmem mappings from ever getting PROT_EXEC */
+>   	secretmem_mnt->mnt_flags |= MNT_NOEXEC;
 
-These tables above produced htmldocs warnings:
+I agree that doing:
 
-Documentation/admin-guide/cgroup-v2.rst:2191: WARNING: Malformed table.
-Text in column margin in table line 4.
+    secretmem_mnt->mnt_flags |= MNT_NOEXEC;
 
-=3D=3D=3D=3D=3D=3D=3D=3D      =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-"member"      Non-root member of a partition
-"root"        Partition root
-"isolated"    Partition root without load balancing
-=3D=3D=3D=3D=3D=3D=3D=3D      =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-Documentation/admin-guide/cgroup-v2.rst:2229: WARNING: Malformed table.
-Text in column margin in table line 5.
+when IS_ERR(secretmem_mnt) evaluates to true is wrong. But I have
+a question: what happen if you invoke memfd_secret() syscall when
+@secretmem_mnt is an ERR_PTR?
 
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D        =
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D
-"member"                      Non-root member of a partition
-"root"                        Partition root
-"isolated"                    Partition root without load balancing
-"root invalid (<reason>)"     Invalid partition root
-"isolated invalid (<reason>)" Invalid isolated partition root
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D        =
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D
+Shouldn't we also guard the memfd_secret() path?
 
-I have applied the fixup:
+diff --git a/mm/secretmem.c b/mm/secretmem.c
+index e3e9590c6fb3..2d52508d47a9 100644
+--- a/mm/secretmem.c
++++ b/mm/secretmem.c
+@@ -230,18 +230,21 @@ static struct file *secretmem_file_create(unsigned long flags)
+  
+  SYSCALL_DEFINE1(memfd_secret, unsigned int, flags)
+  {
+  	struct file *file;
+  	int fd, err;
+  
+  	/* make sure local flags do not confict with global fcntl.h */
+  	BUILD_BUG_ON(SECRETMEM_FLAGS_MASK & O_CLOEXEC);
+  
++	if (IS_ERR(secretmem_mnt))
++		return PTR_ERR(secretmem_mnt);
++
+  	if (!secretmem_enable)
+  		return -ENOSYS;
+  
+  	if (flags & ~(SECRETMEM_FLAGS_MASK | O_CLOEXEC))
+  		return -EINVAL;
+  	if (atomic_read(&secretmem_users) < 0)
+  		return -ENFILE;
+  
+  	fd = get_unused_fd_flags(flags & O_CLOEXEC);
 
----- >8 ----
 
-diff --git a/Documentation/admin-guide/cgroup-v2.rst b/Documentation/admin-=
-guide/cgroup-v2.rst
-index 76b3ea9fd5c560..77b6faecf066cb 100644
---- a/Documentation/admin-guide/cgroup-v2.rst
-+++ b/Documentation/admin-guide/cgroup-v2.rst
-@@ -2185,11 +2185,11 @@ Cpuset Interface Files
-=20
- 	It accepts only the following input values when written to.
-=20
--	  =3D=3D=3D=3D=3D=3D=3D=3D	=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-+	  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D	=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
- 	  "member"	Non-root member of a partition
- 	  "root"	Partition root
- 	  "isolated"	Partition root without load balancing
--	  =3D=3D=3D=3D=3D=3D=3D=3D	=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-+	  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D	=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-=20
- 	The root cgroup is always a partition root and its state
- 	cannot be changed.  All other non-root cgroups start out as
-@@ -2222,13 +2222,13 @@ Cpuset Interface Files
- 	On read, the "cpuset.cpus.partition" file can show the following
- 	values.
-=20
--	  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D	=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D
-+	  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D	=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
- 	  "member"			Non-root member of a partition
- 	  "root"			Partition root
- 	  "isolated"			Partition root without load balancing
- 	  "root invalid (<reason>)"	Invalid partition root
- 	  "isolated invalid (<reason>)"	Invalid isolated partition root
--	  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D	=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D
-+	  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D	=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-=20
- 	In the case of an invalid partition root, a descriptive string on
- 	why the partition is invalid is included within parentheses.
-
-Thanks.
-
---=20
-An old man doll... just what I always wanted! - Clara
-
---oIHDfZi7tkZKklmK
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCYxRfxAAKCRD2uYlJVVFO
-o3SHAQClBqZgslhw004gM4yBhkfde6wdEJ2nw/MXorNJ8fTClQD+JtUvFXJzGoUu
-rSAT7jqqrPGSs2nO4gsLQKWjeu/V6gQ=
-=Tjsc
------END PGP SIGNATURE-----
-
---oIHDfZi7tkZKklmK--
+-- 
+Ammar Faizi
