@@ -2,156 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 167E8ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Sun,  4 Sep 2022 04:17:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFCDEECAAD5
+	for <linux-kernel@archiver.kernel.org>; Sun,  4 Sep 2022 04:21:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230163AbiIDERi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 4 Sep 2022 00:17:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45586 "EHLO
+        id S232458AbiIDEVT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 4 Sep 2022 00:21:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232159AbiIDERd (ORCPT
+        with ESMTP id S231550AbiIDEVQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 4 Sep 2022 00:17:33 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CADE94B4AF
-        for <linux-kernel@vger.kernel.org>; Sat,  3 Sep 2022 21:17:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662265052; x=1693801052;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=a85wHFq24sgpdmFzHzJbK2vyXsHJm0xE+DbbfAA2qoA=;
-  b=Nkw2griYSAPtlvVIgsJH1VUVLxEGE6z4zIdula/0Cp0ZxBScoHtdVTH8
-   BvSqP+jOBtUdSw038j8G1UNAnCuDMDhMPk4vPX8hkkpcCPRAWt5uWvh1I
-   oW0UrnhFo2G/iOeaNW6ObaSvyoLDsl72CV/hQVl393OcfszN5NGrZ8QF0
-   ddWcNLN6Uq6Cb9sU7KqlFU0vmERpvFGaFnW71Pw0X7O7ZfmfWR5lujHwB
-   5ITK/JfWer4QtfGK6KOHB4fjcXiDflGtE5Wye8TmIby1qLH+0jgNxYMhY
-   vDgOJjHusv37K+myfXn/Pxabf1pPu7c5zBQktW6jh8c+sYmAnKmm7J+am
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10459"; a="360164244"
-X-IronPort-AV: E=Sophos;i="5.93,288,1654585200"; 
-   d="scan'208";a="360164244"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2022 21:17:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,288,1654585200"; 
-   d="scan'208";a="564382709"
-Received: from lkp-server02.sh.intel.com (HELO 95dfd251caa2) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 03 Sep 2022 21:17:31 -0700
-Received: from kbuild by 95dfd251caa2 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oUh4c-0002YE-2B;
-        Sun, 04 Sep 2022 04:17:30 +0000
-Date:   Sun, 04 Sep 2022 12:16:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [paulmck-rcu:lazy.2022.09.03b] BUILD SUCCESS
- 485ca0ab99b3e10ff521fff226c3c8fe48fad488
-Message-ID: <631426ab.KN0Np3giE+pyBkEK%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Sun, 4 Sep 2022 00:21:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4473F1F603;
+        Sat,  3 Sep 2022 21:21:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D448060EBF;
+        Sun,  4 Sep 2022 04:21:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCA62C433D6;
+        Sun,  4 Sep 2022 04:21:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662265274;
+        bh=HTaLkyOjeRqU6VsCndu9y+G0HXRggqTWGIUw/ybXXiE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MxGJ2cteHFQQU2LqmX2NpaI/6R7xnmfcsx/3Eu0WPftaDbPga46zvXsc12SBVYA81
+         lv08BC3pvPTj+qtjvZ5epX+o5nbRxd2+3XMWDP+1VCy9o6nU2YctavaHm39honQsQJ
+         nQ3QSnn/iD8Qu1/plkJMQoS4dpOMC3k4W2tcZkqGkzOVoU+dgt9Y/suyebfFn1oh/i
+         L5SiXE+3MuRAKin/VKVpWa4JfEwFn1swTSXH/mth7Vu/vvX/MieBG3i65bmGIE07sy
+         pJoaJkJU0bRALRKlxXySzIYWV4Wor0CvMfnV2Z30JpfxXzeInpDJ+1Xx31UdblFOLz
+         +VGAPe0uPt+gw==
+Date:   Sun, 4 Sep 2022 07:21:09 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Reinette Chatre <reinette.chatre@intel.com>
+Cc:     linux-sgx@vger.kernel.org,
+        Haitao Huang <haitao.huang@linux.intel.com>,
+        Vijay Dhanraj <vijay.dhanraj@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Shuah Khan <shuah@kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 4/6] selftests/sgx: Add SGX selftest
+ augment_via_eaccept_long
+Message-ID: <YxQntXMQfEZ/kZQT@kernel.org>
+References: <20220831173829.126661-1-jarkko@kernel.org>
+ <20220831173829.126661-5-jarkko@kernel.org>
+ <d2b76530-82a2-6ac1-32ea-696e653d767d@intel.com>
+ <YxEwwzXOsCliznQJ@kernel.org>
+ <YxQjPbFSHOThq4c5@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <YxQjPbFSHOThq4c5@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git lazy.2022.09.03b
-branch HEAD: 485ca0ab99b3e10ff521fff226c3c8fe48fad488  rcutorture: Add test code for call_rcu_lazy()
+On Sun, Sep 04, 2022 at 07:02:08AM +0300, Jarkko Sakkinen wrote:
+> On Fri, Sep 02, 2022 at 01:22:59AM +0300, Jarkko Sakkinen wrote:
+> > > Is this test passing on your system? This version is missing the change to
+> > > mrenclave_ecreate() that causes SGX_IOC_ENCLAVE_INIT to fail when I try it out.
+> > 
+> > I *did* get a pass in my test machine. Hmm... I'll check if
+> > the kernel tree was out-of-sync, which could be the reason.
+> > 
+> > I do not compile kernel on that machine but have the kernel
+> > tree for running selftests. So there is a possiblity for
+> > a human error. Thanks for pointing this out.
+> 
+> Apparently, v1 and v2 break the encl->src_size calculation:
+> the dynamic heap size is not added.
+> 
+> So, in order to revert sigstruct change:
+> 
+> diff --git a/tools/testing/selftests/sgx/load.c b/tools/testing/selftests/sgx/load.c
+> index 47b2786d6a77..0e4e12e1e3eb 100644
+> --- a/tools/testing/selftests/sgx/load.c
+> +++ b/tools/testing/selftests/sgx/load.c
+> @@ -172,7 +172,7 @@ uint64_t encl_get_entry(struct encl *encl, const char *symbol)
+>  }
+> 
+>  bool encl_load(const char *path, struct encl *encl, unsigned long heap_size,
+> -              unsigned long edmm_size)
+> +              unsigned long dynamic_heap_size)
+>  {
+>         const char device_path[] = "/dev/sgx_enclave";
+>         struct encl_segment *seg;
+> @@ -299,9 +299,9 @@ bool encl_load(const char *path, struct encl *encl, unsigned long heap_size,
+>         if (seg->src == MAP_FAILED)
+>                 goto err;
+> 
+> -       encl->src_size = encl->segment_tbl[j].offset + encl->segment_tbl[j].size;
+> +       encl->src_size = encl->segment_tbl[j].offset + encl->segment_tbl[j].size + dynamic_heap_size;
+> 
+> -       for (encl->encl_size = 4096; encl->encl_size < encl->src_size + edmm_size;)
+> +       for (encl->encl_size = 4096; encl->encl_size < encl->src_size;)
+>                 encl->encl_size <<= 1;
 
-elapsed time: 720m
+Actually, it is correct after all how Vijay changed it. We should use
+the final pre-calculated enclave address range in sigstruct.c. It's the
+re-calculation of that in sigstruct is a reminiscent of it being a
+separate command-line utility, instead of calculating the sigstruct
+on-fly. I.e. there has been sane reasons why it has been like that.
 
-configs tested: 80
-configs skipped: 2
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-um                             i386_defconfig
-um                           x86_64_defconfig
-i386                                defconfig
-arm                                 defconfig
-i386                             allyesconfig
-arc                  randconfig-r043-20220904
-x86_64                    rhel-8.3-kselftests
-x86_64                          rhel-8.3-func
-i386                          randconfig-a005
-x86_64                              defconfig
-i386                          randconfig-a014
-x86_64                        randconfig-a013
-arm                              allyesconfig
-x86_64                        randconfig-a004
-x86_64                         rhel-8.3-kunit
-riscv                randconfig-r042-20220904
-arm64                            allyesconfig
-s390                 randconfig-r044-20220904
-i386                          randconfig-a016
-x86_64                           rhel-8.3-kvm
-arc                              allyesconfig
-x86_64                               rhel-8.3
-x86_64                        randconfig-a002
-powerpc                          allmodconfig
-i386                          randconfig-a001
-sh                               allmodconfig
-alpha                            allyesconfig
-x86_64                        randconfig-a011
-x86_64                           rhel-8.3-syz
-x86_64                           allyesconfig
-mips                             allyesconfig
-i386                          randconfig-a003
-x86_64                        randconfig-a006
-powerpc                           allnoconfig
-i386                          randconfig-a012
-x86_64                        randconfig-a015
-ia64                             allmodconfig
-m68k                             allyesconfig
-microblaze                          defconfig
-powerpc                         wii_defconfig
-arc                               allnoconfig
-m68k                             allmodconfig
-sh                          r7785rp_defconfig
-sh                           se7206_defconfig
-alpha                             allnoconfig
-arc                      axs103_smp_defconfig
-riscv                             allnoconfig
-csky                              allnoconfig
-microblaze                      mmu_defconfig
-arm                         lpc18xx_defconfig
-sparc                               defconfig
-sh                           se7722_defconfig
-arm                           u8500_defconfig
-sh                           se7712_defconfig
-m68k                       m5475evb_defconfig
-mips                      fuloong2e_defconfig
-sparc64                          alldefconfig
-mips                  maltasmvp_eva_defconfig
-sh                   rts7751r2dplus_defconfig
-sh                           se7721_defconfig
-i386                          randconfig-c001
-
-clang tested configs:
-i386                          randconfig-a013
-x86_64                        randconfig-a016
-hexagon              randconfig-r045-20220904
-i386                          randconfig-a006
-hexagon              randconfig-r041-20220904
-i386                          randconfig-a011
-i386                          randconfig-a015
-x86_64                        randconfig-a005
-x86_64                        randconfig-a001
-x86_64                        randconfig-a012
-i386                          randconfig-a002
-x86_64                        randconfig-a003
-x86_64                        randconfig-a014
-i386                          randconfig-a004
-arm                        multi_v5_defconfig
-powerpc                 mpc8272_ads_defconfig
-arm                   milbeaut_m10v_defconfig
-arm                            mmp2_defconfig
-x86_64                        randconfig-k001
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+BR, Jarkko
